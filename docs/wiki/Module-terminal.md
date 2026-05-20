@@ -10,281 +10,25 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [ansi.rs](#ansirs)
+  - [cell.rs](#cellrs)
+  - [completion.rs](#completionrs)
+  - [highlighter.rs](#highlighterrs)
+  - [mod.rs](#modrs)
+  - [render.rs](#renderrs)
+  - [terminal_state.rs](#terminalstaters)
+  - [widget.rs](#widgetrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.terminal.addCompletion](#lurekterminaladdcompletion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.applyTheme](#lurekterminalapplytheme)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.clearCmdHistory](#lurekterminalclearcmdhistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.clearCompletions](#lurekterminalclearcompletions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.cmdHistoryLen](#lurekterminalcmdhistorylen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.getCompletions](#lurekterminalgetcompletions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.getMaxCols](#lurekterminalgetmaxcols)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.getMaxRows](#lurekterminalgetmaxrows)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.getScrollback](#lurekterminalgetscrollback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.newBorder](#lurekterminalnewborder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.newButton](#lurekterminalnewbutton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.newLabel](#lurekterminalnewlabel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.newList](#lurekterminalnewlist)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.newPanel](#lurekterminalnewpanel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.newTerminal](#lurekterminalnewterminal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.newTextBox](#lurekterminalnewtextbox)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.nextCmd](#lurekterminalnextcmd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.nextCompletion](#lurekterminalnextcompletion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.parseAnsi](#lurekterminalparseansi)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.prevCmd](#lurekterminalprevcmd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.printAnsi](#lurekterminalprintansi)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.printHighlighted](#lurekterminalprinthighlighted)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.pushCmdHistory](#lurekterminalpushcmdhistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.pushScrollback](#lurekterminalpushscrollback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.removeCompletion](#lurekterminalremovecompletion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.resetCompletion](#lurekterminalresetcompletion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.scrollbackLen](#lurekterminalscrollbacklen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.setScrollbackCap](#lurekterminalsetscrollbackcap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.terminal.stripAnsi](#lurekterminalstripansi)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LTerminal](#lterminal)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LWidget](#lwidget)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LTerminal:addWidget](#lterminaladdwidget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:autoResize](#lterminalautoresize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:clear](#lterminalclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:clearWidgets](#lterminalclearwidgets)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:get](#lterminalget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:getCellSize](#lterminalgetcellsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:getDimensions](#lterminalgetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:getFocused](#lterminalgetfocused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:getWidgetCount](#lterminalgetwidgetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:keypressed](#lterminalkeypressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:mousepressed](#lterminalmousepressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:print](#lterminalprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:removeWidget](#lterminalremovewidget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:render](#lterminalrender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:resetCellSize](#lterminalresetcellsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:set](#lterminalset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:setCellSize](#lterminalsetcellsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:setFocus](#lterminalsetfocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:setFont](#lterminalsetfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:textinput](#lterminaltextinput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:type](#lterminaltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerminal:typeOf](#lterminaltypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:addChild](#lwidgetaddchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:addItem](#lwidgetadditem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:clearChildren](#lwidgetclearchildren)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:clearItems](#lwidgetclearitems)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getChild](#lwidgetgetchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getChildCount](#lwidgetgetchildcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getColor](#lwidgetgetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getItem](#lwidgetgetitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getItemCount](#lwidgetgetitemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getMaxLength](#lwidgetgetmaxlength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getPosition](#lwidgetgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getSelected](#lwidgetgetselected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getSize](#lwidgetgetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getStyle](#lwidgetgetstyle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getTag](#lwidgetgettag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getText](#lwidgetgettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:getTitle](#lwidgetgettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:isEnabled](#lwidgetisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:isVisible](#lwidgetisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:removeChild](#lwidgetremovechild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:removeItem](#lwidgetremoveitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setColor](#lwidgetsetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setEnabled](#lwidgetsetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setMaxLength](#lwidgetsetmaxlength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setOnChange](#lwidgetsetonchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setOnClick](#lwidgetsetonclick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setOnSelect](#lwidgetsetonselect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setPosition](#lwidgetsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setSelected](#lwidgetsetselected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setSize](#lwidgetsetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setStyle](#lwidgetsetstyle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setTag](#lwidgetsettag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setText](#lwidgetsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setTitle](#lwidgetsettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:setVisible](#lwidgetsetvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:type](#lwidgettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWidget:typeOf](#lwidgettypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LTerminal Methods](#lterminal-methods)
+  - [LWidget Methods](#lwidget-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -308,6 +52,75 @@ Widgets provide pre-built terminal UI components with default shaded cell backgr
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `ansi.rs`
+
+- ANSI escape sequence stripping and SGR attribute parsing.
+- Standard 8-color CGA and bright palette tables (codes 30–37, 90–97).
+- Xterm-256 color index decoding: cube (16–231) and grayscale (232–255).
+- 24-bit true-color RGB extraction from SGR 38/48 sub-code 2.
+- Span-based output splitting text into runs with shared fg/bg/bold state.
+- UTF-8 byte-level helpers for raw escape parsing without allocation.
+
+### `cell.rs`
+
+- Single-cell data type for the terminal grid.
+- Default color and character constants.
+- `Default` trait wiring for blank cells.
+
+### `completion.rs`
+
+- Prefix-based tab-completion engine for the in-game terminal.
+- Maintains a sorted candidate list; cycles through matches on repeated Tab presses.
+- Supports dynamic add/remove of candidates and stateless prefix queries.
+
+### `highlighter.rs`
+
+- Pattern-based text highlighting: match literal strings and assign foreground/background colors.
+- Span splitting: decompose input into colored runs for terminal cell rendering.
+- Leftmost-first rule priority with default fallback for unmatched regions.
+
+### `mod.rs`
+
+- In-engine terminal emulator with ANSI escape-code support
+- Grid-based cell model, tab completion, and syntax highlighting
+- Converts terminal state into RenderCommand sequences for display
+- Widget primitives for composing custom terminal UIs
+
+### `render.rs`
+
+- Render the composited terminal cell grid as a list of `RenderCommand` draw calls.
+- Rasterise the composited grid into an `ImageData` thumbnail for previews.
+- Both paths include terminal widgets and map foreground/background colours to output.
+
+### `terminal_state.rs`
+
+- Terminal grid state machine: fixed-size cell buffer with 1-based cursor, per-cell fg/bg colors, and content-preserving resize.
+- Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid with default shaded skins.
+- Focus and input dispatch: keyboard, text-input, and mouse events routed to the focused widget with event emission.
+- Scrollback buffer: capped line history with offset-based windowed retrieval.
+- Command history: push/prev/next navigation for console-style input recall.
+- Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application.
+- Render output: composited cell buffer flattened into batched text and background `RenderCommand` lists for the renderer.
+- Border rendering: single, double, and ASCII frame styles with optional title text.
+- Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
+
+### `widget.rs`
+
+- Define the terminal widget type system: Label, Button, TextBox, List, Border, and Panel.
+- Provide `WidgetBase` for shared layout state: position, size, visibility, enabled flag, and tag.
+- Offer `BorderStyle` enum with single, double, and ASCII line-drawing variants.
+- Construct widgets from 1-based terminal coordinates with clamped dimensions.
+- Get and set display text for text-bearing widgets (Label, Button, TextBox).
+- Get and set foreground color for colored widgets (Label, Border).
+- Manipulate list contents: add, remove, clear items; track selection and scroll offset.
+- Enforce TextBox max-length constraints with automatic cursor clamping.
+- Expose border property accessors for style and title.
+- Provide type-checking predicates for widget kind discrimination.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LTerminal` (22 methods) - Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
@@ -318,34 +131,18 @@ Widgets provide pre-built terminal UI components with default shaded cell backgr
 ## 📖 API Overview
 
 - Source spec: [docs/specs/terminal.md](../blob/main/docs/specs/terminal.md)
+- Module-level functions: 29
+- Lua-visible types: 2
+- Total type methods: 59
 
-```lua
-lurek.terminal.addCompletion(candidate: string) -- Registers a candidate string for tab-completion in the shared completion engine.
-lurek.terminal.applyTheme(terminal: LTerminal, theme: string) -- Applies a named color theme to the terminal, setting default foreground and background colors.
-lurek.terminal.clearCmdHistory(terminal: LTerminal) -- Removes all entries from the terminal command history.
-lurek.terminal.clearCompletions() -- Removes all registered completion candidates from the shared completion engine.
-lurek.terminal.cmdHistoryLen(terminal: LTerminal) -> integer -- Returns the number of commands currently stored in the terminal command history.
-lurek.terminal.getCompletions(prefix: string) -> string[] -- Returns all completion candidates matching the given prefix string.
-lurek.terminal.getMaxCols() -> integer -- Returns the engine-defined maximum number of columns a terminal grid can have.
-lurek.terminal.getMaxRows() -> integer -- Returns the engine-defined maximum number of rows a terminal grid can have.
-lurek.terminal.getScrollback(terminal: LTerminal, offset: integer, count: integer) -> string[] -- Retrieves a range of lines from the terminal scrollback buffer.
-lurek.terminal.newBorder(col: integer, row: integer, width: integer, height: integer) -> LWidget -- Creates a new decorative border widget drawn using box-drawing characters.
-lurek.terminal.newButton(col: integer, row: integer, width: integer, [height]: integer, [text]: string) -> LWidget -- Creates a new clickable button widget with the given position, size, and label text.
-lurek.terminal.newLabel(col: integer, row: integer, [text]: string) -> LWidget -- Creates a new label widget that displays static text at the given cell position.
-lurek.terminal.newList(col: integer, row: integer, width: integer, height: integer) -> LWidget -- Creates a new scrollable list widget for displaying and selecting items.
-lurek.terminal.newPanel(col: integer, row: integer, [width]: integer, [height]: integer) -> LWidget -- Creates a new panel widget that can contain child widgets for grouped layout.
-lurek.terminal.newTerminal([cols]: integer, [rows]: integer) -> LTerminal -- Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
-lurek.terminal.newTextBox(col: integer, row: integer, width: integer) -> LWidget -- Creates a new single-line text input widget at the given position with a fixed width.
-lurek.terminal.nextCmd(terminal: LTerminal) -> string -- Navigates forward in the terminal command history, returning the next command or nil if at the end.
-lurek.terminal.nextCompletion(prefix: string) -> string -- Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.
--- ... 11 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.terminal.addCompletion
+### Module-Level Functions
+
+#### lurek.terminal.addCompletion
 
 #### Definition
 
@@ -377,7 +174,7 @@ do
 end
 ```
 
-### lurek.terminal.applyTheme
+#### lurek.terminal.applyTheme
 
 #### Definition
 
@@ -411,7 +208,7 @@ do
 end
 ```
 
-### lurek.terminal.clearCmdHistory
+#### lurek.terminal.clearCmdHistory
 
 #### Definition
 
@@ -443,7 +240,7 @@ do
 end
 ```
 
-### lurek.terminal.clearCompletions
+#### lurek.terminal.clearCompletions
 
 #### Definition
 
@@ -468,7 +265,7 @@ do
 end
 ```
 
-### lurek.terminal.cmdHistoryLen
+#### lurek.terminal.cmdHistoryLen
 
 #### Definition
 
@@ -503,7 +300,7 @@ do
 end
 ```
 
-### lurek.terminal.getCompletions
+#### lurek.terminal.getCompletions
 
 #### Definition
 
@@ -536,7 +333,7 @@ do
 end
 ```
 
-### lurek.terminal.getMaxCols
+#### lurek.terminal.getMaxCols
 
 #### Definition
 
@@ -563,7 +360,7 @@ do
 end
 ```
 
-### lurek.terminal.getMaxRows
+#### lurek.terminal.getMaxRows
 
 #### Definition
 
@@ -590,7 +387,7 @@ do
 end
 ```
 
-### lurek.terminal.getScrollback
+#### lurek.terminal.getScrollback
 
 #### Definition
 
@@ -627,7 +424,7 @@ do
 end
 ```
 
-### lurek.terminal.newBorder
+#### lurek.terminal.newBorder
 
 #### Definition
 
@@ -668,7 +465,7 @@ do
 end
 ```
 
-### lurek.terminal.newButton
+#### lurek.terminal.newButton
 
 #### Definition
 
@@ -711,7 +508,7 @@ do
 end
 ```
 
-### lurek.terminal.newLabel
+#### lurek.terminal.newLabel
 
 #### Definition
 
@@ -750,7 +547,7 @@ do
 end
 ```
 
-### lurek.terminal.newList
+#### lurek.terminal.newList
 
 #### Definition
 
@@ -791,7 +588,7 @@ do
 end
 ```
 
-### lurek.terminal.newPanel
+#### lurek.terminal.newPanel
 
 #### Definition
 
@@ -832,7 +629,7 @@ do
 end
 ```
 
-### lurek.terminal.newTerminal
+#### lurek.terminal.newTerminal
 
 #### Definition
 
@@ -869,7 +666,7 @@ do
 end
 ```
 
-### lurek.terminal.newTextBox
+#### lurek.terminal.newTextBox
 
 #### Definition
 
@@ -908,7 +705,7 @@ do
 end
 ```
 
-### lurek.terminal.nextCmd
+#### lurek.terminal.nextCmd
 
 #### Definition
 
@@ -943,7 +740,7 @@ do
 end
 ```
 
-### lurek.terminal.nextCompletion
+#### lurek.terminal.nextCompletion
 
 #### Definition
 
@@ -978,7 +775,7 @@ do
 end
 ```
 
-### lurek.terminal.parseAnsi
+#### lurek.terminal.parseAnsi
 
 #### Definition
 
@@ -1012,7 +809,7 @@ do
 end
 ```
 
-### lurek.terminal.prevCmd
+#### lurek.terminal.prevCmd
 
 #### Definition
 
@@ -1047,7 +844,7 @@ do
 end
 ```
 
-### lurek.terminal.printAnsi
+#### lurek.terminal.printAnsi
 
 #### Definition
 
@@ -1085,7 +882,7 @@ do
 end
 ```
 
-### lurek.terminal.printHighlighted
+#### lurek.terminal.printHighlighted
 
 #### Definition
 
@@ -1125,7 +922,7 @@ do
 end
 ```
 
-### lurek.terminal.pushCmdHistory
+#### lurek.terminal.pushCmdHistory
 
 #### Definition
 
@@ -1159,7 +956,7 @@ do
 end
 ```
 
-### lurek.terminal.pushScrollback
+#### lurek.terminal.pushScrollback
 
 #### Definition
 
@@ -1193,7 +990,7 @@ do
 end
 ```
 
-### lurek.terminal.removeCompletion
+#### lurek.terminal.removeCompletion
 
 #### Definition
 
@@ -1224,7 +1021,7 @@ do
 end
 ```
 
-### lurek.terminal.resetCompletion
+#### lurek.terminal.resetCompletion
 
 #### Definition
 
@@ -1249,7 +1046,7 @@ do
 end
 ```
 
-### lurek.terminal.scrollbackLen
+#### lurek.terminal.scrollbackLen
 
 #### Definition
 
@@ -1282,7 +1079,7 @@ do
 end
 ```
 
-### lurek.terminal.setScrollbackCap
+#### lurek.terminal.setScrollbackCap
 
 #### Definition
 
@@ -1315,7 +1112,7 @@ do
 end
 ```
 
-### lurek.terminal.stripAnsi
+#### lurek.terminal.stripAnsi
 
 #### Definition
 
@@ -1416,7 +1213,9 @@ end
 
 ## 🔹 Module Methods
 
-### LTerminal:addWidget
+### LTerminal Methods
+
+#### LTerminal:addWidget
 
 #### Definition
 
@@ -1447,7 +1246,7 @@ do
 end
 ```
 
-### LTerminal:autoResize
+#### LTerminal:autoResize
 
 #### Definition
 
@@ -1473,7 +1272,7 @@ do
 end
 ```
 
-### LTerminal:clear
+#### LTerminal:clear
 
 #### Definition
 
@@ -1500,7 +1299,7 @@ do
 end
 ```
 
-### LTerminal:clearWidgets
+#### LTerminal:clearWidgets
 
 #### Definition
 
@@ -1527,7 +1326,7 @@ do
 end
 ```
 
-### LTerminal:get
+#### LTerminal:get
 
 #### Definition
 
@@ -1572,7 +1371,7 @@ do
 end
 ```
 
-### LTerminal:getCellSize
+#### LTerminal:getCellSize
 
 #### Definition
 
@@ -1603,7 +1402,7 @@ do
 end
 ```
 
-### LTerminal:getDimensions
+#### LTerminal:getDimensions
 
 #### Definition
 
@@ -1632,7 +1431,7 @@ do
 end
 ```
 
-### LTerminal:getFocused
+#### LTerminal:getFocused
 
 #### Definition
 
@@ -1661,7 +1460,7 @@ do
 end
 ```
 
-### LTerminal:getWidgetCount
+#### LTerminal:getWidgetCount
 
 #### Definition
 
@@ -1690,7 +1489,7 @@ do
 end
 ```
 
-### LTerminal:keypressed
+#### LTerminal:keypressed
 
 #### Definition
 
@@ -1725,7 +1524,7 @@ do
 end
 ```
 
-### LTerminal:mousepressed
+#### LTerminal:mousepressed
 
 #### Definition
 
@@ -1761,7 +1560,7 @@ do
 end
 ```
 
-### LTerminal:print
+#### LTerminal:print
 
 #### Definition
 
@@ -1795,7 +1594,7 @@ do
 end
 ```
 
-### LTerminal:removeWidget
+#### LTerminal:removeWidget
 
 #### Definition
 
@@ -1827,7 +1626,7 @@ do
 end
 ```
 
-### LTerminal:render
+#### LTerminal:render
 
 #### Definition
 
@@ -1861,7 +1660,7 @@ do
 end
 ```
 
-### LTerminal:resetCellSize
+#### LTerminal:resetCellSize
 
 #### Definition
 
@@ -1887,7 +1686,7 @@ do
 end
 ```
 
-### LTerminal:set
+#### LTerminal:set
 
 #### Definition
 
@@ -1939,7 +1738,7 @@ do
 end
 ```
 
-### LTerminal:setCellSize
+#### LTerminal:setCellSize
 
 #### Definition
 
@@ -1972,7 +1771,7 @@ do
 end
 ```
 
-### LTerminal:setFocus
+#### LTerminal:setFocus
 
 #### Definition
 
@@ -2003,7 +1802,7 @@ do
 end
 ```
 
-### LTerminal:setFont
+#### LTerminal:setFont
 
 #### Definition
 
@@ -2034,7 +1833,7 @@ do
 end
 ```
 
-### LTerminal:textinput
+#### LTerminal:textinput
 
 #### Definition
 
@@ -2069,7 +1868,7 @@ do
 end
 ```
 
-### LTerminal:type
+#### LTerminal:type
 
 #### Definition
 
@@ -2096,7 +1895,7 @@ do
 end
 ```
 
-### LTerminal:typeOf
+#### LTerminal:typeOf
 
 #### Definition
 
@@ -2128,7 +1927,9 @@ do
 end
 ```
 
-### LWidget:addChild
+### LWidget Methods
+
+#### LWidget:addChild
 
 #### Definition
 
@@ -2160,7 +1961,7 @@ do
 end
 ```
 
-### LWidget:addItem
+#### LWidget:addItem
 
 #### Definition
 
@@ -2190,7 +1991,7 @@ do
 end
 ```
 
-### LWidget:clearChildren
+#### LWidget:clearChildren
 
 #### Definition
 
@@ -2217,7 +2018,7 @@ do
 end
 ```
 
-### LWidget:clearItems
+#### LWidget:clearItems
 
 #### Definition
 
@@ -2244,7 +2045,7 @@ do
 end
 ```
 
-### LWidget:getChild
+#### LWidget:getChild
 
 #### Definition
 
@@ -2279,7 +2080,7 @@ do
 end
 ```
 
-### LWidget:getChildCount
+#### LWidget:getChildCount
 
 #### Definition
 
@@ -2309,7 +2110,7 @@ do
 end
 ```
 
-### LWidget:getColor
+#### LWidget:getColor
 
 #### Definition
 
@@ -2341,7 +2142,7 @@ do
 end
 ```
 
-### LWidget:getItem
+#### LWidget:getItem
 
 #### Definition
 
@@ -2376,7 +2177,7 @@ do
 end
 ```
 
-### LWidget:getItemCount
+#### LWidget:getItemCount
 
 #### Definition
 
@@ -2406,7 +2207,7 @@ do
 end
 ```
 
-### LWidget:getMaxLength
+#### LWidget:getMaxLength
 
 #### Definition
 
@@ -2434,7 +2235,7 @@ do
 end
 ```
 
-### LWidget:getPosition
+#### LWidget:getPosition
 
 #### Definition
 
@@ -2463,7 +2264,7 @@ do
 end
 ```
 
-### LWidget:getSelected
+#### LWidget:getSelected
 
 #### Definition
 
@@ -2493,7 +2294,7 @@ do
 end
 ```
 
-### LWidget:getSize
+#### LWidget:getSize
 
 #### Definition
 
@@ -2522,7 +2323,7 @@ do
 end
 ```
 
-### LWidget:getStyle
+#### LWidget:getStyle
 
 #### Definition
 
@@ -2551,7 +2352,7 @@ do
 end
 ```
 
-### LWidget:getTag
+#### LWidget:getTag
 
 #### Definition
 
@@ -2580,7 +2381,7 @@ do
 end
 ```
 
-### LWidget:getText
+#### LWidget:getText
 
 #### Definition
 
@@ -2609,7 +2410,7 @@ do
 end
 ```
 
-### LWidget:getTitle
+#### LWidget:getTitle
 
 #### Definition
 
@@ -2638,7 +2439,7 @@ do
 end
 ```
 
-### LWidget:isEnabled
+#### LWidget:isEnabled
 
 #### Definition
 
@@ -2667,7 +2468,7 @@ do
 end
 ```
 
-### LWidget:isVisible
+#### LWidget:isVisible
 
 #### Definition
 
@@ -2696,7 +2497,7 @@ do
 end
 ```
 
-### LWidget:removeChild
+#### LWidget:removeChild
 
 #### Definition
 
@@ -2728,7 +2529,7 @@ do
 end
 ```
 
-### LWidget:removeItem
+#### LWidget:removeItem
 
 #### Definition
 
@@ -2760,7 +2561,7 @@ do
 end
 ```
 
-### LWidget:setColor
+#### LWidget:setColor
 
 #### Definition
 
@@ -2797,7 +2598,7 @@ do
 end
 ```
 
-### LWidget:setEnabled
+#### LWidget:setEnabled
 
 #### Definition
 
@@ -2827,7 +2628,7 @@ do
 end
 ```
 
-### LWidget:setMaxLength
+#### LWidget:setMaxLength
 
 #### Definition
 
@@ -2858,7 +2659,7 @@ do
 end
 ```
 
-### LWidget:setOnChange
+#### LWidget:setOnChange
 
 #### Definition
 
@@ -2890,7 +2691,7 @@ do
 end
 ```
 
-### LWidget:setOnClick
+#### LWidget:setOnClick
 
 #### Definition
 
@@ -2920,7 +2721,7 @@ do
 end
 ```
 
-### LWidget:setOnSelect
+#### LWidget:setOnSelect
 
 #### Definition
 
@@ -2950,7 +2751,7 @@ do
 end
 ```
 
-### LWidget:setPosition
+#### LWidget:setPosition
 
 #### Definition
 
@@ -2983,7 +2784,7 @@ do
 end
 ```
 
-### LWidget:setSelected
+#### LWidget:setSelected
 
 #### Definition
 
@@ -3014,7 +2815,7 @@ do
 end
 ```
 
-### LWidget:setSize
+#### LWidget:setSize
 
 #### Definition
 
@@ -3047,7 +2848,7 @@ do
 end
 ```
 
-### LWidget:setStyle
+#### LWidget:setStyle
 
 #### Definition
 
@@ -3078,7 +2879,7 @@ do
 end
 ```
 
-### LWidget:setTag
+#### LWidget:setTag
 
 #### Definition
 
@@ -3108,7 +2909,7 @@ do
 end
 ```
 
-### LWidget:setText
+#### LWidget:setText
 
 #### Definition
 
@@ -3138,7 +2939,7 @@ do
 end
 ```
 
-### LWidget:setTitle
+#### LWidget:setTitle
 
 #### Definition
 
@@ -3168,7 +2969,7 @@ do
 end
 ```
 
-### LWidget:setVisible
+#### LWidget:setVisible
 
 #### Definition
 
@@ -3198,7 +2999,7 @@ do
 end
 ```
 
-### LWidget:type
+#### LWidget:type
 
 #### Definition
 
@@ -3225,7 +3026,7 @@ do
 end
 ```
 
-### LWidget:typeOf
+#### LWidget:typeOf
 
 #### Definition
 

@@ -10,128 +10,24 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [bone.rs](#boners)
+  - [ik.rs](#ikrs)
+  - [mod.rs](#modrs)
+  - [render.rs](#renderrs)
+  - [skeleton.rs](#skeletonrs)
+  - [slot.rs](#slotrs)
+  - [timeline.rs](#timeliners)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.spine.animationFromJson](#lurekspineanimationfromjson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.spine.newSkeleton](#lurekspinenewskeleton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.spine.newSkeletonAnimation](#lurekspinenewskeletonanimation)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LSkeleton](#lskeleton)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSkeletonAnimation](#lskeletonanimation)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LSkeleton:addAnimation](#lskeletonaddanimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:addBone](#lskeletonaddbone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:addChildBone](#lskeletonaddchildbone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:addIKConstraint](#lskeletonaddikconstraint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:addSkin](#lskeletonaddskin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:addSlot](#lskeletonaddslot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:blendAnimation](#lskeletonblendanimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:boneCount](#lskeletonbonecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:drawToImage](#lskeletondrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:findBone](#lskeletonfindbone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:findSlot](#lskeletonfindslot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:getAnimationTime](#lskeletongetanimationtime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:getBoneWorld](#lskeletongetboneworld)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:getSkin](#lskeletongetskin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:playAnimation](#lskeletonplayanimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:setIKTarget](#lskeletonsetiktarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:setPosition](#lskeletonsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:setSkin](#lskeletonsetskin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:setSkinMapping](#lskeletonsetskinmapping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:slotCount](#lskeletonslotcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:stopAnimation](#lskeletonstopanimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:type](#lskeletontype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:typeOf](#lskeletontypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:updateAnimation](#lskeletonupdateanimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeleton:updateWorldTransforms](#lskeletonupdateworldtransforms)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:addEventKey](#lskeletonanimationaddeventkey)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:addKeyframe](#lskeletonanimationaddkeyframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:getDuration](#lskeletonanimationgetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:getEvents](#lskeletonanimationgetevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:getTimelineCount](#lskeletonanimationgettimelinecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:poseAt](#lskeletonanimationposeat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:reverse](#lskeletonanimationreverse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:type](#lskeletonanimationtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSkeletonAnimation:typeOf](#lskeletonanimationtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LSkeleton Methods](#lskeleton-methods)
+  - [LSkeletonAnimation Methods](#lskeletonanimation-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -155,6 +51,59 @@ Skeletal animation runtime providing hierarchical bone trees, slot-based attachm
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `bone.rs`
+
+- Bone struct holding local and accumulated world-space transform.
+- Parent-child hierarchy via optional parent index.
+- Constructors for root bones and parented child bones.
+
+### `ik.rs`
+
+- Two-bone inverse-kinematics constraint for skeleton animation.
+- Solves root and elbow rotations via law-of-cosines to reach a world-space target.
+- Supports configurable bend direction (positive or negative).
+
+### `mod.rs`
+
+- Skeletal animation runtime: bones, slots, IK, timelines, and pose blending.
+- Hierarchical bone transforms with parent-relative computation.
+- Keyframe-driven animation clips with easing and interpolation.
+- Skeleton-level render assembly converting posed bones to draw commands.
+
+### `render.rs`
+
+- Convert a Skeleton's bone and slot state into a flat list of RenderCommands.
+- Draw bones as filled circles at world positions with slot-derived colors.
+- Draw slot attachments as outline rectangles around their parent bone.
+
+### `skeleton.rs`
+
+- Skeleton struct holding bones, slots, animations, IK constraints, skins, and playback state.
+- Bone and slot management: add, find by name, query world transforms.
+- Animation playback: start/stop clips, advance time, loop or clamp at duration.
+- IK constraint registration and per-frame solving against bone poses.
+- Skin system: register skins, switch active skin, map attachments per slot.
+- World-transform recomputation traversing bones in parent-before-child order.
+- Debug visualization: rasterise skeleton bones and slot markers into ImageData.
+
+### `slot.rs`
+
+- Slot struct: named attachment point on a bone with RGBA tint and optional texture reference.
+- Constructor defaults to white opaque colour, no attachment, and draw-order zero.
+- Draw-order field drives back-to-front rendering when multiple slots share a bone.
+
+### `timeline.rs`
+
+- Easing curves (linear, quadratic in/out, step) for inter-keyframe interpolation.
+- Keyframe storage and sorted insertion for bone property timelines.
+- BoneTimeline evaluation with clamping and step-hold semantics.
+- Event keyframes fired at specific animation times for Lua callback dispatch.
+- SkeletonAnimation clip: multi-timeline playback, blending, reversal, and JSON parsing.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LSkeleton` (25 methods) - Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
@@ -165,18 +114,18 @@ Skeletal animation runtime providing hierarchical bone trees, slot-based attachm
 ## 📖 API Overview
 
 - Source spec: [docs/specs/spine.md](../blob/main/docs/specs/spine.md)
+- Module-level functions: 3
+- Lua-visible types: 2
+- Total type methods: 34
 
-```lua
-lurek.spine.animationFromJson(json: string) -> LSkeletonAnimation -- Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
-lurek.spine.newSkeleton(name: string) -> LSkeleton -- Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
-lurek.spine.newSkeletonAnimation(name: string, duration: number) -> LSkeletonAnimation -- Creates a new empty animation with the given name and duration. Add keyframes to define motion.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.spine.animationFromJson
+### Module-Level Functions
+
+#### lurek.spine.animationFromJson
 
 #### Definition
 
@@ -209,7 +158,7 @@ do
 end
 ```
 
-### lurek.spine.newSkeleton
+#### lurek.spine.newSkeleton
 
 #### Definition
 
@@ -244,7 +193,7 @@ do
 end
 ```
 
-### lurek.spine.newSkeletonAnimation
+#### lurek.spine.newSkeletonAnimation
 
 #### Definition
 
@@ -344,7 +293,9 @@ end
 
 ## 🔹 Module Methods
 
-### LSkeleton:addAnimation
+### LSkeleton Methods
+
+#### LSkeleton:addAnimation
 
 #### Definition
 
@@ -374,7 +325,7 @@ do
 end
 ```
 
-### LSkeleton:addBone
+#### LSkeleton:addBone
 
 #### Definition
 
@@ -410,7 +361,7 @@ do
 end
 ```
 
-### LSkeleton:addChildBone
+#### LSkeleton:addChildBone
 
 #### Definition
 
@@ -449,7 +400,7 @@ do
 end
 ```
 
-### LSkeleton:addIKConstraint
+#### LSkeleton:addIKConstraint
 
 #### Definition
 
@@ -487,7 +438,7 @@ do
 end
 ```
 
-### LSkeleton:addSkin
+#### LSkeleton:addSkin
 
 #### Definition
 
@@ -518,7 +469,7 @@ do
 end
 ```
 
-### LSkeleton:addSlot
+#### LSkeleton:addSlot
 
 #### Definition
 
@@ -556,7 +507,7 @@ do
 end
 ```
 
-### LSkeleton:blendAnimation
+#### LSkeleton:blendAnimation
 
 #### Definition
 
@@ -592,7 +543,7 @@ do
 end
 ```
 
-### LSkeleton:boneCount
+#### LSkeleton:boneCount
 
 #### Definition
 
@@ -620,7 +571,7 @@ do
 end
 ```
 
-### LSkeleton:drawToImage
+#### LSkeleton:drawToImage
 
 #### Definition
 
@@ -657,7 +608,7 @@ do
 end
 ```
 
-### LSkeleton:findBone
+#### LSkeleton:findBone
 
 #### Definition
 
@@ -690,7 +641,7 @@ do
 end
 ```
 
-### LSkeleton:findSlot
+#### LSkeleton:findSlot
 
 #### Definition
 
@@ -723,7 +674,7 @@ do
 end
 ```
 
-### LSkeleton:getAnimationTime
+#### LSkeleton:getAnimationTime
 
 #### Definition
 
@@ -752,7 +703,7 @@ do
 end
 ```
 
-### LSkeleton:getBoneWorld
+#### LSkeleton:getBoneWorld
 
 #### Definition
 
@@ -787,7 +738,7 @@ do
 end
 ```
 
-### LSkeleton:getSkin
+#### LSkeleton:getSkin
 
 #### Definition
 
@@ -816,7 +767,7 @@ do
 end
 ```
 
-### LSkeleton:playAnimation
+#### LSkeleton:playAnimation
 
 #### Definition
 
@@ -852,7 +803,7 @@ do
 end
 ```
 
-### LSkeleton:setIKTarget
+#### LSkeleton:setIKTarget
 
 #### Definition
 
@@ -891,7 +842,7 @@ do
 end
 ```
 
-### LSkeleton:setPosition
+#### LSkeleton:setPosition
 
 #### Definition
 
@@ -923,7 +874,7 @@ do
 end
 ```
 
-### LSkeleton:setSkin
+#### LSkeleton:setSkin
 
 #### Definition
 
@@ -957,7 +908,7 @@ do
 end
 ```
 
-### LSkeleton:setSkinMapping
+#### LSkeleton:setSkinMapping
 
 #### Definition
 
@@ -993,7 +944,7 @@ do
 end
 ```
 
-### LSkeleton:slotCount
+#### LSkeleton:slotCount
 
 #### Definition
 
@@ -1021,7 +972,7 @@ do
 end
 ```
 
-### LSkeleton:stopAnimation
+#### LSkeleton:stopAnimation
 
 #### Definition
 
@@ -1048,7 +999,7 @@ do
 end
 ```
 
-### LSkeleton:type
+#### LSkeleton:type
 
 #### Definition
 
@@ -1075,7 +1026,7 @@ do
 end
 ```
 
-### LSkeleton:typeOf
+#### LSkeleton:typeOf
 
 #### Definition
 
@@ -1107,7 +1058,7 @@ do
 end
 ```
 
-### LSkeleton:updateAnimation
+#### LSkeleton:updateAnimation
 
 #### Definition
 
@@ -1138,7 +1089,7 @@ do
 end
 ```
 
-### LSkeleton:updateWorldTransforms
+#### LSkeleton:updateWorldTransforms
 
 #### Definition
 
@@ -1164,7 +1115,9 @@ do
 end
 ```
 
-### LSkeletonAnimation:addEventKey
+### LSkeletonAnimation Methods
+
+#### LSkeletonAnimation:addEventKey
 
 #### Definition
 
@@ -1198,7 +1151,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:addKeyframe
+#### LSkeletonAnimation:addKeyframe
 
 #### Definition
 
@@ -1237,7 +1190,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:getDuration
+#### LSkeletonAnimation:getDuration
 
 #### Definition
 
@@ -1264,7 +1217,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:getEvents
+#### LSkeletonAnimation:getEvents
 
 #### Definition
 
@@ -1299,7 +1252,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:getTimelineCount
+#### LSkeletonAnimation:getTimelineCount
 
 #### Definition
 
@@ -1327,7 +1280,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:poseAt
+#### LSkeletonAnimation:poseAt
 
 #### Definition
 
@@ -1361,7 +1314,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:reverse
+#### LSkeletonAnimation:reverse
 
 #### Definition
 
@@ -1391,7 +1344,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:type
+#### LSkeletonAnimation:type
 
 #### Definition
 
@@ -1418,7 +1371,7 @@ do
 end
 ```
 
-### LSkeletonAnimation:typeOf
+#### LSkeletonAnimation:typeOf
 
 #### Definition
 

@@ -10,98 +10,32 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [biome.rs](#biomers)
+  - [bsp.rs](#bsprs)
+  - [cellular.rs](#cellularrs)
+  - [color.rs](#colorrs)
+  - [flood_fill.rs](#floodfillrs)
+  - [heightmap.rs](#heightmaprs)
+  - [lcg.rs](#lcgrs)
+  - [lsystem.rs](#lsystemrs)
+  - [mod.rs](#modrs)
+  - [namegen.rs](#namegenrs)
+  - [noise.rs](#noisers)
+  - [poisson.rs](#poissonrs)
+  - [render.rs](#renderrs)
+  - [rooms.rs](#roomsrs)
+  - [voronoi.rs](#voronoirs)
+  - [wfc.rs](#wfcrs)
+  - [world_graph.rs](#worldgraphrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.procgen.biomeColor](#lurekprocgenbiomecolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.bspDungeon](#lurekprocgenbspdungeon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.bspDungeonWithPrefabs](#lurekprocgenbspdungeonwithprefabs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.cellularAutomata](#lurekprocgencellularautomata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.floodFill](#lurekprocgenfloodfill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.generateName](#lurekprocgengeneratename)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.generateNames](#lurekprocgengeneratenames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.heightmap](#lurekprocgenheightmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.heightmapFromCellular](#lurekprocgenheightmapfromcellular)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.lsystem](#lurekprocgenlsystem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.lsystemSegments](#lurekprocgenlsystemsegments)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.newBiomeClassifier](#lurekprocgennewbiomeclassifier)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.noiseMap](#lurekprocgennoisemap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.noiseMapParallel](#lurekprocgennoisemapparallel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.noiseMapParallelSeeded](#lurekprocgennoisemapparallelseeded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.perlinNoise](#lurekprocgenperlinnoise)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.poissonDisk](#lurekprocgenpoissondisk)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.roomsDungeon](#lurekprocgenroomsdungeon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.roomsDungeonWithPrefabs](#lurekprocgenroomsdungeonwithprefabs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.simplex2d](#lurekprocgensimplex2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.simplex3d](#lurekprocgensimplex3d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.voronoi](#lurekprocgenvoronoi)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.wfcGenerate](#lurekprocgenwfcgenerate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.procgen.worldGraph](#lurekprocgenworldgraph)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [BiomeClassifier](#biomeclassifier)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [BiomeClassifier:classify](#biomeclassifierclassify)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [BiomeClassifier:classifyMap](#biomeclassifierclassifymap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [BiomeClassifier:type](#biomeclassifiertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [BiomeClassifier:typeOf](#biomeclassifiertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [BiomeClassifier Methods](#biomeclassifier-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -125,6 +59,132 @@ Procedural content generation library providing noise, dungeon generation, heigh
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `biome.rs`
+
+- Biome classification system mapping height, moisture, and temperature to terrain types.
+- Defines `BiomeType` enum covering ocean, coast, desert, forest, tundra, and more.
+- Configurable `BiomeRules` thresholds for tuning world generation.
+- Stateless `BiomeClassifier` for single-cell or bulk grid classification.
+- RGBA color mapping for biome visualisation output.
+
+### `bsp.rs`
+
+- Binary Space Partition dungeon generator: recursive splitting, leaf room placement, corridor linking.
+- Configuration via `BspOpts`: grid size, recursion depth, minimum partition size, padding, seed.
+- Prefab stamping: round-robin placement of named template shapes centred in qualifying rooms.
+- Deterministic output driven by a seeded `Lcg` RNG for reproducible layouts.
+- Pure algorithm module with no rendering or tilemap dependency.
+
+### `cellular.rs`
+
+- Cellular automata cave generator producing flat grid maps from configurable birth/survive rules.
+- Supports reproducible output via seeded LCG randomisation.
+- Treats out-of-bounds neighbours as solid, forming natural cave walls at map edges.
+
+### `color.rs`
+
+- Convert scalar procgen output into pixel-ready RGBA byte buffers.
+- Grayscale mapping with automatic 0–1 clamping.
+- Suitable for heightmaps, noise previews, and debug visualisation.
+
+### `flood_fill.rs`
+
+- Four-connected flood fill on a flat `u8` grid with threshold-based matching.
+- Return a binary mask of reachable cells from a seed coordinate.
+- Support both above-threshold and below-threshold fill modes.
+
+### `heightmap.rs`
+
+- Procedural heightmap generation from FBM Perlin noise with configurable octaves, lacunarity, and persistence.
+- Simple hydraulic erosion pass that redistributes height differences across 4-connected neighbours.
+- Construction from raw noise maps or cellular automata grids with automatic normalisation to 0.0–1.0.
+- Clamped coordinate access and flat RGBA byte export for GPU texture upload.
+- Deterministic output controlled by a seed value passed through to the noise generator.
+
+### `lcg.rs`
+
+- 64-bit linear congruential generator (LCG) for deterministic pseudo-random number output.
+- Provides seeded construction, raw `u64` stepping, and uniform `f32` sampling.
+- Used as the shared RNG primitive across all `procgen` subsystems.
+
+### `lsystem.rs`
+
+- Deterministic string-rewriting L-system with configurable axiom, production rules, and iteration depth.
+- Turtle-graphics interpreter converts generated strings into line segments for rendering.
+- Supports branching via stack-based `[`/`]` commands for tree and fractal geometry.
+
+### `mod.rs`
+
+- Procedural generation toolkit: noise, dungeons, heightmaps, and world graphs.
+- Algorithms: Perlin/Simplex/Worley noise, BSP & room-scatter dungeons, cellular automata caves.
+- Utilities: Poisson disk sampling, L-systems, Markov name generation, Voronoi, WFC.
+- All generators are deterministic given a seed via the internal LCG.
+
+### `namegen.rs`
+
+- Markov-chain name generator trained on arbitrary word corpora.
+- Configurable n-gram order controls fidelity-vs-variety tradeoff.
+- Deterministic output via internal LCG seeding for reproducible generation.
+- Batch generation with length constraints and bounded retry logic.
+
+### `noise.rs`
+
+- Standalone 2D, 3D, and 4D Perlin noise evaluation with configurable seeds.
+- 2D simplex noise with seeded and convenience zero-seed wrappers.
+- FBM fractal layering over Perlin noise with normalised output.
+- Seeded `NoiseGenerator` with permutation-table Perlin (1D/2D/3D) and Simplex (2D/3D/4D).
+- Worley (cellular) noise in 2D and 3D with Euclidean, Manhattan, and Chebyshev metrics.
+- Fractal combinators: FBM, ridged multifractal, and turbulence; all normalised.
+- Domain warping via Perlin-driven coordinate offsets.
+- Sequential and parallel (`rayon`) height-map generation from `MapGenOptions`.
+- Tileable periodic 2D Perlin noise for seamless texture synthesis.
+- Internal hash and gradient helpers for all supported dimensions.
+
+### `poisson.rs`
+
+- Poisson-disk sampling: generate evenly-spaced random 2D point distributions.
+- Uses Bridson's algorithm with grid acceleration for O(n) rejection.
+- Deterministic via seeded LCG; produces `(x, y)` pair vectors.
+
+### `render.rs`
+
+- Tileable Perlin noise grid generation and cell access.
+- Conversion to grayscale RGBA byte buffers and `ImageData`.
+- Batch render-command generation for grid visualization.
+
+### `rooms.rs`
+
+- Random room placement with overlap rejection and configurable size ranges.
+- L-shaped corridor carving between consecutive room centres.
+- Flat row-major tile grid output (wall / floor / corridor byte values).
+- Prefab stamp system that centre-pastes named mask patterns into placed rooms.
+- Round-robin prefab assignment across all placed rooms.
+
+### `voronoi.rs`
+
+- Voronoi diagram generation on a 2D grid with F1/F2 distance fields.
+- Optional domain warp via hash noise for organic region boundaries.
+- Returns region indices and per-pixel distance buffers in row-major order.
+
+### `wfc.rs`
+
+- Wave Function Collapse (WFC) grid generator with weighted tile selection.
+- Adjacency-rule constraint propagation with automatic backtracking retries.
+- Deterministic seeded output via the internal LCG; each retry increments the seed.
+- Returns a flat row-major grid of tile IDs or `None` cells on contradiction.
+
+### `world_graph.rs`
+
+- Region and edge data types representing nodes and weighted connections in a world graph.
+- A* pathfinding with Euclidean heuristic for shortest-path queries between regions.
+- Bounded Dijkstra reachability returning all regions within a cumulative travel cost.
+- Minimum spanning tree computation via Kruskal's algorithm.
+- Random world graph generation placing regions in a bounding box and connecting k-nearest neighbours.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `BiomeClassifier` (4 methods) - Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
@@ -134,34 +194,18 @@ Procedural content generation library providing noise, dungeon generation, heigh
 ## 📖 API Overview
 
 - Source spec: [docs/specs/procgen.md](../blob/main/docs/specs/procgen.md)
+- Module-level functions: 24
+- Lua-visible types: 1
+- Total type methods: 4
 
-```lua
-lurek.procgen.biomeColor(name: string) -> number -- Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
-lurek.procgen.bspDungeon([opts]: table) -> table -- Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corr...
-lurek.procgen.bspDungeonWithPrefabs([opts]: table, prefabs: table) -> table -- Generate a BSP dungeon and stamp named prefab rooms into suitable leaves. Returns dungeon layout plus prefa...
-lurek.procgen.cellularAutomata(width: integer, height: integer, [opts]: table) -> integer[] -- Generate a cave or organic map using cellular automata rules.
-lurek.procgen.floodFill(data: table, width: number, height: number, startX: number, startY: number, [threshold]: number, [above]: boolean) -> integer[] -- Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test.
-lurek.procgen.generateName(samples: table, [minLen]: number, [maxLen]: number, [seed]: number) -> string -- Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place...
-lurek.procgen.generateNames(samples: table, count: number, [minLen]: number, [maxLen]: number, [seed]: number) -> string[] -- Generate multiple random names in one call using Markov chains trained from sample data.
-lurek.procgen.heightmap([opts]: table) -> table -- Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
-lurek.procgen.heightmapFromCellular(width: integer, height: integer, cells: table, [floorValue]: number) -> table -- Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
-lurek.procgen.lsystem(opts: table) -> string -- Expand an L-system grammar and return the resulting string. Useful for generating branching structures like...
-lurek.procgen.lsystemSegments(opts: table, [angle]: number, [step]: number) -> table -- Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.
-lurek.procgen.newBiomeClassifier([opts]: table) -> BiomeClassifier -- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biom...
-lurek.procgen.noiseMap(width: integer, height: integer, [opts]: table) -> number[] -- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
-lurek.procgen.noiseMapParallel(width: integer, height: integer, [opts]: table) -> number[] -- Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
-lurek.procgen.noiseMapParallelSeeded(width: integer, height: integer, [opts]: table) -> number[] -- Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
-lurek.procgen.perlinNoise(x: number, y: number, periodX: number, periodY: number) -> number -- Sample periodic 2D Perlin noise at a given coordinate.
-lurek.procgen.poissonDisk(width: number, height: number, minDist: number, [maxAttempts]: integer, [seed]: integer) -> table -- Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot w...
-lurek.procgen.roomsDungeon([opts]: table) -> table -- Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns...
--- ... 6 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.procgen.biomeColor
+### Module-Level Functions
+
+#### lurek.procgen.biomeColor
 
 #### Definition
 
@@ -196,7 +240,7 @@ do
 end
 ```
 
-### lurek.procgen.bspDungeon
+#### lurek.procgen.bspDungeon
 
 #### Definition
 
@@ -229,7 +273,7 @@ do
 end
 ```
 
-### lurek.procgen.bspDungeonWithPrefabs
+#### lurek.procgen.bspDungeonWithPrefabs
 
 #### Definition
 
@@ -265,7 +309,7 @@ do
 end
 ```
 
-### lurek.procgen.cellularAutomata
+#### lurek.procgen.cellularAutomata
 
 #### Definition
 
@@ -302,7 +346,7 @@ do
 end
 ```
 
-### lurek.procgen.floodFill
+#### lurek.procgen.floodFill
 
 #### Definition
 
@@ -346,7 +390,7 @@ do
 end
 ```
 
-### lurek.procgen.generateName
+#### lurek.procgen.generateName
 
 #### Definition
 
@@ -384,7 +428,7 @@ do
 end
 ```
 
-### lurek.procgen.generateNames
+#### lurek.procgen.generateNames
 
 #### Definition
 
@@ -425,7 +469,7 @@ do
 end
 ```
 
-### lurek.procgen.heightmap
+#### lurek.procgen.heightmap
 
 #### Definition
 
@@ -458,7 +502,7 @@ do
 end
 ```
 
-### lurek.procgen.heightmapFromCellular
+#### lurek.procgen.heightmapFromCellular
 
 #### Definition
 
@@ -498,7 +542,7 @@ do
 end
 ```
 
-### lurek.procgen.lsystem
+#### lurek.procgen.lsystem
 
 #### Definition
 
@@ -531,7 +575,7 @@ do
 end
 ```
 
-### lurek.procgen.lsystemSegments
+#### lurek.procgen.lsystemSegments
 
 #### Definition
 
@@ -568,7 +612,7 @@ do
 end
 ```
 
-### lurek.procgen.newBiomeClassifier
+#### lurek.procgen.newBiomeClassifier
 
 #### Definition
 
@@ -600,7 +644,7 @@ do
 end
 ```
 
-### lurek.procgen.noiseMap
+#### lurek.procgen.noiseMap
 
 #### Definition
 
@@ -637,7 +681,7 @@ do
 end
 ```
 
-### lurek.procgen.noiseMapParallel
+#### lurek.procgen.noiseMapParallel
 
 #### Definition
 
@@ -673,7 +717,7 @@ do
 end
 ```
 
-### lurek.procgen.noiseMapParallelSeeded
+#### lurek.procgen.noiseMapParallelSeeded
 
 #### Definition
 
@@ -709,7 +753,7 @@ do
 end
 ```
 
-### lurek.procgen.perlinNoise
+#### lurek.procgen.perlinNoise
 
 #### Definition
 
@@ -749,7 +793,7 @@ do
 end
 ```
 
-### lurek.procgen.poissonDisk
+#### lurek.procgen.poissonDisk
 
 #### Definition
 
@@ -792,7 +836,7 @@ do
 end
 ```
 
-### lurek.procgen.roomsDungeon
+#### lurek.procgen.roomsDungeon
 
 #### Definition
 
@@ -825,7 +869,7 @@ do
 end
 ```
 
-### lurek.procgen.roomsDungeonWithPrefabs
+#### lurek.procgen.roomsDungeonWithPrefabs
 
 #### Definition
 
@@ -864,7 +908,7 @@ do
 end
 ```
 
-### lurek.procgen.simplex2d
+#### lurek.procgen.simplex2d
 
 #### Definition
 
@@ -898,7 +942,7 @@ do
 end
 ```
 
-### lurek.procgen.simplex3d
+#### lurek.procgen.simplex3d
 
 #### Definition
 
@@ -934,7 +978,7 @@ do
 end
 ```
 
-### lurek.procgen.voronoi
+#### lurek.procgen.voronoi
 
 #### Definition
 
@@ -976,7 +1020,7 @@ do
 end
 ```
 
-### lurek.procgen.wfcGenerate
+#### lurek.procgen.wfcGenerate
 
 #### Definition
 
@@ -1009,7 +1053,7 @@ do
 end
 ```
 
-### lurek.procgen.worldGraph
+#### lurek.procgen.worldGraph
 
 #### Definition
 
@@ -1083,7 +1127,9 @@ end
 
 ## 🔹 Module Methods
 
-### BiomeClassifier:classify
+### BiomeClassifier Methods
+
+#### BiomeClassifier:classify
 
 #### Definition
 
@@ -1119,7 +1165,7 @@ do
 end
 ```
 
-### BiomeClassifier:classifyMap
+#### BiomeClassifier:classifyMap
 
 #### Definition
 
@@ -1160,7 +1206,7 @@ do
 end
 ```
 
-### BiomeClassifier:type
+#### BiomeClassifier:type
 
 #### Definition
 
@@ -1187,7 +1233,7 @@ do
 end
 ```
 
-### BiomeClassifier:typeOf
+#### BiomeClassifier:typeOf
 
 #### Definition
 

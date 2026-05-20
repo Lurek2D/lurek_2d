@@ -10,117 +10,16 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [catalog.rs](#catalogrs)
+  - [format.rs](#formatrs)
+  - [interpolation.rs](#interpolationrs)
+  - [mod.rs](#modrs)
+  - [plural.rs](#pluralrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.i18n.buildIndex](#lureki18nbuildindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.categories](#lureki18ncategories)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.detectLocale](#lureki18ndetectlocale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.formatDate](#lureki18nformatdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.formatNumber](#lureki18nformatnumber)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.getAvailableLanguages](#lureki18ngetavailablelanguages)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.getBase](#lureki18ngetbase)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.getFallbacks](#lureki18ngetfallbacks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.getKeys](#lureki18ngetkeys)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.getLanguage](#lureki18ngetlanguage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.getLanguages](#lureki18ngetlanguages)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.getLoadedLocales](#lureki18ngetloadedlocales)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.hasKey](#lureki18nhaskey)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.hasLanguage](#lureki18nhaslanguage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.interpolate](#lureki18ninterpolate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.isRTL](#lureki18nisrtl)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.keyCount](#lureki18nkeycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.keysInCategory](#lureki18nkeysincategory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.loadString](#lureki18nloadstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.loadTable](#lureki18nloadtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.localeCoverage](#lureki18nlocalecoverage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.mergeLocale](#lureki18nmergelocale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.offChange](#lureki18noffchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.onChange](#lureki18nonchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.onLanguageChange](#lureki18nonlanguagechange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.pluralFor](#lureki18npluralfor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.search](#lureki18nsearch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.searchIndexed](#lureki18nsearchindexed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.setBase](#lureki18nsetbase)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.setFallbacks](#lureki18nsetfallbacks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.setKey](#lureki18nsetkey)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.setLanguage](#lureki18nsetlanguage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.t](#lureki18nt)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.tGender](#lureki18ntgender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.unloadTable](#lureki18nunloadtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.i18n.validateLocale](#lureki18nvalidatelocale)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -144,6 +43,45 @@ Number formatting respects locale decimal separators, grouping, and currency sym
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `catalog.rs`
+
+- Locale-indexed translation catalog with active locale and ordered fallback chain.
+- Key lookup, category grouping, value search, and word-index caching.
+- Coverage-gap analysis comparing locales against a reference table.
+- TOML and JSON flattening into dot-separated translation tables.
+- Locale validation, RTL detection, and system-locale auto-detection.
+
+### `format.rs`
+
+- Locale-aware number formatting with configurable decimal and thousands separators.
+- Date formatting from Unix timestamps with ISO, long, and short patterns.
+- Calendar conversion utilities (days since epoch to year/month/day).
+- Month name lookup tables for English output.
+
+### `interpolation.rs`
+
+- Template string interpolation with `{name}` placeholder syntax.
+- Supports escaping via `{{` / `}}` and preserves unknown placeholders.
+- Provides both map-based and pair-based variable substitution.
+
+### `mod.rs`
+
+- Locale detection, validation, and flat-table catalog loading from TOML/JSON.
+- Date and number formatting with locale-aware separators.
+- Template interpolation with named and pair-based placeholders.
+- Plural-form selection for English and Slavic language families.
+
+### `plural.rs`
+
+- Plural-form enum covering CLDR categories (zero, one, two, few, many, other).
+- Language-specific selection: English (singular/other) and Slavic (mod-10/mod-100 rules).
+- Key round-trip: convert between enum and string keys for translation maps.
+- Pluralize helpers that pick the best form from a HashMap and fall back gracefully.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -153,34 +91,18 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/i18n.md](../blob/main/docs/specs/i18n.md)
+- Module-level functions: 36
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.i18n.buildIndex() -> string[] -- Builds a word-to-keys search index from the catalog.
-lurek.i18n.categories() -> string[] -- Returns top-level translation key categories.
-lurek.i18n.detectLocale() -> string -- Detects the system locale when available.
-lurek.i18n.formatDate(timestamp: integer, [fmt]: string) -> string -- Formats a timestamp with the active locale and a named format.
-lurek.i18n.formatNumber(n: number, [opts]: table) -> string -- Formats a number with locale-aware separators and optional decimal precision.
-lurek.i18n.getAvailableLanguages() -> string[] -- Returns sorted locale codes currently loaded in the catalog.
-lurek.i18n.getBase() -> string -- Returns the base locale string stored by the localization module.
-lurek.i18n.getFallbacks() -> string[] -- Returns fallback locale codes in lookup order.
-lurek.i18n.getKeys() -> string[] -- Returns sorted translation keys known to the catalog.
-lurek.i18n.getLanguage() -> string -- Returns the active locale code string.
-lurek.i18n.getLanguages() -> string[] -- Returns sorted locale codes currently loaded in the catalog.
-lurek.i18n.getLoadedLocales() -> string[] -- Returns locale codes currently loaded in the catalog.
-lurek.i18n.hasKey(key: string) -> boolean -- Returns whether the catalog contains a translation key in active or fallback locales.
-lurek.i18n.hasLanguage(locale: string) -> boolean -- Returns whether a locale has translations loaded.
-lurek.i18n.interpolate(template: string, vars: table) -> string -- Replaces `{name}` placeholders in a template using string variables.
-lurek.i18n.isRTL([locale]: string) -> boolean -- Returns whether a locale is written right-to-left.
-lurek.i18n.keyCount() -> integer -- Returns the number of translation keys known to the catalog.
-lurek.i18n.keysInCategory(category: string) -> string[] -- Returns translation keys belonging to one category prefix.
--- ... 18 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.i18n.buildIndex
+### Module-Level Functions
+
+#### lurek.i18n.buildIndex
 
 #### Definition
 
@@ -207,7 +129,7 @@ do
 end
 ```
 
-### lurek.i18n.categories
+#### lurek.i18n.categories
 
 #### Definition
 
@@ -234,7 +156,7 @@ do
 end
 ```
 
-### lurek.i18n.detectLocale
+#### lurek.i18n.detectLocale
 
 #### Definition
 
@@ -261,7 +183,7 @@ do
 end
 ```
 
-### lurek.i18n.formatDate
+#### lurek.i18n.formatDate
 
 #### Definition
 
@@ -295,7 +217,7 @@ do
 end
 ```
 
-### lurek.i18n.formatNumber
+#### lurek.i18n.formatNumber
 
 #### Definition
 
@@ -329,7 +251,7 @@ do
 end
 ```
 
-### lurek.i18n.getAvailableLanguages
+#### lurek.i18n.getAvailableLanguages
 
 #### Definition
 
@@ -356,7 +278,7 @@ do
 end
 ```
 
-### lurek.i18n.getBase
+#### lurek.i18n.getBase
 
 #### Definition
 
@@ -384,7 +306,7 @@ do
 end
 ```
 
-### lurek.i18n.getFallbacks
+#### lurek.i18n.getFallbacks
 
 #### Definition
 
@@ -412,7 +334,7 @@ do
 end
 ```
 
-### lurek.i18n.getKeys
+#### lurek.i18n.getKeys
 
 #### Definition
 
@@ -439,7 +361,7 @@ do
 end
 ```
 
-### lurek.i18n.getLanguage
+#### lurek.i18n.getLanguage
 
 #### Definition
 
@@ -467,7 +389,7 @@ do
 end
 ```
 
-### lurek.i18n.getLanguages
+#### lurek.i18n.getLanguages
 
 #### Definition
 
@@ -494,7 +416,7 @@ do
 end
 ```
 
-### lurek.i18n.getLoadedLocales
+#### lurek.i18n.getLoadedLocales
 
 #### Definition
 
@@ -521,7 +443,7 @@ do
 end
 ```
 
-### lurek.i18n.hasKey
+#### lurek.i18n.hasKey
 
 #### Definition
 
@@ -553,7 +475,7 @@ do
 end
 ```
 
-### lurek.i18n.hasLanguage
+#### lurek.i18n.hasLanguage
 
 #### Definition
 
@@ -585,7 +507,7 @@ do
 end
 ```
 
-### lurek.i18n.interpolate
+#### lurek.i18n.interpolate
 
 #### Definition
 
@@ -619,7 +541,7 @@ do
 end
 ```
 
-### lurek.i18n.isRTL
+#### lurek.i18n.isRTL
 
 #### Definition
 
@@ -651,7 +573,7 @@ do
 end
 ```
 
-### lurek.i18n.keyCount
+#### lurek.i18n.keyCount
 
 #### Definition
 
@@ -678,7 +600,7 @@ do
 end
 ```
 
-### lurek.i18n.keysInCategory
+#### lurek.i18n.keysInCategory
 
 #### Definition
 
@@ -710,7 +632,7 @@ do
 end
 ```
 
-### lurek.i18n.loadString
+#### lurek.i18n.loadString
 
 #### Definition
 
@@ -743,7 +665,7 @@ do
 end
 ```
 
-### lurek.i18n.loadTable
+#### lurek.i18n.loadTable
 
 #### Definition
 
@@ -774,7 +696,7 @@ do
 end
 ```
 
-### lurek.i18n.localeCoverage
+#### lurek.i18n.localeCoverage
 
 #### Definition
 
@@ -806,7 +728,7 @@ do
 end
 ```
 
-### lurek.i18n.mergeLocale
+#### lurek.i18n.mergeLocale
 
 #### Definition
 
@@ -837,7 +759,7 @@ do
 end
 ```
 
-### lurek.i18n.offChange
+#### lurek.i18n.offChange
 
 #### Definition
 
@@ -862,7 +784,7 @@ do
 end
 ```
 
-### lurek.i18n.onChange
+#### lurek.i18n.onChange
 
 #### Definition
 
@@ -893,7 +815,7 @@ do
 end
 ```
 
-### lurek.i18n.onLanguageChange
+#### lurek.i18n.onLanguageChange
 
 #### Definition
 
@@ -924,7 +846,7 @@ do
 end
 ```
 
-### lurek.i18n.pluralFor
+#### lurek.i18n.pluralFor
 
 #### Definition
 
@@ -956,7 +878,7 @@ do
 end
 ```
 
-### lurek.i18n.search
+#### lurek.i18n.search
 
 #### Definition
 
@@ -990,7 +912,7 @@ do
 end
 ```
 
-### lurek.i18n.searchIndexed
+#### lurek.i18n.searchIndexed
 
 #### Definition
 
@@ -1027,7 +949,7 @@ do
 end
 ```
 
-### lurek.i18n.setBase
+#### lurek.i18n.setBase
 
 #### Definition
 
@@ -1056,7 +978,7 @@ do
 end
 ```
 
-### lurek.i18n.setFallbacks
+#### lurek.i18n.setFallbacks
 
 #### Definition
 
@@ -1085,7 +1007,7 @@ do
 end
 ```
 
-### lurek.i18n.setKey
+#### lurek.i18n.setKey
 
 #### Definition
 
@@ -1118,7 +1040,7 @@ do
 end
 ```
 
-### lurek.i18n.setLanguage
+#### lurek.i18n.setLanguage
 
 #### Definition
 
@@ -1147,7 +1069,7 @@ do
 end
 ```
 
-### lurek.i18n.t
+#### lurek.i18n.t
 
 #### Definition
 
@@ -1184,7 +1106,7 @@ do
 end
 ```
 
-### lurek.i18n.tGender
+#### lurek.i18n.tGender
 
 #### Definition
 
@@ -1220,7 +1142,7 @@ do
 end
 ```
 
-### lurek.i18n.unloadTable
+#### lurek.i18n.unloadTable
 
 #### Definition
 
@@ -1253,7 +1175,7 @@ do
 end
 ```
 
-### lurek.i18n.validateLocale
+#### lurek.i18n.validateLocale
 
 #### Definition
 

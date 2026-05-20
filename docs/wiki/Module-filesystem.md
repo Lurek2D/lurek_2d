@@ -10,221 +10,26 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [async_loader.rs](#asyncloaderrs)
+  - [file_data.rs](#filedatars)
+  - [file_handle.rs](#filehandlers)
+  - [mod.rs](#modrs)
+  - [vfs.rs](#vfsrs)
+  - [watcher.rs](#watcherrs)
+  - [zip_mount.rs](#zipmountrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.filesystem.append](#lurekfilesystemappend)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.copy](#lurekfilesystemcopy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.createDirectory](#lurekfilesystemcreatedirectory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.createTempFile](#lurekfilesystemcreatetempfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.exists](#lurekfilesystemexists)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.getDirectoryItems](#lurekfilesystemgetdirectoryitems)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.getIdentity](#lurekfilesystemgetidentity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.getInfo](#lurekfilesystemgetinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.getSaveDirectory](#lurekfilesystemgetsavedirectory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.getSource](#lurekfilesystemgetsource)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.getUserDirectory](#lurekfilesystemgetuserdirectory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.getWorkingDirectory](#lurekfilesystemgetworkingdirectory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.glob](#lurekfilesystemglob)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.isDirectory](#lurekfilesystemisdirectory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.isFile](#lurekfilesystemisfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.lines](#lurekfilesystemlines)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.listRecursive](#lurekfilesystemlistrecursive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.load](#lurekfilesystemload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.mkdir](#lurekfilesystemmkdir)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.mount](#lurekfilesystemmount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.mountZip](#lurekfilesystemmountzip)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.move](#lurekfilesystemmove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.newFileData](#lurekfilesystemnewfiledata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.openFile](#lurekfilesystemopenfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.pollAsync](#lurekfilesystempollasync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.pollAsyncWrite](#lurekfilesystempollasyncwrite)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.pollWatchers](#lurekfilesystempollwatchers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.read](#lurekfilesystemread)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.readAsync](#lurekfilesystemreadasync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.readBytes](#lurekfilesystemreadbytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.readJson](#lurekfilesystemreadjson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.readOrWriteJson](#lurekfilesystemreadorwritejson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.remove](#lurekfilesystemremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.removeDir](#lurekfilesystemremovedir)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.setIdentity](#lurekfilesystemsetidentity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.stat](#lurekfilesystemstat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.toAbsolutePath](#lurekfilesystemtoabsolutepath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.unmount](#lurekfilesystemunmount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.unwatchPath](#lurekfilesystemunwatchpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.watchPath](#lurekfilesystemwatchpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.write](#lurekfilesystemwrite)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.writeAsync](#lurekfilesystemwriteasync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.writeBytes](#lurekfilesystemwritebytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.filesystem.writeJson](#lurekfilesystemwritejson)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LFileData](#lfiledata)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LFileHandle](#lfilehandle)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LZipMount](#lzipmount)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LFileData:getFilename](#lfiledatagetfilename)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileData:getSize](#lfiledatagetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileData:getString](#lfiledatagetstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileData:type](#lfiledatatype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileData:typeOf](#lfiledatatypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:close](#lfilehandleclose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:flush](#lfilehandleflush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:getMode](#lfilehandlegetmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:getSize](#lfilehandlegetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:isEOF](#lfilehandleiseof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:read](#lfilehandleread)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:readLine](#lfilehandlereadline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:seek](#lfilehandleseek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:tell](#lfilehandletell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:type](#lfilehandletype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:typeOf](#lfilehandletypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileHandle:write](#lfilehandlewrite)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZipMount:contains](#lzipmountcontains)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZipMount:listFiles](#lzipmountlistfiles)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZipMount:prefix](#lzipmountprefix)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZipMount:readFile](#lzipmountreadfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZipMount:type](#lzipmounttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZipMount:typeOf](#lzipmounttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LFileData Methods](#lfiledata-methods)
+  - [LFileHandle Methods](#lfilehandle-methods)
+  - [LZipMount Methods](#lzipmount-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -248,6 +53,60 @@ Supports synchronous and asynchronous read/write, directory listing, glob matchi
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `async_loader.rs`
+
+- Background file I/O via a dedicated worker thread and bounded request queue.
+- Non-blocking read and write requests returning opaque handles for polling.
+- Capacity-limited channel with graceful overflow reporting.
+- Thread-safe result storage consumed by callers through poll methods.
+- Automatic worker shutdown and join on drop.
+
+### `file_data.rs`
+
+- Pair raw file bytes with the logical path they were loaded from.
+- Provide length, emptiness, and UTF-8 decode helpers on the cached payload.
+- Serve as the common return type for GameFS load operations.
+
+### `file_handle.rs`
+
+- Buffered file handle abstraction for GameFS read, write, and append streams.
+- Mode-based state machine: Read, Write, Append, or Closed.
+- Resolves logical game paths through GameFS before opening OS files.
+- Provides line-oriented and byte-oriented read APIs with EOF detection.
+- Seek, tell, flush, and auto-close on drop for safe resource cleanup.
+
+### `mod.rs`
+
+- Virtual filesystem with layered mounts (directory, ZIP archive).
+- Async file loading queue with handle-based status polling.
+- Buffered file I/O with read, write, and append modes.
+- File modification watcher for hot-reload workflows.
+
+### `vfs.rs`
+
+- Virtual filesystem (GameFS) rooted at a game directory with read and write operations.
+- Overlay mount system that layers additional source directories under virtual prefixes.
+- Path-traversal rejection and save-directory write confinement for sandboxed access.
+- JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
+- Recursive and flat directory listing with merged overlay results.
+- File handle creation, copy, move, and remove operations within the save boundary.
+
+### `watcher.rs`
+
+- Poll-based file watcher that detects modification-time changes on registered paths.
+- Maintains a path→mtime cache and reports diffs on each poll cycle.
+- Supports watch/unwatch, forced invalidation, and empty-state queries.
+
+### `zip_mount.rs`
+
+- ZIP-backed virtual filesystem mount with path-indexed entry lookup.
+- Reads individual files from a ZIP archive on demand without full extraction.
+- Normalizes virtual paths and rejects directory-traversal attempts.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LFileData` (5 methods)
@@ -259,34 +118,18 @@ Supports synchronous and asynchronous read/write, directory listing, glob matchi
 ## 📖 API Overview
 
 - Source spec: [docs/specs/filesystem.md](../blob/main/docs/specs/filesystem.md)
+- Module-level functions: 44
+- Lua-visible types: 3
+- Total type methods: 23
 
-```lua
-lurek.filesystem.append(path: string, data: string) -- Appends UTF-8 text to a GameFS file.
-lurek.filesystem.copy(src: string, dst: string) -- Copies one GameFS file to another path.
-lurek.filesystem.createDirectory(path: string) -- Creates a GameFS directory and any missing parents.
-lurek.filesystem.createTempFile([prefix]: string) -> string -- Creates a temporary file through GameFS.
-lurek.filesystem.exists(path: string) -> boolean -- Returns whether a path exists in GameFS.
-lurek.filesystem.getDirectoryItems(path: string) -> string[] -- Lists immediate entries in a GameFS directory.
-lurek.filesystem.getIdentity() -> string -- Returns the current filesystem identity string.
-lurek.filesystem.getInfo(path: string) -> table -- Returns file metadata for a GameFS path when available.
-lurek.filesystem.getSaveDirectory() -> string -- Returns the save directory path used by GameFS.
-lurek.filesystem.getSource() -> string -- Returns the GameFS source root string.
-lurek.filesystem.getUserDirectory() -> string -- Returns the current user's directory path.
-lurek.filesystem.getWorkingDirectory() -> string -- Returns the process working directory.
-lurek.filesystem.glob(pattern: string) -> string[] -- Returns GameFS paths matching a glob pattern.
-lurek.filesystem.isDirectory(path: string) -> boolean -- Returns whether a GameFS path is a directory.
-lurek.filesystem.isFile(path: string) -> boolean -- Returns whether a GameFS path is a regular file.
-lurek.filesystem.lines(path: string) -> function -- Creates an iterator function over lines in a text file.
-lurek.filesystem.listRecursive(path: string) -> string[] -- Lists all paths under a GameFS directory recursively.
-lurek.filesystem.load(path: string) -> function -- Loads a Lua chunk from GameFS and returns it as a Lua function.
--- ... 26 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.filesystem.append
+### Module-Level Functions
+
+#### lurek.filesystem.append
 
 #### Definition
 
@@ -318,7 +161,7 @@ do
 end
 ```
 
-### lurek.filesystem.copy
+#### lurek.filesystem.copy
 
 #### Definition
 
@@ -349,7 +192,7 @@ do
 end
 ```
 
-### lurek.filesystem.createDirectory
+#### lurek.filesystem.createDirectory
 
 #### Definition
 
@@ -378,7 +221,7 @@ do
 end
 ```
 
-### lurek.filesystem.createTempFile
+#### lurek.filesystem.createTempFile
 
 #### Definition
 
@@ -410,7 +253,7 @@ do
 end
 ```
 
-### lurek.filesystem.exists
+#### lurek.filesystem.exists
 
 #### Definition
 
@@ -443,7 +286,7 @@ do
 end
 ```
 
-### lurek.filesystem.getDirectoryItems
+#### lurek.filesystem.getDirectoryItems
 
 #### Definition
 
@@ -475,7 +318,7 @@ do
 end
 ```
 
-### lurek.filesystem.getIdentity
+#### lurek.filesystem.getIdentity
 
 #### Definition
 
@@ -502,7 +345,7 @@ do
 end
 ```
 
-### lurek.filesystem.getInfo
+#### lurek.filesystem.getInfo
 
 #### Definition
 
@@ -537,7 +380,7 @@ do
 end
 ```
 
-### lurek.filesystem.getSaveDirectory
+#### lurek.filesystem.getSaveDirectory
 
 #### Definition
 
@@ -564,7 +407,7 @@ do
 end
 ```
 
-### lurek.filesystem.getSource
+#### lurek.filesystem.getSource
 
 #### Definition
 
@@ -591,7 +434,7 @@ do
 end
 ```
 
-### lurek.filesystem.getUserDirectory
+#### lurek.filesystem.getUserDirectory
 
 #### Definition
 
@@ -618,7 +461,7 @@ do
 end
 ```
 
-### lurek.filesystem.getWorkingDirectory
+#### lurek.filesystem.getWorkingDirectory
 
 #### Definition
 
@@ -645,7 +488,7 @@ do
 end
 ```
 
-### lurek.filesystem.glob
+#### lurek.filesystem.glob
 
 #### Definition
 
@@ -677,7 +520,7 @@ do
 end
 ```
 
-### lurek.filesystem.isDirectory
+#### lurek.filesystem.isDirectory
 
 #### Definition
 
@@ -709,7 +552,7 @@ do
 end
 ```
 
-### lurek.filesystem.isFile
+#### lurek.filesystem.isFile
 
 #### Definition
 
@@ -741,7 +584,7 @@ do
 end
 ```
 
-### lurek.filesystem.lines
+#### lurek.filesystem.lines
 
 #### Definition
 
@@ -776,7 +619,7 @@ do
 end
 ```
 
-### lurek.filesystem.listRecursive
+#### lurek.filesystem.listRecursive
 
 #### Definition
 
@@ -808,7 +651,7 @@ do
 end
 ```
 
-### lurek.filesystem.load
+#### lurek.filesystem.load
 
 #### Definition
 
@@ -842,7 +685,7 @@ do
 end
 ```
 
-### lurek.filesystem.mkdir
+#### lurek.filesystem.mkdir
 
 #### Definition
 
@@ -871,7 +714,7 @@ do
 end
 ```
 
-### lurek.filesystem.mount
+#### lurek.filesystem.mount
 
 #### Definition
 
@@ -903,7 +746,7 @@ do
 end
 ```
 
-### lurek.filesystem.mountZip
+#### lurek.filesystem.mountZip
 
 #### Definition
 
@@ -937,7 +780,7 @@ do
 end
 ```
 
-### lurek.filesystem.move
+#### lurek.filesystem.move
 
 #### Definition
 
@@ -968,7 +811,7 @@ do
 end
 ```
 
-### lurek.filesystem.newFileData
+#### lurek.filesystem.newFileData
 
 #### Definition
 
@@ -1000,7 +843,7 @@ do
 end
 ```
 
-### lurek.filesystem.openFile
+#### lurek.filesystem.openFile
 
 #### Definition
 
@@ -1036,7 +879,7 @@ do
 end
 ```
 
-### lurek.filesystem.pollAsync
+#### lurek.filesystem.pollAsync
 
 #### Definition
 
@@ -1069,7 +912,7 @@ do
 end
 ```
 
-### lurek.filesystem.pollAsyncWrite
+#### lurek.filesystem.pollAsyncWrite
 
 #### Definition
 
@@ -1102,7 +945,7 @@ do
 end
 ```
 
-### lurek.filesystem.pollWatchers
+#### lurek.filesystem.pollWatchers
 
 #### Definition
 
@@ -1131,7 +974,7 @@ do
 end
 ```
 
-### lurek.filesystem.read
+#### lurek.filesystem.read
 
 #### Definition
 
@@ -1164,7 +1007,7 @@ do
 end
 ```
 
-### lurek.filesystem.readAsync
+#### lurek.filesystem.readAsync
 
 #### Definition
 
@@ -1196,7 +1039,7 @@ do
 end
 ```
 
-### lurek.filesystem.readBytes
+#### lurek.filesystem.readBytes
 
 #### Definition
 
@@ -1228,7 +1071,7 @@ do
 end
 ```
 
-### lurek.filesystem.readJson
+#### lurek.filesystem.readJson
 
 #### Definition
 
@@ -1262,7 +1105,7 @@ do
 end
 ```
 
-### lurek.filesystem.readOrWriteJson
+#### lurek.filesystem.readOrWriteJson
 
 #### Definition
 
@@ -1297,7 +1140,7 @@ do
 end
 ```
 
-### lurek.filesystem.remove
+#### lurek.filesystem.remove
 
 #### Definition
 
@@ -1326,7 +1169,7 @@ do
 end
 ```
 
-### lurek.filesystem.removeDir
+#### lurek.filesystem.removeDir
 
 #### Definition
 
@@ -1355,7 +1198,7 @@ do
 end
 ```
 
-### lurek.filesystem.setIdentity
+#### lurek.filesystem.setIdentity
 
 #### Definition
 
@@ -1384,7 +1227,7 @@ do
 end
 ```
 
-### lurek.filesystem.stat
+#### lurek.filesystem.stat
 
 #### Definition
 
@@ -1419,7 +1262,7 @@ do
 end
 ```
 
-### lurek.filesystem.toAbsolutePath
+#### lurek.filesystem.toAbsolutePath
 
 #### Definition
 
@@ -1451,7 +1294,7 @@ do
 end
 ```
 
-### lurek.filesystem.unmount
+#### lurek.filesystem.unmount
 
 #### Definition
 
@@ -1483,7 +1326,7 @@ do
 end
 ```
 
-### lurek.filesystem.unwatchPath
+#### lurek.filesystem.unwatchPath
 
 #### Definition
 
@@ -1512,7 +1355,7 @@ do
 end
 ```
 
-### lurek.filesystem.watchPath
+#### lurek.filesystem.watchPath
 
 #### Definition
 
@@ -1541,7 +1384,7 @@ do
 end
 ```
 
-### lurek.filesystem.write
+#### lurek.filesystem.write
 
 #### Definition
 
@@ -1573,7 +1416,7 @@ do
 end
 ```
 
-### lurek.filesystem.writeAsync
+#### lurek.filesystem.writeAsync
 
 #### Definition
 
@@ -1607,7 +1450,7 @@ do
 end
 ```
 
-### lurek.filesystem.writeBytes
+#### lurek.filesystem.writeBytes
 
 #### Definition
 
@@ -1638,7 +1481,7 @@ do
 end
 ```
 
-### lurek.filesystem.writeJson
+#### lurek.filesystem.writeJson
 
 #### Definition
 
@@ -1757,7 +1600,9 @@ end
 
 ## 🔹 Module Methods
 
-### LFileData:getFilename
+### LFileData Methods
+
+#### LFileData:getFilename
 
 #### Definition
 
@@ -1784,7 +1629,7 @@ do
 end
 ```
 
-### LFileData:getSize
+#### LFileData:getSize
 
 #### Definition
 
@@ -1811,7 +1656,7 @@ do
 end
 ```
 
-### LFileData:getString
+#### LFileData:getString
 
 #### Definition
 
@@ -1839,7 +1684,7 @@ do
 end
 ```
 
-### LFileData:type
+#### LFileData:type
 
 #### Definition
 
@@ -1866,7 +1711,7 @@ do
 end
 ```
 
-### LFileData:typeOf
+#### LFileData:typeOf
 
 #### Definition
 
@@ -1898,7 +1743,9 @@ do
 end
 ```
 
-### LFileHandle:close
+### LFileHandle Methods
+
+#### LFileHandle:close
 
 #### Definition
 
@@ -1924,7 +1771,7 @@ do
 end
 ```
 
-### LFileHandle:flush
+#### LFileHandle:flush
 
 #### Definition
 
@@ -1951,7 +1798,7 @@ do
 end
 ```
 
-### LFileHandle:getMode
+#### LFileHandle:getMode
 
 #### Definition
 
@@ -1979,7 +1826,7 @@ do
 end
 ```
 
-### LFileHandle:getSize
+#### LFileHandle:getSize
 
 #### Definition
 
@@ -2007,7 +1854,7 @@ do
 end
 ```
 
-### LFileHandle:isEOF
+#### LFileHandle:isEOF
 
 #### Definition
 
@@ -2036,7 +1883,7 @@ do
 end
 ```
 
-### LFileHandle:read
+#### LFileHandle:read
 
 #### Definition
 
@@ -2070,7 +1917,7 @@ do
 end
 ```
 
-### LFileHandle:readLine
+#### LFileHandle:readLine
 
 #### Definition
 
@@ -2100,7 +1947,7 @@ do
 end
 ```
 
-### LFileHandle:seek
+#### LFileHandle:seek
 
 #### Definition
 
@@ -2132,7 +1979,7 @@ do
 end
 ```
 
-### LFileHandle:tell
+#### LFileHandle:tell
 
 #### Definition
 
@@ -2162,7 +2009,7 @@ do
 end
 ```
 
-### LFileHandle:type
+#### LFileHandle:type
 
 #### Definition
 
@@ -2190,7 +2037,7 @@ do
 end
 ```
 
-### LFileHandle:typeOf
+#### LFileHandle:typeOf
 
 #### Definition
 
@@ -2223,7 +2070,7 @@ do
 end
 ```
 
-### LFileHandle:write
+#### LFileHandle:write
 
 #### Definition
 
@@ -2255,7 +2102,9 @@ do
 end
 ```
 
-### LZipMount:contains
+### LZipMount Methods
+
+#### LZipMount:contains
 
 #### Definition
 
@@ -2287,7 +2136,7 @@ do
 end
 ```
 
-### LZipMount:listFiles
+#### LZipMount:listFiles
 
 #### Definition
 
@@ -2315,7 +2164,7 @@ do
 end
 ```
 
-### LZipMount:prefix
+#### LZipMount:prefix
 
 #### Definition
 
@@ -2342,7 +2191,7 @@ do
 end
 ```
 
-### LZipMount:readFile
+#### LZipMount:readFile
 
 #### Definition
 
@@ -2375,7 +2224,7 @@ do
 end
 ```
 
-### LZipMount:type
+#### LZipMount:type
 
 #### Definition
 
@@ -2402,7 +2251,7 @@ do
 end
 ```
 
-### LZipMount:typeOf
+#### LZipMount:typeOf
 
 #### Definition
 

@@ -10,644 +10,35 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [body.rs](#bodyrs)
+  - [cellular.rs](#cellularrs)
+  - [collision.rs](#collisionrs)
+  - [collision_helpers.rs](#collisionhelpersrs)
+  - [mod.rs](#modrs)
+  - [render.rs](#renderrs)
+  - [shape.rs](#shapers)
+  - [terrain.rs](#terrainrs)
+  - [world.rs](#worldrs)
+  - [zone.rs](#zoners)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.physics.attachShape](#lurekphysicsattachshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.debugDraw](#lurekphysicsdebugdraw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.destroyWorld](#lurekphysicsdestroyworld)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.drawDebugGpu](#lurekphysicsdrawdebuggpu)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.getBody](#lurekphysicsgetbody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.getCollisions](#lurekphysicsgetcollisions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.isSleepingAllowed](#lurekphysicsissleepingallowed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newBody](#lurekphysicsnewbody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newCellular](#lurekphysicsnewcellular)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newChainShape](#lurekphysicsnewchainshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newCircleShape](#lurekphysicsnewcircleshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newEdgeShape](#lurekphysicsnewedgeshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newPolygonShape](#lurekphysicsnewpolygonshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newRectangleShape](#lurekphysicsnewrectangleshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newTerrain](#lurekphysicsnewterrain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.newWorld](#lurekphysicsnewworld)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.setBodyVelocity](#lurekphysicssetbodyvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.setSleepingAllowed](#lurekphysicssetsleepingallowed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.step](#lurekphysicsstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.testAABB](#lurekphysicstestaabb)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.testCircleAABB](#lurekphysicstestcircleaabb)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.testCircles](#lurekphysicstestcircles)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.physics.testPoint](#lurekphysicstestpoint)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LBody](#lbody)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCellular](#lcellular)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPhysicsShape](#lphysicsshape)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTerrain](#lterrain)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LWorld](#lworld)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LZone](#lzone)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LBody:applyAngularImpulse](#lbodyapplyangularimpulse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:applyForce](#lbodyapplyforce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:applyForceAtPoint](#lbodyapplyforceatpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:applyImpulse](#lbodyapplyimpulse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:applyTorque](#lbodyapplytorque)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:destroy](#lbodydestroy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getAngle](#lbodygetangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getAngularDamping](#lbodygetangulardamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getAngularVelocity](#lbodygetangularvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getFriction](#lbodygetfriction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getGravityScale](#lbodygetgravityscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getHeight](#lbodygetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getId](#lbodygetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getLayer](#lbodygetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getLinearDamping](#lbodygetlineardamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getMask](#lbodygetmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getMass](#lbodygetmass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getPosition](#lbodygetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getRestitution](#lbodygetrestitution)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getType](#lbodygettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getVelocity](#lbodygetvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getWidth](#lbodygetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getX](#lbodygetx)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:getY](#lbodygety)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:isBullet](#lbodyisbullet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:isFixedRotation](#lbodyisfixedrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:isSleeping](#lbodyissleeping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:isSleepingAllowed](#lbodyissleepingallowed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setAngle](#lbodysetangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setAngularDamping](#lbodysetangulardamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setAngularVelocity](#lbodysetangularvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setBullet](#lbodysetbullet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setFixedRotation](#lbodysetfixedrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setFriction](#lbodysetfriction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setGravityScale](#lbodysetgravityscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setLayer](#lbodysetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setLinearDamping](#lbodysetlineardamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setMask](#lbodysetmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setMass](#lbodysetmass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setPosition](#lbodysetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setRestitution](#lbodysetrestitution)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setSleepingAllowed](#lbodysetsleepingallowed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setType](#lbodysettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:setVelocity](#lbodysetvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:sleep](#lbodysleep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:type](#lbodytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:typeOf](#lbodytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBody:wakeUp](#lbodywakeup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:countCells](#lcellularcountcells)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:fillCircle](#lcellularfillcircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:fillRect](#lcellularfillrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:findCells](#lcellularfindcells)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:getCell](#lcellulargetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:loadFromBytes](#lcellularloadfrombytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:setCell](#lcellularsetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:step](#lcellularstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:stepN](#lcellularstepn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:toBytes](#lcellulartobytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:toImageData](#lcellulartoimagedata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:toImageDataRegion](#lcellulartoimagedataregion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:type](#lcellulartype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCellular:typeOf](#lcellulartypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:destroy](#lphysicsshapedestroy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:getBoundingBox](#lphysicsshapegetboundingbox)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:getRadius](#lphysicsshapegetradius)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:getType](#lphysicsshapegettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:setDensity](#lphysicsshapesetdensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:setFriction](#lphysicsshapesetfriction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:setRestitution](#lphysicsshapesetrestitution)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:setSensor](#lphysicsshapesetsensor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:type](#lphysicsshapetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPhysicsShape:typeOf](#lphysicsshapetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:collapseColumns](#lterraincollapsecolumns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:fillAll](#lterrainfillall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:fillCircle](#lterrainfillcircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:fillRect](#lterrainfillrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:flush](#lterrainflush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:getCell](#lterraingetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:isDirty](#lterrainisdirty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:loadFromBytes](#lterrainloadfrombytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:setCell](#lterrainsetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:solidPositions](#lterrainsolidpositions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:spawnDebris](#lterrainspawndebris)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:toBytes](#lterraintobytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:toImageData](#lterraintoimagedata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:type](#lterraintype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTerrain:typeOf](#lterraintypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addDistanceJoint](#lworldadddistancejoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addFixture](#lworldaddfixture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addFrictionJoint](#lworldaddfrictionjoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addGearJoint](#lworldaddgearjoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addMotorJoint](#lworldaddmotorjoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addMouseJoint](#lworldaddmousejoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addPrismaticJoint](#lworldaddprismaticjoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addPulleyJoint](#lworldaddpulleyjoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addRevoluteJoint](#lworldaddrevolutejoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addRopeJoint](#lworldaddropejoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addWeldJoint](#lworldaddweldjoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addWheelJoint](#lworldaddwheeljoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:addZone](#lworldaddzone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:clear](#lworldclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:clearBeginContact](#lworldclearbegincontact)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:clearBodyData](#lworldclearbodydata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:clearBodyOneWay](#lworldclearbodyoneway)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:clearEndContact](#lworldclearendcontact)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:destroyBody](#lworlddestroybody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:destroyJoint](#lworlddestroyjoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:drawDebug](#lworlddrawdebug)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:fixtureCount](#lworldfixturecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBeginContactEvents](#lworldgetbegincontactevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyAtPoint](#lworldgetbodyatpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyCCD](#lworldgetbodyccd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyContacts](#lworldgetbodycontacts)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyCount](#lworldgetbodycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyData](#lworldgetbodydata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyIds](#lworldgetbodyids)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyOneWay](#lworldgetbodyoneway)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getBodyType](#lworldgetbodytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getCollisionEvents](#lworldgetcollisionevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getContacts](#lworldgetcontacts)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getEndContactEvents](#lworldgetendcontactevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getGravity](#lworldgetgravity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getJointBodies](#lworldgetjointbodies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getJointBreakForce](#lworldgetjointbreakforce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getJointIds](#lworldgetjointids)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getJointLimits](#lworldgetjointlimits)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getJointMotorSpeed](#lworldgetjointmotorspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getJointType](#lworldgetjointtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getMeter](#lworldgetmeter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getSolverIterations](#lworldgetsolveriterations)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:getZoneEvents](#lworldgetzoneevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:isBodySleeping](#lworldisbodysleeping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:jointCount](#lworldjointcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:newBodies](#lworldnewbodies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:newBody](#lworldnewbody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:newChainBody](#lworldnewchainbody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:newCircleBody](#lworldnewcirclebody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:newEdgeBody](#lworldnewedgebody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:newPolygonBody](#lworldnewpolygonbody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:queryAABB](#lworldqueryaabb)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:raycast](#lworldraycast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:raycastAll](#lworldraycastall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:raycastClosest](#lworldraycastclosest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setBeginContact](#lworldsetbegincontact)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setBodyCCD](#lworldsetbodyccd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setBodyData](#lworldsetbodydata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setBodyOneWay](#lworldsetbodyoneway)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setBodyType](#lworldsetbodytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setEndContact](#lworldsetendcontact)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setFixtureFriction](#lworldsetfixturefriction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setFixtureRestitution](#lworldsetfixturerestitution)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setFixtureSensor](#lworldsetfixturesensor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setGravity](#lworldsetgravity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setJointBreakForce](#lworldsetjointbreakforce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setJointLimits](#lworldsetjointlimits)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setJointLimitsEnabled](#lworldsetjointlimitsenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setJointMotorSpeed](#lworldsetjointmotorspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setMeter](#lworldsetmeter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setMouseJointTarget](#lworldsetmousejointtarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:setSolverIterations](#lworldsetsolveriterations)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:sleepBody](#lworldsleepbody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:step](#lworldstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:stepFixed](#lworldstepfixed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:toPhysics](#lworldtophysics)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:toPixels](#lworldtopixels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:type](#lworldtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:typeOf](#lworldtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWorld:wakeUpBody](#lworldwakeupbody)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:destroy](#lzonedestroy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:getId](#lzonegetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setAngularDampingOverride](#lzonesetangulardampingoverride)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setCircle](#lzonesetcircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setEnabled](#lzonesetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setGravityDirectional](#lzonesetgravitydirectional)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setGravityPoint](#lzonesetgravitypoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setGravityRepulsor](#lzonesetgravityrepulsor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setGravityZero](#lzonesetgravityzero)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setLayerMask](#lzonesetlayermask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setLinearDampingOverride](#lzonesetlineardampingoverride)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:setPriority](#lzonesetpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:type](#lzonetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LZone:typeOf](#lzonetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LBody Methods](#lbody-methods)
+  - [LCellular Methods](#lcellular-methods)
+  - [LPhysicsShape Methods](#lphysicsshape-methods)
+  - [LTerrain Methods](#lterrain-methods)
+  - [LWorld Methods](#lworld-methods)
+  - [LZone Methods](#lzone-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -671,6 +62,90 @@ Bodies support dynamic, static, and kinematic modes with restitution, friction, 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `body.rs`
+
+- Data-only body descriptor passed to `World` for physics simulation.
+- Body types: static, dynamic, kinematic, and sensor (overlap-only).
+- Shape primitives: rectangle, circle, polygon, edge, and chain.
+- Constructors produce default mass, friction, and restitution values.
+- Geometric helpers: AABB computation, layer/mask filtering, local↔world transforms.
+- Extended shapes stored in `shape_ext` for polygon/edge/chain bodies.
+
+### `cellular.rs`
+
+- Fixed-size cellular automaton grid simulating falling sand, flowing water, rising gas, and spreading fire.
+- Material interaction rules: sand displaces water, fire consumes gas, gravity pulls solids down.
+- Alternating sweep direction each tick to reduce lateral bias in material flow.
+- RGBA image export with pluggable palette for rendering grid state to textures.
+- Compact byte serialization and deserialization for save/load of grid snapshots.
+- Geometric fill helpers (rect, circle) for painting materials into the grid.
+
+### `collision.rs`
+
+- Collision detection result types for penetration depth and contact normals.
+
+### `collision_helpers.rs`
+
+- Pure-geometry collision tests for AABB, circle, and point queries.
+- No allocations or side effects; suitable for hot-path per-frame checks.
+- All coordinates assume x-right, y-down screen space.
+
+### `mod.rs`
+
+- Rapier2D-backed rigid-body physics: bodies, shapes, world stepping, and raycasting.
+- Collision helpers (AABB, circle, point) and contact/event reporting.
+- Terrain tile-maps, spatial trigger zones, and cellular-automaton simulation.
+
+### `render.rs`
+
+- Debug visualisation of physics bodies as render commands or rasterised images.
+- Colour-codes bodies by type: dynamic, static, kinematic, sensor.
+- Draws velocity arrows for dynamic bodies and shape outlines for all bodies.
+
+### `shape.rs`
+
+- Geometry primitives: rect, circle, convex polygon, edge, and chain polyline.
+- Rapier collider conversion with degenerate-input rejection.
+- String-based shape parsing from a type tag and flat argument list.
+- Regular polygon constructor with side-count clamping.
+- `StandaloneShape` pairs geometry with density, friction, restitution, and sensor flag.
+- Local-space AABB queries for all shape variants.
+
+### `terrain.rs`
+
+- Tile-based terrain grid that syncs solid cells to static physics bodies via chunked rebuilds.
+- Chunk-based dirty tracking: only modified regions regenerate bodies on flush.
+- Bulk fill operations (circle, rectangle, fill-all) for terrain editing at runtime.
+- Run-length row merging to minimise body count per chunk.
+- Compact bitpacked serialisation and deserialisation for save/load.
+- Debris spawning and column-collapse utilities for destructible terrain effects.
+
+### `world.rs`
+
+- Full rapier2d-backed physics simulation world with body, collider, and joint management.
+- Collision event collection: begin-contact, end-contact, and overlap pairs per step.
+- Raycast queries: single closest hit, point-to-point sweep, and multi-hit gather.
+- AABB and point spatial queries via QueryPipeline.
+- Joint catalog: revolute, distance, prismatic, weld, rope, wheel, friction, motor, mouse, pulley, gear.
+- Joint break-force thresholds with automatic removal on exceeded relative velocity.
+- One-way platform normals with velocity projection on contact.
+- Trigger zone system: gravity overrides (zero, directional, point, repulsor), damping, enter/exit events.
+- Fixed-timestep accumulator helper and pixels-per-meter unit conversion.
+- Debug rendering: shape snapshot extraction and direct ImageData line drawing.
+- Body lifecycle: add, destroy (disable), clear world, sleep control, CCD toggle.
+
+### `zone.rs`
+
+- Spatial trigger zones with boundary containment (rect or circle).
+- Gravity overrides per zone: directional, point-attractor, repulsor, or zero-g.
+- Priority-based zone layering with bitmask filtering.
+- Damping overrides (linear and angular) for bodies inside a zone.
+- Enter/leave event tracking via diffing per-body zone sets each step.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LBody` (48 methods) - A handle to a single physics body in the world, providing per-body manipulation methods.
@@ -685,34 +160,18 @@ Bodies support dynamic, static, and kinematic modes with restitution, friction, 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/physics.md](../blob/main/docs/specs/physics.md)
+- Module-level functions: 23
+- Lua-visible types: 6
+- Total type methods: 182
 
-```lua
-lurek.physics.attachShape(body: LBody, shape: LPhysicsShape) -- Attaches a previously created shape to a body, using the shape's stored material properties.
-lurek.physics.debugDraw(enable: boolean) -- Enables or disables automatic physics debug overlay rendering for the next frame.
-lurek.physics.destroyWorld(world: LWorld) -- No-op placeholder for API parity. Worlds are freed when no longer referenced.
-lurek.physics.drawDebugGpu(world: LWorld, [config]: table) -- Queues a GPU-rendered physics debug visualization using the world's current body state.
-lurek.physics.getBody(world: LWorld, body: LBody) -> number -- Returns position and velocity of a body (free-function variant for quick queries).
-lurek.physics.getCollisions(world: LWorld) -> table -- Returns all collision events from the last world step as {body_a, body_b} pairs.
-lurek.physics.isSleepingAllowed(world: LWorld, body: LBody) -> boolean -- Checks if sleeping is allowed on a body (free-function variant).
-lurek.physics.newBody(world: LWorld, x: number, y: number, bodyType: string) -> LBody -- Creates a new body in a world (free-function variant).
-lurek.physics.newCellular(width: integer, height: integer) -> LCellular -- Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
-lurek.physics.newChainShape(closed: boolean, ...: number) -> LPhysicsShape -- Creates a chain (polyline) collision shape. Useful for terrain outlines.
-lurek.physics.newCircleShape(r: number) -> LPhysicsShape -- Creates a circle collision shape with the given radius.
-lurek.physics.newEdgeShape(x1: number, y1: number, x2: number, y2: number) -> LPhysicsShape -- Creates an edge (line segment) collision shape between two local points.
-lurek.physics.newPolygonShape(...: number) -> LPhysicsShape -- Creates a convex polygon collision shape from vertex coordinate pairs.
-lurek.physics.newRectangleShape(w: number, h: number) -> LPhysicsShape -- Creates a rectangle collision shape with the given dimensions.
-lurek.physics.newTerrain(width: integer, height: integer, cellSize: number, world: LWorld) -> LTerrain -- Creates a destructible terrain grid linked to a physics world for automatic collider generation.
-lurek.physics.newWorld(gx: number, gy: number) -> LWorld -- Creates a new physics world with the given gravity vector.
-lurek.physics.setBodyVelocity(world: LWorld, body: LBody, vx: number, vy: number) -- Sets a body's velocity (free-function variant).
-lurek.physics.setSleepingAllowed(world: LWorld, body: LBody, allowed: boolean) -- Sets whether a body is allowed to sleep (free-function variant).
--- ... 5 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.physics.attachShape
+### Module-Level Functions
+
+#### lurek.physics.attachShape
 
 #### Definition
 
@@ -746,7 +205,7 @@ do
 end
 ```
 
-### lurek.physics.debugDraw
+#### lurek.physics.debugDraw
 
 #### Definition
 
@@ -778,7 +237,7 @@ do
 end
 ```
 
-### lurek.physics.destroyWorld
+#### lurek.physics.destroyWorld
 
 #### Definition
 
@@ -810,7 +269,7 @@ do
 end
 ```
 
-### lurek.physics.drawDebugGpu
+#### lurek.physics.drawDebugGpu
 
 #### Definition
 
@@ -842,7 +301,7 @@ do
 end
 ```
 
-### lurek.physics.getBody
+#### lurek.physics.getBody
 
 #### Definition
 
@@ -881,7 +340,7 @@ do
 end
 ```
 
-### lurek.physics.getCollisions
+#### lurek.physics.getCollisions
 
 #### Definition
 
@@ -916,7 +375,7 @@ do
 end
 ```
 
-### lurek.physics.isSleepingAllowed
+#### lurek.physics.isSleepingAllowed
 
 #### Definition
 
@@ -953,7 +412,7 @@ do
 end
 ```
 
-### lurek.physics.newBody
+#### lurek.physics.newBody
 
 #### Definition
 
@@ -992,7 +451,7 @@ do
 end
 ```
 
-### lurek.physics.newCellular
+#### lurek.physics.newCellular
 
 #### Definition
 
@@ -1029,7 +488,7 @@ do
 end
 ```
 
-### lurek.physics.newChainShape
+#### lurek.physics.newChainShape
 
 #### Definition
 
@@ -1065,7 +524,7 @@ do
 end
 ```
 
-### lurek.physics.newCircleShape
+#### lurek.physics.newCircleShape
 
 #### Definition
 
@@ -1100,7 +559,7 @@ do
 end
 ```
 
-### lurek.physics.newEdgeShape
+#### lurek.physics.newEdgeShape
 
 #### Definition
 
@@ -1141,7 +600,7 @@ do
 end
 ```
 
-### lurek.physics.newPolygonShape
+#### lurek.physics.newPolygonShape
 
 #### Definition
 
@@ -1175,7 +634,7 @@ do
 end
 ```
 
-### lurek.physics.newRectangleShape
+#### lurek.physics.newRectangleShape
 
 #### Definition
 
@@ -1212,7 +671,7 @@ do
 end
 ```
 
-### lurek.physics.newTerrain
+#### lurek.physics.newTerrain
 
 #### Definition
 
@@ -1253,7 +712,7 @@ do
 end
 ```
 
-### lurek.physics.newWorld
+#### lurek.physics.newWorld
 
 #### Definition
 
@@ -1290,7 +749,7 @@ do
 end
 ```
 
-### lurek.physics.setBodyVelocity
+#### lurek.physics.setBodyVelocity
 
 #### Definition
 
@@ -1327,7 +786,7 @@ do
 end
 ```
 
-### lurek.physics.setSleepingAllowed
+#### lurek.physics.setSleepingAllowed
 
 #### Definition
 
@@ -1362,7 +821,7 @@ do
 end
 ```
 
-### lurek.physics.step
+#### lurek.physics.step
 
 #### Definition
 
@@ -1396,7 +855,7 @@ do
 end
 ```
 
-### lurek.physics.testAABB
+#### lurek.physics.testAABB
 
 #### Definition
 
@@ -1444,7 +903,7 @@ do
 end
 ```
 
-### lurek.physics.testCircleAABB
+#### lurek.physics.testCircleAABB
 
 #### Definition
 
@@ -1490,7 +949,7 @@ do
 end
 ```
 
-### lurek.physics.testCircles
+#### lurek.physics.testCircles
 
 #### Definition
 
@@ -1534,7 +993,7 @@ do
 end
 ```
 
-### lurek.physics.testPoint
+#### lurek.physics.testPoint
 
 #### Definition
 
@@ -1753,7 +1212,9 @@ end
 
 ## 🔹 Module Methods
 
-### LBody:applyAngularImpulse
+### LBody Methods
+
+#### LBody:applyAngularImpulse
 
 #### Definition
 
@@ -1785,7 +1246,7 @@ do
 end
 ```
 
-### LBody:applyForce
+#### LBody:applyForce
 
 #### Definition
 
@@ -1819,7 +1280,7 @@ do
 end
 ```
 
-### LBody:applyForceAtPoint
+#### LBody:applyForceAtPoint
 
 #### Definition
 
@@ -1857,7 +1318,7 @@ do
 end
 ```
 
-### LBody:applyImpulse
+#### LBody:applyImpulse
 
 #### Definition
 
@@ -1891,7 +1352,7 @@ do
 end
 ```
 
-### LBody:applyTorque
+#### LBody:applyTorque
 
 #### Definition
 
@@ -1923,7 +1384,7 @@ do
 end
 ```
 
-### LBody:destroy
+#### LBody:destroy
 
 #### Definition
 
@@ -1950,7 +1411,7 @@ do
 end
 ```
 
-### LBody:getAngle
+#### LBody:getAngle
 
 #### Definition
 
@@ -1980,7 +1441,7 @@ do
 end
 ```
 
-### LBody:getAngularDamping
+#### LBody:getAngularDamping
 
 #### Definition
 
@@ -2010,7 +1471,7 @@ do
 end
 ```
 
-### LBody:getAngularVelocity
+#### LBody:getAngularVelocity
 
 #### Definition
 
@@ -2040,7 +1501,7 @@ do
 end
 ```
 
-### LBody:getFriction
+#### LBody:getFriction
 
 #### Definition
 
@@ -2070,7 +1531,7 @@ do
 end
 ```
 
-### LBody:getGravityScale
+#### LBody:getGravityScale
 
 #### Definition
 
@@ -2100,7 +1561,7 @@ do
 end
 ```
 
-### LBody:getHeight
+#### LBody:getHeight
 
 #### Definition
 
@@ -2130,7 +1591,7 @@ do
 end
 ```
 
-### LBody:getId
+#### LBody:getId
 
 #### Definition
 
@@ -2160,7 +1621,7 @@ do
 end
 ```
 
-### LBody:getLayer
+#### LBody:getLayer
 
 #### Definition
 
@@ -2190,7 +1651,7 @@ do
 end
 ```
 
-### LBody:getLinearDamping
+#### LBody:getLinearDamping
 
 #### Definition
 
@@ -2220,7 +1681,7 @@ do
 end
 ```
 
-### LBody:getMask
+#### LBody:getMask
 
 #### Definition
 
@@ -2250,7 +1711,7 @@ do
 end
 ```
 
-### LBody:getMass
+#### LBody:getMass
 
 #### Definition
 
@@ -2280,7 +1741,7 @@ do
 end
 ```
 
-### LBody:getPosition
+#### LBody:getPosition
 
 #### Definition
 
@@ -2311,7 +1772,7 @@ do
 end
 ```
 
-### LBody:getRestitution
+#### LBody:getRestitution
 
 #### Definition
 
@@ -2341,7 +1802,7 @@ do
 end
 ```
 
-### LBody:getType
+#### LBody:getType
 
 #### Definition
 
@@ -2371,7 +1832,7 @@ do
 end
 ```
 
-### LBody:getVelocity
+#### LBody:getVelocity
 
 #### Definition
 
@@ -2402,7 +1863,7 @@ do
 end
 ```
 
-### LBody:getWidth
+#### LBody:getWidth
 
 #### Definition
 
@@ -2432,7 +1893,7 @@ do
 end
 ```
 
-### LBody:getX
+#### LBody:getX
 
 #### Definition
 
@@ -2462,7 +1923,7 @@ do
 end
 ```
 
-### LBody:getY
+#### LBody:getY
 
 #### Definition
 
@@ -2492,7 +1953,7 @@ do
 end
 ```
 
-### LBody:isBullet
+#### LBody:isBullet
 
 #### Definition
 
@@ -2522,7 +1983,7 @@ do
 end
 ```
 
-### LBody:isFixedRotation
+#### LBody:isFixedRotation
 
 #### Definition
 
@@ -2552,7 +2013,7 @@ do
 end
 ```
 
-### LBody:isSleeping
+#### LBody:isSleeping
 
 #### Definition
 
@@ -2582,7 +2043,7 @@ do
 end
 ```
 
-### LBody:isSleepingAllowed
+#### LBody:isSleepingAllowed
 
 #### Definition
 
@@ -2612,7 +2073,7 @@ do
 end
 ```
 
-### LBody:setAngle
+#### LBody:setAngle
 
 #### Definition
 
@@ -2644,7 +2105,7 @@ do
 end
 ```
 
-### LBody:setAngularDamping
+#### LBody:setAngularDamping
 
 #### Definition
 
@@ -2676,7 +2137,7 @@ do
 end
 ```
 
-### LBody:setAngularVelocity
+#### LBody:setAngularVelocity
 
 #### Definition
 
@@ -2708,7 +2169,7 @@ do
 end
 ```
 
-### LBody:setBullet
+#### LBody:setBullet
 
 #### Definition
 
@@ -2740,7 +2201,7 @@ do
 end
 ```
 
-### LBody:setFixedRotation
+#### LBody:setFixedRotation
 
 #### Definition
 
@@ -2772,7 +2233,7 @@ do
 end
 ```
 
-### LBody:setFriction
+#### LBody:setFriction
 
 #### Definition
 
@@ -2804,7 +2265,7 @@ do
 end
 ```
 
-### LBody:setGravityScale
+#### LBody:setGravityScale
 
 #### Definition
 
@@ -2836,7 +2297,7 @@ do
 end
 ```
 
-### LBody:setLayer
+#### LBody:setLayer
 
 #### Definition
 
@@ -2868,7 +2329,7 @@ do
 end
 ```
 
-### LBody:setLinearDamping
+#### LBody:setLinearDamping
 
 #### Definition
 
@@ -2900,7 +2361,7 @@ do
 end
 ```
 
-### LBody:setMask
+#### LBody:setMask
 
 #### Definition
 
@@ -2932,7 +2393,7 @@ do
 end
 ```
 
-### LBody:setMass
+#### LBody:setMass
 
 #### Definition
 
@@ -2964,7 +2425,7 @@ do
 end
 ```
 
-### LBody:setPosition
+#### LBody:setPosition
 
 #### Definition
 
@@ -2998,7 +2459,7 @@ do
 end
 ```
 
-### LBody:setRestitution
+#### LBody:setRestitution
 
 #### Definition
 
@@ -3030,7 +2491,7 @@ do
 end
 ```
 
-### LBody:setSleepingAllowed
+#### LBody:setSleepingAllowed
 
 #### Definition
 
@@ -3062,7 +2523,7 @@ do
 end
 ```
 
-### LBody:setType
+#### LBody:setType
 
 #### Definition
 
@@ -3094,7 +2555,7 @@ do
 end
 ```
 
-### LBody:setVelocity
+#### LBody:setVelocity
 
 #### Definition
 
@@ -3128,7 +2589,7 @@ do
 end
 ```
 
-### LBody:sleep
+#### LBody:sleep
 
 #### Definition
 
@@ -3155,7 +2616,7 @@ do
 end
 ```
 
-### LBody:type
+#### LBody:type
 
 #### Definition
 
@@ -3185,7 +2646,7 @@ do
 end
 ```
 
-### LBody:typeOf
+#### LBody:typeOf
 
 #### Definition
 
@@ -3220,7 +2681,7 @@ do
 end
 ```
 
-### LBody:wakeUp
+#### LBody:wakeUp
 
 #### Definition
 
@@ -3247,7 +2708,9 @@ do
 end
 ```
 
-### LCellular:countCells
+### LCellular Methods
+
+#### LCellular:countCells
 
 #### Definition
 
@@ -3282,7 +2745,7 @@ do
 end
 ```
 
-### LCellular:fillCircle
+#### LCellular:fillCircle
 
 #### Definition
 
@@ -3320,7 +2783,7 @@ do
 end
 ```
 
-### LCellular:fillRect
+#### LCellular:fillRect
 
 #### Definition
 
@@ -3360,7 +2823,7 @@ do
 end
 ```
 
-### LCellular:findCells
+#### LCellular:findCells
 
 #### Definition
 
@@ -3395,7 +2858,7 @@ do
 end
 ```
 
-### LCellular:getCell
+#### LCellular:getCell
 
 #### Definition
 
@@ -3432,7 +2895,7 @@ do
 end
 ```
 
-### LCellular:loadFromBytes
+#### LCellular:loadFromBytes
 
 #### Definition
 
@@ -3467,7 +2930,7 @@ do
 end
 ```
 
-### LCellular:setCell
+#### LCellular:setCell
 
 #### Definition
 
@@ -3503,7 +2966,7 @@ do
 end
 ```
 
-### LCellular:step
+#### LCellular:step
 
 #### Definition
 
@@ -3530,7 +2993,7 @@ do
 end
 ```
 
-### LCellular:stepN
+#### LCellular:stepN
 
 #### Definition
 
@@ -3562,7 +3025,7 @@ do
 end
 ```
 
-### LCellular:toBytes
+#### LCellular:toBytes
 
 #### Definition
 
@@ -3592,7 +3055,7 @@ do
 end
 ```
 
-### LCellular:toImageData
+#### LCellular:toImageData
 
 #### Definition
 
@@ -3622,7 +3085,7 @@ do
 end
 ```
 
-### LCellular:toImageDataRegion
+#### LCellular:toImageDataRegion
 
 #### Definition
 
@@ -3663,7 +3126,7 @@ do
 end
 ```
 
-### LCellular:type
+#### LCellular:type
 
 #### Definition
 
@@ -3693,7 +3156,7 @@ do
 end
 ```
 
-### LCellular:typeOf
+#### LCellular:typeOf
 
 #### Definition
 
@@ -3728,7 +3191,9 @@ do
 end
 ```
 
-### LPhysicsShape:destroy
+### LPhysicsShape Methods
+
+#### LPhysicsShape:destroy
 
 #### Definition
 
@@ -3754,7 +3219,7 @@ do
 end
 ```
 
-### LPhysicsShape:getBoundingBox
+#### LPhysicsShape:getBoundingBox
 
 #### Definition
 
@@ -3787,7 +3252,7 @@ do
 end
 ```
 
-### LPhysicsShape:getRadius
+#### LPhysicsShape:getRadius
 
 #### Definition
 
@@ -3817,7 +3282,7 @@ do
 end
 ```
 
-### LPhysicsShape:getType
+#### LPhysicsShape:getType
 
 #### Definition
 
@@ -3847,7 +3312,7 @@ do
 end
 ```
 
-### LPhysicsShape:setDensity
+#### LPhysicsShape:setDensity
 
 #### Definition
 
@@ -3878,7 +3343,7 @@ do
 end
 ```
 
-### LPhysicsShape:setFriction
+#### LPhysicsShape:setFriction
 
 #### Definition
 
@@ -3909,7 +3374,7 @@ do
 end
 ```
 
-### LPhysicsShape:setRestitution
+#### LPhysicsShape:setRestitution
 
 #### Definition
 
@@ -3940,7 +3405,7 @@ do
 end
 ```
 
-### LPhysicsShape:setSensor
+#### LPhysicsShape:setSensor
 
 #### Definition
 
@@ -3971,7 +3436,7 @@ do
 end
 ```
 
-### LPhysicsShape:type
+#### LPhysicsShape:type
 
 #### Definition
 
@@ -3999,7 +3464,7 @@ do
 end
 ```
 
-### LPhysicsShape:typeOf
+#### LPhysicsShape:typeOf
 
 #### Definition
 
@@ -4032,7 +3497,9 @@ do
 end
 ```
 
-### LTerrain:collapseColumns
+### LTerrain Methods
+
+#### LTerrain:collapseColumns
 
 #### Definition
 
@@ -4062,7 +3529,7 @@ do
 end
 ```
 
-### LTerrain:fillAll
+#### LTerrain:fillAll
 
 #### Definition
 
@@ -4094,7 +3561,7 @@ do
 end
 ```
 
-### LTerrain:fillCircle
+#### LTerrain:fillCircle
 
 #### Definition
 
@@ -4132,7 +3599,7 @@ do
 end
 ```
 
-### LTerrain:fillRect
+#### LTerrain:fillRect
 
 #### Definition
 
@@ -4172,7 +3639,7 @@ do
 end
 ```
 
-### LTerrain:flush
+#### LTerrain:flush
 
 #### Definition
 
@@ -4199,7 +3666,7 @@ do
 end
 ```
 
-### LTerrain:getCell
+#### LTerrain:getCell
 
 #### Definition
 
@@ -4236,7 +3703,7 @@ do
 end
 ```
 
-### LTerrain:isDirty
+#### LTerrain:isDirty
 
 #### Definition
 
@@ -4266,7 +3733,7 @@ do
 end
 ```
 
-### LTerrain:loadFromBytes
+#### LTerrain:loadFromBytes
 
 #### Definition
 
@@ -4301,7 +3768,7 @@ do
 end
 ```
 
-### LTerrain:setCell
+#### LTerrain:setCell
 
 #### Definition
 
@@ -4337,7 +3804,7 @@ do
 end
 ```
 
-### LTerrain:solidPositions
+#### LTerrain:solidPositions
 
 #### Definition
 
@@ -4367,7 +3834,7 @@ do
 end
 ```
 
-### LTerrain:spawnDebris
+#### LTerrain:spawnDebris
 
 #### Definition
 
@@ -4406,7 +3873,7 @@ do
 end
 ```
 
-### LTerrain:toBytes
+#### LTerrain:toBytes
 
 #### Definition
 
@@ -4436,7 +3903,7 @@ do
 end
 ```
 
-### LTerrain:toImageData
+#### LTerrain:toImageData
 
 #### Definition
 
@@ -4481,7 +3948,7 @@ do
 end
 ```
 
-### LTerrain:type
+#### LTerrain:type
 
 #### Definition
 
@@ -4511,7 +3978,7 @@ do
 end
 ```
 
-### LTerrain:typeOf
+#### LTerrain:typeOf
 
 #### Definition
 
@@ -4546,7 +4013,9 @@ do
 end
 ```
 
-### LWorld:addDistanceJoint
+### LWorld Methods
+
+#### LWorld:addDistanceJoint
 
 #### Definition
 
@@ -4593,7 +4062,7 @@ do
 end
 ```
 
-### LWorld:addFixture
+#### LWorld:addFixture
 
 #### Definition
 
@@ -4640,7 +4109,7 @@ do
 end
 ```
 
-### LWorld:addFrictionJoint
+#### LWorld:addFrictionJoint
 
 #### Definition
 
@@ -4685,7 +4154,7 @@ do
 end
 ```
 
-### LWorld:addGearJoint
+#### LWorld:addGearJoint
 
 #### Definition
 
@@ -4726,7 +4195,7 @@ do
 end
 ```
 
-### LWorld:addMotorJoint
+#### LWorld:addMotorJoint
 
 #### Definition
 
@@ -4765,7 +4234,7 @@ do
 end
 ```
 
-### LWorld:addMouseJoint
+#### LWorld:addMouseJoint
 
 #### Definition
 
@@ -4806,7 +4275,7 @@ do
 end
 ```
 
-### LWorld:addPrismaticJoint
+#### LWorld:addPrismaticJoint
 
 #### Definition
 
@@ -4851,7 +4320,7 @@ do
 end
 ```
 
-### LWorld:addPulleyJoint
+#### LWorld:addPulleyJoint
 
 #### Definition
 
@@ -4892,7 +4361,7 @@ do
 end
 ```
 
-### LWorld:addRevoluteJoint
+#### LWorld:addRevoluteJoint
 
 #### Definition
 
@@ -4933,7 +4402,7 @@ do
 end
 ```
 
-### LWorld:addRopeJoint
+#### LWorld:addRopeJoint
 
 #### Definition
 
@@ -4980,7 +4449,7 @@ do
 end
 ```
 
-### LWorld:addWeldJoint
+#### LWorld:addWeldJoint
 
 #### Definition
 
@@ -5021,7 +4490,7 @@ do
 end
 ```
 
-### LWorld:addWheelJoint
+#### LWorld:addWheelJoint
 
 #### Definition
 
@@ -5066,7 +4535,7 @@ do
 end
 ```
 
-### LWorld:addZone
+#### LWorld:addZone
 
 #### Definition
 
@@ -5107,7 +4576,7 @@ do
 end
 ```
 
-### LWorld:clear
+#### LWorld:clear
 
 #### Definition
 
@@ -5134,7 +4603,7 @@ do
 end
 ```
 
-### LWorld:clearBeginContact
+#### LWorld:clearBeginContact
 
 #### Definition
 
@@ -5161,7 +4630,7 @@ do
 end
 ```
 
-### LWorld:clearBodyData
+#### LWorld:clearBodyData
 
 #### Definition
 
@@ -5193,7 +4662,7 @@ do
 end
 ```
 
-### LWorld:clearBodyOneWay
+#### LWorld:clearBodyOneWay
 
 #### Definition
 
@@ -5225,7 +4694,7 @@ do
 end
 ```
 
-### LWorld:clearEndContact
+#### LWorld:clearEndContact
 
 #### Definition
 
@@ -5252,7 +4721,7 @@ do
 end
 ```
 
-### LWorld:destroyBody
+#### LWorld:destroyBody
 
 #### Definition
 
@@ -5284,7 +4753,7 @@ do
 end
 ```
 
-### LWorld:destroyJoint
+#### LWorld:destroyJoint
 
 #### Definition
 
@@ -5316,7 +4785,7 @@ do
 end
 ```
 
-### LWorld:drawDebug
+#### LWorld:drawDebug
 
 #### Definition
 
@@ -5356,7 +4825,7 @@ do
 end
 ```
 
-### LWorld:fixtureCount
+#### LWorld:fixtureCount
 
 #### Definition
 
@@ -5391,7 +4860,7 @@ do
 end
 ```
 
-### LWorld:getBeginContactEvents
+#### LWorld:getBeginContactEvents
 
 #### Definition
 
@@ -5421,7 +4890,7 @@ do
 end
 ```
 
-### LWorld:getBodyAtPoint
+#### LWorld:getBodyAtPoint
 
 #### Definition
 
@@ -5458,7 +4927,7 @@ do
 end
 ```
 
-### LWorld:getBodyCCD
+#### LWorld:getBodyCCD
 
 #### Definition
 
@@ -5493,7 +4962,7 @@ do
 end
 ```
 
-### LWorld:getBodyContacts
+#### LWorld:getBodyContacts
 
 #### Definition
 
@@ -5528,7 +4997,7 @@ do
 end
 ```
 
-### LWorld:getBodyCount
+#### LWorld:getBodyCount
 
 #### Definition
 
@@ -5558,7 +5027,7 @@ do
 end
 ```
 
-### LWorld:getBodyData
+#### LWorld:getBodyData
 
 #### Definition
 
@@ -5593,7 +5062,7 @@ do
 end
 ```
 
-### LWorld:getBodyIds
+#### LWorld:getBodyIds
 
 #### Definition
 
@@ -5623,7 +5092,7 @@ do
 end
 ```
 
-### LWorld:getBodyOneWay
+#### LWorld:getBodyOneWay
 
 #### Definition
 
@@ -5659,7 +5128,7 @@ do
 end
 ```
 
-### LWorld:getBodyType
+#### LWorld:getBodyType
 
 #### Definition
 
@@ -5693,7 +5162,7 @@ do
 end
 ```
 
-### LWorld:getCollisionEvents
+#### LWorld:getCollisionEvents
 
 #### Definition
 
@@ -5723,7 +5192,7 @@ do
 end
 ```
 
-### LWorld:getContacts
+#### LWorld:getContacts
 
 #### Definition
 
@@ -5753,7 +5222,7 @@ do
 end
 ```
 
-### LWorld:getEndContactEvents
+#### LWorld:getEndContactEvents
 
 #### Definition
 
@@ -5781,7 +5250,7 @@ do
     for frame = 1, 300 do world:step(1 / 60) local events = world:getEndContactEvents() if #events > 0 then count = #events print("frame " .. frame .. ": end events = " .. count) break end end
 ```
 
-### LWorld:getGravity
+#### LWorld:getGravity
 
 #### Definition
 
@@ -5812,7 +5281,7 @@ do
 end
 ```
 
-### LWorld:getJointBodies
+#### LWorld:getJointBodies
 
 #### Definition
 
@@ -5848,7 +5317,7 @@ do
 end
 ```
 
-### LWorld:getJointBreakForce
+#### LWorld:getJointBreakForce
 
 #### Definition
 
@@ -5883,7 +5352,7 @@ do
 end
 ```
 
-### LWorld:getJointIds
+#### LWorld:getJointIds
 
 #### Definition
 
@@ -5913,7 +5382,7 @@ do
 end
 ```
 
-### LWorld:getJointLimits
+#### LWorld:getJointLimits
 
 #### Definition
 
@@ -5949,7 +5418,7 @@ do
 end
 ```
 
-### LWorld:getJointMotorSpeed
+#### LWorld:getJointMotorSpeed
 
 #### Definition
 
@@ -5984,7 +5453,7 @@ do
 end
 ```
 
-### LWorld:getJointType
+#### LWorld:getJointType
 
 #### Definition
 
@@ -6019,7 +5488,7 @@ do
 end
 ```
 
-### LWorld:getMeter
+#### LWorld:getMeter
 
 #### Definition
 
@@ -6049,7 +5518,7 @@ do
 end
 ```
 
-### LWorld:getSolverIterations
+#### LWorld:getSolverIterations
 
 #### Definition
 
@@ -6078,7 +5547,7 @@ do
 end
 ```
 
-### LWorld:getZoneEvents
+#### LWorld:getZoneEvents
 
 #### Definition
 
@@ -6108,7 +5577,7 @@ do
 end
 ```
 
-### LWorld:isBodySleeping
+#### LWorld:isBodySleeping
 
 #### Definition
 
@@ -6143,7 +5612,7 @@ do
 end
 ```
 
-### LWorld:jointCount
+#### LWorld:jointCount
 
 #### Definition
 
@@ -6173,7 +5642,7 @@ do
 end
 ```
 
-### LWorld:newBodies
+#### LWorld:newBodies
 
 #### Definition
 
@@ -6207,7 +5676,7 @@ do
 end
 ```
 
-### LWorld:newBody
+#### LWorld:newBody
 
 #### Definition
 
@@ -6246,7 +5715,7 @@ do
 end
 ```
 
-### LWorld:newChainBody
+#### LWorld:newChainBody
 
 #### Definition
 
@@ -6289,7 +5758,7 @@ do
 end
 ```
 
-### LWorld:newCircleBody
+#### LWorld:newCircleBody
 
 #### Definition
 
@@ -6329,7 +5798,7 @@ do
 end
 ```
 
-### LWorld:newEdgeBody
+#### LWorld:newEdgeBody
 
 #### Definition
 
@@ -6375,7 +5844,7 @@ do
 end
 ```
 
-### LWorld:newPolygonBody
+#### LWorld:newPolygonBody
 
 #### Definition
 
@@ -6416,7 +5885,7 @@ do
 end
 ```
 
-### LWorld:queryAABB
+#### LWorld:queryAABB
 
 #### Definition
 
@@ -6457,7 +5926,7 @@ do
 end
 ```
 
-### LWorld:raycast
+#### LWorld:raycast
 
 #### Definition
 
@@ -6498,7 +5967,7 @@ do
 end
 ```
 
-### LWorld:raycastAll
+#### LWorld:raycastAll
 
 #### Definition
 
@@ -6541,7 +6010,7 @@ do
 end
 ```
 
-### LWorld:raycastClosest
+#### LWorld:raycastClosest
 
 #### Definition
 
@@ -6584,7 +6053,7 @@ do
 end
 ```
 
-### LWorld:setBeginContact
+#### LWorld:setBeginContact
 
 #### Definition
 
@@ -6622,7 +6091,7 @@ do
 end
 ```
 
-### LWorld:setBodyCCD
+#### LWorld:setBodyCCD
 
 #### Definition
 
@@ -6656,7 +6125,7 @@ do
 end
 ```
 
-### LWorld:setBodyData
+#### LWorld:setBodyData
 
 #### Definition
 
@@ -6690,7 +6159,7 @@ do
 end
 ```
 
-### LWorld:setBodyOneWay
+#### LWorld:setBodyOneWay
 
 #### Definition
 
@@ -6726,7 +6195,7 @@ do
 end
 ```
 
-### LWorld:setBodyType
+#### LWorld:setBodyType
 
 #### Definition
 
@@ -6760,7 +6229,7 @@ do
 end
 ```
 
-### LWorld:setEndContact
+#### LWorld:setEndContact
 
 #### Definition
 
@@ -6796,7 +6265,7 @@ do
     print("end contacts (bounces) = " .. endCount)
 ```
 
-### LWorld:setFixtureFriction
+#### LWorld:setFixtureFriction
 
 #### Definition
 
@@ -6832,7 +6301,7 @@ do
 end
 ```
 
-### LWorld:setFixtureRestitution
+#### LWorld:setFixtureRestitution
 
 #### Definition
 
@@ -6868,7 +6337,7 @@ do
 end
 ```
 
-### LWorld:setFixtureSensor
+#### LWorld:setFixtureSensor
 
 #### Definition
 
@@ -6904,7 +6373,7 @@ do
 end
 ```
 
-### LWorld:setGravity
+#### LWorld:setGravity
 
 #### Definition
 
@@ -6938,7 +6407,7 @@ do
 end
 ```
 
-### LWorld:setJointBreakForce
+#### LWorld:setJointBreakForce
 
 #### Definition
 
@@ -6972,7 +6441,7 @@ do
 end
 ```
 
-### LWorld:setJointLimits
+#### LWorld:setJointLimits
 
 #### Definition
 
@@ -7008,7 +6477,7 @@ do
 end
 ```
 
-### LWorld:setJointLimitsEnabled
+#### LWorld:setJointLimitsEnabled
 
 #### Definition
 
@@ -7042,7 +6511,7 @@ do
 end
 ```
 
-### LWorld:setJointMotorSpeed
+#### LWorld:setJointMotorSpeed
 
 #### Definition
 
@@ -7076,7 +6545,7 @@ do
 end
 ```
 
-### LWorld:setMeter
+#### LWorld:setMeter
 
 #### Definition
 
@@ -7108,7 +6577,7 @@ do
 end
 ```
 
-### LWorld:setMouseJointTarget
+#### LWorld:setMouseJointTarget
 
 #### Definition
 
@@ -7144,7 +6613,7 @@ do
 end
 ```
 
-### LWorld:setSolverIterations
+#### LWorld:setSolverIterations
 
 #### Definition
 
@@ -7175,7 +6644,7 @@ do
 end
 ```
 
-### LWorld:sleepBody
+#### LWorld:sleepBody
 
 #### Definition
 
@@ -7207,7 +6676,7 @@ do
 end
 ```
 
-### LWorld:step
+#### LWorld:step
 
 #### Definition
 
@@ -7239,7 +6708,7 @@ do
 end
 ```
 
-### LWorld:stepFixed
+#### LWorld:stepFixed
 
 #### Definition
 
@@ -7278,7 +6747,7 @@ do
 end
 ```
 
-### LWorld:toPhysics
+#### LWorld:toPhysics
 
 #### Definition
 
@@ -7313,7 +6782,7 @@ do
 end
 ```
 
-### LWorld:toPixels
+#### LWorld:toPixels
 
 #### Definition
 
@@ -7348,7 +6817,7 @@ do
 end
 ```
 
-### LWorld:type
+#### LWorld:type
 
 #### Definition
 
@@ -7377,7 +6846,7 @@ do
 end
 ```
 
-### LWorld:typeOf
+#### LWorld:typeOf
 
 #### Definition
 
@@ -7411,7 +6880,7 @@ do
 end
 ```
 
-### LWorld:wakeUpBody
+#### LWorld:wakeUpBody
 
 #### Definition
 
@@ -7443,7 +6912,9 @@ do
 end
 ```
 
-### LZone:destroy
+### LZone Methods
+
+#### LZone:destroy
 
 #### Definition
 
@@ -7470,7 +6941,7 @@ do
 end
 ```
 
-### LZone:getId
+#### LZone:getId
 
 #### Definition
 
@@ -7500,7 +6971,7 @@ do
 end
 ```
 
-### LZone:setAngularDampingOverride
+#### LZone:setAngularDampingOverride
 
 #### Definition
 
@@ -7532,7 +7003,7 @@ do
 end
 ```
 
-### LZone:setCircle
+#### LZone:setCircle
 
 #### Definition
 
@@ -7568,7 +7039,7 @@ do
 end
 ```
 
-### LZone:setEnabled
+#### LZone:setEnabled
 
 #### Definition
 
@@ -7600,7 +7071,7 @@ do
 end
 ```
 
-### LZone:setGravityDirectional
+#### LZone:setGravityDirectional
 
 #### Definition
 
@@ -7634,7 +7105,7 @@ do
 end
 ```
 
-### LZone:setGravityPoint
+#### LZone:setGravityPoint
 
 #### Definition
 
@@ -7670,7 +7141,7 @@ do
 end
 ```
 
-### LZone:setGravityRepulsor
+#### LZone:setGravityRepulsor
 
 #### Definition
 
@@ -7706,7 +7177,7 @@ do
 end
 ```
 
-### LZone:setGravityZero
+#### LZone:setGravityZero
 
 #### Definition
 
@@ -7733,7 +7204,7 @@ do
 end
 ```
 
-### LZone:setLayerMask
+#### LZone:setLayerMask
 
 #### Definition
 
@@ -7765,7 +7236,7 @@ do
 end
 ```
 
-### LZone:setLinearDampingOverride
+#### LZone:setLinearDampingOverride
 
 #### Definition
 
@@ -7797,7 +7268,7 @@ do
 end
 ```
 
-### LZone:setPriority
+#### LZone:setPriority
 
 #### Definition
 
@@ -7829,7 +7300,7 @@ do
 end
 ```
 
-### LZone:type
+#### LZone:type
 
 #### Definition
 
@@ -7859,7 +7330,7 @@ do
 end
 ```
 
-### LZone:typeOf
+#### LZone:typeOf
 
 #### Definition
 

@@ -10,314 +10,26 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [combo.rs](#combors)
+  - [gamepad.rs](#gamepadrs)
+  - [keyboard.rs](#keyboardrs)
+  - [mod.rs](#modrs)
+  - [mouse.rs](#mousers)
+  - [recorder.rs](#recorderrs)
+  - [touch.rs](#touchrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.input.advancePlayback](#lurekinputadvanceplayback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.bind](#lurekinputbind)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.clearBindings](#lurekinputclearbindings)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getAxis](#lurekinputgamepadgetaxis)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getAxisCount](#lurekinputgamepadgetaxiscount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getBackgroundEvents](#lurekinputgamepadgetbackgroundevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.getBindings](#lurekinputgetbindings)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getButtonCount](#lurekinputgamepadgetbuttoncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getCount](#lurekinputgamepadgetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.getCursor](#lurekinputmousegetcursor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getGamepadMappingString](#lurekinputgamepadgetgamepadmappingstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getGUID](#lurekinputgamepadgetguid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getHat](#lurekinputgamepadgethat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getJoystickCount](#lurekinputgamepadgetjoystickcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getJoysticks](#lurekinputgamepadgetjoysticks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.getKeyFromScancode](#lurekinputkeyboardgetkeyfromscancode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.getName](#lurekinputgamepadgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.getPlaybackFrame](#lurekinputgetplaybackframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.getPosition](#lurekinputmousegetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.touch.getPosition](#lurekinputtouchgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.touch.getPressure](#lurekinputtouchgetpressure)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.getRelativeMode](#lurekinputmousegetrelativemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.getScancodeFromKey](#lurekinputkeyboardgetscancodefromkey)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.getSystemCursor](#lurekinputmousegetsystemcursor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.touch.getTouchCount](#lurekinputtouchgettouchcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.touch.getTouches](#lurekinputtouchgettouches)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.getWheelDelta](#lurekinputmousegetwheeldelta)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.getX](#lurekinputmousegetx)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.getY](#lurekinputmousegety)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.hasKeyRepeat](#lurekinputkeyboardhaskeyrepeat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.hasTextInput](#lurekinputkeyboardhastextinput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.isActionDown](#lurekinputisactiondown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.isConnected](#lurekinputgamepadisconnected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.isCursorSupported](#lurekinputmouseiscursorsupported)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.isDown](#lurekinputgamepadisdown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.isDown](#lurekinputisdown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.isDown](#lurekinputkeyboardisdown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.isDown](#lurekinputmouseisdown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.isGamepad](#lurekinputgamepadisgamepad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.isGrabbed](#lurekinputmouseisgrabbed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.isModifierActive](#lurekinputkeyboardismodifieractive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.isPlayingBack](#lurekinputisplayingback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.isRecording](#lurekinputisrecording)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.isScancodeDown](#lurekinputkeyboardisscancodedown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.isVibrationSupported](#lurekinputgamepadisvibrationsupported)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.isVisible](#lurekinputmouseisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.loadGamepadMappings](#lurekinputgamepadloadgamepadmappings)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.loadRecording](#lurekinputloadrecording)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.newCombo](#lurekinputnewcombo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.newCursor](#lurekinputmousenewcursor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.newMapping](#lurekinputnewmapping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.saveGamepadMappings](#lurekinputgamepadsavegamepadmappings)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.setBackgroundEvents](#lurekinputgamepadsetbackgroundevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.setCursor](#lurekinputmousesetcursor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.setGamepadMapping](#lurekinputgamepadsetgamepadmapping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.setGrabbed](#lurekinputmousesetgrabbed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.setKeyRepeat](#lurekinputkeyboardsetkeyrepeat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.setPosition](#lurekinputmousesetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.setRelativeMode](#lurekinputmousesetrelativemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.keyboard.setTextInput](#lurekinputkeyboardsettextinput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.setVibration](#lurekinputgamepadsetvibration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.mouse.setVisible](#lurekinputmousesetvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.startPlayback](#lurekinputstartplayback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.startRecording](#lurekinputstartrecording)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.stopPlayback](#lurekinputstopplayback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.stopRecording](#lurekinputstoprecording)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.unbind](#lurekinputunbind)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.vibrate](#lurekinputgamepadvibrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.virtualDpad](#lurekinputgamepadvirtualdpad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.wasActionPressed](#lurekinputwasactionpressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.wasActionPressedWithin](#lurekinputwasactionpressedwithin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.wasActionReleased](#lurekinputwasactionreleased)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.wasConnected](#lurekinputgamepadwasconnected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.wasDisconnected](#lurekinputgamepadwasdisconnected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.wasPressed](#lurekinputgamepadwaspressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.touch.wasPressed](#lurekinputtouchwaspressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.wasPressed](#lurekinputwaspressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.gamepad.wasReleased](#lurekinputgamepadwasreleased)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.touch.wasReleased](#lurekinputtouchwasreleased)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.input.wasReleased](#lurekinputwasreleased)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LCombo](#lcombo)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCursor](#lcursor)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LInputRecording](#linputrecording)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LCombo:feed](#lcombofeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:getStep](#lcombogetstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:isInProgress](#lcomboisinprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:progress](#lcomboprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:reset](#lcomboreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:tick](#lcombotick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:totalSteps](#lcombototalsteps)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:type](#lcombotype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCombo:typeOf](#lcombotypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCursor:getType](#lcursorgettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCursor:release](#lcursorrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCursor:type](#lcursortype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCursor:typeOf](#lcursortypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInputRecording:frameCount](#linputrecordingframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInputRecording:toJson](#linputrecordingtojson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInputRecording:totalFrames](#linputrecordingtotalframes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInputRecording:type](#linputrecordingtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInputRecording:typeOf](#linputrecordingtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LCombo Methods](#lcombo-methods)
+  - [LCursor Methods](#lcursor-methods)
+  - [LInputRecording Methods](#linputrecording-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -341,6 +53,65 @@ Per-frame input state translated from winit OS events covering keyboard, mouse, 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `combo.rs`
+
+- Multi-step key-press combo detection with per-step and total-sequence timeouts.
+- Stateful detector that advances, breaks, or completes on each key feed or timer tick.
+- Used by the `lurek.input` combo API to recognize fighting-game-style input sequences.
+
+### `gamepad.rs`
+
+- Per-slot gamepad state tracking: buttons, axes, connection lifecycle, and per-frame delta sets.
+- Vibration request queuing for delivery to the OS force-feedback driver.
+- SDL2-style GUID-based mapping store with file and string parsing.
+- Gilrs button/axis to SDL2 string conversion helpers.
+- Virtual D-pad synthesis from analog stick values with configurable deadzone.
+- Hat (D-pad) direction queries returning 8-way compass strings.
+
+### `keyboard.rs`
+
+- Per-frame keyboard state machine tracking logical keys, physical scan-codes, and frame deltas.
+- Modifier bitmask flags (Shift, Ctrl, Alt, Meta) updated each event.
+- OS key-repeat and text-input (IME) buffer toggling.
+- Bidirectional mapping between logical key names and physical scan-code names.
+- Winit-to-Lurek translation for both logical `Key` and physical `KeyCode` enums.
+- Frame lifecycle: `begin_frame` clears deltas, events accumulate, queries read snapshot.
+- Scan-code layer allows layout-independent bindings for WASD-style controls.
+- Text-input buffer collects composed characters for chat and text fields.
+
+### `mod.rs`
+
+- Keyboard, mouse, gamepad, and touch input state aggregation.
+- Event constants for Lua callbacks (keypressed, mousemoved, etc.).
+- Combo gesture detection and input recording for replays.
+
+### `mouse.rs`
+
+- Per-frame mouse state tracking: position, button held/pressed/released deltas, and scroll accumulators.
+- System cursor shape selection from a fixed set of OS-provided variants.
+- Custom image-based cursor support via raw RGBA pixel buffers with hotspot offsets.
+- Cursor visibility, grab (confinement), and relative (delta) mode toggles.
+- Warp-to-position requests consumed by the runtime window loop.
+- Frame-boundary reset for button deltas and scroll values.
+
+### `recorder.rs`
+
+- Record and replay input sessions as sparse frame sequences.
+- Capture key/mouse events per frame; skip silent frames to save space.
+- Serialise recordings to versioned JSON envelopes for deterministic replay.
+- Provide stateful recorder with start/stop/load/playback cursor lifecycle.
+- Support both live recording and loaded-file playback in one struct.
+
+### `touch.rs`
+
+- Multi-touch contact tracking with per-frame pressed/released deltas.
+- Position and pressure state for each active touch id.
+- Frame-boundary lifecycle: begin_frame clears deltas, start/move/end mutate state.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LCombo` (9 methods) - Lua-side combo detector handle tracking ordered key sequences.
@@ -352,34 +123,18 @@ Per-frame input state translated from winit OS events covering keyboard, mouse, 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/input.md](../blob/main/docs/specs/input.md)
+- Module-level functions: 80
+- Lua-visible types: 3
+- Total type methods: 18
 
-```lua
-lurek.input.advancePlayback() -> table -- Advances playback by one frame and returns events for that frame.
-lurek.input.bind(action: string, keys: any) -- Adds one or more keyboard/gamepad bindings to an action.
-lurek.input.clearBindings() -- Removes all action bindings from the map.
-lurek.input.gamepad.getAxis(id: integer, axis: integer) -> number -- Returns a gamepad axis value by index.
-lurek.input.gamepad.getAxisCount(id: integer) -> integer -- Returns the axis count for a gamepad.
-lurek.input.gamepad.getBackgroundEvents() -> boolean -- Returns whether background gamepad event processing is enabled.
-lurek.input.getBindings() -> string[] -- Returns all registered action bindings.
-lurek.input.gamepad.getButtonCount(id: integer) -> integer -- Returns the button count for a gamepad.
-lurek.input.gamepad.getCount() -> integer -- Returns the number of gamepad slots tracked by the runtime.
-lurek.input.mouse.getCursor() -> string -- Returns the current system cursor name.
-lurek.input.gamepad.getGamepadMappingString(guid: string) -> string -- Returns a stored mapping string for a gamepad GUID.
-lurek.input.gamepad.getGUID(id: integer) -> string -- Returns the GUID string for a gamepad.
-lurek.input.gamepad.getHat(id: integer, hat: integer) -> string -- Returns hat direction for a gamepad hat index.
-lurek.input.gamepad.getJoystickCount() -> integer -- Returns the number of joystick slots tracked by the runtime.
-lurek.input.gamepad.getJoysticks() -> integer[] -- Returns ids for currently connected gamepads.
-lurek.input.keyboard.getKeyFromScancode(scancode: string) -> string -- Converts a scancode name to its key name when known.
-lurek.input.gamepad.getName(id: integer) -> string -- Returns a gamepad display name by its id.
-lurek.input.getPlaybackFrame() -> integer -- Returns the current playback frame index.
--- ... 62 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.input.advancePlayback
+### Module-Level Functions
+
+#### lurek.input.advancePlayback
 
 #### Definition
 
@@ -410,7 +165,7 @@ do
 end
 ```
 
-### lurek.input.bind
+#### lurek.input.bind
 
 #### Definition
 
@@ -442,7 +197,7 @@ do
 end
 ```
 
-### lurek.input.clearBindings
+#### lurek.input.clearBindings
 
 #### Definition
 
@@ -468,7 +223,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getAxis
+#### lurek.input.gamepad.getAxis
 
 #### Definition
 
@@ -502,7 +257,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getAxisCount
+#### lurek.input.gamepad.getAxisCount
 
 #### Definition
 
@@ -534,7 +289,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getBackgroundEvents
+#### lurek.input.gamepad.getBackgroundEvents
 
 #### Definition
 
@@ -562,7 +317,7 @@ do
 end
 ```
 
-### lurek.input.getBindings
+#### lurek.input.getBindings
 
 #### Definition
 
@@ -590,7 +345,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getButtonCount
+#### lurek.input.gamepad.getButtonCount
 
 #### Definition
 
@@ -622,7 +377,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getCount
+#### lurek.input.gamepad.getCount
 
 #### Definition
 
@@ -649,7 +404,7 @@ do
 end
 ```
 
-### lurek.input.mouse.getCursor
+#### lurek.input.mouse.getCursor
 
 #### Definition
 
@@ -676,7 +431,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getGamepadMappingString
+#### lurek.input.gamepad.getGamepadMappingString
 
 #### Definition
 
@@ -710,7 +465,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getGUID
+#### lurek.input.gamepad.getGUID
 
 #### Definition
 
@@ -742,7 +497,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getHat
+#### lurek.input.gamepad.getHat
 
 #### Definition
 
@@ -776,7 +531,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getJoystickCount
+#### lurek.input.gamepad.getJoystickCount
 
 #### Definition
 
@@ -804,7 +559,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getJoysticks
+#### lurek.input.gamepad.getJoysticks
 
 #### Definition
 
@@ -832,7 +587,7 @@ do
 end
 ```
 
-### lurek.input.keyboard.getKeyFromScancode
+#### lurek.input.keyboard.getKeyFromScancode
 
 #### Definition
 
@@ -864,7 +619,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.getName
+#### lurek.input.gamepad.getName
 
 #### Definition
 
@@ -896,7 +651,7 @@ do
 end
 ```
 
-### lurek.input.getPlaybackFrame
+#### lurek.input.getPlaybackFrame
 
 #### Definition
 
@@ -923,7 +678,7 @@ do
 end
 ```
 
-### lurek.input.mouse.getPosition
+#### lurek.input.mouse.getPosition
 
 #### Definition
 
@@ -951,7 +706,7 @@ do
 end
 ```
 
-### lurek.input.touch.getPosition
+#### lurek.input.touch.getPosition
 
 #### Definition
 
@@ -984,7 +739,7 @@ do
 end
 ```
 
-### lurek.input.touch.getPressure
+#### lurek.input.touch.getPressure
 
 #### Definition
 
@@ -1016,7 +771,7 @@ do
 end
 ```
 
-### lurek.input.mouse.getRelativeMode
+#### lurek.input.mouse.getRelativeMode
 
 #### Definition
 
@@ -1042,7 +797,7 @@ do
 end
 ```
 
-### lurek.input.keyboard.getScancodeFromKey
+#### lurek.input.keyboard.getScancodeFromKey
 
 #### Definition
 
@@ -1074,7 +829,7 @@ do
 end
 ```
 
-### lurek.input.mouse.getSystemCursor
+#### lurek.input.mouse.getSystemCursor
 
 #### Definition
 
@@ -1106,7 +861,7 @@ do
 end
 ```
 
-### lurek.input.touch.getTouchCount
+#### lurek.input.touch.getTouchCount
 
 #### Definition
 
@@ -1133,7 +888,7 @@ do
 end
 ```
 
-### lurek.input.touch.getTouches
+#### lurek.input.touch.getTouches
 
 #### Definition
 
@@ -1160,7 +915,7 @@ do
 end
 ```
 
-### lurek.input.mouse.getWheelDelta
+#### lurek.input.mouse.getWheelDelta
 
 #### Definition
 
@@ -1188,7 +943,7 @@ do
 end
 ```
 
-### lurek.input.mouse.getX
+#### lurek.input.mouse.getX
 
 #### Definition
 
@@ -1215,7 +970,7 @@ do
 end
 ```
 
-### lurek.input.mouse.getY
+#### lurek.input.mouse.getY
 
 #### Definition
 
@@ -1242,7 +997,7 @@ do
 end
 ```
 
-### lurek.input.keyboard.hasKeyRepeat
+#### lurek.input.keyboard.hasKeyRepeat
 
 #### Definition
 
@@ -1313,7 +1068,7 @@ end
 do
 ```
 
-### lurek.input.keyboard.hasTextInput
+#### lurek.input.keyboard.hasTextInput
 
 #### Definition
 
@@ -1339,7 +1094,7 @@ do
 end
 ```
 
-### lurek.input.isActionDown
+#### lurek.input.isActionDown
 
 #### Definition
 
@@ -1372,7 +1127,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.isConnected
+#### lurek.input.gamepad.isConnected
 
 #### Definition
 
@@ -1404,7 +1159,7 @@ do
 end
 ```
 
-### lurek.input.mouse.isCursorSupported
+#### lurek.input.mouse.isCursorSupported
 
 #### Definition
 
@@ -1430,7 +1185,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.isDown
+#### lurek.input.gamepad.isDown
 
 #### Definition
 
@@ -1464,7 +1219,7 @@ do
 end
 ```
 
-### lurek.input.isDown
+#### lurek.input.isDown
 
 #### Definition
 
@@ -1535,7 +1290,7 @@ do
     local combo = lurek.input.newCombo({"a", "b"})
 ```
 
-### lurek.input.keyboard.isDown
+#### lurek.input.keyboard.isDown
 
 #### Definition
 
@@ -1567,7 +1322,7 @@ do
 end
 ```
 
-### lurek.input.mouse.isDown
+#### lurek.input.mouse.isDown
 
 #### Definition
 
@@ -1600,7 +1355,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.isGamepad
+#### lurek.input.gamepad.isGamepad
 
 #### Definition
 
@@ -1632,7 +1387,7 @@ do
 end
 ```
 
-### lurek.input.mouse.isGrabbed
+#### lurek.input.mouse.isGrabbed
 
 #### Definition
 
@@ -1658,7 +1413,7 @@ do
 end
 ```
 
-### lurek.input.keyboard.isModifierActive
+#### lurek.input.keyboard.isModifierActive
 
 #### Definition
 
@@ -1691,7 +1446,7 @@ do
 end
 ```
 
-### lurek.input.isPlayingBack
+#### lurek.input.isPlayingBack
 
 #### Definition
 
@@ -1721,7 +1476,7 @@ do
 end
 ```
 
-### lurek.input.isRecording
+#### lurek.input.isRecording
 
 #### Definition
 
@@ -1748,7 +1503,7 @@ do
 end
 ```
 
-### lurek.input.keyboard.isScancodeDown
+#### lurek.input.keyboard.isScancodeDown
 
 #### Definition
 
@@ -1780,7 +1535,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.isVibrationSupported
+#### lurek.input.gamepad.isVibrationSupported
 
 #### Definition
 
@@ -1812,7 +1567,7 @@ do
 end
 ```
 
-### lurek.input.mouse.isVisible
+#### lurek.input.mouse.isVisible
 
 #### Definition
 
@@ -1838,7 +1593,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.loadGamepadMappings
+#### lurek.input.gamepad.loadGamepadMappings
 
 #### Definition
 
@@ -1870,7 +1625,7 @@ do
 end
 ```
 
-### lurek.input.loadRecording
+#### lurek.input.loadRecording
 
 #### Definition
 
@@ -1901,7 +1656,7 @@ do
 end
 ```
 
-### lurek.input.newCombo
+#### lurek.input.newCombo
 
 #### Definition
 
@@ -1937,7 +1692,7 @@ do
 end
 ```
 
-### lurek.input.mouse.newCursor
+#### lurek.input.mouse.newCursor
 
 #### Definition
 
@@ -1979,7 +1734,7 @@ do
 end
 ```
 
-### lurek.input.newMapping
+#### lurek.input.newMapping
 
 #### Definition
 
@@ -2016,7 +1771,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.saveGamepadMappings
+#### lurek.input.gamepad.saveGamepadMappings
 
 #### Definition
 
@@ -2048,7 +1803,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.setBackgroundEvents
+#### lurek.input.gamepad.setBackgroundEvents
 
 #### Definition
 
@@ -2078,7 +1833,7 @@ do
 end
 ```
 
-### lurek.input.mouse.setCursor
+#### lurek.input.mouse.setCursor
 
 #### Definition
 
@@ -2108,7 +1863,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.setGamepadMapping
+#### lurek.input.gamepad.setGamepadMapping
 
 #### Definition
 
@@ -2140,7 +1895,7 @@ do
 end
 ```
 
-### lurek.input.mouse.setGrabbed
+#### lurek.input.mouse.setGrabbed
 
 #### Definition
 
@@ -2169,7 +1924,7 @@ do
 end
 ```
 
-### lurek.input.keyboard.setKeyRepeat
+#### lurek.input.keyboard.setKeyRepeat
 
 #### Definition
 
@@ -2242,7 +1997,7 @@ end
 --@api-stub: lurek.input.mouse.setPosition
 ```
 
-### lurek.input.mouse.setPosition
+#### lurek.input.mouse.setPosition
 
 #### Definition
 
@@ -2273,7 +2028,7 @@ do
 end
 ```
 
-### lurek.input.mouse.setRelativeMode
+#### lurek.input.mouse.setRelativeMode
 
 #### Definition
 
@@ -2302,7 +2057,7 @@ do
 end
 ```
 
-### lurek.input.keyboard.setTextInput
+#### lurek.input.keyboard.setTextInput
 
 #### Definition
 
@@ -2331,7 +2086,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.setVibration
+#### lurek.input.gamepad.setVibration
 
 #### Definition
 
@@ -2369,7 +2124,7 @@ do
 end
 ```
 
-### lurek.input.mouse.setVisible
+#### lurek.input.mouse.setVisible
 
 #### Definition
 
@@ -2398,7 +2153,7 @@ do
 end
 ```
 
-### lurek.input.startPlayback
+#### lurek.input.startPlayback
 
 #### Definition
 
@@ -2425,7 +2180,7 @@ do
 end
 ```
 
-### lurek.input.startRecording
+#### lurek.input.startRecording
 
 #### Definition
 
@@ -2450,7 +2205,7 @@ do
 end
 ```
 
-### lurek.input.stopPlayback
+#### lurek.input.stopPlayback
 
 #### Definition
 
@@ -2477,7 +2232,7 @@ do
 end
 ```
 
-### lurek.input.stopRecording
+#### lurek.input.stopRecording
 
 #### Definition
 
@@ -2505,7 +2260,7 @@ do
 end
 ```
 
-### lurek.input.unbind
+#### lurek.input.unbind
 
 #### Definition
 
@@ -2538,7 +2293,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.vibrate
+#### lurek.input.gamepad.vibrate
 
 #### Definition
 
@@ -2576,7 +2331,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.virtualDpad
+#### lurek.input.gamepad.virtualDpad
 
 #### Definition
 
@@ -2613,7 +2368,7 @@ do
 end
 ```
 
-### lurek.input.wasActionPressed
+#### lurek.input.wasActionPressed
 
 #### Definition
 
@@ -2646,7 +2401,7 @@ do
 end
 ```
 
-### lurek.input.wasActionPressedWithin
+#### lurek.input.wasActionPressedWithin
 
 #### Definition
 
@@ -2681,7 +2436,7 @@ do
 end
 ```
 
-### lurek.input.wasActionReleased
+#### lurek.input.wasActionReleased
 
 #### Definition
 
@@ -2714,7 +2469,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.wasConnected
+#### lurek.input.gamepad.wasConnected
 
 #### Definition
 
@@ -2746,7 +2501,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.wasDisconnected
+#### lurek.input.gamepad.wasDisconnected
 
 #### Definition
 
@@ -2778,7 +2533,7 @@ do
 end
 ```
 
-### lurek.input.gamepad.wasPressed
+#### lurek.input.gamepad.wasPressed
 
 #### Definition
 
@@ -2812,7 +2567,7 @@ do
 end
 ```
 
-### lurek.input.touch.wasPressed
+#### lurek.input.touch.wasPressed
 
 #### Definition
 
@@ -2845,7 +2600,7 @@ do
 end
 ```
 
-### lurek.input.wasPressed
+#### lurek.input.wasPressed
 
 #### Definition
 
@@ -2916,7 +2671,7 @@ end
 --@api-stub: LCombo:reset
 ```
 
-### lurek.input.gamepad.wasReleased
+#### lurek.input.gamepad.wasReleased
 
 #### Definition
 
@@ -2950,7 +2705,7 @@ do
 end
 ```
 
-### lurek.input.touch.wasReleased
+#### lurek.input.touch.wasReleased
 
 #### Definition
 
@@ -2983,7 +2738,7 @@ do
 end
 ```
 
-### lurek.input.wasReleased
+#### lurek.input.wasReleased
 
 #### Definition
 
@@ -3142,7 +2897,9 @@ end
 
 ## 🔹 Module Methods
 
-### LCombo:feed
+### LCombo Methods
+
+#### LCombo:feed
 
 #### Definition
 
@@ -3175,7 +2932,7 @@ do
 end
 ```
 
-### LCombo:getStep
+#### LCombo:getStep
 
 #### Definition
 
@@ -3208,7 +2965,7 @@ do
 end
 ```
 
-### LCombo:isInProgress
+#### LCombo:isInProgress
 
 #### Definition
 
@@ -3237,7 +2994,7 @@ do
 end
 ```
 
-### LCombo:progress
+#### LCombo:progress
 
 #### Definition
 
@@ -3267,7 +3024,7 @@ do
 end
 ```
 
-### LCombo:reset
+#### LCombo:reset
 
 #### Definition
 
@@ -3293,7 +3050,7 @@ do
 end
 ```
 
-### LCombo:tick
+#### LCombo:tick
 
 #### Definition
 
@@ -3326,7 +3083,7 @@ do
 end
 ```
 
-### LCombo:totalSteps
+#### LCombo:totalSteps
 
 #### Definition
 
@@ -3355,7 +3112,7 @@ do
 end
 ```
 
-### LCombo:type
+#### LCombo:type
 
 #### Definition
 
@@ -3383,7 +3140,7 @@ do
 end
 ```
 
-### LCombo:typeOf
+#### LCombo:typeOf
 
 #### Definition
 
@@ -3416,7 +3173,9 @@ do
 end
 ```
 
-### LCursor:getType
+### LCursor Methods
+
+#### LCursor:getType
 
 #### Definition
 
@@ -3446,7 +3205,7 @@ do
 end
 ```
 
-### LCursor:release
+#### LCursor:release
 
 #### Definition
 
@@ -3473,7 +3232,7 @@ do
 end
 ```
 
-### LCursor:type
+#### LCursor:type
 
 #### Definition
 
@@ -3503,7 +3262,7 @@ do
 end
 ```
 
-### LCursor:typeOf
+#### LCursor:typeOf
 
 #### Definition
 
@@ -3538,7 +3297,9 @@ do
 end
 ```
 
-### LInputRecording:frameCount
+### LInputRecording Methods
+
+#### LInputRecording:frameCount
 
 #### Definition
 
@@ -3566,7 +3327,7 @@ do
 end
 ```
 
-### LInputRecording:toJson
+#### LInputRecording:toJson
 
 #### Definition
 
@@ -3595,7 +3356,7 @@ do
 end
 ```
 
-### LInputRecording:totalFrames
+#### LInputRecording:totalFrames
 
 #### Definition
 
@@ -3623,7 +3384,7 @@ do
 end
 ```
 
-### LInputRecording:type
+#### LInputRecording:type
 
 #### Definition
 
@@ -3651,7 +3412,7 @@ do
 end
 ```
 
-### LInputRecording:typeOf
+#### LInputRecording:typeOf
 
 #### Definition
 

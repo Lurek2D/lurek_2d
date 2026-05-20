@@ -10,404 +10,31 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [algorithms.rs](#algorithmsrs)
+  - [core.rs](#corers)
+  - [edge.rs](#edgers)
+  - [item.rs](#itemrs)
+  - [mod.rs](#modrs)
+  - [node.rs](#noders)
+  - [pathfinding.rs](#pathfindingrs)
+  - [render.rs](#renderrs)
+  - [simulation.rs](#simulationrs)
+  - [supply_demand.rs](#supplydemandrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.graph.newGraph](#lurekgraphnewgraph)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LGraph](#lgraph)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGraphEdge](#lgraphedge)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGraphItem](#lgraphitem)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGraphNode](#lgraphnode)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LGraph:addEdge](#lgraphaddedge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:addItem](#lgraphadditem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:addNode](#lgraphaddnode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:astar](#lgraphastar)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:colorGraph](#lgraphcolorgraph)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:createItem](#lgraphcreateitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:findPath](#lgraphfindpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:findPathForItem](#lgraphfindpathforitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getComponents](#lgraphgetcomponents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getDistance](#lgraphgetdistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getEdgeBetween](#lgraphgetedgebetween)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getEdgeCount](#lgraphgetedgecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getEdges](#lgraphgetedges)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getItemCount](#lgraphgetitemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getItems](#lgraphgetitems)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getNeighbors](#lgraphgetneighbors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getNodeCount](#lgraphgetnodecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getNodes](#lgraphgetnodes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getReachable](#lgraphgetreachable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:getStats](#lgraphgetstats)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:hasCycle](#lgraphhascycle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:hasEdge](#lgraphhasedge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:hasItem](#lgraphhasitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:hasNode](#lgraphhasnode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:isBipartite](#lgraphisbipartite)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:mst](#lgraphmst)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:on](#lgraphon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:processDemand](#lgraphprocessdemand)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:removeEdge](#lgraphremoveedge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:removeItem](#lgraphremoveitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:removeNode](#lgraphremovenode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:sendItem](#lgraphsenditem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:step](#lgraphstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:subgraph](#lgraphsubgraph)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:tickParallel](#lgraphtickparallel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:topologicalSort](#lgraphtopologicalsort)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:type](#lgraphtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:typeOf](#lgraphtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraph:update](#lgraphupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:addAllowedType](#lgraphedgeaddallowedtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:clearAllowedTypes](#lgraphedgeclearallowedtypes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getCapacity](#lgraphedgegetcapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getCooldown](#lgraphedgegetcooldown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getFrom](#lgraphedgegetfrom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getItemsInTransit](#lgraphedgegetitemsintransit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getSpeedModifier](#lgraphedgegetspeedmodifier)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getThroughput](#lgraphedgegetthroughput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getTo](#lgraphedgegetto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getTravelTime](#lgraphedgegettraveltime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getType](#lgraphedgegettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:getWeight](#lgraphedgegetweight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:isActive](#lgraphedgeisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:isBidirectional](#lgraphedgeisbidirectional)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:isItemTypeAllowed](#lgraphedgeisitemtypeallowed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:isOnCooldown](#lgraphedgeisoncooldown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:removeAllowedType](#lgraphedgeremoveallowedtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setActive](#lgraphedgesetactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setBidirectional](#lgraphedgesetbidirectional)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setCapacity](#lgraphedgesetcapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setCooldown](#lgraphedgesetcooldown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setSpeedModifier](#lgraphedgesetspeedmodifier)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setThroughput](#lgraphedgesetthroughput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setTravelTime](#lgraphedgesettraveltime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setType](#lgraphedgesettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:setWeight](#lgraphedgesetweight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:type](#lgraphedgetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphEdge:typeOf](#lgraphedgetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:getDecayTime](#lgraphitemgetdecaytime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:getPosition](#lgraphitemgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:getPriority](#lgraphitemgetpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:getRemainingLife](#lgraphitemgetremaininglife)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:getType](#lgraphitemgettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:isAlive](#lgraphitemisalive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:kill](#lgraphitemkill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:setDecayTime](#lgraphitemsetdecaytime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:setPriority](#lgraphitemsetpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:setType](#lgraphitemsettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:type](#lgraphitemtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphItem:typeOf](#lgraphitemtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:addDemand](#lgraphnodeadddemand)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:addSupply](#lgraphnodeaddsupply)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:addTag](#lgraphnodeaddtag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:clearAllConversions](#lgraphnodeclearallconversions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:clearConversion](#lgraphnodeclearconversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:clearDemands](#lgraphnodecleardemands)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:clearSupplies](#lgraphnodeclearsupplies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:clearTags](#lgraphnodecleartags)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:dequeue](#lgraphnodedequeue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:enqueue](#lgraphnodeenqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getCapacity](#lgraphnodegetcapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getEdges](#lgraphnodegetedges)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getFlowMode](#lgraphnodegetflowmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getItemCount](#lgraphnodegetitemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getItems](#lgraphnodegetitems)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getOverflowPolicy](#lgraphnodegetoverflowpolicy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getProcessTime](#lgraphnodegetprocesstime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getPullFilter](#lgraphnodegetpullfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getPullRate](#lgraphnodegetpullrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getPushFilter](#lgraphnodegetpushfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getPushRate](#lgraphnodegetpushrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getQueueCapacity](#lgraphnodegetqueuecapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getQueueSize](#lgraphnodegetqueuesize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getTags](#lgraphnodegettags)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:getType](#lgraphnodegettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:hasTag](#lgraphnodehastag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:isActive](#lgraphnodeisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:isFull](#lgraphnodeisfull)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:isQueueEnabled](#lgraphnodeisqueueenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:removeDemand](#lgraphnoderemovedemand)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:removeSupply](#lgraphnoderemovesupply)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:removeTag](#lgraphnoderemovetag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setActive](#lgraphnodesetactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setCapacity](#lgraphnodesetcapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setConversion](#lgraphnodesetconversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setFlowMode](#lgraphnodesetflowmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setOverflowPolicy](#lgraphnodesetoverflowpolicy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setProcessTime](#lgraphnodesetprocesstime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setPullFilter](#lgraphnodesetpullfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setPullRate](#lgraphnodesetpullrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setPushFilter](#lgraphnodesetpushfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setPushRate](#lgraphnodesetpushrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setQueueCapacity](#lgraphnodesetqueuecapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setQueueEnabled](#lgraphnodesetqueueenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:setType](#lgraphnodesettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:type](#lgraphnodetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGraphNode:typeOf](#lgraphnodetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LGraph Methods](#lgraph-methods)
+  - [LGraphEdge Methods](#lgraphedge-methods)
+  - [LGraphItem Methods](#lgraphitem-methods)
+  - [LGraphNode Methods](#lgraphnode-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -431,6 +58,96 @@ Simulation pipeline (`step(dt)`): decay all items, fire conversion rules, match 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `algorithms.rs`
+
+- Connected-component discovery via undirected BFS traversal.
+- Directed cycle detection using a three-color DFS walk.
+- Kahn-style topological sort with deterministic tie-breaking.
+- Kruskal minimum spanning forest using a union-find structure.
+- Greedy graph coloring with sorted node-id processing order.
+- Bipartiteness test through BFS two-coloring.
+- A* shortest-path search using Euclidean node-position heuristics.
+- All algorithms operate on the shared `Graph` adjacency representation.
+
+### `core.rs`
+
+- Graph container managing nodes, edges, and items with id-based lookup.
+- Adjacency indexes for fast outgoing and incoming edge queries.
+- Node CRUD with cascade removal of connected edges and displaced items.
+- Edge CRUD with transit capacity, cooldown, and type filtering.
+- Item lifecycle: creation, node placement (with overflow policy), transit, and removal.
+- Subgraph extraction preserving topology and item positions.
+- Aggregate stats computation across nodes and edges.
+- Direction-based edge queries (in, out, both).
+- Simple circular-layout image rendering for debug preview.
+- JSON-like serialize and deserialize for persistence.
+
+### `edge.rs`
+
+- Directed edge connecting two graph nodes with capacity, throughput, and cooldown constraints.
+- Type-based filtering restricts which items may transit an edge.
+- Supports bidirectional flag and per-edge speed/weight modifiers for pathfinding.
+
+### `item.rs`
+
+- Define `GraphItem` as the data carrier moved through graph nodes and edges.
+- Track item position (at node, in transit, or unplaced) via `ItemPosition`.
+- Provide decay-time lifetime, priority, and alive/dead state per item.
+
+### `mod.rs`
+
+- Directed graph container with typed nodes, edges, and item flow.
+- Supply/demand modeling, conversion rules, and overflow policies.
+- Pathfinding, simulation stepping, and event emission.
+- Render helpers for visual graph output.
+
+### `node.rs`
+
+- Node struct with id, type, capacity, inventory, and flow settings for graph simulation.
+- OverflowPolicy enum controlling behavior when a node reaches capacity: reject, destroy, or queue.
+- FlowMode enum defining automatic push, pull, or passive behavior during simulation steps.
+- ConversionRule, Supply, and Demand structs for item transformation and economic modeling.
+- Tag, queue, and item management methods on Node.
+- String-based FromStr parsing for policy and flow mode enums.
+
+### `pathfinding.rs`
+
+- Dijkstra shortest-path search over weighted directed graphs.
+- Item-type-aware pathfinding respecting edge filters and cooldowns.
+- Distance queries and bounded reachability flood-fill.
+- Neighbor discovery across active edges and bidirectional links.
+- Path reconstruction from predecessor maps into ordered node/edge lists.
+- Priority-queue state with min-cost ordering for traversal.
+
+### `render.rs`
+
+- Render a graph as a circular node-and-edge diagram via `RenderCommand` output.
+- Layout nodes evenly on a circle, draw edges as lines, color nodes by type.
+- Produce a self-contained command list suitable for the engine renderer.
+
+### `simulation.rs`
+
+- Graph simulation tick loop: `update`, `step`, and parallel variant.
+- Item decay processing: reduce remaining life, kill expired items, purge from all containers.
+- Edge transit progression: advance items along edges and resolve arrivals with overflow policy.
+- Push-flow mechanics: rate-limited emission of items from push-capable nodes onto outgoing edges.
+- Pull-flow mechanics: rate-limited demand of items into pull-capable nodes from source inventories.
+- Node conversion rules: consume matching inputs and produce typed outputs per recipe.
+- Queue processing: timed dequeue of waiting items into node inventories when capacity allows.
+- Overflow handling: reject, destroy, or queue items that arrive at full nodes.
+- Parallel simulation via rayon feature gate for large-graph workloads.
+- GraphEvent emission for every state transition observable by Lua scripts.
+
+### `supply_demand.rs`
+
+- Priority-ordered demand matching against available supply nodes.
+- Pathfinding-based item routing from supplier to consumer.
+- Event emission on supply depletion and demand fulfillment.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LGraph` (39 methods) - Lua-side graph handle storing graph state and registered event callbacks.
@@ -443,16 +160,18 @@ Simulation pipeline (`step(dt)`): decay all items, fire conversion rules, match 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/graph.md](../blob/main/docs/specs/graph.md)
+- Module-level functions: 1
+- Lua-visible types: 4
+- Total type methods: 126
 
-```lua
-lurek.graph.newGraph() -> LGraph -- Creates an empty logistics graph with no nodes, edges, items, or callbacks.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.graph.newGraph
+### Module-Level Functions
+
+#### lurek.graph.newGraph
 
 #### Definition
 
@@ -594,7 +313,9 @@ end
 
 ## 🔹 Module Methods
 
-### LGraph:addEdge
+### LGraph Methods
+
+#### LGraph:addEdge
 
 #### Definition
 
@@ -633,7 +354,7 @@ do
 end
 ```
 
-### LGraph:addItem
+#### LGraph:addItem
 
 #### Definition
 
@@ -667,7 +388,7 @@ do
 end
 ```
 
-### LGraph:addNode
+#### LGraph:addNode
 
 #### Definition
 
@@ -702,7 +423,7 @@ do
 end
 ```
 
-### LGraph:astar
+#### LGraph:astar
 
 #### Definition
 
@@ -739,7 +460,7 @@ do
 end
 ```
 
-### LGraph:colorGraph
+#### LGraph:colorGraph
 
 #### Definition
 
@@ -769,7 +490,7 @@ do
 end
 ```
 
-### LGraph:createItem
+#### LGraph:createItem
 
 #### Definition
 
@@ -804,7 +525,7 @@ do
 end
 ```
 
-### LGraph:findPath
+#### LGraph:findPath
 
 #### Definition
 
@@ -841,7 +562,7 @@ do
 end
 ```
 
-### LGraph:findPathForItem
+#### LGraph:findPathForItem
 
 #### Definition
 
@@ -880,7 +601,7 @@ do
 end
 ```
 
-### LGraph:getComponents
+#### LGraph:getComponents
 
 #### Definition
 
@@ -910,7 +631,7 @@ do
 end
 ```
 
-### LGraph:getDistance
+#### LGraph:getDistance
 
 #### Definition
 
@@ -947,7 +668,7 @@ do
 end
 ```
 
-### LGraph:getEdgeBetween
+#### LGraph:getEdgeBetween
 
 #### Definition
 
@@ -984,7 +705,7 @@ do
 end
 ```
 
-### LGraph:getEdgeCount
+#### LGraph:getEdgeCount
 
 #### Definition
 
@@ -1014,7 +735,7 @@ do
 end
 ```
 
-### LGraph:getEdges
+#### LGraph:getEdges
 
 #### Definition
 
@@ -1044,7 +765,7 @@ do
 end
 ```
 
-### LGraph:getItemCount
+#### LGraph:getItemCount
 
 #### Definition
 
@@ -1073,7 +794,7 @@ do
 end
 ```
 
-### LGraph:getItems
+#### LGraph:getItems
 
 #### Definition
 
@@ -1102,7 +823,7 @@ do
 end
 ```
 
-### LGraph:getNeighbors
+#### LGraph:getNeighbors
 
 #### Definition
 
@@ -1137,7 +858,7 @@ do
 end
 ```
 
-### LGraph:getNodeCount
+#### LGraph:getNodeCount
 
 #### Definition
 
@@ -1166,7 +887,7 @@ do
 end
 ```
 
-### LGraph:getNodes
+#### LGraph:getNodes
 
 #### Definition
 
@@ -1196,7 +917,7 @@ do
 end
 ```
 
-### LGraph:getReachable
+#### LGraph:getReachable
 
 #### Definition
 
@@ -1233,7 +954,7 @@ do
 end
 ```
 
-### LGraph:getStats
+#### LGraph:getStats
 
 #### Definition
 
@@ -1263,7 +984,7 @@ do
 end
 ```
 
-### LGraph:hasCycle
+#### LGraph:hasCycle
 
 #### Definition
 
@@ -1292,7 +1013,7 @@ do
 end
 ```
 
-### LGraph:hasEdge
+#### LGraph:hasEdge
 
 #### Definition
 
@@ -1327,7 +1048,7 @@ do
 end
 ```
 
-### LGraph:hasItem
+#### LGraph:hasItem
 
 #### Definition
 
@@ -1360,7 +1081,7 @@ do
 end
 ```
 
-### LGraph:hasNode
+#### LGraph:hasNode
 
 #### Definition
 
@@ -1393,7 +1114,7 @@ do
 end
 ```
 
-### LGraph:isBipartite
+#### LGraph:isBipartite
 
 #### Definition
 
@@ -1423,7 +1144,7 @@ do
 end
 ```
 
-### LGraph:mst
+#### LGraph:mst
 
 #### Definition
 
@@ -1453,7 +1174,7 @@ do
 end
 ```
 
-### LGraph:on
+#### LGraph:on
 
 #### Definition
 
@@ -1487,7 +1208,7 @@ do
 end
 ```
 
-### LGraph:processDemand
+#### LGraph:processDemand
 
 #### Definition
 
@@ -1512,7 +1233,7 @@ do
 end
 ```
 
-### LGraph:removeEdge
+#### LGraph:removeEdge
 
 #### Definition
 
@@ -1547,7 +1268,7 @@ do
 end
 ```
 
-### LGraph:removeItem
+#### LGraph:removeItem
 
 #### Definition
 
@@ -1581,7 +1302,7 @@ do
 end
 ```
 
-### LGraph:removeNode
+#### LGraph:removeNode
 
 #### Definition
 
@@ -1615,7 +1336,7 @@ do
 end
 ```
 
-### LGraph:sendItem
+#### LGraph:sendItem
 
 #### Definition
 
@@ -1649,7 +1370,7 @@ do
 end
 ```
 
-### LGraph:step
+#### LGraph:step
 
 #### Definition
 
@@ -1674,7 +1395,7 @@ do
 end
 ```
 
-### LGraph:subgraph
+#### LGraph:subgraph
 
 #### Definition
 
@@ -1709,7 +1430,7 @@ do
 end
 ```
 
-### LGraph:tickParallel
+#### LGraph:tickParallel
 
 #### Definition
 
@@ -1739,7 +1460,7 @@ do
 end
 ```
 
-### LGraph:topologicalSort
+#### LGraph:topologicalSort
 
 #### Definition
 
@@ -1769,7 +1490,7 @@ do
 end
 ```
 
-### LGraph:type
+#### LGraph:type
 
 #### Definition
 
@@ -1796,7 +1517,7 @@ do
 end
 ```
 
-### LGraph:typeOf
+#### LGraph:typeOf
 
 #### Definition
 
@@ -1828,7 +1549,7 @@ do
 end
 ```
 
-### LGraph:update
+#### LGraph:update
 
 #### Definition
 
@@ -1858,7 +1579,9 @@ do
 end
 ```
 
-### LGraphEdge:addAllowedType
+### LGraphEdge Methods
+
+#### LGraphEdge:addAllowedType
 
 #### Definition
 
@@ -1890,7 +1613,7 @@ do
 end
 ```
 
-### LGraphEdge:clearAllowedTypes
+#### LGraphEdge:clearAllowedTypes
 
 #### Definition
 
@@ -1917,7 +1640,7 @@ do
 end
 ```
 
-### LGraphEdge:getCapacity
+#### LGraphEdge:getCapacity
 
 #### Definition
 
@@ -1947,7 +1670,7 @@ do
 end
 ```
 
-### LGraphEdge:getCooldown
+#### LGraphEdge:getCooldown
 
 #### Definition
 
@@ -1977,7 +1700,7 @@ do
 end
 ```
 
-### LGraphEdge:getFrom
+#### LGraphEdge:getFrom
 
 #### Definition
 
@@ -2007,7 +1730,7 @@ do
 end
 ```
 
-### LGraphEdge:getItemsInTransit
+#### LGraphEdge:getItemsInTransit
 
 #### Definition
 
@@ -2037,7 +1760,7 @@ do
 end
 ```
 
-### LGraphEdge:getSpeedModifier
+#### LGraphEdge:getSpeedModifier
 
 #### Definition
 
@@ -2067,7 +1790,7 @@ do
 end
 ```
 
-### LGraphEdge:getThroughput
+#### LGraphEdge:getThroughput
 
 #### Definition
 
@@ -2097,7 +1820,7 @@ do
 end
 ```
 
-### LGraphEdge:getTo
+#### LGraphEdge:getTo
 
 #### Definition
 
@@ -2127,7 +1850,7 @@ do
 end
 ```
 
-### LGraphEdge:getTravelTime
+#### LGraphEdge:getTravelTime
 
 #### Definition
 
@@ -2157,7 +1880,7 @@ do
 end
 ```
 
-### LGraphEdge:getType
+#### LGraphEdge:getType
 
 #### Definition
 
@@ -2187,7 +1910,7 @@ do
 end
 ```
 
-### LGraphEdge:getWeight
+#### LGraphEdge:getWeight
 
 #### Definition
 
@@ -2217,7 +1940,7 @@ do
 end
 ```
 
-### LGraphEdge:isActive
+#### LGraphEdge:isActive
 
 #### Definition
 
@@ -2247,7 +1970,7 @@ do
 end
 ```
 
-### LGraphEdge:isBidirectional
+#### LGraphEdge:isBidirectional
 
 #### Definition
 
@@ -2277,7 +2000,7 @@ do
 end
 ```
 
-### LGraphEdge:isItemTypeAllowed
+#### LGraphEdge:isItemTypeAllowed
 
 #### Definition
 
@@ -2312,7 +2035,7 @@ do
 end
 ```
 
-### LGraphEdge:isOnCooldown
+#### LGraphEdge:isOnCooldown
 
 #### Definition
 
@@ -2342,7 +2065,7 @@ do
 end
 ```
 
-### LGraphEdge:removeAllowedType
+#### LGraphEdge:removeAllowedType
 
 #### Definition
 
@@ -2377,7 +2100,7 @@ do
 end
 ```
 
-### LGraphEdge:setActive
+#### LGraphEdge:setActive
 
 #### Definition
 
@@ -2409,7 +2132,7 @@ do
 end
 ```
 
-### LGraphEdge:setBidirectional
+#### LGraphEdge:setBidirectional
 
 #### Definition
 
@@ -2441,7 +2164,7 @@ do
 end
 ```
 
-### LGraphEdge:setCapacity
+#### LGraphEdge:setCapacity
 
 #### Definition
 
@@ -2473,7 +2196,7 @@ do
 end
 ```
 
-### LGraphEdge:setCooldown
+#### LGraphEdge:setCooldown
 
 #### Definition
 
@@ -2505,7 +2228,7 @@ do
 end
 ```
 
-### LGraphEdge:setSpeedModifier
+#### LGraphEdge:setSpeedModifier
 
 #### Definition
 
@@ -2537,7 +2260,7 @@ do
 end
 ```
 
-### LGraphEdge:setThroughput
+#### LGraphEdge:setThroughput
 
 #### Definition
 
@@ -2569,7 +2292,7 @@ do
 end
 ```
 
-### LGraphEdge:setTravelTime
+#### LGraphEdge:setTravelTime
 
 #### Definition
 
@@ -2601,7 +2324,7 @@ do
 end
 ```
 
-### LGraphEdge:setType
+#### LGraphEdge:setType
 
 #### Definition
 
@@ -2633,7 +2356,7 @@ do
 end
 ```
 
-### LGraphEdge:setWeight
+#### LGraphEdge:setWeight
 
 #### Definition
 
@@ -2665,7 +2388,7 @@ do
 end
 ```
 
-### LGraphEdge:type
+#### LGraphEdge:type
 
 #### Definition
 
@@ -2695,7 +2418,7 @@ do
 end
 ```
 
-### LGraphEdge:typeOf
+#### LGraphEdge:typeOf
 
 #### Definition
 
@@ -2730,7 +2453,9 @@ do
 end
 ```
 
-### LGraphItem:getDecayTime
+### LGraphItem Methods
+
+#### LGraphItem:getDecayTime
 
 #### Definition
 
@@ -2758,7 +2483,7 @@ do
 end
 ```
 
-### LGraphItem:getPosition
+#### LGraphItem:getPosition
 
 #### Definition
 
@@ -2788,7 +2513,7 @@ do
 end
 ```
 
-### LGraphItem:getPriority
+#### LGraphItem:getPriority
 
 #### Definition
 
@@ -2816,7 +2541,7 @@ do
 end
 ```
 
-### LGraphItem:getRemainingLife
+#### LGraphItem:getRemainingLife
 
 #### Definition
 
@@ -2844,7 +2569,7 @@ do
 end
 ```
 
-### LGraphItem:getType
+#### LGraphItem:getType
 
 #### Definition
 
@@ -2872,7 +2597,7 @@ do
 end
 ```
 
-### LGraphItem:isAlive
+#### LGraphItem:isAlive
 
 #### Definition
 
@@ -2900,7 +2625,7 @@ do
 end
 ```
 
-### LGraphItem:kill
+#### LGraphItem:kill
 
 #### Definition
 
@@ -2926,7 +2651,7 @@ do
 end
 ```
 
-### LGraphItem:setDecayTime
+#### LGraphItem:setDecayTime
 
 #### Definition
 
@@ -2957,7 +2682,7 @@ do
 end
 ```
 
-### LGraphItem:setPriority
+#### LGraphItem:setPriority
 
 #### Definition
 
@@ -2988,7 +2713,7 @@ do
 end
 ```
 
-### LGraphItem:setType
+#### LGraphItem:setType
 
 #### Definition
 
@@ -3019,7 +2744,7 @@ do
 end
 ```
 
-### LGraphItem:type
+#### LGraphItem:type
 
 #### Definition
 
@@ -3047,7 +2772,7 @@ do
 end
 ```
 
-### LGraphItem:typeOf
+#### LGraphItem:typeOf
 
 #### Definition
 
@@ -3080,7 +2805,9 @@ do
 end
 ```
 
-### LGraphNode:addDemand
+### LGraphNode Methods
+
+#### LGraphNode:addDemand
 
 #### Definition
 
@@ -3115,7 +2842,7 @@ do
 end
 ```
 
-### LGraphNode:addSupply
+#### LGraphNode:addSupply
 
 #### Definition
 
@@ -3148,7 +2875,7 @@ do
 end
 ```
 
-### LGraphNode:addTag
+#### LGraphNode:addTag
 
 #### Definition
 
@@ -3179,7 +2906,7 @@ do
 end
 ```
 
-### LGraphNode:clearAllConversions
+#### LGraphNode:clearAllConversions
 
 #### Definition
 
@@ -3206,7 +2933,7 @@ do
 end
 ```
 
-### LGraphNode:clearConversion
+#### LGraphNode:clearConversion
 
 #### Definition
 
@@ -3241,7 +2968,7 @@ do
 end
 ```
 
-### LGraphNode:clearDemands
+#### LGraphNode:clearDemands
 
 #### Definition
 
@@ -3268,7 +2995,7 @@ do
 end
 ```
 
-### LGraphNode:clearSupplies
+#### LGraphNode:clearSupplies
 
 #### Definition
 
@@ -3295,7 +3022,7 @@ do
 end
 ```
 
-### LGraphNode:clearTags
+#### LGraphNode:clearTags
 
 #### Definition
 
@@ -3322,7 +3049,7 @@ do
 end
 ```
 
-### LGraphNode:dequeue
+#### LGraphNode:dequeue
 
 #### Definition
 
@@ -3352,7 +3079,7 @@ do
 end
 ```
 
-### LGraphNode:enqueue
+#### LGraphNode:enqueue
 
 #### Definition
 
@@ -3386,7 +3113,7 @@ do
 end
 ```
 
-### LGraphNode:getCapacity
+#### LGraphNode:getCapacity
 
 #### Definition
 
@@ -3414,7 +3141,7 @@ do
 end
 ```
 
-### LGraphNode:getEdges
+#### LGraphNode:getEdges
 
 #### Definition
 
@@ -3449,7 +3176,7 @@ do
 end
 ```
 
-### LGraphNode:getFlowMode
+#### LGraphNode:getFlowMode
 
 #### Definition
 
@@ -3477,7 +3204,7 @@ do
 end
 ```
 
-### LGraphNode:getItemCount
+#### LGraphNode:getItemCount
 
 #### Definition
 
@@ -3505,7 +3232,7 @@ do
 end
 ```
 
-### LGraphNode:getItems
+#### LGraphNode:getItems
 
 #### Definition
 
@@ -3535,7 +3262,7 @@ do
 end
 ```
 
-### LGraphNode:getOverflowPolicy
+#### LGraphNode:getOverflowPolicy
 
 #### Definition
 
@@ -3563,7 +3290,7 @@ do
 end
 ```
 
-### LGraphNode:getProcessTime
+#### LGraphNode:getProcessTime
 
 #### Definition
 
@@ -3591,7 +3318,7 @@ do
 end
 ```
 
-### LGraphNode:getPullFilter
+#### LGraphNode:getPullFilter
 
 #### Definition
 
@@ -3620,7 +3347,7 @@ do
 end
 ```
 
-### LGraphNode:getPullRate
+#### LGraphNode:getPullRate
 
 #### Definition
 
@@ -3648,7 +3375,7 @@ do
 end
 ```
 
-### LGraphNode:getPushFilter
+#### LGraphNode:getPushFilter
 
 #### Definition
 
@@ -3677,7 +3404,7 @@ do
 end
 ```
 
-### LGraphNode:getPushRate
+#### LGraphNode:getPushRate
 
 #### Definition
 
@@ -3705,7 +3432,7 @@ do
 end
 ```
 
-### LGraphNode:getQueueCapacity
+#### LGraphNode:getQueueCapacity
 
 #### Definition
 
@@ -3733,7 +3460,7 @@ do
 end
 ```
 
-### LGraphNode:getQueueSize
+#### LGraphNode:getQueueSize
 
 #### Definition
 
@@ -3761,7 +3488,7 @@ do
 end
 ```
 
-### LGraphNode:getTags
+#### LGraphNode:getTags
 
 #### Definition
 
@@ -3791,7 +3518,7 @@ do
 end
 ```
 
-### LGraphNode:getType
+#### LGraphNode:getType
 
 #### Definition
 
@@ -3819,7 +3546,7 @@ do
 end
 ```
 
-### LGraphNode:hasTag
+#### LGraphNode:hasTag
 
 #### Definition
 
@@ -3853,7 +3580,7 @@ do
 end
 ```
 
-### LGraphNode:isActive
+#### LGraphNode:isActive
 
 #### Definition
 
@@ -3881,7 +3608,7 @@ do
 end
 ```
 
-### LGraphNode:isFull
+#### LGraphNode:isFull
 
 #### Definition
 
@@ -3909,7 +3636,7 @@ do
 end
 ```
 
-### LGraphNode:isQueueEnabled
+#### LGraphNode:isQueueEnabled
 
 #### Definition
 
@@ -3937,7 +3664,7 @@ do
 end
 ```
 
-### LGraphNode:removeDemand
+#### LGraphNode:removeDemand
 
 #### Definition
 
@@ -3972,7 +3699,7 @@ do
 end
 ```
 
-### LGraphNode:removeSupply
+#### LGraphNode:removeSupply
 
 #### Definition
 
@@ -4007,7 +3734,7 @@ do
 end
 ```
 
-### LGraphNode:removeTag
+#### LGraphNode:removeTag
 
 #### Definition
 
@@ -4042,7 +3769,7 @@ do
 end
 ```
 
-### LGraphNode:setActive
+#### LGraphNode:setActive
 
 #### Definition
 
@@ -4073,7 +3800,7 @@ do
 end
 ```
 
-### LGraphNode:setCapacity
+#### LGraphNode:setCapacity
 
 #### Definition
 
@@ -4104,7 +3831,7 @@ do
 end
 ```
 
-### LGraphNode:setConversion
+#### LGraphNode:setConversion
 
 #### Definition
 
@@ -4141,7 +3868,7 @@ do
 end
 ```
 
-### LGraphNode:setFlowMode
+#### LGraphNode:setFlowMode
 
 #### Definition
 
@@ -4172,7 +3899,7 @@ do
 end
 ```
 
-### LGraphNode:setOverflowPolicy
+#### LGraphNode:setOverflowPolicy
 
 #### Definition
 
@@ -4203,7 +3930,7 @@ do
 end
 ```
 
-### LGraphNode:setProcessTime
+#### LGraphNode:setProcessTime
 
 #### Definition
 
@@ -4234,7 +3961,7 @@ do
 end
 ```
 
-### LGraphNode:setPullFilter
+#### LGraphNode:setPullFilter
 
 #### Definition
 
@@ -4265,7 +3992,7 @@ do
 end
 ```
 
-### LGraphNode:setPullRate
+#### LGraphNode:setPullRate
 
 #### Definition
 
@@ -4296,7 +4023,7 @@ do
 end
 ```
 
-### LGraphNode:setPushFilter
+#### LGraphNode:setPushFilter
 
 #### Definition
 
@@ -4327,7 +4054,7 @@ do
 end
 ```
 
-### LGraphNode:setPushRate
+#### LGraphNode:setPushRate
 
 #### Definition
 
@@ -4358,7 +4085,7 @@ do
 end
 ```
 
-### LGraphNode:setQueueCapacity
+#### LGraphNode:setQueueCapacity
 
 #### Definition
 
@@ -4389,7 +4116,7 @@ do
 end
 ```
 
-### LGraphNode:setQueueEnabled
+#### LGraphNode:setQueueEnabled
 
 #### Definition
 
@@ -4420,7 +4147,7 @@ do
 end
 ```
 
-### LGraphNode:setType
+#### LGraphNode:setType
 
 #### Definition
 
@@ -4451,7 +4178,7 @@ do
 end
 ```
 
-### LGraphNode:type
+#### LGraphNode:type
 
 #### Definition
 
@@ -4479,7 +4206,7 @@ do
 end
 ```
 
-### LGraphNode:typeOf
+#### LGraphNode:typeOf
 
 #### Definition
 

@@ -10,230 +10,35 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [aseprite.rs](#asepriters)
+  - [blend.rs](#blendrs)
+  - [clip.rs](#cliprs)
+  - [controller.rs](#controllerrs)
+  - [curve.rs](#curvers)
+  - [event.rs](#eventrs)
+  - [frame.rs](#framers)
+  - [mod.rs](#modrs)
+  - [render.rs](#renderrs)
+  - [spine_bridge.rs](#spinebridgers)
+  - [state_machine.rs](#statemachiners)
+  - [sync_group.rs](#syncgrouprs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.animation.buildCharacter](#lurekanimationbuildcharacter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.animation.fromAseprite](#lurekanimationfromaseprite)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.animation.new](#lurekanimationnew)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.animation.newBlendLayerSet](#lurekanimationnewblendlayerset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.animation.newCurve](#lurekanimationnewcurve)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.animation.newStateMachine](#lurekanimationnewstatemachine)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.animation.newSyncGroup](#lurekanimationnewsyncgroup)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LAnimation](#lanimation)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAnimCurve](#lanimcurve)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAnimStateMachine](#lanimstatemachine)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAnimSyncGroup](#lanimsyncgroup)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBlendLayerSet](#lblendlayerset)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LAnimation:addClip](#lanimationaddclip)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:addClipFromGrid](#lanimationaddclipfromgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:addFrame](#lanimationaddframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:addFramesFromGrid](#lanimationaddframesfromgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:addFramesFromRects](#lanimationaddframesfromrects)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:crossfade](#lanimationcrossfade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:drawPreviewGrid](#lanimationdrawpreviewgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:drawToImage](#lanimationdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getBlendState](#lanimationgetblendstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getClip](#lanimationgetclip)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getClipCount](#lanimationgetclipcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getClipMode](#lanimationgetclipmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getCurrentFrame](#lanimationgetcurrentframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getFrameCount](#lanimationgetframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getQuad](#lanimationgetquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:getSpeed](#lanimationgetspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:isLooping](#lanimationislooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:isPlaying](#lanimationisplaying)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:pause](#lanimationpause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:play](#lanimationplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:pollEvents](#lanimationpollevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:resume](#lanimationresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:setClipMode](#lanimationsetclipmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:setFrame](#lanimationsetframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:setSpeed](#lanimationsetspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:stop](#lanimationstop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:type](#lanimationtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:typeOf](#lanimationtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimation:update](#lanimationupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:addKeyframe](#lanimcurveaddkeyframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:clear](#lanimcurveclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:eval](#lanimcurveeval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:keyframeCount](#lanimcurvekeyframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:setCustomEasing](#lanimcurvesetcustomeasing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:setEasing](#lanimcurveseteasing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:type](#lanimcurvetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimCurve:typeOf](#lanimcurvetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:addState](#lanimstatemachineaddstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:addTransition](#lanimstatemachineaddtransition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:forceState](#lanimstatemachineforcestate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:getQuad](#lanimstatemachinegetquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:getState](#lanimstatemachinegetstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:setParam](#lanimstatemachinesetparam)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:type](#lanimstatemachinetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:typeOf](#lanimstatemachinetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimStateMachine:update](#lanimstatemachineupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimSyncGroup:add](#lanimsyncgroupadd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimSyncGroup:clear](#lanimsyncgroupclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimSyncGroup:memberCount](#lanimsyncgroupmembercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimSyncGroup:remove](#lanimsyncgroupremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimSyncGroup:type](#lanimsyncgrouptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAnimSyncGroup:typeOf](#lanimsyncgrouptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:addLayer](#lblendlayersetaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:getWeight](#lblendlayersetgetweight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:len](#lblendlayersetlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:listLayers](#lblendlayersetlistlayers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:removeLayer](#lblendlayersetremovelayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:setMask](#lblendlayersetsetmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:setWeight](#lblendlayersetsetweight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:type](#lblendlayersettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlendLayerSet:typeOf](#lblendlayersettypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LAnimation Methods](#lanimation-methods)
+  - [LAnimCurve Methods](#lanimcurve-methods)
+  - [LAnimStateMachine Methods](#lanimstatemachine-methods)
+  - [LAnimSyncGroup Methods](#lanimsyncgroup-methods)
+  - [LBlendLayerSet Methods](#lblendlayerset-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -257,6 +62,94 @@ The module provides `AnimCurve` for easing-driven value interpolation along keyf
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `aseprite.rs`
+
+- Loads Aseprite JSON exports into engine animation metadata.
+- Extracts sheet frame rectangles, per-frame durations, and sheet size.
+- Parses frame tags into named clip ranges with forward, reverse, or ping-pong playback.
+- Accepts both array and object `frames` layouts and normalizes object order into playback order.
+- Validates required metadata fields and returns explicit parse errors when the export is incomplete.
+
+### `blend.rs`
+
+- Defines blend masks and named blend layers for multi-clip animation mixing.
+- Stores per-layer clip assignment, clamped blend weight, and optional bone filtering.
+- Manages an ordered layer set with add, remove, lookup, weight update, and mask replacement.
+- Provides the layer data higher animation systems use to build partial-body or weighted blends.
+
+### `clip.rs`
+
+- Defines named animation clips as reusable frame-index ranges.
+- Stores playback direction, looping state, and fallback FPS for clips that do not rely on per-frame timing.
+- Gives higher animation systems a compact clip descriptor they can switch, reuse, and combine by name.
+
+### `controller.rs`
+
+- Owns the runtime animation player for frame-based clips.
+- Stores loaded frames, named clips, active playback state, pending animation events, and crossfade state.
+- Builds clip data from grids, explicit rectangles, and parsed Aseprite metadata.
+- Advances playback with forward, reverse, and ping-pong modes, including looping, stopping, pausing, and speed scaling.
+- Exposes the current quad, event drain, crossfade blend state, and simple preview images for the active frame set.
+
+### `curve.rs`
+
+- Defines keyed numeric curves and sparse multi-property timelines for animation data.
+- Stores sorted keyframes for single values and named property tracks.
+- Supports step, linear, ease-in, ease-out, ease-in-out, and callback-backed easing modes.
+- Evaluates one curve, one property, or a full property snapshot at an arbitrary time.
+- Provides the interpolation layer used by higher animation systems for parameter driving over time.
+
+### `event.rs`
+
+- Defines the animation events emitted while clip playback advances.
+- Carries the state changes higher layers react to: finish, loop, and frame switch.
+- Stores the optional frame index payload for frame-change notifications.
+- Provides a stable event name and a small accessor surface for consumers of runtime playback events.
+
+### `frame.rs`
+
+- Defines the single-frame record used by the animation runtime to pair a source rectangle with optional per-frame timing.
+- Keeps the minimal frame payload shared by clips, controllers, previews, and imported metadata.
+- Preserves the older public alias so existing code can keep referring to the same frame type through its legacy name.
+
+### `mod.rs`
+
+- Provides frame-based sprite animation with clips, playback modes, and named events.
+- Supports Aseprite JSON import, blend layers, property curves, and state machine transitions.
+- Offers Spine skeleton bridge, sync groups, and render-command generation for active frames.
+- Re-exports all primary types so dependents can import from `animation::` directly.
+
+### `render.rs`
+
+- Converts the current animation frame quad into a textured draw command.
+- Stores atlas reference, position, rotation, and scale in `AnimRenderParams`.
+- Provides a standalone `quad_to_draw_command` helper reusable outside the controller.
+
+### `spine_bridge.rs`
+
+- Bridges a Spine skeleton to an animation state machine via name mapping.
+- Plays mapped Spine clips automatically when the FSM transitions to a new state.
+- Owns the skeleton instance and advances its animation and world transforms each frame.
+- Exposes read and write access to the skeleton and the last applied FSM state.
+
+### `state_machine.rs`
+
+- Implements a named-state animation FSM driven by typed parameters and parsed conditions.
+- Registers states with clip bindings and transitions with string-based condition expressions.
+- Evaluates transition chains each frame and force-plays the target clip on state change.
+- Supports float, int, and bool parameters compared with standard relational operators.
+- Provides the condition parser and numeric comparison utilities used by transition evaluation.
+
+### `sync_group.rs`
+
+- Groups animation slot-map keys that should stay synchronised during playback.
+- Stores a deduplicated member list with add, remove, clear, and query operations.
+- Provides the membership data higher systems use to align animation timers.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LAnimation` (29 methods) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
@@ -270,22 +163,18 @@ The module provides `AnimCurve` for easing-driven value interpolation along keyf
 ## 📖 API Overview
 
 - Source spec: [docs/specs/animation.md](../blob/main/docs/specs/animation.md)
+- Module-level functions: 7
+- Lua-visible types: 5
+- Total type methods: 61
 
-```lua
-lurek.animation.buildCharacter(cfg: table) -> table -- Builds a character animation bundle from grid frame and clip configuration.
-lurek.animation.fromAseprite(json_str: string) -> LuaValue -- Loads an animation from an Aseprite JSON export string.
-lurek.animation.new() -> LAnimation -- Creates an empty animation with no frames or clips.
-lurek.animation.newBlendLayerSet() -> LBlendLayerSet -- Creates an empty blend layer set for layered animation playback.
-lurek.animation.newCurve() -> LAnimCurve -- Creates an empty animation curve. This function is exposed to Lua scripts.
-lurek.animation.newStateMachine(anim_ud: LAnimation, initial: string) -> LAnimStateMachine -- Creates an animation state machine by consuming an animation handle.
-lurek.animation.newSyncGroup() -> LAnimSyncGroup -- Creates an empty animation synchronization group.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.animation.buildCharacter
+### Module-Level Functions
+
+#### lurek.animation.buildCharacter
 
 #### Definition
 
@@ -317,7 +206,7 @@ do
 end
 ```
 
-### lurek.animation.fromAseprite
+#### lurek.animation.fromAseprite
 
 #### Definition
 
@@ -352,7 +241,7 @@ do
 end
 ```
 
-### lurek.animation.new
+#### lurek.animation.new
 
 #### Definition
 
@@ -379,7 +268,7 @@ do
 end
 ```
 
-### lurek.animation.newBlendLayerSet
+#### lurek.animation.newBlendLayerSet
 
 #### Definition
 
@@ -406,7 +295,7 @@ do
 end
 ```
 
-### lurek.animation.newCurve
+#### lurek.animation.newCurve
 
 #### Definition
 
@@ -433,7 +322,7 @@ do
 end
 ```
 
-### lurek.animation.newStateMachine
+#### lurek.animation.newStateMachine
 
 #### Definition
 
@@ -470,7 +359,7 @@ do
 end
 ```
 
-### lurek.animation.newSyncGroup
+#### lurek.animation.newSyncGroup
 
 #### Definition
 
@@ -635,7 +524,9 @@ end
 
 ## 🔹 Module Methods
 
-### LAnimation:addClip
+### LAnimation Methods
+
+#### LAnimation:addClip
 
 #### Definition
 
@@ -674,7 +565,7 @@ do
 end
 ```
 
-### LAnimation:addClipFromGrid
+#### LAnimation:addClipFromGrid
 
 #### Definition
 
@@ -720,7 +611,7 @@ do
 end
 ```
 
-### LAnimation:addFrame
+#### LAnimation:addFrame
 
 #### Definition
 
@@ -759,7 +650,7 @@ do
 end
 ```
 
-### LAnimation:addFramesFromGrid
+#### LAnimation:addFramesFromGrid
 
 #### Definition
 
@@ -802,7 +693,7 @@ do
 end
 ```
 
-### LAnimation:addFramesFromRects
+#### LAnimation:addFramesFromRects
 
 #### Definition
 
@@ -835,7 +726,7 @@ do
 end
 ```
 
-### LAnimation:crossfade
+#### LAnimation:crossfade
 
 #### Definition
 
@@ -872,7 +763,7 @@ do
 end
 ```
 
-### LAnimation:drawPreviewGrid
+#### LAnimation:drawPreviewGrid
 
 #### Definition
 
@@ -908,7 +799,7 @@ do
 end
 ```
 
-### LAnimation:drawToImage
+#### LAnimation:drawToImage
 
 #### Definition
 
@@ -944,7 +835,7 @@ do
 end
 ```
 
-### LAnimation:getBlendState
+#### LAnimation:getBlendState
 
 #### Definition
 
@@ -973,7 +864,7 @@ do
 end
 ```
 
-### LAnimation:getClip
+#### LAnimation:getClip
 
 #### Definition
 
@@ -1003,7 +894,7 @@ do
 end
 ```
 
-### LAnimation:getClipCount
+#### LAnimation:getClipCount
 
 #### Definition
 
@@ -1033,7 +924,7 @@ do
 end
 ```
 
-### LAnimation:getClipMode
+#### LAnimation:getClipMode
 
 #### Definition
 
@@ -1068,7 +959,7 @@ do
 end
 ```
 
-### LAnimation:getCurrentFrame
+#### LAnimation:getCurrentFrame
 
 #### Definition
 
@@ -1098,7 +989,7 @@ do
 end
 ```
 
-### LAnimation:getFrameCount
+#### LAnimation:getFrameCount
 
 #### Definition
 
@@ -1127,7 +1018,7 @@ do
 end
 ```
 
-### LAnimation:getQuad
+#### LAnimation:getQuad
 
 #### Definition
 
@@ -1156,7 +1047,7 @@ do
 end
 ```
 
-### LAnimation:getSpeed
+#### LAnimation:getSpeed
 
 #### Definition
 
@@ -1183,7 +1074,7 @@ do
 end
 ```
 
-### LAnimation:isLooping
+#### LAnimation:isLooping
 
 #### Definition
 
@@ -1213,7 +1104,7 @@ do
 end
 ```
 
-### LAnimation:isPlaying
+#### LAnimation:isPlaying
 
 #### Definition
 
@@ -1243,7 +1134,7 @@ do
 end
 ```
 
-### LAnimation:pause
+#### LAnimation:pause
 
 #### Definition
 
@@ -1269,7 +1160,7 @@ do
 end
 ```
 
-### LAnimation:play
+#### LAnimation:play
 
 #### Definition
 
@@ -1304,7 +1195,7 @@ do
 end
 ```
 
-### LAnimation:pollEvents
+#### LAnimation:pollEvents
 
 #### Definition
 
@@ -1334,7 +1225,7 @@ do
 end
 ```
 
-### LAnimation:resume
+#### LAnimation:resume
 
 #### Definition
 
@@ -1361,7 +1252,7 @@ do
 end
 ```
 
-### LAnimation:setClipMode
+#### LAnimation:setClipMode
 
 #### Definition
 
@@ -1398,7 +1289,7 @@ do
 end
 ```
 
-### LAnimation:setFrame
+#### LAnimation:setFrame
 
 #### Definition
 
@@ -1429,7 +1320,7 @@ do
 end
 ```
 
-### LAnimation:setSpeed
+#### LAnimation:setSpeed
 
 #### Definition
 
@@ -1459,7 +1350,7 @@ do
 end
 ```
 
-### LAnimation:stop
+#### LAnimation:stop
 
 #### Definition
 
@@ -1485,7 +1376,7 @@ do
 end
 ```
 
-### LAnimation:type
+#### LAnimation:type
 
 #### Definition
 
@@ -1512,7 +1403,7 @@ do
 end
 ```
 
-### LAnimation:typeOf
+#### LAnimation:typeOf
 
 #### Definition
 
@@ -1544,7 +1435,7 @@ do
 end
 ```
 
-### LAnimation:update
+#### LAnimation:update
 
 #### Definition
 
@@ -1575,7 +1466,9 @@ do
 end
 ```
 
-### LAnimCurve:addKeyframe
+### LAnimCurve Methods
+
+#### LAnimCurve:addKeyframe
 
 #### Definition
 
@@ -1608,7 +1501,7 @@ do
 end
 ```
 
-### LAnimCurve:clear
+#### LAnimCurve:clear
 
 #### Definition
 
@@ -1635,7 +1528,7 @@ do
 end
 ```
 
-### LAnimCurve:eval
+#### LAnimCurve:eval
 
 #### Definition
 
@@ -1670,7 +1563,7 @@ do
 end
 ```
 
-### LAnimCurve:keyframeCount
+#### LAnimCurve:keyframeCount
 
 #### Definition
 
@@ -1699,7 +1592,7 @@ do
 end
 ```
 
-### LAnimCurve:setCustomEasing
+#### LAnimCurve:setCustomEasing
 
 #### Definition
 
@@ -1730,7 +1623,7 @@ do
 end
 ```
 
-### LAnimCurve:setEasing
+#### LAnimCurve:setEasing
 
 #### Definition
 
@@ -1761,7 +1654,7 @@ do
 end
 ```
 
-### LAnimCurve:type
+#### LAnimCurve:type
 
 #### Definition
 
@@ -1788,7 +1681,7 @@ do
 end
 ```
 
-### LAnimCurve:typeOf
+#### LAnimCurve:typeOf
 
 #### Definition
 
@@ -1820,7 +1713,9 @@ do
 end
 ```
 
-### LAnimStateMachine:addState
+### LAnimStateMachine Methods
+
+#### LAnimStateMachine:addState
 
 #### Definition
 
@@ -1856,7 +1751,7 @@ do
 end
 ```
 
-### LAnimStateMachine:addTransition
+#### LAnimStateMachine:addTransition
 
 #### Definition
 
@@ -1892,7 +1787,7 @@ do
 end
 ```
 
-### LAnimStateMachine:forceState
+#### LAnimStateMachine:forceState
 
 #### Definition
 
@@ -1927,7 +1822,7 @@ do
 end
 ```
 
-### LAnimStateMachine:getQuad
+#### LAnimStateMachine:getQuad
 
 #### Definition
 
@@ -1957,7 +1852,7 @@ do
 end
 ```
 
-### LAnimStateMachine:getState
+#### LAnimStateMachine:getState
 
 #### Definition
 
@@ -1986,7 +1881,7 @@ do
 end
 ```
 
-### LAnimStateMachine:setParam
+#### LAnimStateMachine:setParam
 
 #### Definition
 
@@ -2020,7 +1915,7 @@ do
 end
 ```
 
-### LAnimStateMachine:type
+#### LAnimStateMachine:type
 
 #### Definition
 
@@ -2050,7 +1945,7 @@ do
 end
 ```
 
-### LAnimStateMachine:typeOf
+#### LAnimStateMachine:typeOf
 
 #### Definition
 
@@ -2085,7 +1980,7 @@ do
 end
 ```
 
-### LAnimStateMachine:update
+#### LAnimStateMachine:update
 
 #### Definition
 
@@ -2117,7 +2012,9 @@ do
 end
 ```
 
-### LAnimSyncGroup:add
+### LAnimSyncGroup Methods
+
+#### LAnimSyncGroup:add
 
 #### Definition
 
@@ -2147,7 +2044,7 @@ do
 end
 ```
 
-### LAnimSyncGroup:clear
+#### LAnimSyncGroup:clear
 
 #### Definition
 
@@ -2173,7 +2070,7 @@ do
 end
 ```
 
-### LAnimSyncGroup:memberCount
+#### LAnimSyncGroup:memberCount
 
 #### Definition
 
@@ -2201,7 +2098,7 @@ do
 end
 ```
 
-### LAnimSyncGroup:remove
+#### LAnimSyncGroup:remove
 
 #### Definition
 
@@ -2232,7 +2129,7 @@ do
 end
 ```
 
-### LAnimSyncGroup:type
+#### LAnimSyncGroup:type
 
 #### Definition
 
@@ -2259,7 +2156,7 @@ do
 end
 ```
 
-### LAnimSyncGroup:typeOf
+#### LAnimSyncGroup:typeOf
 
 #### Definition
 
@@ -2291,7 +2188,9 @@ do
 end
 ```
 
-### LBlendLayerSet:addLayer
+### LBlendLayerSet Methods
+
+#### LBlendLayerSet:addLayer
 
 #### Definition
 
@@ -2330,7 +2229,7 @@ do
 end
 ```
 
-### LBlendLayerSet:getWeight
+#### LBlendLayerSet:getWeight
 
 #### Definition
 
@@ -2364,7 +2263,7 @@ do
 end
 ```
 
-### LBlendLayerSet:len
+#### LBlendLayerSet:len
 
 #### Definition
 
@@ -2392,7 +2291,7 @@ do
 end
 ```
 
-### LBlendLayerSet:listLayers
+#### LBlendLayerSet:listLayers
 
 #### Definition
 
@@ -2422,7 +2321,7 @@ do
 end
 ```
 
-### LBlendLayerSet:removeLayer
+#### LBlendLayerSet:removeLayer
 
 #### Definition
 
@@ -2456,7 +2355,7 @@ do
 end
 ```
 
-### LBlendLayerSet:setMask
+#### LBlendLayerSet:setMask
 
 #### Definition
 
@@ -2492,7 +2391,7 @@ do
 end
 ```
 
-### LBlendLayerSet:setWeight
+#### LBlendLayerSet:setWeight
 
 #### Definition
 
@@ -2528,7 +2427,7 @@ do
 end
 ```
 
-### LBlendLayerSet:type
+#### LBlendLayerSet:type
 
 #### Definition
 
@@ -2555,7 +2454,7 @@ do
 end
 ```
 
-### LBlendLayerSet:typeOf
+#### LBlendLayerSet:typeOf
 
 #### Definition
 

@@ -10,1112 +10,100 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [agent.rs](#agentrs)
+  - [bandit.rs](#banditrs)
+  - [behavior_tree.rs](#behaviortreers)
+  - [blackboard.rs](#blackboardrs)
+  - [command_queue.rs](#commandqueuers)
+  - [context_steering.rs](#contextsteeringrs)
+  - [dialogue.rs](#dialoguers)
+  - [director.rs](#directorrs)
+  - [emotion.rs](#emotionrs)
+  - [fsm.rs](#fsmrs)
+  - [genetic.rs](#geneticrs)
+  - [goap.rs](#goaprs)
+  - [htn.rs](#htnrs)
+  - [lod.rs](#lodrs)
+  - [mcts.rs](#mctsrs)
+  - [mod.rs](#modrs)
+  - [needs.rs](#needsrs)
+  - [neural_net.rs](#neuralnetrs)
+  - [neuroevolution.rs](#neuroevolutionrs)
+  - [orca.rs](#orcars)
+  - [perception.rs](#perceptionrs)
+  - [qlearner.rs](#qlearnerrs)
+  - [render.rs](#renderrs)
+  - [squad.rs](#squadrs)
+  - [steering.rs](#steeringrs)
+  - [strategy.rs](#strategyrs)
+  - [traits.rs](#traitsrs)
+  - [utility_ai.rs](#utilityairs)
+  - [world.rs](#worldrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.ai.newAction](#lurekainewaction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newAIDirector](#lurekainewaidirector)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newAILod](#lurekainewailod)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newBandit](#lurekainewbandit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newBehaviorTree](#lurekainewbehaviortree)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newBlackboard](#lurekainewblackboard)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newCommandQueue](#lurekainewcommandqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newCondition](#lurekainewcondition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newContextSteering](#lurekainewcontextsteering)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newDialogueAI](#lurekainewdialogueai)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newEmotionModel](#lurekainewemotionmodel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newGeneticAlgorithm](#lurekainewgeneticalgorithm)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newGOAPPlanner](#lurekainewgoapplanner)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newGuard](#lurekainewguard)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newHTNDomain](#lurekainewhtndomain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newInfluenceMap](#lurekainewinfluencemap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newInverter](#lurekainewinverter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newMCTSEngine](#lurekainewmctsengine)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newNeedSystem](#lurekainewneedsystem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newNeuralNet](#lurekainewneuralnet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newNeuroevolution](#lurekainewneuroevolution)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newORCASolver](#lurekaineworcasolver)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newParallel](#lurekainewparallel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newQLearner](#lurekainewqlearner)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newRepeater](#lurekainewrepeater)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newSelector](#lurekainewselector)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newSequence](#lurekainewsequence)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newSquad](#lurekainewsquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newStateMachine](#lurekainewstatemachine)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newSteeringManager](#lurekainewsteeringmanager)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newStimulusWorld](#lurekainewstimulusworld)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newStrategyAI](#lurekainewstrategyai)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newSucceeder](#lurekainewsucceeder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newTraitProfile](#lurekainewtraitprofile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newUtilityAI](#lurekainewutilityai)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ai.newWorld](#lurekainewworld)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LAgent](#lagent)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAIBlackboard](#laiblackboard)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAIDirector](#laidirector)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAILod](#lailod)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAIWorld](#laiworld)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBandit](#lbandit)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBehaviorTree](#lbehaviortree)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBTNode](#lbtnode)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCommandQueue](#lcommandqueue)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LContextSteering](#lcontextsteering)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDialogueAI](#ldialogueai)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LEmotionModel](#lemotionmodel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGeneticAlgorithm](#lgeneticalgorithm)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGOAPPlanner](#lgoapplanner)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LHTNDomain](#lhtndomain)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LInfluenceMap](#linfluencemap)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMCTSEngine](#lmctsengine)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNeedSystem](#lneedsystem)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNeuralNet](#lneuralnet)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNeuroevolution](#lneuroevolution)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LORCASolver](#lorcasolver)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LQLearner](#lqlearner)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSquad](#lsquad)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LStateMachine](#lstatemachine)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSteeringManager](#lsteeringmanager)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LStimulusWorld](#lstimulusworld)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LStrategyAI](#lstrategyai)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTraitProfile](#ltraitprofile)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LUtilityAI](#lutilityai)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LAgent:addTag](#lagentaddtag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getBlackboard](#lagentgetblackboard)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getDecisionModel](#lagentgetdecisionmodel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getMaxForce](#lagentgetmaxforce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getMaxSpeed](#lagentgetmaxspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getName](#lagentgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getPosition](#lagentgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getPriority](#lagentgetpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:getVelocity](#lagentgetvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:hasTag](#lagenthastag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:removeTag](#lagentremovetag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:setCustomModel](#lagentsetcustommodel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:setDecisionModel](#lagentsetdecisionmodel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:setMaxForce](#lagentsetmaxforce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:setMaxSpeed](#lagentsetmaxspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:setPosition](#lagentsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:setPriority](#lagentsetpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:setVelocity](#lagentsetvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:type](#lagenttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAgent:typeOf](#lagenttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:clear](#laiblackboardclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:getBool](#laiblackboardgetbool)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:getKeys](#laiblackboardgetkeys)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:getNumber](#laiblackboardgetnumber)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:getSize](#laiblackboardgetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:getString](#laiblackboardgetstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:has](#laiblackboardhas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:remove](#laiblackboardremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:setBool](#laiblackboardsetbool)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:setNumber](#laiblackboardsetnumber)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:setString](#laiblackboardsetstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:type](#laiblackboardtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIBlackboard:typeOf](#laiblackboardtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:ambientIntensity](#laidirectorambientintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:lootFactor](#laidirectorlootfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:phase](#laidirectorphase)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:pushEvent](#laidirectorpushevent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:reset](#laidirectorreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:setTension](#laidirectorsettension)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:spawnRateFactor](#laidirectorspawnratefactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:tension](#laidirectortension)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:type](#laidirectortype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:typeOf](#laidirectortypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIDirector:update](#laidirectorupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAILod:shouldUpdate](#lailodshouldupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAILod:tierCount](#lailodtiercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAILod:tierFor](#lailodtierfor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAILod:tierName](#lailodtiername)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAILod:type](#lailodtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAILod:typeOf](#lailodtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:addAgent](#laiworldaddagent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:getAgent](#laiworldgetagent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:getAgentCount](#laiworldgetagentcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:getGlobalBlackboard](#laiworldgetglobalblackboard)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:removeAgent](#laiworldremoveagent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:type](#laiworldtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:typeOf](#laiworldtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIWorld:update](#laiworldupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:armCount](#lbanditarmcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:bestArm](#lbanditbestarm)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:reset](#lbanditreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:select](#lbanditselect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:totalPulls](#lbandittotalpulls)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:type](#lbandittype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:typeOf](#lbandittypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBandit:update](#lbanditupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:getDebugState](#lbehaviortreegetdebugstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:getLastStatus](#lbehaviortreegetlaststatus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:setRoot](#lbehaviortreesetroot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:type](#lbehaviortreetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:typeOf](#lbehaviortreetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:addChild](#lbtnodeaddchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:getChildCount](#lbtnodegetchildcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:getCount](#lbtnodegetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:getNodeType](#lbtnodegetnodetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:reset](#lbtnodereset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:setChild](#lbtnodesetchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:setCount](#lbtnodesetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:setFailurePolicy](#lbtnodesetfailurepolicy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:setSuccessPolicy](#lbtnodesetsuccesspolicy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:type](#lbtnodetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBTNode:typeOf](#lbtnodetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:cancelCurrent](#lcommandqueuecancelcurrent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:clear](#lcommandqueueclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:enqueue](#lcommandqueueenqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:getCount](#lcommandqueuegetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:getCurrentTarget](#lcommandqueuegetcurrenttarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:getCurrentType](#lcommandqueuegetcurrenttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:isEmpty](#lcommandqueueisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:pushFront](#lcommandqueuepushfront)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:replace](#lcommandqueuereplace)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:type](#lcommandqueuetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandQueue:typeOf](#lcommandqueuetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:addAvoidBounds](#lcontextsteeringaddavoidbounds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:addAvoidPoint](#lcontextsteeringaddavoidpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:addSeekTarget](#lcontextsteeringaddseektarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:addWander](#lcontextsteeringaddwander)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:chosenMagnitude](#lcontextsteeringchosenmagnitude)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:clearBehaviors](#lcontextsteeringclearbehaviors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:evaluate](#lcontextsteeringevaluate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:slotCount](#lcontextsteeringslotcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:type](#lcontextsteeringtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContextSteering:typeOf](#lcontextsteeringtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:addBranch](#ldialogueaiaddbranch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:addTopic](#ldialogueaiaddtopic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:clearUtilityScores](#ldialogueaiclearutilityscores)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:getTopicCount](#ldialogueaigettopiccount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:selectBranch](#ldialogueaiselectbranch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:selectTopic](#ldialogueaiselecttopic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:setBTStatus](#ldialogueaisetbtstatus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:setFSMState](#ldialogueaisetfsmstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:setUtilityScore](#ldialogueaisetutilityscore)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:type](#ldialogueaitype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialogueAI:typeOf](#ldialogueaitypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:add](#lemotionmodeladd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:dominant](#lemotionmodeldominant)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:get](#lemotionmodelget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:isActive](#lemotionmodelisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:reset](#lemotionmodelreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:trigger](#lemotionmodeltrigger)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:type](#lemotionmodeltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:typeOf](#lemotionmodeltypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEmotionModel:update](#lemotionmodelupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:bestGenes](#lgeneticalgorithmbestgenes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:evolve](#lgeneticalgorithmevolve)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:generation](#lgeneticalgorithmgeneration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:getGenes](#lgeneticalgorithmgetgenes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:popSize](#lgeneticalgorithmpopsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:setFitness](#lgeneticalgorithmsetfitness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:type](#lgeneticalgorithmtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGeneticAlgorithm:typeOf](#lgeneticalgorithmtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:addAction](#lgoapplanneraddaction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:addGoal](#lgoapplanneraddgoal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:getActionCount](#lgoapplannergetactioncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:getGoalCount](#lgoapplannergetgoalcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:getMaxIterations](#lgoapplannergetmaxiterations)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:plan](#lgoapplannerplan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:setEffect](#lgoapplannerseteffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:setGoalState](#lgoapplannersetgoalstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:setMaxIterations](#lgoapplannersetmaxiterations)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:setPrecondition](#lgoapplannersetprecondition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:type](#lgoapplannertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGOAPPlanner:typeOf](#lgoapplannertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHTNDomain:addCompound](#lhtndomainaddcompound)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHTNDomain:addPrimitive](#lhtndomainaddprimitive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHTNDomain:plan](#lhtndomainplan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHTNDomain:taskCount](#lhtndomaintaskcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHTNDomain:type](#lhtndomaintype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHTNDomain:typeOf](#lhtndomaintypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:addLayer](#linfluencemapaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:blend](#linfluencemapblend)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:clearAll](#linfluencemapclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:clearLayer](#linfluencemapclearlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:decay](#linfluencemapdecay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:getCellSize](#linfluencemapgetcellsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:getHeight](#linfluencemapgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:getInfluence](#linfluencemapgetinfluence)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:getMaxPosition](#linfluencemapgetmaxposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:getMinPosition](#linfluencemapgetminposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:getWidth](#linfluencemapgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:hasLayer](#linfluencemaphaslayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:propagate](#linfluencemappropagate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:queryRect](#linfluencemapqueryrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:setInfluence](#linfluencemapsetinfluence)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:stampInfluence](#linfluencemapstampinfluence)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:type](#linfluencemaptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LInfluenceMap:typeOf](#linfluencemaptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMCTSEngine:search](#lmctsenginesearch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMCTSEngine:type](#lmctsenginetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMCTSEngine:typeOf](#lmctsenginetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeedSystem:addNeed](#lneedsystemaddneed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeedSystem:mostUrgent](#lneedsystemmosturgent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeedSystem:satisfy](#lneedsystemsatisfy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeedSystem:type](#lneedsystemtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeedSystem:typeOf](#lneedsystemtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeedSystem:update](#lneedsystemupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeedSystem:valueOf](#lneedsystemvalueof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:addLayer](#lneuralnetaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:forward](#lneuralnetforward)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:getWeights](#lneuralnetgetweights)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:layerCount](#lneuralnetlayercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:paramCount](#lneuralnetparamcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:setWeights](#lneuralnetsetweights)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:type](#lneuralnettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuralNet:typeOf](#lneuralnettypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:bestFitness](#lneuroevolutionbestfitness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:bestNetwork](#lneuroevolutionbestnetwork)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:chromosomeToNet](#lneuroevolutionchromosometonet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:evolve](#lneuroevolutionevolve)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:generation](#lneuroevolutiongeneration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:popSize](#lneuroevolutionpopsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:setFitness](#lneuroevolutionsetfitness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:type](#lneuroevolutiontype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNeuroevolution:typeOf](#lneuroevolutiontypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:addAgent](#lorcasolveraddagent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:agentCount](#lorcasolveragentcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:compute](#lorcasolvercompute)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:getSafeVelocity](#lorcasolvergetsafevelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:setPosition](#lorcasolversetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:setPreferredVelocity](#lorcasolversetpreferredvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:type](#lorcasolvertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LORCASolver:typeOf](#lorcasolvertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:bestAction](#lqlearnerbestaction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:chooseAction](#lqlearnerchooseaction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:deserialize](#lqlearnerdeserialize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:endEpisode](#lqlearnerendepisode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getActionCount](#lqlearnergetactioncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getDiscountFactor](#lqlearnergetdiscountfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getEpisodeCount](#lqlearnergetepisodecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getExplorationDecay](#lqlearnergetexplorationdecay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getExplorationRate](#lqlearnergetexplorationrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getLearningRate](#lqlearnergetlearningrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getQValue](#lqlearnergetqvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:getStateCount](#lqlearnergetstatecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:learn](#lqlearnerlearn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:serialize](#lqlearnerserialize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:setDiscountFactor](#lqlearnersetdiscountfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:setExplorationDecay](#lqlearnersetexplorationdecay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:setExplorationRate](#lqlearnersetexplorationrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:setLearningRate](#lqlearnersetlearningrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:setQValue](#lqlearnersetqvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:type](#lqlearnertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQLearner:typeOf](#lqlearnertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:addMember](#lsquadaddmember)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getBlackboard](#lsquadgetblackboard)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getFormation](#lsquadgetformation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getFormationPosition](#lsquadgetformationposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getFormationSpacing](#lsquadgetformationspacing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getLeader](#lsquadgetleader)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getMemberCount](#lsquadgetmembercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getMembers](#lsquadgetmembers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:getName](#lsquadgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:removeMember](#lsquadremovemember)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:setFormation](#lsquadsetformation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:setLeader](#lsquadsetleader)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:type](#lsquadtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSquad:typeOf](#lsquadtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:addState](#lstatemachineaddstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:addTransition](#lstatemachineaddtransition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:forceState](#lstatemachineforcestate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:getCurrentState](#lstatemachinegetcurrentstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:getTimeInState](#lstatemachinegettimeinstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:setInitialState](#lstatemachinesetinitialstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:type](#lstatemachinetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStateMachine:typeOf](#lstatemachinetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addArrive](#lsteeringmanageraddarrive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addCustomBehavior](#lsteeringmanageraddcustombehavior)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addEvade](#lsteeringmanageraddevade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addFlee](#lsteeringmanageraddflee)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addFlock](#lsteeringmanageraddflock)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addPursue](#lsteeringmanageraddpursue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addSeek](#lsteeringmanageraddseek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:addWander](#lsteeringmanageraddwander)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:applyCustomSteering](#lsteeringmanagerapplycustomsteering)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:calculate](#lsteeringmanagercalculate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:clearPath](#lsteeringmanagerclearpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:enableSpatialHash](#lsteeringmanagerenablespatialhash)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:getBehaviorCount](#lsteeringmanagergetbehaviorcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:getCombineMode](#lsteeringmanagergetcombinemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:getLastSteering](#lsteeringmanagergetlaststeering)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:getPathProgress](#lsteeringmanagergetpathprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:hasPath](#lsteeringmanagerhaspath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:setCombineMode](#lsteeringmanagersetcombinemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:setPath](#lsteeringmanagersetpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:setSpatialHashCellSize](#lsteeringmanagersetspatialhashcellsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:type](#lsteeringmanagertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSteeringManager:typeOf](#lsteeringmanagertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:addAuditory](#lstimulusworldaddauditory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:addVisual](#lstimulusworldaddvisual)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:clear](#lstimulusworldclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:count](#lstimulusworldcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:remove](#lstimulusworldremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:type](#lstimulusworldtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:typeOf](#lstimulusworldtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStimulusWorld:update](#lstimulusworldupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:activeGoal](#lstrategyaiactivegoal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:addGoal](#lstrategyaiaddgoal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:addTag](#lstrategyaiaddtag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:forceEvaluate](#lstrategyaiforceevaluate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:removeTag](#lstrategyairemovetag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:timeUntilNext](#lstrategyaitimeuntilnext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:type](#lstrategyaitype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:typeOf](#lstrategyaitypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategyAI:update](#lstrategyaiupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:addModifier](#ltraitprofileaddmodifier)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:archetype](#ltraitprofilearchetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:get](#ltraitprofileget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:getBase](#ltraitprofilegetbase)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:has](#ltraitprofilehas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:removeModifiers](#ltraitprofileremovemodifiers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:set](#ltraitprofileset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:traitCount](#ltraitprofiletraitcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:type](#ltraitprofiletype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:typeOf](#ltraitprofiletypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTraitProfile:update](#ltraitprofileupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUtilityAI:addAction](#lutilityaiaddaction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUtilityAI:addConsideration](#lutilityaiaddconsideration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUtilityAI:evaluate](#lutilityaievaluate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUtilityAI:getActionCount](#lutilityaigetactioncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUtilityAI:getLastAction](#lutilityaigetlastaction)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUtilityAI:type](#lutilityaitype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUtilityAI:typeOf](#lutilityaitypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LAgent Methods](#lagent-methods)
+  - [LAIBlackboard Methods](#laiblackboard-methods)
+  - [LAIDirector Methods](#laidirector-methods)
+  - [LAILod Methods](#lailod-methods)
+  - [LAIWorld Methods](#laiworld-methods)
+  - [LBandit Methods](#lbandit-methods)
+  - [LBehaviorTree Methods](#lbehaviortree-methods)
+  - [LBTNode Methods](#lbtnode-methods)
+  - [LCommandQueue Methods](#lcommandqueue-methods)
+  - [LContextSteering Methods](#lcontextsteering-methods)
+  - [LDialogueAI Methods](#ldialogueai-methods)
+  - [LEmotionModel Methods](#lemotionmodel-methods)
+  - [LGeneticAlgorithm Methods](#lgeneticalgorithm-methods)
+  - [LGOAPPlanner Methods](#lgoapplanner-methods)
+  - [LHTNDomain Methods](#lhtndomain-methods)
+  - [LInfluenceMap Methods](#linfluencemap-methods)
+  - [LMCTSEngine Methods](#lmctsengine-methods)
+  - [LNeedSystem Methods](#lneedsystem-methods)
+  - [LNeuralNet Methods](#lneuralnet-methods)
+  - [LNeuroevolution Methods](#lneuroevolution-methods)
+  - [LORCASolver Methods](#lorcasolver-methods)
+  - [LQLearner Methods](#lqlearner-methods)
+  - [LSquad Methods](#lsquad-methods)
+  - [LStateMachine Methods](#lstatemachine-methods)
+  - [LSteeringManager Methods](#lsteeringmanager-methods)
+  - [LStimulusWorld Methods](#lstimulusworld-methods)
+  - [LStrategyAI Methods](#lstrategyai-methods)
+  - [LTraitProfile Methods](#ltraitprofile-methods)
+  - [LUtilityAI Methods](#lutilityai-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -1136,6 +124,228 @@ Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards.
 Game AI toolkit providing twelve subsystems for non-player character behavior. Includes finite state machines (`FSM`), behavior trees with parallel/sequence/selector composites, Goal-Oriented Action Planning (`GOAP`), Hierarchical Task Networks (`HTN`), Monte-Carlo Tree Search (`MCTS`), utility-based scoring, Q-learning with epsilon-greedy exploration, context steering for obstacle avoidance, squad coordination, influence maps, need/emotion/trait personality models, and a global `AIDirector` that adjusts difficulty based on player performance metrics.
 
 All subsystems are pure CPU, headless-testable, and exposed through `lurek.ai.*` constructors. Each AI object is independent Lua userdata — no shared world state is required. The `Blackboard` key-value store provides inter-system communication when needed. Sensors feed world observations into agents via a typed `SensorWorld` container. The module has no rendering dependency and sits in the Feature Systems tier importing only `math` and `runtime`.
+
+[⬆ back to top](#table-of-contents)
+
+## 📁 Source Files
+
+### `agent.rs`
+
+- Core runtime state for one AI actor: identity, motion, priority, and decision mode.
+- Per-agent links to AI subsystems: blackboard, FSM, behavior tree, steering, and sensing.
+- Optional emotion, needs, tags, and LOD data accessible through a single shared container.
+- DecisionModel enum routing agents to FSM, BT, steering, or custom Lua callbacks.
+- Single-call constructor initializing all fields to safe defaults with subsystem slots disconnected.
+
+### `bandit.rs`
+
+- Compact multi-armed bandit storing per-arm reward history and posterior parameters.
+- Strategy switch for epsilon-greedy, UCB1, and Thompson sampling policies.
+- Selection, reward ingestion, and reset for adaptive arm choice without a planning framework.
+- Internal gamma and beta sampling driven by a deterministic xorshift64 RNG.
+- Per-arm pull counts, cumulative reward, and Bayesian alpha/beta parameter tracking.
+
+### `behavior_tree.rs`
+
+- Behavior-tree node hierarchy with local runtime progress and last tick result.
+- Control-flow variants: selector, sequence, parallel, decorator, guard, and Lua leaves.
+- Subtree reset, node counting, status translation, and compact debug snapshots.
+- Running state per composite node enabling cross-tick resume from last active child.
+- Parallel policy configuration with independent success and failure thresholds.
+- Root node container used as the single-instance tree by the per-agent AI runtime.
+
+### `blackboard.rs`
+
+- Lightweight hierarchical blackboard storing per-agent facts as numbers, booleans, and strings.
+- Local entry map with optional parent chain and read/write resolution through fallback hierarchy.
+- Key removal, board clearing, key listing, size reporting, and parent attachment operations.
+- Parent-chain walk for reads giving child boards transparent access to shared data.
+- Structured runtime logging for creation, removal, and clear events.
+
+### `command_queue.rs`
+
+- Queued command format staging discrete actor actions with targets, callbacks, and priority.
+- FIFO command queue with front insertion, replacement, cancellation, and advance operations.
+- Raw-construction helpers for enqueuing commands without separate struct building.
+- Interruptible commands that can be cancelled individually without clearing the queue.
+- Structured runtime logging for queue creation and bulk-clear events.
+
+### `context_steering.rs`
+
+- Slot-based context steering accumulating interest and danger around a directional ring.
+- Behavior variants projecting targets, hazards, wander, fixed headings, and world-bound avoidance.
+- Evaluation pass merging contributions and choosing the strongest safe direction.
+- Seek-target interest projection using an angle cone toward the target position.
+- Hash-based wander jitter biasing direction over time without explicit random state.
+- Per-slot danger subtraction so agents steer around hazards while maintaining progress.
+- Last chosen heading and magnitude recording for downstream movement application.
+- Inspection accessors for interest and danger maps useful for debug visualization.
+- Uses cosine-attenuated cone fill to smoothly distribute weights across
+- neighboring slots near a target angle.
+
+### `dialogue.rs`
+
+- Dialogue selection choosing topics and branches from weighted sets guarded by FSM and BT state.
+- Topic and branch records with optional gate keys and utility-score references.
+- Scoring and matching logic filtering by gates, folding utility, and returning best candidates.
+- Independent gating against FSM state and behavior-tree status for adaptive selection.
+- Base weight combined with optional utility scores for flexible priority ranking.
+
+### `director.rs`
+
+- Pacing director translating accumulated tension into pressure phases and runtime multipliers.
+- Tunable thresholds and timers moving between buildup, peak, sustain, and relief phases.
+- Derived outputs for spawn pressure, loot pressure, ambient intensity, and state inspection.
+- Slower tension decay during peak and sustain phases to hold pressure before relief.
+- Per-phase spawn, loot, and ambient multipliers scaling downstream gameplay intensity.
+
+### `emotion.rs`
+
+- Per-agent emotion state tracking named feelings as clamped scalars decaying toward rest.
+- Single-emotion rules for activation thresholds, direct setting, triggering, and decay.
+- Model-level add, replace, query, dominant-state lookup, update, and reset operations.
+- Value clamping to [0, 1] at the write boundary preventing out-of-range propagation.
+- Dominant emotion identification by filtering active entries and selecting highest value.
+
+### `fsm.rs`
+
+- Finite-state-machine storing named states, callback hooks, transition rules, and active state.
+- Callback bundles for state entry, update, and exit with priority-sorted transition records.
+- Mutable machine state tracking current state, initial state, elapsed time, and registration helpers.
+- Descending-priority transition sorting so the tick evaluator tests highest-priority guards first.
+- Elapsed time tracking in the current state for time-based guards and Lua update callbacks.
+
+### `genetic.rs`
+
+- Population-based genetic optimization storing genomes, fitness values, and generation bookkeeping.
+- Evolution step preserving elites, tournament selection, crossover, and in-place mutation.
+- Deterministic random helpers driving parent selection, crossover, and Gaussian mutation.
+- Stable per-chromosome identifiers persisting across generations for lineage tracking.
+- Seeded xorshift64 RNG with Box-Muller normal sampling for reproducible evolution.
+
+### `goap.rs`
+
+- GOAP planning data storing actions, goals, search nodes, and planner state.
+- World-state model built from boolean preconditions, effects, and goal priorities.
+- Optional Lua execution callbacks attached to actions for runtime behavior.
+- Bounded A* search expanding reachable states and returning ordered action plans.
+- Unsatisfied-condition count heuristic guiding A* toward goals with minimal expansion.
+- Automatic highest-priority goal selection or targeted planning by goal index.
+- Iteration cap preventing runaway planning on large or unsolvable state spaces.
+- Search node tracking with parent links for plan reconstruction after goal reach.
+
+### `htn.rs`
+
+- HTN planning model representing symbolic world state, tasks, methods, and the task registry.
+- Primitive tasks mutating state directly and compound tasks expanding through methods.
+- Recursive decomposition of a root task into a linear primitive plan with precondition checks.
+- Float-threshold preconditions on world-state keys expressing partial satisfaction.
+- Recursion depth cap at 128 levels preventing infinite expansion in cyclic task domains.
+
+### `lod.rs`
+
+- AI level-of-detail model grouping agents into distance-based update tiers.
+- Tier data controlling maximum coverage, think distance, and frame cadence.
+- Tier sorting, agent assignment from positions, and per-frame run decisions.
+- Frame-cadence check so distant agents skip updates while near agents run every frame.
+- Default three-tier near/mid/far layout suitable for 2D worlds on integrated GPUs.
+
+### `mcts.rs`
+
+- Monte Carlo Tree Search configuring search parameters, arena-backed nodes, and rollout statistics.
+- Selection, expansion, rollout, and backpropagation flow scoring actions through bounded simulations.
+- Internal random helper and UCT scoring logic driving node choice and action sampling.
+- Arena-backed tree structure avoiding per-node heap allocations during iterative search.
+- Generic state, action-enumeration, transition, and evaluation closures for domain-independent search.
+
+### `mod.rs`
+
+- Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
+- Module-level export map for agent state, planners, blackboard, and command flow.
+- Learning helpers, perception, steering, and squad coordination re-exports.
+- Compact entry surface re-exporting runtime types for higher engine layers.
+
+### `needs.rs`
+
+- Need-tracking model with normalized internal drives, urgency settings, and external advertisements.
+- Per-need decay, urgency scoring, satisfaction updates, and cooldown-aware advertisement scoring.
+- System-level operations for adding needs, time-based updates, and most-urgent drive selection.
+- Best-advertisement selection weighted by distance, cooldown, and need priority.
+
+### `neural_net.rs`
+
+- Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
+- Layer-local forward evaluation, activation application, and parameter counting.
+- Network-level operations: append layers, run forward passes, load/export weight buffers.
+
+### `neuroevolution.rs`
+
+- Neuroevolution wrapper joining genetic algorithm with neural-network for population-based weight search.
+- Template layer specification for rebuilding networks from flat chromosome genes.
+- Orchestration logic mapping chromosomes to networks, recording fitness, and advancing evolution.
+
+### `orca.rs`
+
+- ORCA local-avoidance data representing moving agents, solver constraints, and safe output velocities.
+- Per-agent motion inputs: current velocity, preferred velocity, collision radius, and max speed.
+- Solver pass building pairwise half-plane constraints and projecting collision-free velocities.
+
+### `perception.rs`
+
+- Perception model storing stimuli, sensor configuration, detection results, and awareness state.
+- Stimulus world for visual, auditory, and custom signals with insertion, decay, and removal.
+- Sensor-side logic testing visibility, hearing, detecting nearby stimuli, and updating awareness.
+- Custom detection range tracking and time-based stimulus expiration.
+
+### `qlearner.rs`
+
+- Tabular Q-learning model with flat state-action value table and training parameters.
+- Epsilon-greedy action selection, Bellman updates, and episode bookkeeping.
+- Lightweight persistence helpers for serializing and reloading learned policies.
+
+### `render.rs`
+
+- AI debug rendering helpers turning FSM and behavior-tree state into renderer commands.
+- Layout and traversal logic walking state-machine and tree data with position assignment.
+- Image drawing helpers mirroring structures into offline ImageData for inspection.
+
+### `squad.rs`
+
+- Squad-level coordination grouping named members under one leader with shared local memory.
+- Formation mode, spacing, and ordered membership determining relative placement.
+- Formation-position logic producing target offsets for line, column, wedge, and circle patterns.
+
+### `steering.rs`
+
+- Steering model representing individual movement behaviors, blending rules, and waypoint following.
+- Behavior variants: seek, flee, arrive, wander, flock, pursue, evade, and custom callbacks.
+- Manager logic combining active behaviors with weighting or priority selection.
+- Waypoint path advancement and final steering force clamping.
+
+### `strategy.rs`
+
+- High-level strategy selection scoring named goals against current tag context over time.
+- Goal records with eligibility tags, priority scaling, enable state, and computed scores.
+- Timed evaluation flow querying external scorers and storing the active strategic choice.
+
+### `traits.rs`
+
+- Personality-trait model storing base values, temporary modifiers, and reusable archetype presets.
+- Profile logic resolving effective trait values, advancing and removing expiring modifiers.
+- Interpolation toward other profiles with origin archetype tracking.
+- Archetype registry and deterministic hash helper for varied profiles with per-trait jitter.
+
+### `utility_ai.rs`
+
+- Utility-AI scoring model storing actions, response curves, considerations, and evaluation results.
+- Response-curve mapping rules and action-side data binding Lua scorers with momentum weighting.
+- Evaluation flow calling registered scorers, tracking per-action scores, and selecting best action.
+
+### `world.rs`
+
+- Shared AI world container owning registered agents, name-to-index lookup, and global blackboard.
+- Lifecycle operations adding or removing named agents with synchronized lookup tables.
+- World update surface exposing global blackboard access and velocity-based position integration.
 
 [⬆ back to top](#table-of-contents)
 
@@ -1163,34 +373,18 @@ All subsystems are pure CPU, headless-testable, and exposed through `lurek.ai.*`
 ## 📖 API Overview
 
 - Source spec: [docs/specs/ai.md](../blob/main/docs/specs/ai.md)
+- Module-level functions: 36
+- Lua-visible types: 29
+- Total type methods: 302
 
-```lua
-lurek.ai.newAction(callback: function) -> LBTNode -- Creates a behavior tree action leaf backed by a Lua callback.
-lurek.ai.newAIDirector() -> LAIDirector -- Creates an AI director for tension, phase, and pacing factor calculations.
-lurek.ai.newAILod() -> LAILod -- Creates a default AI level-of-detail tier selector.
-lurek.ai.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -> LBandit -- Creates a multi-armed bandit with a named selection strategy.
-lurek.ai.newBehaviorTree() -> LBehaviorTree -- Creates an empty behavior tree that can receive a root node.
-lurek.ai.newBlackboard() -> LAIBlackboard -- Creates an empty AI blackboard for typed local facts.
-lurek.ai.newCommandQueue() -> LCommandQueue -- Creates an empty command queue for callback-backed AI commands.
-lurek.ai.newCondition(callback: function) -> LBTNode -- Creates a behavior tree condition leaf backed by a Lua callback.
-lurek.ai.newContextSteering(slots: integer) -> LContextSteering -- Creates a context steering model with the requested directional slot count.
-lurek.ai.newDialogueAI() -> LDialogueAI -- Creates an empty dialogue selector for weighted topics and branches.
-lurek.ai.newEmotionModel() -> LEmotionModel -- Creates an empty emotion model for named decaying emotion values.
-lurek.ai.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -> LGeneticAlgorithm -- Creates a genetic algorithm population with fixed chromosome length.
-lurek.ai.newGOAPPlanner() -> LGOAPPlanner -- Creates an empty GOAP planner for boolean world-state planning.
-lurek.ai.newGuard(predicate: function, child: LBTNode) -> LBTNode -- Creates a guard decorator that runs a predicate before ticking its child.
-lurek.ai.newHTNDomain() -> LHTNDomain -- Creates an empty hierarchical task network domain.
-lurek.ai.newInfluenceMap(w: integer, h: integer, cs: number) -> LInfluenceMap -- Creates a grid influence map with the supplied cell dimensions and world cell size.
-lurek.ai.newInverter() -> LBTNode -- Creates a behavior tree inverter decorator with an empty sequence child.
-lurek.ai.newMCTSEngine(iters: integer, uct_c: number, depth: integer, seed: integer) -> LMCTSEngine -- Creates a Monte Carlo tree search engine with deterministic configuration.
--- ... 18 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.ai.newAction
+### Module-Level Functions
+
+#### lurek.ai.newAction
 
 #### Definition
 
@@ -1222,7 +416,7 @@ do
 end
 ```
 
-### lurek.ai.newAIDirector
+#### lurek.ai.newAIDirector
 
 #### Definition
 
@@ -1249,7 +443,7 @@ do
 end
 ```
 
-### lurek.ai.newAILod
+#### lurek.ai.newAILod
 
 #### Definition
 
@@ -1276,7 +470,7 @@ do
 end
 ```
 
-### lurek.ai.newBandit
+#### lurek.ai.newBandit
 
 #### Definition
 
@@ -1314,7 +508,7 @@ do
 end
 ```
 
-### lurek.ai.newBehaviorTree
+#### lurek.ai.newBehaviorTree
 
 #### Definition
 
@@ -1341,7 +535,7 @@ do
 end
 ```
 
-### lurek.ai.newBlackboard
+#### lurek.ai.newBlackboard
 
 #### Definition
 
@@ -1369,7 +563,7 @@ do
 end
 ```
 
-### lurek.ai.newCommandQueue
+#### lurek.ai.newCommandQueue
 
 #### Definition
 
@@ -1396,7 +590,7 @@ do
 end
 ```
 
-### lurek.ai.newCondition
+#### lurek.ai.newCondition
 
 #### Definition
 
@@ -1428,7 +622,7 @@ do
 end
 ```
 
-### lurek.ai.newContextSteering
+#### lurek.ai.newContextSteering
 
 #### Definition
 
@@ -1460,7 +654,7 @@ do
 end
 ```
 
-### lurek.ai.newDialogueAI
+#### lurek.ai.newDialogueAI
 
 #### Definition
 
@@ -1487,7 +681,7 @@ do
 end
 ```
 
-### lurek.ai.newEmotionModel
+#### lurek.ai.newEmotionModel
 
 #### Definition
 
@@ -1514,7 +708,7 @@ do
 end
 ```
 
-### lurek.ai.newGeneticAlgorithm
+#### lurek.ai.newGeneticAlgorithm
 
 #### Definition
 
@@ -1550,7 +744,7 @@ do
 end
 ```
 
-### lurek.ai.newGOAPPlanner
+#### lurek.ai.newGOAPPlanner
 
 #### Definition
 
@@ -1577,7 +771,7 @@ do
 end
 ```
 
-### lurek.ai.newGuard
+#### lurek.ai.newGuard
 
 #### Definition
 
@@ -1612,7 +806,7 @@ do
 end
 ```
 
-### lurek.ai.newHTNDomain
+#### lurek.ai.newHTNDomain
 
 #### Definition
 
@@ -1639,7 +833,7 @@ do
 end
 ```
 
-### lurek.ai.newInfluenceMap
+#### lurek.ai.newInfluenceMap
 
 #### Definition
 
@@ -1675,7 +869,7 @@ do
 end
 ```
 
-### lurek.ai.newInverter
+#### lurek.ai.newInverter
 
 #### Definition
 
@@ -1702,7 +896,7 @@ do
 end
 ```
 
-### lurek.ai.newMCTSEngine
+#### lurek.ai.newMCTSEngine
 
 #### Definition
 
@@ -1743,7 +937,7 @@ do
 end
 ```
 
-### lurek.ai.newNeedSystem
+#### lurek.ai.newNeedSystem
 
 #### Definition
 
@@ -1770,7 +964,7 @@ do
 end
 ```
 
-### lurek.ai.newNeuralNet
+#### lurek.ai.newNeuralNet
 
 #### Definition
 
@@ -1797,7 +991,7 @@ do
 end
 ```
 
-### lurek.ai.newNeuroevolution
+#### lurek.ai.newNeuroevolution
 
 #### Definition
 
@@ -1833,7 +1027,7 @@ do
 end
 ```
 
-### lurek.ai.newORCASolver
+#### lurek.ai.newORCASolver
 
 #### Definition
 
@@ -1865,7 +1059,7 @@ do
 end
 ```
 
-### lurek.ai.newParallel
+#### lurek.ai.newParallel
 
 #### Definition
 
@@ -1899,7 +1093,7 @@ do
 end
 ```
 
-### lurek.ai.newQLearner
+#### lurek.ai.newQLearner
 
 #### Definition
 
@@ -1933,7 +1127,7 @@ do
 end
 ```
 
-### lurek.ai.newRepeater
+#### lurek.ai.newRepeater
 
 #### Definition
 
@@ -1965,7 +1159,7 @@ do
 end
 ```
 
-### lurek.ai.newSelector
+#### lurek.ai.newSelector
 
 #### Definition
 
@@ -1992,7 +1186,7 @@ do
 end
 ```
 
-### lurek.ai.newSequence
+#### lurek.ai.newSequence
 
 #### Definition
 
@@ -2019,7 +1213,7 @@ do
 end
 ```
 
-### lurek.ai.newSquad
+#### lurek.ai.newSquad
 
 #### Definition
 
@@ -2051,7 +1245,7 @@ do
 end
 ```
 
-### lurek.ai.newStateMachine
+#### lurek.ai.newStateMachine
 
 #### Definition
 
@@ -2078,7 +1272,7 @@ do
 end
 ```
 
-### lurek.ai.newSteeringManager
+#### lurek.ai.newSteeringManager
 
 #### Definition
 
@@ -2105,7 +1299,7 @@ do
 end
 ```
 
-### lurek.ai.newStimulusWorld
+#### lurek.ai.newStimulusWorld
 
 #### Definition
 
@@ -2132,7 +1326,7 @@ do
 end
 ```
 
-### lurek.ai.newStrategyAI
+#### lurek.ai.newStrategyAI
 
 #### Definition
 
@@ -2164,7 +1358,7 @@ do
 end
 ```
 
-### lurek.ai.newSucceeder
+#### lurek.ai.newSucceeder
 
 #### Definition
 
@@ -2191,7 +1385,7 @@ do
 end
 ```
 
-### lurek.ai.newTraitProfile
+#### lurek.ai.newTraitProfile
 
 #### Definition
 
@@ -2218,7 +1412,7 @@ do
 end
 ```
 
-### lurek.ai.newUtilityAI
+#### lurek.ai.newUtilityAI
 
 #### Definition
 
@@ -2245,7 +1439,7 @@ do
 end
 ```
 
-### lurek.ai.newWorld
+#### lurek.ai.newWorld
 
 #### Definition
 
@@ -3012,7 +2206,9 @@ end
 
 ## 🔹 Module Methods
 
-### LAgent:addTag
+### LAgent Methods
+
+#### LAgent:addTag
 
 #### Definition
 
@@ -3044,7 +2240,7 @@ do
 end
 ```
 
-### LAgent:getBlackboard
+#### LAgent:getBlackboard
 
 #### Definition
 
@@ -3074,7 +2270,7 @@ do
 end
 ```
 
-### LAgent:getDecisionModel
+#### LAgent:getDecisionModel
 
 #### Definition
 
@@ -3104,7 +2300,7 @@ do
 end
 ```
 
-### LAgent:getMaxForce
+#### LAgent:getMaxForce
 
 #### Definition
 
@@ -3134,7 +2330,7 @@ do
 end
 ```
 
-### LAgent:getMaxSpeed
+#### LAgent:getMaxSpeed
 
 #### Definition
 
@@ -3164,7 +2360,7 @@ do
 end
 ```
 
-### LAgent:getName
+#### LAgent:getName
 
 #### Definition
 
@@ -3193,7 +2389,7 @@ do
 end
 ```
 
-### LAgent:getPosition
+#### LAgent:getPosition
 
 #### Definition
 
@@ -3224,7 +2420,7 @@ do
 end
 ```
 
-### LAgent:getPriority
+#### LAgent:getPriority
 
 #### Definition
 
@@ -3254,7 +2450,7 @@ do
 end
 ```
 
-### LAgent:getVelocity
+#### LAgent:getVelocity
 
 #### Definition
 
@@ -3285,7 +2481,7 @@ do
 end
 ```
 
-### LAgent:hasTag
+#### LAgent:hasTag
 
 #### Definition
 
@@ -3320,7 +2516,7 @@ do
 end
 ```
 
-### LAgent:removeTag
+#### LAgent:removeTag
 
 #### Definition
 
@@ -3352,7 +2548,7 @@ do
 end
 ```
 
-### LAgent:setCustomModel
+#### LAgent:setCustomModel
 
 #### Definition
 
@@ -3384,7 +2580,7 @@ do
 end
 ```
 
-### LAgent:setDecisionModel
+#### LAgent:setDecisionModel
 
 #### Definition
 
@@ -3416,7 +2612,7 @@ do
 end
 ```
 
-### LAgent:setMaxForce
+#### LAgent:setMaxForce
 
 #### Definition
 
@@ -3447,7 +2643,7 @@ do
 end
 ```
 
-### LAgent:setMaxSpeed
+#### LAgent:setMaxSpeed
 
 #### Definition
 
@@ -3478,7 +2674,7 @@ do
 end
 ```
 
-### LAgent:setPosition
+#### LAgent:setPosition
 
 #### Definition
 
@@ -3511,7 +2707,7 @@ do
 end
 ```
 
-### LAgent:setPriority
+#### LAgent:setPriority
 
 #### Definition
 
@@ -3542,7 +2738,7 @@ do
 end
 ```
 
-### LAgent:setVelocity
+#### LAgent:setVelocity
 
 #### Definition
 
@@ -3575,7 +2771,7 @@ do
 end
 ```
 
-### LAgent:type
+#### LAgent:type
 
 #### Definition
 
@@ -3604,7 +2800,7 @@ do
 end
 ```
 
-### LAgent:typeOf
+#### LAgent:typeOf
 
 #### Definition
 
@@ -3639,7 +2835,9 @@ do
 end
 ```
 
-### LAIBlackboard:clear
+### LAIBlackboard Methods
+
+#### LAIBlackboard:clear
 
 #### Definition
 
@@ -3666,7 +2864,7 @@ do
 end
 ```
 
-### LAIBlackboard:getBool
+#### LAIBlackboard:getBool
 
 #### Definition
 
@@ -3703,7 +2901,7 @@ do
 end
 ```
 
-### LAIBlackboard:getKeys
+#### LAIBlackboard:getKeys
 
 #### Definition
 
@@ -3733,7 +2931,7 @@ do
 end
 ```
 
-### LAIBlackboard:getNumber
+#### LAIBlackboard:getNumber
 
 #### Definition
 
@@ -3770,7 +2968,7 @@ do
 end
 ```
 
-### LAIBlackboard:getSize
+#### LAIBlackboard:getSize
 
 #### Definition
 
@@ -3800,7 +2998,7 @@ do
 end
 ```
 
-### LAIBlackboard:getString
+#### LAIBlackboard:getString
 
 #### Definition
 
@@ -3837,7 +3035,7 @@ do
 end
 ```
 
-### LAIBlackboard:has
+#### LAIBlackboard:has
 
 #### Definition
 
@@ -3872,7 +3070,7 @@ do
 end
 ```
 
-### LAIBlackboard:remove
+#### LAIBlackboard:remove
 
 #### Definition
 
@@ -3904,7 +3102,7 @@ do
 end
 ```
 
-### LAIBlackboard:setBool
+#### LAIBlackboard:setBool
 
 #### Definition
 
@@ -3938,7 +3136,7 @@ do
 end
 ```
 
-### LAIBlackboard:setNumber
+#### LAIBlackboard:setNumber
 
 #### Definition
 
@@ -3972,7 +3170,7 @@ do
 end
 ```
 
-### LAIBlackboard:setString
+#### LAIBlackboard:setString
 
 #### Definition
 
@@ -4006,7 +3204,7 @@ do
 end
 ```
 
-### LAIBlackboard:type
+#### LAIBlackboard:type
 
 #### Definition
 
@@ -4036,7 +3234,7 @@ do
 end
 ```
 
-### LAIBlackboard:typeOf
+#### LAIBlackboard:typeOf
 
 #### Definition
 
@@ -4070,7 +3268,9 @@ do
 end
 ```
 
-### LAIDirector:ambientIntensity
+### LAIDirector Methods
+
+#### LAIDirector:ambientIntensity
 
 #### Definition
 
@@ -4099,7 +3299,7 @@ do
 end
 ```
 
-### LAIDirector:lootFactor
+#### LAIDirector:lootFactor
 
 #### Definition
 
@@ -4128,7 +3328,7 @@ do
 end
 ```
 
-### LAIDirector:phase
+#### LAIDirector:phase
 
 #### Definition
 
@@ -4156,7 +3356,7 @@ do
 end
 ```
 
-### LAIDirector:pushEvent
+#### LAIDirector:pushEvent
 
 #### Definition
 
@@ -4187,7 +3387,7 @@ do
 end
 ```
 
-### LAIDirector:reset
+#### LAIDirector:reset
 
 #### Definition
 
@@ -4213,7 +3413,7 @@ do
 end
 ```
 
-### LAIDirector:setTension
+#### LAIDirector:setTension
 
 #### Definition
 
@@ -4243,7 +3443,7 @@ do
 end
 ```
 
-### LAIDirector:spawnRateFactor
+#### LAIDirector:spawnRateFactor
 
 #### Definition
 
@@ -4272,7 +3472,7 @@ do
 end
 ```
 
-### LAIDirector:tension
+#### LAIDirector:tension
 
 #### Definition
 
@@ -4300,7 +3500,7 @@ do
 end
 ```
 
-### LAIDirector:type
+#### LAIDirector:type
 
 #### Definition
 
@@ -4327,7 +3527,7 @@ do
 end
 ```
 
-### LAIDirector:typeOf
+#### LAIDirector:typeOf
 
 #### Definition
 
@@ -4359,7 +3559,7 @@ do
 end
 ```
 
-### LAIDirector:update
+#### LAIDirector:update
 
 #### Definition
 
@@ -4390,7 +3590,9 @@ do
 end
 ```
 
-### LAILod:shouldUpdate
+### LAILod Methods
+
+#### LAILod:shouldUpdate
 
 #### Definition
 
@@ -4425,7 +3627,7 @@ do
 end
 ```
 
-### LAILod:tierCount
+#### LAILod:tierCount
 
 #### Definition
 
@@ -4452,7 +3654,7 @@ do
 end
 ```
 
-### LAILod:tierFor
+#### LAILod:tierFor
 
 #### Definition
 
@@ -4491,7 +3693,7 @@ do
 end
 ```
 
-### LAILod:tierName
+#### LAILod:tierName
 
 #### Definition
 
@@ -4524,7 +3726,7 @@ do
 end
 ```
 
-### LAILod:type
+#### LAILod:type
 
 #### Definition
 
@@ -4551,7 +3753,7 @@ do
 end
 ```
 
-### LAILod:typeOf
+#### LAILod:typeOf
 
 #### Definition
 
@@ -4583,7 +3785,9 @@ do
 end
 ```
 
-### LAIWorld:addAgent
+### LAIWorld Methods
+
+#### LAIWorld:addAgent
 
 #### Definition
 
@@ -4616,7 +3820,7 @@ do
 end
 ```
 
-### LAIWorld:getAgent
+#### LAIWorld:getAgent
 
 #### Definition
 
@@ -4650,7 +3854,7 @@ do
 end
 ```
 
-### LAIWorld:getAgentCount
+#### LAIWorld:getAgentCount
 
 #### Definition
 
@@ -4680,7 +3884,7 @@ do
 end
 ```
 
-### LAIWorld:getGlobalBlackboard
+#### LAIWorld:getGlobalBlackboard
 
 #### Definition
 
@@ -4708,7 +3912,7 @@ do
 end
 ```
 
-### LAIWorld:removeAgent
+#### LAIWorld:removeAgent
 
 #### Definition
 
@@ -4739,7 +3943,7 @@ do
 end
 ```
 
-### LAIWorld:type
+#### LAIWorld:type
 
 #### Definition
 
@@ -4769,7 +3973,7 @@ do
 end
 ```
 
-### LAIWorld:typeOf
+#### LAIWorld:typeOf
 
 #### Definition
 
@@ -4803,7 +4007,7 @@ do
 end
 ```
 
-### LAIWorld:update
+#### LAIWorld:update
 
 #### Definition
 
@@ -4835,7 +4039,9 @@ do
 end
 ```
 
-### LBandit:armCount
+### LBandit Methods
+
+#### LBandit:armCount
 
 #### Definition
 
@@ -4862,7 +4068,7 @@ do
 end
 ```
 
-### LBandit:bestArm
+#### LBandit:bestArm
 
 #### Definition
 
@@ -4892,7 +4098,7 @@ do
 end
 ```
 
-### LBandit:reset
+#### LBandit:reset
 
 #### Definition
 
@@ -4919,7 +4125,7 @@ do
 end
 ```
 
-### LBandit:select
+#### LBandit:select
 
 #### Definition
 
@@ -4947,7 +4153,7 @@ do
 end
 ```
 
-### LBandit:totalPulls
+#### LBandit:totalPulls
 
 #### Definition
 
@@ -4977,7 +4183,7 @@ do
 end
 ```
 
-### LBandit:type
+#### LBandit:type
 
 #### Definition
 
@@ -5004,7 +4210,7 @@ do
 end
 ```
 
-### LBandit:typeOf
+#### LBandit:typeOf
 
 #### Definition
 
@@ -5036,7 +4242,7 @@ do
 end
 ```
 
-### LBandit:update
+#### LBandit:update
 
 #### Definition
 
@@ -5069,7 +4275,9 @@ do
 end
 ```
 
-### LBehaviorTree:getDebugState
+### LBehaviorTree Methods
+
+#### LBehaviorTree:getDebugState
 
 #### Definition
 
@@ -5098,7 +4306,7 @@ do
 end
 ```
 
-### LBehaviorTree:getLastStatus
+#### LBehaviorTree:getLastStatus
 
 #### Definition
 
@@ -5127,7 +4335,7 @@ do
 end
 ```
 
-### LBehaviorTree:setRoot
+#### LBehaviorTree:setRoot
 
 #### Definition
 
@@ -5160,7 +4368,7 @@ do
 end
 ```
 
-### LBehaviorTree:type
+#### LBehaviorTree:type
 
 #### Definition
 
@@ -5188,7 +4396,7 @@ do
 end
 ```
 
-### LBehaviorTree:typeOf
+#### LBehaviorTree:typeOf
 
 #### Definition
 
@@ -5222,7 +4430,9 @@ do
 end
 ```
 
-### LBTNode:addChild
+### LBTNode Methods
+
+#### LBTNode:addChild
 
 #### Definition
 
@@ -5253,7 +4463,7 @@ do
 end
 ```
 
-### LBTNode:getChildCount
+#### LBTNode:getChildCount
 
 #### Definition
 
@@ -5282,7 +4492,7 @@ do
 end
 ```
 
-### LBTNode:getCount
+#### LBTNode:getCount
 
 #### Definition
 
@@ -5310,7 +4520,7 @@ do
 end
 ```
 
-### LBTNode:getNodeType
+#### LBTNode:getNodeType
 
 #### Definition
 
@@ -5337,7 +4547,7 @@ do
 end
 ```
 
-### LBTNode:reset
+#### LBTNode:reset
 
 #### Definition
 
@@ -5363,7 +4573,7 @@ do
 end
 ```
 
-### LBTNode:setChild
+#### LBTNode:setChild
 
 #### Definition
 
@@ -5393,7 +4603,7 @@ do
 end
 ```
 
-### LBTNode:setCount
+#### LBTNode:setCount
 
 #### Definition
 
@@ -5424,7 +4634,7 @@ do
 end
 ```
 
-### LBTNode:setFailurePolicy
+#### LBTNode:setFailurePolicy
 
 #### Definition
 
@@ -5454,7 +4664,7 @@ do
 end
 ```
 
-### LBTNode:setSuccessPolicy
+#### LBTNode:setSuccessPolicy
 
 #### Definition
 
@@ -5484,7 +4694,7 @@ do
 end
 ```
 
-### LBTNode:type
+#### LBTNode:type
 
 #### Definition
 
@@ -5514,7 +4724,7 @@ do
 end
 ```
 
-### LBTNode:typeOf
+#### LBTNode:typeOf
 
 #### Definition
 
@@ -5548,7 +4758,9 @@ do
 end
 ```
 
-### LCommandQueue:cancelCurrent
+### LCommandQueue Methods
+
+#### LCommandQueue:cancelCurrent
 
 #### Definition
 
@@ -5578,7 +4790,7 @@ do
 end
 ```
 
-### LCommandQueue:clear
+#### LCommandQueue:clear
 
 #### Definition
 
@@ -5605,7 +4817,7 @@ do
 end
 ```
 
-### LCommandQueue:enqueue
+#### LCommandQueue:enqueue
 
 #### Definition
 
@@ -5640,7 +4852,7 @@ do
 end
 ```
 
-### LCommandQueue:getCount
+#### LCommandQueue:getCount
 
 #### Definition
 
@@ -5670,7 +4882,7 @@ do
 end
 ```
 
-### LCommandQueue:getCurrentTarget
+#### LCommandQueue:getCurrentTarget
 
 #### Definition
 
@@ -5700,7 +4912,7 @@ do
 end
 ```
 
-### LCommandQueue:getCurrentType
+#### LCommandQueue:getCurrentType
 
 #### Definition
 
@@ -5728,7 +4940,7 @@ do
 end
 ```
 
-### LCommandQueue:isEmpty
+#### LCommandQueue:isEmpty
 
 #### Definition
 
@@ -5757,7 +4969,7 @@ do
 end
 ```
 
-### LCommandQueue:pushFront
+#### LCommandQueue:pushFront
 
 #### Definition
 
@@ -5792,7 +5004,7 @@ do
 end
 ```
 
-### LCommandQueue:replace
+#### LCommandQueue:replace
 
 #### Definition
 
@@ -5828,7 +5040,7 @@ do
 end
 ```
 
-### LCommandQueue:type
+#### LCommandQueue:type
 
 #### Definition
 
@@ -5855,7 +5067,7 @@ do
 end
 ```
 
-### LCommandQueue:typeOf
+#### LCommandQueue:typeOf
 
 #### Definition
 
@@ -5887,7 +5099,9 @@ do
 end
 ```
 
-### LContextSteering:addAvoidBounds
+### LContextSteering Methods
+
+#### LContextSteering:addAvoidBounds
 
 #### Definition
 
@@ -5927,7 +5141,7 @@ do
 end
 ```
 
-### LContextSteering:addAvoidPoint
+#### LContextSteering:addAvoidPoint
 
 #### Definition
 
@@ -5963,7 +5177,7 @@ do
 end
 ```
 
-### LContextSteering:addSeekTarget
+#### LContextSteering:addSeekTarget
 
 #### Definition
 
@@ -5997,7 +5211,7 @@ do
 end
 ```
 
-### LContextSteering:addWander
+#### LContextSteering:addWander
 
 #### Definition
 
@@ -6029,7 +5243,7 @@ do
 end
 ```
 
-### LContextSteering:chosenMagnitude
+#### LContextSteering:chosenMagnitude
 
 #### Definition
 
@@ -6059,7 +5273,7 @@ do
 end
 ```
 
-### LContextSteering:clearBehaviors
+#### LContextSteering:clearBehaviors
 
 #### Definition
 
@@ -6086,7 +5300,7 @@ do
 end
 ```
 
-### LContextSteering:evaluate
+#### LContextSteering:evaluate
 
 #### Definition
 
@@ -6128,7 +5342,7 @@ do
 end
 ```
 
-### LContextSteering:slotCount
+#### LContextSteering:slotCount
 
 #### Definition
 
@@ -6155,7 +5369,7 @@ do
 end
 ```
 
-### LContextSteering:type
+#### LContextSteering:type
 
 #### Definition
 
@@ -6182,7 +5396,7 @@ do
 end
 ```
 
-### LContextSteering:typeOf
+#### LContextSteering:typeOf
 
 #### Definition
 
@@ -6214,7 +5428,9 @@ do
 end
 ```
 
-### LDialogueAI:addBranch
+### LDialogueAI Methods
+
+#### LDialogueAI:addBranch
 
 #### Definition
 
@@ -6259,7 +5475,7 @@ do
 end
 ```
 
-### LDialogueAI:addTopic
+#### LDialogueAI:addTopic
 
 #### Definition
 
@@ -6299,7 +5515,7 @@ do
 end
 ```
 
-### LDialogueAI:clearUtilityScores
+#### LDialogueAI:clearUtilityScores
 
 #### Definition
 
@@ -6326,7 +5542,7 @@ do
 end
 ```
 
-### LDialogueAI:getTopicCount
+#### LDialogueAI:getTopicCount
 
 #### Definition
 
@@ -6356,7 +5572,7 @@ do
 end
 ```
 
-### LDialogueAI:selectBranch
+#### LDialogueAI:selectBranch
 
 #### Definition
 
@@ -6391,7 +5607,7 @@ do
 end
 ```
 
-### LDialogueAI:selectTopic
+#### LDialogueAI:selectTopic
 
 #### Definition
 
@@ -6421,7 +5637,7 @@ do
 end
 ```
 
-### LDialogueAI:setBTStatus
+#### LDialogueAI:setBTStatus
 
 #### Definition
 
@@ -6453,7 +5669,7 @@ do
 end
 ```
 
-### LDialogueAI:setFSMState
+#### LDialogueAI:setFSMState
 
 #### Definition
 
@@ -6485,7 +5701,7 @@ do
 end
 ```
 
-### LDialogueAI:setUtilityScore
+#### LDialogueAI:setUtilityScore
 
 #### Definition
 
@@ -6519,7 +5735,7 @@ do
 end
 ```
 
-### LDialogueAI:type
+#### LDialogueAI:type
 
 #### Definition
 
@@ -6547,7 +5763,7 @@ do
 end
 ```
 
-### LDialogueAI:typeOf
+#### LDialogueAI:typeOf
 
 #### Definition
 
@@ -6581,7 +5797,9 @@ do
 end
 ```
 
-### LEmotionModel:add
+### LEmotionModel Methods
+
+#### LEmotionModel:add
 
 #### Definition
 
@@ -6618,7 +5836,7 @@ do
 end
 ```
 
-### LEmotionModel:dominant
+#### LEmotionModel:dominant
 
 #### Definition
 
@@ -6648,7 +5866,7 @@ do
 end
 ```
 
-### LEmotionModel:get
+#### LEmotionModel:get
 
 #### Definition
 
@@ -6683,7 +5901,7 @@ do
 end
 ```
 
-### LEmotionModel:isActive
+#### LEmotionModel:isActive
 
 #### Definition
 
@@ -6718,7 +5936,7 @@ do
 end
 ```
 
-### LEmotionModel:reset
+#### LEmotionModel:reset
 
 #### Definition
 
@@ -6745,7 +5963,7 @@ do
 end
 ```
 
-### LEmotionModel:trigger
+#### LEmotionModel:trigger
 
 #### Definition
 
@@ -6778,7 +5996,7 @@ do
 end
 ```
 
-### LEmotionModel:type
+#### LEmotionModel:type
 
 #### Definition
 
@@ -6805,7 +6023,7 @@ do
 end
 ```
 
-### LEmotionModel:typeOf
+#### LEmotionModel:typeOf
 
 #### Definition
 
@@ -6837,7 +6055,7 @@ do
 end
 ```
 
-### LEmotionModel:update
+#### LEmotionModel:update
 
 #### Definition
 
@@ -6869,7 +6087,9 @@ do
 end
 ```
 
-### LGeneticAlgorithm:bestGenes
+### LGeneticAlgorithm Methods
+
+#### LGeneticAlgorithm:bestGenes
 
 #### Definition
 
@@ -6899,7 +6119,7 @@ do
 end
 ```
 
-### LGeneticAlgorithm:evolve
+#### LGeneticAlgorithm:evolve
 
 #### Definition
 
@@ -6925,7 +6145,7 @@ do
 end
 ```
 
-### LGeneticAlgorithm:generation
+#### LGeneticAlgorithm:generation
 
 #### Definition
 
@@ -6955,7 +6175,7 @@ do
 end
 ```
 
-### LGeneticAlgorithm:getGenes
+#### LGeneticAlgorithm:getGenes
 
 #### Definition
 
@@ -6988,7 +6208,7 @@ do
 end
 ```
 
-### LGeneticAlgorithm:popSize
+#### LGeneticAlgorithm:popSize
 
 #### Definition
 
@@ -7015,7 +6235,7 @@ do
 end
 ```
 
-### LGeneticAlgorithm:setFitness
+#### LGeneticAlgorithm:setFitness
 
 #### Definition
 
@@ -7049,7 +6269,7 @@ do
 end
 ```
 
-### LGeneticAlgorithm:type
+#### LGeneticAlgorithm:type
 
 #### Definition
 
@@ -7076,7 +6296,7 @@ do
 end
 ```
 
-### LGeneticAlgorithm:typeOf
+#### LGeneticAlgorithm:typeOf
 
 #### Definition
 
@@ -7108,7 +6328,9 @@ do
 end
 ```
 
-### LGOAPPlanner:addAction
+### LGOAPPlanner Methods
+
+#### LGOAPPlanner:addAction
 
 #### Definition
 
@@ -7143,7 +6365,7 @@ do
 end
 ```
 
-### LGOAPPlanner:addGoal
+#### LGOAPPlanner:addGoal
 
 #### Definition
 
@@ -7176,7 +6398,7 @@ do
 end
 ```
 
-### LGOAPPlanner:getActionCount
+#### LGOAPPlanner:getActionCount
 
 #### Definition
 
@@ -7205,7 +6427,7 @@ do
 end
 ```
 
-### LGOAPPlanner:getGoalCount
+#### LGOAPPlanner:getGoalCount
 
 #### Definition
 
@@ -7235,7 +6457,7 @@ do
 end
 ```
 
-### LGOAPPlanner:getMaxIterations
+#### LGOAPPlanner:getMaxIterations
 
 #### Definition
 
@@ -7263,7 +6485,7 @@ do
 end
 ```
 
-### LGOAPPlanner:plan
+#### LGOAPPlanner:plan
 
 #### Definition
 
@@ -7300,7 +6522,7 @@ do
 end
 ```
 
-### LGOAPPlanner:setEffect
+#### LGOAPPlanner:setEffect
 
 #### Definition
 
@@ -7335,7 +6557,7 @@ do
 end
 ```
 
-### LGOAPPlanner:setGoalState
+#### LGOAPPlanner:setGoalState
 
 #### Definition
 
@@ -7370,7 +6592,7 @@ do
 end
 ```
 
-### LGOAPPlanner:setMaxIterations
+#### LGOAPPlanner:setMaxIterations
 
 #### Definition
 
@@ -7400,7 +6622,7 @@ do
 end
 ```
 
-### LGOAPPlanner:setPrecondition
+#### LGOAPPlanner:setPrecondition
 
 #### Definition
 
@@ -7435,7 +6657,7 @@ do
 end
 ```
 
-### LGOAPPlanner:type
+#### LGOAPPlanner:type
 
 #### Definition
 
@@ -7462,7 +6684,7 @@ do
 end
 ```
 
-### LGOAPPlanner:typeOf
+#### LGOAPPlanner:typeOf
 
 #### Definition
 
@@ -7494,7 +6716,9 @@ do
 end
 ```
 
-### LHTNDomain:addCompound
+### LHTNDomain Methods
+
+#### LHTNDomain:addCompound
 
 #### Definition
 
@@ -7527,7 +6751,7 @@ do
 end
 ```
 
-### LHTNDomain:addPrimitive
+#### LHTNDomain:addPrimitive
 
 #### Definition
 
@@ -7564,7 +6788,7 @@ do
 end
 ```
 
-### LHTNDomain:plan
+#### LHTNDomain:plan
 
 #### Definition
 
@@ -7642,7 +6866,7 @@ end
 do
 ```
 
-### LHTNDomain:taskCount
+#### LHTNDomain:taskCount
 
 #### Definition
 
@@ -7671,7 +6895,7 @@ do
 end
 ```
 
-### LHTNDomain:type
+#### LHTNDomain:type
 
 #### Definition
 
@@ -7698,7 +6922,7 @@ do
 end
 ```
 
-### LHTNDomain:typeOf
+#### LHTNDomain:typeOf
 
 #### Definition
 
@@ -7730,7 +6954,9 @@ do
 end
 ```
 
-### LInfluenceMap:addLayer
+### LInfluenceMap Methods
+
+#### LInfluenceMap:addLayer
 
 #### Definition
 
@@ -7761,7 +6987,7 @@ do
 end
 ```
 
-### LInfluenceMap:blend
+#### LInfluenceMap:blend
 
 #### Definition
 
@@ -7801,7 +7027,7 @@ do
 end
 ```
 
-### LInfluenceMap:clearAll
+#### LInfluenceMap:clearAll
 
 #### Definition
 
@@ -7828,7 +7054,7 @@ do
 end
 ```
 
-### LInfluenceMap:clearLayer
+#### LInfluenceMap:clearLayer
 
 #### Definition
 
@@ -7860,7 +7086,7 @@ do
 end
 ```
 
-### LInfluenceMap:decay
+#### LInfluenceMap:decay
 
 #### Definition
 
@@ -7894,7 +7120,7 @@ do
 end
 ```
 
-### LInfluenceMap:getCellSize
+#### LInfluenceMap:getCellSize
 
 #### Definition
 
@@ -7921,7 +7147,7 @@ do
 end
 ```
 
-### LInfluenceMap:getHeight
+#### LInfluenceMap:getHeight
 
 #### Definition
 
@@ -7948,7 +7174,7 @@ do
 end
 ```
 
-### LInfluenceMap:getInfluence
+#### LInfluenceMap:getInfluence
 
 #### Definition
 
@@ -7987,7 +7213,7 @@ do
 end
 ```
 
-### LInfluenceMap:getMaxPosition
+#### LInfluenceMap:getMaxPosition
 
 #### Definition
 
@@ -8023,7 +7249,7 @@ do
 end
 ```
 
-### LInfluenceMap:getMinPosition
+#### LInfluenceMap:getMinPosition
 
 #### Definition
 
@@ -8059,7 +7285,7 @@ do
 end
 ```
 
-### LInfluenceMap:getWidth
+#### LInfluenceMap:getWidth
 
 #### Definition
 
@@ -8086,7 +7312,7 @@ do
 end
 ```
 
-### LInfluenceMap:hasLayer
+#### LInfluenceMap:hasLayer
 
 #### Definition
 
@@ -8120,7 +7346,7 @@ do
 end
 ```
 
-### LInfluenceMap:propagate
+#### LInfluenceMap:propagate
 
 #### Definition
 
@@ -8154,7 +7380,7 @@ do
 end
 ```
 
-### LInfluenceMap:queryRect
+#### LInfluenceMap:queryRect
 
 #### Definition
 
@@ -8197,7 +7423,7 @@ do
 end
 ```
 
-### LInfluenceMap:setInfluence
+#### LInfluenceMap:setInfluence
 
 #### Definition
 
@@ -8235,7 +7461,7 @@ do
 end
 ```
 
-### LInfluenceMap:stampInfluence
+#### LInfluenceMap:stampInfluence
 
 #### Definition
 
@@ -8277,7 +7503,7 @@ do
 end
 ```
 
-### LInfluenceMap:type
+#### LInfluenceMap:type
 
 #### Definition
 
@@ -8304,7 +7530,7 @@ do
 end
 ```
 
-### LInfluenceMap:typeOf
+#### LInfluenceMap:typeOf
 
 #### Definition
 
@@ -8336,7 +7562,9 @@ do
 end
 ```
 
-### LMCTSEngine:search
+### LMCTSEngine Methods
+
+#### LMCTSEngine:search
 
 #### Definition
 
@@ -8374,7 +7602,7 @@ do
 end
 ```
 
-### LMCTSEngine:type
+#### LMCTSEngine:type
 
 #### Definition
 
@@ -8401,7 +7629,7 @@ do
 end
 ```
 
-### LMCTSEngine:typeOf
+#### LMCTSEngine:typeOf
 
 #### Definition
 
@@ -8433,7 +7661,9 @@ do
 end
 ```
 
-### LNeedSystem:addNeed
+### LNeedSystem Methods
+
+#### LNeedSystem:addNeed
 
 #### Definition
 
@@ -8470,7 +7700,7 @@ do
 end
 ```
 
-### LNeedSystem:mostUrgent
+#### LNeedSystem:mostUrgent
 
 #### Definition
 
@@ -8500,7 +7730,7 @@ do
 end
 ```
 
-### LNeedSystem:satisfy
+#### LNeedSystem:satisfy
 
 #### Definition
 
@@ -8534,7 +7764,7 @@ do
 end
 ```
 
-### LNeedSystem:type
+#### LNeedSystem:type
 
 #### Definition
 
@@ -8561,7 +7791,7 @@ do
 end
 ```
 
-### LNeedSystem:typeOf
+#### LNeedSystem:typeOf
 
 #### Definition
 
@@ -8593,7 +7823,7 @@ do
 end
 ```
 
-### LNeedSystem:update
+#### LNeedSystem:update
 
 #### Definition
 
@@ -8625,7 +7855,7 @@ do
 end
 ```
 
-### LNeedSystem:valueOf
+#### LNeedSystem:valueOf
 
 #### Definition
 
@@ -8660,7 +7890,9 @@ do
 end
 ```
 
-### LNeuralNet:addLayer
+### LNeuralNet Methods
+
+#### LNeuralNet:addLayer
 
 #### Definition
 
@@ -8695,7 +7927,7 @@ do
 end
 ```
 
-### LNeuralNet:forward
+#### LNeuralNet:forward
 
 #### Definition
 
@@ -8730,7 +7962,7 @@ do
 end
 ```
 
-### LNeuralNet:getWeights
+#### LNeuralNet:getWeights
 
 #### Definition
 
@@ -8759,7 +7991,7 @@ do
 end
 ```
 
-### LNeuralNet:layerCount
+#### LNeuralNet:layerCount
 
 #### Definition
 
@@ -8789,7 +8021,7 @@ do
 end
 ```
 
-### LNeuralNet:paramCount
+#### LNeuralNet:paramCount
 
 #### Definition
 
@@ -8818,7 +8050,7 @@ do
 end
 ```
 
-### LNeuralNet:setWeights
+#### LNeuralNet:setWeights
 
 #### Definition
 
@@ -8853,7 +8085,7 @@ do
 end
 ```
 
-### LNeuralNet:type
+#### LNeuralNet:type
 
 #### Definition
 
@@ -8880,7 +8112,7 @@ do
 end
 ```
 
-### LNeuralNet:typeOf
+#### LNeuralNet:typeOf
 
 #### Definition
 
@@ -8912,7 +8144,9 @@ do
 end
 ```
 
-### LNeuroevolution:bestFitness
+### LNeuroevolution Methods
+
+#### LNeuroevolution:bestFitness
 
 #### Definition
 
@@ -8942,7 +8176,7 @@ do
 end
 ```
 
-### LNeuroevolution:bestNetwork
+#### LNeuroevolution:bestNetwork
 
 #### Definition
 
@@ -8971,7 +8205,7 @@ do
 end
 ```
 
-### LNeuroevolution:chromosomeToNet
+#### LNeuroevolution:chromosomeToNet
 
 #### Definition
 
@@ -9003,7 +8237,7 @@ do
 end
 ```
 
-### LNeuroevolution:evolve
+#### LNeuroevolution:evolve
 
 #### Definition
 
@@ -9028,7 +8262,7 @@ do
 end
 ```
 
-### LNeuroevolution:generation
+#### LNeuroevolution:generation
 
 #### Definition
 
@@ -9057,7 +8291,7 @@ do
 end
 ```
 
-### LNeuroevolution:popSize
+#### LNeuroevolution:popSize
 
 #### Definition
 
@@ -9086,7 +8320,7 @@ do
 end
 ```
 
-### LNeuroevolution:setFitness
+#### LNeuroevolution:setFitness
 
 #### Definition
 
@@ -9118,7 +8352,7 @@ do
 end
 ```
 
-### LNeuroevolution:type
+#### LNeuroevolution:type
 
 #### Definition
 
@@ -9147,7 +8381,7 @@ do
 end
 ```
 
-### LNeuroevolution:typeOf
+#### LNeuroevolution:typeOf
 
 #### Definition
 
@@ -9181,7 +8415,9 @@ do
 end
 ```
 
-### LORCASolver:addAgent
+### LORCASolver Methods
+
+#### LORCASolver:addAgent
 
 #### Definition
 
@@ -9220,7 +8456,7 @@ do
 end
 ```
 
-### LORCASolver:agentCount
+#### LORCASolver:agentCount
 
 #### Definition
 
@@ -9249,7 +8485,7 @@ do
 end
 ```
 
-### LORCASolver:compute
+#### LORCASolver:compute
 
 #### Definition
 
@@ -9281,7 +8517,7 @@ do
 end
 ```
 
-### LORCASolver:getSafeVelocity
+#### LORCASolver:getSafeVelocity
 
 #### Definition
 
@@ -9317,7 +8553,7 @@ do
 end
 ```
 
-### LORCASolver:setPosition
+#### LORCASolver:setPosition
 
 #### Definition
 
@@ -9352,7 +8588,7 @@ do
 end
 ```
 
-### LORCASolver:setPreferredVelocity
+#### LORCASolver:setPreferredVelocity
 
 #### Definition
 
@@ -9387,7 +8623,7 @@ do
 end
 ```
 
-### LORCASolver:type
+#### LORCASolver:type
 
 #### Definition
 
@@ -9414,7 +8650,7 @@ do
 end
 ```
 
-### LORCASolver:typeOf
+#### LORCASolver:typeOf
 
 #### Definition
 
@@ -9446,7 +8682,9 @@ do
 end
 ```
 
-### LQLearner:bestAction
+### LQLearner Methods
+
+#### LQLearner:bestAction
 
 #### Definition
 
@@ -9481,7 +8719,7 @@ do
 end
 ```
 
-### LQLearner:chooseAction
+#### LQLearner:chooseAction
 
 #### Definition
 
@@ -9516,7 +8754,7 @@ do
 end
 ```
 
-### LQLearner:deserialize
+#### LQLearner:deserialize
 
 #### Definition
 
@@ -9548,7 +8786,7 @@ do
 end
 ```
 
-### LQLearner:endEpisode
+#### LQLearner:endEpisode
 
 #### Definition
 
@@ -9575,7 +8813,7 @@ do
 end
 ```
 
-### LQLearner:getActionCount
+#### LQLearner:getActionCount
 
 #### Definition
 
@@ -9604,7 +8842,7 @@ do
 end
 ```
 
-### LQLearner:getDiscountFactor
+#### LQLearner:getDiscountFactor
 
 #### Definition
 
@@ -9633,7 +8871,7 @@ do
 end
 ```
 
-### LQLearner:getEpisodeCount
+#### LQLearner:getEpisodeCount
 
 #### Definition
 
@@ -9663,7 +8901,7 @@ do
 end
 ```
 
-### LQLearner:getExplorationDecay
+#### LQLearner:getExplorationDecay
 
 #### Definition
 
@@ -9692,7 +8930,7 @@ do
 end
 ```
 
-### LQLearner:getExplorationRate
+#### LQLearner:getExplorationRate
 
 #### Definition
 
@@ -9721,7 +8959,7 @@ do
 end
 ```
 
-### LQLearner:getLearningRate
+#### LQLearner:getLearningRate
 
 #### Definition
 
@@ -9750,7 +8988,7 @@ do
 end
 ```
 
-### LQLearner:getQValue
+#### LQLearner:getQValue
 
 #### Definition
 
@@ -9787,7 +9025,7 @@ do
 end
 ```
 
-### LQLearner:getStateCount
+#### LQLearner:getStateCount
 
 #### Definition
 
@@ -9816,7 +9054,7 @@ do
 end
 ```
 
-### LQLearner:learn
+#### LQLearner:learn
 
 #### Definition
 
@@ -9854,7 +9092,7 @@ do
 end
 ```
 
-### LQLearner:serialize
+#### LQLearner:serialize
 
 #### Definition
 
@@ -9884,7 +9122,7 @@ do
 end
 ```
 
-### LQLearner:setDiscountFactor
+#### LQLearner:setDiscountFactor
 
 #### Definition
 
@@ -9915,7 +9153,7 @@ do
 end
 ```
 
-### LQLearner:setExplorationDecay
+#### LQLearner:setExplorationDecay
 
 #### Definition
 
@@ -9947,7 +9185,7 @@ do
 end
 ```
 
-### LQLearner:setExplorationRate
+#### LQLearner:setExplorationRate
 
 #### Definition
 
@@ -9978,7 +9216,7 @@ do
 end
 ```
 
-### LQLearner:setLearningRate
+#### LQLearner:setLearningRate
 
 #### Definition
 
@@ -10009,7 +9247,7 @@ do
 end
 ```
 
-### LQLearner:setQValue
+#### LQLearner:setQValue
 
 #### Definition
 
@@ -10045,7 +9283,7 @@ do
 end
 ```
 
-### LQLearner:type
+#### LQLearner:type
 
 #### Definition
 
@@ -10073,7 +9311,7 @@ do
 end
 ```
 
-### LQLearner:typeOf
+#### LQLearner:typeOf
 
 #### Definition
 
@@ -10107,7 +9345,9 @@ do
 end
 ```
 
-### LSquad:addMember
+### LSquad Methods
+
+#### LSquad:addMember
 
 #### Definition
 
@@ -10138,7 +9378,7 @@ do
 end
 ```
 
-### LSquad:getBlackboard
+#### LSquad:getBlackboard
 
 #### Definition
 
@@ -10167,7 +9407,7 @@ do
 end
 ```
 
-### LSquad:getFormation
+#### LSquad:getFormation
 
 #### Definition
 
@@ -10196,7 +9436,7 @@ do
 end
 ```
 
-### LSquad:getFormationPosition
+#### LSquad:getFormationPosition
 
 #### Definition
 
@@ -10236,7 +9476,7 @@ do
 end
 ```
 
-### LSquad:getFormationSpacing
+#### LSquad:getFormationSpacing
 
 #### Definition
 
@@ -10265,7 +9505,7 @@ do
 end
 ```
 
-### LSquad:getLeader
+#### LSquad:getLeader
 
 #### Definition
 
@@ -10295,7 +9535,7 @@ do
 end
 ```
 
-### LSquad:getMemberCount
+#### LSquad:getMemberCount
 
 #### Definition
 
@@ -10325,7 +9565,7 @@ do
 end
 ```
 
-### LSquad:getMembers
+#### LSquad:getMembers
 
 #### Definition
 
@@ -10355,7 +9595,7 @@ do
 end
 ```
 
-### LSquad:getName
+#### LSquad:getName
 
 #### Definition
 
@@ -10382,7 +9622,7 @@ do
 end
 ```
 
-### LSquad:removeMember
+#### LSquad:removeMember
 
 #### Definition
 
@@ -10414,7 +9654,7 @@ do
 end
 ```
 
-### LSquad:setFormation
+#### LSquad:setFormation
 
 #### Definition
 
@@ -10448,7 +9688,7 @@ do
 end
 ```
 
-### LSquad:setLeader
+#### LSquad:setLeader
 
 #### Definition
 
@@ -10480,7 +9720,7 @@ do
 end
 ```
 
-### LSquad:type
+#### LSquad:type
 
 #### Definition
 
@@ -10507,7 +9747,7 @@ do
 end
 ```
 
-### LSquad:typeOf
+#### LSquad:typeOf
 
 #### Definition
 
@@ -10539,7 +9779,9 @@ do
 end
 ```
 
-### LStateMachine:addState
+### LStateMachine Methods
+
+#### LStateMachine:addState
 
 #### Definition
 
@@ -10572,7 +9814,7 @@ do
 end
 ```
 
-### LStateMachine:addTransition
+#### LStateMachine:addTransition
 
 #### Definition
 
@@ -10610,7 +9852,7 @@ do
 end
 ```
 
-### LStateMachine:forceState
+#### LStateMachine:forceState
 
 #### Definition
 
@@ -10642,7 +9884,7 @@ do
 end
 ```
 
-### LStateMachine:getCurrentState
+#### LStateMachine:getCurrentState
 
 #### Definition
 
@@ -10672,7 +9914,7 @@ do
 end
 ```
 
-### LStateMachine:getTimeInState
+#### LStateMachine:getTimeInState
 
 #### Definition
 
@@ -10702,7 +9944,7 @@ do
 end
 ```
 
-### LStateMachine:setInitialState
+#### LStateMachine:setInitialState
 
 #### Definition
 
@@ -10734,7 +9976,7 @@ do
 end
 ```
 
-### LStateMachine:type
+#### LStateMachine:type
 
 #### Definition
 
@@ -10763,7 +10005,7 @@ do
 end
 ```
 
-### LStateMachine:typeOf
+#### LStateMachine:typeOf
 
 #### Definition
 
@@ -10798,7 +10040,9 @@ do
 end
 ```
 
-### LSteeringManager:addArrive
+### LSteeringManager Methods
+
+#### LSteeringManager:addArrive
 
 #### Definition
 
@@ -10835,7 +10079,7 @@ do
 end
 ```
 
-### LSteeringManager:addCustomBehavior
+#### LSteeringManager:addCustomBehavior
 
 #### Definition
 
@@ -10868,7 +10112,7 @@ do
 end
 ```
 
-### LSteeringManager:addEvade
+#### LSteeringManager:addEvade
 
 #### Definition
 
@@ -10901,7 +10145,7 @@ do
 end
 ```
 
-### LSteeringManager:addFlee
+#### LSteeringManager:addFlee
 
 #### Definition
 
@@ -10938,7 +10182,7 @@ do
 end
 ```
 
-### LSteeringManager:addFlock
+#### LSteeringManager:addFlock
 
 #### Definition
 
@@ -10977,7 +10221,7 @@ do
 end
 ```
 
-### LSteeringManager:addPursue
+#### LSteeringManager:addPursue
 
 #### Definition
 
@@ -11010,7 +10254,7 @@ do
 end
 ```
 
-### LSteeringManager:addSeek
+#### LSteeringManager:addSeek
 
 #### Definition
 
@@ -11045,7 +10289,7 @@ do
 end
 ```
 
-### LSteeringManager:addWander
+#### LSteeringManager:addWander
 
 #### Definition
 
@@ -11082,7 +10326,7 @@ do
 end
 ```
 
-### LSteeringManager:applyCustomSteering
+#### LSteeringManager:applyCustomSteering
 
 #### Definition
 
@@ -11120,7 +10364,7 @@ do
 end
 ```
 
-### LSteeringManager:calculate
+#### LSteeringManager:calculate
 
 #### Definition
 
@@ -11168,7 +10412,7 @@ do
 end
 ```
 
-### LSteeringManager:clearPath
+#### LSteeringManager:clearPath
 
 #### Definition
 
@@ -11195,7 +10439,7 @@ do
 end
 ```
 
-### LSteeringManager:enableSpatialHash
+#### LSteeringManager:enableSpatialHash
 
 #### Definition
 
@@ -11226,7 +10470,7 @@ do
 end
 ```
 
-### LSteeringManager:getBehaviorCount
+#### LSteeringManager:getBehaviorCount
 
 #### Definition
 
@@ -11256,7 +10500,7 @@ do
 end
 ```
 
-### LSteeringManager:getCombineMode
+#### LSteeringManager:getCombineMode
 
 #### Definition
 
@@ -11286,7 +10530,7 @@ do
 end
 ```
 
-### LSteeringManager:getLastSteering
+#### LSteeringManager:getLastSteering
 
 #### Definition
 
@@ -11317,7 +10561,7 @@ do
 end
 ```
 
-### LSteeringManager:getPathProgress
+#### LSteeringManager:getPathProgress
 
 #### Definition
 
@@ -11346,7 +10590,7 @@ do
 end
 ```
 
-### LSteeringManager:hasPath
+#### LSteeringManager:hasPath
 
 #### Definition
 
@@ -11376,7 +10620,7 @@ do
 end
 ```
 
-### LSteeringManager:setCombineMode
+#### LSteeringManager:setCombineMode
 
 #### Definition
 
@@ -11407,7 +10651,7 @@ do
 end
 ```
 
-### LSteeringManager:setPath
+#### LSteeringManager:setPath
 
 #### Definition
 
@@ -11442,7 +10686,7 @@ do
 end
 ```
 
-### LSteeringManager:setSpatialHashCellSize
+#### LSteeringManager:setSpatialHashCellSize
 
 #### Definition
 
@@ -11472,7 +10716,7 @@ do
 end
 ```
 
-### LSteeringManager:type
+#### LSteeringManager:type
 
 #### Definition
 
@@ -11500,7 +10744,7 @@ do
 end
 ```
 
-### LSteeringManager:typeOf
+#### LSteeringManager:typeOf
 
 #### Definition
 
@@ -11534,7 +10778,9 @@ do
 end
 ```
 
-### LStimulusWorld:addAuditory
+### LStimulusWorld Methods
+
+#### LStimulusWorld:addAuditory
 
 #### Definition
 
@@ -11577,7 +10823,7 @@ do
 end
 ```
 
-### LStimulusWorld:addVisual
+#### LStimulusWorld:addVisual
 
 #### Definition
 
@@ -11618,7 +10864,7 @@ do
 end
 ```
 
-### LStimulusWorld:clear
+#### LStimulusWorld:clear
 
 #### Definition
 
@@ -11645,7 +10891,7 @@ do
 end
 ```
 
-### LStimulusWorld:count
+#### LStimulusWorld:count
 
 #### Definition
 
@@ -11674,7 +10920,7 @@ do
 end
 ```
 
-### LStimulusWorld:remove
+#### LStimulusWorld:remove
 
 #### Definition
 
@@ -11708,7 +10954,7 @@ do
 end
 ```
 
-### LStimulusWorld:type
+#### LStimulusWorld:type
 
 #### Definition
 
@@ -11735,7 +10981,7 @@ do
 end
 ```
 
-### LStimulusWorld:typeOf
+#### LStimulusWorld:typeOf
 
 #### Definition
 
@@ -11767,7 +11013,7 @@ do
 end
 ```
 
-### LStimulusWorld:update
+#### LStimulusWorld:update
 
 #### Definition
 
@@ -11798,7 +11044,9 @@ do
 end
 ```
 
-### LStrategyAI:activeGoal
+### LStrategyAI Methods
+
+#### LStrategyAI:activeGoal
 
 #### Definition
 
@@ -11827,7 +11075,7 @@ do
 end
 ```
 
-### LStrategyAI:addGoal
+#### LStrategyAI:addGoal
 
 #### Definition
 
@@ -11859,7 +11107,7 @@ do
 end
 ```
 
-### LStrategyAI:addTag
+#### LStrategyAI:addTag
 
 #### Definition
 
@@ -11890,7 +11138,7 @@ do
 end
 ```
 
-### LStrategyAI:forceEvaluate
+#### LStrategyAI:forceEvaluate
 
 #### Definition
 
@@ -11922,7 +11170,7 @@ do
 end
 ```
 
-### LStrategyAI:removeTag
+#### LStrategyAI:removeTag
 
 #### Definition
 
@@ -11953,7 +11201,7 @@ do
 end
 ```
 
-### LStrategyAI:timeUntilNext
+#### LStrategyAI:timeUntilNext
 
 #### Definition
 
@@ -11981,7 +11229,7 @@ do
     print("time until next = " .. strat:timeUntilNext())
 ```
 
-### LStrategyAI:type
+#### LStrategyAI:type
 
 #### Definition
 
@@ -12008,7 +11256,7 @@ do
 end
 ```
 
-### LStrategyAI:typeOf
+#### LStrategyAI:typeOf
 
 #### Definition
 
@@ -12040,7 +11288,7 @@ do
 end
 ```
 
-### LStrategyAI:update
+#### LStrategyAI:update
 
 #### Definition
 
@@ -12074,7 +11322,9 @@ do
 end
 ```
 
-### LTraitProfile:addModifier
+### LTraitProfile Methods
+
+#### LTraitProfile:addModifier
 
 #### Definition
 
@@ -12111,7 +11361,7 @@ do
 end
 ```
 
-### LTraitProfile:archetype
+#### LTraitProfile:archetype
 
 #### Definition
 
@@ -12141,7 +11391,7 @@ do
 end
 ```
 
-### LTraitProfile:get
+#### LTraitProfile:get
 
 #### Definition
 
@@ -12176,7 +11426,7 @@ do
 end
 ```
 
-### LTraitProfile:getBase
+#### LTraitProfile:getBase
 
 #### Definition
 
@@ -12210,7 +11460,7 @@ do
 end
 ```
 
-### LTraitProfile:has
+#### LTraitProfile:has
 
 #### Definition
 
@@ -12244,7 +11494,7 @@ do
 end
 ```
 
-### LTraitProfile:removeModifiers
+#### LTraitProfile:removeModifiers
 
 #### Definition
 
@@ -12276,7 +11526,7 @@ do
 end
 ```
 
-### LTraitProfile:set
+#### LTraitProfile:set
 
 #### Definition
 
@@ -12309,7 +11559,7 @@ do
 end
 ```
 
-### LTraitProfile:traitCount
+#### LTraitProfile:traitCount
 
 #### Definition
 
@@ -12339,7 +11589,7 @@ do
 end
 ```
 
-### LTraitProfile:type
+#### LTraitProfile:type
 
 #### Definition
 
@@ -12366,7 +11616,7 @@ do
 end
 ```
 
-### LTraitProfile:typeOf
+#### LTraitProfile:typeOf
 
 #### Definition
 
@@ -12398,7 +11648,7 @@ do
 end
 ```
 
-### LTraitProfile:update
+#### LTraitProfile:update
 
 #### Definition
 
@@ -12430,7 +11680,9 @@ do
 end
 ```
 
-### LUtilityAI:addAction
+### LUtilityAI Methods
+
+#### LUtilityAI:addAction
 
 #### Definition
 
@@ -12465,7 +11717,7 @@ do
 end
 ```
 
-### LUtilityAI:addConsideration
+#### LUtilityAI:addConsideration
 
 #### Definition
 
@@ -12511,7 +11763,7 @@ do
 end
 ```
 
-### LUtilityAI:evaluate
+#### LUtilityAI:evaluate
 
 #### Definition
 
@@ -12541,7 +11793,7 @@ do
 end
 ```
 
-### LUtilityAI:getActionCount
+#### LUtilityAI:getActionCount
 
 #### Definition
 
@@ -12571,7 +11823,7 @@ do
 end
 ```
 
-### LUtilityAI:getLastAction
+#### LUtilityAI:getLastAction
 
 #### Definition
 
@@ -12601,7 +11853,7 @@ do
 end
 ```
 
-### LUtilityAI:type
+#### LUtilityAI:type
 
 #### Definition
 
@@ -12628,7 +11880,7 @@ do
 end
 ```
 
-### LUtilityAI:typeOf
+#### LUtilityAI:typeOf
 
 #### Definition
 

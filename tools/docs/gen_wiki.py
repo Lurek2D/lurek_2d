@@ -14,7 +14,7 @@ import json
 import os
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +52,7 @@ CALLBACK_ORDER = [
 SECTION_EMOJI: dict[str, str] = {
     "Purpose": "\U0001f3af",
     "Summary": "\U0001f4cb",
+    "Source Files": "\U0001f4c1",
     "Key Types": "\U0001f9e9",
     "API Overview": "\U0001f4d6",
     "Module Functions": "\u2699\ufe0f",
@@ -85,6 +86,7 @@ class SpecInfo:
     purpose: str = ""
     summary: str = ""
     namespace: str = ""
+    source_docs: list[tuple[str, list[str]]] = field(default_factory=list)
 
 
 @dataclass
@@ -227,15 +229,39 @@ def navigation_block(extra_links: list[tuple[str, str]] | None = None) -> list[s
 def table_of_contents(body: list[str]) -> list[str]:
     entries: list[str] = []
     for line in body:
-        match = re.match(r"^(#{2,4})\s+(.+?)\s*$", line)
+        match = re.match(r"^(#{2,3})\s+(.+?)\s*$", line)
         if not match:
             continue
         title = re.sub(r"<[^>]+>", "", match.group(2)).strip()
-        if not title or title.lower() in {"table of contents", "navigation", "example"}:
+        if not title or title.lower() in {"table of contents", "navigation", "example", "definition", "description"}:
             continue
         indent = "  " * (len(match.group(1)) - 2)
         entries.append(f"{indent}- [{strip_links(title)}](#{heading_anchor(title)})")
     return ["## Table of Contents", "", *(entries or ["- [Overview](#overview)"])]
+
+
+def parse_source_docs(text: str) -> list[tuple[str, list[str]]]:
+    source_docs = section(text, "Source Documentation")
+    if not source_docs:
+        return []
+
+    result: list[tuple[str, list[str]]] = []
+    current_file = ""
+    current_items: list[str] = []
+    for raw_line in source_docs.splitlines():
+        line = raw_line.strip()
+        file_match = re.match(r"^###\s+`([^`]+)`\s*$", line)
+        if file_match:
+            if current_file:
+                result.append((current_file, current_items))
+            current_file = file_match.group(1)
+            current_items = []
+            continue
+        if current_file and line.startswith("- "):
+            current_items.append(clean_text(line[2:]))
+    if current_file:
+        result.append((current_file, current_items))
+    return result
 
 
 def file_link(context: Context, target: Path, label: str | None = None) -> str:
@@ -305,6 +331,7 @@ def parse_specs() -> dict[str, SpecInfo]:
         namespace_match = re.search(r"^- Primary Lua namespace:\s*`?([^`\n]+)`?", general, re.MULTILINE)
         info.group = info.group or (group_match.group(1).strip() if group_match else "")
         info.namespace = namespace_match.group(1).strip() if namespace_match else f"lurek.{module}"
+        info.source_docs = parse_source_docs(text)
         specs[module] = info
     return specs
 
@@ -872,13 +899,13 @@ def type_example_section(
     return rendered_example_section(context, type_example(context, module, class_name, function_list, class_list))
 
 
-def detail(context: Context, function_data: dict[str, Any], module: str, class_name: str | None = None) -> list[str]:
+def detail(context: Context, function_data: dict[str, Any], module: str, class_name: str | None = None, heading_level: int = 3) -> list[str]:
     fn_name = str(function_data.get("name", ""))
     if class_name:
         short_heading = f"{class_name}:{fn_name}"
     else:
         short_heading = str(function_data.get("lua_name", "") or f"lurek.{module}.{fn_name}")
-    lines = [f"### {short_heading}", ""]
+    lines = [f"{'#' * heading_level} {short_heading}", ""]
     stub_keys = callable_example_keys(module, function_data, class_name)
     callable_stub = next((context.callable_stubs[example_key(k)] for k in stub_keys if example_key(k) in context.callable_stubs), "")
     definition_block = callable_stub or signature(function_data, module, class_name)
@@ -945,6 +972,19 @@ def module_page(context: Context, module: str) -> Page:
         body.append(f"**Namespace:** `{namespace(context, module)}`")
     body += ["", sec("Purpose"), "", purpose, "", BACK_TOP, "", sec("Summary"), "", summary, "", BACK_TOP]
 
+    body += ["", sec("Source Files"), ""]
+    if info and info.source_docs:
+        for file_name, descriptions in info.source_docs:
+            body += [f"### `{file_name}`", ""]
+            if descriptions:
+                body += [f"- {item}" for item in descriptions]
+                body.append("")
+            else:
+                body += ["No generated file description was found.", ""]
+    else:
+        body += ["No source-file descriptions were found in the module spec.", ""]
+    body += [BACK_TOP]
+
     class_list = classes(api_module)
     body += ["", sec("Key Types"), ""]
     if class_list:
@@ -959,21 +999,18 @@ def module_page(context: Context, module: str) -> Page:
     body += ["", sec("API Overview"), ""]
     if module in context.specs:
         body.append(f"- Source spec: {file_link(context, SPEC_DIR / (module + '.md'), 'docs/specs/' + module + '.md')}")
-    body.append("")
-    if function_list:
-        body.append("```lua")
-        body += [compact_line(function_data, module) for function_data in function_list[:18]]
-        if len(function_list) > 18:
-            body.append(f"-- ... {len(function_list) - 18} more module functions")
-        body.append("```")
-    else:
-        body.append("No module functions appear in the generated Lua API data.")
+    body += [
+        f"- Module-level functions: {len(function_list)}",
+        f"- Lua-visible types: {len(class_list)}",
+        f"- Total type methods: {sum(len(methods(class_data)) for _class_name, class_data in class_list)}",
+        "",
+    ]
     body += ["", BACK_TOP]
 
     if function_list:
-        body += ["", sec("Module Functions"), ""]
+        body += ["", sec("Module Functions"), "", "### Module-Level Functions", ""]
         for function_data in function_list:
-            body += detail(context, function_data, module)
+            body += detail(context, function_data, module, heading_level=4)
         body += ["", BACK_TOP]
     if class_list:
         body += ["", sec("Module Types"), ""]
@@ -992,8 +1029,9 @@ def module_page(context: Context, module: str) -> Page:
         body += ["", BACK_TOP]
         body += ["", sec("Module Methods"), ""]
         for class_name, class_data in class_list:
+            body += [f"### {class_name} Methods", ""]
             for method_data in methods(class_data):
-                body += detail(context, method_data, module, class_name)
+                body += detail(context, method_data, module, class_name, heading_level=4)
         body += ["", BACK_TOP]
 
     body += ["", sec("Examples"), ""]

@@ -10,174 +10,15 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [event_loop.rs](#eventlooprs)
+  - [management.rs](#managementrs)
+  - [mod.rs](#modrs)
+  - [viewport.rs](#viewportrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.window.close](#lurekwindowclose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.flash](#lurekwindowflash)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.focus](#lurekwindowfocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.fromPixels](#lurekwindowfrompixels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getCurrentDisplay](#lurekwindowgetcurrentdisplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getDesktopDimensions](#lurekwindowgetdesktopdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getDimensions](#lurekwindowgetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getDisplayCount](#lurekwindowgetdisplaycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getDisplayName](#lurekwindowgetdisplayname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getDisplayOrientation](#lurekwindowgetdisplayorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getDisplays](#lurekwindowgetdisplays)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getDPIScale](#lurekwindowgetdpiscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getFullscreen](#lurekwindowgetfullscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getFullscreenModes](#lurekwindowgetfullscreenmodes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getGameHeight](#lurekwindowgetgameheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getGameWidth](#lurekwindowgetgamewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getHeight](#lurekwindowgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getMode](#lurekwindowgetmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getNativeDPIScale](#lurekwindowgetnativedpiscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getPixelDimensions](#lurekwindowgetpixeldimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getPosition](#lurekwindowgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getSafeArea](#lurekwindowgetsafearea)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getScaleInfo](#lurekwindowgetscaleinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getScaleMode](#lurekwindowgetscalemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getSystemTheme](#lurekwindowgetsystemtheme)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getTitle](#lurekwindowgettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getVSync](#lurekwindowgetvsync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.getWidth](#lurekwindowgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.hasFocus](#lurekwindowhasfocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.hasMouseFocus](#lurekwindowhasmousefocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.isFullscreen](#lurekwindowisfullscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.isHighDPIAllowed](#lurekwindowishighdpiallowed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.isMaximized](#lurekwindowismaximized)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.isMinimized](#lurekwindowisminimized)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.isOpen](#lurekwindowisopen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.isResizable](#lurekwindowisresizable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.isVisible](#lurekwindowisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.maximize](#lurekwindowmaximize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.minimize](#lurekwindowminimize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.onDpiChange](#lurekwindowondpichange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.openFileDialog](#lurekwindowopenfiledialog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.pollDpiChange](#lurekwindowpolldpichange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.requestAttention](#lurekwindowrequestattention)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.restore](#lurekwindowrestore)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setDisplay](#lurekwindowsetdisplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setFullscreen](#lurekwindowsetfullscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setIcon](#lurekwindowseticon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setMode](#lurekwindowsetmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setPosition](#lurekwindowsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setScaleMode](#lurekwindowsetscalemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setTitle](#lurekwindowsettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.setVSync](#lurekwindowsetvsync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.showMessageBox](#lurekwindowshowmessagebox)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.toPixels](#lurekwindowtopixels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.window.windowConfig](#lurekwindowwindowconfig)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -201,6 +42,39 @@ Multi-monitor enumeration provides `DisplayInfo` snapshots with resolution, DPI 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `event_loop.rs`
+
+- Multi-monitor enumeration, display info snapshots, and primary-monitor detection.
+- Monitor selection with fallback logic (current → primary → first available).
+- Window centering and cross-display movement helpers.
+- Startup monitor resolution for initial window placement.
+
+### `management.rs`
+
+- Stage deferred window property changes (title, size, position, icon, display).
+- Fullscreen and vsync mode switching with exclusive/desktop variants.
+- Minimize, maximize, restore, close, and attention-request staging.
+- Focus, visibility, and mouse-focus queries.
+- DPI-aware pixel conversion helpers.
+- Combined mode update and snapshot via `set_mode`/`get_mode`.
+- Native OS message-box dialog via `rfd`.
+
+### `mod.rs`
+
+- OS window lifecycle: creation, sizing, positioning, fullscreen, and DPI handling.
+- Multi-monitor support: display enumeration, selection, and window placement.
+- Virtual viewport: logical-to-pixel scaling and scale-mode selection.
+
+### `viewport.rs`
+
+- Logical game viewport size queries and scale-mode staging.
+- Coordinate conversion between logical game space and physical screen pixels.
+- Viewport scale/offset snapshot via `ScaleInfo`.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -210,34 +84,18 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/window.md](../blob/main/docs/specs/window.md)
+- Module-level functions: 55
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.window.close() -- Closes the window and signals the engine to shut down.
-lurek.window.flash() -- Flashes the window briefly to attract the user's attention.
-lurek.window.focus() -- Requests keyboard focus for the window. No-op if already focused.
-lurek.window.fromPixels(value: number) -> number -- Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.
-lurek.window.getCurrentDisplay() -> number -- Returns the index of the display that currently contains the window.
-lurek.window.getDesktopDimensions([display]: integer) -> number -- Returns the desktop resolution of a specific display, or the current display if none is specified.
-lurek.window.getDimensions() -> number -- Returns the current window width and height in logical pixels.
-lurek.window.getDisplayCount() -> number -- Returns the number of connected displays (monitors).
-lurek.window.getDisplayName([display]: integer) -> string -- Returns the human-readable name of a display. Returns "Unknown" if the display cannot be identified.
-lurek.window.getDisplayOrientation() -> string -- Returns the display orientation based on the window's aspect ratio.
-lurek.window.getDisplays() -> table -- Returns a list of all connected displays with their properties. Each entry contains index, name, position (...
-lurek.window.getDPIScale() -> number -- Returns the current DPI scale factor of the window. A value of 2.0 means the display uses 2x scaling (e.g.,...
-lurek.window.getFullscreen() -> boolean -- Returns the current fullscreen state and type.
-lurek.window.getFullscreenModes() -> table -- Returns a list of all supported fullscreen video modes across all monitors. Each entry contains width, heig...
-lurek.window.getGameHeight() -> number -- Returns the logical game height as defined by the current scale mode and game configuration.
-lurek.window.getGameWidth() -> number -- Returns the logical game width as defined by the current scale mode and game configuration.
-lurek.window.getHeight() -> number -- Returns the current window height in logical (DPI-independent) pixels.
-lurek.window.getMode() -> number -- Returns the current window display mode: width, height, and a flags table containing fullscreen state, full...
--- ... 37 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.window.close
+### Module-Level Functions
+
+#### lurek.window.close
 
 #### Definition
 
@@ -259,7 +117,7 @@ do
     print("call lurek.window.close() from a quit button when you are ready to end the session")
 ```
 
-### lurek.window.flash
+#### lurek.window.flash
 
 #### Definition
 
@@ -284,7 +142,7 @@ do
 end
 ```
 
-### lurek.window.focus
+#### lurek.window.focus
 
 #### Definition
 
@@ -309,7 +167,7 @@ do
 end
 ```
 
-### lurek.window.fromPixels
+#### lurek.window.fromPixels
 
 #### Definition
 
@@ -344,7 +202,7 @@ do
 end
 ```
 
-### lurek.window.getCurrentDisplay
+#### lurek.window.getCurrentDisplay
 
 #### Definition
 
@@ -374,7 +232,7 @@ do
 end
 ```
 
-### lurek.window.getDesktopDimensions
+#### lurek.window.getDesktopDimensions
 
 #### Definition
 
@@ -410,7 +268,7 @@ do
 end
 ```
 
-### lurek.window.getDimensions
+#### lurek.window.getDimensions
 
 #### Definition
 
@@ -439,7 +297,7 @@ do
 end
 ```
 
-### lurek.window.getDisplayCount
+#### lurek.window.getDisplayCount
 
 #### Definition
 
@@ -469,7 +327,7 @@ do
 end
 ```
 
-### lurek.window.getDisplayName
+#### lurek.window.getDisplayName
 
 #### Definition
 
@@ -504,7 +362,7 @@ do
 end
 ```
 
-### lurek.window.getDisplayOrientation
+#### lurek.window.getDisplayOrientation
 
 #### Definition
 
@@ -532,7 +390,7 @@ do
 end
 ```
 
-### lurek.window.getDisplays
+#### lurek.window.getDisplays
 
 #### Definition
 
@@ -562,7 +420,7 @@ do
 end
 ```
 
-### lurek.window.getDPIScale
+#### lurek.window.getDPIScale
 
 #### Definition
 
@@ -588,7 +446,7 @@ do
 end
 ```
 
-### lurek.window.getFullscreen
+#### lurek.window.getFullscreen
 
 #### Definition
 
@@ -614,7 +472,7 @@ do
 end
 ```
 
-### lurek.window.getFullscreenModes
+#### lurek.window.getFullscreenModes
 
 #### Definition
 
@@ -643,7 +501,7 @@ do
 end
 ```
 
-### lurek.window.getGameHeight
+#### lurek.window.getGameHeight
 
 #### Definition
 
@@ -671,7 +529,7 @@ do
 end
 ```
 
-### lurek.window.getGameWidth
+#### lurek.window.getGameWidth
 
 #### Definition
 
@@ -699,7 +557,7 @@ do
 end
 ```
 
-### lurek.window.getHeight
+#### lurek.window.getHeight
 
 #### Definition
 
@@ -728,7 +586,7 @@ do
 end
 ```
 
-### lurek.window.getMode
+#### lurek.window.getMode
 
 #### Definition
 
@@ -759,7 +617,7 @@ do
 end
 ```
 
-### lurek.window.getNativeDPIScale
+#### lurek.window.getNativeDPIScale
 
 #### Definition
 
@@ -785,7 +643,7 @@ do
 end
 ```
 
-### lurek.window.getPixelDimensions
+#### lurek.window.getPixelDimensions
 
 #### Definition
 
@@ -813,7 +671,7 @@ do
 end
 ```
 
-### lurek.window.getPosition
+#### lurek.window.getPosition
 
 #### Definition
 
@@ -841,7 +699,7 @@ do
 end
 ```
 
-### lurek.window.getSafeArea
+#### lurek.window.getSafeArea
 
 #### Definition
 
@@ -872,7 +730,7 @@ do
 end
 ```
 
-### lurek.window.getScaleInfo
+#### lurek.window.getScaleInfo
 
 #### Definition
 
@@ -901,7 +759,7 @@ do
 end
 ```
 
-### lurek.window.getScaleMode
+#### lurek.window.getScaleMode
 
 #### Definition
 
@@ -930,7 +788,7 @@ do
 end
 ```
 
-### lurek.window.getSystemTheme
+#### lurek.window.getSystemTheme
 
 #### Definition
 
@@ -958,7 +816,7 @@ do
 end
 ```
 
-### lurek.window.getTitle
+#### lurek.window.getTitle
 
 #### Definition
 
@@ -985,7 +843,7 @@ do
 end
 ```
 
-### lurek.window.getVSync
+#### lurek.window.getVSync
 
 #### Definition
 
@@ -1014,7 +872,7 @@ do
 end
 ```
 
-### lurek.window.getWidth
+#### lurek.window.getWidth
 
 #### Definition
 
@@ -1043,7 +901,7 @@ do
 end
 ```
 
-### lurek.window.hasFocus
+#### lurek.window.hasFocus
 
 #### Definition
 
@@ -1071,7 +929,7 @@ do
 end
 ```
 
-### lurek.window.hasMouseFocus
+#### lurek.window.hasMouseFocus
 
 #### Definition
 
@@ -1097,7 +955,7 @@ do
 end
 ```
 
-### lurek.window.isFullscreen
+#### lurek.window.isFullscreen
 
 #### Definition
 
@@ -1123,7 +981,7 @@ do
 end
 ```
 
-### lurek.window.isHighDPIAllowed
+#### lurek.window.isHighDPIAllowed
 
 #### Definition
 
@@ -1150,7 +1008,7 @@ do
 end
 ```
 
-### lurek.window.isMaximized
+#### lurek.window.isMaximized
 
 #### Definition
 
@@ -1178,7 +1036,7 @@ do
 end
 ```
 
-### lurek.window.isMinimized
+#### lurek.window.isMinimized
 
 #### Definition
 
@@ -1206,7 +1064,7 @@ do
 end
 ```
 
-### lurek.window.isOpen
+#### lurek.window.isOpen
 
 #### Definition
 
@@ -1233,7 +1091,7 @@ do
 end
 ```
 
-### lurek.window.isResizable
+#### lurek.window.isResizable
 
 #### Definition
 
@@ -1260,7 +1118,7 @@ do
 end
 ```
 
-### lurek.window.isVisible
+#### lurek.window.isVisible
 
 #### Definition
 
@@ -1287,7 +1145,7 @@ do
 end
 ```
 
-### lurek.window.maximize
+#### lurek.window.maximize
 
 #### Definition
 
@@ -1313,7 +1171,7 @@ do
 end
 ```
 
-### lurek.window.minimize
+#### lurek.window.minimize
 
 #### Definition
 
@@ -1339,7 +1197,7 @@ do
 end
 ```
 
-### lurek.window.onDpiChange
+#### lurek.window.onDpiChange
 
 #### Definition
 
@@ -1370,7 +1228,7 @@ do
 end
 ```
 
-### lurek.window.openFileDialog
+#### lurek.window.openFileDialog
 
 #### Definition
 
@@ -1404,7 +1262,7 @@ do
 end
 ```
 
-### lurek.window.pollDpiChange
+#### lurek.window.pollDpiChange
 
 #### Definition
 
@@ -1433,7 +1291,7 @@ do
 end
 ```
 
-### lurek.window.requestAttention
+#### lurek.window.requestAttention
 
 #### Definition
 
@@ -1458,7 +1316,7 @@ do
 end
 ```
 
-### lurek.window.restore
+#### lurek.window.restore
 
 #### Definition
 
@@ -1484,7 +1342,7 @@ do
 end
 ```
 
-### lurek.window.setDisplay
+#### lurek.window.setDisplay
 
 #### Definition
 
@@ -1514,7 +1372,7 @@ do
 end
 ```
 
-### lurek.window.setFullscreen
+#### lurek.window.setFullscreen
 
 #### Definition
 
@@ -1547,7 +1405,7 @@ do
 end
 ```
 
-### lurek.window.setIcon
+#### lurek.window.setIcon
 
 #### Definition
 
@@ -1577,7 +1435,7 @@ do
 end
 ```
 
-### lurek.window.setMode
+#### lurek.window.setMode
 
 #### Definition
 
@@ -1611,7 +1469,7 @@ do
 end
 ```
 
-### lurek.window.setPosition
+#### lurek.window.setPosition
 
 #### Definition
 
@@ -1643,7 +1501,7 @@ do
 end
 ```
 
-### lurek.window.setScaleMode
+#### lurek.window.setScaleMode
 
 #### Definition
 
@@ -1674,7 +1532,7 @@ do
 end
 ```
 
-### lurek.window.setTitle
+#### lurek.window.setTitle
 
 #### Definition
 
@@ -1704,7 +1562,7 @@ do
 end
 ```
 
-### lurek.window.setVSync
+#### lurek.window.setVSync
 
 #### Definition
 
@@ -1735,7 +1593,7 @@ do
 end
 ```
 
-### lurek.window.showMessageBox
+#### lurek.window.showMessageBox
 
 #### Definition
 
@@ -1774,7 +1632,7 @@ do
 end
 ```
 
-### lurek.window.toPixels
+#### lurek.window.toPixels
 
 #### Definition
 
@@ -1809,7 +1667,7 @@ do
 end
 ```
 
-### lurek.window.windowConfig
+#### lurek.window.windowConfig
 
 #### Definition
 

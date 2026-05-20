@@ -10,48 +10,11 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.engine.fps](#lurekenginefps)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.frameCount](#lurekengineframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.getConfigRevision](#lurekenginegetconfigrevision)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.getFrameBudget](#lurekenginegetframebudget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.getFrameProfile](#lurekenginegetframeprofile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.getFrameProfileText](#lurekenginegetframeprofiletext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.getResourceStats](#lurekenginegetresourcestats)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.getVersion](#lurekenginegetversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.isDebug](#lurekengineisdebug)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.memoryUsage](#lurekenginememoryusage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.platform](#lurekengineplatform)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.setResourceBudget](#lurekenginesetresourcebudget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.engine.uptime](#lurekengineuptime)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -73,6 +36,12 @@ lurek.engine -- Runtime metadata and diagnostics bindings for version, platform,
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+No source-file descriptions were found in the module spec.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -81,28 +50,18 @@ This module has no separate Lua-visible classes in the generated API data.
 
 ## 📖 API Overview
 
+- Module-level functions: 13
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.engine.fps() -> number -- Returns the latest frames-per-second value stored by the runtime.
-lurek.engine.frameCount() -> integer -- Returns the number of frames counted by the shared runtime clock.
-lurek.engine.getConfigRevision() -> integer -- Returns the configuration reload revision counter.
-lurek.engine.getFrameBudget() -> number -- Returns the target frame budget for a 60 FPS update loop.
-lurek.engine.getFrameProfile() -> table -- Returns the latest frame timing profile split by engine phase.
-lurek.engine.getFrameProfileText() -> string -- Returns the latest frame timing profile formatted as one text line.
-lurek.engine.getResourceStats() -> table -- Returns current resource memory usage and object counts by resource kind.
-lurek.engine.getVersion() -> string -- Returns the engine crate version string embedded at build time.
-lurek.engine.isDebug() -> boolean -- Returns whether the engine binary was built with debug assertions.
-lurek.engine.memoryUsage() -> table -- Returns Lua VM memory usage as bytes and rounded kilobytes.
-lurek.engine.platform() -> string -- Returns the current desktop operating system name.
-lurek.engine.setResourceBudget(budget_bytes: integer) -- Sets the resource memory budget used by resource statistics reporting.
-lurek.engine.uptime() -> number -- Returns total engine runtime accumulated by the main loop.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.engine.fps
+### Module-Level Functions
+
+#### lurek.engine.fps
 
 #### Definition
 
@@ -129,7 +88,7 @@ do
 end
 ```
 
-### lurek.engine.frameCount
+#### lurek.engine.frameCount
 
 #### Definition
 
@@ -156,7 +115,7 @@ do
 end
 ```
 
-### lurek.engine.getConfigRevision
+#### lurek.engine.getConfigRevision
 
 #### Definition
 
@@ -183,7 +142,7 @@ do
 end
 ```
 
-### lurek.engine.getFrameBudget
+#### lurek.engine.getFrameBudget
 
 #### Definition
 
@@ -210,7 +169,7 @@ do
 end
 ```
 
-### lurek.engine.getFrameProfile
+#### lurek.engine.getFrameProfile
 
 #### Definition
 
@@ -237,7 +196,7 @@ do
 end
 ```
 
-### lurek.engine.getFrameProfileText
+#### lurek.engine.getFrameProfileText
 
 #### Definition
 
@@ -264,7 +223,7 @@ do
 end
 ```
 
-### lurek.engine.getResourceStats
+#### lurek.engine.getResourceStats
 
 #### Definition
 
@@ -291,7 +250,7 @@ do
 end
 ```
 
-### lurek.engine.getVersion
+#### lurek.engine.getVersion
 
 #### Definition
 
@@ -318,7 +277,7 @@ do
 end
 ```
 
-### lurek.engine.isDebug
+#### lurek.engine.isDebug
 
 #### Definition
 
@@ -345,7 +304,7 @@ do
 end
 ```
 
-### lurek.engine.memoryUsage
+#### lurek.engine.memoryUsage
 
 #### Definition
 
@@ -372,7 +331,7 @@ do
 end
 ```
 
-### lurek.engine.platform
+#### lurek.engine.platform
 
 #### Definition
 
@@ -399,7 +358,7 @@ do
 end
 ```
 
-### lurek.engine.setResourceBudget
+#### lurek.engine.setResourceBudget
 
 #### Definition
 
@@ -428,7 +387,7 @@ do
 end
 ```
 
-### lurek.engine.uptime
+#### lurek.engine.uptime
 
 #### Definition
 

@@ -10,89 +10,23 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [atlas.rs](#atlasrs)
+  - [mod.rs](#modrs)
+  - [nine_slice.rs](#nineslicers)
+  - [sprite.rs](#spriters)
+  - [sprite_batch.rs](#spritebatchrs)
+  - [sprite_sheet.rs](#spritesheetrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.sprite.newAtlasSheet](#lurekspritenewatlassheet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.sprite.newRPGMakerSheet](#lurekspritenewrpgmakersheet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.sprite.newSheet](#lurekspritenewsheet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.sprite.parseAsepriteAtlas](#lurekspriteparseasepriteatlas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.sprite.parseAtlas](#lurekspriteparseatlas)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LSpriteAtlas](#lspriteatlas)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSpriteSheet](#lspritesheet)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LSpriteAtlas:entryCount](#lspriteatlasentrycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteAtlas:entryNames](#lspriteatlasentrynames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteAtlas:getByIndex](#lspriteatlasgetbyindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteAtlas:getEntry](#lspriteatlasgetentry)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteAtlas:getFlipped](#lspriteatlasgetflipped)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteAtlas:type](#lspriteatlastype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteAtlas:typeOf](#lspriteatlastypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:drawToImage](#lspritesheetdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getColumn](#lspritesheetgetcolumn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getFrame](#lspritesheetgetframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getFrameCount](#lspritesheetgetframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getFrameSize](#lspritesheetgetframesize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getGridSize](#lspritesheetgetgridsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getGroupFrames](#lspritesheetgetgroupframes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getGroupNames](#lspritesheetgetgroupnames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:getRow](#lspritesheetgetrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:nameGroup](#lspritesheetnamegroup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:type](#lspritesheettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteSheet:typeOf](#lspritesheettypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LSpriteAtlas Methods](#lspriteatlas-methods)
+  - [LSpriteSheet Methods](#lspritesheet-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -116,6 +50,51 @@ Sprite sheet, texture atlas, and batch rendering primitives for 2D game visuals.
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `atlas.rs`
+
+- Named atlas region type (`AtlasEntry`) with pixel rect, rotation, and flip flags.
+- `SpriteAtlas` lookup table: ordered Vec + HashMap for O(1) name lookup.
+- TexturePacker JSON parser supporting both array and object frame formats.
+- Aseprite JSON parser with the same dual-format support.
+- Conversion from `image::TextureAtlas` for runtime atlas building.
+
+### `mod.rs`
+
+- Sprite, SpriteSheet, and SpriteBatch types for 2D rendering
+- Texture atlas parsing (TexturePacker JSON) and region lookup
+- Nine-slice panel geometry for scalable UI elements
+
+### `nine_slice.rs`
+
+- Nine-slice (9-patch) descriptor that splits a texture into corners, edges, and a center.
+- Generates source/destination patch tuples for scalable UI borders and panels.
+- Preserves corner pixel ratios while stretching edges and center to fit target dimensions.
+
+### `sprite.rs`
+
+- Single-sprite data type holding texture, position, scale, rotation, and colour tint.
+- Constructor and transform setters for positioning and styling sprites.
+- Designed as a lightweight value object consumed by the render pipeline.
+
+### `sprite_batch.rs`
+
+- Deferred sprite draw-call collector bound to a single texture atlas.
+- Accumulates positioned, rotated, scaled source-quad entries for batch submission.
+- Supports optional capacity cap to limit per-frame draw volume.
+
+### `sprite_sheet.rs`
+
+- Uniform grid frame extraction from a single texture via per-frame width/height.
+- Precomputed Rect lookup by linear index, row, column, or arbitrary range.
+- Named frame groups for tagging animation sequences within the grid.
+- Directional animation layout (rows or columns) for multi-facing character sheets.
+- Preset constructors for RPGMaker 3×4 sheets and SpriteAtlas-backed sheets.
+- Debug visualisation that rasterises the grid into an ImageData with coloured borders.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LSpriteAtlas` (7 methods) - Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
@@ -126,20 +105,18 @@ Sprite sheet, texture atlas, and batch rendering primitives for 2D game visuals.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/sprite.md](../blob/main/docs/specs/sprite.md)
+- Module-level functions: 5
+- Lua-visible types: 2
+- Total type methods: 19
 
-```lua
-lurek.sprite.newAtlasSheet(atlas: LSpriteAtlas, sw: integer, sh: integer) -> LSpriteSheet -- Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet...
-lurek.sprite.newRPGMakerSheet(tw: integer, th: integer) -> LSpriteSheet -- Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
-lurek.sprite.newSheet(tw: integer, th: integer, fw: integer, fh: integer) -> LSpriteSheet -- Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
-lurek.sprite.parseAsepriteAtlas(json_str: string) -> LSpriteAtlas -- Parses an Aseprite JSON atlas string and returns a sprite atlas object.
-lurek.sprite.parseAtlas(json_str: string) -> LSpriteAtlas -- Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.sprite.newAtlasSheet
+### Module-Level Functions
+
+#### lurek.sprite.newAtlasSheet
 
 #### Definition
 
@@ -177,7 +154,7 @@ do
 end
 ```
 
-### lurek.sprite.newRPGMakerSheet
+#### lurek.sprite.newRPGMakerSheet
 
 #### Definition
 
@@ -214,7 +191,7 @@ do
 end
 ```
 
-### lurek.sprite.newSheet
+#### lurek.sprite.newSheet
 
 #### Definition
 
@@ -254,7 +231,7 @@ do
 end
 ```
 
-### lurek.sprite.parseAsepriteAtlas
+#### lurek.sprite.parseAsepriteAtlas
 
 #### Definition
 
@@ -289,7 +266,7 @@ do
 end
 ```
 
-### lurek.sprite.parseAtlas
+#### lurek.sprite.parseAtlas
 
 #### Definition
 
@@ -389,7 +366,9 @@ end
 
 ## 🔹 Module Methods
 
-### LSpriteAtlas:entryCount
+### LSpriteAtlas Methods
+
+#### LSpriteAtlas:entryCount
 
 #### Definition
 
@@ -417,7 +396,7 @@ do
 end
 ```
 
-### LSpriteAtlas:entryNames
+#### LSpriteAtlas:entryNames
 
 #### Definition
 
@@ -446,7 +425,7 @@ do
 end
 ```
 
-### LSpriteAtlas:getByIndex
+#### LSpriteAtlas:getByIndex
 
 #### Definition
 
@@ -480,7 +459,7 @@ do
 end
 ```
 
-### LSpriteAtlas:getEntry
+#### LSpriteAtlas:getEntry
 
 #### Definition
 
@@ -515,7 +494,7 @@ do
 end
 ```
 
-### LSpriteAtlas:getFlipped
+#### LSpriteAtlas:getFlipped
 
 #### Definition
 
@@ -554,7 +533,7 @@ do
 end
 ```
 
-### LSpriteAtlas:type
+#### LSpriteAtlas:type
 
 #### Definition
 
@@ -582,7 +561,7 @@ do
 end
 ```
 
-### LSpriteAtlas:typeOf
+#### LSpriteAtlas:typeOf
 
 #### Definition
 
@@ -615,7 +594,9 @@ do
 end
 ```
 
-### LSpriteSheet:drawToImage
+### LSpriteSheet Methods
+
+#### LSpriteSheet:drawToImage
 
 #### Definition
 
@@ -652,7 +633,7 @@ do
 end
 ```
 
-### LSpriteSheet:getColumn
+#### LSpriteSheet:getColumn
 
 #### Definition
 
@@ -686,7 +667,7 @@ do
 end
 ```
 
-### LSpriteSheet:getFrame
+#### LSpriteSheet:getFrame
 
 #### Definition
 
@@ -720,7 +701,7 @@ do
 end
 ```
 
-### LSpriteSheet:getFrameCount
+#### LSpriteSheet:getFrameCount
 
 #### Definition
 
@@ -747,7 +728,7 @@ do
 end
 ```
 
-### LSpriteSheet:getFrameSize
+#### LSpriteSheet:getFrameSize
 
 #### Definition
 
@@ -776,7 +757,7 @@ do
 end
 ```
 
-### LSpriteSheet:getGridSize
+#### LSpriteSheet:getGridSize
 
 #### Definition
 
@@ -805,7 +786,7 @@ do
 end
 ```
 
-### LSpriteSheet:getGroupFrames
+#### LSpriteSheet:getGroupFrames
 
 #### Definition
 
@@ -840,7 +821,7 @@ do
 end
 ```
 
-### LSpriteSheet:getGroupNames
+#### LSpriteSheet:getGroupNames
 
 #### Definition
 
@@ -870,7 +851,7 @@ do
 end
 ```
 
-### LSpriteSheet:getRow
+#### LSpriteSheet:getRow
 
 #### Definition
 
@@ -904,7 +885,7 @@ do
 end
 ```
 
-### LSpriteSheet:nameGroup
+#### LSpriteSheet:nameGroup
 
 #### Definition
 
@@ -939,7 +920,7 @@ do
 end
 ```
 
-### LSpriteSheet:type
+#### LSpriteSheet:type
 
 #### Definition
 
@@ -966,7 +947,7 @@ do
 end
 ```
 
-### LSpriteSheet:typeOf
+#### LSpriteSheet:typeOf
 
 #### Definition
 

@@ -10,6 +10,63 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [ai_api.rs](#aiapirs)
+  - [animation_api.rs](#animationapirs)
+  - [audio_api.rs](#audioapirs)
+  - [automation_api.rs](#automationapirs)
+  - [callback_registry.rs](#callbackregistryrs)
+  - [camera_api.rs](#cameraapirs)
+  - [compute_api.rs](#computeapirs)
+  - [data_api.rs](#dataapirs)
+  - [dataframe_api.rs](#dataframeapirs)
+  - [debugbridge_api.rs](#debugbridgeapirs)
+  - [devtools_api.rs](#devtoolsapirs)
+  - [docs_api.rs](#docsapirs)
+  - [ecs_api.rs](#ecsapirs)
+  - [effect_api.rs](#effectapirs)
+  - [engine_api.rs](#engineapirs)
+  - [event_api.rs](#eventapirs)
+  - [filesystem_api.rs](#filesystemapirs)
+  - [globe_api.rs](#globeapirs)
+  - [graph_api.rs](#graphapirs)
+  - [html_api.rs](#htmlapirs)
+  - [i18n_api.rs](#i18napirs)
+  - [image_api.rs](#imageapirs)
+  - [input_api.rs](#inputapirs)
+  - [light_api.rs](#lightapirs)
+  - [log_api.rs](#logapirs)
+  - [lua_types.rs](#luatypesrs)
+  - [math_api.rs](#mathapirs)
+  - [minimap_api.rs](#minimapapirs)
+  - [mod.rs](#modrs)
+  - [mods_api.rs](#modsapirs)
+  - [network_api.rs](#networkapirs)
+  - [parallax_api.rs](#parallaxapirs)
+  - [particle_api.rs](#particleapirs)
+  - [pathfind_api.rs](#pathfindapirs)
+  - [patterns_api.rs](#patternsapirs)
+  - [physics_api.rs](#physicsapirs)
+  - [pipeline_api.rs](#pipelineapirs)
+  - [procgen_api.rs](#procgenapirs)
+  - [province_api.rs](#provinceapirs)
+  - [raycaster_api.rs](#raycasterapirs)
+  - [register.rs](#registerrs)
+  - [render_api.rs](#renderapirs)
+  - [repl_api.rs](#replapirs)
+  - [save_api.rs](#saveapirs)
+  - [scene_api.rs](#sceneapirs)
+  - [serial_api.rs](#serialapirs)
+  - [spine_api.rs](#spineapirs)
+  - [sprite_api.rs](#spriteapirs)
+  - [system_api.rs](#systemapirs)
+  - [terminal_api.rs](#terminalapirs)
+  - [thread_api.rs](#threadapirs)
+  - [tilemap_api.rs](#tilemapapirs)
+  - [timer_api.rs](#timerapirs)
+  - [tween_api.rs](#tweenapirs)
+  - [ui_api.rs](#uiapirs)
+  - [window_api.rs](#windowapirs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [💡 Examples](#examples)
@@ -35,6 +92,234 @@ The module enforces binding constraints: no business logic in binding files (TST
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `ai_api.rs`
+
+- `lurek.ai` - Lua bindings for AI worlds, agents, blackboards, behavior trees, steering, planning, learning, and simulation helpers.
+
+### `animation_api.rs`
+
+- `lurek.animation` -- Animation bindings for sprite clips, state machines, blend layers, curves, sync groups, and Aseprite import helpers.
+
+### `audio_api.rs`
+
+- `lurek.audio` - Audio playback, mixing, spatial sound, MIDI, and DSP processing for 2D games.
+
+### `automation_api.rs`
+
+- `lurek.automation` -- Automation bindings for loading simulator scripts, controlling playback, inspecting state, saving macros, and waiting on Lua predicates.
+
+### `callback_registry.rs`
+
+- Public types and helpers for the callback_registry module.
+
+### `camera_api.rs`
+
+- `lurek.camera` -- Camera bindings for 2D transforms, targets, bounds, screen conversion, paths, zoom tweens, parallax factors, effects, constraints, presets, and camera rigs.
+
+### `compute_api.rs`
+
+- `lurek.compute` -- Compute bindings for multidimensional arrays, numeric operations, reductions, spatial filters, analytics, linear algebra, FFT helpers, and parallel threshold tuning.
+
+### `data_api.rs`
+
+- `lurek.data` -- Data bindings for binary packing, compression, encoding, hashing, byte buffers, data views, TOML conversion, ring buffers, and structured writers.
+
+### `dataframe_api.rs`
+
+- `lurek.dataframe` -- DataFrame bindings for tabular rows, columns, grouping, joins, SQL queries, lazy pipelines, databases, vectorized frames, serialization, and statistics.
+
+### `debugbridge_api.rs`
+
+- `lurek.debugbridge` -- Debug bridge bindings for starting the local TCP bridge, polling debugger requests, print capture, performance data, screenshots, protocol metadata, and hot reload flags.
+
+### `devtools_api.rs`
+
+- `lurek.devtools` -- Developer tooling bindings for logs, profiling, frame stats, file watching, console state, watch expressions, snapshots, REPL, and debugger-style eval helpers.
+
+### `docs_api.rs`
+
+- `lurek.docs` -- Documentation tooling bindings for live API reflection, editable catalogs, quality reports, schema validation, and export helpers that produce editor and Markdown artifacts from Lua-visible API metadata.
+
+### `ecs_api.rs`
+
+- `lurek.ecs` -- Entity-component-system bindings for creating universes, managing entities and components, running Lua systems, querying tags and blueprints, serializing state, and tracking hierarchy and relation data.
+
+### `effect_api.rs`
+
+- `lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, image effect chains, screen overlays, weather and ambient controls, screen transitions, and shader error display state used by the renderer command queue.
+
+### `engine_api.rs`
+
+- `lurek.engine` -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.
+
+### `event_api.rs`
+
+- `lurek.event` -- Event queue and signal bindings for quit/restart requests, polling, waiting, immediate and deferred event pushes, priority delivery, optional history capture, and Lua callback signal dispatch.
+
+### `filesystem_api.rs`
+
+- `lurek.filesystem` -- GameFS bindings for text, binary, JSON, directory, metadata, async IO, mount, ZIP archive, file handle, file data, watcher, path conversion, and script chunk loading operations available to Lua.
+
+### `globe_api.rs`
+
+- `lurek.globe` -- Spherical province-map bindings for globe registries, province graphs, sectors, heat layers, camera controls, picking, fog of war, markers, labels, render layers, arcs, pathfinding, exports, and coordinate math.
+
+### `graph_api.rs`
+
+- `lurek.graph` -- Logistics graph bindings for nodes, directed edges, typed items, capacities, queues, conversion rules, supply and demand, pathfinding, reachability, graph algorithms, events, and Lua callbacks.
+
+### `html_api.rs`
+
+- `lurek.html` -- HTML document bindings for markup and CSS loading, layout, rendering into engine draw commands, DOM element selection and mutation, input forwarding, event listeners, and feature support checks.
+
+### `i18n_api.rs`
+
+- `lurek.i18n` -- Localization bindings for in-memory catalogs, locale selection, fallback lists, translation lookup, interpolation, plural and gender variants, search indexes, formatting helpers, locale validation, and coverage gap reports.
+
+### `image_api.rs`
+
+- `lurek.image` -- Image bindings for pixel buffers, encoded image load/save, layered image stacks, DDS compressed metadata, palette lookup tables, province color grids, polygon extraction, shape rendering, and screen capture handoff.
+
+### `input_api.rs`
+
+- `lurek.input` -- Input bindings for keyboard, mouse, cursor objects, gamepads, touch points, action mappings, combo detection, virtual d-pad conversion, input recording, and playback state exposed through nested Lua tables.
+
+### `light_api.rs`
+
+- `lurek.light` -- 2D lighting bindings for light handles, occluders, ambient color, shadows, masks, groups, flicker animation, transitions, cookies, normal-map hints, and renderer-facing lighting world state.
+
+### `log_api.rs`
+
+- `lurek.log` -- Logging bindings for severity helpers, global level control, memory/file/rotating/callback sinks, sink listing and flushing, memory reads, structured field logs, tag filters, and Lua callback dispatch.
+
+### `lua_types.rs`
+
+- Public types and helpers for the lua_types module.
+
+### `math_api.rs`
+
+- `lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, noise generation, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, colors, and scalar helpers.
+
+### `minimap_api.rs`
+
+- `lurek.minimap` -- Lua bindings for grid minimaps, terrain colors, fog, object markers, overlays, layers, hover conversion, and render command output.
+
+### `mod.rs`
+
+- Lua API binding modules and shared runtime re-exports for building Lurek2D Lua VMs.
+
+### `mods_api.rs`
+
+- `lurek.mods` -- Lua bindings for mod metadata, mod manager load order/dependency helpers, content registries, and API version checks.
+
+### `network_api.rs`
+
+- `lurek.network` -- Lua bindings for ENet-style hosts, async network runtime, message packing, lobby helpers, relay tickets, and snapshot prediction.
+
+### `parallax_api.rs`
+
+- `lurek.parallax` -- Lua bindings for parallax layers, parallax sets, presets, automatic camera rendering, tiling, blend modes, and effect chains.
+
+### `particle_api.rs`
+
+- `lurek.particle` -- Lua bindings for particle systems, trails, presets, TOML configs, physics collision, custom emission callbacks, death callbacks, and module-level forwarding helpers.
+
+### `pathfind_api.rs`
+
+- `lurek.pathfind` - Lua bindings for navigation grids, unit pathfinding, flow fields, path grids, hex grids, JPS grids, nav meshes, range maps, and tilemap-derived path data.
+
+### `patterns_api.rs`
+
+- `lurek.patterns` — Design pattern utilities: event buses, object pools, state machines, command stacks, observers, mediators, factories, data structures, behavior trees, and graphs.
+
+### `physics_api.rs`
+
+- `lurek.physics` — 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
+
+### `pipeline_api.rs`
+
+- `lurek.pipeline` — Declarative task pipelines with dependency ordering, retry logic, branching, and async coroutine execution.
+
+### `procgen_api.rs`
+
+- `lurek.procgen` — Procedural generation tools: noise, dungeon generators, wave function collapse, heightmaps, L-systems, name generation, voronoi, biomes, and world graphs.
+
+### `province_api.rs`
+
+- `lurek.province` — Province-based strategic map system with grid regions, borders, ownership tracking, adjacency queries, and map-mode rendering.
+
+### `raycaster_api.rs`
+
+- `lurek.raycaster` - Provides a pseudo-3D raycasting engine for first-person dungeon crawlers with textured walls, floors, and ceilings.
+
+### `register.rs`
+
+- Lua VM creation and `lurek.*` module registration entry point.
+
+### `render_api.rs`
+
+- `lurek.render` - Provides 2D drawing primitives, texture rendering, text output, blend modes, and render state management.
+
+### `repl_api.rs`
+
+- `lurek.repl` -- Release-safe Lua REPL session bindings for interactive evaluation.
+
+### `save_api.rs`
+
+- `lurek.save` — Persistent game save/load system with named slots, schema versioning, auto-save, compression, and migration support.
+
+### `scene_api.rs`
+
+- `lurek.scene` — Stack-based scene management with animated transitions, overlay support, shared data passing, lifecycle callbacks (enter/leave/pause/resume/ready/update/draw/render), and depth-sorted rendering via `LDepthSorter`.
+
+### `serial_api.rs`
+
+- `lurek.serial` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange.
+
+### `spine_api.rs`
+
+- `lurek.spine` — Spine-like skeletal animation with bones, slots, attachments, IK constraints, and skin mixing.
+
+### `sprite_api.rs`
+
+- `lurek.sprite` - Provides sprite batch rendering, sprite sheets, quad management, and texture atlas operations for efficient 2D rendering.
+
+### `system_api.rs`
+
+- `lurek.system` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
+
+### `terminal_api.rs`
+
+- `lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
+
+### `thread_api.rs`
+
+- `lurek.thread` - Provides multi-threaded Lua worker VMs with typed channel messaging for parallel game logic execution.
+
+### `tilemap_api.rs`
+
+- `lurek.tilemap` - Provides tile-based map rendering with layers, animated tiles, auto-tiling, collision maps, and TMX/Tiled import.
+
+### `timer_api.rs`
+
+- `lurek.timer` - Provides time management with delta time, fixed timestep, cooldowns, delays, intervals, and frame counting.
+
+### `tween_api.rs`
+
+- `lurek.tween` - Provides value tweening with easing functions, sequences, parallel groups, and property animation for smooth game transitions.
+
+### `ui_api.rs`
+
+- `lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.
+
+### `window_api.rs`
+
+- `lurek.window` - Provides window management with resizing, fullscreen, title, icon, DPI scaling, and display mode control.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -44,8 +329,10 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/lua_api.md](../blob/main/docs/specs/lua_api.md)
+- Module-level functions: 0
+- Lua-visible types: 0
+- Total type methods: 0
 
-No module functions appear in the generated Lua API data.
 
 [⬆ back to top](#table-of-contents)
 

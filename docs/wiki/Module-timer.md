@@ -10,161 +10,20 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [accumulator.rs](#accumulatorrs)
+  - [clock.rs](#clockrs)
+  - [mod.rs](#modrs)
+  - [scheduler.rs](#schedulerrs)
+  - [sleep.rs](#sleeprs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.timer.afterReal](#lurektimerafterreal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.chain](#lurektimerchain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getAverageDelta](#lurektimergetaveragedelta)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getDelta](#lurektimergetdelta)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getFPS](#lurektimergetfps)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getFrameCount](#lurektimergetframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getMicroTime](#lurektimergetmicrotime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getPhysicsDelta](#lurektimergetphysicsdelta)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getPhysicsMaxSteps](#lurektimergetphysicsmaxsteps)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getSmoothedDelta](#lurektimergetsmootheddelta)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.getTime](#lurektimergettime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.newScheduler](#lurektimernewscheduler)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.setPhysicsDelta](#lurektimersetphysicsdelta)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.setPhysicsMaxSteps](#lurektimersetphysicsmaxsteps)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.setSmoothingFactor](#lurektimersetsmoothingfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.sleep](#lurektimersleep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.step](#lurektimerstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.tickRealTimers](#lurektimertickrealtimers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.tickWaits](#lurektimertickwaits)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.waitFrames](#lurektimerwaitframes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.timer.waitSeconds](#lurektimerwaitseconds)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LScheduler](#lscheduler)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LScheduler:after](#lschedulerafter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:afterFrames](#lschedulerafterframes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:afterNamed](#lschedulerafternamed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:cancel](#lschedulercancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:cancelAll](#lschedulercancelall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:cancelNamed](#lschedulercancelnamed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:every](#lschedulerevery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:everyFrames](#lschedulereveryframes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:everyNamed](#lschedulereverynamed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:getCount](#lschedulergetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:getInterval](#lschedulergetinterval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:getRemaining](#lschedulergetremaining)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:getRepeatCount](#lschedulergetrepeatcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:getTimeScale](#lschedulergettimescale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:isEmpty](#lschedulerisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:isPaused](#lschedulerispaused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:isPausedNamed](#lschedulerispausednamed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:pause](#lschedulerpause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:pauseNamed](#lschedulerpausenamed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:resetEvent](#lschedulerresetevent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:resume](#lschedulerresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:resumeNamed](#lschedulerresumenamed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:setInterval](#lschedulersetinterval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:setTimeScale](#lschedulersettimescale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:type](#lschedulertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:typeOf](#lschedulertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:update](#lschedulerupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScheduler:updateFrames](#lschedulerupdateframes)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LScheduler Methods](#lscheduler-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -188,6 +47,44 @@ Frame timing and deferred callback scheduling for the engine main loop. `Clock` 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `accumulator.rs`
+
+- Drift-free microsecond accumulation for scaled elapsed-time tracking.
+- Fractional sub-microsecond carry prevents rounding loss across frames.
+- All negative inputs clamped to zero for monotonic guarantees.
+
+### `clock.rs`
+
+- Per-frame clock that tracks delta time, total elapsed, FPS, and a rolling average delta.
+- FPS is measured over one-second windows; average delta uses a fixed-size ring buffer.
+- Designed for the runtime main loop — one `tick()` call per frame drives all counters.
+
+### `mod.rs`
+
+- Time tracking, fixed-step accumulation, and frame-independent scheduling.
+- Provides a high-resolution clock, scaled delta, and sleep utilities.
+- Exposes a tick-based scheduler for deferred and repeating callbacks.
+
+### `scheduler.rs`
+
+- Time-based and frame-based event scheduling with one-shot and repeating modes.
+- Named events with automatic deduplication on re-registration.
+- Global time-scale multiplier applied to wall-clock updates; clamped to safe range.
+- Per-event pause/resume, interval mutation, and remaining-time queries.
+- Swap-remove expiry during update to avoid O(n) shifts on large event lists.
+- Monotonic ID allocation for stable external references into the scheduler.
+- Integration point for `lurek.timer` Lua bindings via ID-keyed callback dispatch.
+
+### `sleep.rs`
+
+- Thread-blocking sleep utility for the timer subsystem.
+- Clamps non-positive durations to a no-op, preventing panics from negative `Duration`.
+- Delegates to `std::thread::sleep` with no spin-wait or busy-loop overhead.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LScheduler` (28 methods) - A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.
@@ -197,34 +94,18 @@ Frame timing and deferred callback scheduling for the engine main loop. `Clock` 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/timer.md](../blob/main/docs/specs/timer.md)
+- Module-level functions: 21
+- Lua-visible types: 1
+- Total type methods: 28
 
-```lua
-lurek.timer.afterReal(delay: number, func: function) -- Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling....
-lurek.timer.chain(steps: table) -> LScheduler -- Creates a scheduler pre-loaded with a sequence of delayed callbacks. Each step is a table with an optional...
-lurek.timer.getAverageDelta() -> number -- Returns the smoothed average delta time in seconds over a recent window of frames. More stable than getDelt...
-lurek.timer.getDelta() -> number -- Returns the time in seconds elapsed since the last frame. Use this to make movement and animations frame-ra...
-lurek.timer.getFPS() -> number -- Returns the current frames-per-second count. Useful for performance monitoring overlays and debug HUDs.
-lurek.timer.getFrameCount() -> integer -- Returns the total number of frames rendered since the engine started.
-lurek.timer.getMicroTime() -> number -- Returns high-resolution elapsed time in seconds since engine start. Useful for precise benchmarking and pro...
-lurek.timer.getPhysicsDelta() -> number -- Returns the fixed timestep used for physics simulation in seconds. The default is typically 1/60.
-lurek.timer.getPhysicsMaxSteps() -> number -- Returns the maximum number of physics steps allowed per frame. Prevents the spiral of death when the game r...
-lurek.timer.getSmoothedDelta() -> number -- Returns an exponentially smoothed delta time in seconds, reducing frame-to-frame jitter. Call once per fram...
-lurek.timer.getTime() -> number -- Returns the total elapsed game time in seconds since the engine started. Useful for time-based animations,...
-lurek.timer.newScheduler() -> LScheduler -- Creates a new LScheduler instance for managing timed and frame-based callbacks independently from the globa...
-lurek.timer.setPhysicsDelta(dt: number) -- Sets the fixed timestep for physics simulation. Clamped between 1/240 and 1/10 seconds. Lower values increa...
-lurek.timer.setPhysicsMaxSteps(n: integer) -- Sets the maximum number of physics steps allowed per frame. Clamped between 1 and 64. Higher values improve...
-lurek.timer.setSmoothingFactor(alpha: number) -- Sets the exponential smoothing factor used by getSmoothedDelta. Lower values produce smoother (more lagged)...
-lurek.timer.sleep(seconds: number) -- Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop....
-lurek.timer.step() -> number -- Advances the internal clock by one tick and returns the delta time for that tick. Typically called by the e...
-lurek.timer.tickRealTimers() -> integer -- Checks all real-time timers and fires any whose deadline has passed. Returns the number of callbacks that f...
--- ... 3 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.timer.afterReal
+### Module-Level Functions
+
+#### lurek.timer.afterReal
 
 #### Definition
 
@@ -256,7 +137,7 @@ do
 end
 ```
 
-### lurek.timer.chain
+#### lurek.timer.chain
 
 #### Definition
 
@@ -290,7 +171,7 @@ do
 end
 ```
 
-### lurek.timer.getAverageDelta
+#### lurek.timer.getAverageDelta
 
 #### Definition
 
@@ -317,7 +198,7 @@ do
 end
 ```
 
-### lurek.timer.getDelta
+#### lurek.timer.getDelta
 
 #### Definition
 
@@ -344,7 +225,7 @@ do
 end
 ```
 
-### lurek.timer.getFPS
+#### lurek.timer.getFPS
 
 #### Definition
 
@@ -371,7 +252,7 @@ do
 end
 ```
 
-### lurek.timer.getFrameCount
+#### lurek.timer.getFrameCount
 
 #### Definition
 
@@ -398,7 +279,7 @@ do
 end
 ```
 
-### lurek.timer.getMicroTime
+#### lurek.timer.getMicroTime
 
 #### Definition
 
@@ -428,7 +309,7 @@ do
 end
 ```
 
-### lurek.timer.getPhysicsDelta
+#### lurek.timer.getPhysicsDelta
 
 #### Definition
 
@@ -455,7 +336,7 @@ do
 end
 ```
 
-### lurek.timer.getPhysicsMaxSteps
+#### lurek.timer.getPhysicsMaxSteps
 
 #### Definition
 
@@ -484,7 +365,7 @@ do
 end
 ```
 
-### lurek.timer.getSmoothedDelta
+#### lurek.timer.getSmoothedDelta
 
 #### Definition
 
@@ -512,7 +393,7 @@ do
 end
 ```
 
-### lurek.timer.getTime
+#### lurek.timer.getTime
 
 #### Definition
 
@@ -539,7 +420,7 @@ do
 end
 ```
 
-### lurek.timer.newScheduler
+#### lurek.timer.newScheduler
 
 #### Definition
 
@@ -569,7 +450,7 @@ do
 end
 ```
 
-### lurek.timer.setPhysicsDelta
+#### lurek.timer.setPhysicsDelta
 
 #### Definition
 
@@ -599,7 +480,7 @@ do
 end
 ```
 
-### lurek.timer.setPhysicsMaxSteps
+#### lurek.timer.setPhysicsMaxSteps
 
 #### Definition
 
@@ -629,7 +510,7 @@ do
 end
 ```
 
-### lurek.timer.setSmoothingFactor
+#### lurek.timer.setSmoothingFactor
 
 #### Definition
 
@@ -659,7 +540,7 @@ do
 end
 ```
 
-### lurek.timer.sleep
+#### lurek.timer.sleep
 
 #### Definition
 
@@ -689,7 +570,7 @@ do
 end
 ```
 
-### lurek.timer.step
+#### lurek.timer.step
 
 #### Definition
 
@@ -716,7 +597,7 @@ do
 end
 ```
 
-### lurek.timer.tickRealTimers
+#### lurek.timer.tickRealTimers
 
 #### Definition
 
@@ -743,7 +624,7 @@ do
 end
 ```
 
-### lurek.timer.tickWaits
+#### lurek.timer.tickWaits
 
 #### Definition
 
@@ -773,7 +654,7 @@ do
 end
 ```
 
-### lurek.timer.waitFrames
+#### lurek.timer.waitFrames
 
 #### Definition
 
@@ -805,7 +686,7 @@ do
 end
 ```
 
-### lurek.timer.waitSeconds
+#### lurek.timer.waitSeconds
 
 #### Definition
 
@@ -873,7 +754,9 @@ end
 
 ## 🔹 Module Methods
 
-### LScheduler:after
+### LScheduler Methods
+
+#### LScheduler:after
 
 #### Definition
 
@@ -908,7 +791,7 @@ do
 end
 ```
 
-### LScheduler:afterFrames
+#### LScheduler:afterFrames
 
 #### Definition
 
@@ -944,7 +827,7 @@ do
 end
 ```
 
-### LScheduler:afterNamed
+#### LScheduler:afterNamed
 
 #### Definition
 
@@ -981,7 +864,7 @@ do
 end
 ```
 
-### LScheduler:cancel
+#### LScheduler:cancel
 
 #### Definition
 
@@ -1016,7 +899,7 @@ do
 end
 ```
 
-### LScheduler:cancelAll
+#### LScheduler:cancelAll
 
 #### Definition
 
@@ -1046,7 +929,7 @@ do
 end
 ```
 
-### LScheduler:cancelNamed
+#### LScheduler:cancelNamed
 
 #### Definition
 
@@ -1080,7 +963,7 @@ do
 end
 ```
 
-### LScheduler:every
+#### LScheduler:every
 
 #### Definition
 
@@ -1119,7 +1002,7 @@ do
 end
 ```
 
-### LScheduler:everyFrames
+#### LScheduler:everyFrames
 
 #### Definition
 
@@ -1158,7 +1041,7 @@ do
 end
 ```
 
-### LScheduler:everyNamed
+#### LScheduler:everyNamed
 
 #### Definition
 
@@ -1199,7 +1082,7 @@ do
 end
 ```
 
-### LScheduler:getCount
+#### LScheduler:getCount
 
 #### Definition
 
@@ -1229,7 +1112,7 @@ do
 end
 ```
 
-### LScheduler:getInterval
+#### LScheduler:getInterval
 
 #### Definition
 
@@ -1265,7 +1148,7 @@ do
 end
 ```
 
-### LScheduler:getRemaining
+#### LScheduler:getRemaining
 
 #### Definition
 
@@ -1301,7 +1184,7 @@ do
 end
 ```
 
-### LScheduler:getRepeatCount
+#### LScheduler:getRepeatCount
 
 #### Definition
 
@@ -1378,7 +1261,7 @@ do
 end
 ```
 
-### LScheduler:getTimeScale
+#### LScheduler:getTimeScale
 
 #### Definition
 
@@ -1407,7 +1290,7 @@ do
 end
 ```
 
-### LScheduler:isEmpty
+#### LScheduler:isEmpty
 
 #### Definition
 
@@ -1436,7 +1319,7 @@ do
 end
 ```
 
-### LScheduler:isPaused
+#### LScheduler:isPaused
 
 #### Definition
 
@@ -1470,7 +1353,7 @@ do
 end
 ```
 
-### LScheduler:isPausedNamed
+#### LScheduler:isPausedNamed
 
 #### Definition
 
@@ -1504,7 +1387,7 @@ do
 end
 ```
 
-### LScheduler:pause
+#### LScheduler:pause
 
 #### Definition
 
@@ -1538,7 +1421,7 @@ do
 end
 ```
 
-### LScheduler:pauseNamed
+#### LScheduler:pauseNamed
 
 #### Definition
 
@@ -1572,7 +1455,7 @@ do
 end
 ```
 
-### LScheduler:resetEvent
+#### LScheduler:resetEvent
 
 #### Definition
 
@@ -1607,7 +1490,7 @@ do
 end
 ```
 
-### LScheduler:resume
+#### LScheduler:resume
 
 #### Definition
 
@@ -1642,7 +1525,7 @@ do
 end
 ```
 
-### LScheduler:resumeNamed
+#### LScheduler:resumeNamed
 
 #### Definition
 
@@ -1677,7 +1560,7 @@ do
 end
 ```
 
-### LScheduler:setInterval
+#### LScheduler:setInterval
 
 #### Definition
 
@@ -1713,7 +1596,7 @@ do
 end
 ```
 
-### LScheduler:setTimeScale
+#### LScheduler:setTimeScale
 
 #### Definition
 
@@ -1744,7 +1627,7 @@ do
 end
 ```
 
-### LScheduler:type
+#### LScheduler:type
 
 #### Definition
 
@@ -1771,7 +1654,7 @@ do
 end
 ```
 
-### LScheduler:typeOf
+#### LScheduler:typeOf
 
 #### Definition
 
@@ -1803,7 +1686,7 @@ do
 end
 ```
 
-### LScheduler:update
+#### LScheduler:update
 
 #### Definition
 
@@ -1838,7 +1721,7 @@ do
 end
 ```
 
-### LScheduler:updateFrames
+#### LScheduler:updateFrames
 
 #### Definition
 

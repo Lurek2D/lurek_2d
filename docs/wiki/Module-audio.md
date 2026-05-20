@@ -10,692 +10,38 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [bus.rs](#busrs)
+  - [decoder.rs](#decoderrs)
+  - [dsp.rs](#dsprs)
+  - [facade.rs](#facaders)
+  - [midi.rs](#midirs)
+  - [midi_player.rs](#midiplayerrs)
+  - [mixer.rs](#mixerrs)
+  - [mod.rs](#modrs)
+  - [offline.rs](#offliners)
+  - [pool.rs](#poolrs)
+  - [sound_data.rs](#sounddatars)
+  - [source.rs](#sourcers)
+  - [visualizer.rs](#visualizerrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.audio.add_effect](#lurekaudioaddeffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.applyBandpass](#lurekaudioapplybandpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.applyGain](#lurekaudioapplygain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.applyHighpass](#lurekaudioapplyhighpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.applyLowpass](#lurekaudioapplylowpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.clearFilter](#lurekaudioclearfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.clearMidiSoundFont](#lurekaudioclearmidisoundfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.clearRandomPitch](#lurekaudioclearrandompitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.clone](#lurekaudioclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.create_bus](#lurekaudiocreatebus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.crossfade](#lurekaudiocrossfade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.fadeIn](#lurekaudiofadein)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getActiveSourceCount](#lurekaudiogetactivesourcecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getBusPeak](#lurekaudiogetbuspeak)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getBusRms](#lurekaudiogetbusrms)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getDistanceModel](#lurekaudiogetdistancemodel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getDopplerScale](#lurekaudiogetdopplerscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getDuration](#lurekaudiogetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getFadeIn](#lurekaudiogetfadein)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getFreeBufferCount](#lurekaudiogetfreebuffercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getHighpass](#lurekaudiogethighpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getListener](#lurekaudiogetlistener)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getListener2D](#lurekaudiogetlistener2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getLowpass](#lurekaudiogetlowpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getMasterVolume](#lurekaudiogetmastervolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getMaxSources](#lurekaudiogetmaxsources)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getMeter](#lurekaudiogetmeter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getOrientation](#lurekaudiogetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getPan](#lurekaudiogetpan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getPitch](#lurekaudiogetpitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getPlaybackDevice](#lurekaudiogetplaybackdevice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getPlaybackDevices](#lurekaudiogetplaybackdevices)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getPosition](#lurekaudiogetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getSourceBus](#lurekaudiogetsourcebus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getSourceCount](#lurekaudiogetsourcecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getSourceType](#lurekaudiogetsourcetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getStereoWidth](#lurekaudiogetstereowidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getVelocity](#lurekaudiogetvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.getVolume](#lurekaudiogetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.hasMidiSoundFont](#lurekaudiohasmidisoundfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.isLooping](#lurekaudioislooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.isPaused](#lurekaudioispaused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.isPlaying](#lurekaudioisplaying)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.isStopped](#lurekaudioisstopped)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.mixInto](#lurekaudiomixinto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newBus](#lurekaudionewbus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newDecoder](#lurekaudionewdecoder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newMidiPlayer](#lurekaudionewmidiplayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newPool](#lurekaudionewpool)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newQueueableSource](#lurekaudionewqueueablesource)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newSawtoothWave](#lurekaudionewsawtoothwave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newSineWave](#lurekaudionewsinewave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newSoundData](#lurekaudionewsounddata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newSource](#lurekaudionewsource)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newSquareWave](#lurekaudionewsquarewave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newTriangleWave](#lurekaudionewtrianglewave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.newWhiteNoise](#lurekaudionewwhitenoise)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.normalizeFile](#lurekaudionormalizefile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.pause](#lurekaudiopause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.pauseAll](#lurekaudiopauseall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.play](#lurekaudioplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.playLooping](#lurekaudioplaylooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.playQueueable](#lurekaudioplayqueueable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.processOffline](#lurekaudioprocessoffline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.queueSource](#lurekaudioqueuesource)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.release](#lurekaudiorelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.remove_effect](#lurekaudioremoveeffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.resume](#lurekaudioresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.resumeAll](#lurekaudioresumeall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.saveWAV](#lurekaudiosavewav)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.seek](#lurekaudioseek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.set_bus_volume](#lurekaudiosetbusvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.set_effect_param](#lurekaudioseteffectparam)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setDistanceModel](#lurekaudiosetdistancemodel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setDopplerScale](#lurekaudiosetdopplerscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setHighpass](#lurekaudiosethighpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setListener](#lurekaudiosetlistener)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setListener2D](#lurekaudiosetlistener2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setLooping](#lurekaudiosetlooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setLowpass](#lurekaudiosetlowpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setMasterVolume](#lurekaudiosetmastervolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setMeter](#lurekaudiosetmeter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setMidiSoundFont](#lurekaudiosetmidisoundfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setOrientation](#lurekaudiosetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setPan](#lurekaudiosetpan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setPitch](#lurekaudiosetpitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setPlaybackDevice](#lurekaudiosetplaybackdevice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setPosition](#lurekaudiosetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setRandomPitch](#lurekaudiosetrandompitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setSourceBus](#lurekaudiosetsourcebus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setStereoWidth](#lurekaudiosetstereowidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setVelocity](#lurekaudiosetvelocity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.setVolume](#lurekaudiosetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.spectrogramToPng](#lurekaudiospectrogramtopng)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.stop](#lurekaudiostop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.stopAll](#lurekaudiostopall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.stopQueueable](#lurekaudiostopqueueable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.tell](#lurekaudiotell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.audio.waveformToPng](#lurekaudiowaveformtopng)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LBus](#lbus)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDecoder](#ldecoder)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMidiPlayer](#lmidiplayer)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSoundData](#lsounddata)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSoundPool](#lsoundpool)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSource](#lsource)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LBus:clearDuck](#lbusclearduck)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:getName](#lbusgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:getPeak](#lbusgetpeak)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:getPitch](#lbusgetpitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:getVolume](#lbusgetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:isPaused](#lbusispaused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:pause](#lbuspause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:resume](#lbusresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:setDuckTarget](#lbussetducktarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:setPitch](#lbussetpitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:setVolume](#lbussetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:type](#lbustype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBus:typeOf](#lbustypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:decode](#ldecoderdecode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:getBitDepth](#ldecodergetbitdepth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:getChannelCount](#ldecodergetchannelcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:getDuration](#ldecodergetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:getSampleRate](#ldecodergetsamplerate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:isSeekable](#ldecoderisseekable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:release](#ldecoderrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:rewind](#ldecoderrewind)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:seek](#ldecoderseek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:tell](#ldecodertell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:type](#ldecodertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDecoder:typeOf](#ldecodertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getBus](#lmidiplayergetbus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getChannelCount](#lmidiplayergetchannelcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getChannelInstrument](#lmidiplayergetchannelinstrument)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getChannels](#lmidiplayergetchannels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getChannelVolume](#lmidiplayergetchannelvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getDuration](#lmidiplayergetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getFilePath](#lmidiplayergetfilepath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getNoteCount](#lmidiplayergetnotecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getOriginalTempo](#lmidiplayergetoriginaltempo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getSampleRate](#lmidiplayergetsamplerate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getSoundFontPath](#lmidiplayergetsoundfontpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getTempo](#lmidiplayergettempo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getTempoScale](#lmidiplayergettemposcale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getTicksPerBeat](#lmidiplayergetticksperbeat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getTrackCount](#lmidiplayergettrackcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getTrackName](#lmidiplayergettrackname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:getVolume](#lmidiplayergetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:isChannelMuted](#lmidiplayerischannelmuted)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:isLoaded](#lmidiplayerisloaded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:isLooping](#lmidiplayerislooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:isPaused](#lmidiplayerispaused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:isPlaying](#lmidiplayerisplaying)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:isTrackMuted](#lmidiplayeristrackmuted)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:load](#lmidiplayerload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:loadData](#lmidiplayerloaddata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:pause](#lmidiplayerpause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:play](#lmidiplayerplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:seek](#lmidiplayerseek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setBus](#lmidiplayersetbus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setChannelInstrument](#lmidiplayersetchannelinstrument)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setChannelMuted](#lmidiplayersetchannelmuted)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setChannels](#lmidiplayersetchannels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setChannelVolume](#lmidiplayersetchannelvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setLooping](#lmidiplayersetlooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setOnEnd](#lmidiplayersetonend)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setOnNoteOff](#lmidiplayersetonnoteoff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setOnNoteOn](#lmidiplayersetonnoteon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setSampleRate](#lmidiplayersetsamplerate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setSoundFont](#lmidiplayersetsoundfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setTempo](#lmidiplayersettempo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setTempoScale](#lmidiplayersettemposcale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setTrackMuted](#lmidiplayersettrackmuted)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:setVolume](#lmidiplayersetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:soloChannel](#lmidiplayersolochannel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:stop](#lmidiplayerstop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:tell](#lmidiplayertell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:type](#lmidiplayertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:typeOf](#lmidiplayertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:unsoloAll](#lmidiplayerunsoloall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMidiPlayer:useDefaultSoundFont](#lmidiplayerusedefaultsoundfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:drawWaveform](#lsounddatadrawwaveform)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:getBitDepth](#lsounddatagetbitdepth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:getChannelCount](#lsounddatagetchannelcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:getDuration](#lsounddatagetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:getSample](#lsounddatagetsample)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:getSampleCount](#lsounddatagetsamplecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:getSampleRate](#lsounddatagetsamplerate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:setSample](#lsounddatasetsample)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:type](#lsounddatatype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundData:typeOf](#lsounddatatypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:getVoiceCount](#lsoundpoolgetvoicecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:play](#lsoundpoolplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:release](#lsoundpoolrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:setBus](#lsoundpoolsetbus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:setVolume](#lsoundpoolsetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:stopAll](#lsoundpoolstopall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:type](#lsoundpooltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSoundPool:typeOf](#lsoundpooltypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:clearFilter](#lsourceclearfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:clone](#lsourceclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:fadeIn](#lsourcefadein)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getDuration](#lsourcegetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getFadeIn](#lsourcegetfadein)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getHighpass](#lsourcegethighpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getLowpass](#lsourcegetlowpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getPan](#lsourcegetpan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getPitch](#lsourcegetpitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getType](#lsourcegettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:getVolume](#lsourcegetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:isLooping](#lsourceislooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:isPaused](#lsourceispaused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:isPlaying](#lsourceisplaying)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:isStopped](#lsourceisstopped)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:pause](#lsourcepause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:play](#lsourceplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:resume](#lsourceresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:seek](#lsourceseek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:setHighpass](#lsourcesethighpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:setLooping](#lsourcesetlooping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:setLowpass](#lsourcesetlowpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:setPan](#lsourcesetpan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:setPitch](#lsourcesetpitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:setVolume](#lsourcesetvolume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:stop](#lsourcestop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:tell](#lsourcetell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:type](#lsourcetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSource:typeOf](#lsourcetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LBus Methods](#lbus-methods)
+  - [LDecoder Methods](#ldecoder-methods)
+  - [LMidiPlayer Methods](#lmidiplayer-methods)
+  - [LSoundData Methods](#lsounddata-methods)
+  - [LSoundPool Methods](#lsoundpool-methods)
+  - [LSource Methods](#lsource-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -719,6 +65,121 @@ Full-featured sound engine built on `rodio` 0.17 handling loading, real-time pla
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `bus.rs`
+
+- Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
+- Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
+- Dynamic add/remove of typed effects (lowpass, reverb, chorus, compressor, etc.) with runtime IDs.
+- Duck-target assignment enabling automatic cross-bus volume suppression.
+- Boundary clamping on volume, pitch, and duck volume values.
+
+### `decoder.rs`
+
+- Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
+- Random-access seek and rewind via cursor over the decoded i16 sample buffer.
+- Chunked iteration with configurable `buffer_size` for streaming consumption.
+- Duration and position queries derived from sample rate and channel count.
+- Seekable flag always true since the entire file is held in memory.
+
+### `dsp.rs`
+
+- Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
+- `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
+- `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
+- `ActiveEffect` per-source instantiation holding biquad delay elements, circular comb buffer, LFO phase, and envelope state.
+- Sample-by-sample `process` implementing each algorithm variant with clamped parameter reads.
+- `SharedEffectGraph` Arc-wrapped effect list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
+- `DynamicEffectSource<I>` rodio `Source` wrapper applying the full effect chain per sample with per-frame sync.
+- Comb-buffer sizing derived from sample rate and effect type at construction time.
+- Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
+- LFO-driven modulated delay for flanger and phaser with depth and rate controls.
+
+### `facade.rs`
+
+- Stub device enumeration and selection for the audio output backend.
+- Always reports a single "Default" device until platform-specific enumeration is added.
+- Validates device name against the available list on set.
+
+### `midi.rs`
+
+- 
+- RIFF+sfbk header validation on `set_soundfont` to reject malformed SF2 files.
+- Query and clear helpers for SoundFont availability and data access.
+
+### `midi_player.rs`
+
+- `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
+- File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
+- Transport controls: play, stop, pause, resume, seek, tell, and duration queries.
+- Per-channel volume, mute, instrument, and solo/unsolo operations across 16 MIDI channels.
+- Per-track mute support keyed by track index.
+- Configurable tempo scaling, looping, and output sample rate / channel count.
+- Mixer bus assignment via `BusKey` for routed playback.
+- `MidiData` metadata struct storing parsed song-level attributes.
+- Helper functions for MIDI note-to-frequency conversion and sine-wave note rendering.
+
+### `mixer.rs`
+
+- `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
+- rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
+- Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
+- Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
+- `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
+- `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
+- Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
+- Peak metering: per-source, per-bus average, and master peak tracking.
+- Stereo width, random pitch range, crossfade, and sound pool creation utilities.
+- `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
+
+### `mod.rs`
+
+- Audio subsystem module: mixer, buses, DSP effects, decoders, MIDI, pools, and visualisation.
+- Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `MidiPlayer`, `SoundPool`.
+- Submodule organisation separating playback, offline processing, and device enumeration.
+
+### `offline.rs`
+
+- Offline audio processing: apply DSP effect chains to files without real-time playback.
+- Peak normalisation with configurable target level.
+- WAV file decode to f32 and encode back to 16-bit PCM via rodio.
+- `OfflineEffect` serialisable struct matching `EffectType` + three parameter slots.
+- Parent directory auto-creation for output paths.
+
+### `pool.rs`
+
+- `SoundPool` round-robin polyphonic voice pool for one-shot playback of a single sound asset.
+- Preloaded `SoundKey` voices cycled via `next_voice` for low-latency triggering.
+- Per-pool volume multiplier and optional bus routing assignment.
+- Validity check ensuring at least one voice is available.
+
+### `sound_data.rs`
+
+- `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
+- File decode via rodio, silent-buffer allocation, and Lua argument factory.
+- WAV encoding to byte vector for save/export.
+- Waveform generators: sine, square, sawtooth, triangle, and deterministic white noise.
+- In-place DSP transforms: low-pass, high-pass, band-pass, gain, and mix-into.
+- Waveform drawing into `ImageData` for visual feedback.
+- Duration, sample count, and channel count queries.
+
+### `source.rs`
+
+- `SpatialState` 3D position, velocity, and orientation for positional audio.
+- `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
+- Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
+
+### `visualizer.rs`
+
+- Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
+- Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
+- Mono downmix helper for multi-channel input files.
+- Heat-colour mapping from normalised magnitude to RGBA.
+- Parent directory auto-creation for output image paths.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LBus` (13 methods) - Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
@@ -733,34 +194,18 @@ Full-featured sound engine built on `rodio` 0.17 handling loading, real-time pla
 ## 📖 API Overview
 
 - Source spec: [docs/specs/audio.md](../blob/main/docs/specs/audio.md)
+- Module-level functions: 99
+- Lua-visible types: 6
+- Total type methods: 122
 
-```lua
-lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer -- Adds an effect to a named audio bus and returns its effect ID.
-lurek.audio.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number) -- Applies a bandpass filter in-place to the sound data.
-lurek.audio.applyGain(sd_ud: LSoundData, gain: number) -- Applies a gain multiplier in-place to the sound data.
-lurek.audio.applyHighpass(sd_ud: LSoundData, cutoff_hz: number) -- Applies a highpass filter in-place to the sound data.
-lurek.audio.applyLowpass(sd_ud: LSoundData, cutoff_hz: number) -- Applies a lowpass filter in-place to the sound data.
-lurek.audio.clearFilter(source: LSource|integer) -- Removes all frequency filters from a source.
-lurek.audio.clearMidiSoundFont() -- Clears the loaded SoundFont and reverts MIDI synthesis to default.
-lurek.audio.clearRandomPitch(src_ud: LSource) -- Clears any random pitch range previously set on the source.
-lurek.audio.clone(source: LSource|integer) -> LSource -- Creates an independent copy of a source sharing the same audio data.
-lurek.audio.create_bus(name: string, [parent_name]: string) -- Creates a named audio bus, optionally parented to another bus.
-lurek.audio.crossfade(from_ud: LSource, to_ud: LSource, duration: number) -- Crossfades from one audio source to another over the given duration.
-lurek.audio.fadeIn(source: LSource|integer, dur: number) -- Sets the fade-in duration for a source so it ramps from silence on play.
-lurek.audio.getActiveSourceCount() -> integer -- Returns the number of sources currently playing audio.
-lurek.audio.getBusPeak(bus_name: string) -> number -- Returns the peak amplitude of the named audio bus over the last processing frame.
-lurek.audio.getBusRms(bus_name: string) -> number -- Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.
-lurek.audio.getDistanceModel() -> string -- Returns the current distance attenuation model name.
-lurek.audio.getDopplerScale() -> number -- Returns the current global Doppler effect scale.
-lurek.audio.getDuration(source: LSource|integer) -> number -- Returns the total duration of a source in seconds.
--- ... 81 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.audio.add_effect
+### Module-Level Functions
+
+#### lurek.audio.add_effect
 
 #### Definition
 
@@ -797,7 +242,7 @@ do
 end
 ```
 
-### lurek.audio.applyBandpass
+#### lurek.audio.applyBandpass
 
 #### Definition
 
@@ -831,7 +276,7 @@ do
 end
 ```
 
-### lurek.audio.applyGain
+#### lurek.audio.applyGain
 
 #### Definition
 
@@ -863,7 +308,7 @@ do
 end
 ```
 
-### lurek.audio.applyHighpass
+#### lurek.audio.applyHighpass
 
 #### Definition
 
@@ -895,7 +340,7 @@ do
 end
 ```
 
-### lurek.audio.applyLowpass
+#### lurek.audio.applyLowpass
 
 #### Definition
 
@@ -927,7 +372,7 @@ do
 end
 ```
 
-### lurek.audio.clearFilter
+#### lurek.audio.clearFilter
 
 #### Definition
 
@@ -959,7 +404,7 @@ do
 end
 ```
 
-### lurek.audio.clearMidiSoundFont
+#### lurek.audio.clearMidiSoundFont
 
 #### Definition
 
@@ -983,7 +428,7 @@ do
 end
 ```
 
-### lurek.audio.clearRandomPitch
+#### lurek.audio.clearRandomPitch
 
 #### Definition
 
@@ -1015,7 +460,7 @@ do
 end
 ```
 
-### lurek.audio.clone
+#### lurek.audio.clone
 
 #### Definition
 
@@ -1050,7 +495,7 @@ do
 end
 ```
 
-### lurek.audio.create_bus
+#### lurek.audio.create_bus
 
 #### Definition
 
@@ -1081,7 +526,7 @@ do
 end
 ```
 
-### lurek.audio.crossfade
+#### lurek.audio.crossfade
 
 #### Definition
 
@@ -1117,7 +562,7 @@ do
 end
 ```
 
-### lurek.audio.fadeIn
+#### lurek.audio.fadeIn
 
 #### Definition
 
@@ -1150,7 +595,7 @@ do
 end
 ```
 
-### lurek.audio.getActiveSourceCount
+#### lurek.audio.getActiveSourceCount
 
 #### Definition
 
@@ -1177,7 +622,7 @@ do
 end
 ```
 
-### lurek.audio.getBusPeak
+#### lurek.audio.getBusPeak
 
 #### Definition
 
@@ -1210,7 +655,7 @@ do
 end
 ```
 
-### lurek.audio.getBusRms
+#### lurek.audio.getBusRms
 
 #### Definition
 
@@ -1243,7 +688,7 @@ do
 end
 ```
 
-### lurek.audio.getDistanceModel
+#### lurek.audio.getDistanceModel
 
 #### Definition
 
@@ -1271,7 +716,7 @@ do
 end
 ```
 
-### lurek.audio.getDopplerScale
+#### lurek.audio.getDopplerScale
 
 #### Definition
 
@@ -1299,7 +744,7 @@ do
 end
 ```
 
-### lurek.audio.getDuration
+#### lurek.audio.getDuration
 
 #### Definition
 
@@ -1333,7 +778,7 @@ do
 end
 ```
 
-### lurek.audio.getFadeIn
+#### lurek.audio.getFadeIn
 
 #### Definition
 
@@ -1368,7 +813,7 @@ do
 end
 ```
 
-### lurek.audio.getFreeBufferCount
+#### lurek.audio.getFreeBufferCount
 
 #### Definition
 
@@ -1401,7 +846,7 @@ do
 end
 ```
 
-### lurek.audio.getHighpass
+#### lurek.audio.getHighpass
 
 #### Definition
 
@@ -1436,7 +881,7 @@ do
 end
 ```
 
-### lurek.audio.getListener
+#### lurek.audio.getListener
 
 #### Definition
 
@@ -1466,7 +911,7 @@ do
 end
 ```
 
-### lurek.audio.getListener2D
+#### lurek.audio.getListener2D
 
 #### Definition
 
@@ -1495,7 +940,7 @@ do
 end
 ```
 
-### lurek.audio.getLowpass
+#### lurek.audio.getLowpass
 
 #### Definition
 
@@ -1530,7 +975,7 @@ do
 end
 ```
 
-### lurek.audio.getMasterVolume
+#### lurek.audio.getMasterVolume
 
 #### Definition
 
@@ -1558,7 +1003,7 @@ do
 end
 ```
 
-### lurek.audio.getMaxSources
+#### lurek.audio.getMaxSources
 
 #### Definition
 
@@ -1585,7 +1030,7 @@ do
 end
 ```
 
-### lurek.audio.getMeter
+#### lurek.audio.getMeter
 
 #### Definition
 
@@ -1613,7 +1058,7 @@ do
 end
 ```
 
-### lurek.audio.getOrientation
+#### lurek.audio.getOrientation
 
 #### Definition
 
@@ -1653,7 +1098,7 @@ do
 end
 ```
 
-### lurek.audio.getPan
+#### lurek.audio.getPan
 
 #### Definition
 
@@ -1688,7 +1133,7 @@ do
 end
 ```
 
-### lurek.audio.getPitch
+#### lurek.audio.getPitch
 
 #### Definition
 
@@ -1723,7 +1168,7 @@ do
 end
 ```
 
-### lurek.audio.getPlaybackDevice
+#### lurek.audio.getPlaybackDevice
 
 #### Definition
 
@@ -1750,7 +1195,7 @@ do
 end
 ```
 
-### lurek.audio.getPlaybackDevices
+#### lurek.audio.getPlaybackDevices
 
 #### Definition
 
@@ -1777,7 +1222,7 @@ do
 end
 ```
 
-### lurek.audio.getPosition
+#### lurek.audio.getPosition
 
 #### Definition
 
@@ -1814,7 +1259,7 @@ do
 end
 ```
 
-### lurek.audio.getSourceBus
+#### lurek.audio.getSourceBus
 
 #### Definition
 
@@ -1849,7 +1294,7 @@ do
 end
 ```
 
-### lurek.audio.getSourceCount
+#### lurek.audio.getSourceCount
 
 #### Definition
 
@@ -1876,7 +1321,7 @@ do
 end
 ```
 
-### lurek.audio.getSourceType
+#### lurek.audio.getSourceType
 
 #### Definition
 
@@ -1910,7 +1355,7 @@ do
 end
 ```
 
-### lurek.audio.getStereoWidth
+#### lurek.audio.getStereoWidth
 
 #### Definition
 
@@ -1945,7 +1390,7 @@ do
 end
 ```
 
-### lurek.audio.getVelocity
+#### lurek.audio.getVelocity
 
 #### Definition
 
@@ -1982,7 +1427,7 @@ do
 end
 ```
 
-### lurek.audio.getVolume
+#### lurek.audio.getVolume
 
 #### Definition
 
@@ -2017,7 +1462,7 @@ do
 end
 ```
 
-### lurek.audio.hasMidiSoundFont
+#### lurek.audio.hasMidiSoundFont
 
 #### Definition
 
@@ -2044,7 +1489,7 @@ do
 end
 ```
 
-### lurek.audio.isLooping
+#### lurek.audio.isLooping
 
 #### Definition
 
@@ -2078,7 +1523,7 @@ do
 end
 ```
 
-### lurek.audio.isPaused
+#### lurek.audio.isPaused
 
 #### Definition
 
@@ -2113,7 +1558,7 @@ do
 end
 ```
 
-### lurek.audio.isPlaying
+#### lurek.audio.isPlaying
 
 #### Definition
 
@@ -2147,7 +1592,7 @@ do
 end
 ```
 
-### lurek.audio.isStopped
+#### lurek.audio.isStopped
 
 #### Definition
 
@@ -2180,7 +1625,7 @@ do
 end
 ```
 
-### lurek.audio.mixInto
+#### lurek.audio.mixInto
 
 #### Definition
 
@@ -2213,7 +1658,7 @@ do
 end
 ```
 
-### lurek.audio.newBus
+#### lurek.audio.newBus
 
 #### Definition
 
@@ -2245,7 +1690,7 @@ do
 end
 ```
 
-### lurek.audio.newDecoder
+#### lurek.audio.newDecoder
 
 #### Definition
 
@@ -2280,7 +1725,7 @@ do
 end
 ```
 
-### lurek.audio.newMidiPlayer
+#### lurek.audio.newMidiPlayer
 
 #### Definition
 
@@ -2312,7 +1757,7 @@ do
 end
 ```
 
-### lurek.audio.newPool
+#### lurek.audio.newPool
 
 #### Definition
 
@@ -2347,7 +1792,7 @@ do
 end
 ```
 
-### lurek.audio.newQueueableSource
+#### lurek.audio.newQueueableSource
 
 #### Definition
 
@@ -2385,7 +1830,7 @@ do
 end
 ```
 
-### lurek.audio.newSawtoothWave
+#### lurek.audio.newSawtoothWave
 
 #### Definition
 
@@ -2423,7 +1868,7 @@ do
 end
 ```
 
-### lurek.audio.newSineWave
+#### lurek.audio.newSineWave
 
 #### Definition
 
@@ -2461,7 +1906,7 @@ do
 end
 ```
 
-### lurek.audio.newSoundData
+#### lurek.audio.newSoundData
 
 #### Definition
 
@@ -2497,7 +1942,7 @@ do
 end
 ```
 
-### lurek.audio.newSource
+#### lurek.audio.newSource
 
 #### Definition
 
@@ -2532,7 +1977,7 @@ do
 end
 ```
 
-### lurek.audio.newSquareWave
+#### lurek.audio.newSquareWave
 
 #### Definition
 
@@ -2570,7 +2015,7 @@ do
 end
 ```
 
-### lurek.audio.newTriangleWave
+#### lurek.audio.newTriangleWave
 
 #### Definition
 
@@ -2608,7 +2053,7 @@ do
 end
 ```
 
-### lurek.audio.newWhiteNoise
+#### lurek.audio.newWhiteNoise
 
 #### Definition
 
@@ -2646,7 +2091,7 @@ do
 end
 ```
 
-### lurek.audio.normalizeFile
+#### lurek.audio.normalizeFile
 
 #### Definition
 
@@ -2681,7 +2126,7 @@ do
 end
 ```
 
-### lurek.audio.pause
+#### lurek.audio.pause
 
 #### Definition
 
@@ -2713,7 +2158,7 @@ do
 end
 ```
 
-### lurek.audio.pauseAll
+#### lurek.audio.pauseAll
 
 #### Definition
 
@@ -2737,7 +2182,7 @@ do
 end
 ```
 
-### lurek.audio.play
+#### lurek.audio.play
 
 #### Definition
 
@@ -2773,7 +2218,7 @@ do
 end
 ```
 
-### lurek.audio.playLooping
+#### lurek.audio.playLooping
 
 #### Definition
 
@@ -2804,7 +2249,7 @@ do
 end
 ```
 
-### lurek.audio.playQueueable
+#### lurek.audio.playQueueable
 
 #### Definition
 
@@ -2836,7 +2281,7 @@ do
 end
 ```
 
-### lurek.audio.processOffline
+#### lurek.audio.processOffline
 
 #### Definition
 
@@ -2872,7 +2317,7 @@ do
 end
 ```
 
-### lurek.audio.queueSource
+#### lurek.audio.queueSource
 
 #### Definition
 
@@ -2905,7 +2350,7 @@ do
 end
 ```
 
-### lurek.audio.release
+#### lurek.audio.release
 
 #### Definition
 
@@ -2939,7 +2384,7 @@ do
 end
 ```
 
-### lurek.audio.remove_effect
+#### lurek.audio.remove_effect
 
 #### Definition
 
@@ -2975,7 +2420,7 @@ do
 end
 ```
 
-### lurek.audio.resume
+#### lurek.audio.resume
 
 #### Definition
 
@@ -3007,7 +2452,7 @@ do
 end
 ```
 
-### lurek.audio.resumeAll
+#### lurek.audio.resumeAll
 
 #### Definition
 
@@ -3031,7 +2476,7 @@ do
 end
 ```
 
-### lurek.audio.saveWAV
+#### lurek.audio.saveWAV
 
 #### Definition
 
@@ -3063,7 +2508,7 @@ do
 end
 ```
 
-### lurek.audio.seek
+#### lurek.audio.seek
 
 #### Definition
 
@@ -3097,7 +2542,7 @@ do
 end
 ```
 
-### lurek.audio.set_bus_volume
+#### lurek.audio.set_bus_volume
 
 #### Definition
 
@@ -3129,7 +2574,7 @@ do
 end
 ```
 
-### lurek.audio.set_effect_param
+#### lurek.audio.set_effect_param
 
 #### Definition
 
@@ -3169,7 +2614,7 @@ do
 end
 ```
 
-### lurek.audio.setDistanceModel
+#### lurek.audio.setDistanceModel
 
 #### Definition
 
@@ -3198,7 +2643,7 @@ do
 end
 ```
 
-### lurek.audio.setDopplerScale
+#### lurek.audio.setDopplerScale
 
 #### Definition
 
@@ -3227,7 +2672,7 @@ do
 end
 ```
 
-### lurek.audio.setHighpass
+#### lurek.audio.setHighpass
 
 #### Definition
 
@@ -3260,7 +2705,7 @@ do
 end
 ```
 
-### lurek.audio.setListener
+#### lurek.audio.setListener
 
 #### Definition
 
@@ -3294,7 +2739,7 @@ do
 end
 ```
 
-### lurek.audio.setListener2D
+#### lurek.audio.setListener2D
 
 #### Definition
 
@@ -3326,7 +2771,7 @@ do
 end
 ```
 
-### lurek.audio.setLooping
+#### lurek.audio.setLooping
 
 #### Definition
 
@@ -3359,7 +2804,7 @@ do
 end
 ```
 
-### lurek.audio.setLowpass
+#### lurek.audio.setLowpass
 
 #### Definition
 
@@ -3392,7 +2837,7 @@ do
 end
 ```
 
-### lurek.audio.setMasterVolume
+#### lurek.audio.setMasterVolume
 
 #### Definition
 
@@ -3421,7 +2866,7 @@ do
 end
 ```
 
-### lurek.audio.setMeter
+#### lurek.audio.setMeter
 
 #### Definition
 
@@ -3450,7 +2895,7 @@ do
 end
 ```
 
-### lurek.audio.setMidiSoundFont
+#### lurek.audio.setMidiSoundFont
 
 #### Definition
 
@@ -3482,7 +2927,7 @@ do
 end
 ```
 
-### lurek.audio.setOrientation
+#### lurek.audio.setOrientation
 
 #### Definition
 
@@ -3525,7 +2970,7 @@ do
 end
 ```
 
-### lurek.audio.setPan
+#### lurek.audio.setPan
 
 #### Definition
 
@@ -3558,7 +3003,7 @@ do
 end
 ```
 
-### lurek.audio.setPitch
+#### lurek.audio.setPitch
 
 #### Definition
 
@@ -3591,7 +3036,7 @@ do
 end
 ```
 
-### lurek.audio.setPlaybackDevice
+#### lurek.audio.setPlaybackDevice
 
 #### Definition
 
@@ -3622,7 +3067,7 @@ do
 end
 ```
 
-### lurek.audio.setPosition
+#### lurek.audio.setPosition
 
 #### Definition
 
@@ -3660,7 +3105,7 @@ do
 end
 ```
 
-### lurek.audio.setRandomPitch
+#### lurek.audio.setRandomPitch
 
 #### Definition
 
@@ -3695,7 +3140,7 @@ do
 end
 ```
 
-### lurek.audio.setSourceBus
+#### lurek.audio.setSourceBus
 
 #### Definition
 
@@ -3729,7 +3174,7 @@ do
 end
 ```
 
-### lurek.audio.setStereoWidth
+#### lurek.audio.setStereoWidth
 
 #### Definition
 
@@ -3762,7 +3207,7 @@ do
 end
 ```
 
-### lurek.audio.setVelocity
+#### lurek.audio.setVelocity
 
 #### Definition
 
@@ -3800,7 +3245,7 @@ do
 end
 ```
 
-### lurek.audio.setVolume
+#### lurek.audio.setVolume
 
 #### Definition
 
@@ -3833,7 +3278,7 @@ do
 end
 ```
 
-### lurek.audio.spectrogramToPng
+#### lurek.audio.spectrogramToPng
 
 #### Definition
 
@@ -3870,7 +3315,7 @@ do
 end
 ```
 
-### lurek.audio.stop
+#### lurek.audio.stop
 
 #### Definition
 
@@ -3902,7 +3347,7 @@ do
 end
 ```
 
-### lurek.audio.stopAll
+#### lurek.audio.stopAll
 
 #### Definition
 
@@ -3926,7 +3371,7 @@ do
 end
 ```
 
-### lurek.audio.stopQueueable
+#### lurek.audio.stopQueueable
 
 #### Definition
 
@@ -3956,7 +3401,7 @@ do
 end
 ```
 
-### lurek.audio.tell
+#### lurek.audio.tell
 
 #### Definition
 
@@ -3991,7 +3436,7 @@ do
 end
 ```
 
-### lurek.audio.waveformToPng
+#### lurek.audio.waveformToPng
 
 #### Definition
 
@@ -4196,7 +3641,9 @@ end
 
 ## 🔹 Module Methods
 
-### LBus:clearDuck
+### LBus Methods
+
+#### LBus:clearDuck
 
 #### Definition
 
@@ -4222,7 +3669,7 @@ do
 end
 ```
 
-### LBus:getName
+#### LBus:getName
 
 #### Definition
 
@@ -4249,7 +3696,7 @@ do
 end
 ```
 
-### LBus:getPeak
+#### LBus:getPeak
 
 #### Definition
 
@@ -4277,7 +3724,7 @@ do
 end
 ```
 
-### LBus:getPitch
+#### LBus:getPitch
 
 #### Definition
 
@@ -4306,7 +3753,7 @@ do
 end
 ```
 
-### LBus:getVolume
+#### LBus:getVolume
 
 #### Definition
 
@@ -4335,7 +3782,7 @@ do
 end
 ```
 
-### LBus:isPaused
+#### LBus:isPaused
 
 #### Definition
 
@@ -4363,7 +3810,7 @@ do
 end
 ```
 
-### LBus:pause
+#### LBus:pause
 
 #### Definition
 
@@ -4388,7 +3835,7 @@ do
 end
 ```
 
-### LBus:resume
+#### LBus:resume
 
 #### Definition
 
@@ -4414,7 +3861,7 @@ do
 end
 ```
 
-### LBus:setDuckTarget
+#### LBus:setDuckTarget
 
 #### Definition
 
@@ -4447,7 +3894,7 @@ do
 end
 ```
 
-### LBus:setPitch
+#### LBus:setPitch
 
 #### Definition
 
@@ -4477,7 +3924,7 @@ do
 end
 ```
 
-### LBus:setVolume
+#### LBus:setVolume
 
 #### Definition
 
@@ -4507,7 +3954,7 @@ do
 end
 ```
 
-### LBus:type
+#### LBus:type
 
 #### Definition
 
@@ -4534,7 +3981,7 @@ do
 end
 ```
 
-### LBus:typeOf
+#### LBus:typeOf
 
 #### Definition
 
@@ -4566,7 +4013,9 @@ do
 end
 ```
 
-### LDecoder:decode
+### LDecoder Methods
+
+#### LDecoder:decode
 
 #### Definition
 
@@ -4595,7 +4044,7 @@ do
 end
 ```
 
-### LDecoder:getBitDepth
+#### LDecoder:getBitDepth
 
 #### Definition
 
@@ -4624,7 +4073,7 @@ do
 end
 ```
 
-### LDecoder:getChannelCount
+#### LDecoder:getChannelCount
 
 #### Definition
 
@@ -4653,7 +4102,7 @@ do
 end
 ```
 
-### LDecoder:getDuration
+#### LDecoder:getDuration
 
 #### Definition
 
@@ -4682,7 +4131,7 @@ do
 end
 ```
 
-### LDecoder:getSampleRate
+#### LDecoder:getSampleRate
 
 #### Definition
 
@@ -4711,7 +4160,7 @@ do
 end
 ```
 
-### LDecoder:isSeekable
+#### LDecoder:isSeekable
 
 #### Definition
 
@@ -4739,7 +4188,7 @@ do
 end
 ```
 
-### LDecoder:release
+#### LDecoder:release
 
 #### Definition
 
@@ -4765,7 +4214,7 @@ do
 end
 ```
 
-### LDecoder:rewind
+#### LDecoder:rewind
 
 #### Definition
 
@@ -4792,7 +4241,7 @@ do
 end
 ```
 
-### LDecoder:seek
+#### LDecoder:seek
 
 #### Definition
 
@@ -4823,7 +4272,7 @@ do
 end
 ```
 
-### LDecoder:tell
+#### LDecoder:tell
 
 #### Definition
 
@@ -4853,7 +4302,7 @@ do
 end
 ```
 
-### LDecoder:type
+#### LDecoder:type
 
 #### Definition
 
@@ -4881,7 +4330,7 @@ do
 end
 ```
 
-### LDecoder:typeOf
+#### LDecoder:typeOf
 
 #### Definition
 
@@ -4914,7 +4363,9 @@ do
 end
 ```
 
-### LMidiPlayer:getBus
+### LMidiPlayer Methods
+
+#### LMidiPlayer:getBus
 
 #### Definition
 
@@ -4944,7 +4395,7 @@ do
 end
 ```
 
-### LMidiPlayer:getChannelCount
+#### LMidiPlayer:getChannelCount
 
 #### Definition
 
@@ -4973,7 +4424,7 @@ do
 end
 ```
 
-### LMidiPlayer:getChannelInstrument
+#### LMidiPlayer:getChannelInstrument
 
 #### Definition
 
@@ -5007,7 +4458,7 @@ do
 end
 ```
 
-### LMidiPlayer:getChannels
+#### LMidiPlayer:getChannels
 
 #### Definition
 
@@ -5035,7 +4486,7 @@ do
 end
 ```
 
-### LMidiPlayer:getChannelVolume
+#### LMidiPlayer:getChannelVolume
 
 #### Definition
 
@@ -5069,7 +4520,7 @@ do
 end
 ```
 
-### LMidiPlayer:getDuration
+#### LMidiPlayer:getDuration
 
 #### Definition
 
@@ -5098,7 +4549,7 @@ do
 end
 ```
 
-### LMidiPlayer:getFilePath
+#### LMidiPlayer:getFilePath
 
 #### Definition
 
@@ -5126,7 +4577,7 @@ do
 end
 ```
 
-### LMidiPlayer:getNoteCount
+#### LMidiPlayer:getNoteCount
 
 #### Definition
 
@@ -5155,7 +4606,7 @@ do
 end
 ```
 
-### LMidiPlayer:getOriginalTempo
+#### LMidiPlayer:getOriginalTempo
 
 #### Definition
 
@@ -5184,7 +4635,7 @@ do
 end
 ```
 
-### LMidiPlayer:getSampleRate
+#### LMidiPlayer:getSampleRate
 
 #### Definition
 
@@ -5212,7 +4663,7 @@ do
 end
 ```
 
-### LMidiPlayer:getSoundFontPath
+#### LMidiPlayer:getSoundFontPath
 
 #### Definition
 
@@ -5242,7 +4693,7 @@ do
 end
 ```
 
-### LMidiPlayer:getTempo
+#### LMidiPlayer:getTempo
 
 #### Definition
 
@@ -5271,7 +4722,7 @@ do
 end
 ```
 
-### LMidiPlayer:getTempoScale
+#### LMidiPlayer:getTempoScale
 
 #### Definition
 
@@ -5300,7 +4751,7 @@ do
 end
 ```
 
-### LMidiPlayer:getTicksPerBeat
+#### LMidiPlayer:getTicksPerBeat
 
 #### Definition
 
@@ -5329,7 +4780,7 @@ do
 end
 ```
 
-### LMidiPlayer:getTrackCount
+#### LMidiPlayer:getTrackCount
 
 #### Definition
 
@@ -5358,7 +4809,7 @@ do
 end
 ```
 
-### LMidiPlayer:getTrackName
+#### LMidiPlayer:getTrackName
 
 #### Definition
 
@@ -5392,7 +4843,7 @@ do
 end
 ```
 
-### LMidiPlayer:getVolume
+#### LMidiPlayer:getVolume
 
 #### Definition
 
@@ -5421,7 +4872,7 @@ do
 end
 ```
 
-### LMidiPlayer:isChannelMuted
+#### LMidiPlayer:isChannelMuted
 
 #### Definition
 
@@ -5454,7 +4905,7 @@ do
 end
 ```
 
-### LMidiPlayer:isLoaded
+#### LMidiPlayer:isLoaded
 
 #### Definition
 
@@ -5481,7 +4932,7 @@ do
 end
 ```
 
-### LMidiPlayer:isLooping
+#### LMidiPlayer:isLooping
 
 #### Definition
 
@@ -5510,7 +4961,7 @@ do
 end
 ```
 
-### LMidiPlayer:isPaused
+#### LMidiPlayer:isPaused
 
 #### Definition
 
@@ -5540,7 +4991,7 @@ do
 end
 ```
 
-### LMidiPlayer:isPlaying
+#### LMidiPlayer:isPlaying
 
 #### Definition
 
@@ -5569,7 +5020,7 @@ do
 end
 ```
 
-### LMidiPlayer:isTrackMuted
+#### LMidiPlayer:isTrackMuted
 
 #### Definition
 
@@ -5603,7 +5054,7 @@ do
 end
 ```
 
-### LMidiPlayer:load
+#### LMidiPlayer:load
 
 #### Definition
 
@@ -5637,7 +5088,7 @@ do
 end
 ```
 
-### LMidiPlayer:loadData
+#### LMidiPlayer:loadData
 
 #### Definition
 
@@ -5671,7 +5122,7 @@ do
 end
 ```
 
-### LMidiPlayer:pause
+#### LMidiPlayer:pause
 
 #### Definition
 
@@ -5698,7 +5149,7 @@ do
 end
 ```
 
-### LMidiPlayer:play
+#### LMidiPlayer:play
 
 #### Definition
 
@@ -5724,7 +5175,7 @@ do
 end
 ```
 
-### LMidiPlayer:seek
+#### LMidiPlayer:seek
 
 #### Definition
 
@@ -5756,7 +5207,7 @@ do
 end
 ```
 
-### LMidiPlayer:setBus
+#### LMidiPlayer:setBus
 
 #### Definition
 
@@ -5787,7 +5238,7 @@ do
 end
 ```
 
-### LMidiPlayer:setChannelInstrument
+#### LMidiPlayer:setChannelInstrument
 
 #### Definition
 
@@ -5819,7 +5270,7 @@ do
 end
 ```
 
-### LMidiPlayer:setChannelMuted
+#### LMidiPlayer:setChannelMuted
 
 #### Definition
 
@@ -5851,7 +5302,7 @@ do
 end
 ```
 
-### LMidiPlayer:setChannels
+#### LMidiPlayer:setChannels
 
 #### Definition
 
@@ -5881,7 +5332,7 @@ do
 end
 ```
 
-### LMidiPlayer:setChannelVolume
+#### LMidiPlayer:setChannelVolume
 
 #### Definition
 
@@ -5913,7 +5364,7 @@ do
 end
 ```
 
-### LMidiPlayer:setLooping
+#### LMidiPlayer:setLooping
 
 #### Definition
 
@@ -5944,7 +5395,7 @@ do
 end
 ```
 
-### LMidiPlayer:setOnEnd
+#### LMidiPlayer:setOnEnd
 
 #### Definition
 
@@ -5976,7 +5427,7 @@ do
 end
 ```
 
-### LMidiPlayer:setOnNoteOff
+#### LMidiPlayer:setOnNoteOff
 
 #### Definition
 
@@ -6008,7 +5459,7 @@ do
 end
 ```
 
-### LMidiPlayer:setOnNoteOn
+#### LMidiPlayer:setOnNoteOn
 
 #### Definition
 
@@ -6040,7 +5491,7 @@ do
 end
 ```
 
-### LMidiPlayer:setSampleRate
+#### LMidiPlayer:setSampleRate
 
 #### Definition
 
@@ -6070,7 +5521,7 @@ do
 end
 ```
 
-### LMidiPlayer:setSoundFont
+#### LMidiPlayer:setSoundFont
 
 #### Definition
 
@@ -6101,7 +5552,7 @@ do
 end
 ```
 
-### LMidiPlayer:setTempo
+#### LMidiPlayer:setTempo
 
 #### Definition
 
@@ -6131,7 +5582,7 @@ do
 end
 ```
 
-### LMidiPlayer:setTempoScale
+#### LMidiPlayer:setTempoScale
 
 #### Definition
 
@@ -6161,7 +5612,7 @@ do
 end
 ```
 
-### LMidiPlayer:setTrackMuted
+#### LMidiPlayer:setTrackMuted
 
 #### Definition
 
@@ -6194,7 +5645,7 @@ do
 end
 ```
 
-### LMidiPlayer:setVolume
+#### LMidiPlayer:setVolume
 
 #### Definition
 
@@ -6224,7 +5675,7 @@ do
 end
 ```
 
-### LMidiPlayer:soloChannel
+#### LMidiPlayer:soloChannel
 
 #### Definition
 
@@ -6254,7 +5705,7 @@ do
 end
 ```
 
-### LMidiPlayer:stop
+#### LMidiPlayer:stop
 
 #### Definition
 
@@ -6281,7 +5732,7 @@ do
 end
 ```
 
-### LMidiPlayer:tell
+#### LMidiPlayer:tell
 
 #### Definition
 
@@ -6311,7 +5762,7 @@ do
 end
 ```
 
-### LMidiPlayer:type
+#### LMidiPlayer:type
 
 #### Definition
 
@@ -6338,7 +5789,7 @@ do
 end
 ```
 
-### LMidiPlayer:typeOf
+#### LMidiPlayer:typeOf
 
 #### Definition
 
@@ -6370,7 +5821,7 @@ do
 end
 ```
 
-### LMidiPlayer:unsoloAll
+#### LMidiPlayer:unsoloAll
 
 #### Definition
 
@@ -6396,7 +5847,7 @@ do
 end
 ```
 
-### LMidiPlayer:useDefaultSoundFont
+#### LMidiPlayer:useDefaultSoundFont
 
 #### Definition
 
@@ -6421,7 +5872,9 @@ do
 end
 ```
 
-### LSoundData:drawWaveform
+### LSoundData Methods
+
+#### LSoundData:drawWaveform
 
 #### Definition
 
@@ -6468,7 +5921,7 @@ do
 end
 ```
 
-### LSoundData:getBitDepth
+#### LSoundData:getBitDepth
 
 #### Definition
 
@@ -6496,7 +5949,7 @@ do
 end
 ```
 
-### LSoundData:getChannelCount
+#### LSoundData:getChannelCount
 
 #### Definition
 
@@ -6524,7 +5977,7 @@ do
 end
 ```
 
-### LSoundData:getDuration
+#### LSoundData:getDuration
 
 #### Definition
 
@@ -6552,7 +6005,7 @@ do
 end
 ```
 
-### LSoundData:getSample
+#### LSoundData:getSample
 
 #### Definition
 
@@ -6585,7 +6038,7 @@ do
 end
 ```
 
-### LSoundData:getSampleCount
+#### LSoundData:getSampleCount
 
 #### Definition
 
@@ -6613,7 +6066,7 @@ do
 end
 ```
 
-### LSoundData:getSampleRate
+#### LSoundData:getSampleRate
 
 #### Definition
 
@@ -6641,7 +6094,7 @@ do
 end
 ```
 
-### LSoundData:setSample
+#### LSoundData:setSample
 
 #### Definition
 
@@ -6674,7 +6127,7 @@ do
 end
 ```
 
-### LSoundData:type
+#### LSoundData:type
 
 #### Definition
 
@@ -6701,7 +6154,7 @@ do
 end
 ```
 
-### LSoundData:typeOf
+#### LSoundData:typeOf
 
 #### Definition
 
@@ -6733,7 +6186,9 @@ do
 end
 ```
 
-### LSoundPool:getVoiceCount
+### LSoundPool Methods
+
+#### LSoundPool:getVoiceCount
 
 #### Definition
 
@@ -6761,7 +6216,7 @@ do
 end
 ```
 
-### LSoundPool:play
+#### LSoundPool:play
 
 #### Definition
 
@@ -6790,7 +6245,7 @@ do
 end
 ```
 
-### LSoundPool:release
+#### LSoundPool:release
 
 #### Definition
 
@@ -6816,7 +6271,7 @@ do
 end
 ```
 
-### LSoundPool:setBus
+#### LSoundPool:setBus
 
 #### Definition
 
@@ -6848,7 +6303,7 @@ do
 end
 ```
 
-### LSoundPool:setVolume
+#### LSoundPool:setVolume
 
 #### Definition
 
@@ -6879,7 +6334,7 @@ do
 end
 ```
 
-### LSoundPool:stopAll
+#### LSoundPool:stopAll
 
 #### Definition
 
@@ -6906,7 +6361,7 @@ do
 end
 ```
 
-### LSoundPool:type
+#### LSoundPool:type
 
 #### Definition
 
@@ -6934,7 +6389,7 @@ do
 end
 ```
 
-### LSoundPool:typeOf
+#### LSoundPool:typeOf
 
 #### Definition
 
@@ -6967,7 +6422,9 @@ do
 end
 ```
 
-### LSource:clearFilter
+### LSource Methods
+
+#### LSource:clearFilter
 
 #### Definition
 
@@ -6994,7 +6451,7 @@ do
 end
 ```
 
-### LSource:clone
+#### LSource:clone
 
 #### Definition
 
@@ -7024,7 +6481,7 @@ do
 end
 ```
 
-### LSource:fadeIn
+#### LSource:fadeIn
 
 #### Definition
 
@@ -7055,7 +6512,7 @@ do
 end
 ```
 
-### LSource:getDuration
+#### LSource:getDuration
 
 #### Definition
 
@@ -7084,7 +6541,7 @@ do
 end
 ```
 
-### LSource:getFadeIn
+#### LSource:getFadeIn
 
 #### Definition
 
@@ -7114,7 +6571,7 @@ do
 end
 ```
 
-### LSource:getHighpass
+#### LSource:getHighpass
 
 #### Definition
 
@@ -7144,7 +6601,7 @@ do
 end
 ```
 
-### LSource:getLowpass
+#### LSource:getLowpass
 
 #### Definition
 
@@ -7174,7 +6631,7 @@ do
 end
 ```
 
-### LSource:getPan
+#### LSource:getPan
 
 #### Definition
 
@@ -7204,7 +6661,7 @@ do
 end
 ```
 
-### LSource:getPitch
+#### LSource:getPitch
 
 #### Definition
 
@@ -7234,7 +6691,7 @@ do
 end
 ```
 
-### LSource:getType
+#### LSource:getType
 
 #### Definition
 
@@ -7262,7 +6719,7 @@ do
 end
 ```
 
-### LSource:getVolume
+#### LSource:getVolume
 
 #### Definition
 
@@ -7292,7 +6749,7 @@ do
 end
 ```
 
-### LSource:isLooping
+#### LSource:isLooping
 
 #### Definition
 
@@ -7321,7 +6778,7 @@ do
 end
 ```
 
-### LSource:isPaused
+#### LSource:isPaused
 
 #### Definition
 
@@ -7351,7 +6808,7 @@ do
 end
 ```
 
-### LSource:isPlaying
+#### LSource:isPlaying
 
 #### Definition
 
@@ -7380,7 +6837,7 @@ do
 end
 ```
 
-### LSource:isStopped
+#### LSource:isStopped
 
 #### Definition
 
@@ -7408,7 +6865,7 @@ do
 end
 ```
 
-### LSource:pause
+#### LSource:pause
 
 #### Definition
 
@@ -7435,7 +6892,7 @@ do
 end
 ```
 
-### LSource:play
+#### LSource:play
 
 #### Definition
 
@@ -7461,7 +6918,7 @@ do
 end
 ```
 
-### LSource:resume
+#### LSource:resume
 
 #### Definition
 
@@ -7488,7 +6945,7 @@ do
 end
 ```
 
-### LSource:seek
+#### LSource:seek
 
 #### Definition
 
@@ -7520,7 +6977,7 @@ do
 end
 ```
 
-### LSource:setHighpass
+#### LSource:setHighpass
 
 #### Definition
 
@@ -7551,7 +7008,7 @@ do
 end
 ```
 
-### LSource:setLooping
+#### LSource:setLooping
 
 #### Definition
 
@@ -7582,7 +7039,7 @@ do
 end
 ```
 
-### LSource:setLowpass
+#### LSource:setLowpass
 
 #### Definition
 
@@ -7613,7 +7070,7 @@ do
 end
 ```
 
-### LSource:setPan
+#### LSource:setPan
 
 #### Definition
 
@@ -7644,7 +7101,7 @@ do
 end
 ```
 
-### LSource:setPitch
+#### LSource:setPitch
 
 #### Definition
 
@@ -7675,7 +7132,7 @@ do
 end
 ```
 
-### LSource:setVolume
+#### LSource:setVolume
 
 #### Definition
 
@@ -7706,7 +7163,7 @@ do
 end
 ```
 
-### LSource:stop
+#### LSource:stop
 
 #### Definition
 
@@ -7733,7 +7190,7 @@ do
 end
 ```
 
-### LSource:tell
+#### LSource:tell
 
 #### Definition
 
@@ -7763,7 +7220,7 @@ do
 end
 ```
 
-### LSource:type
+#### LSource:type
 
 #### Definition
 
@@ -7791,7 +7248,7 @@ do
 end
 ```
 
-### LSource:typeOf
+#### LSource:typeOf
 
 #### Definition
 

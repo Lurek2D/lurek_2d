@@ -10,6 +10,9 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [lurek_headless.rs](#lurekheadlessrs)
+  - [lurekc.rs](#lurekcrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [💡 Examples](#examples)
@@ -35,6 +38,24 @@ Neither file contains domain logic; they parse command-line arguments and delega
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `lurek_headless.rs`
+
+- Headless CLI tool for game validation, packaging, and batch screenshot capture.
+- `validate` subcommand invokes the Python game validator script.
+- `pack` subcommand compresses a game directory into a .lurek ZIP archive.
+- `screenshot-batch` subcommand runs each game for N frames and captures a PNG.
+- No GPU or window required for validate/pack; screenshot-batch spawns engine instances.
+
+### `lurekc.rs`
+
+- Console-less launcher variant for the shared `lurek_run()` bootstrap path.
+- Applies the Windows GUI subsystem attribute while preserving all runtime modes.
+- Returns the same process exit code as the main `lurek2d` entry point.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -44,8 +65,10 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/bin.md](../blob/main/docs/specs/bin.md)
+- Module-level functions: 0
+- Lua-visible types: 0
+- Total type methods: 0
 
-No module functions appear in the generated Lua API data.
 
 [⬆ back to top](#table-of-contents)
 

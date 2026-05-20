@@ -10,332 +10,46 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [compressed.rs](#compressedrs)
+  - [effects.rs](#effectsrs)
+  - [image_data.rs](#imagedatars)
+  - [layers.rs](#layersrs)
+  - [mod.rs](#modrs)
+  - [palette_lut.rs](#palettelutrs)
+  - [province_grid.rs](#provincegridrs)
+  - [render.rs](#renderrs)
+  - [serial.rs](#serialrs)
+  - [texture.rs](#texturers)
+  - [texture_atlas.rs](#textureatlasrs)
+  - [visualization/animation.rs](#visualizationanimationrs)
+  - [visualization/audio.rs](#visualizationaudiors)
+  - [visualization/camera.rs](#visualizationcamerars)
+  - [visualization/easing.rs](#visualizationeasingrs)
+  - [visualization/facade.rs](#visualizationfacaders)
+  - [visualization/geometry.rs](#visualizationgeometryrs)
+  - [visualization/graph.rs](#visualizationgraphrs)
+  - [visualization/image_ops.rs](#visualizationimageopsrs)
+  - [visualization/mod.rs](#visualizationmodrs)
+  - [visualization/noise.rs](#visualizationnoisers)
+  - [visualization/procgen.rs](#visualizationprocgenrs)
+  - [visualization/ui.rs](#visualizationuirs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.image.fromScreen](#lurekimagefromscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.isCompressed](#lurekimageiscompressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.loadImage](#lurekimageloadimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.loadLayered](#lurekimageloadlayered)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.newCompressedData](#lurekimagenewcompresseddata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.newImageData](#lurekimagenewimagedata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.newImageDataFromBytes](#lurekimagenewimagedatafrombytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.newLayeredImage](#lurekimagenewlayeredimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.newPaletteLut](#lurekimagenewpalettelut)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.newProvinceGrid](#lurekimagenewprovincegrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.saveImage](#lurekimagesaveimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.image.savePNG](#lurekimagesavepng)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LCompressedImageData](#lcompressedimagedata)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LImageData](#limagedata)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LLayeredImage](#llayeredimage)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPaletteLUT](#lpalettelut)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LProvinceGrid](#lprovincegrid)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LCompressedImageData:getDimensions](#lcompressedimagedatagetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCompressedImageData:getFormat](#lcompressedimagedatagetformat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCompressedImageData:getHeight](#lcompressedimagedatagetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCompressedImageData:getMipmapCount](#lcompressedimagedatagetmipmapcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCompressedImageData:getWidth](#lcompressedimagedatagetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCompressedImageData:type](#lcompressedimagedatatype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCompressedImageData:typeOf](#lcompressedimagedatatypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:alphaMask](#limagedataalphamask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:applyPaletteLut](#limagedataapplypalettelut)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:blit](#limagedatablit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:blur](#limagedatablur)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:brightness](#limagedatabrightness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:contrast](#limagedatacontrast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:convolve](#limagedataconvolve)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:crop](#limagedatacrop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:diff](#limagedatadiff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:drawCircle](#limagedatadrawcircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:drawLine](#limagedatadrawline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:drawNineSlice](#limagedatadrawnineslice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:drawRect](#limagedatadrawrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:encode](#limagedataencode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:fill](#limagedatafill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:flipHorizontal](#limagedatafliphorizontal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:flipVertical](#limagedataflipvertical)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:gamma](#limagedatagamma)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getDimensions](#limagedatagetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getHeight](#limagedatagetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getPixel](#limagedatagetpixel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getRawBytes](#limagedatagetrawbytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getRegion](#limagedatagetregion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getString](#limagedatagetstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getWidth](#limagedatagetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:grayscale](#limagedatagrayscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:invert](#limagedatainvert)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:mapPixel](#limagedatamappixel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:mapPixels](#limagedatamappixels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:noise](#limagedatanoise)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:paste](#limagedatapaste)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:posterize](#limagedataposterize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:resize](#limagedataresize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:resizeNearest](#limagedataresizenearest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:rotate90cw](#limagedatarotate90cw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:saturation](#limagedatasaturation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:sepia](#limagedatasepia)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:setPixel](#limagedatasetpixel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:setRawData](#limagedatasetrawdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:sharpen](#limagedatasharpen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:threshold](#limagedatathreshold)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:tint](#limagedatatint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:type](#limagedatatype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:typeOf](#limagedatatypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:addLayer](#llayeredimageaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:getHeight](#llayeredimagegetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:getLayer](#llayeredimagegetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:getName](#llayeredimagegetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:getOpacity](#llayeredimagegetopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:getWidth](#llayeredimagegetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:isVisible](#llayeredimageisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:layerCount](#llayeredimagelayercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:merge](#llayeredimagemerge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:moveLayer](#llayeredimagemovelayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:removeLayer](#llayeredimageremovelayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:save](#llayeredimagesave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:setLayer](#llayeredimagesetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:setName](#llayeredimagesetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:setOpacity](#llayeredimagesetopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:setVisible](#llayeredimagesetvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:swapLayers](#llayeredimageswaplayers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:type](#llayeredimagetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayeredImage:typeOf](#llayeredimagetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPaletteLUT:clear](#lpalettelutclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPaletteLUT:cycle](#lpalettelutcycle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPaletteLUT:getColorCount](#lpalettelutgetcolorcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPaletteLUT:setColor](#lpalettelutsetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPaletteLUT:type](#lpaletteluttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPaletteLUT:typeOf](#lpaletteluttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:adjacencies](#lprovincegridadjacencies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:borderSegments](#lprovincegridbordersegments)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:deserializeShapeData](#lprovincegriddeserializeshapedata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:drawShapes](#lprovincegriddrawshapes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:getAt](#lprovincegridgetat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:getHeight](#lprovincegridgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:getPolygons](#lprovincegridgetpolygons)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:getPolygonsSimplified](#lprovincegridgetpolygonssimplified)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:getWidth](#lprovincegridgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:provinceCount](#lprovincegridprovincecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:provinceSpans](#lprovincegridprovincespans)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:serializeShapeData](#lprovincegridserializeshapedata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:type](#lprovincegridtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceGrid:typeOf](#lprovincegridtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LCompressedImageData Methods](#lcompressedimagedata-methods)
+  - [LImageData Methods](#limagedata-methods)
+  - [LLayeredImage Methods](#llayeredimage-methods)
+  - [LPaletteLUT Methods](#lpalettelut-methods)
+  - [LProvinceGrid Methods](#lprovincegrid-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -359,6 +73,196 @@ Province grid detection segments pixel regions into numbered provinces via flood
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `compressed.rs`
+
+- DDS compressed-texture parsing: header validation, mipmap extraction, format detection.
+- Recognized block-compression families: BC1–BC7 (desktop) and ETC1/ETC2 (mobile).
+- Dual detection path: DXGI format field for DX10+ files, D3DFormat for legacy DDS.
+- File-level helpers for magic-byte checks and full-file decode via GameFS or std I/O.
+- Data carrier (`CompressedImageData`) holding dimensions, format tag, and raw mip payloads.
+
+### `effects.rs`
+
+- Pixel-level color adjustments: brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, and posterize applied via parallel pixel mapping.
+- Alpha channel masking and deterministic per-pixel noise injection with repeatable seed.
+- Geometric transforms: horizontal and vertical flip, 90-degree clockwise rotation, and rectangular crop with bounds validation.
+- Resize operations using nearest-neighbor sampling, bilinear interpolation, and Lanczos3 windowed-sinc filtering.
+- Separable box blur with configurable radius and 3x3 unsharp-mask sharpening kernel.
+- General-purpose NxN kernel convolution with clamped-edge boundary handling and validation of odd kernel dimensions.
+- Compositing via alpha-blended blit with fast-path for fully opaque sources and nine-slice stretch drawing.
+- Bytewise image difference scoring across same-sized and differently-sized images for test comparison.
+- `ResizeFilter` enum for selecting resampling kernels via string parsing at the Lua boundary.
+
+### `image_data.rs`
+
+- Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
+- Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
+- Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
+- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
+- PNG encoding for serialization and export.
+
+### `layers.rs`
+
+- Named image layers with opacity, visibility, and RGBA pixel data.
+- Layered image stack that composites layers front-to-back with alpha blending.
+- Layer manipulation: add, remove, reorder, swap, rename, set opacity/visibility.
+- Final merge produces a single `ImageData` using standard Porter-Duff over compositing.
+
+### `mod.rs`
+
+- RGBA image storage, pixel manipulation, and CPU-side drawing helpers.
+- Compressed format decoding (PNG, QOI, BMP, TGA, WebP) and texture upload.
+- Layered compositing, palette remapping, and image-space effects.
+- Texture atlas packing, nine-slice metadata, and province-grid extraction.
+
+### `palette_lut.rs`
+
+- Source-to-target color remapping via indexed palette lookup tables.
+- Hash-accelerated pixel matching for large palettes, linear scan for small ones.
+- In-place image rewrite and cyclic rotation of replacement colors.
+
+### `province_grid.rs`
+
+- Province grid construction from color-mapped images, assigning unique ids per distinct RGB color.
+- Pixel-level province id lookup and reverse color retrieval by id.
+- Adjacency detection between neighboring provinces with shared-border-pixel counts.
+- Horizontal span extraction for contiguous province row segments.
+- Border segment detection returning line segments between differing province regions.
+- Polygon tracing from directed cell edges into closed point loops per province.
+- Polygon simplification removing collinear vertices and 45-degree staircase patterns.
+- Binary serialization and deserialization of span and border segment shape data.
+- Adjacency pair struct exposing province relationships for map graph queries.
+
+### `render.rs`
+
+- Convert an image buffer into GPU render commands for on-screen display.
+- Provide cloning helpers to snapshot pixel data as standalone values.
+- Bridge between ImageData and the engine's RenderCommand pipeline.
+
+### `serial.rs`
+
+- Serialize and deserialize flat and layered images in the LIMG binary format.
+- Provide zlib compression and decompression for pixel payloads.
+- Validate headers, version tags, and type flags on load.
+- Encode layer metadata (name, opacity, visibility) alongside pixel data.
+- Expose both file-path and raw-byte entry points for flexible I/O.
+
+### `texture.rs`
+
+- CPU-side texture loading, decoding, and storage into the SlotMap pool.
+- Premultiplied-alpha conversion for correct blending on the GPU.
+- Color-space tagging (sRGB vs linear) carried alongside pixel data.
+- Construction from file paths or raw RGBA byte buffers.
+- Dimension validation for caller-supplied pixel buffers.
+
+### `texture_atlas.rs`
+
+- Shelf-based rectangle packing for combining multiple images into a single atlas texture.
+- Nine-slice inset metadata attached per region for scalable UI sprites.
+- Name-keyed region lookup, clearing, and dimension queries.
+
+### `visualization/animation.rs`
+
+- Frame grid rendering for animation debug overlays.
+- Playback timeline preview with active frame highlighting.
+- Playback control state visualization with run, idle, pause, and resume.
+- Default cell-dimension wrapper for quick animation preview.
+- Color-coded frame indicators for current vs inactive frames.
+
+### `visualization/audio.rs`
+
+- Mono waveform preview with axis grid and peak normalization.
+- Stereo waveform rendering with channel separation.
+- Zoomed waveform with interpolated sample detail.
+- Labeled waveform strip with custom color mapping.
+- Shared peak normalization and column-based rendering.
+
+### `visualization/camera.rs`
+
+- Camera debug overlay with viewport rectangle and position crosshair.
+- Zoom level comparison panel across multiple scale factors.
+- Rotation preview grid with world-to-screen coordinate transforms.
+- Camera bounds display with labeled position list.
+- Follow and dead-zone trail visualization.
+- Shake displacement trail with center and moved-position markers.
+- Full-size camera debug wrapper for quick usage.
+- HSV color helpers for hue-based visual differentiation.
+
+### `visualization/easing.rs`
+
+- Easing curve gallery rendered in a labeled grid layout.
+- Overlaid easing comparison chart with colored traces.
+- Bézier curve rendering with control-point markers.
+- Advanced Bézier demo with derivatives, segments, and edit operations.
+- Grid background and axis rendering for chart context.
+
+### `visualization/facade.rs`
+
+- HSV to RGB conversion for visualization color mapping.
+- Hue-based palette generation for chart and graph elements.
+- Shared color utility used across all visualization submodules.
+
+### `visualization/geometry.rs`
+
+- Polygon gallery with regular shapes of varying side counts.
+- Archimedes spiral rendering with HSV ring colors.
+- Filled primitive samples: rectangles, circles, brightness grid.
+- Convex hull computation and overlay drawing.
+- Point-in-polygon, centroid, and area visualization.
+- Bresenham line rasterization proof.
+- Segment-segment and circle-line intersection tests.
+- Circle-segment and line intersection proof rendering.
+
+### `visualization/graph.rs`
+
+- Node-edge graph rendering with labels and colored vertices.
+- Removed-edge overlay with dimmed styling.
+- Item-flow graph with directional arrows and node items.
+- Stats text and title label placement.
+- Circle node rendering with adjacency-list edges.
+
+### `visualization/image_ops.rs`
+
+- Side-by-side labeled image comparison composite.
+- Pixel transform grid: original, inverted, grayscale, sepia columns.
+- HSV color wheel rendering from angle and distance.
+- Slot-based layout with automatic scaling and padding.
+- Label placement beneath each comparison slot.
+
+### `visualization/mod.rs`
+
+- Submodule declarations for all visualization categories.
+- Wildcard re-exports providing a flat public API.
+- Shared facade helpers scoped to crate visibility.
+
+### `visualization/noise.rs`
+
+- Noise function rendering as scaled grayscale.
+- Raw noise mapping without range normalization.
+- Terrain biome coloring from noise elevation bands.
+- Heightmap slice visualization with elevation gradient.
+- Noise comparison strip with multiple tiles side by side.
+
+### `visualization/procgen.rs`
+
+- Cellular automata grid rendering with alive and dead colors.
+- Voronoi region visualization from seed partitions.
+- Point sample rendering as colored dots or circles.
+- Dungeon grid display with wall and floor tile scaling.
+- Delaunay triangulation overlay with triangle edges and vertices.
+
+### `visualization/ui.rs`
+
+- Settings panel layout with controls, sliders, and buttons.
+- HUD bar rendering for health, mana, stamina, and XP.
+- Skill cooldown arcs with radial fill indicators.
+- Color swatch palette with selection highlight.
+- Progress bars and percentage label formatting.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LCompressedImageData` (7 methods) - Lua-side handle for compressed DDS image metadata and mipmap data.
@@ -372,27 +276,18 @@ Province grid detection segments pixel regions into numbered provinces via flood
 ## 📖 API Overview
 
 - Source spec: [docs/specs/image.md](../blob/main/docs/specs/image.md)
+- Module-level functions: 12
+- Lua-visible types: 5
+- Total type methods: 90
 
-```lua
-lurek.image.fromScreen() -> LImageData|nil -- Returns a completed screen capture image or requests one for a future call.
-lurek.image.isCompressed(filename: string) -> boolean -- Returns whether a GameFS image file begins with DDS compressed image magic bytes.
-lurek.image.loadImage(filename: string) -> LImageData -- Loads and decodes image data from GameFS.
-lurek.image.loadLayered(filename: string) -> LLayeredImage -- Loads a serialized layered image stack from GameFS.
-lurek.image.newCompressedData(filename: string) -> LCompressedImageData -- Loads DDS compressed image data from GameFS.
-lurek.image.newImageData(width_or_filename: integer|string, [height]: integer) -> LImageData -- Creates empty image data from dimensions or decodes image data from a GameFS filename.
-lurek.image.newImageDataFromBytes(w: integer, h: integer, bytes: string) -> LImageData -- Creates image data from raw RGBA bytes and explicit dimensions.
-lurek.image.newLayeredImage(width: integer, height: integer) -> LLayeredImage -- Creates a layered image stack with one or more blank layers.
-lurek.image.newPaletteLut() -> LPaletteLUT -- Creates an empty palette lookup table.
-lurek.image.newProvinceGrid(filename: string) -> LProvinceGrid -- Loads a province id grid from an image file under the current game directory.
-lurek.image.saveImage(img_ud: LImageData, filename: string) -- Saves an image data object to a path under the current game directory.
-lurek.image.savePNG(img_ud: LImageData, filename: string) -- Encodes image data as PNG and writes it under the current game directory.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.image.fromScreen
+### Module-Level Functions
+
+#### lurek.image.fromScreen
 
 #### Definition
 
@@ -420,7 +315,7 @@ do
 end
 ```
 
-### lurek.image.isCompressed
+#### lurek.image.isCompressed
 
 #### Definition
 
@@ -452,7 +347,7 @@ do
 end
 ```
 
-### lurek.image.loadImage
+#### lurek.image.loadImage
 
 #### Definition
 
@@ -487,7 +382,7 @@ do
 end
 ```
 
-### lurek.image.loadLayered
+#### lurek.image.loadLayered
 
 #### Definition
 
@@ -563,7 +458,7 @@ do
     img:setPixel(0, 0, 1, 1, 1, 1)
 ```
 
-### lurek.image.newCompressedData
+#### lurek.image.newCompressedData
 
 #### Definition
 
@@ -597,7 +492,7 @@ do
 end
 ```
 
-### lurek.image.newImageData
+#### lurek.image.newImageData
 
 #### Definition
 
@@ -631,7 +526,7 @@ do
 end
 ```
 
-### lurek.image.newImageDataFromBytes
+#### lurek.image.newImageDataFromBytes
 
 #### Definition
 
@@ -668,7 +563,7 @@ do
 end
 ```
 
-### lurek.image.newLayeredImage
+#### lurek.image.newLayeredImage
 
 #### Definition
 
@@ -703,7 +598,7 @@ do
 end
 ```
 
-### lurek.image.newPaletteLut
+#### lurek.image.newPaletteLut
 
 #### Definition
 
@@ -730,7 +625,7 @@ do
 end
 ```
 
-### lurek.image.newProvinceGrid
+#### lurek.image.newProvinceGrid
 
 #### Definition
 
@@ -763,7 +658,7 @@ do
 end
 ```
 
-### lurek.image.saveImage
+#### lurek.image.saveImage
 
 #### Definition
 
@@ -796,7 +691,7 @@ do
 end
 ```
 
-### lurek.image.savePNG
+#### lurek.image.savePNG
 
 #### Definition
 
@@ -1012,7 +907,9 @@ end
 
 ## 🔹 Module Methods
 
-### LCompressedImageData:getDimensions
+### LCompressedImageData Methods
+
+#### LCompressedImageData:getDimensions
 
 #### Definition
 
@@ -1041,7 +938,7 @@ do
 end
 ```
 
-### LCompressedImageData:getFormat
+#### LCompressedImageData:getFormat
 
 #### Definition
 
@@ -1068,7 +965,7 @@ do
 end
 ```
 
-### LCompressedImageData:getHeight
+#### LCompressedImageData:getHeight
 
 #### Definition
 
@@ -1098,7 +995,7 @@ do
 end
 ```
 
-### LCompressedImageData:getMipmapCount
+#### LCompressedImageData:getMipmapCount
 
 #### Definition
 
@@ -1125,7 +1022,7 @@ do
 end
 ```
 
-### LCompressedImageData:getWidth
+#### LCompressedImageData:getWidth
 
 #### Definition
 
@@ -1155,7 +1052,7 @@ do
 end
 ```
 
-### LCompressedImageData:type
+#### LCompressedImageData:type
 
 #### Definition
 
@@ -1183,7 +1080,7 @@ do
 end
 ```
 
-### LCompressedImageData:typeOf
+#### LCompressedImageData:typeOf
 
 #### Definition
 
@@ -1216,7 +1113,9 @@ do
 end
 ```
 
-### LImageData:alphaMask
+### LImageData Methods
+
+#### LImageData:alphaMask
 
 #### Definition
 
@@ -1248,7 +1147,7 @@ do
 end
 ```
 
-### LImageData:applyPaletteLut
+#### LImageData:applyPaletteLut
 
 #### Definition
 
@@ -1280,7 +1179,7 @@ do
 end
 ```
 
-### LImageData:blit
+#### LImageData:blit
 
 #### Definition
 
@@ -1316,7 +1215,7 @@ do
 end
 ```
 
-### LImageData:blur
+#### LImageData:blur
 
 #### Definition
 
@@ -1350,7 +1249,7 @@ do
 end
 ```
 
-### LImageData:brightness
+#### LImageData:brightness
 
 #### Definition
 
@@ -1381,7 +1280,7 @@ do
 end
 ```
 
-### LImageData:contrast
+#### LImageData:contrast
 
 #### Definition
 
@@ -1412,7 +1311,7 @@ do
 end
 ```
 
-### LImageData:convolve
+#### LImageData:convolve
 
 #### Definition
 
@@ -1448,7 +1347,7 @@ do
 end
 ```
 
-### LImageData:crop
+#### LImageData:crop
 
 #### Definition
 
@@ -1487,7 +1386,7 @@ do
 end
 ```
 
-### LImageData:diff
+#### LImageData:diff
 
 #### Definition
 
@@ -1522,7 +1421,7 @@ do
 end
 ```
 
-### LImageData:drawCircle
+#### LImageData:drawCircle
 
 #### Definition
 
@@ -1564,7 +1463,7 @@ do
 end
 ```
 
-### LImageData:drawLine
+#### LImageData:drawLine
 
 #### Definition
 
@@ -1608,7 +1507,7 @@ do
 end
 ```
 
-### LImageData:drawNineSlice
+#### LImageData:drawNineSlice
 
 #### Definition
 
@@ -1664,7 +1563,7 @@ do
 end
 ```
 
-### LImageData:drawRect
+#### LImageData:drawRect
 
 #### Definition
 
@@ -1708,7 +1607,7 @@ do
 end
 ```
 
-### LImageData:encode
+#### LImageData:encode
 
 #### Definition
 
@@ -1742,7 +1641,7 @@ do
 end
 ```
 
-### LImageData:fill
+#### LImageData:fill
 
 #### Definition
 
@@ -1778,7 +1677,7 @@ do
 end
 ```
 
-### LImageData:flipHorizontal
+#### LImageData:flipHorizontal
 
 #### Definition
 
@@ -1805,7 +1704,7 @@ do
 end
 ```
 
-### LImageData:flipVertical
+#### LImageData:flipVertical
 
 #### Definition
 
@@ -1832,7 +1731,7 @@ do
 end
 ```
 
-### LImageData:gamma
+#### LImageData:gamma
 
 #### Definition
 
@@ -1863,7 +1762,7 @@ do
 end
 ```
 
-### LImageData:getDimensions
+#### LImageData:getDimensions
 
 #### Definition
 
@@ -1892,7 +1791,7 @@ do
 end
 ```
 
-### LImageData:getHeight
+#### LImageData:getHeight
 
 #### Definition
 
@@ -1919,7 +1818,7 @@ do
 end
 ```
 
-### LImageData:getPixel
+#### LImageData:getPixel
 
 #### Definition
 
@@ -1958,7 +1857,7 @@ do
 end
 ```
 
-### LImageData:getRawBytes
+#### LImageData:getRawBytes
 
 #### Definition
 
@@ -1986,7 +1885,7 @@ do
 end
 ```
 
-### LImageData:getRegion
+#### LImageData:getRegion
 
 #### Definition
 
@@ -2027,7 +1926,7 @@ do
 end
 ```
 
-### LImageData:getString
+#### LImageData:getString
 
 #### Definition
 
@@ -2055,7 +1954,7 @@ do
 end
 ```
 
-### LImageData:getWidth
+#### LImageData:getWidth
 
 #### Definition
 
@@ -2082,7 +1981,7 @@ do
 end
 ```
 
-### LImageData:grayscale
+#### LImageData:grayscale
 
 #### Definition
 
@@ -2109,7 +2008,7 @@ do
 end
 ```
 
-### LImageData:invert
+#### LImageData:invert
 
 #### Definition
 
@@ -2136,7 +2035,7 @@ do
 end
 ```
 
-### LImageData:mapPixel
+#### LImageData:mapPixel
 
 #### Definition
 
@@ -2167,7 +2066,7 @@ do
 end
 ```
 
-### LImageData:mapPixels
+#### LImageData:mapPixels
 
 #### Definition
 
@@ -2197,7 +2096,7 @@ do
 end
 ```
 
-### LImageData:noise
+#### LImageData:noise
 
 #### Definition
 
@@ -2228,7 +2127,7 @@ do
 end
 ```
 
-### LImageData:paste
+#### LImageData:paste
 
 #### Definition
 
@@ -2264,7 +2163,7 @@ do
 end
 ```
 
-### LImageData:posterize
+#### LImageData:posterize
 
 #### Definition
 
@@ -2295,7 +2194,7 @@ do
 end
 ```
 
-### LImageData:resize
+#### LImageData:resize
 
 #### Definition
 
@@ -2331,7 +2230,7 @@ do
 end
 ```
 
-### LImageData:resizeNearest
+#### LImageData:resizeNearest
 
 #### Definition
 
@@ -2366,7 +2265,7 @@ do
 end
 ```
 
-### LImageData:rotate90cw
+#### LImageData:rotate90cw
 
 #### Definition
 
@@ -2394,7 +2293,7 @@ do
 end
 ```
 
-### LImageData:saturation
+#### LImageData:saturation
 
 #### Definition
 
@@ -2425,7 +2324,7 @@ do
 end
 ```
 
-### LImageData:sepia
+#### LImageData:sepia
 
 #### Definition
 
@@ -2451,7 +2350,7 @@ do
 end
 ```
 
-### LImageData:setPixel
+#### LImageData:setPixel
 
 #### Definition
 
@@ -2492,7 +2391,7 @@ do
 end
 ```
 
-### LImageData:setRawData
+#### LImageData:setRawData
 
 #### Definition
 
@@ -2523,7 +2422,7 @@ do
 end
 ```
 
-### LImageData:sharpen
+#### LImageData:sharpen
 
 #### Definition
 
@@ -2552,7 +2451,7 @@ do
 end
 ```
 
-### LImageData:threshold
+#### LImageData:threshold
 
 #### Definition
 
@@ -2583,7 +2482,7 @@ do
 end
 ```
 
-### LImageData:tint
+#### LImageData:tint
 
 #### Definition
 
@@ -2620,7 +2519,7 @@ do
 end
 ```
 
-### LImageData:type
+#### LImageData:type
 
 #### Definition
 
@@ -2647,7 +2546,7 @@ do
 end
 ```
 
-### LImageData:typeOf
+#### LImageData:typeOf
 
 #### Definition
 
@@ -2679,7 +2578,9 @@ do
 end
 ```
 
-### LLayeredImage:addLayer
+### LLayeredImage Methods
+
+#### LLayeredImage:addLayer
 
 #### Definition
 
@@ -2713,7 +2614,7 @@ do
 end
 ```
 
-### LLayeredImage:getHeight
+#### LLayeredImage:getHeight
 
 #### Definition
 
@@ -2740,7 +2641,7 @@ do
 end
 ```
 
-### LLayeredImage:getLayer
+#### LLayeredImage:getLayer
 
 #### Definition
 
@@ -2774,7 +2675,7 @@ do
 end
 ```
 
-### LLayeredImage:getName
+#### LLayeredImage:getName
 
 #### Definition
 
@@ -2808,7 +2709,7 @@ do
 end
 ```
 
-### LLayeredImage:getOpacity
+#### LLayeredImage:getOpacity
 
 #### Definition
 
@@ -2841,7 +2742,7 @@ do
 end
 ```
 
-### LLayeredImage:getWidth
+#### LLayeredImage:getWidth
 
 #### Definition
 
@@ -2868,7 +2769,7 @@ do
 end
 ```
 
-### LLayeredImage:isVisible
+#### LLayeredImage:isVisible
 
 #### Definition
 
@@ -2901,7 +2802,7 @@ do
 end
 ```
 
-### LLayeredImage:layerCount
+#### LLayeredImage:layerCount
 
 #### Definition
 
@@ -2928,7 +2829,7 @@ do
 end
 ```
 
-### LLayeredImage:merge
+#### LLayeredImage:merge
 
 #### Definition
 
@@ -2957,7 +2858,7 @@ do
 end
 ```
 
-### LLayeredImage:moveLayer
+#### LLayeredImage:moveLayer
 
 #### Definition
 
@@ -2994,7 +2895,7 @@ do
 end
 ```
 
-### LLayeredImage:removeLayer
+#### LLayeredImage:removeLayer
 
 #### Definition
 
@@ -3028,7 +2929,7 @@ do
 end
 ```
 
-### LLayeredImage:save
+#### LLayeredImage:save
 
 #### Definition
 
@@ -3059,7 +2960,7 @@ do
 end
 ```
 
-### LLayeredImage:setLayer
+#### LLayeredImage:setLayer
 
 #### Definition
 
@@ -3095,7 +2996,7 @@ do
 end
 ```
 
-### LLayeredImage:setName
+#### LLayeredImage:setName
 
 #### Definition
 
@@ -3131,7 +3032,7 @@ do
 end
 ```
 
-### LLayeredImage:setOpacity
+#### LLayeredImage:setOpacity
 
 #### Definition
 
@@ -3167,7 +3068,7 @@ do
 end
 ```
 
-### LLayeredImage:setVisible
+#### LLayeredImage:setVisible
 
 #### Definition
 
@@ -3203,7 +3104,7 @@ do
 end
 ```
 
-### LLayeredImage:swapLayers
+#### LLayeredImage:swapLayers
 
 #### Definition
 
@@ -3240,7 +3141,7 @@ do
 end
 ```
 
-### LLayeredImage:type
+#### LLayeredImage:type
 
 #### Definition
 
@@ -3268,7 +3169,7 @@ do
 end
 ```
 
-### LLayeredImage:typeOf
+#### LLayeredImage:typeOf
 
 #### Definition
 
@@ -3301,7 +3202,9 @@ do
 end
 ```
 
-### LPaletteLUT:clear
+### LPaletteLUT Methods
+
+#### LPaletteLUT:clear
 
 #### Definition
 
@@ -3327,7 +3230,7 @@ do
 end
 ```
 
-### LPaletteLUT:cycle
+#### LPaletteLUT:cycle
 
 #### Definition
 
@@ -3359,7 +3262,7 @@ do
 end
 ```
 
-### LPaletteLUT:getColorCount
+#### LPaletteLUT:getColorCount
 
 #### Definition
 
@@ -3387,7 +3290,7 @@ do
 end
 ```
 
-### LPaletteLUT:setColor
+#### LPaletteLUT:setColor
 
 #### Definition
 
@@ -3431,7 +3334,7 @@ do
 end
 ```
 
-### LPaletteLUT:type
+#### LPaletteLUT:type
 
 #### Definition
 
@@ -3459,7 +3362,7 @@ do
 end
 ```
 
-### LPaletteLUT:typeOf
+#### LPaletteLUT:typeOf
 
 #### Definition
 
@@ -3492,7 +3395,9 @@ do
 end
 ```
 
-### LProvinceGrid:adjacencies
+### LProvinceGrid Methods
+
+#### LProvinceGrid:adjacencies
 
 #### Definition
 
@@ -3520,7 +3425,7 @@ do
 end
 ```
 
-### LProvinceGrid:borderSegments
+#### LProvinceGrid:borderSegments
 
 #### Definition
 
@@ -3548,7 +3453,7 @@ do
 end
 ```
 
-### LProvinceGrid:deserializeShapeData
+#### LProvinceGrid:deserializeShapeData
 
 #### Definition
 
@@ -3583,7 +3488,7 @@ do
 end
 ```
 
-### LProvinceGrid:drawShapes
+#### LProvinceGrid:drawShapes
 
 #### Definition
 
@@ -3622,7 +3527,7 @@ do
 end
 ```
 
-### LProvinceGrid:getAt
+#### LProvinceGrid:getAt
 
 #### Definition
 
@@ -3657,7 +3562,7 @@ do
 end
 ```
 
-### LProvinceGrid:getHeight
+#### LProvinceGrid:getHeight
 
 #### Definition
 
@@ -3684,7 +3589,7 @@ do
 end
 ```
 
-### LProvinceGrid:getPolygons
+#### LProvinceGrid:getPolygons
 
 #### Definition
 
@@ -3712,7 +3617,7 @@ do
 end
 ```
 
-### LProvinceGrid:getPolygonsSimplified
+#### LProvinceGrid:getPolygonsSimplified
 
 #### Definition
 
@@ -3740,7 +3645,7 @@ do
 end
 ```
 
-### LProvinceGrid:getWidth
+#### LProvinceGrid:getWidth
 
 #### Definition
 
@@ -3767,7 +3672,7 @@ do
 end
 ```
 
-### LProvinceGrid:provinceCount
+#### LProvinceGrid:provinceCount
 
 #### Definition
 
@@ -3794,7 +3699,7 @@ do
 end
 ```
 
-### LProvinceGrid:provinceSpans
+#### LProvinceGrid:provinceSpans
 
 #### Definition
 
@@ -3822,7 +3727,7 @@ do
 end
 ```
 
-### LProvinceGrid:serializeShapeData
+#### LProvinceGrid:serializeShapeData
 
 #### Definition
 
@@ -3852,7 +3757,7 @@ do
 end
 ```
 
-### LProvinceGrid:type
+#### LProvinceGrid:type
 
 #### Definition
 
@@ -3880,7 +3785,7 @@ do
 end
 ```
 
-### LProvinceGrid:typeOf
+#### LProvinceGrid:typeOf
 
 #### Definition
 

@@ -10,197 +10,24 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [color.rs](#colorrs)
+  - [document.rs](#documentrs)
+  - [element.rs](#elementrs)
+  - [mod.rs](#modrs)
+  - [parser.rs](#parserrs)
+  - [selector.rs](#selectorrs)
+  - [style.rs](#stylers)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.html.isDefaultPrevented](#lurekhtmlisdefaultprevented)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.html.loadDocument](#lurekhtmlloaddocument)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.html.newDocument](#lurekhtmlnewdocument)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.html.preventDefault](#lurekhtmlpreventdefault)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.html.stopPropagation](#lurekhtmlstoppropagation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.html.supports](#lurekhtmlsupports)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LHtmlDocument](#lhtmldocument)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LHtmlElement](#lhtmlelement)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LHtmlDocument:addCss](#lhtmldocumentaddcss)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:clearCss](#lhtmldocumentclearcss)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:draw](#lhtmldocumentdraw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:getElementById](#lhtmldocumentgetelementbyid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:getHtml](#lhtmldocumentgethtml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:getRoot](#lhtmldocumentgetroot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:getViewport](#lhtmldocumentgetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:isDirty](#lhtmldocumentisdirty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:keypressed](#lhtmldocumentkeypressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:mousemoved](#lhtmldocumentmousemoved)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:mousepressed](#lhtmldocumentmousepressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:mousereleased](#lhtmldocumentmousereleased)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:off](#lhtmldocumentoff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:on](#lhtmldocumenton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:query](#lhtmldocumentquery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:queryAll](#lhtmldocumentqueryall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:relayout](#lhtmldocumentrelayout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:render](#lhtmldocumentrender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:setCss](#lhtmldocumentsetcss)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:setHtml](#lhtmldocumentsethtml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:setViewport](#lhtmldocumentsetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:textinput](#lhtmldocumenttextinput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:type](#lhtmldocumenttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:typeOf](#lhtmldocumenttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:update](#lhtmldocumentupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlDocument:wheelmoved](#lhtmldocumentwheelmoved)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:addClass](#lhtmlelementaddclass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:appendHtml](#lhtmlelementappendhtml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:blur](#lhtmlelementblur)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:focus](#lhtmlelementfocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getAttribute](#lhtmlelementgetattribute)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getDocument](#lhtmlelementgetdocument)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getHtml](#lhtmlelementgethtml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getId](#lhtmlelementgetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getRect](#lhtmlelementgetrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getStyle](#lhtmlelementgetstyle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getTagName](#lhtmlelementgettagname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:getText](#lhtmlelementgettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:hasClass](#lhtmlelementhasclass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:off](#lhtmlelementoff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:on](#lhtmlelementon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:query](#lhtmlelementquery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:queryAll](#lhtmlelementqueryall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:remove](#lhtmlelementremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:removeAttribute](#lhtmlelementremoveattribute)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:removeClass](#lhtmlelementremoveclass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:setAttribute](#lhtmlelementsetattribute)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:setHtml](#lhtmlelementsethtml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:setId](#lhtmlelementsetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:setStyle](#lhtmlelementsetstyle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:setText](#lhtmlelementsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:toggleClass](#lhtmlelementtoggleclass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:type](#lhtmlelementtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHtmlElement:typeOf](#lhtmlelementtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LHtmlDocument Methods](#lhtmldocument-methods)
+  - [LHtmlElement Methods](#lhtmlelement-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -224,6 +51,66 @@ CSS color parsing covers hex, rgb(), rgba(), hsl(), hsla(), and named keywords. 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `color.rs`
+
+- CSS color string parsing: hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and named keywords.
+- Component extraction for RGB bytes/percent, alpha, hue (deg/turn/rad), and percent values.
+- HSL-to-RGB conversion with full hue normalization.
+- Named color lookup covering the CSS basic and extended keyword set.
+- All outputs normalized to `[f32; 4]` in the 0.0–1.0 range.
+
+### `document.rs`
+
+- Owns `HtmlDocument`, the mutable tree that holds parsed elements, CSS state, and interaction focus.
+- Provides document construction from raw HTML with optional viewport size and initial CSS.
+- Manages CSS source accumulation, rule parsing, and per-element computed style resolution.
+- Implements a simple vertical block layout engine with dirty-flag tracking and viewport resize.
+- Exposes DOM query helpers: element-by-id, CSS selector matching, ancestor traversal.
+- Supports DOM mutation: set/append inner HTML, set text, remove elements, attribute and class ops.
+- Handles focus, hover, hit-testing, mouse/keyboard routing, and text input for form elements.
+- Produces `HtmlDrawCommand` vectors consumed by the renderer for box and text passes.
+- Includes inner/outer HTML serialization and document-order traversal utilities.
+
+### `element.rs`
+
+- DOM element model: tag, attributes, children, parent linkage, and text content.
+- Inline style handling with bidirectional sync to the `style` attribute.
+- Class list manipulation: add, remove, toggle, and membership queries.
+- Axis-aligned layout rectangle for hit testing and position queries.
+- Attribute normalization and void-tag classification helpers.
+
+### `mod.rs`
+
+- HTML document tree with element storage, layout rectangles, and draw-command generation.
+- CSS rule parsing, selector matching, and color normalization.
+- Tag parsing and entity escaping for inline HTML content.
+
+### `parser.rs`
+
+- Parse raw HTML strings into a live element tree with parent-child relationships.
+- Split tag headers, extract and normalize attribute key-value pairs.
+- Decode and encode the small HTML entity set (amp, lt, gt, quot, #39).
+- Collapse whitespace in text nodes before attaching to elements.
+- Handle self-closing tags, void tags, closing tags, and comments.
+
+### `selector.rs`
+
+- CSS selector matching for the HTML element tree.
+- Parse selector strings into tag, id, class, and combinator fragments.
+- Support descendant and child combinators for ancestor-chain traversal.
+- Match parsed selector chains against live elements by walking parent links.
+- Provide the core predicate used by style resolution and query APIs.
+
+### `style.rs`
+
+- CSS stylesheet parsing: split source text into selector/declaration blocks.
+- Declaration normalization: property validation, value extraction, warning collection.
+- Length unit resolution: convert px, %, and unitless values to pixel floats.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LHtmlDocument` (26 methods) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
@@ -234,21 +121,18 @@ CSS color parsing covers hex, rgb(), rgba(), hsl(), hsla(), and named keywords. 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/html.md](../blob/main/docs/specs/html.md)
+- Module-level functions: 6
+- Lua-visible types: 2
+- Total type methods: 54
 
-```lua
-lurek.html.isDefaultPrevented() -> boolean -- Returns whether the default action was prevented.
-lurek.html.loadDocument(path: string, [opts]: table) -> LHtmlDocument -- Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
-lurek.html.newDocument([source]: string, [opts]: table) -> LHtmlDocument -- Creates an HTML document from optional source and layout/style options.
-lurek.html.preventDefault() -- Marks the event as having its default action prevented.
-lurek.html.stopPropagation() -- Stops event propagation to remaining listeners.
-lurek.html.supports(feature: string) -> boolean -- Returns whether the HTML engine supports a named feature.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.html.isDefaultPrevented
+### Module-Level Functions
+
+#### lurek.html.isDefaultPrevented
 
 #### Definition
 
@@ -318,7 +202,7 @@ do
 end
 ```
 
-### lurek.html.loadDocument
+#### lurek.html.loadDocument
 
 #### Definition
 
@@ -352,7 +236,7 @@ do
 end
 ```
 
-### lurek.html.newDocument
+#### lurek.html.newDocument
 
 #### Definition
 
@@ -386,7 +270,7 @@ do
 end
 ```
 
-### lurek.html.preventDefault
+#### lurek.html.preventDefault
 
 #### Definition
 
@@ -454,7 +338,7 @@ do
     doc:clearCss()
 ```
 
-### lurek.html.stopPropagation
+#### lurek.html.stopPropagation
 
 #### Definition
 
@@ -522,7 +406,7 @@ end
 do
 ```
 
-### lurek.html.supports
+#### lurek.html.supports
 
 #### Definition
 
@@ -615,7 +499,9 @@ end
 
 ## 🔹 Module Methods
 
-### LHtmlDocument:addCss
+### LHtmlDocument Methods
+
+#### LHtmlDocument:addCss
 
 #### Definition
 
@@ -646,7 +532,7 @@ do
 end
 ```
 
-### LHtmlDocument:clearCss
+#### LHtmlDocument:clearCss
 
 #### Definition
 
@@ -672,7 +558,7 @@ do
 end
 ```
 
-### LHtmlDocument:draw
+#### LHtmlDocument:draw
 
 #### Definition
 
@@ -704,7 +590,7 @@ do
 end
 ```
 
-### LHtmlDocument:getElementById
+#### LHtmlDocument:getElementById
 
 #### Definition
 
@@ -739,7 +625,7 @@ do
 end
 ```
 
-### LHtmlDocument:getHtml
+#### LHtmlDocument:getHtml
 
 #### Definition
 
@@ -767,7 +653,7 @@ do
 end
 ```
 
-### LHtmlDocument:getRoot
+#### LHtmlDocument:getRoot
 
 #### Definition
 
@@ -795,7 +681,7 @@ do
 end
 ```
 
-### LHtmlDocument:getViewport
+#### LHtmlDocument:getViewport
 
 #### Definition
 
@@ -825,7 +711,7 @@ do
 end
 ```
 
-### LHtmlDocument:isDirty
+#### LHtmlDocument:isDirty
 
 #### Definition
 
@@ -853,7 +739,7 @@ do
 end
 ```
 
-### LHtmlDocument:keypressed
+#### LHtmlDocument:keypressed
 
 #### Definition
 
@@ -886,7 +772,7 @@ do
 end
 ```
 
-### LHtmlDocument:mousemoved
+#### LHtmlDocument:mousemoved
 
 #### Definition
 
@@ -921,7 +807,7 @@ do
 end
 ```
 
-### LHtmlDocument:mousepressed
+#### LHtmlDocument:mousepressed
 
 #### Definition
 
@@ -958,7 +844,7 @@ do
 end
 ```
 
-### LHtmlDocument:mousereleased
+#### LHtmlDocument:mousereleased
 
 #### Definition
 
@@ -995,7 +881,7 @@ do
 end
 ```
 
-### LHtmlDocument:off
+#### LHtmlDocument:off
 
 #### Definition
 
@@ -1026,7 +912,7 @@ do
 end
 ```
 
-### LHtmlDocument:on
+#### LHtmlDocument:on
 
 #### Definition
 
@@ -1063,7 +949,7 @@ do
 end
 ```
 
-### LHtmlDocument:query
+#### LHtmlDocument:query
 
 #### Definition
 
@@ -1098,7 +984,7 @@ do
 end
 ```
 
-### LHtmlDocument:queryAll
+#### LHtmlDocument:queryAll
 
 #### Definition
 
@@ -1131,7 +1017,7 @@ do
 end
 ```
 
-### LHtmlDocument:relayout
+#### LHtmlDocument:relayout
 
 #### Definition
 
@@ -1156,7 +1042,7 @@ do
 end
 ```
 
-### LHtmlDocument:render
+#### LHtmlDocument:render
 
 #### Definition
 
@@ -1188,7 +1074,7 @@ do
 end
 ```
 
-### LHtmlDocument:setCss
+#### LHtmlDocument:setCss
 
 #### Definition
 
@@ -1218,7 +1104,7 @@ do
 end
 ```
 
-### LHtmlDocument:setHtml
+#### LHtmlDocument:setHtml
 
 #### Definition
 
@@ -1248,7 +1134,7 @@ do
 end
 ```
 
-### LHtmlDocument:setViewport
+#### LHtmlDocument:setViewport
 
 #### Definition
 
@@ -1280,7 +1166,7 @@ do
 end
 ```
 
-### LHtmlDocument:textinput
+#### LHtmlDocument:textinput
 
 #### Definition
 
@@ -1313,7 +1199,7 @@ do
 end
 ```
 
-### LHtmlDocument:type
+#### LHtmlDocument:type
 
 #### Definition
 
@@ -1340,7 +1226,7 @@ do
 end
 ```
 
-### LHtmlDocument:typeOf
+#### LHtmlDocument:typeOf
 
 #### Definition
 
@@ -1372,7 +1258,7 @@ do
 end
 ```
 
-### LHtmlDocument:update
+#### LHtmlDocument:update
 
 #### Definition
 
@@ -1402,7 +1288,7 @@ do
 end
 ```
 
-### LHtmlDocument:wheelmoved
+#### LHtmlDocument:wheelmoved
 
 #### Definition
 
@@ -1437,7 +1323,9 @@ do
 end
 ```
 
-### LHtmlElement:addClass
+### LHtmlElement Methods
+
+#### LHtmlElement:addClass
 
 #### Definition
 
@@ -1468,7 +1356,7 @@ do
 end
 ```
 
-### LHtmlElement:appendHtml
+#### LHtmlElement:appendHtml
 
 #### Definition
 
@@ -1499,7 +1387,7 @@ do
 end
 ```
 
-### LHtmlElement:blur
+#### LHtmlElement:blur
 
 #### Definition
 
@@ -1525,7 +1413,7 @@ do
 end
 ```
 
-### LHtmlElement:focus
+#### LHtmlElement:focus
 
 #### Definition
 
@@ -1551,7 +1439,7 @@ do
 end
 ```
 
-### LHtmlElement:getAttribute
+#### LHtmlElement:getAttribute
 
 #### Definition
 
@@ -1584,7 +1472,7 @@ do
 end
 ```
 
-### LHtmlElement:getDocument
+#### LHtmlElement:getDocument
 
 #### Definition
 
@@ -1612,7 +1500,7 @@ do
 end
 ```
 
-### LHtmlElement:getHtml
+#### LHtmlElement:getHtml
 
 #### Definition
 
@@ -1642,7 +1530,7 @@ do
 end
 ```
 
-### LHtmlElement:getId
+#### LHtmlElement:getId
 
 #### Definition
 
@@ -1672,7 +1560,7 @@ do
 end
 ```
 
-### LHtmlElement:getRect
+#### LHtmlElement:getRect
 
 #### Definition
 
@@ -1704,7 +1592,7 @@ do
 end
 ```
 
-### LHtmlElement:getStyle
+#### LHtmlElement:getStyle
 
 #### Definition
 
@@ -1737,7 +1625,7 @@ do
 end
 ```
 
-### LHtmlElement:getTagName
+#### LHtmlElement:getTagName
 
 #### Definition
 
@@ -1765,7 +1653,7 @@ do
 end
 ```
 
-### LHtmlElement:getText
+#### LHtmlElement:getText
 
 #### Definition
 
@@ -1795,7 +1683,7 @@ do
 end
 ```
 
-### LHtmlElement:hasClass
+#### LHtmlElement:hasClass
 
 #### Definition
 
@@ -1830,7 +1718,7 @@ do
 end
 ```
 
-### LHtmlElement:off
+#### LHtmlElement:off
 
 #### Definition
 
@@ -1861,7 +1749,7 @@ do
 end
 ```
 
-### LHtmlElement:on
+#### LHtmlElement:on
 
 #### Definition
 
@@ -1896,7 +1784,7 @@ do
 end
 ```
 
-### LHtmlElement:query
+#### LHtmlElement:query
 
 #### Definition
 
@@ -1930,7 +1818,7 @@ do
 end
 ```
 
-### LHtmlElement:queryAll
+#### LHtmlElement:queryAll
 
 #### Definition
 
@@ -1963,7 +1851,7 @@ do
 end
 ```
 
-### LHtmlElement:remove
+#### LHtmlElement:remove
 
 #### Definition
 
@@ -1989,7 +1877,7 @@ do
 end
 ```
 
-### LHtmlElement:removeAttribute
+#### LHtmlElement:removeAttribute
 
 #### Definition
 
@@ -2020,7 +1908,7 @@ do
 end
 ```
 
-### LHtmlElement:removeClass
+#### LHtmlElement:removeClass
 
 #### Definition
 
@@ -2051,7 +1939,7 @@ do
 end
 ```
 
-### LHtmlElement:setAttribute
+#### LHtmlElement:setAttribute
 
 #### Definition
 
@@ -2084,7 +1972,7 @@ do
 end
 ```
 
-### LHtmlElement:setHtml
+#### LHtmlElement:setHtml
 
 #### Definition
 
@@ -2115,7 +2003,7 @@ do
 end
 ```
 
-### LHtmlElement:setId
+#### LHtmlElement:setId
 
 #### Definition
 
@@ -2146,7 +2034,7 @@ do
 end
 ```
 
-### LHtmlElement:setStyle
+#### LHtmlElement:setStyle
 
 #### Definition
 
@@ -2179,7 +2067,7 @@ do
 end
 ```
 
-### LHtmlElement:setText
+#### LHtmlElement:setText
 
 #### Definition
 
@@ -2210,7 +2098,7 @@ do
 end
 ```
 
-### LHtmlElement:toggleClass
+#### LHtmlElement:toggleClass
 
 #### Definition
 
@@ -2245,7 +2133,7 @@ do
 end
 ```
 
-### LHtmlElement:type
+#### LHtmlElement:type
 
 #### Definition
 
@@ -2273,7 +2161,7 @@ do
 end
 ```
 
-### LHtmlElement:typeOf
+#### LHtmlElement:typeOf
 
 #### Definition
 

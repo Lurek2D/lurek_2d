@@ -10,170 +10,23 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [draw.rs](#drawrs)
+  - [layer.rs](#layerrs)
+  - [mod.rs](#modrs)
+  - [presets.rs](#presetsrs)
+  - [render.rs](#renderrs)
+  - [tile_iter.rs](#tileiterrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.parallax.newLayer](#lurekparallaxnewlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.parallax.newPresetLayer](#lurekparallaxnewpresetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.parallax.newSet](#lurekparallaxnewset)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LParallaxLayer](#lparallaxlayer)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LParallaxSet](#lparallaxset)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LParallaxLayer:addEffectPass](#lparallaxlayeraddeffectpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:clearClamp](#lparallaxlayerclearclamp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:clearEffects](#lparallaxlayercleareffects)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:effectCount](#lparallaxlayereffectcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getAutoscroll](#lparallaxlayergetautoscroll)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getBlendMode](#lparallaxlayergetblendmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getDepth](#lparallaxlayergetdepth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getMotionStretch](#lparallaxlayergetmotionstretch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getOffset](#lparallaxlayergetoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getOpacity](#lparallaxlayergetopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getScrollFactor](#lparallaxlayergetscrollfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getTiling](#lparallaxlayergettiling)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getTint](#lparallaxlayergettint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:getZ](#lparallaxlayergetz)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:isVisible](#lparallaxlayerisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:render](#lparallaxlayerrender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:renderAuto](#lparallaxlayerrenderauto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:resetAutoscroll](#lparallaxlayerresetautoscroll)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setAutoscroll](#lparallaxlayersetautoscroll)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setBlendMode](#lparallaxlayersetblendmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setClamp](#lparallaxlayersetclamp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setDepth](#lparallaxlayersetdepth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setMotionStretch](#lparallaxlayersetmotionstretch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setOffset](#lparallaxlayersetoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setOpacity](#lparallaxlayersetopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setRepeat](#lparallaxlayersetrepeat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setScale](#lparallaxlayersetscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setScrollFactor](#lparallaxlayersetscrollfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setTileSize](#lparallaxlayersettilesize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setTiling](#lparallaxlayersettiling)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setTint](#lparallaxlayersettint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setVisible](#lparallaxlayersetvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:setZ](#lparallaxlayersetz)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:type](#lparallaxlayertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxLayer:update](#lparallaxlayerupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:addLayer](#lparallaxsetaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:getLayerZAt](#lparallaxsetgetlayerzat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:getName](#lparallaxsetgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:isVisible](#lparallaxsetisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:layerCount](#lparallaxsetlayercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:removeLayerAt](#lparallaxsetremovelayerat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:render](#lparallaxsetrender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:renderAuto](#lparallaxsetrenderauto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:setName](#lparallaxsetsetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:setVisible](#lparallaxsetsetvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:sortByZ](#lparallaxsetsortbyz)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:type](#lparallaxsettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParallaxSet:update](#lparallaxsetupdate)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LParallaxLayer Methods](#lparallaxlayer-methods)
+  - [LParallaxSet Methods](#lparallaxset-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -197,6 +50,49 @@ Auto-scroll adds constant velocity independent of camera movement for ambient ef
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `draw.rs`
+
+- Rasterisation of a single parallax layer into an `ImageData` bitmap.
+- Applies tint, opacity, and visibility when drawing.
+- Produces a solid-colour image sized to the requested dimensions.
+
+### `layer.rs`
+
+- Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint.
+- Draw-batch struct that collects tile positions and render state for submission.
+- Camera-relative pixel offset computation with optional scroll clamping.
+- Tile repetition logic delegated to `tile_iter` for viewport coverage.
+- Motion-stretch blur effect injection based on autoscroll velocity.
+- Shader effect chain management (set, clear, count) per layer.
+
+### `mod.rs`
+
+- Multi-layer parallax scrolling system with per-layer speed, tiling, and draw-batch accumulation.
+- Preset constructors for common configurations (sky, mountains, clouds).
+- Tile-column iterator and stateless draw-call generation into `RenderCommand` payloads.
+
+### `presets.rs`
+
+- Ready-made parallax layer constructors for common depth planes.
+- Far background, mid background, and foreground fog presets.
+- Each preset configures scroll factor, repeat, z-order, opacity, and blend mode.
+
+### `render.rs`
+
+- Convert parallax layer state into flat `RenderCommand` lists for the renderer.
+- Tile position batches into draw-image sequences with color and blend pre-applied.
+- Bridge between the parallax camera math and the GPU submission pipeline.
+
+### `tile_iter.rs`
+
+- Compute visible tile positions for repeating parallax layers within a screen rect plus cull margin.
+- Walk one axis at a time and combine X/Y into a full grid, capped to prevent runaway allocation.
+- Non-repeating layers emit only the single start position.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LParallaxLayer` (35 methods) - Lua-side wrapper for a parallax layer and shared render state.
@@ -207,18 +103,18 @@ Auto-scroll adds constant velocity independent of camera movement for ambient ef
 ## 📖 API Overview
 
 - Source spec: [docs/specs/parallax.md](../blob/main/docs/specs/parallax.md)
+- Module-level functions: 3
+- Lua-visible types: 2
+- Total type methods: 48
 
-```lua
-lurek.parallax.newLayer(opts: table) -> LParallaxLayer -- Creates a parallax layer from an options table.
-lurek.parallax.newPresetLayer(preset_name: string, img_ud: LImage) -> LParallaxLayer -- Creates a parallax layer from a named preset and texture image.
-lurek.parallax.newSet(name: string) -> LParallaxSet -- Creates an empty parallax layer set.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.parallax.newLayer
+### Module-Level Functions
+
+#### lurek.parallax.newLayer
 
 #### Definition
 
@@ -250,7 +146,7 @@ do
 end
 ```
 
-### lurek.parallax.newPresetLayer
+#### lurek.parallax.newPresetLayer
 
 #### Definition
 
@@ -287,7 +183,7 @@ do
 end
 ```
 
-### lurek.parallax.newSet
+#### lurek.parallax.newSet
 
 #### Definition
 
@@ -383,7 +279,9 @@ end
 
 ## 🔹 Module Methods
 
-### LParallaxLayer:addEffectPass
+### LParallaxLayer Methods
+
+#### LParallaxLayer:addEffectPass
 
 #### Definition
 
@@ -417,7 +315,7 @@ do
 end
 ```
 
-### LParallaxLayer:clearClamp
+#### LParallaxLayer:clearClamp
 
 #### Definition
 
@@ -443,7 +341,7 @@ do
 end
 ```
 
-### LParallaxLayer:clearEffects
+#### LParallaxLayer:clearEffects
 
 #### Definition
 
@@ -470,7 +368,7 @@ do
 end
 ```
 
-### LParallaxLayer:effectCount
+#### LParallaxLayer:effectCount
 
 #### Definition
 
@@ -500,7 +398,7 @@ do
 end
 ```
 
-### LParallaxLayer:getAutoscroll
+#### LParallaxLayer:getAutoscroll
 
 #### Definition
 
@@ -531,7 +429,7 @@ do
 end
 ```
 
-### LParallaxLayer:getBlendMode
+#### LParallaxLayer:getBlendMode
 
 #### Definition
 
@@ -560,7 +458,7 @@ do
 end
 ```
 
-### LParallaxLayer:getDepth
+#### LParallaxLayer:getDepth
 
 #### Definition
 
@@ -588,7 +486,7 @@ do
 end
 ```
 
-### LParallaxLayer:getMotionStretch
+#### LParallaxLayer:getMotionStretch
 
 #### Definition
 
@@ -619,7 +517,7 @@ do
 end
 ```
 
-### LParallaxLayer:getOffset
+#### LParallaxLayer:getOffset
 
 #### Definition
 
@@ -649,7 +547,7 @@ do
 end
 ```
 
-### LParallaxLayer:getOpacity
+#### LParallaxLayer:getOpacity
 
 #### Definition
 
@@ -677,7 +575,7 @@ do
 end
 ```
 
-### LParallaxLayer:getScrollFactor
+#### LParallaxLayer:getScrollFactor
 
 #### Definition
 
@@ -707,7 +605,7 @@ do
 end
 ```
 
-### LParallaxLayer:getTiling
+#### LParallaxLayer:getTiling
 
 #### Definition
 
@@ -735,7 +633,7 @@ do
 end
 ```
 
-### LParallaxLayer:getTint
+#### LParallaxLayer:getTint
 
 #### Definition
 
@@ -767,7 +665,7 @@ do
 end
 ```
 
-### LParallaxLayer:getZ
+#### LParallaxLayer:getZ
 
 #### Definition
 
@@ -795,7 +693,7 @@ do
 end
 ```
 
-### LParallaxLayer:isVisible
+#### LParallaxLayer:isVisible
 
 #### Definition
 
@@ -823,7 +721,7 @@ do
 end
 ```
 
-### LParallaxLayer:render
+#### LParallaxLayer:render
 
 #### Definition
 
@@ -857,7 +755,7 @@ do
 end
 ```
 
-### LParallaxLayer:renderAuto
+#### LParallaxLayer:renderAuto
 
 #### Definition
 
@@ -884,7 +782,7 @@ do
 end
 ```
 
-### LParallaxLayer:resetAutoscroll
+#### LParallaxLayer:resetAutoscroll
 
 #### Definition
 
@@ -911,7 +809,7 @@ do
 end
 ```
 
-### LParallaxLayer:setAutoscroll
+#### LParallaxLayer:setAutoscroll
 
 #### Definition
 
@@ -945,7 +843,7 @@ do
 end
 ```
 
-### LParallaxLayer:setBlendMode
+#### LParallaxLayer:setBlendMode
 
 #### Definition
 
@@ -976,7 +874,7 @@ do
 end
 ```
 
-### LParallaxLayer:setClamp
+#### LParallaxLayer:setClamp
 
 #### Definition
 
@@ -1013,7 +911,7 @@ do
 end
 ```
 
-### LParallaxLayer:setDepth
+#### LParallaxLayer:setDepth
 
 #### Definition
 
@@ -1043,7 +941,7 @@ do
 end
 ```
 
-### LParallaxLayer:setMotionStretch
+#### LParallaxLayer:setMotionStretch
 
 #### Definition
 
@@ -1078,7 +976,7 @@ do
 end
 ```
 
-### LParallaxLayer:setOffset
+#### LParallaxLayer:setOffset
 
 #### Definition
 
@@ -1111,7 +1009,7 @@ do
 end
 ```
 
-### LParallaxLayer:setOpacity
+#### LParallaxLayer:setOpacity
 
 #### Definition
 
@@ -1141,7 +1039,7 @@ do
 end
 ```
 
-### LParallaxLayer:setRepeat
+#### LParallaxLayer:setRepeat
 
 #### Definition
 
@@ -1216,7 +1114,7 @@ do
     local layer = lurek.parallax.newLayer({ texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png") })
 ```
 
-### LParallaxLayer:setScale
+#### LParallaxLayer:setScale
 
 #### Definition
 
@@ -1248,7 +1146,7 @@ do
 end
 ```
 
-### LParallaxLayer:setScrollFactor
+#### LParallaxLayer:setScrollFactor
 
 #### Definition
 
@@ -1281,7 +1179,7 @@ do
 end
 ```
 
-### LParallaxLayer:setTileSize
+#### LParallaxLayer:setTileSize
 
 #### Definition
 
@@ -1313,7 +1211,7 @@ do
 end
 ```
 
-### LParallaxLayer:setTiling
+#### LParallaxLayer:setTiling
 
 #### Definition
 
@@ -1343,7 +1241,7 @@ do
 end
 ```
 
-### LParallaxLayer:setTint
+#### LParallaxLayer:setTint
 
 #### Definition
 
@@ -1380,7 +1278,7 @@ do
 end
 ```
 
-### LParallaxLayer:setVisible
+#### LParallaxLayer:setVisible
 
 #### Definition
 
@@ -1410,7 +1308,7 @@ do
 end
 ```
 
-### LParallaxLayer:setZ
+#### LParallaxLayer:setZ
 
 #### Definition
 
@@ -1440,7 +1338,7 @@ do
 end
 ```
 
-### LParallaxLayer:type
+#### LParallaxLayer:type
 
 #### Definition
 
@@ -1468,7 +1366,7 @@ do
 end
 ```
 
-### LParallaxLayer:update
+#### LParallaxLayer:update
 
 #### Definition
 
@@ -1500,7 +1398,9 @@ do
 end
 ```
 
-### LParallaxSet:addLayer
+### LParallaxSet Methods
+
+#### LParallaxSet:addLayer
 
 #### Definition
 
@@ -1532,7 +1432,7 @@ do
 end
 ```
 
-### LParallaxSet:getLayerZAt
+#### LParallaxSet:getLayerZAt
 
 #### Definition
 
@@ -1567,7 +1467,7 @@ do
 end
 ```
 
-### LParallaxSet:getName
+#### LParallaxSet:getName
 
 #### Definition
 
@@ -1597,7 +1497,7 @@ do
 end
 ```
 
-### LParallaxSet:isVisible
+#### LParallaxSet:isVisible
 
 #### Definition
 
@@ -1627,7 +1527,7 @@ do
 end
 ```
 
-### LParallaxSet:layerCount
+#### LParallaxSet:layerCount
 
 #### Definition
 
@@ -1657,7 +1557,7 @@ do
 end
 ```
 
-### LParallaxSet:removeLayerAt
+#### LParallaxSet:removeLayerAt
 
 #### Definition
 
@@ -1692,7 +1592,7 @@ do
 end
 ```
 
-### LParallaxSet:render
+#### LParallaxSet:render
 
 #### Definition
 
@@ -1726,7 +1626,7 @@ do
 end
 ```
 
-### LParallaxSet:renderAuto
+#### LParallaxSet:renderAuto
 
 #### Definition
 
@@ -1753,7 +1653,7 @@ do
 end
 ```
 
-### LParallaxSet:setName
+#### LParallaxSet:setName
 
 #### Definition
 
@@ -1785,7 +1685,7 @@ do
 end
 ```
 
-### LParallaxSet:setVisible
+#### LParallaxSet:setVisible
 
 #### Definition
 
@@ -1817,7 +1717,7 @@ do
 end
 ```
 
-### LParallaxSet:sortByZ
+#### LParallaxSet:sortByZ
 
 #### Definition
 
@@ -1844,7 +1744,7 @@ do
 end
 ```
 
-### LParallaxSet:type
+#### LParallaxSet:type
 
 #### Definition
 
@@ -1871,7 +1771,7 @@ do
 end
 ```
 
-### LParallaxSet:update
+#### LParallaxSet:update
 
 #### Definition
 

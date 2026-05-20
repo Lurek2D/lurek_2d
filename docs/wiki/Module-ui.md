@@ -10,1298 +10,106 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [chart.rs](#chartrs)
+  - [containers.rs](#containersrs)
+  - [context.rs](#contextrs)
+  - [controls.rs](#controlsrs)
+  - [data_graph_renderer.rs](#datagraphrendererrs)
+  - [extras.rs](#extrasrs)
+  - [layout_loader.rs](#layoutloaderrs)
+  - [mod.rs](#modrs)
+  - [render.rs](#renderrs)
+  - [theme.rs](#themers)
+  - [widget.rs](#widgetrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.ui.addToast](#lurekuiaddtoast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.beginDrag](#lurekuibegindrag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.clearFocus](#lurekuiclearfocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.draw](#lurekuidraw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.drawToImage](#lurekuidrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.dropOn](#lurekuidropon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.endDrag](#lurekuienddrag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.flushCache](#lurekuiflushcache)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.focusNext](#lurekuifocusnext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.focusPrev](#lurekuifocusprev)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.getActiveDrag](#lurekuigetactivedrag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.getFocus](#lurekuigetfocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.getRoot](#lurekuigetroot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.getTheme](#lurekuigettheme)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.getToastCount](#lurekuigettoastcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.getWidgetCount](#lurekuigetwidgetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.keypressed](#lurekuikeypressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.loadLayout](#lurekuiloadlayout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.loadLayoutFile](#lurekuiloadlayoutfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.mousemoved](#lurekuimousemoved)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.mousepressed](#lurekuimousepressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.mousereleased](#lurekuimousereleased)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newAccordion](#lurekuinewaccordion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newAreaChart](#lurekuinewareachart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newBadge](#lurekuinewbadge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newBarChart](#lurekuinewbarchart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newButton](#lurekuinewbutton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newCheckbox](#lurekuinewcheckbox)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newColorPicker](#lurekuinewcolorpicker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newComboBox](#lurekuinewcombobox)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newCustomWidget](#lurekuinewcustomwidget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newDialog](#lurekuinewdialog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newDockPanel](#lurekuinewdockpanel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newImageWidget](#lurekuinewimagewidget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newLabel](#lurekuinewlabel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newLayout](#lurekuinewlayout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newLineChart](#lurekuinewlinechart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newList](#lurekuinewlist)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newMenuBar](#lurekuinewmenubar)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newMenuItem](#lurekuinewmenuitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newNinePatch](#lurekuinewninepatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newPanel](#lurekuinewpanel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newPieChart](#lurekuinewpiechart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newProgressBar](#lurekuinewprogressbar)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newRadioButton](#lurekuinewradiobutton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newScatterPlot](#lurekuinewscatterplot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newScrollBar](#lurekuinewscrollbar)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newScrollPanel](#lurekuinewscrollpanel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newSeparator](#lurekuinewseparator)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newSlider](#lurekuinewslider)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newSpacer](#lurekuinewspacer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newSpinBox](#lurekuinewspinbox)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newSplitPanel](#lurekuinewsplitpanel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newStatusBar](#lurekuinewstatusbar)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newSwitch](#lurekuinewswitch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newTabBar](#lurekuinewtabbar)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newTable](#lurekuinewtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newTextInput](#lurekuinewtextinput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newTheme](#lurekuinewtheme)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newToast](#lurekuinewtoast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newToolbar](#lurekuinewtoolbar)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newTooltipPanel](#lurekuinewtooltippanel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newTreeView](#lurekuinewtreeview)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.newWindow](#lurekuinewwindow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.parseWidgetState](#lurekuiparsewidgetstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.renderToImage](#lurekuirendertoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.setDefaultTheme](#lurekuisetdefaulttheme)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.setFocus](#lurekuisetfocus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.setTheme](#lurekuisettheme)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.setViewport](#lurekuisetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.textinput](#lurekuitextinput)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.update](#lurekuiupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.update_bindings](#lurekuiupdatebindings)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.ui.wheelmoved](#lurekuiwheelmoved)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LAccordion](#laccordion)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LAreaChart](#lareachart)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBadge](#lbadge)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBarChart](#lbarchart)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LButton](#lbutton)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCheckbox](#lcheckbox)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LColorPicker](#lcolorpicker)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LComboBox](#lcombobox)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDialog](#ldialog)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDockPanel](#ldockpanel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGuiTable](#lguitable)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGuiWindow](#lguiwindow)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LImageWidget](#limagewidget)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LLabel](#llabel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LLayout](#llayout)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LLineChart](#llinechart)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LListBox](#llistbox)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMenuBar](#lmenubar)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMenuItem](#lmenuitem)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNinePatch](#lninepatch)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPanel](#lpanel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPieChart](#lpiechart)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LProgressBar](#lprogressbar)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LRadioButton](#lradiobutton)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LScatterPlot](#lscatterplot)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LScrollBar](#lscrollbar)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LScrollPanel](#lscrollpanel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSeparator](#lseparator)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSlider](#lslider)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSpinBox](#lspinbox)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSplitPanel](#lsplitpanel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LStatusBar](#lstatusbar)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSwitch](#lswitch)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTabBar](#ltabbar)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTextInput](#ltextinput)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTheme](#ltheme)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LToast](#ltoast)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LToolbar](#ltoolbar)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTooltipPanel](#ltooltippanel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTreeView](#ltreeview)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LUiWidget](#luiwidget)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LAccordion:addSection](#laccordionaddsection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAccordion:getSectionCount](#laccordiongetsectioncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAccordion:getSectionTitle](#laccordiongetsectiontitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAccordion:isExclusive](#laccordionisexclusive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAccordion:isSectionExpanded](#laccordionissectionexpanded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAccordion:setExclusive](#laccordionsetexclusive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAccordion:toggleSection](#laccordiontogglesection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAreaChart:addLayer](#lareachartaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAreaChart:drawToImage](#lareachartdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAreaChart:setYMax](#lareachartsetymax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAreaChart:type](#lareacharttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAreaChart:typeOf](#lareacharttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBadge:getCount](#lbadgegetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBadge:getDisplayText](#lbadgegetdisplaytext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBadge:setCount](#lbadgesetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBarChart:addCategory](#lbarchartaddcategory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBarChart:addSeries](#lbarchartaddseries)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBarChart:drawToImage](#lbarchartdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBarChart:type](#lbarcharttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBarChart:typeOf](#lbarcharttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LButton:getText](#lbuttongettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LButton:setText](#lbuttonsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCheckbox:getText](#lcheckboxgettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCheckbox:isChecked](#lcheckboxischecked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCheckbox:setChecked](#lcheckboxsetchecked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCheckbox:setText](#lcheckboxsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LColorPicker:getColor](#lcolorpickergetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LColorPicker:getColorMode](#lcolorpickergetcolormode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LColorPicker:getShowAlpha](#lcolorpickergetshowalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LColorPicker:setColor](#lcolorpickersetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LColorPicker:setColorMode](#lcolorpickersetcolormode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LColorPicker:setOnChange](#lcolorpickersetonchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LColorPicker:setShowAlpha](#lcolorpickersetshowalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:addItem](#lcomboboxadditem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:clearItems](#lcomboboxclearitems)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:getItem](#lcomboboxgetitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:getItemCount](#lcomboboxgetitemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:getSelectedIndex](#lcomboboxgetselectedindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:getSelectedItem](#lcomboboxgetselecteditem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:removeItem](#lcomboboxremoveitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LComboBox:setSelectedIndex](#lcomboboxsetselectedindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:addButton](#ldialogaddbutton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:close](#ldialogclose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:getContent](#ldialoggetcontent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:getTitle](#ldialoggettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:isModal](#ldialogismodal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:isOpen](#ldialogisopen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:open](#ldialogopen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:setContent](#ldialogsetcontent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:setModal](#ldialogsetmodal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:setOnClose](#ldialogsetonclose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDialog:setTitle](#ldialogsettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDockPanel:dock](#ldockpaneldock)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDockPanel:getDockedCount](#ldockpanelgetdockedcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDockPanel:getSplitSize](#ldockpanelgetsplitsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDockPanel:setSplitSize](#ldockpanelsetsplitsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDockPanel:undock](#ldockpanelundock)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:addColumn](#lguitableaddcolumn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:addRow](#lguitableaddrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:getCell](#lguitablegetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:getColumnCount](#lguitablegetcolumncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:getRowCount](#lguitablegetrowcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:getSelectedRow](#lguitablegetselectedrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:isSortable](#lguitableissortable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:setCell](#lguitablesetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:setOnSelect](#lguitablesetonselect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:setSelectedRow](#lguitablesetselectedrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiTable:setSortable](#lguitablesetsortable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:getTitle](#lguiwindowgettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:isCloseable](#lguiwindowiscloseable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:isDraggable](#lguiwindowisdraggable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:isResizable](#lguiwindowisresizable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:setCloseable](#lguiwindowsetcloseable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:setDraggable](#lguiwindowsetdraggable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:setOnClose](#lguiwindowsetonclose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:setResizable](#lguiwindowsetresizable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGuiWindow:setTitle](#lguiwindowsettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageWidget:getScaleMode](#limagewidgetgetscalemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageWidget:getTint](#limagewidgetgettint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageWidget:setScaleMode](#limagewidgetsetscalemode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageWidget:setTint](#limagewidgetsettint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLabel:getText](#llabelgettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLabel:setText](#llabelsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:getAlign](#llayoutgetalign)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:getDirection](#llayoutgetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:getJustify](#llayoutgetjustify)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:getSpacing](#llayoutgetspacing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:getWrap](#llayoutgetwrap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:setAlign](#llayoutsetalign)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:setColumns](#llayoutsetcolumns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:setDirection](#llayoutsetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:setJustify](#llayoutsetjustify)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:setSpacing](#llayoutsetspacing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLayout:setWrap](#llayoutsetwrap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLineChart:addSeries](#llinechartaddseries)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLineChart:drawToImage](#llinechartdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLineChart:setXMax](#llinechartsetxmax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLineChart:setYMax](#llinechartsetymax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLineChart:type](#llinecharttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLineChart:typeOf](#llinecharttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:addItem](#llistboxadditem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:clearItems](#llistboxclearitems)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:getItem](#llistboxgetitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:getItemCount](#llistboxgetitemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:getSelectedIndex](#llistboxgetselectedindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:removeItem](#llistboxremoveitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:setItemHeight](#llistboxsetitemheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LListBox:setSelectedIndex](#llistboxsetselectedindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuBar:addMenu](#lmenubaraddmenu)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuBar:getMenuCount](#lmenubargetmenucount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuBar:getMenus](#lmenubargetmenus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuBar:removeMenu](#lmenubarremovemenu)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:addSubItem](#lmenuitemaddsubitem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:getShortcut](#lmenuitemgetshortcut)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:getSubItems](#lmenuitemgetsubitems)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:getText](#lmenuitemgettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:isChecked](#lmenuitemischecked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:setChecked](#lmenuitemsetchecked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:setOnClick](#lmenuitemsetonclick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:setShortcut](#lmenuitemsetshortcut)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMenuItem:setText](#lmenuitemsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNinePatch:getImageDimensions](#lninepatchgetimagedimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNinePatch:getInsets](#lninepatchgetinsets)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNinePatch:getSlices](#lninepatchgetslices)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNinePatch:setImageDimensions](#lninepatchsetimagedimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNinePatch:setInsets](#lninepatchsetinsets)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPanel:getTitle](#lpanelgettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPanel:setScrollable](#lpanelsetscrollable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPanel:setTitle](#lpanelsettitle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPieChart:addSegment](#lpiechartaddsegment)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPieChart:drawToImage](#lpiechartdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPieChart:type](#lpiecharttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPieChart:typeOf](#lpiecharttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProgressBar:getMax](#lprogressbargetmax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProgressBar:getMin](#lprogressbargetmin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProgressBar:getProgress](#lprogressbargetprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProgressBar:getValue](#lprogressbargetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProgressBar:setRange](#lprogressbarsetrange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProgressBar:setValue](#lprogressbarsetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRadioButton:getGroup](#lradiobuttongetgroup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRadioButton:getText](#lradiobuttongettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRadioButton:isSelected](#lradiobuttonisselected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRadioButton:setGroup](#lradiobuttonsetgroup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRadioButton:setOnChange](#lradiobuttonsetonchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRadioButton:setSelected](#lradiobuttonsetselected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRadioButton:setText](#lradiobuttonsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScatterPlot:addSeries](#lscatterplotaddseries)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScatterPlot:drawToImage](#lscatterplotdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScatterPlot:setXRange](#lscatterplotsetxrange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScatterPlot:setYRange](#lscatterplotsetyrange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScatterPlot:type](#lscatterplottype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScatterPlot:typeOf](#lscatterplottypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:getContentSize](#lscrollbargetcontentsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:getScrollPosition](#lscrollbargetscrollposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:getViewSize](#lscrollbargetviewsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:isVertical](#lscrollbarisvertical)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:setContentSize](#lscrollbarsetcontentsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:setOnChange](#lscrollbarsetonchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:setScrollPosition](#lscrollbarsetscrollposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollBar:setViewSize](#lscrollbarsetviewsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollPanel:getContentSize](#lscrollpanelgetcontentsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollPanel:getMaxScroll](#lscrollpanelgetmaxscroll)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollPanel:getScrollPosition](#lscrollpanelgetscrollposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollPanel:getScrollSpeed](#lscrollpanelgetscrollspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollPanel:setContentSize](#lscrollpanelsetcontentsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollPanel:setScrollPosition](#lscrollpanelsetscrollposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScrollPanel:setScrollSpeed](#lscrollpanelsetscrollspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSeparator:getThickness](#lseparatorgetthickness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSeparator:isVertical](#lseparatorisvertical)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSeparator:setThickness](#lseparatorsetthickness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSeparator:setVertical](#lseparatorsetvertical)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSlider:getMax](#lslidergetmax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSlider:getMin](#lslidergetmin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSlider:getValue](#lslidergetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSlider:setRange](#lslidersetrange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSlider:setStep](#lslidersetstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSlider:setValue](#lslidersetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpinBox:decrement](#lspinboxdecrement)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpinBox:getValue](#lspinboxgetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpinBox:increment](#lspinboxincrement)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpinBox:setRange](#lspinboxsetrange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpinBox:setStep](#lspinboxsetstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpinBox:setValue](#lspinboxsetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:getFirstChild](#lsplitpanelgetfirstchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:getMinPanelSize](#lsplitpanelgetminpanelsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:getOrientation](#lsplitpanelgetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:getSecondChild](#lsplitpanelgetsecondchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:getSplitPosition](#lsplitpanelgetsplitposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:setFirstChild](#lsplitpanelsetfirstchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:setMinPanelSize](#lsplitpanelsetminpanelsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:setOrientation](#lsplitpanelsetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:setSecondChild](#lsplitpanelsetsecondchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSplitPanel:setSplitPosition](#lsplitpanelsetsplitposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStatusBar:addSection](#lstatusbaraddsection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStatusBar:getSectionCount](#lstatusbargetsectioncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStatusBar:getSectionText](#lstatusbargetsectiontext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStatusBar:setSectionCount](#lstatusbarsetsectioncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStatusBar:setSectionText](#lstatusbarsetsectiontext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStatusBar:setSectionWidget](#lstatusbarsetsectionwidget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSwitch:isOn](#lswitchison)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSwitch:setOn](#lswitchseton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSwitch:toggle](#lswitchtoggle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTabBar:addTab](#ltabbaraddtab)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTabBar:getActiveTab](#ltabbargetactivetab)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTabBar:getTab](#ltabbargettab)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTabBar:getTabCount](#ltabbargettabcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTabBar:removeTab](#ltabbarremovetab)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTabBar:setActiveTab](#ltabbarsetactivetab)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTextInput:getCursorPosition](#ltextinputgetcursorposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTextInput:getPlaceholder](#ltextinputgetplaceholder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTextInput:getText](#ltextinputgettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTextInput:isFocused](#ltextinputisfocused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTextInput:setMaxLength](#ltextinputsetmaxlength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTextInput:setPlaceholder](#ltextinputsetplaceholder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTextInput:setText](#ltextinputsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTheme:setStyle](#lthemesetstyle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTheme:type](#lthemetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTheme:typeOf](#lthemetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToast:getDuration](#ltoastgetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToast:getMessage](#ltoastgetmessage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToast:getProgress](#ltoastgetprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToast:isExpired](#ltoastisexpired)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToast:setDuration](#ltoastsetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToast:setMessage](#ltoastsetmessage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:addButton](#ltoolbaraddbutton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:addSeparator](#ltoolbaraddseparator)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:addSpacer](#ltoolbaraddspacer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:getButton](#ltoolbargetbutton)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:getOrientation](#ltoolbargetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:isButtonToggled](#ltoolbarisbuttontoggled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:setButtonEnabled](#ltoolbarsetbuttonenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:setButtonToggled](#ltoolbarsetbuttontoggled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LToolbar:setOrientation](#ltoolbarsetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTooltipPanel:getDelay](#ltooltippanelgetdelay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTooltipPanel:getTarget](#ltooltippanelgettarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTooltipPanel:getText](#ltooltippanelgettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTooltipPanel:setDelay](#ltooltippanelsetdelay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTooltipPanel:setTarget](#ltooltippanelsettarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTooltipPanel:setText](#ltooltippanelsettext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:addNode](#ltreeviewaddnode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:clearNodes](#ltreeviewclearnodes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:collapseAll](#ltreeviewcollapseall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:collapseNode](#ltreeviewcollapsenode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:expandAll](#ltreeviewexpandall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:expandNode](#ltreeviewexpandnode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:getChildNodes](#ltreeviewgetchildnodes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:getNodeCount](#ltreeviewgetnodecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:getNodeDepth](#ltreeviewgetnodedepth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:getNodeText](#ltreeviewgetnodetext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:getParentNode](#ltreeviewgetparentnode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:getSelectedNode](#ltreeviewgetselectednode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:isExpanded](#ltreeviewisexpanded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:isNodeExpanded](#ltreeviewisnodeexpanded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:removeNode](#ltreeviewremovenode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:setNodeIcon](#ltreeviewsetnodeicon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:setNodeText](#ltreeviewsetnodetext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:setSelectedNode](#ltreeviewsetselectednode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTreeView:toggleNode](#ltreeviewtogglenode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:addChild](#luiwidgetaddchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:animateAlpha](#luiwidgetanimatealpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:animatePosition](#luiwidgetanimateposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:attachToEntity](#luiwidgetattachtoentity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:bind](#luiwidgetbind)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:cancelAnimations](#luiwidgetcancelanimations)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:clearAnchor](#luiwidgetclearanchor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:containsPoint](#luiwidgetcontainspoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:detachFromEntity](#luiwidgetdetachfromentity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:fadeIn](#luiwidgetfadein)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:fadeOut](#luiwidgetfadeout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:findById](#luiwidgetfindbyid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getAlpha](#luiwidgetgetalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getChildCount](#luiwidgetgetchildcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getChildren](#luiwidgetgetchildren)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getFlexGrow](#luiwidgetgetflexgrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getFlexShrink](#luiwidgetgetflexshrink)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getId](#luiwidgetgetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getMargin](#luiwidgetgetmargin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getMaxSize](#luiwidgetgetmaxsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getMinSize](#luiwidgetgetminsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getPadding](#luiwidgetgetpadding)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getPosition](#luiwidgetgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getRect](#luiwidgetgetrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getSize](#luiwidgetgetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getState](#luiwidgetgetstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getTooltip](#luiwidgetgettooltip)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:getZOrder](#luiwidgetgetzorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:isAnimating](#luiwidgetisanimating)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:isEnabled](#luiwidgetisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:isVisible](#luiwidgetisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:removeChild](#luiwidgetremovechild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setAlpha](#luiwidgetsetalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setAnchor](#luiwidgetsetanchor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setAnchorCenter](#luiwidgetsetanchorcenter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setEnabled](#luiwidgetsetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setFlexGrow](#luiwidgetsetflexgrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setFlexShrink](#luiwidgetsetflexshrink)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setId](#luiwidgetsetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setMargin](#luiwidgetsetmargin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setMaxSize](#luiwidgetsetmaxsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setMinSize](#luiwidgetsetminsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setOnChange](#luiwidgetsetonchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setOnClick](#luiwidgetsetonclick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setOnDraw](#luiwidgetsetondraw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setPadding](#luiwidgetsetpadding)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setPosition](#luiwidgetsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setSize](#luiwidgetsetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setTooltip](#luiwidgetsettooltip)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setVisible](#luiwidgetsetvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:setZOrder](#luiwidgetsetzorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:slideIn](#luiwidgetslidein)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:slideOut](#luiwidgetslideout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:type](#luiwidgettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:typeOf](#luiwidgettypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUiWidget:unbind](#luiwidgetunbind)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LAccordion Methods](#laccordion-methods)
+  - [LAreaChart Methods](#lareachart-methods)
+  - [LBadge Methods](#lbadge-methods)
+  - [LBarChart Methods](#lbarchart-methods)
+  - [LButton Methods](#lbutton-methods)
+  - [LCheckbox Methods](#lcheckbox-methods)
+  - [LColorPicker Methods](#lcolorpicker-methods)
+  - [LComboBox Methods](#lcombobox-methods)
+  - [LDialog Methods](#ldialog-methods)
+  - [LDockPanel Methods](#ldockpanel-methods)
+  - [LGuiTable Methods](#lguitable-methods)
+  - [LGuiWindow Methods](#lguiwindow-methods)
+  - [LImageWidget Methods](#limagewidget-methods)
+  - [LLabel Methods](#llabel-methods)
+  - [LLayout Methods](#llayout-methods)
+  - [LLineChart Methods](#llinechart-methods)
+  - [LListBox Methods](#llistbox-methods)
+  - [LMenuBar Methods](#lmenubar-methods)
+  - [LMenuItem Methods](#lmenuitem-methods)
+  - [LNinePatch Methods](#lninepatch-methods)
+  - [LPanel Methods](#lpanel-methods)
+  - [LPieChart Methods](#lpiechart-methods)
+  - [LProgressBar Methods](#lprogressbar-methods)
+  - [LRadioButton Methods](#lradiobutton-methods)
+  - [LScatterPlot Methods](#lscatterplot-methods)
+  - [LScrollBar Methods](#lscrollbar-methods)
+  - [LScrollPanel Methods](#lscrollpanel-methods)
+  - [LSeparator Methods](#lseparator-methods)
+  - [LSlider Methods](#lslider-methods)
+  - [LSpinBox Methods](#lspinbox-methods)
+  - [LSplitPanel Methods](#lsplitpanel-methods)
+  - [LStatusBar Methods](#lstatusbar-methods)
+  - [LSwitch Methods](#lswitch-methods)
+  - [LTabBar Methods](#ltabbar-methods)
+  - [LTextInput Methods](#ltextinput-methods)
+  - [LTheme Methods](#ltheme-methods)
+  - [LToast Methods](#ltoast-methods)
+  - [LToolbar Methods](#ltoolbar-methods)
+  - [LTooltipPanel Methods](#ltooltippanel-methods)
+  - [LTreeView Methods](#ltreeview-methods)
+  - [LUiWidget Methods](#luiwidget-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -1322,6 +130,121 @@ Retained-mode widget system; rendering deferred through RenderCommand.
 Retained-mode GUI framework with 35+ widget types, layout engine, theme system, charts, data binding, and TOML-based layout loading. `GuiContext` is the top-level container managing widget trees, focus state, input routing, and per-frame update/draw cycles. Widgets include buttons, labels, text inputs, checkboxes, sliders, dropdowns, lists, trees, tabs, panels, scrollbars, progress bars, color pickers, date pickers, and custom canvas regions.
 
 Layout uses a flex-based model with containers, rows, columns, grids, and stack panels — supports padding, margin, alignment, grow/shrink factors, and min/max constraints. Themes define color palettes, fonts, spacing, and per-widget style overrides in TOML. Data binding connects widget values to Lua tables with two-way synchronization. Chart widgets (line, bar, scatter, pie, area) render data visualizations to `ImageData` buffers. TOML loader instantiates complete UI hierarchies from declarative layout files. Exposed as `lurek.ui.*`. Feature Systems tier.
+
+[⬆ back to top](#table-of-contents)
+
+## 📁 Source Files
+
+### `chart.rs`
+
+- Software-rasterised chart rendering into `ImageData` pixel buffers — no GPU dependency.
+- Five chart types: `LineChart` (polyline + dots), `BarChart` (grouped), `ScatterPlot`,
+- `PieChart` (per-pixel angle test), and `AreaChart` (stacked cumulative layers).
+- Shared `ChartConfig` controls dimensions, background/axis/grid/label colours, title,
+- margins, and grid visibility across all chart types.
+- Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
+- scaled to arbitrary value ranges on both axes.
+- Legend panel rendered as a floating colour-swatch box positioned near the top-right corner.
+- Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
+- anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
+- Area chart performs linear interpolation between uniform X samples and fills columns
+- cumulatively from the bottom layer upward.
+- `safe_circle` helper rasterises filled circles clamped to image bounds for dot markers.
+- All draw operations write directly to RGBA pixel data; output is a plain `ImageData` that
+- can be saved to PNG or uploaded as a GPU texture.
+
+### `containers.rs`
+
+- Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.
+- Layout engine supports vertical, horizontal, and grid stacking with spacing, alignment, and justification.
+- ScrollPanel provides viewport clipping with clamped 2D scroll offsets and configurable speed.
+- NinePatch implements resolution-independent 9-slice border rendering from pixel insets.
+- GUIWindow adds floating window semantics: title bar, close button, drag, and resize.
+- SplitPanel and DockPanel offer two-pane splitting and edge-based docking respectively.
+
+### `context.rs`
+
+- Retained-mode GUI context owning a flat arena of widgets addressed by index.
+- Discriminated `WidgetKind` union covering 35+ control/container/overlay types with shared `WidgetBase` access.
+- Recursive layout pass computing absolute `computed_rect` from parent-relative positions.
+- Focus management with forward/backward cycling and keyboard-driven tab navigation.
+- Drag-and-drop API with cycle detection to prevent parent-into-child drops.
+- Alpha and position transition animations stepped each frame with automatic expiry.
+- Data binding system mapping string keys to numeric, text, or boolean widget values.
+- FNV-hash render signature for fast dirty-check without full tree diffing.
+- Mouse press/release/move and keyboard input dispatch to the focused widget.
+- Toast overlay queue with per-message timers and automatic expiry.
+- Event queue (`GuiEvent`) drained each frame by the Lua binding layer.
+
+### `controls.rs`
+
+- Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
+- Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
+- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
+- Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
+- All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
+
+### `data_graph_renderer.rs`
+
+- Stateful graph renderer mapping named data series (line, scatter, bar) onto a screen viewport.
+- World-to-screen and screen-to-world coordinate transforms with configurable axis ranges and auto-range fitting.
+- Visual configuration: toggleable grid, axes, labels, background colour, and chart title/annotation.
+- Series storage keyed by name with insert-or-replace semantics and bulk clear.
+- Cursor overlay support for interactive hover inspection in world-space coordinates.
+
+### `extras.rs`
+
+- Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
+- Accordion panels with optional exclusive-expand mode and tooltip overlays with configurable delay.
+- HSVA/RGB colour picker, column-row data grid with sorting, static image display, numeric badge overlay.
+- TreeView uses a flat `Vec<TreeNode>` with index-based parent/child links; add, remove, expand, collapse, and depth queries are O(n) worst case.
+- Toolbar and MenuBar hold child indices into an external widget list; buttons support enabled/toggled states.
+- Dialog supports modal blocking, optional content slot, and footer action buttons.
+- CustomWidget provides a blank shell for fully user-controlled rendering via Lua callbacks.
+- All widgets embed `WidgetBase` for shared layout, style, and state; widget-type enum discriminant assigned at construction.
+
+### `layout_loader.rs`
+
+- Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
+- Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
+- Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
+- Provide a headless `render_to_image` path that runs a layout pass and alpha-blends flat debug colours per widget kind to an RGBA PNG.
+- Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
+- Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
+
+### `mod.rs`
+
+- Immediate-mode GUI toolkit: containers, controls, extras, and theming.
+- Provides layout panels, interactive widgets, and data-bound context.
+- Optional chart and TOML layout-loader features behind feature flags.
+
+### `render.rs`
+
+- GPU render-command emission for all retained-mode UI widget types (buttons, sliders, trees, tables, dialogs, etc.).
+- CPU pixel-rasterisation fallback (`draw_to_image`) for headless screenshot and test verification.
+- Theme-aware style resolution with per-widget alpha compositing applied to all colour channels.
+- Shared helper emitters for common visual patterns: shadow, highlight strip, gradient/rounded box, border.
+- Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
+- Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
+- HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
+- `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
+- Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
+- Approximate character-width text measurement and alignment (left/center/right) for label placement.
+
+### `theme.rs`
+
+- Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records.
+- Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment.
+- Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration.
+- Ships a full dark preset covering all standard widget types (buttons, inputs, panels, layouts, menus, dialogs, etc.).
+- Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen.
+- Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
+- Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
+- Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
+
+### `widget.rs`
+
+- Public types and helpers for the widget module.
 
 [⬆ back to top](#table-of-contents)
 
@@ -1349,34 +272,18 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/ui.md](../blob/main/docs/specs/ui.md)
+- Module-level functions: 74
+- Lua-visible types: 41
+- Total type methods: 314
 
-```lua
-lurek.ui.addToast(toast_table: table) -- Adds a toast notification to the queue.
-lurek.ui.beginDrag(widget: table|number) -> boolean -- Begins a drag operation on a widget.
-lurek.ui.clearFocus() -- Clears keyboard focus from all widgets.
-lurek.ui.draw() -- Invokes custom draw callbacks for all widgets that have one registered.
-lurek.ui.drawToImage(w: integer, h: integer) -> LImageData -- Renders the entire UI to an image buffer.
-lurek.ui.dropOn(target: table|number) -> boolean -- Drops the currently dragged widget onto a target widget.
-lurek.ui.endDrag() -> integer -- Ends the current drag operation without dropping.
-lurek.ui.flushCache() -> boolean -- Flushes internal UI layout and render caches.
-lurek.ui.focusNext() -- Moves keyboard focus to the next focusable widget.
-lurek.ui.focusPrev() -- Moves keyboard focus to the previous focusable widget.
-lurek.ui.getActiveDrag() -> integer -- Returns the widget index currently being dragged, or nil.
-lurek.ui.getFocus() -> integer -- Returns the index of the currently focused widget, or nil.
-lurek.ui.getRoot() -> LPanel -- Returns the root panel widget of the UI tree.
-lurek.ui.getTheme() -> boolean -- Returns whether a theme is currently set.
-lurek.ui.getToastCount() -> integer -- Returns the number of active toast notifications.
-lurek.ui.getWidgetCount() -> integer -- Returns the total number of widgets in the UI context.
-lurek.ui.keypressed(key: string) -> boolean -- Delivers a key press event to the UI.
-lurek.ui.loadLayout(def: table) -> integer -- Loads a UI layout from a Lua table definition.
--- ... 56 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.ui.addToast
+### Module-Level Functions
+
+#### lurek.ui.addToast
 
 #### Definition
 
@@ -1407,7 +314,7 @@ do
 end
 ```
 
-### lurek.ui.beginDrag
+#### lurek.ui.beginDrag
 
 #### Definition
 
@@ -1442,7 +349,7 @@ do
 end
 ```
 
-### lurek.ui.clearFocus
+#### lurek.ui.clearFocus
 
 #### Definition
 
@@ -1469,7 +376,7 @@ do
 end
 ```
 
-### lurek.ui.draw
+#### lurek.ui.draw
 
 #### Definition
 
@@ -1496,7 +403,7 @@ do
 end
 ```
 
-### lurek.ui.drawToImage
+#### lurek.ui.drawToImage
 
 #### Definition
 
@@ -1533,7 +440,7 @@ do
 end
 ```
 
-### lurek.ui.dropOn
+#### lurek.ui.dropOn
 
 #### Definition
 
@@ -1568,7 +475,7 @@ do
 end
 ```
 
-### lurek.ui.endDrag
+#### lurek.ui.endDrag
 
 #### Definition
 
@@ -1598,7 +505,7 @@ do
 end
 ```
 
-### lurek.ui.flushCache
+#### lurek.ui.flushCache
 
 #### Definition
 
@@ -1628,7 +535,7 @@ do
 end
 ```
 
-### lurek.ui.focusNext
+#### lurek.ui.focusNext
 
 #### Definition
 
@@ -1655,7 +562,7 @@ do
 end
 ```
 
-### lurek.ui.focusPrev
+#### lurek.ui.focusPrev
 
 #### Definition
 
@@ -1682,7 +589,7 @@ do
 end
 ```
 
-### lurek.ui.getActiveDrag
+#### lurek.ui.getActiveDrag
 
 #### Definition
 
@@ -1712,7 +619,7 @@ do
 end
 ```
 
-### lurek.ui.getFocus
+#### lurek.ui.getFocus
 
 #### Definition
 
@@ -1742,7 +649,7 @@ do
 end
 ```
 
-### lurek.ui.getRoot
+#### lurek.ui.getRoot
 
 #### Definition
 
@@ -1770,7 +677,7 @@ do
 end
 ```
 
-### lurek.ui.getTheme
+#### lurek.ui.getTheme
 
 #### Definition
 
@@ -1800,7 +707,7 @@ do
 end
 ```
 
-### lurek.ui.getToastCount
+#### lurek.ui.getToastCount
 
 #### Definition
 
@@ -1830,7 +737,7 @@ do
 end
 ```
 
-### lurek.ui.getWidgetCount
+#### lurek.ui.getWidgetCount
 
 #### Definition
 
@@ -1860,7 +767,7 @@ do
 end
 ```
 
-### lurek.ui.keypressed
+#### lurek.ui.keypressed
 
 #### Definition
 
@@ -1895,7 +802,7 @@ do
 end
 ```
 
-### lurek.ui.loadLayout
+#### lurek.ui.loadLayout
 
 #### Definition
 
@@ -1929,7 +836,7 @@ do
 end
 ```
 
-### lurek.ui.loadLayoutFile
+#### lurek.ui.loadLayoutFile
 
 #### Definition
 
@@ -1964,7 +871,7 @@ do
 end
 ```
 
-### lurek.ui.mousemoved
+#### lurek.ui.mousemoved
 
 #### Definition
 
@@ -2001,7 +908,7 @@ do
 end
 ```
 
-### lurek.ui.mousepressed
+#### lurek.ui.mousepressed
 
 #### Definition
 
@@ -2040,7 +947,7 @@ do
 end
 ```
 
-### lurek.ui.mousereleased
+#### lurek.ui.mousereleased
 
 #### Definition
 
@@ -2079,7 +986,7 @@ do
 end
 ```
 
-### lurek.ui.newAccordion
+#### lurek.ui.newAccordion
 
 #### Definition
 
@@ -2108,7 +1015,7 @@ do
 end
 ```
 
-### lurek.ui.newAreaChart
+#### lurek.ui.newAreaChart
 
 #### Definition
 
@@ -2143,7 +1050,7 @@ do
 end
 ```
 
-### lurek.ui.newBadge
+#### lurek.ui.newBadge
 
 #### Definition
 
@@ -2178,7 +1085,7 @@ do
 end
 ```
 
-### lurek.ui.newBarChart
+#### lurek.ui.newBarChart
 
 #### Definition
 
@@ -2213,7 +1120,7 @@ do
 end
 ```
 
-### lurek.ui.newButton
+#### lurek.ui.newButton
 
 #### Definition
 
@@ -2247,7 +1154,7 @@ do
 end
 ```
 
-### lurek.ui.newCheckbox
+#### lurek.ui.newCheckbox
 
 #### Definition
 
@@ -2282,7 +1189,7 @@ do
 end
 ```
 
-### lurek.ui.newColorPicker
+#### lurek.ui.newColorPicker
 
 #### Definition
 
@@ -2312,7 +1219,7 @@ do
 end
 ```
 
-### lurek.ui.newComboBox
+#### lurek.ui.newComboBox
 
 #### Definition
 
@@ -2341,7 +1248,7 @@ do
 end
 ```
 
-### lurek.ui.newCustomWidget
+#### lurek.ui.newCustomWidget
 
 #### Definition
 
@@ -2375,7 +1282,7 @@ do
 end
 ```
 
-### lurek.ui.newDialog
+#### lurek.ui.newDialog
 
 #### Definition
 
@@ -2429,7 +1336,7 @@ do
 end
 ```
 
-### lurek.ui.newDockPanel
+#### lurek.ui.newDockPanel
 
 #### Definition
 
@@ -2459,7 +1366,7 @@ do
 end
 ```
 
-### lurek.ui.newImageWidget
+#### lurek.ui.newImageWidget
 
 #### Definition
 
@@ -2489,7 +1396,7 @@ do
 end
 ```
 
-### lurek.ui.newLabel
+#### lurek.ui.newLabel
 
 #### Definition
 
@@ -2524,7 +1431,7 @@ do
 end
 ```
 
-### lurek.ui.newLayout
+#### lurek.ui.newLayout
 
 #### Definition
 
@@ -2559,7 +1466,7 @@ do
 end
 ```
 
-### lurek.ui.newLineChart
+#### lurek.ui.newLineChart
 
 #### Definition
 
@@ -2594,7 +1501,7 @@ do
 end
 ```
 
-### lurek.ui.newList
+#### lurek.ui.newList
 
 #### Definition
 
@@ -2623,7 +1530,7 @@ do
 end
 ```
 
-### lurek.ui.newMenuBar
+#### lurek.ui.newMenuBar
 
 #### Definition
 
@@ -2652,7 +1559,7 @@ do
 end
 ```
 
-### lurek.ui.newMenuItem
+#### lurek.ui.newMenuItem
 
 #### Definition
 
@@ -2687,7 +1594,7 @@ do
 end
 ```
 
-### lurek.ui.newNinePatch
+#### lurek.ui.newNinePatch
 
 #### Definition
 
@@ -2717,7 +1624,7 @@ do
 end
 ```
 
-### lurek.ui.newPanel
+#### lurek.ui.newPanel
 
 #### Definition
 
@@ -2747,7 +1654,7 @@ do
 end
 ```
 
-### lurek.ui.newPieChart
+#### lurek.ui.newPieChart
 
 #### Definition
 
@@ -2782,7 +1689,7 @@ do
 end
 ```
 
-### lurek.ui.newProgressBar
+#### lurek.ui.newProgressBar
 
 #### Definition
 
@@ -2818,7 +1725,7 @@ do
 end
 ```
 
-### lurek.ui.newRadioButton
+#### lurek.ui.newRadioButton
 
 #### Definition
 
@@ -2855,7 +1762,7 @@ do
 end
 ```
 
-### lurek.ui.newScatterPlot
+#### lurek.ui.newScatterPlot
 
 #### Definition
 
@@ -2890,7 +1797,7 @@ do
 end
 ```
 
-### lurek.ui.newScrollBar
+#### lurek.ui.newScrollBar
 
 #### Definition
 
@@ -2924,7 +1831,7 @@ do
 end
 ```
 
-### lurek.ui.newScrollPanel
+#### lurek.ui.newScrollPanel
 
 #### Definition
 
@@ -2954,7 +1861,7 @@ do
 end
 ```
 
-### lurek.ui.newSeparator
+#### lurek.ui.newSeparator
 
 #### Definition
 
@@ -2988,7 +1895,7 @@ do
 end
 ```
 
-### lurek.ui.newSlider
+#### lurek.ui.newSlider
 
 #### Definition
 
@@ -3025,7 +1932,7 @@ do
 end
 ```
 
-### lurek.ui.newSpacer
+#### lurek.ui.newSpacer
 
 #### Definition
 
@@ -3061,7 +1968,7 @@ do
 end
 ```
 
-### lurek.ui.newSpinBox
+#### lurek.ui.newSpinBox
 
 #### Definition
 
@@ -3098,7 +2005,7 @@ do
 end
 ```
 
-### lurek.ui.newSplitPanel
+#### lurek.ui.newSplitPanel
 
 #### Definition
 
@@ -3133,7 +2040,7 @@ do
 end
 ```
 
-### lurek.ui.newStatusBar
+#### lurek.ui.newStatusBar
 
 #### Definition
 
@@ -3162,7 +2069,7 @@ do
 end
 ```
 
-### lurek.ui.newSwitch
+#### lurek.ui.newSwitch
 
 #### Definition
 
@@ -3196,7 +2103,7 @@ do
 end
 ```
 
-### lurek.ui.newTabBar
+#### lurek.ui.newTabBar
 
 #### Definition
 
@@ -3225,7 +2132,7 @@ do
 end
 ```
 
-### lurek.ui.newTable
+#### lurek.ui.newTable
 
 #### Definition
 
@@ -3255,7 +2162,7 @@ do
 end
 ```
 
-### lurek.ui.newTextInput
+#### lurek.ui.newTextInput
 
 #### Definition
 
@@ -3285,7 +2192,7 @@ do
 end
 ```
 
-### lurek.ui.newTheme
+#### lurek.ui.newTheme
 
 #### Definition
 
@@ -3315,7 +2222,7 @@ do
 end
 ```
 
-### lurek.ui.newToast
+#### lurek.ui.newToast
 
 #### Definition
 
@@ -3352,7 +2259,7 @@ do
 end
 ```
 
-### lurek.ui.newToolbar
+#### lurek.ui.newToolbar
 
 #### Definition
 
@@ -3385,7 +2292,7 @@ do
 end
 ```
 
-### lurek.ui.newTooltipPanel
+#### lurek.ui.newTooltipPanel
 
 #### Definition
 
@@ -3420,7 +2327,7 @@ do
 end
 ```
 
-### lurek.ui.newTreeView
+#### lurek.ui.newTreeView
 
 #### Definition
 
@@ -3450,7 +2357,7 @@ do
 end
 ```
 
-### lurek.ui.newWindow
+#### lurek.ui.newWindow
 
 #### Definition
 
@@ -3503,7 +2410,7 @@ do
 end
 ```
 
-### lurek.ui.parseWidgetState
+#### lurek.ui.parseWidgetState
 
 #### Definition
 
@@ -3537,7 +2444,7 @@ do
 end
 ```
 
-### lurek.ui.renderToImage
+#### lurek.ui.renderToImage
 
 #### Definition
 
@@ -3572,7 +2479,7 @@ do
 end
 ```
 
-### lurek.ui.setDefaultTheme
+#### lurek.ui.setDefaultTheme
 
 #### Definition
 
@@ -3599,7 +2506,7 @@ do
 end
 ```
 
-### lurek.ui.setFocus
+#### lurek.ui.setFocus
 
 #### Definition
 
@@ -3631,7 +2538,7 @@ do
 end
 ```
 
-### lurek.ui.setTheme
+#### lurek.ui.setTheme
 
 #### Definition
 
@@ -3663,7 +2570,7 @@ do
 end
 ```
 
-### lurek.ui.setViewport
+#### lurek.ui.setViewport
 
 #### Definition
 
@@ -3697,7 +2604,7 @@ do
 end
 ```
 
-### lurek.ui.textinput
+#### lurek.ui.textinput
 
 #### Definition
 
@@ -3732,7 +2639,7 @@ do
 end
 ```
 
-### lurek.ui.update
+#### lurek.ui.update
 
 #### Definition
 
@@ -3762,7 +2669,7 @@ do
 end
 ```
 
-### lurek.ui.update_bindings
+#### lurek.ui.update_bindings
 
 #### Definition
 
@@ -3794,7 +2701,7 @@ do
 end
 ```
 
-### lurek.ui.wheelmoved
+#### lurek.ui.wheelmoved
 
 #### Definition
 
@@ -5009,7 +3916,9 @@ end
 
 ## 🔹 Module Methods
 
-### LAccordion:addSection
+### LAccordion Methods
+
+#### LAccordion:addSection
 
 #### Definition
 
@@ -5044,7 +3953,7 @@ do
 end
 ```
 
-### LAccordion:getSectionCount
+#### LAccordion:getSectionCount
 
 #### Definition
 
@@ -5078,7 +3987,7 @@ do
 end
 ```
 
-### LAccordion:getSectionTitle
+#### LAccordion:getSectionTitle
 
 #### Definition
 
@@ -5114,7 +4023,7 @@ do
 end
 ```
 
-### LAccordion:isExclusive
+#### LAccordion:isExclusive
 
 #### Definition
 
@@ -5148,7 +4057,7 @@ do
 end
 ```
 
-### LAccordion:isSectionExpanded
+#### LAccordion:isSectionExpanded
 
 #### Definition
 
@@ -5184,7 +4093,7 @@ do
 end
 ```
 
-### LAccordion:setExclusive
+#### LAccordion:setExclusive
 
 #### Definition
 
@@ -5217,7 +4126,7 @@ do
 end
 ```
 
-### LAccordion:toggleSection
+#### LAccordion:toggleSection
 
 #### Definition
 
@@ -5253,7 +4162,9 @@ do
 end
 ```
 
-### LAreaChart:addLayer
+### LAreaChart Methods
+
+#### LAreaChart:addLayer
 
 #### Definition
 
@@ -5293,7 +4204,7 @@ do
 end
 ```
 
-### LAreaChart:drawToImage
+#### LAreaChart:drawToImage
 
 #### Definition
 
@@ -5325,7 +4236,7 @@ do
 end
 ```
 
-### LAreaChart:setYMax
+#### LAreaChart:setYMax
 
 #### Definition
 
@@ -5357,7 +4268,7 @@ do
 end
 ```
 
-### LAreaChart:type
+#### LAreaChart:type
 
 #### Definition
 
@@ -5387,7 +4298,7 @@ do
 end
 ```
 
-### LAreaChart:typeOf
+#### LAreaChart:typeOf
 
 #### Definition
 
@@ -5422,7 +4333,9 @@ do
 end
 ```
 
-### LBadge:getCount
+### LBadge Methods
+
+#### LBadge:getCount
 
 #### Definition
 
@@ -5456,7 +4369,7 @@ do
 end
 ```
 
-### LBadge:getDisplayText
+#### LBadge:getDisplayText
 
 #### Definition
 
@@ -5490,7 +4403,7 @@ do
 end
 ```
 
-### LBadge:setCount
+#### LBadge:setCount
 
 #### Definition
 
@@ -5523,7 +4436,9 @@ do
 end
 ```
 
-### LBarChart:addCategory
+### LBarChart Methods
+
+#### LBarChart:addCategory
 
 #### Definition
 
@@ -5557,7 +4472,7 @@ do
 end
 ```
 
-### LBarChart:addSeries
+#### LBarChart:addSeries
 
 #### Definition
 
@@ -5595,7 +4510,7 @@ do
 end
 ```
 
-### LBarChart:drawToImage
+#### LBarChart:drawToImage
 
 #### Definition
 
@@ -5627,7 +4542,7 @@ do
 end
 ```
 
-### LBarChart:type
+#### LBarChart:type
 
 #### Definition
 
@@ -5657,7 +4572,7 @@ do
 end
 ```
 
-### LBarChart:typeOf
+#### LBarChart:typeOf
 
 #### Definition
 
@@ -5692,7 +4607,9 @@ do
 end
 ```
 
-### LButton:getText
+### LButton Methods
+
+#### LButton:getText
 
 #### Definition
 
@@ -5726,7 +4643,7 @@ do
 end
 ```
 
-### LButton:setText
+#### LButton:setText
 
 #### Definition
 
@@ -5759,7 +4676,9 @@ do
 end
 ```
 
-### LCheckbox:getText
+### LCheckbox Methods
+
+#### LCheckbox:getText
 
 #### Definition
 
@@ -5793,7 +4712,7 @@ do
 end
 ```
 
-### LCheckbox:isChecked
+#### LCheckbox:isChecked
 
 #### Definition
 
@@ -5827,7 +4746,7 @@ do
 end
 ```
 
-### LCheckbox:setChecked
+#### LCheckbox:setChecked
 
 #### Definition
 
@@ -5860,7 +4779,7 @@ do
 end
 ```
 
-### LCheckbox:setText
+#### LCheckbox:setText
 
 #### Definition
 
@@ -5893,7 +4812,9 @@ do
 end
 ```
 
-### LColorPicker:getColor
+### LColorPicker Methods
+
+#### LColorPicker:getColor
 
 #### Definition
 
@@ -5930,7 +4851,7 @@ do
 end
 ```
 
-### LColorPicker:getColorMode
+#### LColorPicker:getColorMode
 
 #### Definition
 
@@ -5964,7 +4885,7 @@ do
 end
 ```
 
-### LColorPicker:getShowAlpha
+#### LColorPicker:getShowAlpha
 
 #### Definition
 
@@ -5998,7 +4919,7 @@ do
 end
 ```
 
-### LColorPicker:setColor
+#### LColorPicker:setColor
 
 #### Definition
 
@@ -6037,7 +4958,7 @@ do
 end
 ```
 
-### LColorPicker:setColorMode
+#### LColorPicker:setColorMode
 
 #### Definition
 
@@ -6070,7 +4991,7 @@ do
 end
 ```
 
-### LColorPicker:setOnChange
+#### LColorPicker:setOnChange
 
 #### Definition
 
@@ -6103,7 +5024,7 @@ do
 end
 ```
 
-### LColorPicker:setShowAlpha
+#### LColorPicker:setShowAlpha
 
 #### Definition
 
@@ -6136,7 +5057,9 @@ do
 end
 ```
 
-### LComboBox:addItem
+### LComboBox Methods
+
+#### LComboBox:addItem
 
 #### Definition
 
@@ -6169,7 +5092,7 @@ do
 end
 ```
 
-### LComboBox:clearItems
+#### LComboBox:clearItems
 
 #### Definition
 
@@ -6200,7 +5123,7 @@ do
 end
 ```
 
-### LComboBox:getItem
+#### LComboBox:getItem
 
 #### Definition
 
@@ -6236,7 +5159,7 @@ do
 end
 ```
 
-### LComboBox:getItemCount
+#### LComboBox:getItemCount
 
 #### Definition
 
@@ -6270,7 +5193,7 @@ do
 end
 ```
 
-### LComboBox:getSelectedIndex
+#### LComboBox:getSelectedIndex
 
 #### Definition
 
@@ -6304,7 +5227,7 @@ do
 end
 ```
 
-### LComboBox:getSelectedItem
+#### LComboBox:getSelectedItem
 
 #### Definition
 
@@ -6338,7 +5261,7 @@ do
 end
 ```
 
-### LComboBox:removeItem
+#### LComboBox:removeItem
 
 #### Definition
 
@@ -6374,7 +5297,7 @@ do
 end
 ```
 
-### LComboBox:setSelectedIndex
+#### LComboBox:setSelectedIndex
 
 #### Definition
 
@@ -6407,7 +5330,9 @@ do
 end
 ```
 
-### LDialog:addButton
+### LDialog Methods
+
+#### LDialog:addButton
 
 #### Definition
 
@@ -6445,7 +5370,7 @@ do
 end
 ```
 
-### LDialog:close
+#### LDialog:close
 
 #### Definition
 
@@ -6476,7 +5401,7 @@ do
 end
 ```
 
-### LDialog:getContent
+#### LDialog:getContent
 
 #### Definition
 
@@ -6510,7 +5435,7 @@ do
 end
 ```
 
-### LDialog:getTitle
+#### LDialog:getTitle
 
 #### Definition
 
@@ -6544,7 +5469,7 @@ do
 end
 ```
 
-### LDialog:isModal
+#### LDialog:isModal
 
 #### Definition
 
@@ -6578,7 +5503,7 @@ do
 end
 ```
 
-### LDialog:isOpen
+#### LDialog:isOpen
 
 #### Definition
 
@@ -6612,7 +5537,7 @@ do
 end
 ```
 
-### LDialog:open
+#### LDialog:open
 
 #### Definition
 
@@ -6643,7 +5568,7 @@ do
 end
 ```
 
-### LDialog:setContent
+#### LDialog:setContent
 
 #### Definition
 
@@ -6676,7 +5601,7 @@ do
 end
 ```
 
-### LDialog:setModal
+#### LDialog:setModal
 
 #### Definition
 
@@ -6709,7 +5634,7 @@ do
 end
 ```
 
-### LDialog:setOnClose
+#### LDialog:setOnClose
 
 #### Definition
 
@@ -6742,7 +5667,7 @@ do
 end
 ```
 
-### LDialog:setTitle
+#### LDialog:setTitle
 
 #### Definition
 
@@ -6775,7 +5700,9 @@ do
 end
 ```
 
-### LDockPanel:dock
+### LDockPanel Methods
+
+#### LDockPanel:dock
 
 #### Definition
 
@@ -6810,7 +5737,7 @@ do
 end
 ```
 
-### LDockPanel:getDockedCount
+#### LDockPanel:getDockedCount
 
 #### Definition
 
@@ -6844,7 +5771,7 @@ do
 end
 ```
 
-### LDockPanel:getSplitSize
+#### LDockPanel:getSplitSize
 
 #### Definition
 
@@ -6880,7 +5807,7 @@ do
 end
 ```
 
-### LDockPanel:setSplitSize
+#### LDockPanel:setSplitSize
 
 #### Definition
 
@@ -6915,7 +5842,7 @@ do
 end
 ```
 
-### LDockPanel:undock
+#### LDockPanel:undock
 
 #### Definition
 
@@ -6948,7 +5875,9 @@ do
 end
 ```
 
-### LGuiTable:addColumn
+### LGuiTable Methods
+
+#### LGuiTable:addColumn
 
 #### Definition
 
@@ -6983,7 +5912,7 @@ do
 end
 ```
 
-### LGuiTable:addRow
+#### LGuiTable:addRow
 
 #### Definition
 
@@ -7016,7 +5945,7 @@ do
 end
 ```
 
-### LGuiTable:getCell
+#### LGuiTable:getCell
 
 #### Definition
 
@@ -7054,7 +5983,7 @@ do
 end
 ```
 
-### LGuiTable:getColumnCount
+#### LGuiTable:getColumnCount
 
 #### Definition
 
@@ -7088,7 +6017,7 @@ do
 end
 ```
 
-### LGuiTable:getRowCount
+#### LGuiTable:getRowCount
 
 #### Definition
 
@@ -7122,7 +6051,7 @@ do
 end
 ```
 
-### LGuiTable:getSelectedRow
+#### LGuiTable:getSelectedRow
 
 #### Definition
 
@@ -7156,7 +6085,7 @@ do
 end
 ```
 
-### LGuiTable:isSortable
+#### LGuiTable:isSortable
 
 #### Definition
 
@@ -7190,7 +6119,7 @@ do
 end
 ```
 
-### LGuiTable:setCell
+#### LGuiTable:setCell
 
 #### Definition
 
@@ -7227,7 +6156,7 @@ do
 end
 ```
 
-### LGuiTable:setOnSelect
+#### LGuiTable:setOnSelect
 
 #### Definition
 
@@ -7260,7 +6189,7 @@ do
 end
 ```
 
-### LGuiTable:setSelectedRow
+#### LGuiTable:setSelectedRow
 
 #### Definition
 
@@ -7293,7 +6222,7 @@ do
 end
 ```
 
-### LGuiTable:setSortable
+#### LGuiTable:setSortable
 
 #### Definition
 
@@ -7326,7 +6255,9 @@ do
 end
 ```
 
-### LGuiWindow:getTitle
+### LGuiWindow Methods
+
+#### LGuiWindow:getTitle
 
 #### Definition
 
@@ -7360,7 +6291,7 @@ do
 end
 ```
 
-### LGuiWindow:isCloseable
+#### LGuiWindow:isCloseable
 
 #### Definition
 
@@ -7394,7 +6325,7 @@ do
 end
 ```
 
-### LGuiWindow:isDraggable
+#### LGuiWindow:isDraggable
 
 #### Definition
 
@@ -7428,7 +6359,7 @@ do
 end
 ```
 
-### LGuiWindow:isResizable
+#### LGuiWindow:isResizable
 
 #### Definition
 
@@ -7462,7 +6393,7 @@ do
 end
 ```
 
-### LGuiWindow:setCloseable
+#### LGuiWindow:setCloseable
 
 #### Definition
 
@@ -7495,7 +6426,7 @@ do
 end
 ```
 
-### LGuiWindow:setDraggable
+#### LGuiWindow:setDraggable
 
 #### Definition
 
@@ -7528,7 +6459,7 @@ do
 end
 ```
 
-### LGuiWindow:setOnClose
+#### LGuiWindow:setOnClose
 
 #### Definition
 
@@ -7561,7 +6492,7 @@ do
 end
 ```
 
-### LGuiWindow:setResizable
+#### LGuiWindow:setResizable
 
 #### Definition
 
@@ -7594,7 +6525,7 @@ do
 end
 ```
 
-### LGuiWindow:setTitle
+#### LGuiWindow:setTitle
 
 #### Definition
 
@@ -7627,7 +6558,9 @@ do
 end
 ```
 
-### LImageWidget:getScaleMode
+### LImageWidget Methods
+
+#### LImageWidget:getScaleMode
 
 #### Definition
 
@@ -7661,7 +6594,7 @@ do
 end
 ```
 
-### LImageWidget:getTint
+#### LImageWidget:getTint
 
 #### Definition
 
@@ -7698,7 +6631,7 @@ do
 end
 ```
 
-### LImageWidget:setScaleMode
+#### LImageWidget:setScaleMode
 
 #### Definition
 
@@ -7731,7 +6664,7 @@ do
 end
 ```
 
-### LImageWidget:setTint
+#### LImageWidget:setTint
 
 #### Definition
 
@@ -7770,7 +6703,9 @@ do
 end
 ```
 
-### LLabel:getText
+### LLabel Methods
+
+#### LLabel:getText
 
 #### Definition
 
@@ -7804,7 +6739,7 @@ do
 end
 ```
 
-### LLabel:setText
+#### LLabel:setText
 
 #### Definition
 
@@ -7837,7 +6772,9 @@ do
 end
 ```
 
-### LLayout:getAlign
+### LLayout Methods
+
+#### LLayout:getAlign
 
 #### Definition
 
@@ -7871,7 +6808,7 @@ do
 end
 ```
 
-### LLayout:getDirection
+#### LLayout:getDirection
 
 #### Definition
 
@@ -7905,7 +6842,7 @@ do
 end
 ```
 
-### LLayout:getJustify
+#### LLayout:getJustify
 
 #### Definition
 
@@ -7939,7 +6876,7 @@ do
 end
 ```
 
-### LLayout:getSpacing
+#### LLayout:getSpacing
 
 #### Definition
 
@@ -7973,7 +6910,7 @@ do
 end
 ```
 
-### LLayout:getWrap
+#### LLayout:getWrap
 
 #### Definition
 
@@ -8007,7 +6944,7 @@ do
 end
 ```
 
-### LLayout:setAlign
+#### LLayout:setAlign
 
 #### Definition
 
@@ -8040,7 +6977,7 @@ do
 end
 ```
 
-### LLayout:setColumns
+#### LLayout:setColumns
 
 #### Definition
 
@@ -8073,7 +7010,7 @@ do
 end
 ```
 
-### LLayout:setDirection
+#### LLayout:setDirection
 
 #### Definition
 
@@ -8106,7 +7043,7 @@ do
 end
 ```
 
-### LLayout:setJustify
+#### LLayout:setJustify
 
 #### Definition
 
@@ -8139,7 +7076,7 @@ do
 end
 ```
 
-### LLayout:setSpacing
+#### LLayout:setSpacing
 
 #### Definition
 
@@ -8172,7 +7109,7 @@ do
 end
 ```
 
-### LLayout:setWrap
+#### LLayout:setWrap
 
 #### Definition
 
@@ -8205,7 +7142,9 @@ do
 end
 ```
 
-### LLineChart:addSeries
+### LLineChart Methods
+
+#### LLineChart:addSeries
 
 #### Definition
 
@@ -8245,7 +7184,7 @@ do
 end
 ```
 
-### LLineChart:drawToImage
+#### LLineChart:drawToImage
 
 #### Definition
 
@@ -8277,7 +7216,7 @@ do
 end
 ```
 
-### LLineChart:setXMax
+#### LLineChart:setXMax
 
 #### Definition
 
@@ -8309,7 +7248,7 @@ do
 end
 ```
 
-### LLineChart:setYMax
+#### LLineChart:setYMax
 
 #### Definition
 
@@ -8341,7 +7280,7 @@ do
 end
 ```
 
-### LLineChart:type
+#### LLineChart:type
 
 #### Definition
 
@@ -8371,7 +7310,7 @@ do
 end
 ```
 
-### LLineChart:typeOf
+#### LLineChart:typeOf
 
 #### Definition
 
@@ -8405,7 +7344,9 @@ do
 end
 ```
 
-### LListBox:addItem
+### LListBox Methods
+
+#### LListBox:addItem
 
 #### Definition
 
@@ -8438,7 +7379,7 @@ do
 end
 ```
 
-### LListBox:clearItems
+#### LListBox:clearItems
 
 #### Definition
 
@@ -8469,7 +7410,7 @@ do
 end
 ```
 
-### LListBox:getItem
+#### LListBox:getItem
 
 #### Definition
 
@@ -8505,7 +7446,7 @@ do
 end
 ```
 
-### LListBox:getItemCount
+#### LListBox:getItemCount
 
 #### Definition
 
@@ -8539,7 +7480,7 @@ do
 end
 ```
 
-### LListBox:getSelectedIndex
+#### LListBox:getSelectedIndex
 
 #### Definition
 
@@ -8573,7 +7514,7 @@ do
 end
 ```
 
-### LListBox:removeItem
+#### LListBox:removeItem
 
 #### Definition
 
@@ -8606,7 +7547,7 @@ do
 end
 ```
 
-### LListBox:setItemHeight
+#### LListBox:setItemHeight
 
 #### Definition
 
@@ -8639,7 +7580,7 @@ do
 end
 ```
 
-### LListBox:setSelectedIndex
+#### LListBox:setSelectedIndex
 
 #### Definition
 
@@ -8672,7 +7613,9 @@ do
 end
 ```
 
-### LMenuBar:addMenu
+### LMenuBar Methods
+
+#### LMenuBar:addMenu
 
 #### Definition
 
@@ -8705,7 +7648,7 @@ do
 end
 ```
 
-### LMenuBar:getMenuCount
+#### LMenuBar:getMenuCount
 
 #### Definition
 
@@ -8739,7 +7682,7 @@ do
 end
 ```
 
-### LMenuBar:getMenus
+#### LMenuBar:getMenus
 
 #### Definition
 
@@ -8773,7 +7716,7 @@ do
 end
 ```
 
-### LMenuBar:removeMenu
+#### LMenuBar:removeMenu
 
 #### Definition
 
@@ -8809,7 +7752,9 @@ do
 end
 ```
 
-### LMenuItem:addSubItem
+### LMenuItem Methods
+
+#### LMenuItem:addSubItem
 
 #### Definition
 
@@ -8842,7 +7787,7 @@ do
 end
 ```
 
-### LMenuItem:getShortcut
+#### LMenuItem:getShortcut
 
 #### Definition
 
@@ -8876,7 +7821,7 @@ do
 end
 ```
 
-### LMenuItem:getSubItems
+#### LMenuItem:getSubItems
 
 #### Definition
 
@@ -8910,7 +7855,7 @@ do
 end
 ```
 
-### LMenuItem:getText
+#### LMenuItem:getText
 
 #### Definition
 
@@ -8944,7 +7889,7 @@ do
 end
 ```
 
-### LMenuItem:isChecked
+#### LMenuItem:isChecked
 
 #### Definition
 
@@ -8978,7 +7923,7 @@ do
 end
 ```
 
-### LMenuItem:setChecked
+#### LMenuItem:setChecked
 
 #### Definition
 
@@ -9011,7 +7956,7 @@ do
 end
 ```
 
-### LMenuItem:setOnClick
+#### LMenuItem:setOnClick
 
 #### Definition
 
@@ -9044,7 +7989,7 @@ do
 end
 ```
 
-### LMenuItem:setShortcut
+#### LMenuItem:setShortcut
 
 #### Definition
 
@@ -9077,7 +8022,7 @@ do
 end
 ```
 
-### LMenuItem:setText
+#### LMenuItem:setText
 
 #### Definition
 
@@ -9110,7 +8055,9 @@ do
 end
 ```
 
-### LNinePatch:getImageDimensions
+### LNinePatch Methods
+
+#### LNinePatch:getImageDimensions
 
 #### Definition
 
@@ -9145,7 +8092,7 @@ do
 end
 ```
 
-### LNinePatch:getInsets
+#### LNinePatch:getInsets
 
 #### Definition
 
@@ -9182,7 +8129,7 @@ do
 end
 ```
 
-### LNinePatch:getSlices
+#### LNinePatch:getSlices
 
 #### Definition
 
@@ -9216,7 +8163,7 @@ do
 end
 ```
 
-### LNinePatch:setImageDimensions
+#### LNinePatch:setImageDimensions
 
 #### Definition
 
@@ -9251,7 +8198,7 @@ do
 end
 ```
 
-### LNinePatch:setInsets
+#### LNinePatch:setInsets
 
 #### Definition
 
@@ -9290,7 +8237,9 @@ do
 end
 ```
 
-### LPanel:getTitle
+### LPanel Methods
+
+#### LPanel:getTitle
 
 #### Definition
 
@@ -9324,7 +8273,7 @@ do
 end
 ```
 
-### LPanel:setScrollable
+#### LPanel:setScrollable
 
 #### Definition
 
@@ -9357,7 +8306,7 @@ do
 end
 ```
 
-### LPanel:setTitle
+#### LPanel:setTitle
 
 #### Definition
 
@@ -9390,7 +8339,9 @@ do
 end
 ```
 
-### LPieChart:addSegment
+### LPieChart Methods
+
+#### LPieChart:addSegment
 
 #### Definition
 
@@ -9430,7 +8381,7 @@ do
 end
 ```
 
-### LPieChart:drawToImage
+#### LPieChart:drawToImage
 
 #### Definition
 
@@ -9462,7 +8413,7 @@ do
 end
 ```
 
-### LPieChart:type
+#### LPieChart:type
 
 #### Definition
 
@@ -9492,7 +8443,7 @@ do
 end
 ```
 
-### LPieChart:typeOf
+#### LPieChart:typeOf
 
 #### Definition
 
@@ -9527,7 +8478,9 @@ do
 end
 ```
 
-### LProgressBar:getMax
+### LProgressBar Methods
+
+#### LProgressBar:getMax
 
 #### Definition
 
@@ -9561,7 +8514,7 @@ do
 end
 ```
 
-### LProgressBar:getMin
+#### LProgressBar:getMin
 
 #### Definition
 
@@ -9595,7 +8548,7 @@ do
 end
 ```
 
-### LProgressBar:getProgress
+#### LProgressBar:getProgress
 
 #### Definition
 
@@ -9629,7 +8582,7 @@ do
 end
 ```
 
-### LProgressBar:getValue
+#### LProgressBar:getValue
 
 #### Definition
 
@@ -9663,7 +8616,7 @@ do
 end
 ```
 
-### LProgressBar:setRange
+#### LProgressBar:setRange
 
 #### Definition
 
@@ -9698,7 +8651,7 @@ do
 end
 ```
 
-### LProgressBar:setValue
+#### LProgressBar:setValue
 
 #### Definition
 
@@ -9731,7 +8684,9 @@ do
 end
 ```
 
-### LRadioButton:getGroup
+### LRadioButton Methods
+
+#### LRadioButton:getGroup
 
 #### Definition
 
@@ -9765,7 +8720,7 @@ do
 end
 ```
 
-### LRadioButton:getText
+#### LRadioButton:getText
 
 #### Definition
 
@@ -9799,7 +8754,7 @@ do
 end
 ```
 
-### LRadioButton:isSelected
+#### LRadioButton:isSelected
 
 #### Definition
 
@@ -9833,7 +8788,7 @@ do
 end
 ```
 
-### LRadioButton:setGroup
+#### LRadioButton:setGroup
 
 #### Definition
 
@@ -9866,7 +8821,7 @@ do
 end
 ```
 
-### LRadioButton:setOnChange
+#### LRadioButton:setOnChange
 
 #### Definition
 
@@ -9899,7 +8854,7 @@ do
 end
 ```
 
-### LRadioButton:setSelected
+#### LRadioButton:setSelected
 
 #### Definition
 
@@ -9932,7 +8887,7 @@ do
 end
 ```
 
-### LRadioButton:setText
+#### LRadioButton:setText
 
 #### Definition
 
@@ -9963,7 +8918,9 @@ do
 end
 ```
 
-### LScatterPlot:addSeries
+### LScatterPlot Methods
+
+#### LScatterPlot:addSeries
 
 #### Definition
 
@@ -10003,7 +8960,7 @@ do
 end
 ```
 
-### LScatterPlot:drawToImage
+#### LScatterPlot:drawToImage
 
 #### Definition
 
@@ -10035,7 +8992,7 @@ do
 end
 ```
 
-### LScatterPlot:setXRange
+#### LScatterPlot:setXRange
 
 #### Definition
 
@@ -10069,7 +9026,7 @@ do
 end
 ```
 
-### LScatterPlot:setYRange
+#### LScatterPlot:setYRange
 
 #### Definition
 
@@ -10103,7 +9060,7 @@ do
 end
 ```
 
-### LScatterPlot:type
+#### LScatterPlot:type
 
 #### Definition
 
@@ -10133,7 +9090,7 @@ do
 end
 ```
 
-### LScatterPlot:typeOf
+#### LScatterPlot:typeOf
 
 #### Definition
 
@@ -10168,7 +9125,9 @@ do
 end
 ```
 
-### LScrollBar:getContentSize
+### LScrollBar Methods
+
+#### LScrollBar:getContentSize
 
 #### Definition
 
@@ -10202,7 +9161,7 @@ do
 end
 ```
 
-### LScrollBar:getScrollPosition
+#### LScrollBar:getScrollPosition
 
 #### Definition
 
@@ -10236,7 +9195,7 @@ do
 end
 ```
 
-### LScrollBar:getViewSize
+#### LScrollBar:getViewSize
 
 #### Definition
 
@@ -10270,7 +9229,7 @@ do
 end
 ```
 
-### LScrollBar:isVertical
+#### LScrollBar:isVertical
 
 #### Definition
 
@@ -10304,7 +9263,7 @@ do
 end
 ```
 
-### LScrollBar:setContentSize
+#### LScrollBar:setContentSize
 
 #### Definition
 
@@ -10337,7 +9296,7 @@ do
 end
 ```
 
-### LScrollBar:setOnChange
+#### LScrollBar:setOnChange
 
 #### Definition
 
@@ -10370,7 +9329,7 @@ do
 end
 ```
 
-### LScrollBar:setScrollPosition
+#### LScrollBar:setScrollPosition
 
 #### Definition
 
@@ -10403,7 +9362,7 @@ do
 end
 ```
 
-### LScrollBar:setViewSize
+#### LScrollBar:setViewSize
 
 #### Definition
 
@@ -10436,7 +9395,9 @@ do
 end
 ```
 
-### LScrollPanel:getContentSize
+### LScrollPanel Methods
+
+#### LScrollPanel:getContentSize
 
 #### Definition
 
@@ -10471,7 +9432,7 @@ do
 end
 ```
 
-### LScrollPanel:getMaxScroll
+#### LScrollPanel:getMaxScroll
 
 #### Definition
 
@@ -10506,7 +9467,7 @@ do
 end
 ```
 
-### LScrollPanel:getScrollPosition
+#### LScrollPanel:getScrollPosition
 
 #### Definition
 
@@ -10541,7 +9502,7 @@ do
 end
 ```
 
-### LScrollPanel:getScrollSpeed
+#### LScrollPanel:getScrollSpeed
 
 #### Definition
 
@@ -10575,7 +9536,7 @@ do
 end
 ```
 
-### LScrollPanel:setContentSize
+#### LScrollPanel:setContentSize
 
 #### Definition
 
@@ -10610,7 +9571,7 @@ do
 end
 ```
 
-### LScrollPanel:setScrollPosition
+#### LScrollPanel:setScrollPosition
 
 #### Definition
 
@@ -10645,7 +9606,7 @@ do
 end
 ```
 
-### LScrollPanel:setScrollSpeed
+#### LScrollPanel:setScrollSpeed
 
 #### Definition
 
@@ -10678,7 +9639,9 @@ do
 end
 ```
 
-### LSeparator:getThickness
+### LSeparator Methods
+
+#### LSeparator:getThickness
 
 #### Definition
 
@@ -10712,7 +9675,7 @@ do
 end
 ```
 
-### LSeparator:isVertical
+#### LSeparator:isVertical
 
 #### Definition
 
@@ -10746,7 +9709,7 @@ do
 end
 ```
 
-### LSeparator:setThickness
+#### LSeparator:setThickness
 
 #### Definition
 
@@ -10779,7 +9742,7 @@ do
 end
 ```
 
-### LSeparator:setVertical
+#### LSeparator:setVertical
 
 #### Definition
 
@@ -10812,7 +9775,9 @@ do
 end
 ```
 
-### LSlider:getMax
+### LSlider Methods
+
+#### LSlider:getMax
 
 #### Definition
 
@@ -10846,7 +9811,7 @@ do
 end
 ```
 
-### LSlider:getMin
+#### LSlider:getMin
 
 #### Definition
 
@@ -10880,7 +9845,7 @@ do
 end
 ```
 
-### LSlider:getValue
+#### LSlider:getValue
 
 #### Definition
 
@@ -10914,7 +9879,7 @@ do
 end
 ```
 
-### LSlider:setRange
+#### LSlider:setRange
 
 #### Definition
 
@@ -10949,7 +9914,7 @@ do
 end
 ```
 
-### LSlider:setStep
+#### LSlider:setStep
 
 #### Definition
 
@@ -10982,7 +9947,7 @@ do
 end
 ```
 
-### LSlider:setValue
+#### LSlider:setValue
 
 #### Definition
 
@@ -11015,7 +9980,9 @@ do
 end
 ```
 
-### LSpinBox:decrement
+### LSpinBox Methods
+
+#### LSpinBox:decrement
 
 #### Definition
 
@@ -11046,7 +10013,7 @@ do
 end
 ```
 
-### LSpinBox:getValue
+#### LSpinBox:getValue
 
 #### Definition
 
@@ -11080,7 +10047,7 @@ do
 end
 ```
 
-### LSpinBox:increment
+#### LSpinBox:increment
 
 #### Definition
 
@@ -11111,7 +10078,7 @@ do
 end
 ```
 
-### LSpinBox:setRange
+#### LSpinBox:setRange
 
 #### Definition
 
@@ -11146,7 +10113,7 @@ do
 end
 ```
 
-### LSpinBox:setStep
+#### LSpinBox:setStep
 
 #### Definition
 
@@ -11179,7 +10146,7 @@ do
 end
 ```
 
-### LSpinBox:setValue
+#### LSpinBox:setValue
 
 #### Definition
 
@@ -11212,7 +10179,9 @@ do
 end
 ```
 
-### LSplitPanel:getFirstChild
+### LSplitPanel Methods
+
+#### LSplitPanel:getFirstChild
 
 #### Definition
 
@@ -11246,7 +10215,7 @@ do
 end
 ```
 
-### LSplitPanel:getMinPanelSize
+#### LSplitPanel:getMinPanelSize
 
 #### Definition
 
@@ -11280,7 +10249,7 @@ do
 end
 ```
 
-### LSplitPanel:getOrientation
+#### LSplitPanel:getOrientation
 
 #### Definition
 
@@ -11314,7 +10283,7 @@ do
 end
 ```
 
-### LSplitPanel:getSecondChild
+#### LSplitPanel:getSecondChild
 
 #### Definition
 
@@ -11348,7 +10317,7 @@ do
 end
 ```
 
-### LSplitPanel:getSplitPosition
+#### LSplitPanel:getSplitPosition
 
 #### Definition
 
@@ -11382,7 +10351,7 @@ do
 end
 ```
 
-### LSplitPanel:setFirstChild
+#### LSplitPanel:setFirstChild
 
 #### Definition
 
@@ -11415,7 +10384,7 @@ do
 end
 ```
 
-### LSplitPanel:setMinPanelSize
+#### LSplitPanel:setMinPanelSize
 
 #### Definition
 
@@ -11448,7 +10417,7 @@ do
 end
 ```
 
-### LSplitPanel:setOrientation
+#### LSplitPanel:setOrientation
 
 #### Definition
 
@@ -11481,7 +10450,7 @@ do
 end
 ```
 
-### LSplitPanel:setSecondChild
+#### LSplitPanel:setSecondChild
 
 #### Definition
 
@@ -11514,7 +10483,7 @@ do
 end
 ```
 
-### LSplitPanel:setSplitPosition
+#### LSplitPanel:setSplitPosition
 
 #### Definition
 
@@ -11547,7 +10516,9 @@ do
 end
 ```
 
-### LStatusBar:addSection
+### LStatusBar Methods
+
+#### LStatusBar:addSection
 
 #### Definition
 
@@ -11582,7 +10553,7 @@ do
 end
 ```
 
-### LStatusBar:getSectionCount
+#### LStatusBar:getSectionCount
 
 #### Definition
 
@@ -11616,7 +10587,7 @@ do
 end
 ```
 
-### LStatusBar:getSectionText
+#### LStatusBar:getSectionText
 
 #### Definition
 
@@ -11652,7 +10623,7 @@ do
 end
 ```
 
-### LStatusBar:setSectionCount
+#### LStatusBar:setSectionCount
 
 #### Definition
 
@@ -11685,7 +10656,7 @@ do
 end
 ```
 
-### LStatusBar:setSectionText
+#### LStatusBar:setSectionText
 
 #### Definition
 
@@ -11720,7 +10691,7 @@ do
 end
 ```
 
-### LStatusBar:setSectionWidget
+#### LStatusBar:setSectionWidget
 
 #### Definition
 
@@ -11755,7 +10726,9 @@ do
 end
 ```
 
-### LSwitch:isOn
+### LSwitch Methods
+
+#### LSwitch:isOn
 
 #### Definition
 
@@ -11789,7 +10762,7 @@ do
 end
 ```
 
-### LSwitch:setOn
+#### LSwitch:setOn
 
 #### Definition
 
@@ -11822,7 +10795,7 @@ do
 end
 ```
 
-### LSwitch:toggle
+#### LSwitch:toggle
 
 #### Definition
 
@@ -11853,7 +10826,9 @@ do
 end
 ```
 
-### LTabBar:addTab
+### LTabBar Methods
+
+#### LTabBar:addTab
 
 #### Definition
 
@@ -11886,7 +10861,7 @@ do
 end
 ```
 
-### LTabBar:getActiveTab
+#### LTabBar:getActiveTab
 
 #### Definition
 
@@ -11920,7 +10895,7 @@ do
 end
 ```
 
-### LTabBar:getTab
+#### LTabBar:getTab
 
 #### Definition
 
@@ -11956,7 +10931,7 @@ do
 end
 ```
 
-### LTabBar:getTabCount
+#### LTabBar:getTabCount
 
 #### Definition
 
@@ -11990,7 +10965,7 @@ do
 end
 ```
 
-### LTabBar:removeTab
+#### LTabBar:removeTab
 
 #### Definition
 
@@ -12026,7 +11001,7 @@ do
 end
 ```
 
-### LTabBar:setActiveTab
+#### LTabBar:setActiveTab
 
 #### Definition
 
@@ -12100,7 +11075,9 @@ do
     local ph = ti:getPlaceholder()
 ```
 
-### LTextInput:getCursorPosition
+### LTextInput Methods
+
+#### LTextInput:getCursorPosition
 
 #### Definition
 
@@ -12134,7 +11111,7 @@ do
 end
 ```
 
-### LTextInput:getPlaceholder
+#### LTextInput:getPlaceholder
 
 #### Definition
 
@@ -12168,7 +11145,7 @@ do
 end
 ```
 
-### LTextInput:getText
+#### LTextInput:getText
 
 #### Definition
 
@@ -12202,7 +11179,7 @@ do
 end
 ```
 
-### LTextInput:isFocused
+#### LTextInput:isFocused
 
 #### Definition
 
@@ -12236,7 +11213,7 @@ do
 end
 ```
 
-### LTextInput:setMaxLength
+#### LTextInput:setMaxLength
 
 #### Definition
 
@@ -12269,7 +11246,7 @@ do
 end
 ```
 
-### LTextInput:setPlaceholder
+#### LTextInput:setPlaceholder
 
 #### Definition
 
@@ -12302,7 +11279,7 @@ do
 end
 ```
 
-### LTextInput:setText
+#### LTextInput:setText
 
 #### Definition
 
@@ -12335,7 +11312,9 @@ do
 end
 ```
 
-### LTheme:setStyle
+### LTheme Methods
+
+#### LTheme:setStyle
 
 #### Definition
 
@@ -12371,7 +11350,7 @@ do
 end
 ```
 
-### LTheme:type
+#### LTheme:type
 
 #### Definition
 
@@ -12401,7 +11380,7 @@ do
 end
 ```
 
-### LTheme:typeOf
+#### LTheme:typeOf
 
 #### Definition
 
@@ -12436,7 +11415,9 @@ do
 end
 ```
 
-### LToast:getDuration
+### LToast Methods
+
+#### LToast:getDuration
 
 #### Definition
 
@@ -12470,7 +11451,7 @@ do
 end
 ```
 
-### LToast:getMessage
+#### LToast:getMessage
 
 #### Definition
 
@@ -12504,7 +11485,7 @@ do
 end
 ```
 
-### LToast:getProgress
+#### LToast:getProgress
 
 #### Definition
 
@@ -12538,7 +11519,7 @@ do
 end
 ```
 
-### LToast:isExpired
+#### LToast:isExpired
 
 #### Definition
 
@@ -12572,7 +11553,7 @@ do
 end
 ```
 
-### LToast:setDuration
+#### LToast:setDuration
 
 #### Definition
 
@@ -12605,7 +11586,7 @@ do
 end
 ```
 
-### LToast:setMessage
+#### LToast:setMessage
 
 #### Definition
 
@@ -12638,7 +11619,9 @@ do
 end
 ```
 
-### LToolbar:addButton
+### LToolbar Methods
+
+#### LToolbar:addButton
 
 #### Definition
 
@@ -12676,7 +11659,7 @@ do
 end
 ```
 
-### LToolbar:addSeparator
+#### LToolbar:addSeparator
 
 #### Definition
 
@@ -12707,7 +11690,7 @@ do
 end
 ```
 
-### LToolbar:addSpacer
+#### LToolbar:addSpacer
 
 #### Definition
 
@@ -12740,7 +11723,7 @@ do
 end
 ```
 
-### LToolbar:getButton
+#### LToolbar:getButton
 
 #### Definition
 
@@ -12776,7 +11759,7 @@ do
 end
 ```
 
-### LToolbar:getOrientation
+#### LToolbar:getOrientation
 
 #### Definition
 
@@ -12810,7 +11793,7 @@ do
 end
 ```
 
-### LToolbar:isButtonToggled
+#### LToolbar:isButtonToggled
 
 #### Definition
 
@@ -12846,7 +11829,7 @@ do
 end
 ```
 
-### LToolbar:setButtonEnabled
+#### LToolbar:setButtonEnabled
 
 #### Definition
 
@@ -12884,7 +11867,7 @@ do
 end
 ```
 
-### LToolbar:setButtonToggled
+#### LToolbar:setButtonToggled
 
 #### Definition
 
@@ -12922,7 +11905,7 @@ do
 end
 ```
 
-### LToolbar:setOrientation
+#### LToolbar:setOrientation
 
 #### Definition
 
@@ -12955,7 +11938,9 @@ do
 end
 ```
 
-### LTooltipPanel:getDelay
+### LTooltipPanel Methods
+
+#### LTooltipPanel:getDelay
 
 #### Definition
 
@@ -12989,7 +11974,7 @@ do
 end
 ```
 
-### LTooltipPanel:getTarget
+#### LTooltipPanel:getTarget
 
 #### Definition
 
@@ -13023,7 +12008,7 @@ do
 end
 ```
 
-### LTooltipPanel:getText
+#### LTooltipPanel:getText
 
 #### Definition
 
@@ -13057,7 +12042,7 @@ do
 end
 ```
 
-### LTooltipPanel:setDelay
+#### LTooltipPanel:setDelay
 
 #### Definition
 
@@ -13090,7 +12075,7 @@ do
 end
 ```
 
-### LTooltipPanel:setTarget
+#### LTooltipPanel:setTarget
 
 #### Definition
 
@@ -13123,7 +12108,7 @@ do
 end
 ```
 
-### LTooltipPanel:setText
+#### LTooltipPanel:setText
 
 #### Definition
 
@@ -13156,7 +12141,9 @@ do
 end
 ```
 
-### LTreeView:addNode
+### LTreeView Methods
+
+#### LTreeView:addNode
 
 #### Definition
 
@@ -13194,7 +12181,7 @@ do
 end
 ```
 
-### LTreeView:clearNodes
+#### LTreeView:clearNodes
 
 #### Definition
 
@@ -13225,7 +12212,7 @@ do
 end
 ```
 
-### LTreeView:collapseAll
+#### LTreeView:collapseAll
 
 #### Definition
 
@@ -13256,7 +12243,7 @@ do
 end
 ```
 
-### LTreeView:collapseNode
+#### LTreeView:collapseNode
 
 #### Definition
 
@@ -13292,7 +12279,7 @@ do
 end
 ```
 
-### LTreeView:expandAll
+#### LTreeView:expandAll
 
 #### Definition
 
@@ -13323,7 +12310,7 @@ do
 end
 ```
 
-### LTreeView:expandNode
+#### LTreeView:expandNode
 
 #### Definition
 
@@ -13359,7 +12346,7 @@ do
 end
 ```
 
-### LTreeView:getChildNodes
+#### LTreeView:getChildNodes
 
 #### Definition
 
@@ -13395,7 +12382,7 @@ do
 end
 ```
 
-### LTreeView:getNodeCount
+#### LTreeView:getNodeCount
 
 #### Definition
 
@@ -13429,7 +12416,7 @@ do
 end
 ```
 
-### LTreeView:getNodeDepth
+#### LTreeView:getNodeDepth
 
 #### Definition
 
@@ -13465,7 +12452,7 @@ do
 end
 ```
 
-### LTreeView:getNodeText
+#### LTreeView:getNodeText
 
 #### Definition
 
@@ -13501,7 +12488,7 @@ do
 end
 ```
 
-### LTreeView:getParentNode
+#### LTreeView:getParentNode
 
 #### Definition
 
@@ -13537,7 +12524,7 @@ do
 end
 ```
 
-### LTreeView:getSelectedNode
+#### LTreeView:getSelectedNode
 
 #### Definition
 
@@ -13571,7 +12558,7 @@ do
 end
 ```
 
-### LTreeView:isExpanded
+#### LTreeView:isExpanded
 
 #### Definition
 
@@ -13607,7 +12594,7 @@ do
 end
 ```
 
-### LTreeView:isNodeExpanded
+#### LTreeView:isNodeExpanded
 
 #### Definition
 
@@ -13643,7 +12630,7 @@ do
 end
 ```
 
-### LTreeView:removeNode
+#### LTreeView:removeNode
 
 #### Definition
 
@@ -13679,7 +12666,7 @@ do
 end
 ```
 
-### LTreeView:setNodeIcon
+#### LTreeView:setNodeIcon
 
 #### Definition
 
@@ -13717,7 +12704,7 @@ do
 end
 ```
 
-### LTreeView:setNodeText
+#### LTreeView:setNodeText
 
 #### Definition
 
@@ -13755,7 +12742,7 @@ do
 end
 ```
 
-### LTreeView:setSelectedNode
+#### LTreeView:setSelectedNode
 
 #### Definition
 
@@ -13791,7 +12778,7 @@ do
 end
 ```
 
-### LTreeView:toggleNode
+#### LTreeView:toggleNode
 
 #### Definition
 
@@ -13827,7 +12814,9 @@ do
 end
 ```
 
-### LUiWidget:addChild
+### LUiWidget Methods
+
+#### LUiWidget:addChild
 
 #### Definition
 
@@ -13860,7 +12849,7 @@ do
 end
 ```
 
-### LUiWidget:animateAlpha
+#### LUiWidget:animateAlpha
 
 #### Definition
 
@@ -13900,7 +12889,7 @@ do
 end
 ```
 
-### LUiWidget:animatePosition
+#### LUiWidget:animatePosition
 
 #### Definition
 
@@ -13940,7 +12929,7 @@ do
 end
 ```
 
-### LUiWidget:attachToEntity
+#### LUiWidget:attachToEntity
 
 #### Definition
 
@@ -13973,7 +12962,7 @@ do
 end
 ```
 
-### LUiWidget:bind
+#### LUiWidget:bind
 
 #### Definition
 
@@ -14006,7 +12995,7 @@ do
 end
 ```
 
-### LUiWidget:cancelAnimations
+#### LUiWidget:cancelAnimations
 
 #### Definition
 
@@ -14040,7 +13029,7 @@ do
 end
 ```
 
-### LUiWidget:clearAnchor
+#### LUiWidget:clearAnchor
 
 #### Definition
 
@@ -14071,7 +13060,7 @@ do
 end
 ```
 
-### LUiWidget:containsPoint
+#### LUiWidget:containsPoint
 
 #### Definition
 
@@ -14109,7 +13098,7 @@ do
 end
 ```
 
-### LUiWidget:detachFromEntity
+#### LUiWidget:detachFromEntity
 
 #### Definition
 
@@ -14140,7 +13129,7 @@ do
 end
 ```
 
-### LUiWidget:fadeIn
+#### LUiWidget:fadeIn
 
 #### Definition
 
@@ -14171,7 +13160,7 @@ do
 end
 ```
 
-### LUiWidget:fadeOut
+#### LUiWidget:fadeOut
 
 #### Definition
 
@@ -14202,7 +13191,7 @@ do
 end
 ```
 
-### LUiWidget:findById
+#### LUiWidget:findById
 
 #### Definition
 
@@ -14238,7 +13227,7 @@ do
 end
 ```
 
-### LUiWidget:getAlpha
+#### LUiWidget:getAlpha
 
 #### Definition
 
@@ -14272,7 +13261,7 @@ do
 end
 ```
 
-### LUiWidget:getChildCount
+#### LUiWidget:getChildCount
 
 #### Definition
 
@@ -14306,7 +13295,7 @@ do
 end
 ```
 
-### LUiWidget:getChildren
+#### LUiWidget:getChildren
 
 #### Definition
 
@@ -14340,7 +13329,7 @@ do
 end
 ```
 
-### LUiWidget:getFlexGrow
+#### LUiWidget:getFlexGrow
 
 #### Definition
 
@@ -14374,7 +13363,7 @@ do
 end
 ```
 
-### LUiWidget:getFlexShrink
+#### LUiWidget:getFlexShrink
 
 #### Definition
 
@@ -14408,7 +13397,7 @@ do
 end
 ```
 
-### LUiWidget:getId
+#### LUiWidget:getId
 
 #### Definition
 
@@ -14442,7 +13431,7 @@ do
 end
 ```
 
-### LUiWidget:getMargin
+#### LUiWidget:getMargin
 
 #### Definition
 
@@ -14479,7 +13468,7 @@ do
 end
 ```
 
-### LUiWidget:getMaxSize
+#### LUiWidget:getMaxSize
 
 #### Definition
 
@@ -14514,7 +13503,7 @@ do
 end
 ```
 
-### LUiWidget:getMinSize
+#### LUiWidget:getMinSize
 
 #### Definition
 
@@ -14549,7 +13538,7 @@ do
 end
 ```
 
-### LUiWidget:getPadding
+#### LUiWidget:getPadding
 
 #### Definition
 
@@ -14586,7 +13575,7 @@ do
 end
 ```
 
-### LUiWidget:getPosition
+#### LUiWidget:getPosition
 
 #### Definition
 
@@ -14621,7 +13610,7 @@ do
 end
 ```
 
-### LUiWidget:getRect
+#### LUiWidget:getRect
 
 #### Definition
 
@@ -14658,7 +13647,7 @@ do
 end
 ```
 
-### LUiWidget:getSize
+#### LUiWidget:getSize
 
 #### Definition
 
@@ -14693,7 +13682,7 @@ do
 end
 ```
 
-### LUiWidget:getState
+#### LUiWidget:getState
 
 #### Definition
 
@@ -14727,7 +13716,7 @@ do
 end
 ```
 
-### LUiWidget:getTooltip
+#### LUiWidget:getTooltip
 
 #### Definition
 
@@ -14761,7 +13750,7 @@ do
 end
 ```
 
-### LUiWidget:getZOrder
+#### LUiWidget:getZOrder
 
 #### Definition
 
@@ -14795,7 +13784,7 @@ do
 end
 ```
 
-### LUiWidget:isAnimating
+#### LUiWidget:isAnimating
 
 #### Definition
 
@@ -14829,7 +13818,7 @@ do
 end
 ```
 
-### LUiWidget:isEnabled
+#### LUiWidget:isEnabled
 
 #### Definition
 
@@ -14863,7 +13852,7 @@ do
 end
 ```
 
-### LUiWidget:isVisible
+#### LUiWidget:isVisible
 
 #### Definition
 
@@ -14897,7 +13886,7 @@ do
 end
 ```
 
-### LUiWidget:removeChild
+#### LUiWidget:removeChild
 
 #### Definition
 
@@ -14930,7 +13919,7 @@ do
 end
 ```
 
-### LUiWidget:setAlpha
+#### LUiWidget:setAlpha
 
 #### Definition
 
@@ -14963,7 +13952,7 @@ do
 end
 ```
 
-### LUiWidget:setAnchor
+#### LUiWidget:setAnchor
 
 #### Definition
 
@@ -15002,7 +13991,7 @@ do
 end
 ```
 
-### LUiWidget:setAnchorCenter
+#### LUiWidget:setAnchorCenter
 
 #### Definition
 
@@ -15037,7 +14026,7 @@ do
 end
 ```
 
-### LUiWidget:setEnabled
+#### LUiWidget:setEnabled
 
 #### Definition
 
@@ -15070,7 +14059,7 @@ do
 end
 ```
 
-### LUiWidget:setFlexGrow
+#### LUiWidget:setFlexGrow
 
 #### Definition
 
@@ -15103,7 +14092,7 @@ do
 end
 ```
 
-### LUiWidget:setFlexShrink
+#### LUiWidget:setFlexShrink
 
 #### Definition
 
@@ -15136,7 +14125,7 @@ do
 end
 ```
 
-### LUiWidget:setId
+#### LUiWidget:setId
 
 #### Definition
 
@@ -15169,7 +14158,7 @@ do
 end
 ```
 
-### LUiWidget:setMargin
+#### LUiWidget:setMargin
 
 #### Definition
 
@@ -15208,7 +14197,7 @@ do
 end
 ```
 
-### LUiWidget:setMaxSize
+#### LUiWidget:setMaxSize
 
 #### Definition
 
@@ -15243,7 +14232,7 @@ do
 end
 ```
 
-### LUiWidget:setMinSize
+#### LUiWidget:setMinSize
 
 #### Definition
 
@@ -15278,7 +14267,7 @@ do
 end
 ```
 
-### LUiWidget:setOnChange
+#### LUiWidget:setOnChange
 
 #### Definition
 
@@ -15311,7 +14300,7 @@ do
 end
 ```
 
-### LUiWidget:setOnClick
+#### LUiWidget:setOnClick
 
 #### Definition
 
@@ -15344,7 +14333,7 @@ do
 end
 ```
 
-### LUiWidget:setOnDraw
+#### LUiWidget:setOnDraw
 
 #### Definition
 
@@ -15377,7 +14366,7 @@ do
 end
 ```
 
-### LUiWidget:setPadding
+#### LUiWidget:setPadding
 
 #### Definition
 
@@ -15416,7 +14405,7 @@ do
 end
 ```
 
-### LUiWidget:setPosition
+#### LUiWidget:setPosition
 
 #### Definition
 
@@ -15451,7 +14440,7 @@ do
 end
 ```
 
-### LUiWidget:setSize
+#### LUiWidget:setSize
 
 #### Definition
 
@@ -15486,7 +14475,7 @@ do
 end
 ```
 
-### LUiWidget:setTooltip
+#### LUiWidget:setTooltip
 
 #### Definition
 
@@ -15519,7 +14508,7 @@ do
 end
 ```
 
-### LUiWidget:setVisible
+#### LUiWidget:setVisible
 
 #### Definition
 
@@ -15552,7 +14541,7 @@ do
 end
 ```
 
-### LUiWidget:setZOrder
+#### LUiWidget:setZOrder
 
 #### Definition
 
@@ -15585,7 +14574,7 @@ do
 end
 ```
 
-### LUiWidget:slideIn
+#### LUiWidget:slideIn
 
 #### Definition
 
@@ -15620,7 +14609,7 @@ do
 end
 ```
 
-### LUiWidget:slideOut
+#### LUiWidget:slideOut
 
 #### Definition
 
@@ -15655,7 +14644,7 @@ do
 end
 ```
 
-### LUiWidget:type
+#### LUiWidget:type
 
 #### Definition
 
@@ -15689,7 +14678,7 @@ do
 end
 ```
 
-### LUiWidget:typeOf
+#### LUiWidget:typeOf
 
 #### Definition
 
@@ -15725,7 +14714,7 @@ do
 end
 ```
 
-### LUiWidget:unbind
+#### LUiWidget:unbind
 
 #### Definition
 

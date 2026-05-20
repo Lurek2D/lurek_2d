@@ -10,6 +10,16 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [config.rs](#configrs)
+  - [error.rs](#errorrs)
+  - [headless.rs](#headlessrs)
+  - [log_messages.rs](#logmessagesrs)
+  - [messages.rs](#messagesrs)
+  - [mod.rs](#modrs)
+  - [mode.rs](#moders)
+  - [resource_keys.rs](#resourcekeysrs)
+  - [shared_state.rs](#sharedstaters)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [💡 Examples](#examples)
@@ -35,6 +45,86 @@ Foundational shared state, engine configuration, error types, resource keys, and
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `config.rs`
+
+- Runtime configuration types parsed from `conf.toml` at engine startup.
+- Top-level `Config` struct with sections for window, renderer, modules, and performance.
+- Feature-toggle table (`ModulesConfig`) controlling which engine subsystems are loaded.
+- Dependency validation that auto-disables modules when prerequisites are off.
+- TOML merge logic: user overrides are layered on top of built-in defaults.
+- Serde-based serialization for round-trip configuration persistence.
+
+### `error.rs`
+
+- Defines `EngineError` — the engine-wide error enum covering all subsystem failures.
+- Provides `ErrorCategory` for high-level failure classification (init, runtime, resource, script, filesystem, system).
+- Assigns stable machine-readable error codes (`E1001`–`E1012`) and recovery hints per variant.
+- Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding.
+- Supplies the `EngineResult<T>` convenience alias used throughout the runtime.
+
+### `headless.rs`
+
+- Implements the no-window headless runtime path for script automation and CI use.
+- `HeadlessOptions` carries game directory, eval snippets, and an optional frame-count override.
+- `run_headless` maps engine errors to process exit codes; `run_headless_checked` preserves structured errors for test callers.
+- Init sequence installs a stdout-routed `print` global and prepends game-directory roots to `package.path`.
+- Frame loop drives `process_physics`, `fixedUpdate`, `process`, and `process_late` in order; count and dt come from config or CLI flag.
+- Callback timeout is enforced via Lua instruction-count hooks when a limit is configured in `PerformanceConfig`.
+
+### `log_messages.rs`
+
+- Stable, structured log message identifiers for all engine subsystems.
+- Each constant provides a short code (e.g. "L001") used as prefix in log output.
+- Identifiers grouped by domain: L=lifecycle, A=audio, G=graphics, P=physics, FS=filesystem.
+- Additional prefixes: AN=animation, EN=ECS, TM=tilemap, SV=save, SC=scene, TH=thread, PF=pathfind.
+- Extended prefixes: MD=mods, NW=network, PL=pipeline, AT=automation, CP=compute, SR=serial, GU=GUI.
+- Runtime log level control via set_log_level/get_log_level with atomic override.
+- log_msg! macro for consistent formatted log output with message lookup.
+- Codes are stable across versions for log parsing, alerting, and external tool integration.
+
+### `messages.rs`
+
+- Embedded TOML-based message catalog for runtime log and display text.
+- Lazy one-shot initialization with fallback to raw identifiers.
+- Recursive string extraction from nested TOML tables.
+
+### `mod.rs`
+
+- Engine runtime foundations: configuration, shared state, and error types.
+- Loads `conf.toml` into a typed `Config` struct consumed by all subsystems.
+- Provides `SharedState` for mutable cross-module communication during a frame.
+- Defines `EngineError` variants and slot-map resource keys.
+
+### `mode.rs`
+
+- Defines `RuntimeMode` enum with four variants: `gui`, `tui`, `headless`, and `cli`.
+- Provides lowercase string tokens for config serialization and CLI parsing via `as_str` and `Display`.
+- `FromStr` accepts any casing and returns a typed parse error that names the rejected token.
+- Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
+
+### `resource_keys.rs`
+
+- Typed slotmap keys for every engine resource pool (textures, fonts, sounds, particles, etc.).
+- Each key is a lightweight handle safe to store in Lua userdata and pass across frames.
+- Generated via `slotmap::new_key_type!` for O(1) lookup with generational validity checks.
+
+### `shared_state.rs`
+
+- Central mutable state container shared across all engine subsystems during a frame.
+- Window state tracking: focus, DPI, fullscreen, scale mode, and pending resize/move requests.
+- Resource pools via SlotMap for textures, fonts, canvases, shaders, meshes, and particle systems.
+- Input aggregation: keyboard, mouse, touch, and gamepad state with vibration requests.
+- Timing and profiling: frame clock, delta time, FPS, per-phase timing breakdown.
+- Memory budget enforcement with LRU eviction of textures and canvases.
+- Asynchronous file I/O through GameFS with poll-based completion.
+- Physics stepping configuration and run-state parameters.
+- Render pipeline state: blend mode, stencil, depth, scissor, color mask, and command buffer.
+- Province registries, parallax layers, tilemaps, raycaster output, and UI context weak refs.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -44,8 +134,10 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/runtime.md](../blob/main/docs/specs/runtime.md)
+- Module-level functions: 0
+- Lua-visible types: 0
+- Total type methods: 0
 
-No module functions appear in the generated Lua API data.
 
 [⬆ back to top](#table-of-contents)
 

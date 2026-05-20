@@ -10,635 +10,50 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [canvas.rs](#canvasrs)
+  - [decal_surface.rs](#decalsurfacers)
+  - [draw_layer.rs](#drawlayerrs)
+  - [font.rs](#fontrs)
+  - [gpu_renderer.rs](#gpurendererrs)
+  - [image_effect.rs](#imageeffectrs)
+  - [mesh.rs](#meshrs)
+  - [mod.rs](#modrs)
+  - [obj_loader.rs](#objloaderrs)
+  - [postfx_pipeline.rs](#postfxpipeliners)
+  - [renderer.rs](#rendererrs)
+  - [shader.rs](#shaderrs)
+  - [shape.rs](#shapers)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.render.applyTransform](#lurekrenderapplytransform)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.arc](#lurekrenderarc)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.beginSortGroup](#lurekrenderbeginsortgroup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.captureScreenshot](#lurekrendercapturescreenshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.circle](#lurekrendercircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.clear](#lurekrenderclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.clearStencil](#lurekrenderclearstencil)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.currentLayer](#lurekrendercurrentlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.draw](#lurekrenderdraw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawBevelRect](#lurekrenderdrawbevelrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawColoredPolygon](#lurekrenderdrawcoloredpolygon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawCubicBezier](#lurekrenderdrawcubicbezier)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawGradientRect](#lurekrenderdrawgradientrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawHexTile](#lurekrenderdrawhextile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawIsoCubeTile](#lurekrenderdrawisocubetile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawMany](#lurekrenderdrawmany)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawNineSlice](#lurekrenderdrawnineslice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawPath](#lurekrenderdrawpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawq](#lurekrenderdrawq)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawQuadBezier](#lurekrenderdrawquadbezier)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.drawQuadBezier](#lurekrenderdrawquadbezier)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.ellipse](#lurekrenderellipse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.flushSortGroup](#lurekrenderflushsortgroup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getBackgroundColor](#lurekrendergetbackgroundcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getBlendMode](#lurekrendergetblendmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getCanvas](#lurekrendergetcanvas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getCanvasSize](#lurekrendergetcanvassize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getColor](#lurekrendergetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getColorMask](#lurekrendergetcolormask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getDefaultFilter](#lurekrendergetdefaultfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getDefaultFont](#lurekrendergetdefaultfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getDepthMode](#lurekrendergetdepthmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getDimensions](#lurekrendergetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFont](#lurekrendergetfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontAscent](#lurekrendergetfontascent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontCellWidth](#lurekrendergetfontcellwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontDescent](#lurekrendergetfontdescent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontHeight](#lurekrendergetfontheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontLineHeight](#lurekrendergetfontlineheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontSizes](#lurekrendergetfontsizes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontWidth](#lurekrendergetfontwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getFontWrap](#lurekrendergetfontwrap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getHeight](#lurekrendergetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getLayerZOrder](#lurekrendergetlayerzorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getLineWidth](#lurekrendergetlinewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getPointSize](#lurekrendergetpointsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getScissor](#lurekrendergetscissor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getShader](#lurekrendergetshader)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getStats](#lurekrendergetstats)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getStencilMode](#lurekrendergetstencilmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.getWidth](#lurekrendergetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.intersectScissor](#lurekrenderintersectscissor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.isLayerVisible](#lurekrenderislayervisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.isWireframe](#lurekrenderiswireframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.line](#lurekrenderline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.loadModel](#lurekrenderloadmodel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.loadObj](#lurekrenderloadobj)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newCanvas](#lurekrendernewcanvas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newDrawLayer](#lurekrendernewdrawlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newFont](#lurekrendernewfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newImage](#lurekrendernewimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newLayer](#lurekrendernewlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newMesh](#lurekrendernewmesh)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newNineSlice](#lurekrendernewnineslice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newQuad](#lurekrendernewquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newShader](#lurekrendernewshader)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newShape](#lurekrendernewshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.newSpriteBatch](#lurekrendernewspritebatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.origin](#lurekrenderorigin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.points](#lurekrenderpoints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.polygon](#lurekrenderpolygon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.pop](#lurekrenderpop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.popLayer](#lurekrenderpoplayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.print](#lurekrenderprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.printf](#lurekrenderprintf)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.printRich](#lurekrenderprintrich)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.printRotated](#lurekrenderprintrotated)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.push](#lurekrenderpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.pushLayer](#lurekrenderpushlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.pushSortKey](#lurekrenderpushsortkey)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.rectangle](#lurekrenderrectangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.resetCanvas](#lurekrenderresetcanvas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.rotate](#lurekrenderrotate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.saveScreenshot](#lurekrendersavescreenshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.scale](#lurekrenderscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setBackgroundColor](#lurekrendersetbackgroundcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setBlendMode](#lurekrendersetblendmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setCanvas](#lurekrendersetcanvas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setColor](#lurekrendersetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setColorMask](#lurekrendersetcolormask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setDefaultFilter](#lurekrendersetdefaultfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setDepthMode](#lurekrendersetdepthmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setFont](#lurekrendersetfont)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setFontLineHeight](#lurekrendersetfontlineheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setLayer](#lurekrendersetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setLayerVisible](#lurekrendersetlayervisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setLayerZOrder](#lurekrendersetlayerzorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setLineWidth](#lurekrendersetlinewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setPointSize](#lurekrendersetpointsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setScissor](#lurekrendersetscissor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setShader](#lurekrendersetshader)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setStencilMode](#lurekrendersetstencilmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setStencilTest](#lurekrendersetstenciltest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.setWireframe](#lurekrendersetwireframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.shear](#lurekrendershear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.stencil](#lurekrenderstencil)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.translate](#lurekrendertranslate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.render.triangle](#lurekrendertriangle)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LCanvas](#lcanvas)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDrawLayer](#ldrawlayer)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LFont](#lfont)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LImage](#limage)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LImageData](#limagedata)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMesh](#lmesh)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNineSlice](#lnineslice)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LObjModel](#lobjmodel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LQuad](#lquad)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LShader](#lshader)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LShape](#lshape)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSpriteBatch](#lspritebatch)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LCanvas:getDimensions](#lcanvasgetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCanvas:getHeight](#lcanvasgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCanvas:getWidth](#lcanvasgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCanvas:release](#lcanvasrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCanvas:type](#lcanvastype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCanvas:typeOf](#lcanvastypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDrawLayer:clear](#ldrawlayerclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDrawLayer:flush](#ldrawlayerflush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDrawLayer:getCount](#ldrawlayergetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDrawLayer:queue](#ldrawlayerqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDrawLayer:type](#ldrawlayertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDrawLayer:typeOf](#ldrawlayertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:getAscent](#lfontgetascent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:getDescent](#lfontgetdescent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:getHeight](#lfontgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:getLineHeight](#lfontgetlineheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:getWidth](#lfontgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:getWrap](#lfontgetwrap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:release](#lfontrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:setLineHeight](#lfontsetlineheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:type](#lfonttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFont:typeOf](#lfonttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImage:getDimensions](#limagegetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImage:getHeight](#limagegetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImage:getId](#limagegetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImage:getWidth](#limagegetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImage:release](#limagerelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImage:type](#limagetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImage:typeOf](#limagetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:blit](#limagedatablit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:diff](#limagedatadiff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getHeight](#limagedatagetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getRegion](#limagedatagetregion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:getWidth](#limagedatagetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:mapPixels](#limagedatamappixels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:resize](#limagedataresize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:type](#limagedatatype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageData:typeOf](#limagedatatypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMesh:getVertex](#lmeshgetvertex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMesh:getVertexCount](#lmeshgetvertexcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMesh:release](#lmeshrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMesh:setTexture](#lmeshsettexture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMesh:setVertex](#lmeshsetvertex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMesh:type](#lmeshtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMesh:typeOf](#lmeshtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNineSlice:getInsets](#lnineslicegetinsets)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNineSlice:getTextureSize](#lnineslicegettexturesize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNineSlice:type](#lnineslicetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNineSlice:typeOf](#lnineslicetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjModel:getFaceCount](#lobjmodelgetfacecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjModel:getNormalCount](#lobjmodelgetnormalcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjModel:getUvCount](#lobjmodelgetuvcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjModel:getVertexCount](#lobjmodelgetvertexcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjModel:projectToMesh](#lobjmodelprojecttomesh)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjModel:renderToImage](#lobjmodelrendertoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQuad:getTextureDimensions](#lquadgettexturedimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQuad:getViewport](#lquadgetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQuad:setViewport](#lquadsetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQuad:type](#lquadtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQuad:typeOf](#lquadtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShader:hasUniform](#lshaderhasuniform)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShader:release](#lshaderrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShader:send](#lshadersend)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShader:type](#lshadertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShader:typeOf](#lshadertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:arc](#lshapearc)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:circle](#lshapecircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:clear](#lshapeclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:draw](#lshapedraw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:ellipse](#lshapeellipse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:getCommandCount](#lshapegetcommandcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:line](#lshapeline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:polygon](#lshapepolygon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:polyline](#lshapepolyline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:rectangle](#lshaperectangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:roundedRectangle](#lshaperoundedrectangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:setColor](#lshapesetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:setLineWidth](#lshapesetlinewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:triangle](#lshapetriangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:type](#lshapetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LShape:typeOf](#lshapetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteBatch:add](#lspritebatchadd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteBatch:clear](#lspritebatchclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteBatch:getBufferSize](#lspritebatchgetbuffersize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteBatch:getCount](#lspritebatchgetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteBatch:release](#lspritebatchrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteBatch:type](#lspritebatchtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteBatch:typeOf](#lspritebatchtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LCanvas Methods](#lcanvas-methods)
+  - [LDrawLayer Methods](#ldrawlayer-methods)
+  - [LFont Methods](#lfont-methods)
+  - [LImage Methods](#limage-methods)
+  - [LImageData Methods](#limagedata-methods)
+  - [LMesh Methods](#lmesh-methods)
+  - [LNineSlice Methods](#lnineslice-methods)
+  - [LObjModel Methods](#lobjmodel-methods)
+  - [LQuad Methods](#lquad-methods)
+  - [LShader Methods](#lshader-methods)
+  - [LShape Methods](#lshape-methods)
+  - [LSpriteBatch Methods](#lspritebatch-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -662,6 +77,125 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `canvas.rs`
+
+- Fixed-size render canvas carrying pixel dimensions for the GPU surface.
+- Logs creation at debug level via the CV01 message code.
+- Owned by `GpuRenderer`; does not hold GPU resources itself.
+
+### `decal_surface.rs`
+
+- Persistent paint-target surface for world-space decals.
+- Stores pixel dimensions used by the renderer to allocate backing textures.
+- Lightweight data struct with no GPU resources of its own.
+
+### `draw_layer.rs`
+
+- Z-ordered draw-callback queue flushed once per frame by the render loop.
+- Entries hold a depth key and an opaque callback ID returned to Lua.
+- Sorted at flush time so draw callbacks execute in front-to-back order.
+
+### `font.rs`
+
+- Bitmap font atlas loading from embedded PNG sprite sheets with per-character cell extraction.
+- Six bundled font sizes (3×5 through 12×22) with nearest-size selection for scaling.
+- Glyph lookup returning UV coordinates, pixel metrics, and advance widths.
+- Text measurement: total pixel width, line height with multiplier, ascent and descent.
+- Word-wrap algorithm splitting text into lines that fit a pixel-width limit.
+- Atlas dirty-tracking for lazy GPU texture upload.
+
+### `gpu_renderer.rs`
+
+- wgpu-based GPU renderer: vertex batching, draw-call encoding, pipeline caching, and frame presentation.
+- Flat-color and textured geometry paths with per-frame vertex/index buffer management.
+- User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
+- Off-screen canvas render targets with lazy depth/stencil attachment creation.
+- Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
+- Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
+- Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
+- Stencil write/test pipeline variants with configurable compare and operation modes.
+- Bitmap font fallback renderer and thick-line geometry generation utilities.
+- Frustum culling via 2-D AABB visibility test against the camera transform.
+- Automatic geometry buffer growth when frame vertex/index demand exceeds current capacity.
+- Texture upload, font atlas rebuild, and canvas lifecycle tied to slot-map resource pruning.
+
+### `image_effect.rs`
+
+- Descriptor for a single named shader pass in a post-processing chain.
+- Carries float uniform parameters and an enable flag per pass.
+- Used by the render pipeline to build configurable multi-pass effects.
+
+### `mesh.rs`
+
+- 2D mesh geometry: vertices with position, UV, and RGBA color.
+- Triangle topology modes: independent triangles, fan, and strip.
+- Index-buffer support and topology-agnostic triangulation.
+
+### `mod.rs`
+
+- GPU rendering pipeline: wgpu device, passes, command encoding, and post-fx chain.
+- Draw primitives: sprites, shapes, meshes, text, decals, and canvas pixel ops.
+- Font rasterisation, shader management, and image-effect descriptors.
+- Draw-layer ordering and blend/stencil/depth state per command.
+
+### `obj_loader.rs`
+
+- Wavefront OBJ and MTL file loading via `tobj` or a built-in hand parser.
+- Triangulated face model with per-vertex position, UV, and normal indices.
+- Named materials carrying diffuse colour and optional texture path.
+- CPU software rasteriser producing `ImageData` thumbnails with back-face culling, Z-buffer, and key lighting.
+- Perspective projection of OBJ models into engine `Mesh` geometry for GPU rendering.
+- Instance projection with Y-axis rotation, uniform scale, and depth output for scene sorting.
+- Local `Vec3`/`Vec2` types for self-contained 3-D math without engine-wide dependencies.
+- `ObjCamera` helper packing position, lookat target, and FOV for projection calls.
+- `ObjLoader` stateless parser facade with both file-based and in-memory entry points.
+- MTL parsing extracting `newmtl`, `Kd`, and `map_Kd` into a flat material list.
+- OBJ face-vertex index resolver handling 1-based and negative (relative) indices.
+- Edge-function barycentric rasterisation for the CPU renderer path.
+
+### `postfx_pipeline.rs`
+
+- Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
+- 20+ built-in WGSL fragment shaders: bloom, blur, vignette, noise, grayscale, sepia, invert, CRT, chromatic aberration, scanlines, pixelate, hue-shift, edge-detect, god-rays, water-distort, sharpen, dither, outline, depth-of-field, motion-blur.
+- Shared fullscreen-triangle vertex shader emitted once and reused by all effects.
+- Ping-pong intermediate textures for multi-pass compositing without extra allocations.
+- Named parameter map → 16-float uniform packing for effect configuration.
+- Runtime registration of custom WGSL fragment shaders under user-chosen names.
+- Auto-uniform injection of time, frame count, and resolution into the last four slots.
+- Identity copy pass used as fallback when no effects are enabled.
+- Pass sequencing respects insertion order; final result written directly to the surface target.
+
+### `renderer.rs`
+
+- Defines the `RenderCommand` enum — the complete vocabulary of draw, state, and control operations submitted each frame.
+- Provides blend, stencil, and depth mode enums for compositing and test configuration.
+- Contains text alignment and draw-mode enums shared across shape, font, and path rendering.
+- Houses post-processing pass descriptors and rich-text span types.
+- Declares particle instance and render-shape types for the particle system pipeline.
+- Includes physics debug shape and config records for collider overlay rendering.
+- Provides path-segment, gradient, hex, bevel, and nine-slice draw primitives.
+- Defines Spine slot draw records, sort-group markers, and compositing layer commands.
+- Supplies `TextureData` for CPU-to-GPU texture uploads and `DrawableKind` for generic draw utilities.
+
+### `shader.rs`
+
+- Parse and validate user-supplied WGSL fragment shaders via naga.
+- Rewrite fragment entry points into plain helper functions for wrapper-pipeline injection.
+- Extract `@location` input slots (color, UV) and enforce vec type constraints.
+- Manage typed uniform values (`float`, `vec2`–`vec4`, `int`, `bool`) for per-frame GPU upload.
+- Provide deterministic ordered-uniform iteration for stable buffer layout.
+- Strip and consume WGSL `@attribute(...)` tokens during header rewriting.
+
+### `shape.rs`
+
+- Compound shape storage: named, replayable sequences of vector-drawing commands.
+- Shape commands: rectangles, circles, ellipses, arcs, polygons, lines, and polylines.
+- State tracking: per-shape color and line-width carried across replays.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LCanvas` (6 methods) - Off-screen render target that can be drawn to and then composited onto the screen.
@@ -682,34 +216,18 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 ## 📖 API Overview
 
 - Source spec: [docs/specs/render.md](../blob/main/docs/specs/render.md)
+- Module-level functions: 108
+- Lua-visible types: 12
+- Total type methods: 88
 
-```lua
-lurek.render.applyTransform(mat: table) -- Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
-lurek.render.arc(mode: string, x: number, y: number, radius: number, angle1: number, angle2: number, [segments]: number) -- Draws a filled or outlined circular arc segment.
-lurek.render.beginSortGroup(id: integer) -- Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
-lurek.render.captureScreenshot(callback: function) -- Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
-lurek.render.circle(mode: string, x: number, y: number, radius: number) -- Draws a filled or outlined circle at the given position.
-lurek.render.clear([r]: number, [g]: number, [b]: number) -- Clears all queued render commands for the current frame.
-lurek.render.clearStencil() -- Resets the stencil state to defaults (no stencil operations).
-lurek.render.currentLayer() -> string -- Returns the name of the currently active rendering layer.
-lurek.render.draw(drawable: LImage|LCanvas|LSpriteBatch|LMesh, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -- Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
-lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, [bevelW]: number, [style]: string, [opts]: table) -- Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
-lurek.render.drawColoredPolygon(vertices: table, colors: table, [mode]: string) -- Draws a polygon with per-vertex colors.
-lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, [segs]: number) -- Draws a cubic Bezier curve through start, two control points, and end.
-lurek.render.drawGradientRect(x: number, y: number, w: number, h: number, c1: table, c2: table, [dir]: string) -- Draws a rectangle with a two-color gradient fill.
-lurek.render.drawHexTile(cx: number, cy: number, size: number, [orientation]: string, [mode]: string) -- Draws a regular hexagonal tile at the given center position.
-lurek.render.drawIsoCubeTile(sx: number, sy: number, halfW: number, halfH: number, [opts]: table) -- Draws an isometric cube tile with configurable face colors and optional textures.
-lurek.render.drawMany(list: table) -- Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
-lurek.render.drawNineSlice(slice: LNineSlice, x: number, y: number, w: number, h: number) -- Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.
-lurek.render.drawPath(path: table, [mode]: string, [close]: boolean) -- Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
--- ... 90 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.render.applyTransform
+### Module-Level Functions
+
+#### lurek.render.applyTransform
 
 #### Definition
 
@@ -741,7 +259,7 @@ do
 end
 ```
 
-### lurek.render.arc
+#### lurek.render.arc
 
 #### Definition
 
@@ -785,7 +303,7 @@ do
 end
 ```
 
-### lurek.render.beginSortGroup
+#### lurek.render.beginSortGroup
 
 #### Definition
 
@@ -817,7 +335,7 @@ do
 end
 ```
 
-### lurek.render.captureScreenshot
+#### lurek.render.captureScreenshot
 
 #### Definition
 
@@ -852,7 +370,7 @@ do
 end
 ```
 
-### lurek.render.circle
+#### lurek.render.circle
 
 #### Definition
 
@@ -890,7 +408,7 @@ do
 end
 ```
 
-### lurek.render.clear
+#### lurek.render.clear
 
 #### Definition
 
@@ -924,7 +442,7 @@ do
 end
 ```
 
-### lurek.render.clearStencil
+#### lurek.render.clearStencil
 
 #### Definition
 
@@ -950,7 +468,7 @@ do
 end
 ```
 
-### lurek.render.currentLayer
+#### lurek.render.currentLayer
 
 #### Definition
 
@@ -979,7 +497,7 @@ do
 end
 ```
 
-### lurek.render.draw
+#### lurek.render.draw
 
 #### Definition
 
@@ -1028,7 +546,7 @@ do
 end
 ```
 
-### lurek.render.drawBevelRect
+#### lurek.render.drawBevelRect
 
 #### Definition
 
@@ -1072,7 +590,7 @@ do
 end
 ```
 
-### lurek.render.drawColoredPolygon
+#### lurek.render.drawColoredPolygon
 
 #### Definition
 
@@ -1106,7 +624,7 @@ do
 end
 ```
 
-### lurek.render.drawCubicBezier
+#### lurek.render.drawCubicBezier
 
 #### Definition
 
@@ -1152,7 +670,7 @@ do
 end
 ```
 
-### lurek.render.drawGradientRect
+#### lurek.render.drawGradientRect
 
 #### Definition
 
@@ -1194,7 +712,7 @@ do
 end
 ```
 
-### lurek.render.drawHexTile
+#### lurek.render.drawHexTile
 
 #### Definition
 
@@ -1234,7 +752,7 @@ do
 end
 ```
 
-### lurek.render.drawIsoCubeTile
+#### lurek.render.drawIsoCubeTile
 
 #### Definition
 
@@ -1271,7 +789,7 @@ do
 end
 ```
 
-### lurek.render.drawMany
+#### lurek.render.drawMany
 
 #### Definition
 
@@ -1301,7 +819,7 @@ do
 end
 ```
 
-### lurek.render.drawNineSlice
+#### lurek.render.drawNineSlice
 
 #### Definition
 
@@ -1339,7 +857,7 @@ do
 end
 ```
 
-### lurek.render.drawPath
+#### lurek.render.drawPath
 
 #### Definition
 
@@ -1374,7 +892,7 @@ do
 end
 ```
 
-### lurek.render.drawq
+#### lurek.render.drawq
 
 #### Definition
 
@@ -1420,7 +938,7 @@ do
 end
 ```
 
-### lurek.render.drawQuadBezier
+#### lurek.render.drawQuadBezier
 
 #### Definition
 
@@ -1462,7 +980,7 @@ do
 end
 ```
 
-### lurek.render.drawQuadBezier
+#### lurek.render.drawQuadBezier
 
 #### Definition
 
@@ -1504,7 +1022,7 @@ do
 end
 ```
 
-### lurek.render.ellipse
+#### lurek.render.ellipse
 
 #### Definition
 
@@ -1544,7 +1062,7 @@ do
 end
 ```
 
-### lurek.render.flushSortGroup
+#### lurek.render.flushSortGroup
 
 #### Definition
 
@@ -1576,7 +1094,7 @@ do
 end
 ```
 
-### lurek.render.getBackgroundColor
+#### lurek.render.getBackgroundColor
 
 #### Definition
 
@@ -1607,7 +1125,7 @@ do
 end
 ```
 
-### lurek.render.getBlendMode
+#### lurek.render.getBlendMode
 
 #### Definition
 
@@ -1635,7 +1153,7 @@ do
 end
 ```
 
-### lurek.render.getCanvas
+#### lurek.render.getCanvas
 
 #### Definition
 
@@ -1665,7 +1183,7 @@ do
 end
 ```
 
-### lurek.render.getCanvasSize
+#### lurek.render.getCanvasSize
 
 #### Definition
 
@@ -1701,7 +1219,7 @@ do
 end
 ```
 
-### lurek.render.getColor
+#### lurek.render.getColor
 
 #### Definition
 
@@ -1732,7 +1250,7 @@ do
 end
 ```
 
-### lurek.render.getColorMask
+#### lurek.render.getColorMask
 
 #### Definition
 
@@ -1765,7 +1283,7 @@ do
 end
 ```
 
-### lurek.render.getDefaultFilter
+#### lurek.render.getDefaultFilter
 
 #### Definition
 
@@ -1797,7 +1315,7 @@ do
 end
 ```
 
-### lurek.render.getDefaultFont
+#### lurek.render.getDefaultFont
 
 #### Definition
 
@@ -1832,7 +1350,7 @@ do
 end
 ```
 
-### lurek.render.getDepthMode
+#### lurek.render.getDepthMode
 
 #### Definition
 
@@ -1863,7 +1381,7 @@ do
 end
 ```
 
-### lurek.render.getDimensions
+#### lurek.render.getDimensions
 
 #### Definition
 
@@ -1893,7 +1411,7 @@ do
 end
 ```
 
-### lurek.render.getFont
+#### lurek.render.getFont
 
 #### Definition
 
@@ -1922,7 +1440,7 @@ do
 end
 ```
 
-### lurek.render.getFontAscent
+#### lurek.render.getFontAscent
 
 #### Definition
 
@@ -1957,7 +1475,7 @@ do
 end
 ```
 
-### lurek.render.getFontCellWidth
+#### lurek.render.getFontCellWidth
 
 #### Definition
 
@@ -1992,7 +1510,7 @@ do
 end
 ```
 
-### lurek.render.getFontDescent
+#### lurek.render.getFontDescent
 
 #### Definition
 
@@ -2027,7 +1545,7 @@ do
 end
 ```
 
-### lurek.render.getFontHeight
+#### lurek.render.getFontHeight
 
 #### Definition
 
@@ -2062,7 +1580,7 @@ do
 end
 ```
 
-### lurek.render.getFontLineHeight
+#### lurek.render.getFontLineHeight
 
 #### Definition
 
@@ -2097,7 +1615,7 @@ do
 end
 ```
 
-### lurek.render.getFontSizes
+#### lurek.render.getFontSizes
 
 #### Definition
 
@@ -2125,7 +1643,7 @@ do
 end
 ```
 
-### lurek.render.getFontWidth
+#### lurek.render.getFontWidth
 
 #### Definition
 
@@ -2162,7 +1680,7 @@ do
 end
 ```
 
-### lurek.render.getFontWrap
+#### lurek.render.getFontWrap
 
 #### Definition
 
@@ -2200,7 +1718,7 @@ do
 end
 ```
 
-### lurek.render.getHeight
+#### lurek.render.getHeight
 
 #### Definition
 
@@ -2229,7 +1747,7 @@ do
 end
 ```
 
-### lurek.render.getLayerZOrder
+#### lurek.render.getLayerZOrder
 
 #### Definition
 
@@ -2263,7 +1781,7 @@ do
 end
 ```
 
-### lurek.render.getLineWidth
+#### lurek.render.getLineWidth
 
 #### Definition
 
@@ -2292,7 +1810,7 @@ do
 end
 ```
 
-### lurek.render.getPointSize
+#### lurek.render.getPointSize
 
 #### Definition
 
@@ -2321,7 +1839,7 @@ do
 end
 ```
 
-### lurek.render.getScissor
+#### lurek.render.getScissor
 
 #### Definition
 
@@ -2353,7 +1871,7 @@ do
 end
 ```
 
-### lurek.render.getShader
+#### lurek.render.getShader
 
 #### Definition
 
@@ -2383,7 +1901,7 @@ do
 end
 ```
 
-### lurek.render.getStats
+#### lurek.render.getStats
 
 #### Definition
 
@@ -2413,7 +1931,7 @@ do
 end
 ```
 
-### lurek.render.getStencilMode
+#### lurek.render.getStencilMode
 
 #### Definition
 
@@ -2445,7 +1963,7 @@ do
 end
 ```
 
-### lurek.render.getWidth
+#### lurek.render.getWidth
 
 #### Definition
 
@@ -2474,7 +1992,7 @@ do
 end
 ```
 
-### lurek.render.intersectScissor
+#### lurek.render.intersectScissor
 
 #### Definition
 
@@ -2511,7 +2029,7 @@ do
 end
 ```
 
-### lurek.render.isLayerVisible
+#### lurek.render.isLayerVisible
 
 #### Definition
 
@@ -2546,7 +2064,7 @@ do
 end
 ```
 
-### lurek.render.isWireframe
+#### lurek.render.isWireframe
 
 #### Definition
 
@@ -2574,7 +2092,7 @@ do
 end
 ```
 
-### lurek.render.line
+#### lurek.render.line
 
 #### Definition
 
@@ -2606,7 +2124,7 @@ do
 end
 ```
 
-### lurek.render.loadModel
+#### lurek.render.loadModel
 
 #### Definition
 
@@ -2641,7 +2159,7 @@ do
 end
 ```
 
-### lurek.render.loadObj
+#### lurek.render.loadObj
 
 #### Definition
 
@@ -2676,7 +2194,7 @@ do
 end
 ```
 
-### lurek.render.newCanvas
+#### lurek.render.newCanvas
 
 #### Definition
 
@@ -2713,7 +2231,7 @@ do
 end
 ```
 
-### lurek.render.newDrawLayer
+#### lurek.render.newDrawLayer
 
 #### Definition
 
@@ -2756,7 +2274,7 @@ do
 end
 ```
 
-### lurek.render.newFont
+#### lurek.render.newFont
 
 #### Definition
 
@@ -2793,7 +2311,7 @@ do
 end
 ```
 
-### lurek.render.newImage
+#### lurek.render.newImage
 
 #### Definition
 
@@ -2830,7 +2348,7 @@ do
 end
 ```
 
-### lurek.render.newLayer
+#### lurek.render.newLayer
 
 #### Definition
 
@@ -2864,7 +2382,7 @@ do
 end
 ```
 
-### lurek.render.newMesh
+#### lurek.render.newMesh
 
 #### Definition
 
@@ -2901,7 +2419,7 @@ do
 end
 ```
 
-### lurek.render.newNineSlice
+#### lurek.render.newNineSlice
 
 #### Definition
 
@@ -2944,7 +2462,7 @@ do
 end
 ```
 
-### lurek.render.newQuad
+#### lurek.render.newQuad
 
 #### Definition
 
@@ -2989,7 +2507,7 @@ do
 end
 ```
 
-### lurek.render.newShader
+#### lurek.render.newShader
 
 #### Definition
 
@@ -3021,7 +2539,7 @@ do
 end
 ```
 
-### lurek.render.newShape
+#### lurek.render.newShape
 
 #### Definition
 
@@ -3051,7 +2569,7 @@ do
 end
 ```
 
-### lurek.render.newSpriteBatch
+#### lurek.render.newSpriteBatch
 
 #### Definition
 
@@ -3088,7 +2606,7 @@ do
 end
 ```
 
-### lurek.render.origin
+#### lurek.render.origin
 
 #### Definition
 
@@ -3115,7 +2633,7 @@ do
 end
 ```
 
-### lurek.render.points
+#### lurek.render.points
 
 #### Definition
 
@@ -3147,7 +2665,7 @@ do
 end
 ```
 
-### lurek.render.polygon
+#### lurek.render.polygon
 
 #### Definition
 
@@ -3180,7 +2698,7 @@ do
 end
 ```
 
-### lurek.render.pop
+#### lurek.render.pop
 
 #### Definition
 
@@ -3207,7 +2725,7 @@ do
 end
 ```
 
-### lurek.render.popLayer
+#### lurek.render.popLayer
 
 #### Definition
 
@@ -3239,7 +2757,7 @@ do
 end
 ```
 
-### lurek.render.print
+#### lurek.render.print
 
 #### Definition
 
@@ -3275,7 +2793,7 @@ do
 end
 ```
 
-### lurek.render.printf
+#### lurek.render.printf
 
 #### Definition
 
@@ -3311,7 +2829,7 @@ do
 end
 ```
 
-### lurek.render.printRich
+#### lurek.render.printRich
 
 #### Definition
 
@@ -3344,7 +2862,7 @@ do
 end
 ```
 
-### lurek.render.printRotated
+#### lurek.render.printRotated
 
 #### Definition
 
@@ -3380,7 +2898,7 @@ do
 end
 ```
 
-### lurek.render.push
+#### lurek.render.push
 
 #### Definition
 
@@ -3407,7 +2925,7 @@ do
 end
 ```
 
-### lurek.render.pushLayer
+#### lurek.render.pushLayer
 
 #### Definition
 
@@ -3443,7 +2961,7 @@ do
 end
 ```
 
-### lurek.render.pushSortKey
+#### lurek.render.pushSortKey
 
 #### Definition
 
@@ -3475,7 +2993,7 @@ do
 end
 ```
 
-### lurek.render.rectangle
+#### lurek.render.rectangle
 
 #### Definition
 
@@ -3517,7 +3035,7 @@ do
 end
 ```
 
-### lurek.render.resetCanvas
+#### lurek.render.resetCanvas
 
 #### Definition
 
@@ -3552,7 +3070,7 @@ do
 end
 ```
 
-### lurek.render.rotate
+#### lurek.render.rotate
 
 #### Definition
 
@@ -3584,7 +3102,7 @@ do
 end
 ```
 
-### lurek.render.saveScreenshot
+#### lurek.render.saveScreenshot
 
 #### Definition
 
@@ -3616,7 +3134,7 @@ do
 end
 ```
 
-### lurek.render.scale
+#### lurek.render.scale
 
 #### Definition
 
@@ -3650,7 +3168,7 @@ do
 end
 ```
 
-### lurek.render.setBackgroundColor
+#### lurek.render.setBackgroundColor
 
 #### Definition
 
@@ -3685,7 +3203,7 @@ do
 end
 ```
 
-### lurek.render.setBlendMode
+#### lurek.render.setBlendMode
 
 #### Definition
 
@@ -3717,7 +3235,7 @@ do
 end
 ```
 
-### lurek.render.setCanvas
+#### lurek.render.setCanvas
 
 #### Definition
 
@@ -3749,7 +3267,7 @@ do
 end
 ```
 
-### lurek.render.setColor
+#### lurek.render.setColor
 
 #### Definition
 
@@ -3787,7 +3305,7 @@ do
 end
 ```
 
-### lurek.render.setColorMask
+#### lurek.render.setColorMask
 
 #### Definition
 
@@ -3824,7 +3342,7 @@ do
 end
 ```
 
-### lurek.render.setDefaultFilter
+#### lurek.render.setDefaultFilter
 
 #### Definition
 
@@ -3860,7 +3378,7 @@ do
 end
 ```
 
-### lurek.render.setDepthMode
+#### lurek.render.setDepthMode
 
 #### Definition
 
@@ -3894,7 +3412,7 @@ do
 end
 ```
 
-### lurek.render.setFont
+#### lurek.render.setFont
 
 #### Definition
 
@@ -3926,7 +3444,7 @@ do
 end
 ```
 
-### lurek.render.setFontLineHeight
+#### lurek.render.setFontLineHeight
 
 #### Definition
 
@@ -3960,7 +3478,7 @@ do
 end
 ```
 
-### lurek.render.setLayer
+#### lurek.render.setLayer
 
 #### Definition
 
@@ -3992,7 +3510,7 @@ do
 end
 ```
 
-### lurek.render.setLayerVisible
+#### lurek.render.setLayerVisible
 
 #### Definition
 
@@ -4026,7 +3544,7 @@ do
 end
 ```
 
-### lurek.render.setLayerZOrder
+#### lurek.render.setLayerZOrder
 
 #### Definition
 
@@ -4060,7 +3578,7 @@ do
 end
 ```
 
-### lurek.render.setLineWidth
+#### lurek.render.setLineWidth
 
 #### Definition
 
@@ -4090,7 +3608,7 @@ do
 end
 ```
 
-### lurek.render.setPointSize
+#### lurek.render.setPointSize
 
 #### Definition
 
@@ -4121,7 +3639,7 @@ do
 end
 ```
 
-### lurek.render.setScissor
+#### lurek.render.setScissor
 
 #### Definition
 
@@ -4159,7 +3677,7 @@ do
 end
 ```
 
-### lurek.render.setShader
+#### lurek.render.setShader
 
 #### Definition
 
@@ -4191,7 +3709,7 @@ do
 end
 ```
 
-### lurek.render.setStencilMode
+#### lurek.render.setStencilMode
 
 #### Definition
 
@@ -4227,7 +3745,7 @@ do
 end
 ```
 
-### lurek.render.setStencilTest
+#### lurek.render.setStencilTest
 
 #### Definition
 
@@ -4260,7 +3778,7 @@ do
 end
 ```
 
-### lurek.render.setWireframe
+#### lurek.render.setWireframe
 
 #### Definition
 
@@ -4292,7 +3810,7 @@ do
 end
 ```
 
-### lurek.render.shear
+#### lurek.render.shear
 
 #### Definition
 
@@ -4326,7 +3844,7 @@ do
 end
 ```
 
-### lurek.render.stencil
+#### lurek.render.stencil
 
 #### Definition
 
@@ -4360,7 +3878,7 @@ do
 end
 ```
 
-### lurek.render.translate
+#### lurek.render.translate
 
 #### Definition
 
@@ -4394,7 +3912,7 @@ do
 end
 ```
 
-### lurek.render.triangle
+#### lurek.render.triangle
 
 #### Definition
 
@@ -4796,7 +4314,9 @@ end
 
 ## 🔹 Module Methods
 
-### LCanvas:getDimensions
+### LCanvas Methods
+
+#### LCanvas:getDimensions
 
 #### Definition
 
@@ -4827,7 +4347,7 @@ do
 end
 ```
 
-### LCanvas:getHeight
+#### LCanvas:getHeight
 
 #### Definition
 
@@ -4857,7 +4377,7 @@ do
 end
 ```
 
-### LCanvas:getWidth
+#### LCanvas:getWidth
 
 #### Definition
 
@@ -4887,7 +4407,7 @@ do
 end
 ```
 
-### LCanvas:release
+#### LCanvas:release
 
 #### Definition
 
@@ -4917,7 +4437,7 @@ do
 end
 ```
 
-### LCanvas:type
+#### LCanvas:type
 
 #### Definition
 
@@ -4947,7 +4467,7 @@ do
 end
 ```
 
-### LCanvas:typeOf
+#### LCanvas:typeOf
 
 #### Definition
 
@@ -4982,7 +4502,9 @@ do
 end
 ```
 
-### LDrawLayer:clear
+### LDrawLayer Methods
+
+#### LDrawLayer:clear
 
 #### Definition
 
@@ -5009,7 +4531,7 @@ do
 end
 ```
 
-### LDrawLayer:flush
+#### LDrawLayer:flush
 
 #### Definition
 
@@ -5041,7 +4563,7 @@ do
 end
 ```
 
-### LDrawLayer:getCount
+#### LDrawLayer:getCount
 
 #### Definition
 
@@ -5076,7 +4598,7 @@ do
 end
 ```
 
-### LDrawLayer:queue
+#### LDrawLayer:queue
 
 #### Definition
 
@@ -5115,7 +4637,7 @@ do
 end
 ```
 
-### LDrawLayer:type
+#### LDrawLayer:type
 
 #### Definition
 
@@ -5145,7 +4667,7 @@ do
 end
 ```
 
-### LDrawLayer:typeOf
+#### LDrawLayer:typeOf
 
 #### Definition
 
@@ -5180,7 +4702,9 @@ do
 end
 ```
 
-### LFont:getAscent
+### LFont Methods
+
+#### LFont:getAscent
 
 #### Definition
 
@@ -5210,7 +4734,7 @@ do
 end
 ```
 
-### LFont:getDescent
+#### LFont:getDescent
 
 #### Definition
 
@@ -5240,7 +4764,7 @@ do
 end
 ```
 
-### LFont:getHeight
+#### LFont:getHeight
 
 #### Definition
 
@@ -5270,7 +4794,7 @@ do
 end
 ```
 
-### LFont:getLineHeight
+#### LFont:getLineHeight
 
 #### Definition
 
@@ -5300,7 +4824,7 @@ do
 end
 ```
 
-### LFont:getWidth
+#### LFont:getWidth
 
 #### Definition
 
@@ -5335,7 +4859,7 @@ do
 end
 ```
 
-### LFont:getWrap
+#### LFont:getWrap
 
 #### Definition
 
@@ -5373,7 +4897,7 @@ do
 end
 ```
 
-### LFont:release
+#### LFont:release
 
 #### Definition
 
@@ -5402,7 +4926,7 @@ do
 end
 ```
 
-### LFont:setLineHeight
+#### LFont:setLineHeight
 
 #### Definition
 
@@ -5434,7 +4958,7 @@ do
 end
 ```
 
-### LFont:type
+#### LFont:type
 
 #### Definition
 
@@ -5463,7 +4987,7 @@ do
 end
 ```
 
-### LFont:typeOf
+#### LFont:typeOf
 
 #### Definition
 
@@ -5497,7 +5021,9 @@ do
 end
 ```
 
-### LImage:getDimensions
+### LImage Methods
+
+#### LImage:getDimensions
 
 #### Definition
 
@@ -5526,7 +5052,7 @@ do
 end
 ```
 
-### LImage:getHeight
+#### LImage:getHeight
 
 #### Definition
 
@@ -5554,7 +5080,7 @@ do
 end
 ```
 
-### LImage:getId
+#### LImage:getId
 
 #### Definition
 
@@ -5584,7 +5110,7 @@ do
 end
 ```
 
-### LImage:getWidth
+#### LImage:getWidth
 
 #### Definition
 
@@ -5612,7 +5138,7 @@ do
 end
 ```
 
-### LImage:release
+#### LImage:release
 
 #### Definition
 
@@ -5642,7 +5168,7 @@ do
 end
 ```
 
-### LImage:type
+#### LImage:type
 
 #### Definition
 
@@ -5672,7 +5198,7 @@ do
 end
 ```
 
-### LImage:typeOf
+#### LImage:typeOf
 
 #### Definition
 
@@ -5707,7 +5233,9 @@ do
 end
 ```
 
-### LImageData:blit
+### LImageData Methods
+
+#### LImageData:blit
 
 #### Definition
 
@@ -5743,7 +5271,7 @@ do
 end
 ```
 
-### LImageData:diff
+#### LImageData:diff
 
 #### Definition
 
@@ -5778,7 +5306,7 @@ do
 end
 ```
 
-### LImageData:getHeight
+#### LImageData:getHeight
 
 #### Definition
 
@@ -5805,7 +5333,7 @@ do
 end
 ```
 
-### LImageData:getRegion
+#### LImageData:getRegion
 
 #### Definition
 
@@ -5846,7 +5374,7 @@ do
 end
 ```
 
-### LImageData:getWidth
+#### LImageData:getWidth
 
 #### Definition
 
@@ -5873,7 +5401,7 @@ do
 end
 ```
 
-### LImageData:mapPixels
+#### LImageData:mapPixels
 
 #### Definition
 
@@ -5903,7 +5431,7 @@ do
 end
 ```
 
-### LImageData:resize
+#### LImageData:resize
 
 #### Definition
 
@@ -5938,7 +5466,7 @@ do
 end
 ```
 
-### LImageData:type
+#### LImageData:type
 
 #### Definition
 
@@ -5965,7 +5493,7 @@ do
 end
 ```
 
-### LImageData:typeOf
+#### LImageData:typeOf
 
 #### Definition
 
@@ -5997,7 +5525,9 @@ do
 end
 ```
 
-### LMesh:getVertex
+### LMesh Methods
+
+#### LMesh:getVertex
 
 #### Definition
 
@@ -6039,7 +5569,7 @@ do
 end
 ```
 
-### LMesh:getVertexCount
+#### LMesh:getVertexCount
 
 #### Definition
 
@@ -6069,7 +5599,7 @@ do
 end
 ```
 
-### LMesh:release
+#### LMesh:release
 
 #### Definition
 
@@ -6096,7 +5626,7 @@ do
 end
 ```
 
-### LMesh:setTexture
+#### LMesh:setTexture
 
 #### Definition
 
@@ -6127,7 +5657,7 @@ do
 end
 ```
 
-### LMesh:setVertex
+#### LMesh:setVertex
 
 #### Definition
 
@@ -6161,7 +5691,7 @@ do
 end
 ```
 
-### LMesh:type
+#### LMesh:type
 
 #### Definition
 
@@ -6188,7 +5718,7 @@ do
 end
 ```
 
-### LMesh:typeOf
+#### LMesh:typeOf
 
 #### Definition
 
@@ -6220,7 +5750,9 @@ do
 end
 ```
 
-### LNineSlice:getInsets
+### LNineSlice Methods
+
+#### LNineSlice:getInsets
 
 #### Definition
 
@@ -6251,7 +5783,7 @@ do
 end
 ```
 
-### LNineSlice:getTextureSize
+#### LNineSlice:getTextureSize
 
 #### Definition
 
@@ -6280,7 +5812,7 @@ do
 end
 ```
 
-### LNineSlice:type
+#### LNineSlice:type
 
 #### Definition
 
@@ -6308,7 +5840,7 @@ do
 end
 ```
 
-### LNineSlice:typeOf
+#### LNineSlice:typeOf
 
 #### Definition
 
@@ -6343,7 +5875,9 @@ do
 end
 ```
 
-### LObjModel:getFaceCount
+### LObjModel Methods
+
+#### LObjModel:getFaceCount
 
 #### Definition
 
@@ -6373,7 +5907,7 @@ do
 end
 ```
 
-### LObjModel:getNormalCount
+#### LObjModel:getNormalCount
 
 #### Definition
 
@@ -6403,7 +5937,7 @@ do
 end
 ```
 
-### LObjModel:getUvCount
+#### LObjModel:getUvCount
 
 #### Definition
 
@@ -6433,7 +5967,7 @@ do
 end
 ```
 
-### LObjModel:getVertexCount
+#### LObjModel:getVertexCount
 
 #### Definition
 
@@ -6463,7 +5997,7 @@ do
 end
 ```
 
-### LObjModel:projectToMesh
+#### LObjModel:projectToMesh
 
 #### Definition
 
@@ -6501,7 +6035,7 @@ do
 end
 ```
 
-### LObjModel:renderToImage
+#### LObjModel:renderToImage
 
 #### Definition
 
@@ -6540,7 +6074,9 @@ do
 end
 ```
 
-### LQuad:getTextureDimensions
+### LQuad Methods
+
+#### LQuad:getTextureDimensions
 
 #### Definition
 
@@ -6571,7 +6107,7 @@ do
 end
 ```
 
-### LQuad:getViewport
+#### LQuad:getViewport
 
 #### Definition
 
@@ -6603,7 +6139,7 @@ do
 end
 ```
 
-### LQuad:setViewport
+#### LQuad:setViewport
 
 #### Definition
 
@@ -6640,7 +6176,7 @@ do
 end
 ```
 
-### LQuad:type
+#### LQuad:type
 
 #### Definition
 
@@ -6669,7 +6205,7 @@ do
 end
 ```
 
-### LQuad:typeOf
+#### LQuad:typeOf
 
 #### Definition
 
@@ -6703,7 +6239,9 @@ do
 end
 ```
 
-### LShader:hasUniform
+### LShader Methods
+
+#### LShader:hasUniform
 
 #### Definition
 
@@ -6738,7 +6276,7 @@ do
 end
 ```
 
-### LShader:release
+#### LShader:release
 
 #### Definition
 
@@ -6767,7 +6305,7 @@ do
 end
 ```
 
-### LShader:send
+#### LShader:send
 
 #### Definition
 
@@ -6799,7 +6337,7 @@ do
 end
 ```
 
-### LShader:type
+#### LShader:type
 
 #### Definition
 
@@ -6829,7 +6367,7 @@ do
 end
 ```
 
-### LShader:typeOf
+#### LShader:typeOf
 
 #### Definition
 
@@ -6864,7 +6402,9 @@ do
 end
 ```
 
-### LShape:arc
+### LShape Methods
+
+#### LShape:arc
 
 #### Definition
 
@@ -6908,7 +6448,7 @@ do
 end
 ```
 
-### LShape:circle
+#### LShape:circle
 
 #### Definition
 
@@ -6946,7 +6486,7 @@ do
 end
 ```
 
-### LShape:clear
+#### LShape:clear
 
 #### Definition
 
@@ -6973,7 +6513,7 @@ do
 end
 ```
 
-### LShape:draw
+#### LShape:draw
 
 #### Definition
 
@@ -7017,7 +6557,7 @@ do
 end
 ```
 
-### LShape:ellipse
+#### LShape:ellipse
 
 #### Definition
 
@@ -7057,7 +6597,7 @@ do
 end
 ```
 
-### LShape:getCommandCount
+#### LShape:getCommandCount
 
 #### Definition
 
@@ -7087,7 +6627,7 @@ do
 end
 ```
 
-### LShape:line
+#### LShape:line
 
 #### Definition
 
@@ -7125,7 +6665,7 @@ do
 end
 ```
 
-### LShape:polygon
+#### LShape:polygon
 
 #### Definition
 
@@ -7159,7 +6699,7 @@ do
 end
 ```
 
-### LShape:polyline
+#### LShape:polyline
 
 #### Definition
 
@@ -7191,7 +6731,7 @@ do
 end
 ```
 
-### LShape:rectangle
+#### LShape:rectangle
 
 #### Definition
 
@@ -7231,7 +6771,7 @@ do
 end
 ```
 
-### LShape:roundedRectangle
+#### LShape:roundedRectangle
 
 #### Definition
 
@@ -7275,7 +6815,7 @@ do
 end
 ```
 
-### LShape:setColor
+#### LShape:setColor
 
 #### Definition
 
@@ -7313,7 +6853,7 @@ do
 end
 ```
 
-### LShape:setLineWidth
+#### LShape:setLineWidth
 
 #### Definition
 
@@ -7345,7 +6885,7 @@ do
 end
 ```
 
-### LShape:triangle
+#### LShape:triangle
 
 #### Definition
 
@@ -7389,7 +6929,7 @@ do
 end
 ```
 
-### LShape:type
+#### LShape:type
 
 #### Definition
 
@@ -7419,7 +6959,7 @@ do
 end
 ```
 
-### LShape:typeOf
+#### LShape:typeOf
 
 #### Definition
 
@@ -7454,7 +6994,9 @@ do
 end
 ```
 
-### LSpriteBatch:add
+### LSpriteBatch Methods
+
+#### LSpriteBatch:add
 
 #### Definition
 
@@ -7501,7 +7043,7 @@ do
 end
 ```
 
-### LSpriteBatch:clear
+#### LSpriteBatch:clear
 
 #### Definition
 
@@ -7528,7 +7070,7 @@ do
 end
 ```
 
-### LSpriteBatch:getBufferSize
+#### LSpriteBatch:getBufferSize
 
 #### Definition
 
@@ -7558,7 +7100,7 @@ do
 end
 ```
 
-### LSpriteBatch:getCount
+#### LSpriteBatch:getCount
 
 #### Definition
 
@@ -7588,7 +7130,7 @@ do
 end
 ```
 
-### LSpriteBatch:release
+#### LSpriteBatch:release
 
 #### Definition
 
@@ -7618,7 +7160,7 @@ do
 end
 ```
 
-### LSpriteBatch:type
+#### LSpriteBatch:type
 
 #### Definition
 
@@ -7648,7 +7190,7 @@ do
 end
 ```
 
-### LSpriteBatch:typeOf
+#### LSpriteBatch:typeOf
 
 #### Definition
 

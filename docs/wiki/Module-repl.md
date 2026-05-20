@@ -10,38 +10,20 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [commands.rs](#commandsrs)
+  - [completer.rs](#completerrs)
+  - [mod.rs](#modrs)
+  - [session.rs](#sessionrs)
+  - [value.rs](#valuers)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.repl.new](#lurekreplnew)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LReplSession](#lreplsession)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LReplSession:clear](#lreplsessionclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplSession:complete](#lreplsessioncomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplSession:eval](#lreplsessioneval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplSession:history](#lreplsessionhistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplSession:len](#lreplsessionlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplSession:type](#lreplsessiontype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplSession:typeOf](#lreplsessiontypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LReplSession Methods](#lreplsession-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -65,6 +47,44 @@ Value formatting recursively converts Lua values to human-readable strings with 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `commands.rs`
+
+- Declares `ReplCommand` enum for the five built-in colon commands: `:help`, `:quit`, `:clear`, `:reset`, and `:load <path>`.
+- `display_text` returns a short human-readable confirmation string for each command variant.
+- Command data only; dispatch logic and Lua eval live in `session.rs`.
+
+### `completer.rs`
+
+- Provides `complete_prefix` for tab completion against a static pool and live Lua globals.
+- Static pool includes Lua keywords, built-in globals, standard libraries, colon commands, and all `lurek.*` sub-namespaces.
+- Dynamic branch resolves a dot-separated path through Lua globals and collects matching key names.
+- Output is sorted and deduplicated; callers pass `None` for the Lua handle when no VM is available.
+
+### `mod.rs`
+
+- Exports the release-safe Lua REPL core: session, commands, completer, and value formatter.
+- Re-exports top-level symbols for convenient use by `lua_api` bindings and `devtools`.
+- All REPL state is pure Rust with no wgpu or winit dependencies; safe for headless and test contexts.
+
+### `session.rs`
+
+- Implements `ReplSession`, a stateful Lua evaluator with bounded command history.
+- `ReplResult` captures value output, silent success, structured error text, or a parsed colon command.
+- Eval dispatches colon commands first; expression input tries `return <input>` then falls back to statement execution.
+- History is capped at `max_history` entries; oldest entries are evicted when the cap is reached; default capacity is 200.
+- `:load` reads a file from disk and executes it inside the current Lua VM, returning a command or error result.
+- Session state is pure Rust; the Lua reference is borrowed per call and never stored on the struct.
+
+### `value.rs`
+
+- Converts a single `mlua::Value` to a display string for REPL and headless stdout output.
+- Covers all Lua value kinds; opaque types like tables and functions return fixed angle-bracket labels.
+- Error values include the Lua error message; nil returns the literal string `"nil"`.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LReplSession` (7 methods) - Lua-side REPL session handle with bounded history.
@@ -74,16 +94,18 @@ Value formatting recursively converts Lua values to human-readable strings with 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/repl.md](../blob/main/docs/specs/repl.md)
+- Module-level functions: 1
+- Lua-visible types: 1
+- Total type methods: 7
 
-```lua
-lurek.repl.new([max_history]: integer) -> LReplSession -- Creates a release-safe REPL session with bounded command history.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.repl.new
+### Module-Level Functions
+
+#### lurek.repl.new
 
 #### Definition
 
@@ -154,7 +176,9 @@ end
 
 ## 🔹 Module Methods
 
-### LReplSession:clear
+### LReplSession Methods
+
+#### LReplSession:clear
 
 #### Definition
 
@@ -180,7 +204,7 @@ do
 end
 ```
 
-### LReplSession:complete
+#### LReplSession:complete
 
 #### Definition
 
@@ -215,7 +239,7 @@ do
 end
 ```
 
-### LReplSession:eval
+#### LReplSession:eval
 
 #### Definition
 
@@ -249,7 +273,7 @@ do
 end
 ```
 
-### LReplSession:history
+#### LReplSession:history
 
 #### Definition
 
@@ -278,7 +302,7 @@ do
 end
 ```
 
-### LReplSession:len
+#### LReplSession:len
 
 #### Definition
 
@@ -308,7 +332,7 @@ do
 end
 ```
 
-### LReplSession:type
+#### LReplSession:type
 
 #### Definition
 
@@ -336,7 +360,7 @@ do
 end
 ```
 
-### LReplSession:typeOf
+#### LReplSession:typeOf
 
 #### Definition
 

@@ -10,105 +10,15 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [mod.rs](#modrs)
+  - [script.rs](#scriptrs)
+  - [simulator.rs](#simulatorrs)
+  - [step.rs](#steprs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.automation.getCondition](#lurekautomationgetcondition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getCurrentScript](#lurekautomationgetcurrentscript)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getCurrentStep](#lurekautomationgetcurrentstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getElapsedTime](#lurekautomationgetelapsedtime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getLastError](#lurekautomationgetlasterror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getPlaybackSpeed](#lurekautomationgetplaybackspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getScripts](#lurekautomationgetscripts)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getStepCount](#lurekautomationgetstepcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.getStepLimit](#lurekautomationgetsteplimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.hasMacro](#lurekautomationhasmacro)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.hasScript](#lurekautomationhasscript)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.isComplete](#lurekautomationiscomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.isFailed](#lurekautomationisfailed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.isHighlightMode](#lurekautomationishighlightmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.isPaused](#lurekautomationispaused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.isRunning](#lurekautomationisrunning)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.listMacros](#lurekautomationlistmacros)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.load](#lurekautomationload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.loadFromToml](#lurekautomationloadfromtoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.pause](#lurekautomationpause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.playMacro](#lurekautomationplaymacro)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.resume](#lurekautomationresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.saveMacro](#lurekautomationsavemacro)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.setCondition](#lurekautomationsetcondition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.setHighlightMode](#lurekautomationsethighlightmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.setPlaybackSpeed](#lurekautomationsetplaybackspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.setStepLimit](#lurekautomationsetsteplimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.start](#lurekautomationstart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.stop](#lurekautomationstop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.unload](#lurekautomationunload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.update](#lurekautomationupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.automation.waitUntil](#lurekautomationwaituntil)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -132,6 +42,44 @@ Scripts can be loaded from TOML files or constructed from Lua tables. The simula
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `mod.rs`
+
+- Automation subsystem for deterministic input replay and visual regression testing.
+- Script stores time-sorted steps parsed from TOML with repeat expansion.
+- Simulator drives playback, dispatches events, evaluates conditions, and runs asserts.
+- Step and Action types describe timed input events and control flow actions.
+
+### `script.rs`
+
+- Automation script container: named, time-sorted step sequences for deterministic replay.
+- Expands repeat markers into cloned steps at computed time offsets.
+- Parses TOML input with meta description and typed step fields.
+- Enforces a configurable step limit (default MAX_STEPS = 100,000).
+- Sorts steps by time after expansion for correct playback ordering.
+
+### `simulator.rs`
+
+- Automation simulator: drives script playback by advancing time and dispatching events.
+- Manages a registry of named scripts and macros with load/unload lifecycle.
+- Evaluates condition expressions (&&, ||, !, parentheses) against named boolean flags.
+- Supports pause, resume, speed control, and visual highlight mode for debug tools.
+- CallMacro steps inline macro scripts at the current playback position.
+- VisualAssert steps compare baseline and actual images with pixel-diff tolerance.
+- Assert steps halt playback when condition expressions evaluate to false.
+- StepEventSink trait decouples event dispatch from EventQueue for testing.
+
+### `step.rs`
+
+- Action enum and Step struct: typed event descriptors for automation playback.
+- Action variants cover keyboard, mouse, wheel, text, wait, repeat, macro, and asserts.
+- Step carries all optional fields (key, position, delta, button, text, conditions).
+- Parse support maps lowercase action strings to Action variants.
+- Repeat and interval fields drive expansion in Script construction.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -141,34 +89,18 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/automation.md](../blob/main/docs/specs/automation.md)
+- Module-level functions: 32
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.automation.getCondition(name: string) -> boolean -- Returns a named automation condition value.
-lurek.automation.getCurrentScript() -> string -- Returns the current script name when a script is active.
-lurek.automation.getCurrentStep() -> integer -- Returns the current step index of the active script.
-lurek.automation.getElapsedTime() -> number -- Returns elapsed playback time for the current script.
-lurek.automation.getLastError() -> string -- Returns the last automation error message when one exists.
-lurek.automation.getPlaybackSpeed() -> number -- Returns automation playback speed multiplier.
-lurek.automation.getScripts() -> string[] -- Returns the names of loaded automation scripts.
-lurek.automation.getStepCount() -> integer -- Returns the number of steps in the active script.
-lurek.automation.getStepLimit(name: string) -> integer -- Returns the configured step limit for a loaded script.
-lurek.automation.hasMacro(name: string) -> boolean -- Returns whether a macro is saved. This function is exposed to Lua scripts.
-lurek.automation.hasScript(name: string) -> boolean -- Returns whether a script is loaded.
-lurek.automation.isComplete() -> boolean -- Returns whether the current automation script completed.
-lurek.automation.isFailed() -> boolean -- Returns whether the current automation script failed.
-lurek.automation.isHighlightMode() -> boolean -- Returns whether automation highlight mode is enabled.
-lurek.automation.isPaused() -> boolean -- Returns whether automation playback is paused.
-lurek.automation.isRunning() -> boolean -- Returns whether automation playback is running.
-lurek.automation.listMacros() -> string[] -- Returns the names of saved macros. This function is exposed to Lua scripts.
-lurek.automation.load(name: string, data: table) -- Loads an automation script from a Lua table of steps and optional metadata.
--- ... 14 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.automation.getCondition
+### Module-Level Functions
+
+#### lurek.automation.getCondition
 
 #### Definition
 
@@ -201,7 +133,7 @@ do
 end
 ```
 
-### lurek.automation.getCurrentScript
+#### lurek.automation.getCurrentScript
 
 #### Definition
 
@@ -228,7 +160,7 @@ do
 end
 ```
 
-### lurek.automation.getCurrentStep
+#### lurek.automation.getCurrentStep
 
 #### Definition
 
@@ -255,7 +187,7 @@ do
 end
 ```
 
-### lurek.automation.getElapsedTime
+#### lurek.automation.getElapsedTime
 
 #### Definition
 
@@ -282,7 +214,7 @@ do
 end
 ```
 
-### lurek.automation.getLastError
+#### lurek.automation.getLastError
 
 #### Definition
 
@@ -309,7 +241,7 @@ do
 end
 ```
 
-### lurek.automation.getPlaybackSpeed
+#### lurek.automation.getPlaybackSpeed
 
 #### Definition
 
@@ -336,7 +268,7 @@ do
 end
 ```
 
-### lurek.automation.getScripts
+#### lurek.automation.getScripts
 
 #### Definition
 
@@ -363,7 +295,7 @@ do
 end
 ```
 
-### lurek.automation.getStepCount
+#### lurek.automation.getStepCount
 
 #### Definition
 
@@ -390,7 +322,7 @@ do
 end
 ```
 
-### lurek.automation.getStepLimit
+#### lurek.automation.getStepLimit
 
 #### Definition
 
@@ -422,7 +354,7 @@ do
 end
 ```
 
-### lurek.automation.hasMacro
+#### lurek.automation.hasMacro
 
 #### Definition
 
@@ -454,7 +386,7 @@ do
 end
 ```
 
-### lurek.automation.hasScript
+#### lurek.automation.hasScript
 
 #### Definition
 
@@ -486,7 +418,7 @@ do
 end
 ```
 
-### lurek.automation.isComplete
+#### lurek.automation.isComplete
 
 #### Definition
 
@@ -513,7 +445,7 @@ do
 end
 ```
 
-### lurek.automation.isFailed
+#### lurek.automation.isFailed
 
 #### Definition
 
@@ -540,7 +472,7 @@ do
 end
 ```
 
-### lurek.automation.isHighlightMode
+#### lurek.automation.isHighlightMode
 
 #### Definition
 
@@ -567,7 +499,7 @@ do
 end
 ```
 
-### lurek.automation.isPaused
+#### lurek.automation.isPaused
 
 #### Definition
 
@@ -594,7 +526,7 @@ do
 end
 ```
 
-### lurek.automation.isRunning
+#### lurek.automation.isRunning
 
 #### Definition
 
@@ -621,7 +553,7 @@ do
 end
 ```
 
-### lurek.automation.listMacros
+#### lurek.automation.listMacros
 
 #### Definition
 
@@ -648,7 +580,7 @@ do
 end
 ```
 
-### lurek.automation.load
+#### lurek.automation.load
 
 #### Definition
 
@@ -680,7 +612,7 @@ do
 end
 ```
 
-### lurek.automation.loadFromToml
+#### lurek.automation.loadFromToml
 
 #### Definition
 
@@ -712,7 +644,7 @@ do
 end
 ```
 
-### lurek.automation.pause
+#### lurek.automation.pause
 
 #### Definition
 
@@ -736,7 +668,7 @@ do
 end
 ```
 
-### lurek.automation.playMacro
+#### lurek.automation.playMacro
 
 #### Definition
 
@@ -765,7 +697,7 @@ do
 end
 ```
 
-### lurek.automation.resume
+#### lurek.automation.resume
 
 #### Definition
 
@@ -789,7 +721,7 @@ do
 end
 ```
 
-### lurek.automation.saveMacro
+#### lurek.automation.saveMacro
 
 #### Definition
 
@@ -820,7 +752,7 @@ do
 end
 ```
 
-### lurek.automation.setCondition
+#### lurek.automation.setCondition
 
 #### Definition
 
@@ -851,7 +783,7 @@ do
 end
 ```
 
-### lurek.automation.setHighlightMode
+#### lurek.automation.setHighlightMode
 
 #### Definition
 
@@ -880,7 +812,7 @@ do
 end
 ```
 
-### lurek.automation.setPlaybackSpeed
+#### lurek.automation.setPlaybackSpeed
 
 #### Definition
 
@@ -909,7 +841,7 @@ do
 end
 ```
 
-### lurek.automation.setStepLimit
+#### lurek.automation.setStepLimit
 
 #### Definition
 
@@ -943,7 +875,7 @@ do
 end
 ```
 
-### lurek.automation.start
+#### lurek.automation.start
 
 #### Definition
 
@@ -974,7 +906,7 @@ do
 end
 ```
 
-### lurek.automation.stop
+#### lurek.automation.stop
 
 #### Definition
 
@@ -998,7 +930,7 @@ do
 end
 ```
 
-### lurek.automation.unload
+#### lurek.automation.unload
 
 #### Definition
 
@@ -1032,7 +964,7 @@ do
 end
 ```
 
-### lurek.automation.update
+#### lurek.automation.update
 
 #### Definition
 
@@ -1061,7 +993,7 @@ do
 end
 ```
 
-### lurek.automation.waitUntil
+#### lurek.automation.waitUntil
 
 #### Definition
 

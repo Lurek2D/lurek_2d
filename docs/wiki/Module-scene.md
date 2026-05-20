@@ -10,194 +10,21 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [depth_sorter.rs](#depthsorterrs)
+  - [easing.rs](#easingrs)
+  - [mod.rs](#modrs)
+  - [render.rs](#renderrs)
+  - [stack.rs](#stackrs)
+  - [transition.rs](#transitionrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.scene.clear](#lureksceneclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.clearQueuedTransitions](#lureksceneclearqueuedtransitions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.define](#lurekscenedefine)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.depth](#lurekscenedepth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.deserializeScene](#lurekscenedeserializescene)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.draw](#lurekscenedraw)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.transitions.fade](#lurekscenetransitionsfade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getActiveScenes](#lurekscenegetactivescenes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getCurrent](#lurekscenegetcurrent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getCurrentLayer](#lurekscenegetcurrentlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getData](#lurekscenegetdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getQueuedTransitionCount](#lurekscenegetqueuedtransitioncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getRegistered](#lurekscenegetregistered)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getRegisteredNames](#lurekscenegetregisterednames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getStackSize](#lurekscenegetstacksize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getTransitionProgress](#lurekscenegettransitionprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getTransitionProgressEased](#lurekscenegettransitionprogresseased)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.getTransitionTypes](#lurekscenegettransitiontypes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.hasData](#lurekscenehasdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.hasRegistered](#lurekscenehasregistered)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.transitions.iris](#lurekscenetransitionsiris)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.isEmpty](#lureksceneisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.isOverlay](#lureksceneisoverlay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.isPreloaded](#lureksceneispreloaded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.isTransitioning](#lureksceneistransitioning)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.new](#lurekscenenew)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.newDepthSorter](#lurekscenenewdepthsorter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.newScene](#lurekscenenewscene)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.pop](#lurekscenepop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.popTo](#lurekscenepopto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.preload](#lurekscenepreload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.process](#lureksceneprocess)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.processLate](#lureksceneprocesslate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.processPhysics](#lureksceneprocessphysics)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.push](#lurekscenepush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.pushOverlay](#lurekscenepushoverlay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.pushPreloaded](#lurekscenepushpreloaded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.queueTransition](#lurekscenequeuetransition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.registerScene](#lureksceneregisterscene)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.removeData](#lureksceneremovedata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.render](#lurekscenerender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.renderUi](#lurekscenerenderui)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.serializeScene](#lureksceneserializescene)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.setCurrentLayer](#lurekscenesetcurrentlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.setData](#lurekscenesetdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.transitions.slide](#lurekscenetransitionsslide)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.switchTo](#lureksceneswitchto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.unregisterScene](#lureksceneunregisterscene)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.update](#lureksceneupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.scene.transitions.wipe](#lurekscenetransitionswipe)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LDepthSorter](#ldepthsorter)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LDepthSorter:add](#ldepthsorteradd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:addObject](#ldepthsorteraddobject)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:clear](#ldepthsorterclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:flush](#ldepthsorterflush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:getCount](#ldepthsortergetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:isStable](#ldepthsorterisstable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:setStable](#ldepthsortersetstable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:sort](#ldepthsortersort)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:type](#ldepthsortertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDepthSorter:typeOf](#ldepthsortertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LDepthSorter Methods](#ldepthsorter-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -221,6 +48,50 @@ Scene stack with push/pop transitions, depth-sorted draw ordering, layered rende
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `depth_sorter.rs`
+
+- Adaptive depth sorting for scene draw calls with four strategy tiers.
+- Selects unstable, stable, 8-bit radix, or rayon parallel sort by entry count and depth shape.
+- Radix path requires integral depths and ≥256 entries; parallel kicks in at 10k entries.
+- Each entry carries depth, callback index, and object-kind flag for draw dispatch.
+
+### `easing.rs`
+
+- Easing curve helpers for scene transitions and tween interpolation.
+- Provides bounce-out and related mathematical curves.
+
+### `mod.rs`
+
+- Scene stack with push/pop lifecycle and unique SceneId handles.
+- Depth-sorted entity ordering for layered draw calls.
+- Transition effects (fade, slide, wipe) with configurable easing curves.
+
+### `render.rs`
+
+- Render-command generation from the active scene in the stack.
+- Off-screen scene capture into ImageData for snapshots and thumbnails.
+- Stub implementations returning empty output when no scene is active.
+
+### `stack.rs`
+
+- Stack-based scene manager: push, pop, switch, and clear with optional transitions.
+- Overlay support: scenes marked as overlays render above all normal scenes.
+- Transition queuing: enqueues fade/slide/wipe transitions and drains them sequentially.
+- Layer ordering: per-scene draw priority for front-to-back render sorting.
+- Named registry: associate string names with SceneIds for lookup and navigation.
+- Per-scene data slots: store and retrieve SceneId-encoded values by string key.
+
+### `transition.rs`
+
+- Scene transition visual effects for smooth scene switching (fade, slide, wipe, iris, zoom, crossfade).
+- Easing curves with evaluation: linear, quadratic, cubic, bounce, and back overshoot.
+- Active transition state tracking elapsed time and computing eased progress.
+- Lua string parsing for transition type and easing selection from game scripts.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LDepthSorter` (10 methods) - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
@@ -230,34 +101,18 @@ Scene stack with push/pop transitions, depth-sorted draw ordering, layered rende
 ## 📖 API Overview
 
 - Source spec: [docs/specs/scene.md](../blob/main/docs/specs/scene.md)
+- Module-level functions: 50
+- Lua-visible types: 1
+- Total type methods: 10
 
-```lua
-lurek.scene.clear() -- Remove all scenes from the stack. Each removed scene receives its `leave()` callback in stack order. After...
-lurek.scene.clearQueuedTransitions() -- Discard all queued transitions without affecting the currently-playing transition (if any). Use this to can...
-lurek.scene.define([def]: table) -> function -- Create a reusable scene constructor function from a prototype table. Each call to the returned factory prod...
-lurek.scene.depth() -> number -- Alias for `getStackSize`. Returns the total number of scenes currently on the stack.
-lurek.scene.deserializeScene(snapshot: table) -- Restore shared scene data from a previously-serialized snapshot table. Only the `data` key-value map is res...
-lurek.scene.draw() -- Call `draw(self)` on every scene in the stack from bottom to top. This is the legacy draw callback — prefer...
-lurek.scene.transitions.fade([duration]: number) -> table -- Helper sub-table `lurek.scene.transitions` with convenience factory functions that build transition descrip...
-lurek.scene.getActiveScenes() -> table -- Returns a Lua array of all active scene tables ordered by their layer value (lowest layer first). Includes...
-lurek.scene.getCurrent() -> table|nil -- Returns the scene table currently on top of the stack, or nil if the stack is empty. Use this to inspect or...
-lurek.scene.getCurrentLayer() -> number -- Get the rendering layer of the current top scene. Returns 0 if the stack is empty or if no layer was explic...
-lurek.scene.getData(key: string) -> LuaValue -- Retrieve a value from the shared data map by key, or nil if the key has not been set. Commonly used in a sc...
-lurek.scene.getQueuedTransitionCount() -> number -- Returns the number of transitions waiting in the queue behind the currently-playing transition.
-lurek.scene.getRegistered(name: string) -> table|nil -- Retrieve a previously registered scene table by its name, or nil if no scene is registered under that name....
-lurek.scene.getRegisteredNames() -> string[] -- Returns an array of all currently registered scene name strings. Useful for debugging or building dynamic s...
-lurek.scene.getStackSize() -> number -- Returns the total number of scenes currently on the stack, including overlays. Useful for asserting expecte...
-lurek.scene.getTransitionProgress() -> number -- Returns the raw linear progress (0.0 to 1.0) of the current transition animation, ignoring easing. Returns...
-lurek.scene.getTransitionProgressEased() -> number -- Returns the eased progress (0.0 to 1.0) of the current transition, with the selected easing curve applied....
-lurek.scene.getTransitionTypes() -> string[] -- Returns a Lua array of all supported transition type name strings. Use this to discover available transitio...
--- ... 32 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.scene.clear
+### Module-Level Functions
+
+#### lurek.scene.clear
 
 #### Definition
 
@@ -282,7 +137,7 @@ do
 end
 ```
 
-### lurek.scene.clearQueuedTransitions
+#### lurek.scene.clearQueuedTransitions
 
 #### Definition
 
@@ -309,7 +164,7 @@ do
 end
 ```
 
-### lurek.scene.define
+#### lurek.scene.define
 
 #### Definition
 
@@ -343,7 +198,7 @@ do
 end
 ```
 
-### lurek.scene.depth
+#### lurek.scene.depth
 
 #### Definition
 
@@ -372,7 +227,7 @@ do
 end
 ```
 
-### lurek.scene.deserializeScene
+#### lurek.scene.deserializeScene
 
 #### Definition
 
@@ -404,7 +259,7 @@ do
 end
 ```
 
-### lurek.scene.draw
+#### lurek.scene.draw
 
 #### Definition
 
@@ -431,7 +286,7 @@ do
 end
 ```
 
-### lurek.scene.transitions.fade
+#### lurek.scene.transitions.fade
 
 #### Definition
 
@@ -463,7 +318,7 @@ do
 end
 ```
 
-### lurek.scene.getActiveScenes
+#### lurek.scene.getActiveScenes
 
 #### Definition
 
@@ -493,7 +348,7 @@ do
 end
 ```
 
-### lurek.scene.getCurrent
+#### lurek.scene.getCurrent
 
 #### Definition
 
@@ -522,7 +377,7 @@ do
 end
 ```
 
-### lurek.scene.getCurrentLayer
+#### lurek.scene.getCurrentLayer
 
 #### Definition
 
@@ -550,7 +405,7 @@ do
 end
 ```
 
-### lurek.scene.getData
+#### lurek.scene.getData
 
 #### Definition
 
@@ -583,7 +438,7 @@ do
 end
 ```
 
-### lurek.scene.getQueuedTransitionCount
+#### lurek.scene.getQueuedTransitionCount
 
 #### Definition
 
@@ -611,7 +466,7 @@ do
 end
 ```
 
-### lurek.scene.getRegistered
+#### lurek.scene.getRegistered
 
 #### Definition
 
@@ -645,7 +500,7 @@ do
 end
 ```
 
-### lurek.scene.getRegisteredNames
+#### lurek.scene.getRegisteredNames
 
 #### Definition
 
@@ -674,7 +529,7 @@ do
 end
 ```
 
-### lurek.scene.getStackSize
+#### lurek.scene.getStackSize
 
 #### Definition
 
@@ -702,7 +557,7 @@ do
 end
 ```
 
-### lurek.scene.getTransitionProgress
+#### lurek.scene.getTransitionProgress
 
 #### Definition
 
@@ -730,7 +585,7 @@ do
 end
 ```
 
-### lurek.scene.getTransitionProgressEased
+#### lurek.scene.getTransitionProgressEased
 
 #### Definition
 
@@ -758,7 +613,7 @@ do
 end
 ```
 
-### lurek.scene.getTransitionTypes
+#### lurek.scene.getTransitionTypes
 
 #### Definition
 
@@ -786,7 +641,7 @@ do
 end
 ```
 
-### lurek.scene.hasData
+#### lurek.scene.hasData
 
 #### Definition
 
@@ -819,7 +674,7 @@ do
 end
 ```
 
-### lurek.scene.hasRegistered
+#### lurek.scene.hasRegistered
 
 #### Definition
 
@@ -852,7 +707,7 @@ do
 end
 ```
 
-### lurek.scene.transitions.iris
+#### lurek.scene.transitions.iris
 
 #### Definition
 
@@ -884,7 +739,7 @@ do
 end
 ```
 
-### lurek.scene.isEmpty
+#### lurek.scene.isEmpty
 
 #### Definition
 
@@ -913,7 +768,7 @@ do
 end
 ```
 
-### lurek.scene.isOverlay
+#### lurek.scene.isOverlay
 
 #### Definition
 
@@ -941,7 +796,7 @@ do
 end
 ```
 
-### lurek.scene.isPreloaded
+#### lurek.scene.isPreloaded
 
 #### Definition
 
@@ -974,7 +829,7 @@ do
 end
 ```
 
-### lurek.scene.isTransitioning
+#### lurek.scene.isTransitioning
 
 #### Definition
 
@@ -1002,7 +857,7 @@ do
 end
 ```
 
-### lurek.scene.new
+#### lurek.scene.new
 
 #### Definition
 
@@ -1034,7 +889,7 @@ do
 end
 ```
 
-### lurek.scene.newDepthSorter
+#### lurek.scene.newDepthSorter
 
 #### Definition
 
@@ -1064,7 +919,7 @@ do
 end
 ```
 
-### lurek.scene.newScene
+#### lurek.scene.newScene
 
 #### Definition
 
@@ -1099,7 +954,7 @@ do
 end
 ```
 
-### lurek.scene.pop
+#### lurek.scene.pop
 
 #### Definition
 
@@ -1135,7 +990,7 @@ do
 end
 ```
 
-### lurek.scene.popTo
+#### lurek.scene.popTo
 
 #### Definition
 
@@ -1170,7 +1025,7 @@ do
 end
 ```
 
-### lurek.scene.preload
+#### lurek.scene.preload
 
 #### Definition
 
@@ -1204,7 +1059,7 @@ do
 end
 ```
 
-### lurek.scene.process
+#### lurek.scene.process
 
 #### Definition
 
@@ -1236,7 +1091,7 @@ do
 end
 ```
 
-### lurek.scene.processLate
+#### lurek.scene.processLate
 
 #### Definition
 
@@ -1268,7 +1123,7 @@ do
 end
 ```
 
-### lurek.scene.processPhysics
+#### lurek.scene.processPhysics
 
 #### Definition
 
@@ -1300,7 +1155,7 @@ do
 end
 ```
 
-### lurek.scene.push
+#### lurek.scene.push
 
 #### Definition
 
@@ -1339,7 +1194,7 @@ do
 end
 ```
 
-### lurek.scene.pushOverlay
+#### lurek.scene.pushOverlay
 
 #### Definition
 
@@ -1379,7 +1234,7 @@ do
 end
 ```
 
-### lurek.scene.pushPreloaded
+#### lurek.scene.pushPreloaded
 
 #### Definition
 
@@ -1419,7 +1274,7 @@ do
 end
 ```
 
-### lurek.scene.queueTransition
+#### lurek.scene.queueTransition
 
 #### Definition
 
@@ -1454,7 +1309,7 @@ do
 end
 ```
 
-### lurek.scene.registerScene
+#### lurek.scene.registerScene
 
 #### Definition
 
@@ -1486,7 +1341,7 @@ do
 end
 ```
 
-### lurek.scene.removeData
+#### lurek.scene.removeData
 
 #### Definition
 
@@ -1518,7 +1373,7 @@ do
 end
 ```
 
-### lurek.scene.render
+#### lurek.scene.render
 
 #### Definition
 
@@ -1545,7 +1400,7 @@ do
 end
 ```
 
-### lurek.scene.renderUi
+#### lurek.scene.renderUi
 
 #### Definition
 
@@ -1572,7 +1427,7 @@ do
 end
 ```
 
-### lurek.scene.serializeScene
+#### lurek.scene.serializeScene
 
 #### Definition
 
@@ -1602,7 +1457,7 @@ do
 end
 ```
 
-### lurek.scene.setCurrentLayer
+#### lurek.scene.setCurrentLayer
 
 #### Definition
 
@@ -1637,7 +1492,7 @@ do
 end
 ```
 
-### lurek.scene.setData
+#### lurek.scene.setData
 
 #### Definition
 
@@ -1669,7 +1524,7 @@ do
 end
 ```
 
-### lurek.scene.transitions.slide
+#### lurek.scene.transitions.slide
 
 #### Definition
 
@@ -1703,7 +1558,7 @@ do
 end
 ```
 
-### lurek.scene.switchTo
+#### lurek.scene.switchTo
 
 #### Definition
 
@@ -1743,7 +1598,7 @@ do
 end
 ```
 
-### lurek.scene.unregisterScene
+#### lurek.scene.unregisterScene
 
 #### Definition
 
@@ -1773,7 +1628,7 @@ do
 end
 ```
 
-### lurek.scene.update
+#### lurek.scene.update
 
 #### Definition
 
@@ -1805,7 +1660,7 @@ do
 end
 ```
 
-### lurek.scene.transitions.wipe
+#### lurek.scene.transitions.wipe
 
 #### Definition
 
@@ -1875,7 +1730,9 @@ end
 
 ## 🔹 Module Methods
 
-### LDepthSorter:add
+### LDepthSorter Methods
+
+#### LDepthSorter:add
 
 #### Definition
 
@@ -1908,7 +1765,7 @@ do
 end
 ```
 
-### LDepthSorter:addObject
+#### LDepthSorter:addObject
 
 #### Definition
 
@@ -1940,7 +1797,7 @@ do
 end
 ```
 
-### LDepthSorter:clear
+#### LDepthSorter:clear
 
 #### Definition
 
@@ -1967,7 +1824,7 @@ do
 end
 ```
 
-### LDepthSorter:flush
+#### LDepthSorter:flush
 
 #### Definition
 
@@ -1993,7 +1850,7 @@ do
 end
 ```
 
-### LDepthSorter:getCount
+#### LDepthSorter:getCount
 
 #### Definition
 
@@ -2022,7 +1879,7 @@ do
 end
 ```
 
-### LDepthSorter:isStable
+#### LDepthSorter:isStable
 
 #### Definition
 
@@ -2052,7 +1909,7 @@ do
 end
 ```
 
-### LDepthSorter:setStable
+#### LDepthSorter:setStable
 
 #### Definition
 
@@ -2084,7 +1941,7 @@ do
 end
 ```
 
-### LDepthSorter:sort
+#### LDepthSorter:sort
 
 #### Definition
 
@@ -2111,7 +1968,7 @@ do
 end
 ```
 
-### LDepthSorter:type
+#### LDepthSorter:type
 
 #### Definition
 
@@ -2141,7 +1998,7 @@ do
 end
 ```
 
-### LDepthSorter:typeOf
+#### LDepthSorter:typeOf
 
 #### Definition
 

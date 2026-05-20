@@ -10,281 +10,25 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [effects.rs](#effectsrs)
+  - [mod.rs](#modrs)
+  - [multi.rs](#multirs)
+  - [path.rs](#pathrs)
+  - [render.rs](#renderrs)
+  - [types.rs](#typesrs)
+  - [viewport.rs](#viewportrs)
+  - [viewport_scale.rs](#viewportscalers)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.camera.new](#lurekcameranew)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.camera.newCamera](#lurekcameranewcamera)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.camera.newRig](#lurekcameranewrig)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LCamera](#lcamera)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCameraRig](#lcamerarig)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LCamera:apply](#lcameraapply)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:attach](#lcameraattach)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:clearParallaxFactors](#lcameraclearparallaxfactors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:clearTarget](#lcameracleartarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:detach](#lcameradetach)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:followPath](#lcamerafollowpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getBounds](#lcameragetbounds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getDeadZone](#lcameragetdeadzone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getEffectiveZoom](#lcamerageteffectivezoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getEffectOffset](#lcamerageteffectoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getFollowEasing](#lcameragetfolloweasing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getFollowSmooth](#lcameragetfollowsmooth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getLookAhead](#lcameragetlookahead)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getParallaxFactor](#lcameragetparallaxfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getPosition](#lcameragetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getRenderOffset](#lcameragetrenderoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getRotation](#lcameragetrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getRotationConstraints](#lcameragetrotationconstraints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getRotationDamping](#lcameragetrotationdamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getShakeOffset](#lcameragetshakeoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getTarget](#lcameragettarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getViewport](#lcameragetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getVisibleArea](#lcameragetvisiblearea)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getZoom](#lcameragetzoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getZoomConstraints](#lcameragetzoomconstraints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:getZoomDamping](#lcameragetzoomdamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:hasBounds](#lcamerahasbounds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:isBreathing](#lcameraisbreathing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:isSway](#lcameraissway)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:lookAt](#lcameralookat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:move](#lcameramove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:onWindowResize](#lcameraonwindowresize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:onWindowResizeScaled](#lcameraonwindowresizescaled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:pathProgress](#lcamerapathprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:presetAggressiveFollow](#lcamerapresetaggressivefollow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:presetBalancedFollow](#lcamerapresetbalancedfollow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:presetCinematicFollow](#lcamerapresetcinematicfollow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:presetTightFollow](#lcamerapresettightfollow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:removeBounds](#lcameraremovebounds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:reset](#lcamerareset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setBounds](#lcamerasetbounds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setDeadZone](#lcamerasetdeadzone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setFollowEasing](#lcamerasetfolloweasing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setFollowSmooth](#lcamerasetfollowsmooth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setLookAhead](#lcamerasetlookahead)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setParallaxFactor](#lcamerasetparallaxfactor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setPosition](#lcamerasetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setRotation](#lcamerasetrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setRotationConstraints](#lcamerasetrotationconstraints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setRotationDamping](#lcamerasetrotationdamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setTarget](#lcamerasettarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setViewport](#lcamerasetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setZoom](#lcamerasetzoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setZoomConstraints](#lcamerasetzoomconstraints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:setZoomDamping](#lcamerasetzoomdamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:shake](#lcamerashake)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:startBreathing](#lcamerastartbreathing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:startSway](#lcamerastartsway)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:stopBreathing](#lcamerastopbreathing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:stopPath](#lcamerastoppath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:stopSway](#lcamerastopsway)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:stopZoom](#lcamerastopzoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:toScreen](#lcameratoscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:toWorld](#lcameratoworld)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:type](#lcameratype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:typeOf](#lcameratypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:update](#lcameraupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:updatePath](#lcameraupdatepath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:updateZoom](#lcameraupdatezoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:zoomPulse](#lcamerazoompulse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCamera:zoomTo](#lcamerazoomto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:apply](#lcamerarigapply)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:getViewport](#lcamerariggetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:has](#lcamerarighas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:minimap](#lcamerarigminimap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:names](#lcamerarignames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:pictureInPicture](#lcamerarigpictureinpicture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:remove](#lcamerarigremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:setPosition](#lcamerarigsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:setTarget](#lcamerarigsettarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:setZoom](#lcamerarigsetzoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:splitScreen](#lcamerarigsplitscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:type](#lcamerarigtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:typeOf](#lcamerarigtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCameraRig:updateAll](#lcamerarigupdateall)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LCamera Methods](#lcamera-methods)
+  - [LCameraRig Methods](#lcamerarig-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -308,6 +52,69 @@ Camera effects include shake (decaying sinusoidal displacement), sway (continuou
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `effects.rs`
+
+- Camera effect primitives for transient motion overlays on top of base camera state.
+- ZoomPulse provides a one-shot sinusoidal zoom spike triggered by game events.
+- CameraSway adds oscillating positional offset with configurable frequency and decay.
+- CameraBreathing delivers subtle periodic zoom modulation for idle camera presence.
+- Each effect is composable: the parent camera sums their outputs each frame.
+
+### `mod.rs`
+
+- Camera subsystem module root: effects, multi-view, path, render, types, and viewport.
+- Re-exports all primary types for ergonomic access from engine code.
+- Submodules own distinct concerns: transform state, viewport scaling, render commands.
+
+### `multi.rs`
+
+- Multi-camera rig that stores and manages named Camera2D instances.
+- Provides preset viewport layouts: split-screen, minimap, and picture-in-picture.
+- Supports bulk update and deterministic iteration for multi-view rendering passes.
+
+### `path.rs`
+
+- Waypoint-based camera path interpolation for scripted camera movement.
+- CameraZoomTween provides eased transitions between zoom levels over time.
+- CameraTweenEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
+- CameraPath segments multi-point paths with linear interpolation and progress tracking.
+- ZoomTween is a type alias preserving backwards compatibility.
+
+### `render.rs`
+
+- Render command generation from camera transform state.
+- Builds PushTransform/Translate/Rotate/Scale/PopTransform sequences for Camera and Camera2D.
+- Separates begin/end phases so callers can sandwich scene commands between transforms.
+
+### `types.rs`
+
+- Core camera state containers: Camera (minimal) and Camera2D (full runtime).
+- Camera2D drives follow-target tracking with dead-zone, smoothing, and look-ahead.
+- Integrates shake, zoom pulse, sway, and breathing effects into effective transforms.
+- Viewport, bounds, and coordinate conversion for world/screen mapping.
+- Zoom and rotation damping with configurable constraint ranges.
+- Easing selection for follow interpolation: linear, smooth-step, ease-out-cubic.
+- View matrix generation composing position, rotation, zoom, and all active effects.
+- Presets for common follow behaviors: tight, cinematic, balanced, aggressive.
+
+### `viewport.rs`
+
+- Viewport scaling strategies for mapping a fixed game surface into variable window sizes.
+- ScaleMode selects Letterbox (aspect-preserving), Stretch, or PixelPerfect scaling.
+- Viewport struct holds computed scale factors and offsets after each window resize.
+- Bidirectional coordinate conversion between screen pixels and game-space units.
+- Recomputes transforms on resize without allocating new state.
+
+### `viewport_scale.rs`
+
+- Viewport scale state object used by the engine resize flow.
+- Stores computed scale, offset, and scaled dimensions after each resize.
+- Provides bidirectional game/screen coordinate conversion helpers.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LCamera` (71 methods) - Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
@@ -318,18 +125,18 @@ Camera effects include shake (decaying sinusoidal displacement), sway (continuou
 ## 📖 API Overview
 
 - Source spec: [docs/specs/camera.md](../blob/main/docs/specs/camera.md)
+- Module-level functions: 3
+- Lua-visible types: 2
+- Total type methods: 85
 
-```lua
-lurek.camera.new([vw]: number, [vh]: number) -> LCamera -- Creates a 2D camera with optional virtual viewport size.
-lurek.camera.newCamera([vw]: number, [vh]: number) -> LCamera -- Creates a 2D camera with optional virtual viewport size.
-lurek.camera.newRig() -> LCameraRig -- Creates an empty named camera rig. This function is exposed to Lua scripts.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.camera.new
+### Module-Level Functions
+
+#### lurek.camera.new
 
 #### Definition
 
@@ -363,7 +170,7 @@ do
 end
 ```
 
-### lurek.camera.newCamera
+#### lurek.camera.newCamera
 
 #### Definition
 
@@ -397,7 +204,7 @@ do
 end
 ```
 
-### lurek.camera.newRig
+#### lurek.camera.newRig
 
 #### Definition
 
@@ -484,7 +291,9 @@ end
 
 ## 🔹 Module Methods
 
-### LCamera:apply
+### LCamera Methods
+
+#### LCamera:apply
 
 #### Definition
 
@@ -510,7 +319,7 @@ do
 end
 ```
 
-### LCamera:attach
+#### LCamera:attach
 
 #### Definition
 
@@ -535,7 +344,7 @@ do
 end
 ```
 
-### LCamera:clearParallaxFactors
+#### LCamera:clearParallaxFactors
 
 #### Definition
 
@@ -561,7 +370,7 @@ do
 end
 ```
 
-### LCamera:clearTarget
+#### LCamera:clearTarget
 
 #### Definition
 
@@ -587,7 +396,7 @@ do
 end
 ```
 
-### LCamera:detach
+#### LCamera:detach
 
 #### Definition
 
@@ -613,7 +422,7 @@ do
 end
 ```
 
-### LCamera:followPath
+#### LCamera:followPath
 
 #### Definition
 
@@ -646,7 +455,7 @@ do
 end
 ```
 
-### LCamera:getBounds
+#### LCamera:getBounds
 
 #### Definition
 
@@ -679,7 +488,7 @@ do
 end
 ```
 
-### LCamera:getDeadZone
+#### LCamera:getDeadZone
 
 #### Definition
 
@@ -710,7 +519,7 @@ do
 end
 ```
 
-### LCamera:getEffectiveZoom
+#### LCamera:getEffectiveZoom
 
 #### Definition
 
@@ -739,7 +548,7 @@ do
 end
 ```
 
-### LCamera:getEffectOffset
+#### LCamera:getEffectOffset
 
 #### Definition
 
@@ -768,7 +577,7 @@ do
 end
 ```
 
-### LCamera:getFollowEasing
+#### LCamera:getFollowEasing
 
 #### Definition
 
@@ -797,7 +606,7 @@ do
 end
 ```
 
-### LCamera:getFollowSmooth
+#### LCamera:getFollowSmooth
 
 #### Definition
 
@@ -826,7 +635,7 @@ do
 end
 ```
 
-### LCamera:getLookAhead
+#### LCamera:getLookAhead
 
 #### Definition
 
@@ -855,7 +664,7 @@ do
 end
 ```
 
-### LCamera:getParallaxFactor
+#### LCamera:getParallaxFactor
 
 #### Definition
 
@@ -889,7 +698,7 @@ do
 end
 ```
 
-### LCamera:getPosition
+#### LCamera:getPosition
 
 #### Definition
 
@@ -919,7 +728,7 @@ do
 end
 ```
 
-### LCamera:getRenderOffset
+#### LCamera:getRenderOffset
 
 #### Definition
 
@@ -948,7 +757,7 @@ do
 end
 ```
 
-### LCamera:getRotation
+#### LCamera:getRotation
 
 #### Definition
 
@@ -977,7 +786,7 @@ do
 end
 ```
 
-### LCamera:getRotationConstraints
+#### LCamera:getRotationConstraints
 
 #### Definition
 
@@ -1009,7 +818,7 @@ do
 end
 ```
 
-### LCamera:getRotationDamping
+#### LCamera:getRotationDamping
 
 #### Definition
 
@@ -1038,7 +847,7 @@ do
 end
 ```
 
-### LCamera:getShakeOffset
+#### LCamera:getShakeOffset
 
 #### Definition
 
@@ -1069,7 +878,7 @@ do
 end
 ```
 
-### LCamera:getTarget
+#### LCamera:getTarget
 
 #### Definition
 
@@ -1100,7 +909,7 @@ do
 end
 ```
 
-### LCamera:getViewport
+#### LCamera:getViewport
 
 #### Definition
 
@@ -1132,7 +941,7 @@ do
 end
 ```
 
-### LCamera:getVisibleArea
+#### LCamera:getVisibleArea
 
 #### Definition
 
@@ -1164,7 +973,7 @@ do
 end
 ```
 
-### LCamera:getZoom
+#### LCamera:getZoom
 
 #### Definition
 
@@ -1193,7 +1002,7 @@ do
 end
 ```
 
-### LCamera:getZoomConstraints
+#### LCamera:getZoomConstraints
 
 #### Definition
 
@@ -1225,7 +1034,7 @@ do
 end
 ```
 
-### LCamera:getZoomDamping
+#### LCamera:getZoomDamping
 
 #### Definition
 
@@ -1254,7 +1063,7 @@ do
 end
 ```
 
-### LCamera:hasBounds
+#### LCamera:hasBounds
 
 #### Definition
 
@@ -1282,7 +1091,7 @@ do
 end
 ```
 
-### LCamera:isBreathing
+#### LCamera:isBreathing
 
 #### Definition
 
@@ -1310,7 +1119,7 @@ do
 end
 ```
 
-### LCamera:isSway
+#### LCamera:isSway
 
 #### Definition
 
@@ -1338,7 +1147,7 @@ do
 end
 ```
 
-### LCamera:lookAt
+#### LCamera:lookAt
 
 #### Definition
 
@@ -1371,7 +1180,7 @@ do
 end
 ```
 
-### LCamera:move
+#### LCamera:move
 
 #### Definition
 
@@ -1405,7 +1214,7 @@ do
 end
 ```
 
-### LCamera:onWindowResize
+#### LCamera:onWindowResize
 
 #### Definition
 
@@ -1437,7 +1246,7 @@ do
 end
 ```
 
-### LCamera:onWindowResizeScaled
+#### LCamera:onWindowResizeScaled
 
 #### Definition
 
@@ -1475,7 +1284,7 @@ do
 end
 ```
 
-### LCamera:pathProgress
+#### LCamera:pathProgress
 
 #### Definition
 
@@ -1505,7 +1314,7 @@ do
 end
 ```
 
-### LCamera:presetAggressiveFollow
+#### LCamera:presetAggressiveFollow
 
 #### Definition
 
@@ -1530,7 +1339,7 @@ do
 end
 ```
 
-### LCamera:presetBalancedFollow
+#### LCamera:presetBalancedFollow
 
 #### Definition
 
@@ -1555,7 +1364,7 @@ do
 end
 ```
 
-### LCamera:presetCinematicFollow
+#### LCamera:presetCinematicFollow
 
 #### Definition
 
@@ -1580,7 +1389,7 @@ do
 end
 ```
 
-### LCamera:presetTightFollow
+#### LCamera:presetTightFollow
 
 #### Definition
 
@@ -1605,7 +1414,7 @@ do
 end
 ```
 
-### LCamera:removeBounds
+#### LCamera:removeBounds
 
 #### Definition
 
@@ -1631,7 +1440,7 @@ do
 end
 ```
 
-### LCamera:reset
+#### LCamera:reset
 
 #### Definition
 
@@ -1658,7 +1467,7 @@ do
 end
 ```
 
-### LCamera:setBounds
+#### LCamera:setBounds
 
 #### Definition
 
@@ -1694,7 +1503,7 @@ do
 end
 ```
 
-### LCamera:setDeadZone
+#### LCamera:setDeadZone
 
 #### Definition
 
@@ -1726,7 +1535,7 @@ do
 end
 ```
 
-### LCamera:setFollowEasing
+#### LCamera:setFollowEasing
 
 #### Definition
 
@@ -1756,7 +1565,7 @@ do
 end
 ```
 
-### LCamera:setFollowSmooth
+#### LCamera:setFollowSmooth
 
 #### Definition
 
@@ -1786,7 +1595,7 @@ do
 end
 ```
 
-### LCamera:setLookAhead
+#### LCamera:setLookAhead
 
 #### Definition
 
@@ -1816,7 +1625,7 @@ do
 end
 ```
 
-### LCamera:setParallaxFactor
+#### LCamera:setParallaxFactor
 
 #### Definition
 
@@ -1848,7 +1657,7 @@ do
 end
 ```
 
-### LCamera:setPosition
+#### LCamera:setPosition
 
 #### Definition
 
@@ -1881,7 +1690,7 @@ do
 end
 ```
 
-### LCamera:setRotation
+#### LCamera:setRotation
 
 #### Definition
 
@@ -1911,7 +1720,7 @@ do
 end
 ```
 
-### LCamera:setRotationConstraints
+#### LCamera:setRotationConstraints
 
 #### Definition
 
@@ -1943,7 +1752,7 @@ do
 end
 ```
 
-### LCamera:setRotationDamping
+#### LCamera:setRotationDamping
 
 #### Definition
 
@@ -1973,7 +1782,7 @@ do
 end
 ```
 
-### LCamera:setTarget
+#### LCamera:setTarget
 
 #### Definition
 
@@ -2006,7 +1815,7 @@ do
 end
 ```
 
-### LCamera:setViewport
+#### LCamera:setViewport
 
 #### Definition
 
@@ -2042,7 +1851,7 @@ do
 end
 ```
 
-### LCamera:setZoom
+#### LCamera:setZoom
 
 #### Definition
 
@@ -2072,7 +1881,7 @@ do
 end
 ```
 
-### LCamera:setZoomConstraints
+#### LCamera:setZoomConstraints
 
 #### Definition
 
@@ -2104,7 +1913,7 @@ do
 end
 ```
 
-### LCamera:setZoomDamping
+#### LCamera:setZoomDamping
 
 #### Definition
 
@@ -2134,7 +1943,7 @@ do
 end
 ```
 
-### LCamera:shake
+#### LCamera:shake
 
 #### Definition
 
@@ -2166,7 +1975,7 @@ do
 end
 ```
 
-### LCamera:startBreathing
+#### LCamera:startBreathing
 
 #### Definition
 
@@ -2198,7 +2007,7 @@ do
 end
 ```
 
-### LCamera:startSway
+#### LCamera:startSway
 
 #### Definition
 
@@ -2234,7 +2043,7 @@ do
 end
 ```
 
-### LCamera:stopBreathing
+#### LCamera:stopBreathing
 
 #### Definition
 
@@ -2260,7 +2069,7 @@ do
 end
 ```
 
-### LCamera:stopPath
+#### LCamera:stopPath
 
 #### Definition
 
@@ -2287,7 +2096,7 @@ do
 end
 ```
 
-### LCamera:stopSway
+#### LCamera:stopSway
 
 #### Definition
 
@@ -2313,7 +2122,7 @@ do
 end
 ```
 
-### LCamera:stopZoom
+#### LCamera:stopZoom
 
 #### Definition
 
@@ -2339,7 +2148,7 @@ do
 end
 ```
 
-### LCamera:toScreen
+#### LCamera:toScreen
 
 #### Definition
 
@@ -2376,7 +2185,7 @@ do
 end
 ```
 
-### LCamera:toWorld
+#### LCamera:toWorld
 
 #### Definition
 
@@ -2413,7 +2222,7 @@ do
 end
 ```
 
-### LCamera:type
+#### LCamera:type
 
 #### Definition
 
@@ -2440,7 +2249,7 @@ do
 end
 ```
 
-### LCamera:typeOf
+#### LCamera:typeOf
 
 #### Definition
 
@@ -2472,7 +2281,7 @@ do
 end
 ```
 
-### LCamera:update
+#### LCamera:update
 
 #### Definition
 
@@ -2504,7 +2313,7 @@ do
 end
 ```
 
-### LCamera:updatePath
+#### LCamera:updatePath
 
 #### Definition
 
@@ -2539,7 +2348,7 @@ do
 end
 ```
 
-### LCamera:updateZoom
+#### LCamera:updateZoom
 
 #### Definition
 
@@ -2573,7 +2382,7 @@ do
 end
 ```
 
-### LCamera:zoomPulse
+#### LCamera:zoomPulse
 
 #### Definition
 
@@ -2605,7 +2414,7 @@ do
 end
 ```
 
-### LCamera:zoomTo
+#### LCamera:zoomTo
 
 #### Definition
 
@@ -2639,7 +2448,9 @@ do
 end
 ```
 
-### LCameraRig:apply
+### LCameraRig Methods
+
+#### LCameraRig:apply
 
 #### Definition
 
@@ -2673,7 +2484,7 @@ do
 end
 ```
 
-### LCameraRig:getViewport
+#### LCameraRig:getViewport
 
 #### Definition
 
@@ -2712,7 +2523,7 @@ do
 end
 ```
 
-### LCameraRig:has
+#### LCameraRig:has
 
 #### Definition
 
@@ -2745,7 +2556,7 @@ do
 end
 ```
 
-### LCameraRig:minimap
+#### LCameraRig:minimap
 
 #### Definition
 
@@ -2780,7 +2591,7 @@ do
 end
 ```
 
-### LCameraRig:names
+#### LCameraRig:names
 
 #### Definition
 
@@ -2809,7 +2620,7 @@ do
 end
 ```
 
-### LCameraRig:pictureInPicture
+#### LCameraRig:pictureInPicture
 
 #### Definition
 
@@ -2846,7 +2657,7 @@ do
 end
 ```
 
-### LCameraRig:remove
+#### LCameraRig:remove
 
 #### Definition
 
@@ -2880,7 +2691,7 @@ do
 end
 ```
 
-### LCameraRig:setPosition
+#### LCameraRig:setPosition
 
 #### Definition
 
@@ -2914,7 +2725,7 @@ do
 end
 ```
 
-### LCameraRig:setTarget
+#### LCameraRig:setTarget
 
 #### Definition
 
@@ -2949,7 +2760,7 @@ do
 end
 ```
 
-### LCameraRig:setZoom
+#### LCameraRig:setZoom
 
 #### Definition
 
@@ -2982,7 +2793,7 @@ do
 end
 ```
 
-### LCameraRig:splitScreen
+#### LCameraRig:splitScreen
 
 #### Definition
 
@@ -3016,7 +2827,7 @@ do
 end
 ```
 
-### LCameraRig:type
+#### LCameraRig:type
 
 #### Definition
 
@@ -3043,7 +2854,7 @@ do
 end
 ```
 
-### LCameraRig:typeOf
+#### LCameraRig:typeOf
 
 #### Definition
 
@@ -3075,7 +2886,7 @@ do
 end
 ```
 
-### LCameraRig:updateAll
+#### LCameraRig:updateAll
 
 #### Definition
 

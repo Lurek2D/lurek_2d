@@ -10,422 +10,35 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [frame.rs](#framers)
+  - [lazy.rs](#lazyrs)
+  - [mod.rs](#modrs)
+  - [query/analytics.rs](#queryanalyticsrs)
+  - [query/filter.rs](#queryfilterrs)
+  - [query/grouping.rs](#querygroupingrs)
+  - [query/mod.rs](#querymodrs)
+  - [query/window.rs](#querywindowrs)
+  - [rng.rs](#rngrs)
+  - [serial.rs](#serialrs)
+  - [sql.rs](#sqlrs)
+  - [vectorized.rs](#vectorizedrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.dataframe.fromBinary](#lurekdataframefrombinary)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.fromCSV](#lurekdataframefromcsv)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.fromJSON](#lurekdataframefromjson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.fromRows](#lurekdataframefromrows)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.fromTable](#lurekdataframefromtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.fromVec](#lurekdataframefromvec)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.newDatabase](#lurekdataframenewdatabase)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.newDataFrame](#lurekdataframenewdataframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.random](#lurekdataframerandom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.dataframe.toVec](#lurekdataframetovec)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LDatabase](#ldatabase)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDataFrame](#ldataframe)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGroupedFrame](#lgroupedframe)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LLazyQuery](#llazyquery)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LVecFrame](#lvecframe)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LDatabase:addTable](#ldatabaseaddtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:clear](#ldatabaseclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:getTable](#ldatabasegettable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:hasTable](#ldatabasehastable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:listTables](#ldatabaselisttables)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:merge](#ldatabasemerge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:query](#ldatabasequery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:removeTable](#ldatabaseremovetable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:tableCount](#ldatabasetablecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:toJSON](#ldatabasetojson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:type](#ldatabasetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDatabase:typeOf](#ldatabasetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:addColumn](#ldataframeaddcolumn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:addRow](#ldataframeaddrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:addRowBatch](#ldataframeaddrowbatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:apply](#ldataframeapply)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:clone](#ldataframeclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:columns](#ldataframecolumns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:corr](#ldataframecorr)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:correlationMatrix](#ldataframecorrelationmatrix)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:count](#ldataframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:countBy](#ldataframecountby)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:describe](#ldataframedescribe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:dropNil](#ldataframedropnil)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:entropy](#ldataframeentropy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:fillNil](#ldataframefillnil)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:filter](#ldataframefilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:getColumn](#ldataframegetcolumn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:getColumnAsF64](#ldataframegetcolumnasf64)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:getRow](#ldataframegetrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:getValue](#ldataframegetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:groupAgg](#ldataframegroupagg)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:groupBy](#ldataframegroupby)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:groupByObj](#ldataframegroupbyobj)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:head](#ldataframehead)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:join](#ldataframejoin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:lazy](#ldataframelazy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:max](#ldataframemax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:mean](#ldataframemean)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:median](#ldataframemedian)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:merge](#ldataframemerge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:min](#ldataframemin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:modeVal](#ldataframemodeval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:ncols](#ldataframencols)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:normalizeCol](#ldataframenormalizecol)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:nrows](#ldataframenrows)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:outliers](#ldataframeoutliers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:pivot](#ldataframepivot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:pivotTable](#ldataframepivottable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:query](#ldataframequery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:rank](#ldataframerank)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:removeColumn](#ldataframeremovecolumn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:removeRow](#ldataframeremoverow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:rename](#ldataframerename)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:rollingMean](#ldataframerollingmean)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:rollingSum](#ldataframerollingsum)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:rows](#ldataframerows)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:sample](#ldataframesample)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:select](#ldataframeselect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:setColumnFromF64](#ldataframesetcolumnfromf64)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:setValue](#ldataframesetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:slice](#ldataframeslice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:sort](#ldataframesort)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:stddev](#ldataframestddev)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:sum](#ldataframesum)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:tail](#ldataframetail)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:toBinary](#ldataframetobinary)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:toCSV](#ldataframetocsv)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:toJSON](#ldataframetojson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:toString](#ldataframetostring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:toTable](#ldataframetotable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:type](#ldataframetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:typeOf](#ldataframetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:unique](#ldataframeunique)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:variance](#ldataframevariance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withCumsum](#ldataframewithcumsum)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withEval](#ldataframewitheval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withPctChange](#ldataframewithpctchange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withRank](#ldataframewithrank)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withRollingMax](#ldataframewithrollingmax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withRollingMean](#ldataframewithrollingmean)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withRollingMin](#ldataframewithrollingmin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:withRollingSum](#ldataframewithrollingsum)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataFrame:zscoreCol](#ldataframezscorecol)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGroupedFrame:aggregate](#lgroupedframeaggregate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGroupedFrame:type](#lgroupedframetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGroupedFrame:typeOf](#lgroupedframetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:collect](#llazyquerycollect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:dropNil](#llazyquerydropnil)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:filter](#llazyqueryfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:head](#llazyqueryhead)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:limit](#llazyquerylimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:select](#llazyqueryselect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:slice](#llazyqueryslice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:sort](#llazyquerysort)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:tail](#llazyquerytail)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:type](#llazyquerytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLazyQuery:typeOf](#llazyquerytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:applyMask](#lvecframeapplymask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colAbs](#lvecframecolabs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colAdd](#lvecframecoladd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colCast](#lvecframecolcast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colCeil](#lvecframecolceil)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colClamp](#lvecframecolclamp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colDiv](#lvecframecoldiv)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colFloor](#lvecframecolfloor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colMul](#lvecframecolmul)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colNeg](#lvecframecolneg)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colOp](#lvecframecolop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colSqrt](#lvecframecolsqrt)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colSub](#lvecframecolsub)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:colType](#lvecframecoltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:columns](#lvecframecolumns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:filterMask](#lvecframefiltermask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:ncols](#lvecframencols)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:nrows](#lvecframenrows)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:parReduce](#lvecframeparreduce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:parScalarOp](#lvecframeparscalarop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:reduce](#lvecframereduce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:toDataFrame](#lvecframetodataframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:type](#lvecframetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVecFrame:typeOf](#lvecframetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LDatabase Methods](#ldatabase-methods)
+  - [LDataFrame Methods](#ldataframe-methods)
+  - [LGroupedFrame Methods](#lgroupedframe-methods)
+  - [LLazyQuery Methods](#llazyquery-methods)
+  - [LVecFrame Methods](#lvecframe-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -449,6 +62,121 @@ In-memory column-major tabular data engine with lightweight SQL-style queries. `
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `frame.rs`
+
+- Core dataframe cell type and typed value representation
+- Columnar storage with named columns and row-major access
+- Column resolution by name or one-based index
+- Row and column CRUD operations including add, remove, and rename
+- DataFrame cloning, slicing, and row iteration
+- Database container for named table collections
+- Random data generation from typed column definitions
+- Arithmetic expression evaluation per row via `with_eval`
+- Pivot table construction with configurable aggregation
+- Rolling mean, rolling sum, and rank computations
+- Aggregation function enumeration and parsing
+
+### `lazy.rs`
+
+- Deferred query step representation for filter, sort, select, head, tail, slice, and limit
+- Lazy query builder that chains steps without executing until `collect`
+- Materialization via sequential step application over a cloned source frame
+
+### `mod.rs`
+
+- Columnar DataFrame type and Database container
+- Lazy query builder and deferred execution pipeline
+- Query-time transforms: filtering, grouping, analytics, and window functions
+- CSV, JSON, and binary serialization and parsing
+- SQL-like SELECT executor with tokenizer and recursive-descent parser
+- Typed vectorized column storage with parallel reduce and scalar operations
+
+### `query/analytics.rs`
+
+- Percentile computation by linear interpolation over sorted values
+- Z-score standardization for numeric columns
+- Min-max normalization to arbitrary output range
+- Outlier detection via z-score threshold
+- Mode value computation across non-nil cells
+- Shannon entropy calculation over rendered cell distributions
+
+### `query/filter.rs`
+
+- Row filtering by column predicate with comparison and contains operators
+- Column sorting in ascending or descending order
+- Head, tail, and inclusive slice row selection
+- Column projection and unique value extraction
+- Group-by partitioning and inner/left join merging
+- Frame merge, count-by, drop-nil, and deterministic sampling
+- Aggregate statistics: sum, mean, min, max, median, stddev, variance
+- Descriptive statistics frame generation
+- Nil fill, batch row append, and column f64 import/export
+
+### `query/grouping.rs`
+
+- Grouped aggregation by key column with mean, sum, min, max, count, first, last
+- Pivot transformation from row/column/value keys into cross-tabulated frame
+- Pearson correlation between two numeric columns
+- Full numeric-column correlation matrix generation
+
+### `query/mod.rs`
+
+- Statistical and distribution-oriented analytics helpers
+- Row filtering, sorting, joins, and sampling operations
+- Grouped aggregation, pivoting, and correlation computations
+- Rolling and ranking window functions
+
+### `query/window.rs`
+
+- Rolling mean, sum, min, and max over configurable window size
+- Dense rank computation with average-rank tie-breaking
+- Row-to-row percent change calculation
+- Cumulative sum across ordered rows
+
+### `rng.rs`
+
+- Xorshift64 pseudo-random number generator for deterministic dataframe sampling
+- Float, integer, and index generation from 64-bit state
+- Zero-seed remap to avoid degenerate all-zero output
+
+### `serial.rs`
+
+- CSV parsing with quote escaping and type auto-detection
+- CSV serialization with field escaping rules
+- JSON array-of-objects parsing into DataFrame
+- JSON serialization with proper string escaping
+- Compact binary LVDF format encoding and decoding
+- Padded string-table rendering for debug and display
+- Database-level JSON serialization across all tables
+- Nested JSON value and array handling during parse
+
+### `sql.rs`
+
+- SQL text tokenizer producing typed token stream
+- Recursive-descent parser for SELECT statements
+- WHERE clause expression tree with AND, OR, NOT, LIKE, and IN
+- Aggregate function support: COUNT, SUM, AVG, MIN, MAX
+- GROUP BY with HAVING filter and ORDER BY with LIMIT/OFFSET
+- JOIN clause parsing and inner-join execution
+- SQL LIKE pattern matching with `%` and `_` wildcards
+- Single-frame and multi-table Database query entry points
+
+### `vectorized.rs`
+
+- Typed columnar storage (Float64, Int64, Bool, Text) with optional validity masks
+- Element-wise scalar operations: add, sub, mul, div, abs, sqrt, floor, ceil, neg
+- Element-wise binary operations between two numeric columns
+- Column reduction: sum, mean, min, max, std, var, count
+- Comparison mask generation for filter predicates
+- VecFrame ↔ DataFrame bidirectional conversion with type inference
+- Parallel multi-column reduce and scalar operations via rayon
+- Column type casting between float64, int64, and text
+- Boolean mask filtering across all column types
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LDatabase` (12 methods) - Lua-side in-memory database containing named dataframes.
@@ -462,25 +190,18 @@ In-memory column-major tabular data engine with lightweight SQL-style queries. `
 ## 📖 API Overview
 
 - Source spec: [docs/specs/dataframe.md](../blob/main/docs/specs/dataframe.md)
+- Module-level functions: 10
+- Lua-visible types: 5
+- Total type methods: 122
 
-```lua
-lurek.dataframe.fromBinary(s: string) -> LDataFrame -- Parses a dataframe from binary data.
-lurek.dataframe.fromCSV(s: string) -> LDataFrame -- Parses a dataframe from CSV text. This function is exposed to Lua scripts.
-lurek.dataframe.fromJSON(s: string) -> LDataFrame -- Parses a dataframe from JSON text. This function is exposed to Lua scripts.
-lurek.dataframe.fromRows(columns_tbl: table, rows_tbl: table) -> LDataFrame -- Creates a dataframe from column names and array-style rows.
-lurek.dataframe.fromTable(rows: table) -> LDataFrame -- Creates a dataframe from an array table of row tables.
-lurek.dataframe.fromVec(vf: LVecFrame) -> LDataFrame -- Converts a vectorized frame to a dataframe.
-lurek.dataframe.newDatabase() -> LDatabase -- Creates an empty dataframe database.
-lurek.dataframe.newDataFrame() -> LDataFrame -- Creates an empty dataframe. This function is exposed to Lua scripts.
-lurek.dataframe.random(defs_tbl: table, n: integer, [seed]: integer) -> LDataFrame -- Creates a random dataframe from column definitions.
-lurek.dataframe.toVec(df: LDataFrame) -> LVecFrame -- Converts a dataframe to a vectorized frame.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.dataframe.fromBinary
+### Module-Level Functions
+
+#### lurek.dataframe.fromBinary
 
 #### Definition
 
@@ -514,7 +235,7 @@ do
 end
 ```
 
-### lurek.dataframe.fromCSV
+#### lurek.dataframe.fromCSV
 
 #### Definition
 
@@ -547,7 +268,7 @@ do
 end
 ```
 
-### lurek.dataframe.fromJSON
+#### lurek.dataframe.fromJSON
 
 #### Definition
 
@@ -580,7 +301,7 @@ do
 end
 ```
 
-### lurek.dataframe.fromRows
+#### lurek.dataframe.fromRows
 
 #### Definition
 
@@ -617,7 +338,7 @@ do
 end
 ```
 
-### lurek.dataframe.fromTable
+#### lurek.dataframe.fromTable
 
 #### Definition
 
@@ -652,7 +373,7 @@ do
 end
 ```
 
-### lurek.dataframe.fromVec
+#### lurek.dataframe.fromVec
 
 #### Definition
 
@@ -686,7 +407,7 @@ do
 end
 ```
 
-### lurek.dataframe.newDatabase
+#### lurek.dataframe.newDatabase
 
 #### Definition
 
@@ -713,7 +434,7 @@ do
 end
 ```
 
-### lurek.dataframe.newDataFrame
+#### lurek.dataframe.newDataFrame
 
 #### Definition
 
@@ -740,7 +461,7 @@ do
 end
 ```
 
-### lurek.dataframe.random
+#### lurek.dataframe.random
 
 #### Definition
 
@@ -776,7 +497,7 @@ do
 end
 ```
 
-### lurek.dataframe.toVec
+#### lurek.dataframe.toVec
 
 #### Definition
 
@@ -951,7 +672,9 @@ end
 
 ## 🔹 Module Methods
 
-### LDatabase:addTable
+### LDatabase Methods
+
+#### LDatabase:addTable
 
 #### Definition
 
@@ -984,7 +707,7 @@ do
 end
 ```
 
-### LDatabase:clear
+#### LDatabase:clear
 
 #### Definition
 
@@ -1011,7 +734,7 @@ do
 end
 ```
 
-### LDatabase:getTable
+#### LDatabase:getTable
 
 #### Definition
 
@@ -1046,7 +769,7 @@ do
 end
 ```
 
-### LDatabase:hasTable
+#### LDatabase:hasTable
 
 #### Definition
 
@@ -1080,7 +803,7 @@ do
 end
 ```
 
-### LDatabase:listTables
+#### LDatabase:listTables
 
 #### Definition
 
@@ -1110,7 +833,7 @@ do
 end
 ```
 
-### LDatabase:merge
+#### LDatabase:merge
 
 #### Definition
 
@@ -1142,7 +865,7 @@ do
 end
 ```
 
-### LDatabase:query
+#### LDatabase:query
 
 #### Definition
 
@@ -1177,7 +900,7 @@ do
 end
 ```
 
-### LDatabase:removeTable
+#### LDatabase:removeTable
 
 #### Definition
 
@@ -1209,7 +932,7 @@ do
 end
 ```
 
-### LDatabase:tableCount
+#### LDatabase:tableCount
 
 #### Definition
 
@@ -1238,7 +961,7 @@ do
 end
 ```
 
-### LDatabase:toJSON
+#### LDatabase:toJSON
 
 #### Definition
 
@@ -1268,7 +991,7 @@ do
 end
 ```
 
-### LDatabase:type
+#### LDatabase:type
 
 #### Definition
 
@@ -1295,7 +1018,7 @@ do
 end
 ```
 
-### LDatabase:typeOf
+#### LDatabase:typeOf
 
 #### Definition
 
@@ -1327,7 +1050,9 @@ do
 end
 ```
 
-### LDataFrame:addColumn
+### LDataFrame Methods
+
+#### LDataFrame:addColumn
 
 #### Definition
 
@@ -1359,7 +1084,7 @@ do
 end
 ```
 
-### LDataFrame:addRow
+#### LDataFrame:addRow
 
 #### Definition
 
@@ -1392,7 +1117,7 @@ do
 end
 ```
 
-### LDataFrame:addRowBatch
+#### LDataFrame:addRowBatch
 
 #### Definition
 
@@ -1422,7 +1147,7 @@ do
 end
 ```
 
-### LDataFrame:apply
+#### LDataFrame:apply
 
 #### Definition
 
@@ -1454,7 +1179,7 @@ do
 end
 ```
 
-### LDataFrame:clone
+#### LDataFrame:clone
 
 #### Definition
 
@@ -1483,7 +1208,7 @@ do
 end
 ```
 
-### LDataFrame:columns
+#### LDataFrame:columns
 
 #### Definition
 
@@ -1511,7 +1236,7 @@ do
 end
 ```
 
-### LDataFrame:corr
+#### LDataFrame:corr
 
 #### Definition
 
@@ -1545,7 +1270,7 @@ do
 end
 ```
 
-### LDataFrame:correlationMatrix
+#### LDataFrame:correlationMatrix
 
 #### Definition
 
@@ -1573,7 +1298,7 @@ do
 end
 ```
 
-### LDataFrame:count
+#### LDataFrame:count
 
 #### Definition
 
@@ -1600,7 +1325,7 @@ do
 end
 ```
 
-### LDataFrame:countBy
+#### LDataFrame:countBy
 
 #### Definition
 
@@ -1633,7 +1358,7 @@ do
 end
 ```
 
-### LDataFrame:describe
+#### LDataFrame:describe
 
 #### Definition
 
@@ -1661,7 +1386,7 @@ do
 end
 ```
 
-### LDataFrame:dropNil
+#### LDataFrame:dropNil
 
 #### Definition
 
@@ -1696,7 +1421,7 @@ do
 end
 ```
 
-### LDataFrame:entropy
+#### LDataFrame:entropy
 
 #### Definition
 
@@ -1728,7 +1453,7 @@ do
 end
 ```
 
-### LDataFrame:fillNil
+#### LDataFrame:fillNil
 
 #### Definition
 
@@ -1762,7 +1487,7 @@ do
 end
 ```
 
-### LDataFrame:filter
+#### LDataFrame:filter
 
 #### Definition
 
@@ -1799,7 +1524,7 @@ do
 end
 ```
 
-### LDataFrame:getColumn
+#### LDataFrame:getColumn
 
 #### Definition
 
@@ -1832,7 +1557,7 @@ do
 end
 ```
 
-### LDataFrame:getColumnAsF64
+#### LDataFrame:getColumnAsF64
 
 #### Definition
 
@@ -1865,7 +1590,7 @@ do
 end
 ```
 
-### LDataFrame:getRow
+#### LDataFrame:getRow
 
 #### Definition
 
@@ -1898,7 +1623,7 @@ do
 end
 ```
 
-### LDataFrame:getValue
+#### LDataFrame:getValue
 
 #### Definition
 
@@ -1933,7 +1658,7 @@ do
 end
 ```
 
-### LDataFrame:groupAgg
+#### LDataFrame:groupAgg
 
 #### Definition
 
@@ -1972,7 +1697,7 @@ do
 end
 ```
 
-### LDataFrame:groupBy
+#### LDataFrame:groupBy
 
 #### Definition
 
@@ -2004,7 +1729,7 @@ do
 end
 ```
 
-### LDataFrame:groupByObj
+#### LDataFrame:groupByObj
 
 #### Definition
 
@@ -2039,7 +1764,7 @@ do
 end
 ```
 
-### LDataFrame:head
+#### LDataFrame:head
 
 #### Definition
 
@@ -2072,7 +1797,7 @@ do
 end
 ```
 
-### LDataFrame:join
+#### LDataFrame:join
 
 #### Definition
 
@@ -2112,7 +1837,7 @@ do
 end
 ```
 
-### LDataFrame:lazy
+#### LDataFrame:lazy
 
 #### Definition
 
@@ -2140,7 +1865,7 @@ do
 end
 ```
 
-### LDataFrame:max
+#### LDataFrame:max
 
 #### Definition
 
@@ -2172,7 +1897,7 @@ do
 end
 ```
 
-### LDataFrame:mean
+#### LDataFrame:mean
 
 #### Definition
 
@@ -2204,7 +1929,7 @@ do
 end
 ```
 
-### LDataFrame:median
+#### LDataFrame:median
 
 #### Definition
 
@@ -2236,7 +1961,7 @@ do
 end
 ```
 
-### LDataFrame:merge
+#### LDataFrame:merge
 
 #### Definition
 
@@ -2267,7 +1992,7 @@ do
 end
 ```
 
-### LDataFrame:min
+#### LDataFrame:min
 
 #### Definition
 
@@ -2299,7 +2024,7 @@ do
 end
 ```
 
-### LDataFrame:modeVal
+#### LDataFrame:modeVal
 
 #### Definition
 
@@ -2331,7 +2056,7 @@ do
 end
 ```
 
-### LDataFrame:ncols
+#### LDataFrame:ncols
 
 #### Definition
 
@@ -2358,7 +2083,7 @@ do
 end
 ```
 
-### LDataFrame:normalizeCol
+#### LDataFrame:normalizeCol
 
 #### Definition
 
@@ -2394,7 +2119,7 @@ do
 end
 ```
 
-### LDataFrame:nrows
+#### LDataFrame:nrows
 
 #### Definition
 
@@ -2421,7 +2146,7 @@ do
 end
 ```
 
-### LDataFrame:outliers
+#### LDataFrame:outliers
 
 #### Definition
 
@@ -2456,7 +2181,7 @@ do
 end
 ```
 
-### LDataFrame:pivot
+#### LDataFrame:pivot
 
 #### Definition
 
@@ -2492,7 +2217,7 @@ do
 end
 ```
 
-### LDataFrame:pivotTable
+#### LDataFrame:pivotTable
 
 #### Definition
 
@@ -2530,7 +2255,7 @@ do
 end
 ```
 
-### LDataFrame:query
+#### LDataFrame:query
 
 #### Definition
 
@@ -2563,7 +2288,7 @@ do
 end
 ```
 
-### LDataFrame:rank
+#### LDataFrame:rank
 
 #### Definition
 
@@ -2600,7 +2325,7 @@ do
 end
 ```
 
-### LDataFrame:removeColumn
+#### LDataFrame:removeColumn
 
 #### Definition
 
@@ -2630,7 +2355,7 @@ do
 end
 ```
 
-### LDataFrame:removeRow
+#### LDataFrame:removeRow
 
 #### Definition
 
@@ -2660,7 +2385,7 @@ do
 end
 ```
 
-### LDataFrame:rename
+#### LDataFrame:rename
 
 #### Definition
 
@@ -2693,7 +2418,7 @@ do
 end
 ```
 
-### LDataFrame:rollingMean
+#### LDataFrame:rollingMean
 
 #### Definition
 
@@ -2730,7 +2455,7 @@ do
 end
 ```
 
-### LDataFrame:rollingSum
+#### LDataFrame:rollingSum
 
 #### Definition
 
@@ -2767,7 +2492,7 @@ do
 end
 ```
 
-### LDataFrame:rows
+#### LDataFrame:rows
 
 #### Definition
 
@@ -2796,7 +2521,7 @@ do
 end
 ```
 
-### LDataFrame:sample
+#### LDataFrame:sample
 
 #### Definition
 
@@ -2831,7 +2556,7 @@ do
 end
 ```
 
-### LDataFrame:select
+#### LDataFrame:select
 
 #### Definition
 
@@ -2864,7 +2589,7 @@ do
 end
 ```
 
-### LDataFrame:setColumnFromF64
+#### LDataFrame:setColumnFromF64
 
 #### Definition
 
@@ -2896,7 +2621,7 @@ do
 end
 ```
 
-### LDataFrame:setValue
+#### LDataFrame:setValue
 
 #### Definition
 
@@ -2930,7 +2655,7 @@ do
 end
 ```
 
-### LDataFrame:slice
+#### LDataFrame:slice
 
 #### Definition
 
@@ -2965,7 +2690,7 @@ do
 end
 ```
 
-### LDataFrame:sort
+#### LDataFrame:sort
 
 #### Definition
 
@@ -3000,7 +2725,7 @@ do
 end
 ```
 
-### LDataFrame:stddev
+#### LDataFrame:stddev
 
 #### Definition
 
@@ -3032,7 +2757,7 @@ do
 end
 ```
 
-### LDataFrame:sum
+#### LDataFrame:sum
 
 #### Definition
 
@@ -3064,7 +2789,7 @@ do
 end
 ```
 
-### LDataFrame:tail
+#### LDataFrame:tail
 
 #### Definition
 
@@ -3097,7 +2822,7 @@ do
 end
 ```
 
-### LDataFrame:toBinary
+#### LDataFrame:toBinary
 
 #### Definition
 
@@ -3125,7 +2850,7 @@ do
 end
 ```
 
-### LDataFrame:toCSV
+#### LDataFrame:toCSV
 
 #### Definition
 
@@ -3153,7 +2878,7 @@ do
 end
 ```
 
-### LDataFrame:toJSON
+#### LDataFrame:toJSON
 
 #### Definition
 
@@ -3181,7 +2906,7 @@ do
 end
 ```
 
-### LDataFrame:toString
+#### LDataFrame:toString
 
 #### Definition
 
@@ -3209,7 +2934,7 @@ do
 end
 ```
 
-### LDataFrame:toTable
+#### LDataFrame:toTable
 
 #### Definition
 
@@ -3237,7 +2962,7 @@ do
 end
 ```
 
-### LDataFrame:type
+#### LDataFrame:type
 
 #### Definition
 
@@ -3264,7 +2989,7 @@ do
 end
 ```
 
-### LDataFrame:typeOf
+#### LDataFrame:typeOf
 
 #### Definition
 
@@ -3296,7 +3021,7 @@ do
 end
 ```
 
-### LDataFrame:unique
+#### LDataFrame:unique
 
 #### Definition
 
@@ -3329,7 +3054,7 @@ do
 end
 ```
 
-### LDataFrame:variance
+#### LDataFrame:variance
 
 #### Definition
 
@@ -3361,7 +3086,7 @@ do
 end
 ```
 
-### LDataFrame:withCumsum
+#### LDataFrame:withCumsum
 
 #### Definition
 
@@ -3393,7 +3118,7 @@ do
 end
 ```
 
-### LDataFrame:withEval
+#### LDataFrame:withEval
 
 #### Definition
 
@@ -3428,7 +3153,7 @@ do
 end
 ```
 
-### LDataFrame:withPctChange
+#### LDataFrame:withPctChange
 
 #### Definition
 
@@ -3460,7 +3185,7 @@ do
 end
 ```
 
-### LDataFrame:withRank
+#### LDataFrame:withRank
 
 #### Definition
 
@@ -3494,7 +3219,7 @@ do
 end
 ```
 
-### LDataFrame:withRollingMax
+#### LDataFrame:withRollingMax
 
 #### Definition
 
@@ -3528,7 +3253,7 @@ do
 end
 ```
 
-### LDataFrame:withRollingMean
+#### LDataFrame:withRollingMean
 
 #### Definition
 
@@ -3562,7 +3287,7 @@ do
 end
 ```
 
-### LDataFrame:withRollingMin
+#### LDataFrame:withRollingMin
 
 #### Definition
 
@@ -3596,7 +3321,7 @@ do
 end
 ```
 
-### LDataFrame:withRollingSum
+#### LDataFrame:withRollingSum
 
 #### Definition
 
@@ -3630,7 +3355,7 @@ do
 end
 ```
 
-### LDataFrame:zscoreCol
+#### LDataFrame:zscoreCol
 
 #### Definition
 
@@ -3662,7 +3387,9 @@ do
 end
 ```
 
-### LGroupedFrame:aggregate
+### LGroupedFrame Methods
+
+#### LGroupedFrame:aggregate
 
 #### Definition
 
@@ -3697,7 +3424,7 @@ do
 end
 ```
 
-### LGroupedFrame:type
+#### LGroupedFrame:type
 
 #### Definition
 
@@ -3725,7 +3452,7 @@ do
 end
 ```
 
-### LGroupedFrame:typeOf
+#### LGroupedFrame:typeOf
 
 #### Definition
 
@@ -3758,7 +3485,9 @@ do
 end
 ```
 
-### LLazyQuery:collect
+### LLazyQuery Methods
+
+#### LLazyQuery:collect
 
 #### Definition
 
@@ -3786,7 +3515,7 @@ do
 end
 ```
 
-### LLazyQuery:dropNil
+#### LLazyQuery:dropNil
 
 #### Definition
 
@@ -3821,7 +3550,7 @@ do
 end
 ```
 
-### LLazyQuery:filter
+#### LLazyQuery:filter
 
 #### Definition
 
@@ -3858,7 +3587,7 @@ do
 end
 ```
 
-### LLazyQuery:head
+#### LLazyQuery:head
 
 #### Definition
 
@@ -3891,7 +3620,7 @@ do
 end
 ```
 
-### LLazyQuery:limit
+#### LLazyQuery:limit
 
 #### Definition
 
@@ -3924,7 +3653,7 @@ do
 end
 ```
 
-### LLazyQuery:select
+#### LLazyQuery:select
 
 #### Definition
 
@@ -3957,7 +3686,7 @@ do
 end
 ```
 
-### LLazyQuery:slice
+#### LLazyQuery:slice
 
 #### Definition
 
@@ -3992,7 +3721,7 @@ do
 end
 ```
 
-### LLazyQuery:sort
+#### LLazyQuery:sort
 
 #### Definition
 
@@ -4027,7 +3756,7 @@ do
 end
 ```
 
-### LLazyQuery:tail
+#### LLazyQuery:tail
 
 #### Definition
 
@@ -4060,7 +3789,7 @@ do
 end
 ```
 
-### LLazyQuery:type
+#### LLazyQuery:type
 
 #### Definition
 
@@ -4088,7 +3817,7 @@ do
 end
 ```
 
-### LLazyQuery:typeOf
+#### LLazyQuery:typeOf
 
 #### Definition
 
@@ -4121,7 +3850,9 @@ do
 end
 ```
 
-### LVecFrame:applyMask
+### LVecFrame Methods
+
+#### LVecFrame:applyMask
 
 #### Definition
 
@@ -4155,7 +3886,7 @@ do
 end
 ```
 
-### LVecFrame:colAbs
+#### LVecFrame:colAbs
 
 #### Definition
 
@@ -4186,7 +3917,7 @@ do
 end
 ```
 
-### LVecFrame:colAdd
+#### LVecFrame:colAdd
 
 #### Definition
 
@@ -4219,7 +3950,7 @@ do
 end
 ```
 
-### LVecFrame:colCast
+#### LVecFrame:colCast
 
 #### Definition
 
@@ -4252,7 +3983,7 @@ do
 end
 ```
 
-### LVecFrame:colCeil
+#### LVecFrame:colCeil
 
 #### Definition
 
@@ -4283,7 +4014,7 @@ do
 end
 ```
 
-### LVecFrame:colClamp
+#### LVecFrame:colClamp
 
 #### Definition
 
@@ -4318,7 +4049,7 @@ do
 end
 ```
 
-### LVecFrame:colDiv
+#### LVecFrame:colDiv
 
 #### Definition
 
@@ -4351,7 +4082,7 @@ do
 end
 ```
 
-### LVecFrame:colFloor
+#### LVecFrame:colFloor
 
 #### Definition
 
@@ -4382,7 +4113,7 @@ do
 end
 ```
 
-### LVecFrame:colMul
+#### LVecFrame:colMul
 
 #### Definition
 
@@ -4415,7 +4146,7 @@ do
 end
 ```
 
-### LVecFrame:colNeg
+#### LVecFrame:colNeg
 
 #### Definition
 
@@ -4446,7 +4177,7 @@ do
 end
 ```
 
-### LVecFrame:colOp
+#### LVecFrame:colOp
 
 #### Definition
 
@@ -4483,7 +4214,7 @@ do
 end
 ```
 
-### LVecFrame:colSqrt
+#### LVecFrame:colSqrt
 
 #### Definition
 
@@ -4514,7 +4245,7 @@ do
 end
 ```
 
-### LVecFrame:colSub
+#### LVecFrame:colSub
 
 #### Definition
 
@@ -4547,7 +4278,7 @@ do
 end
 ```
 
-### LVecFrame:colType
+#### LVecFrame:colType
 
 #### Definition
 
@@ -4580,7 +4311,7 @@ do
 end
 ```
 
-### LVecFrame:columns
+#### LVecFrame:columns
 
 #### Definition
 
@@ -4609,7 +4340,7 @@ do
 end
 ```
 
-### LVecFrame:filterMask
+#### LVecFrame:filterMask
 
 #### Definition
 
@@ -4647,7 +4378,7 @@ do
 end
 ```
 
-### LVecFrame:ncols
+#### LVecFrame:ncols
 
 #### Definition
 
@@ -4675,7 +4406,7 @@ do
 end
 ```
 
-### LVecFrame:nrows
+#### LVecFrame:nrows
 
 #### Definition
 
@@ -4703,7 +4434,7 @@ do
 end
 ```
 
-### LVecFrame:parReduce
+#### LVecFrame:parReduce
 
 #### Definition
 
@@ -4739,7 +4470,7 @@ do
 end
 ```
 
-### LVecFrame:parScalarOp
+#### LVecFrame:parScalarOp
 
 #### Definition
 
@@ -4774,7 +4505,7 @@ do
 end
 ```
 
-### LVecFrame:reduce
+#### LVecFrame:reduce
 
 #### Definition
 
@@ -4810,7 +4541,7 @@ do
 end
 ```
 
-### LVecFrame:toDataFrame
+#### LVecFrame:toDataFrame
 
 #### Definition
 
@@ -4840,7 +4571,7 @@ do
 end
 ```
 
-### LVecFrame:type
+#### LVecFrame:type
 
 #### Definition
 
@@ -4868,7 +4599,7 @@ do
 end
 ```
 
-### LVecFrame:typeOf
+#### LVecFrame:typeOf
 
 #### Definition
 

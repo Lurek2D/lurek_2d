@@ -10,6 +10,14 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [app.rs](#apprs)
+  - [debug_overlay.rs](#debugoverlayrs)
+  - [error_screen.rs](#errorscreenrs)
+  - [frame_profile.rs](#frameprofilers)
+  - [lua_callbacks.rs](#luacallbacksrs)
+  - [mod.rs](#modrs)
+  - [splash_screen.rs](#splashscreenrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [💡 Examples](#examples)
@@ -35,6 +43,61 @@ Includes a debug overlay for FPS/memory/draw-call display, an error screen for u
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `app.rs`
+
+- Implements the central `LurekApp` runtime driven by winit's `ApplicationHandler`.
+- Manages GPU surface creation, wgpu adapter/device selection, and surface reconfiguration.
+- Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
+- Handles window events (keyboard, mouse, touch, gamepad, drag-drop, resize, focus).
+- Provides splash-screen and error-screen rendering paths when no game is loaded or a fatal occurs.
+- Owns hot-reload watchers for conf.toml, Lua scripts, and asset files with automatic restart.
+- Integrates gilrs for gamepad polling, force-feedback vibration, and axis/button callbacks.
+- Performs viewport letterbox/stretch/pixel scaling and automatic screenshot capture.
+- Boots the Lua VM, loads main.lua, fires `lurek.init()`, and enters the main game loop.
+- Provides `App` bootstrap wrapper that initializes logging and launches the event loop.
+
+### `debug_overlay.rs`
+
+- Owns the lightweight debug HUD toggled by F12 or Lua.
+- Renders FPS counter and draw-call counter in a semi-transparent box.
+- Produces render commands only when the overlay is enabled and a font key is available.
+
+### `error_screen.rs`
+
+- Formats fatal Lua and engine errors into a user-facing screen.
+- Splits message text and traceback, word-wraps long lines, and cleans Lua string markers.
+- Builds full-screen render commands showing error title, body, traceback, and hint footer.
+- Provides clipboard export text for quick copy of error details.
+
+### `frame_profile.rs`
+
+- Formats per-frame timing data into compact single-line strings for logging.
+- Reads tick, update, render, and callback timings from `FrameProfile`.
+
+### `lua_callbacks.rs`
+
+- Invokes named `lurek.*` Lua callbacks with error logging and optional timeout.
+- Installs an instruction-count hook to abort runaway callbacks after a deadline.
+- Provides checked and unchecked variants for both timed and untimed invocation.
+
+### `mod.rs`
+
+- Orchestrates the Lurek2D application lifecycle from window creation through frame rendering.
+- Bridges winit events to Lua callbacks, GPU rendering, input polling, and hot-reload.
+- Houses the error screen, debug overlay, splash screen, and frame profiling submodules.
+- Provides Lua callback timeout wrappers used across the frame update path.
+
+### `splash_screen.rs`
+
+- Decodes embedded splash icon and banner PNGs into temporary texture storage.
+- Builds render commands for the splash screen layout with centred branding.
+- Shows a drag-and-drop hint that changes colour when a folder is hovered.
+- Provides the `SplashBranding` struct used by the app loop until a game loads.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -44,8 +107,10 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/app.md](../blob/main/docs/specs/app.md)
+- Module-level functions: 0
+- Lua-visible types: 0
+- Total type methods: 0
 
-No module functions appear in the generated Lua API data.
 
 [⬆ back to top](#table-of-contents)
 

@@ -10,221 +10,22 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [generational_id.rs](#generationalidrs)
+  - [lua_table.rs](#luatablers)
+  - [mod.rs](#modrs)
+  - [relationships.rs](#relationshipsrs)
+  - [universe.rs](#universers)
+  - [universe_ext.rs](#universeextrs)
+  - [universe_systems.rs](#universesystemsrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.ecs.newUniverse](#lurekecsnewuniverse)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LUniverse](#luniverse)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LUniverse:addRelation](#luniverseaddrelation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:addSystem](#luniverseaddsystem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:addTag](#luniverseaddtag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:applySnapshot](#luniverseapplysnapshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:bitmapTag](#luniversebitmaptag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:bitmapUntag](#luniversebitmapuntag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:clear](#luniverseclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:clearRelations](#luniverseclearrelations)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:defineBlueprint](#luniversedefineblueprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:defineTag](#luniversedefinetag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:deserialize](#luniversedeserialize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:each](#luniverseeach)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:emit](#luniverseemit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:extendBlueprint](#luniverseextendblueprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:flushObservers](#luniverseflushobservers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:get](#luniverseget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getBitmapTagBit](#luniversegetbitmaptagbit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getBlueprintComponents](#luniversegetblueprintcomponents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getChildren](#luniversegetchildren)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getComponents](#luniversegetcomponents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getDirtyEntities](#luniversegetdirtyentities)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getEntities](#luniversegetentities)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getEntitiesByLayer](#luniversegetentitiesbylayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getEntitiesByTag](#luniversegetentitiesbytag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getEntitiesSorted](#luniversegetentitiessorted)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getEntityCount](#luniversegetentitycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getLayer](#luniversegetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getParent](#luniversegetparent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getRelated](#luniversegetrelated)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getSystemCount](#luniversegetsystemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:getTags](#luniversegettags)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:has](#luniversehas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:hasBitmapTag](#luniversehasbitmaptag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:hasBlueprint](#luniversehasblueprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:hasRelation](#luniversehasrelation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:hasTag](#luniversehastag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:isAlive](#luniverseisalive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:kill](#luniversekill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:killRecursive](#luniversekillrecursive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:listBlueprints](#luniverselistblueprints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:onComponentAdded](#luniverseoncomponentadded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:onComponentRemoved](#luniverseoncomponentremoved)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:query](#luniversequery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:queryBitmapAll](#luniversequerybitmapall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:queryBitmapAny](#luniversequerybitmapany)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:queryBitmapTag](#luniversequerybitmaptag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:queryMulti](#luniversequerymulti)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:queryNot](#luniversequerynot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:release](#luniverserelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:remove](#luniverseremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:removeBlueprint](#luniverseremoveblueprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:removeRelation](#luniverseremoverelation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:removeSystem](#luniverseremovesystem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:removeTag](#luniverseremovetag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:render](#luniverserender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:serialize](#luniverseserialize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:set](#luniverseset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:setLayer](#luniversesetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:setParent](#luniversesetparent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:snapshot](#luniversesnapshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:spawn](#luniversespawn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:spawnBlueprint](#luniversespawnblueprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:spawnBulk](#luniversespawnbulk)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:takeSnapshotDiff](#luniversetakesnapshotdiff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:type](#luniversetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:typeOf](#luniversetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:update](#luniverseupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUniverse:updatePhase](#luniverseupdatephase)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LUniverse Methods](#luniverse-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -248,6 +49,64 @@ Supports parent-child relationships with recursive kill propagation, string and 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `generational_id.rs`
+
+- Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.
+- Stateless utility struct with no allocation or state.
+- Supports up to ~16M slots and 256 generations per slot.
+
+### `lua_table.rs`
+
+- Deep-copy utility for Lua tables via mlua.
+- Recursively clones nested table structures by value.
+- Used by ECS and other systems that need independent table snapshots.
+
+### `mod.rs`
+
+- Lightweight ECS: entities with generational IDs, Lua-table components, tags, and blueprints.
+- Relationship graph for parent/child, ownership, and custom link types between entities.
+- Deep-copy and snapshot utilities for cloning Lua component tables.
+
+### `relationships.rs`
+
+- Relationship type definitions with named level labels and validated defaults.
+- Pairwise relationship records storing numeric affinity and per-type level state.
+- Canonical entity-pair ordering for symmetric, order-independent lookups.
+- Directed named links between entities for one-way associations.
+- Query helpers: filter by entity, check existence, iterate all relations.
+
+### `universe.rs`
+
+- Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.
+- Component storage: set, get, has, remove, and name-list queries backed by Lua registry tables.
+- Archetype-style query acceleration via optional component-name index (`ecs-archetype` feature).
+- String tags with reverse index and bitmap tags with 63-bit fast masking.
+- Entity hierarchy: parent/child links, recursive deletion, and child enumeration.
+- Layer assignment and sorted entity retrieval for render ordering.
+- Blueprint templates: define, extend, spawn from template, and list operations.
+- System registration metadata: priorities, phases, names, and dependency lists.
+- Snapshot diff and dirty tracking for component add/remove notification streams.
+- Full universe reset via clear, draining all stores and recycling state.
+
+### `universe_ext.rs`
+
+- Extended Universe operations: advanced queries, bulk spawning, and state serialization.
+- query_not filters entities by required and excluded component sets.
+- query_multi invokes a callback with packed ids and multiple component values per entity.
+- spawn_bulk creates many entities from a single blueprint with optional per-entity overrides.
+- serialize_to_table / deserialize_from_table convert live universe state to and from Lua tables.
+- Serialization captures components, tags, layers, bitmap masks, and parent-child hierarchy.
+
+### `universe_systems.rs`
+
+- System registration, removal, and count queries on a Universe.
+- Priority-based and dependency-aware topological sorting of systems per phase.
+- Phase filtering with fallback semantics for empty-phase systems.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LUniverse` (68 methods) - Lua-side handle for one ECS universe.
@@ -257,16 +116,18 @@ Supports parent-child relationships with recursive kill propagation, string and 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/ecs.md](../blob/main/docs/specs/ecs.md)
+- Module-level functions: 1
+- Lua-visible types: 1
+- Total type methods: 68
 
-```lua
-lurek.ecs.newUniverse() -> LUniverse -- Creates an empty ECS universe for entity, component, system, and relationship management.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.ecs.newUniverse
+### Module-Level Functions
+
+#### lurek.ecs.newUniverse
 
 #### Definition
 
@@ -328,7 +189,9 @@ end
 
 ## 🔹 Module Methods
 
-### LUniverse:addRelation
+### LUniverse Methods
+
+#### LUniverse:addRelation
 
 #### Definition
 
@@ -364,7 +227,7 @@ do
 end
 ```
 
-### LUniverse:addSystem
+#### LUniverse:addSystem
 
 #### Definition
 
@@ -397,7 +260,7 @@ do
 end
 ```
 
-### LUniverse:addTag
+#### LUniverse:addTag
 
 #### Definition
 
@@ -431,7 +294,7 @@ do
 end
 ```
 
-### LUniverse:applySnapshot
+#### LUniverse:applySnapshot
 
 #### Definition
 
@@ -463,7 +326,7 @@ do
 end
 ```
 
-### LUniverse:bitmapTag
+#### LUniverse:bitmapTag
 
 #### Definition
 
@@ -500,7 +363,7 @@ do
 end
 ```
 
-### LUniverse:bitmapUntag
+#### LUniverse:bitmapUntag
 
 #### Definition
 
@@ -534,7 +397,7 @@ do
 end
 ```
 
-### LUniverse:clear
+#### LUniverse:clear
 
 #### Definition
 
@@ -560,7 +423,7 @@ do
 end
 ```
 
-### LUniverse:clearRelations
+#### LUniverse:clearRelations
 
 #### Definition
 
@@ -594,7 +457,7 @@ do
 end
 ```
 
-### LUniverse:defineBlueprint
+#### LUniverse:defineBlueprint
 
 #### Definition
 
@@ -626,7 +489,7 @@ do
 end
 ```
 
-### LUniverse:defineTag
+#### LUniverse:defineTag
 
 #### Definition
 
@@ -661,7 +524,7 @@ do
 end
 ```
 
-### LUniverse:deserialize
+#### LUniverse:deserialize
 
 #### Definition
 
@@ -693,7 +556,7 @@ do
 end
 ```
 
-### LUniverse:each
+#### LUniverse:each
 
 #### Definition
 
@@ -727,7 +590,7 @@ do
 end
 ```
 
-### LUniverse:emit
+#### LUniverse:emit
 
 #### Definition
 
@@ -761,7 +624,7 @@ do
 end
 ```
 
-### LUniverse:extendBlueprint
+#### LUniverse:extendBlueprint
 
 #### Definition
 
@@ -797,7 +660,7 @@ do
 end
 ```
 
-### LUniverse:flushObservers
+#### LUniverse:flushObservers
 
 #### Definition
 
@@ -822,7 +685,7 @@ do
 end
 ```
 
-### LUniverse:get
+#### LUniverse:get
 
 #### Definition
 
@@ -859,7 +722,7 @@ do
 end
 ```
 
-### LUniverse:getBitmapTagBit
+#### LUniverse:getBitmapTagBit
 
 #### Definition
 
@@ -893,7 +756,7 @@ do
 end
 ```
 
-### LUniverse:getBlueprintComponents
+#### LUniverse:getBlueprintComponents
 
 #### Definition
 
@@ -927,7 +790,7 @@ do
 end
 ```
 
-### LUniverse:getChildren
+#### LUniverse:getChildren
 
 #### Definition
 
@@ -962,7 +825,7 @@ do
 end
 ```
 
-### LUniverse:getComponents
+#### LUniverse:getComponents
 
 #### Definition
 
@@ -997,7 +860,7 @@ do
 end
 ```
 
-### LUniverse:getDirtyEntities
+#### LUniverse:getDirtyEntities
 
 #### Definition
 
@@ -1027,7 +890,7 @@ do
 end
 ```
 
-### LUniverse:getEntities
+#### LUniverse:getEntities
 
 #### Definition
 
@@ -1057,7 +920,7 @@ do
 end
 ```
 
-### LUniverse:getEntitiesByLayer
+#### LUniverse:getEntitiesByLayer
 
 #### Definition
 
@@ -1092,7 +955,7 @@ do
 end
 ```
 
-### LUniverse:getEntitiesByTag
+#### LUniverse:getEntitiesByTag
 
 #### Definition
 
@@ -1127,7 +990,7 @@ do
 end
 ```
 
-### LUniverse:getEntitiesSorted
+#### LUniverse:getEntitiesSorted
 
 #### Definition
 
@@ -1157,7 +1020,7 @@ do
 end
 ```
 
-### LUniverse:getEntityCount
+#### LUniverse:getEntityCount
 
 #### Definition
 
@@ -1187,7 +1050,7 @@ do
 end
 ```
 
-### LUniverse:getLayer
+#### LUniverse:getLayer
 
 #### Definition
 
@@ -1222,7 +1085,7 @@ do
 end
 ```
 
-### LUniverse:getParent
+#### LUniverse:getParent
 
 #### Definition
 
@@ -1257,7 +1120,7 @@ do
 end
 ```
 
-### LUniverse:getRelated
+#### LUniverse:getRelated
 
 #### Definition
 
@@ -1294,7 +1157,7 @@ do
 end
 ```
 
-### LUniverse:getSystemCount
+#### LUniverse:getSystemCount
 
 #### Definition
 
@@ -1323,7 +1186,7 @@ do
 end
 ```
 
-### LUniverse:getTags
+#### LUniverse:getTags
 
 #### Definition
 
@@ -1358,7 +1221,7 @@ do
 end
 ```
 
-### LUniverse:has
+#### LUniverse:has
 
 #### Definition
 
@@ -1394,7 +1257,7 @@ do
 end
 ```
 
-### LUniverse:hasBitmapTag
+#### LUniverse:hasBitmapTag
 
 #### Definition
 
@@ -1431,7 +1294,7 @@ do
 end
 ```
 
-### LUniverse:hasBlueprint
+#### LUniverse:hasBlueprint
 
 #### Definition
 
@@ -1466,7 +1329,7 @@ do
 end
 ```
 
-### LUniverse:hasRelation
+#### LUniverse:hasRelation
 
 #### Definition
 
@@ -1505,7 +1368,7 @@ do
 end
 ```
 
-### LUniverse:hasTag
+#### LUniverse:hasTag
 
 #### Definition
 
@@ -1542,7 +1405,7 @@ do
 end
 ```
 
-### LUniverse:isAlive
+#### LUniverse:isAlive
 
 #### Definition
 
@@ -1575,7 +1438,7 @@ do
 end
 ```
 
-### LUniverse:kill
+#### LUniverse:kill
 
 #### Definition
 
@@ -1606,7 +1469,7 @@ do
 end
 ```
 
-### LUniverse:killRecursive
+#### LUniverse:killRecursive
 
 #### Definition
 
@@ -1638,7 +1501,7 @@ do
 end
 ```
 
-### LUniverse:listBlueprints
+#### LUniverse:listBlueprints
 
 #### Definition
 
@@ -1668,7 +1531,7 @@ do
 end
 ```
 
-### LUniverse:onComponentAdded
+#### LUniverse:onComponentAdded
 
 #### Definition
 
@@ -1702,7 +1565,7 @@ do
 end
 ```
 
-### LUniverse:onComponentRemoved
+#### LUniverse:onComponentRemoved
 
 #### Definition
 
@@ -1736,7 +1599,7 @@ do
 end
 ```
 
-### LUniverse:query
+#### LUniverse:query
 
 #### Definition
 
@@ -1770,7 +1633,7 @@ do
 end
 ```
 
-### LUniverse:queryBitmapAll
+#### LUniverse:queryBitmapAll
 
 #### Definition
 
@@ -1805,7 +1668,7 @@ do
 end
 ```
 
-### LUniverse:queryBitmapAny
+#### LUniverse:queryBitmapAny
 
 #### Definition
 
@@ -1840,7 +1703,7 @@ do
 end
 ```
 
-### LUniverse:queryBitmapTag
+#### LUniverse:queryBitmapTag
 
 #### Definition
 
@@ -1875,7 +1738,7 @@ do
 end
 ```
 
-### LUniverse:queryMulti
+#### LUniverse:queryMulti
 
 #### Definition
 
@@ -1909,7 +1772,7 @@ do
 end
 ```
 
-### LUniverse:queryNot
+#### LUniverse:queryNot
 
 #### Definition
 
@@ -1945,7 +1808,7 @@ do
 end
 ```
 
-### LUniverse:release
+#### LUniverse:release
 
 #### Definition
 
@@ -1970,7 +1833,7 @@ do
 end
 ```
 
-### LUniverse:remove
+#### LUniverse:remove
 
 #### Definition
 
@@ -2004,7 +1867,7 @@ do
 end
 ```
 
-### LUniverse:removeBlueprint
+#### LUniverse:removeBlueprint
 
 #### Definition
 
@@ -2039,7 +1902,7 @@ do
 end
 ```
 
-### LUniverse:removeRelation
+#### LUniverse:removeRelation
 
 #### Definition
 
@@ -2075,7 +1938,7 @@ do
 end
 ```
 
-### LUniverse:removeSystem
+#### LUniverse:removeSystem
 
 #### Definition
 
@@ -2107,7 +1970,7 @@ do
 end
 ```
 
-### LUniverse:removeTag
+#### LUniverse:removeTag
 
 #### Definition
 
@@ -2141,7 +2004,7 @@ do
 end
 ```
 
-### LUniverse:render
+#### LUniverse:render
 
 #### Definition
 
@@ -2168,7 +2031,7 @@ do
 end
 ```
 
-### LUniverse:serialize
+#### LUniverse:serialize
 
 #### Definition
 
@@ -2198,7 +2061,7 @@ do
 end
 ```
 
-### LUniverse:set
+#### LUniverse:set
 
 #### Definition
 
@@ -2233,7 +2096,7 @@ do
 end
 ```
 
-### LUniverse:setLayer
+#### LUniverse:setLayer
 
 #### Definition
 
@@ -2267,7 +2130,7 @@ do
 end
 ```
 
-### LUniverse:setParent
+#### LUniverse:setParent
 
 #### Definition
 
@@ -2301,7 +2164,7 @@ do
 end
 ```
 
-### LUniverse:snapshot
+#### LUniverse:snapshot
 
 #### Definition
 
@@ -2331,7 +2194,7 @@ do
 end
 ```
 
-### LUniverse:spawn
+#### LUniverse:spawn
 
 #### Definition
 
@@ -2359,7 +2222,7 @@ do
 end
 ```
 
-### LUniverse:spawnBlueprint
+#### LUniverse:spawnBlueprint
 
 #### Definition
 
@@ -2395,7 +2258,7 @@ do
 end
 ```
 
-### LUniverse:spawnBulk
+#### LUniverse:spawnBulk
 
 #### Definition
 
@@ -2433,7 +2296,7 @@ do
 end
 ```
 
-### LUniverse:takeSnapshotDiff
+#### LUniverse:takeSnapshotDiff
 
 #### Definition
 
@@ -2463,7 +2326,7 @@ do
 end
 ```
 
-### LUniverse:type
+#### LUniverse:type
 
 #### Definition
 
@@ -2490,7 +2353,7 @@ do
 end
 ```
 
-### LUniverse:typeOf
+#### LUniverse:typeOf
 
 #### Definition
 
@@ -2522,7 +2385,7 @@ do
 end
 ```
 
-### LUniverse:update
+#### LUniverse:update
 
 #### Definition
 
@@ -2554,7 +2417,7 @@ do
 end
 ```
 
-### LUniverse:updatePhase
+#### LUniverse:updatePhase
 
 #### Definition
 

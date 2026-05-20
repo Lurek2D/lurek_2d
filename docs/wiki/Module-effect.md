@@ -10,509 +10,38 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [ambient.rs](#ambientrs)
+  - [atmosphere.rs](#atmospherers)
+  - [draw.rs](#drawrs)
+  - [effect.rs](#effectrs)
+  - [effect_type.rs](#effecttypers)
+  - [image_effect.rs](#imageeffectrs)
+  - [mod.rs](#modrs)
+  - [overlay.rs](#overlayrs)
+  - [presets.rs](#presetsrs)
+  - [render.rs](#renderrs)
+  - [screen_effects.rs](#screeneffectsrs)
+  - [stack.rs](#stackrs)
+  - [transition.rs](#transitionrs)
+  - [water_overlay.rs](#wateroverlayrs)
+  - [weather.rs](#weatherrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.effect.getEffectTypes](#lurekeffectgeteffecttypes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.getShaderErrorDisplay](#lurekeffectgetshadererrordisplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newCustomEffect](#lurekeffectnewcustomeffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newEffect](#lurekeffectneweffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newImageEffect](#lurekeffectnewimageeffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newOverlay](#lurekeffectnewoverlay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newPass](#lurekeffectnewpass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newPresetStack](#lurekeffectnewpresetstack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newStack](#lurekeffectnewstack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.newTransition](#lurekeffectnewtransition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.effect.setShaderErrorDisplay](#lurekeffectsetshadererrordisplay)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LImageEffect](#limageeffect)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LOverlay](#loverlay)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPostFxEffect](#lpostfxeffect)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPostFxStack](#lpostfxstack)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LScreenTransition](#lscreentransition)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LImageEffect:addEffect](#limageeffectaddeffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:clear](#limageeffectclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:clearEffects](#limageeffectcleareffects)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:clone](#limageeffectclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:effectCount](#limageeffecteffectcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:getEffect](#limageeffectgeteffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:getEffectCount](#limageeffectgeteffectcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:removeByIndex](#limageeffectremovebyindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:removeByName](#limageeffectremovebyname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:removeEffect](#limageeffectremoveeffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:save](#limageeffectsave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:type](#limageeffecttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LImageEffect:typeOf](#limageeffecttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:clear](#loverlayclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:drawToImage](#loverlaydrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:fade](#loverlayfade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:flash](#loverlayflash)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getAmbientColor](#loverlaygetambientcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getCloudCount](#loverlaygetcloudcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getCloudOpacity](#loverlaygetcloudopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getCloudScale](#loverlaygetcloudscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getCloudSpeed](#loverlaygetcloudspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getDimensions](#loverlaygetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getFilmGrainIntensity](#loverlaygetfilmgrainintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getFlashAlpha](#loverlaygetflashalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getFogColor](#loverlaygetfogcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getFogDensity](#loverlaygetfogdensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getHeatHazeIntensity](#loverlaygetheathazeintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getHeight](#loverlaygetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getLightningAlpha](#loverlaygetlightningalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getLightningColor](#loverlaygetlightningcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getShakeOffset](#loverlaygetshakeoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getTimeOfDay](#loverlaygettimeofday)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getVignetteStrength](#loverlaygetvignettestrength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getWater](#loverlaygetwater)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getWeather](#loverlaygetweather)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getWeatherIntensity](#loverlaygetweatherintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getWidth](#loverlaygetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getWindDirection](#loverlaygetwinddirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:getWindSpeed](#loverlaygetwindspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isActive](#loverlayisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isAmbientEnabled](#loverlayisambientenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isCloudShadowsEnabled](#loverlayiscloudshadowsenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isFading](#loverlayisfading)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isFilmGrainEnabled](#loverlayisfilmgrainenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isFlashing](#loverlayisflashing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isFogEnabled](#loverlayisfogenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isHeatHazeEnabled](#loverlayisheathazeenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isShaking](#loverlayisshaking)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isVignetteEnabled](#loverlayisvignetteenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:isWeatherEnabled](#loverlayisweatherenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:pullAmbientFromLight](#loverlaypullambientfromlight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:pushAmbientToLight](#loverlaypushambienttolight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:render](#loverlayrender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:resize](#loverlayresize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setAmbientColor](#loverlaysetambientcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setAmbientEnabled](#loverlaysetambientenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setCloudCount](#loverlaysetcloudcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setCloudOpacity](#loverlaysetcloudopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setCloudScale](#loverlaysetcloudscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setCloudShadows](#loverlaysetcloudshadows)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setCloudSpeed](#loverlaysetcloudspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setCustomShader](#loverlaysetcustomshader)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setFilmGrainEnabled](#loverlaysetfilmgrainenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setFilmGrainIntensity](#loverlaysetfilmgrainintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setFogColor](#loverlaysetfogcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setFogDensity](#loverlaysetfogdensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setFogEnabled](#loverlaysetfogenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setHeatHazeEnabled](#loverlaysetheathazeenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setHeatHazeIntensity](#loverlaysetheathazeintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setLightningColor](#loverlaysetlightningcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setTimeOfDay](#loverlaysettimeofday)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setVignetteEnabled](#loverlaysetvignetteenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setVignetteStrength](#loverlaysetvignettestrength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setWater](#loverlaysetwater)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setWaterTint](#loverlaysetwatertint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setWeather](#loverlaysetweather)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setWeatherEnabled](#loverlaysetweatherenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setWeatherIntensity](#loverlaysetweatherintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setWindDirection](#loverlaysetwinddirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:setWindSpeed](#loverlaysetwindspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:shake](#loverlayshake)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:syncAmbientWithLight](#loverlaysyncambientwithlight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:triggerFade](#loverlaytriggerfade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:triggerFlash](#loverlaytriggerflash)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:triggerLightning](#loverlaytriggerlightning)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:triggerShake](#loverlaytriggershake)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:type](#loverlaytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:typeOf](#loverlaytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOverlay:update](#loverlayupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:disableAutoUniforms](#lpostfxeffectdisableautouniforms)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:enableAutoUniforms](#lpostfxeffectenableautouniforms)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:getEffectType](#lpostfxeffectgeteffecttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:getParameter](#lpostfxeffectgetparameter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:getParameterNames](#lpostfxeffectgetparameternames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:getType](#lpostfxeffectgettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:getTypeName](#lpostfxeffectgettypename)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:hasParameter](#lpostfxeffecthasparameter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:isAutoUniforms](#lpostfxeffectisautouniforms)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:isBuiltIn](#lpostfxeffectisbuiltin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:isEnabled](#lpostfxeffectisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setBrightness](#lpostfxeffectsetbrightness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setContrast](#lpostfxeffectsetcontrast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setEnabled](#lpostfxeffectsetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setIntensity](#lpostfxeffectsetintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setOffset](#lpostfxeffectsetoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setParameter](#lpostfxeffectsetparameter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setRadius](#lpostfxeffectsetradius)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setSaturation](#lpostfxeffectsetsaturation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setScanlineStrength](#lpostfxeffectsetscanlinestrength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setStrength](#lpostfxeffectsetstrength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:setThreshold](#lpostfxeffectsetthreshold)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:type](#lpostfxeffecttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxEffect:typeOf](#lpostfxeffecttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:add](#lpostfxstackadd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:apply](#lpostfxstackapply)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:beginCapture](#lpostfxstackbegincapture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:clear](#lpostfxstackclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:clearFeedback](#lpostfxstackclearfeedback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:dedup](#lpostfxstackdedup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:endCapture](#lpostfxstackendcapture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:getDimensions](#lpostfxstackgetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:getEffect](#lpostfxstackgeteffect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:getEffectCount](#lpostfxstackgeteffectcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:getEnabledEffects](#lpostfxstackgetenabledeffects)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:getFeedback](#lpostfxstackgetfeedback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:getHeight](#lpostfxstackgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:getWidth](#lpostfxstackgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:insert](#lpostfxstackinsert)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:isCapturing](#lpostfxstackiscapturing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:isEmpty](#lpostfxstackisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:isEnabled](#lpostfxstackisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:len](#lpostfxstacklen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:remove](#lpostfxstackremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:resize](#lpostfxstackresize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:setEnabled](#lpostfxstacksetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:setFeedback](#lpostfxstacksetfeedback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:type](#lpostfxstacktype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPostFxStack:typeOf](#lpostfxstacktypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:color](#lscreentransitioncolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:isActive](#lscreentransitionisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:isDone](#lscreentransitionisdone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:kind](#lscreentransitionkind)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:play](#lscreentransitionplay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:progress](#lscreentransitionprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:reverse](#lscreentransitionreverse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:setColor](#lscreentransitionsetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:type](#lscreentransitiontype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:typeOf](#lscreentransitiontypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LScreenTransition:update](#lscreentransitionupdate)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LImageEffect Methods](#limageeffect-methods)
+  - [LOverlay Methods](#loverlay-methods)
+  - [LPostFxEffect Methods](#lpostfxeffect-methods)
+  - [LPostFxStack Methods](#lpostfxstack-methods)
+  - [LScreenTransition Methods](#lscreentransition-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -536,6 +65,110 @@ Post-processing and screen effect pipeline operating on rendered frames. `PostFx
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `ambient.rs`
+
+- Global ambient tint state driven by a time-of-day curve.
+- Maps hour values (0–24) to RGBA color through piecewise dawn/day/dusk/night segments.
+- Consumed by the overlay renderer when the ambient effect is enabled.
+
+### `atmosphere.rs`
+
+- State structs for full-screen atmosphere overlays: clouds, fog, heat haze, vignette, film grain, and lightning flash.
+- Each struct carries enabled flag plus effect-specific parameters (density, intensity, color, speed).
+- All default to disabled so overlays are opt-in per scene.
+
+### `draw.rs`
+
+- Render a preview image summarizing the current post-FX stack state.
+- Produce a solid-color thumbnail indicating whether any effects are active.
+
+### `effect.rs`
+
+- Post-processing effect instance holding type, parameters, and enabled state.
+- Built-in effects carry default params; custom effects bind to an explicit shader id.
+- Parameter accessors for reading, writing, and listing scalar uniforms.
+
+### `effect_type.rs`
+
+- Post-processing effect type enumeration and name registry.
+- Canonical lowercase name mapping for Lua-facing effect lookup.
+- Debug label generation for renderer diagnostics.
+- Default parameter tables for each built-in effect.
+- Built-in effect catalog excluding the custom shader pass.
+
+### `image_effect.rs`
+
+- Image-scoped post-processing effect pipeline that groups and orders shader passes.
+- Provides add, remove, lookup-by-index/name, and clear operations on owned or shared effects.
+- Converts the active pipeline into renderer-ready `ShaderPassDescriptor` sequences.
+
+### `mod.rs`
+
+- Post-processing effect stack: bloom, blur, CRT, vignette, film grain, and custom shaders.
+- Screen overlays: weather particles, fog, heat haze, water distortion, flashes, and fades.
+- Atmosphere and ambient color derived from time-of-day.
+- Named presets and per-image effect ordering.
+
+### `overlay.rs`
+
+- Central `Overlay` struct owning every screen-space post-world effect state block.
+- Per-frame update loop advancing weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning.
+- Weather particle spawning and simulation for rain, snow, hail, dust, leaves, ash, and pollen modes.
+- Trigger API for flash, camera shake, screen fade, and lightning flash events.
+- Query helpers for shake offset, flash/lightning alpha, active state, and target dimensions.
+- Render command builder emitting full-screen colored rectangles for flash, fade, lightning, and vignette overlays.
+- Clear/reset restoring all subsystems to default inactive state.
+- Debug visualization: state panels, flash frame strips, shake offset trails, fade transition strips, and combined trigger previews.
+
+### `presets.rs`
+
+- Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).
+- Preset construction with viewport-sized stack initialization.
+- Static name lookup for canonical preset identifiers.
+
+### `render.rs`
+
+- Render-command integration for the post-effects stack.
+- Emits begin/end/apply command sequences consumed by the renderer.
+- Skips command generation when no effects are enabled.
+
+### `screen_effects.rs`
+
+- Full-screen effect state machines: flash, shake, and fade.
+- Each state tracks active flag, timing, and per-frame parameters.
+- Deterministic PRNG for shake offsets without external RNG dependency.
+
+### `stack.rs`
+
+- Ordered post-processing effect stack with per-entry enable flags.
+- Index-based effect references aligned with a parallel enabled vector.
+- Stack manipulation: add, remove, insert, reorder, deduplicate.
+- Query helpers for enabled subset, dimensions, and positional lookup.
+- Debug visualization renderers for stack state, catalogs, parameters, and type bars.
+
+### `transition.rs`
+
+- Full-screen transition effects: fade, wipe, iris wipe, and dissolve.
+- String-based kind parsing with canonical name round-tripping.
+- Time-based playback lifecycle with forward and reverse modes.
+- Normalized progress query for renderer consumption.
+
+### `water_overlay.rs`
+
+- Animated water distortion overlay with configurable amplitude, frequency, and speed.
+- Shallow-water tint and depth-based color shift with independent blend strengths.
+- Time-accumulating update loop that advances the wave pattern each frame.
+
+### `weather.rs`
+
+- Weather particle simulation types and state management.
+- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
+- Tracks particle pool, wind parameters, and internal PRNG.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LImageEffect` (13 methods) - Lua-side handle for an image effect chain detached from live post-effect capture.
@@ -549,26 +182,18 @@ Post-processing and screen effect pipeline operating on rendered frames. `PostFx
 ## 📖 API Overview
 
 - Source spec: [docs/specs/effect.md](../blob/main/docs/specs/effect.md)
+- Module-level functions: 11
+- Lua-visible types: 5
+- Total type methods: 150
 
-```lua
-lurek.effect.getEffectTypes() -> string[] -- Returns all built-in post-processing effect type names.
-lurek.effect.getShaderErrorDisplay() -> boolean -- Returns whether renderer shader error display overlays are enabled.
-lurek.effect.newCustomEffect(shader_id: integer) -> LPostFxEffect -- Creates a custom post-processing effect that references an existing shader id.
-lurek.effect.newEffect(type_name: string) -> LPostFxEffect -- Creates a built-in post-processing effect by type name.
-lurek.effect.newImageEffect([spec]: LuaValue, [params]: table) -> LImageEffect -- Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
-lurek.effect.newOverlay([w]: integer, [h]: integer) -> LOverlay -- Creates an overlay controller for screen effects using optional dimensions.
-lurek.effect.newPass(shader_id: integer) -> LPostFxEffect -- Creates a custom post-processing pass from an existing shader id.
-lurek.effect.newPresetStack(name: string, [w]: integer, [h]: integer) -> LPostFxStack -- Creates a named preset post-processing stack with optional dimensions.
-lurek.effect.newStack([w]: integer, [h]: integer) -> LPostFxStack -- Creates a post-processing stack using optional dimensions or the current window size.
-lurek.effect.newTransition([kind]: string, [duration]: number, [color_tbl]: table) -> LScreenTransition -- Creates a timed screen transition with optional kind, duration, and color.
-lurek.effect.setShaderErrorDisplay(enabled: boolean) -- Enables or disables renderer shader error display overlays.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.effect.getEffectTypes
+### Module-Level Functions
+
+#### lurek.effect.getEffectTypes
 
 #### Definition
 
@@ -595,7 +220,7 @@ do
 end
 ```
 
-### lurek.effect.getShaderErrorDisplay
+#### lurek.effect.getShaderErrorDisplay
 
 #### Definition
 
@@ -622,7 +247,7 @@ do
 end
 ```
 
-### lurek.effect.newCustomEffect
+#### lurek.effect.newCustomEffect
 
 #### Definition
 
@@ -654,7 +279,7 @@ do
 end
 ```
 
-### lurek.effect.newEffect
+#### lurek.effect.newEffect
 
 #### Definition
 
@@ -686,7 +311,7 @@ do
 end
 ```
 
-### lurek.effect.newImageEffect
+#### lurek.effect.newImageEffect
 
 #### Definition
 
@@ -720,7 +345,7 @@ do
 end
 ```
 
-### lurek.effect.newOverlay
+#### lurek.effect.newOverlay
 
 #### Definition
 
@@ -754,7 +379,7 @@ do
 end
 ```
 
-### lurek.effect.newPass
+#### lurek.effect.newPass
 
 #### Definition
 
@@ -786,7 +411,7 @@ do
 end
 ```
 
-### lurek.effect.newPresetStack
+#### lurek.effect.newPresetStack
 
 #### Definition
 
@@ -822,7 +447,7 @@ do
 end
 ```
 
-### lurek.effect.newStack
+#### lurek.effect.newStack
 
 #### Definition
 
@@ -856,7 +481,7 @@ do
 end
 ```
 
-### lurek.effect.newTransition
+#### lurek.effect.newTransition
 
 #### Definition
 
@@ -892,7 +517,7 @@ do
 end
 ```
 
-### lurek.effect.setShaderErrorDisplay
+#### lurek.effect.setShaderErrorDisplay
 
 #### Definition
 
@@ -1056,7 +681,9 @@ end
 
 ## 🔹 Module Methods
 
-### LImageEffect:addEffect
+### LImageEffect Methods
+
+#### LImageEffect:addEffect
 
 #### Definition
 
@@ -1089,7 +716,7 @@ do
 end
 ```
 
-### LImageEffect:clear
+#### LImageEffect:clear
 
 #### Definition
 
@@ -1115,7 +742,7 @@ do
 end
 ```
 
-### LImageEffect:clearEffects
+#### LImageEffect:clearEffects
 
 #### Definition
 
@@ -1141,7 +768,7 @@ do
 end
 ```
 
-### LImageEffect:clone
+#### LImageEffect:clone
 
 #### Definition
 
@@ -1170,7 +797,7 @@ do
 end
 ```
 
-### LImageEffect:effectCount
+#### LImageEffect:effectCount
 
 #### Definition
 
@@ -1198,7 +825,7 @@ do
 end
 ```
 
-### LImageEffect:getEffect
+#### LImageEffect:getEffect
 
 #### Definition
 
@@ -1232,7 +859,7 @@ do
 end
 ```
 
-### LImageEffect:getEffectCount
+#### LImageEffect:getEffectCount
 
 #### Definition
 
@@ -1261,7 +888,7 @@ do
 end
 ```
 
-### LImageEffect:removeByIndex
+#### LImageEffect:removeByIndex
 
 #### Definition
 
@@ -1295,7 +922,7 @@ do
 end
 ```
 
-### LImageEffect:removeByName
+#### LImageEffect:removeByName
 
 #### Definition
 
@@ -1329,7 +956,7 @@ do
 end
 ```
 
-### LImageEffect:removeEffect
+#### LImageEffect:removeEffect
 
 #### Definition
 
@@ -1363,7 +990,7 @@ do
 end
 ```
 
-### LImageEffect:save
+#### LImageEffect:save
 
 #### Definition
 
@@ -1391,7 +1018,7 @@ do
 end
 ```
 
-### LImageEffect:type
+#### LImageEffect:type
 
 #### Definition
 
@@ -1418,7 +1045,7 @@ do
 end
 ```
 
-### LImageEffect:typeOf
+#### LImageEffect:typeOf
 
 #### Definition
 
@@ -1450,7 +1077,9 @@ do
 end
 ```
 
-### LOverlay:clear
+### LOverlay Methods
+
+#### LOverlay:clear
 
 #### Definition
 
@@ -1476,7 +1105,7 @@ do
 end
 ```
 
-### LOverlay:drawToImage
+#### LOverlay:drawToImage
 
 #### Definition
 
@@ -1512,7 +1141,7 @@ do
 end
 ```
 
-### LOverlay:fade
+#### LOverlay:fade
 
 #### Definition
 
@@ -1550,7 +1179,7 @@ do
 end
 ```
 
-### LOverlay:flash
+#### LOverlay:flash
 
 #### Definition
 
@@ -1588,7 +1217,7 @@ do
 end
 ```
 
-### LOverlay:getAmbientColor
+#### LOverlay:getAmbientColor
 
 #### Definition
 
@@ -1619,7 +1248,7 @@ do
 end
 ```
 
-### LOverlay:getCloudCount
+#### LOverlay:getCloudCount
 
 #### Definition
 
@@ -1647,7 +1276,7 @@ do
 end
 ```
 
-### LOverlay:getCloudOpacity
+#### LOverlay:getCloudOpacity
 
 #### Definition
 
@@ -1675,7 +1304,7 @@ do
 end
 ```
 
-### LOverlay:getCloudScale
+#### LOverlay:getCloudScale
 
 #### Definition
 
@@ -1703,7 +1332,7 @@ do
 end
 ```
 
-### LOverlay:getCloudSpeed
+#### LOverlay:getCloudSpeed
 
 #### Definition
 
@@ -1731,7 +1360,7 @@ do
 end
 ```
 
-### LOverlay:getDimensions
+#### LOverlay:getDimensions
 
 #### Definition
 
@@ -1760,7 +1389,7 @@ do
 end
 ```
 
-### LOverlay:getFilmGrainIntensity
+#### LOverlay:getFilmGrainIntensity
 
 #### Definition
 
@@ -1788,7 +1417,7 @@ do
 end
 ```
 
-### LOverlay:getFlashAlpha
+#### LOverlay:getFlashAlpha
 
 #### Definition
 
@@ -1815,7 +1444,7 @@ do
 end
 ```
 
-### LOverlay:getFogColor
+#### LOverlay:getFogColor
 
 #### Definition
 
@@ -1847,7 +1476,7 @@ do
 end
 ```
 
-### LOverlay:getFogDensity
+#### LOverlay:getFogDensity
 
 #### Definition
 
@@ -1875,7 +1504,7 @@ do
 end
 ```
 
-### LOverlay:getHeatHazeIntensity
+#### LOverlay:getHeatHazeIntensity
 
 #### Definition
 
@@ -1903,7 +1532,7 @@ do
 end
 ```
 
-### LOverlay:getHeight
+#### LOverlay:getHeight
 
 #### Definition
 
@@ -1930,7 +1559,7 @@ do
 end
 ```
 
-### LOverlay:getLightningAlpha
+#### LOverlay:getLightningAlpha
 
 #### Definition
 
@@ -1957,7 +1586,7 @@ do
 end
 ```
 
-### LOverlay:getLightningColor
+#### LOverlay:getLightningColor
 
 #### Definition
 
@@ -1988,7 +1617,7 @@ do
 end
 ```
 
-### LOverlay:getShakeOffset
+#### LOverlay:getShakeOffset
 
 #### Definition
 
@@ -2017,7 +1646,7 @@ do
 end
 ```
 
-### LOverlay:getTimeOfDay
+#### LOverlay:getTimeOfDay
 
 #### Definition
 
@@ -2045,7 +1674,7 @@ do
 end
 ```
 
-### LOverlay:getVignetteStrength
+#### LOverlay:getVignetteStrength
 
 #### Definition
 
@@ -2073,7 +1702,7 @@ do
 end
 ```
 
-### LOverlay:getWater
+#### LOverlay:getWater
 
 #### Definition
 
@@ -2101,7 +1730,7 @@ do
 end
 ```
 
-### LOverlay:getWeather
+#### LOverlay:getWeather
 
 #### Definition
 
@@ -2129,7 +1758,7 @@ do
 end
 ```
 
-### LOverlay:getWeatherIntensity
+#### LOverlay:getWeatherIntensity
 
 #### Definition
 
@@ -2157,7 +1786,7 @@ do
 end
 ```
 
-### LOverlay:getWidth
+#### LOverlay:getWidth
 
 #### Definition
 
@@ -2184,7 +1813,7 @@ do
 end
 ```
 
-### LOverlay:getWindDirection
+#### LOverlay:getWindDirection
 
 #### Definition
 
@@ -2212,7 +1841,7 @@ do
 end
 ```
 
-### LOverlay:getWindSpeed
+#### LOverlay:getWindSpeed
 
 #### Definition
 
@@ -2240,7 +1869,7 @@ do
 end
 ```
 
-### LOverlay:isActive
+#### LOverlay:isActive
 
 #### Definition
 
@@ -2267,7 +1896,7 @@ do
 end
 ```
 
-### LOverlay:isAmbientEnabled
+#### LOverlay:isAmbientEnabled
 
 #### Definition
 
@@ -2294,7 +1923,7 @@ do
 end
 ```
 
-### LOverlay:isCloudShadowsEnabled
+#### LOverlay:isCloudShadowsEnabled
 
 #### Definition
 
@@ -2321,7 +1950,7 @@ do
 end
 ```
 
-### LOverlay:isFading
+#### LOverlay:isFading
 
 #### Definition
 
@@ -2348,7 +1977,7 @@ do
 end
 ```
 
-### LOverlay:isFilmGrainEnabled
+#### LOverlay:isFilmGrainEnabled
 
 #### Definition
 
@@ -2375,7 +2004,7 @@ do
 end
 ```
 
-### LOverlay:isFlashing
+#### LOverlay:isFlashing
 
 #### Definition
 
@@ -2402,7 +2031,7 @@ do
 end
 ```
 
-### LOverlay:isFogEnabled
+#### LOverlay:isFogEnabled
 
 #### Definition
 
@@ -2429,7 +2058,7 @@ do
 end
 ```
 
-### LOverlay:isHeatHazeEnabled
+#### LOverlay:isHeatHazeEnabled
 
 #### Definition
 
@@ -2456,7 +2085,7 @@ do
 end
 ```
 
-### LOverlay:isShaking
+#### LOverlay:isShaking
 
 #### Definition
 
@@ -2483,7 +2112,7 @@ do
 end
 ```
 
-### LOverlay:isVignetteEnabled
+#### LOverlay:isVignetteEnabled
 
 #### Definition
 
@@ -2510,7 +2139,7 @@ do
 end
 ```
 
-### LOverlay:isWeatherEnabled
+#### LOverlay:isWeatherEnabled
 
 #### Definition
 
@@ -2537,7 +2166,7 @@ do
 end
 ```
 
-### LOverlay:pullAmbientFromLight
+#### LOverlay:pullAmbientFromLight
 
 #### Definition
 
@@ -2562,7 +2191,7 @@ do
 end
 ```
 
-### LOverlay:pushAmbientToLight
+#### LOverlay:pushAmbientToLight
 
 #### Definition
 
@@ -2587,7 +2216,7 @@ do
 end
 ```
 
-### LOverlay:render
+#### LOverlay:render
 
 #### Definition
 
@@ -2612,7 +2241,7 @@ do
 end
 ```
 
-### LOverlay:resize
+#### LOverlay:resize
 
 #### Definition
 
@@ -2644,7 +2273,7 @@ do
 end
 ```
 
-### LOverlay:setAmbientColor
+#### LOverlay:setAmbientColor
 
 #### Definition
 
@@ -2681,7 +2310,7 @@ do
 end
 ```
 
-### LOverlay:setAmbientEnabled
+#### LOverlay:setAmbientEnabled
 
 #### Definition
 
@@ -2711,7 +2340,7 @@ do
 end
 ```
 
-### LOverlay:setCloudCount
+#### LOverlay:setCloudCount
 
 #### Definition
 
@@ -2741,7 +2370,7 @@ do
 end
 ```
 
-### LOverlay:setCloudOpacity
+#### LOverlay:setCloudOpacity
 
 #### Definition
 
@@ -2771,7 +2400,7 @@ do
 end
 ```
 
-### LOverlay:setCloudScale
+#### LOverlay:setCloudScale
 
 #### Definition
 
@@ -2801,7 +2430,7 @@ do
 end
 ```
 
-### LOverlay:setCloudShadows
+#### LOverlay:setCloudShadows
 
 #### Definition
 
@@ -2831,7 +2460,7 @@ do
 end
 ```
 
-### LOverlay:setCloudSpeed
+#### LOverlay:setCloudSpeed
 
 #### Definition
 
@@ -2861,7 +2490,7 @@ do
 end
 ```
 
-### LOverlay:setCustomShader
+#### LOverlay:setCustomShader
 
 #### Definition
 
@@ -2891,7 +2520,7 @@ do
 end
 ```
 
-### LOverlay:setFilmGrainEnabled
+#### LOverlay:setFilmGrainEnabled
 
 #### Definition
 
@@ -2921,7 +2550,7 @@ do
 end
 ```
 
-### LOverlay:setFilmGrainIntensity
+#### LOverlay:setFilmGrainIntensity
 
 #### Definition
 
@@ -2951,7 +2580,7 @@ do
 end
 ```
 
-### LOverlay:setFogColor
+#### LOverlay:setFogColor
 
 #### Definition
 
@@ -2988,7 +2617,7 @@ do
 end
 ```
 
-### LOverlay:setFogDensity
+#### LOverlay:setFogDensity
 
 #### Definition
 
@@ -3018,7 +2647,7 @@ do
 end
 ```
 
-### LOverlay:setFogEnabled
+#### LOverlay:setFogEnabled
 
 #### Definition
 
@@ -3048,7 +2677,7 @@ do
 end
 ```
 
-### LOverlay:setHeatHazeEnabled
+#### LOverlay:setHeatHazeEnabled
 
 #### Definition
 
@@ -3078,7 +2707,7 @@ do
 end
 ```
 
-### LOverlay:setHeatHazeIntensity
+#### LOverlay:setHeatHazeIntensity
 
 #### Definition
 
@@ -3108,7 +2737,7 @@ do
 end
 ```
 
-### LOverlay:setLightningColor
+#### LOverlay:setLightningColor
 
 #### Definition
 
@@ -3145,7 +2774,7 @@ do
 end
 ```
 
-### LOverlay:setTimeOfDay
+#### LOverlay:setTimeOfDay
 
 #### Definition
 
@@ -3175,7 +2804,7 @@ do
 end
 ```
 
-### LOverlay:setVignetteEnabled
+#### LOverlay:setVignetteEnabled
 
 #### Definition
 
@@ -3205,7 +2834,7 @@ do
 end
 ```
 
-### LOverlay:setVignetteStrength
+#### LOverlay:setVignetteStrength
 
 #### Definition
 
@@ -3235,7 +2864,7 @@ do
 end
 ```
 
-### LOverlay:setWater
+#### LOverlay:setWater
 
 #### Definition
 
@@ -3269,7 +2898,7 @@ do
 end
 ```
 
-### LOverlay:setWaterTint
+#### LOverlay:setWaterTint
 
 #### Definition
 
@@ -3306,7 +2935,7 @@ do
 end
 ```
 
-### LOverlay:setWeather
+#### LOverlay:setWeather
 
 #### Definition
 
@@ -3336,7 +2965,7 @@ do
 end
 ```
 
-### LOverlay:setWeatherEnabled
+#### LOverlay:setWeatherEnabled
 
 #### Definition
 
@@ -3366,7 +2995,7 @@ do
 end
 ```
 
-### LOverlay:setWeatherIntensity
+#### LOverlay:setWeatherIntensity
 
 #### Definition
 
@@ -3396,7 +3025,7 @@ do
 end
 ```
 
-### LOverlay:setWindDirection
+#### LOverlay:setWindDirection
 
 #### Definition
 
@@ -3426,7 +3055,7 @@ do
 end
 ```
 
-### LOverlay:setWindSpeed
+#### LOverlay:setWindSpeed
 
 #### Definition
 
@@ -3456,7 +3085,7 @@ do
 end
 ```
 
-### LOverlay:shake
+#### LOverlay:shake
 
 #### Definition
 
@@ -3488,7 +3117,7 @@ do
 end
 ```
 
-### LOverlay:syncAmbientWithLight
+#### LOverlay:syncAmbientWithLight
 
 #### Definition
 
@@ -3518,7 +3147,7 @@ do
 end
 ```
 
-### LOverlay:triggerFade
+#### LOverlay:triggerFade
 
 #### Definition
 
@@ -3556,7 +3185,7 @@ do
 end
 ```
 
-### LOverlay:triggerFlash
+#### LOverlay:triggerFlash
 
 #### Definition
 
@@ -3594,7 +3223,7 @@ do
 end
 ```
 
-### LOverlay:triggerLightning
+#### LOverlay:triggerLightning
 
 #### Definition
 
@@ -3619,7 +3248,7 @@ do
 end
 ```
 
-### LOverlay:triggerShake
+#### LOverlay:triggerShake
 
 #### Definition
 
@@ -3651,7 +3280,7 @@ do
 end
 ```
 
-### LOverlay:type
+#### LOverlay:type
 
 #### Definition
 
@@ -3678,7 +3307,7 @@ do
 end
 ```
 
-### LOverlay:typeOf
+#### LOverlay:typeOf
 
 #### Definition
 
@@ -3710,7 +3339,7 @@ do
 end
 ```
 
-### LOverlay:update
+#### LOverlay:update
 
 #### Definition
 
@@ -3740,7 +3369,9 @@ do
 end
 ```
 
-### LPostFxEffect:disableAutoUniforms
+### LPostFxEffect Methods
+
+#### LPostFxEffect:disableAutoUniforms
 
 #### Definition
 
@@ -3765,7 +3396,7 @@ do
 end
 ```
 
-### LPostFxEffect:enableAutoUniforms
+#### LPostFxEffect:enableAutoUniforms
 
 #### Definition
 
@@ -3790,7 +3421,7 @@ do
 end
 ```
 
-### LPostFxEffect:getEffectType
+#### LPostFxEffect:getEffectType
 
 #### Definition
 
@@ -3817,7 +3448,7 @@ do
 end
 ```
 
-### LPostFxEffect:getParameter
+#### LPostFxEffect:getParameter
 
 #### Definition
 
@@ -3853,7 +3484,7 @@ do
 end
 ```
 
-### LPostFxEffect:getParameterNames
+#### LPostFxEffect:getParameterNames
 
 #### Definition
 
@@ -3882,7 +3513,7 @@ do
 end
 ```
 
-### LPostFxEffect:getType
+#### LPostFxEffect:getType
 
 #### Definition
 
@@ -3909,7 +3540,7 @@ do
 end
 ```
 
-### LPostFxEffect:getTypeName
+#### LPostFxEffect:getTypeName
 
 #### Definition
 
@@ -3936,7 +3567,7 @@ do
 end
 ```
 
-### LPostFxEffect:hasParameter
+#### LPostFxEffect:hasParameter
 
 #### Definition
 
@@ -3969,7 +3600,7 @@ do
 end
 ```
 
-### LPostFxEffect:isAutoUniforms
+#### LPostFxEffect:isAutoUniforms
 
 #### Definition
 
@@ -3996,7 +3627,7 @@ do
 end
 ```
 
-### LPostFxEffect:isBuiltIn
+#### LPostFxEffect:isBuiltIn
 
 #### Definition
 
@@ -4023,7 +3654,7 @@ do
 end
 ```
 
-### LPostFxEffect:isEnabled
+#### LPostFxEffect:isEnabled
 
 #### Definition
 
@@ -4050,7 +3681,7 @@ do
 end
 ```
 
-### LPostFxEffect:setBrightness
+#### LPostFxEffect:setBrightness
 
 #### Definition
 
@@ -4080,7 +3711,7 @@ do
 end
 ```
 
-### LPostFxEffect:setContrast
+#### LPostFxEffect:setContrast
 
 #### Definition
 
@@ -4110,7 +3741,7 @@ do
 end
 ```
 
-### LPostFxEffect:setEnabled
+#### LPostFxEffect:setEnabled
 
 #### Definition
 
@@ -4140,7 +3771,7 @@ do
 end
 ```
 
-### LPostFxEffect:setIntensity
+#### LPostFxEffect:setIntensity
 
 #### Definition
 
@@ -4170,7 +3801,7 @@ do
 end
 ```
 
-### LPostFxEffect:setOffset
+#### LPostFxEffect:setOffset
 
 #### Definition
 
@@ -4200,7 +3831,7 @@ do
 end
 ```
 
-### LPostFxEffect:setParameter
+#### LPostFxEffect:setParameter
 
 #### Definition
 
@@ -4232,7 +3863,7 @@ do
 end
 ```
 
-### LPostFxEffect:setRadius
+#### LPostFxEffect:setRadius
 
 #### Definition
 
@@ -4262,7 +3893,7 @@ do
 end
 ```
 
-### LPostFxEffect:setSaturation
+#### LPostFxEffect:setSaturation
 
 #### Definition
 
@@ -4292,7 +3923,7 @@ do
 end
 ```
 
-### LPostFxEffect:setScanlineStrength
+#### LPostFxEffect:setScanlineStrength
 
 #### Definition
 
@@ -4322,7 +3953,7 @@ do
 end
 ```
 
-### LPostFxEffect:setStrength
+#### LPostFxEffect:setStrength
 
 #### Definition
 
@@ -4352,7 +3983,7 @@ do
 end
 ```
 
-### LPostFxEffect:setThreshold
+#### LPostFxEffect:setThreshold
 
 #### Definition
 
@@ -4382,7 +4013,7 @@ do
 end
 ```
 
-### LPostFxEffect:type
+#### LPostFxEffect:type
 
 #### Definition
 
@@ -4409,7 +4040,7 @@ do
 end
 ```
 
-### LPostFxEffect:typeOf
+#### LPostFxEffect:typeOf
 
 #### Definition
 
@@ -4441,7 +4072,9 @@ do
 end
 ```
 
-### LPostFxStack:add
+### LPostFxStack Methods
+
+#### LPostFxStack:add
 
 #### Definition
 
@@ -4472,7 +4105,7 @@ do
 end
 ```
 
-### LPostFxStack:apply
+#### LPostFxStack:apply
 
 #### Definition
 
@@ -4498,7 +4131,7 @@ do
 end
 ```
 
-### LPostFxStack:beginCapture
+#### LPostFxStack:beginCapture
 
 #### Definition
 
@@ -4524,7 +4157,7 @@ do
 end
 ```
 
-### LPostFxStack:clear
+#### LPostFxStack:clear
 
 #### Definition
 
@@ -4550,7 +4183,7 @@ do
 end
 ```
 
-### LPostFxStack:clearFeedback
+#### LPostFxStack:clearFeedback
 
 #### Definition
 
@@ -4576,7 +4209,7 @@ do
 end
 ```
 
-### LPostFxStack:dedup
+#### LPostFxStack:dedup
 
 #### Definition
 
@@ -4606,7 +4239,7 @@ do
 end
 ```
 
-### LPostFxStack:endCapture
+#### LPostFxStack:endCapture
 
 #### Definition
 
@@ -4633,7 +4266,7 @@ do
 end
 ```
 
-### LPostFxStack:getDimensions
+#### LPostFxStack:getDimensions
 
 #### Definition
 
@@ -4662,7 +4295,7 @@ do
 end
 ```
 
-### LPostFxStack:getEffect
+#### LPostFxStack:getEffect
 
 #### Definition
 
@@ -4696,7 +4329,7 @@ do
 end
 ```
 
-### LPostFxStack:getEffectCount
+#### LPostFxStack:getEffectCount
 
 #### Definition
 
@@ -4725,7 +4358,7 @@ do
 end
 ```
 
-### LPostFxStack:getEnabledEffects
+#### LPostFxStack:getEnabledEffects
 
 #### Definition
 
@@ -4755,7 +4388,7 @@ do
 end
 ```
 
-### LPostFxStack:getFeedback
+#### LPostFxStack:getFeedback
 
 #### Definition
 
@@ -4783,7 +4416,7 @@ do
 end
 ```
 
-### LPostFxStack:getHeight
+#### LPostFxStack:getHeight
 
 #### Definition
 
@@ -4810,7 +4443,7 @@ do
 end
 ```
 
-### LPostFxStack:getWidth
+#### LPostFxStack:getWidth
 
 #### Definition
 
@@ -4837,7 +4470,7 @@ do
 end
 ```
 
-### LPostFxStack:insert
+#### LPostFxStack:insert
 
 #### Definition
 
@@ -4870,7 +4503,7 @@ do
 end
 ```
 
-### LPostFxStack:isCapturing
+#### LPostFxStack:isCapturing
 
 #### Definition
 
@@ -4897,7 +4530,7 @@ do
 end
 ```
 
-### LPostFxStack:isEmpty
+#### LPostFxStack:isEmpty
 
 #### Definition
 
@@ -4924,7 +4557,7 @@ do
 end
 ```
 
-### LPostFxStack:isEnabled
+#### LPostFxStack:isEnabled
 
 #### Definition
 
@@ -4958,7 +4591,7 @@ do
 end
 ```
 
-### LPostFxStack:len
+#### LPostFxStack:len
 
 #### Definition
 
@@ -4986,7 +4619,7 @@ do
 end
 ```
 
-### LPostFxStack:remove
+#### LPostFxStack:remove
 
 #### Definition
 
@@ -5021,7 +4654,7 @@ do
 end
 ```
 
-### LPostFxStack:resize
+#### LPostFxStack:resize
 
 #### Definition
 
@@ -5053,7 +4686,7 @@ do
 end
 ```
 
-### LPostFxStack:setEnabled
+#### LPostFxStack:setEnabled
 
 #### Definition
 
@@ -5087,7 +4720,7 @@ do
 end
 ```
 
-### LPostFxStack:setFeedback
+#### LPostFxStack:setFeedback
 
 #### Definition
 
@@ -5117,7 +4750,7 @@ do
 end
 ```
 
-### LPostFxStack:type
+#### LPostFxStack:type
 
 #### Definition
 
@@ -5144,7 +4777,7 @@ do
 end
 ```
 
-### LPostFxStack:typeOf
+#### LPostFxStack:typeOf
 
 #### Definition
 
@@ -5176,7 +4809,9 @@ do
 end
 ```
 
-### LScreenTransition:color
+### LScreenTransition Methods
+
+#### LScreenTransition:color
 
 #### Definition
 
@@ -5207,7 +4842,7 @@ do
 end
 ```
 
-### LScreenTransition:isActive
+#### LScreenTransition:isActive
 
 #### Definition
 
@@ -5234,7 +4869,7 @@ do
 end
 ```
 
-### LScreenTransition:isDone
+#### LScreenTransition:isDone
 
 #### Definition
 
@@ -5263,7 +4898,7 @@ do
 end
 ```
 
-### LScreenTransition:kind
+#### LScreenTransition:kind
 
 #### Definition
 
@@ -5290,7 +4925,7 @@ do
 end
 ```
 
-### LScreenTransition:play
+#### LScreenTransition:play
 
 #### Definition
 
@@ -5315,7 +4950,7 @@ do
 end
 ```
 
-### LScreenTransition:progress
+#### LScreenTransition:progress
 
 #### Definition
 
@@ -5344,7 +4979,7 @@ do
 end
 ```
 
-### LScreenTransition:reverse
+#### LScreenTransition:reverse
 
 #### Definition
 
@@ -5371,7 +5006,7 @@ do
 end
 ```
 
-### LScreenTransition:setColor
+#### LScreenTransition:setColor
 
 #### Definition
 
@@ -5402,7 +5037,7 @@ do
 end
 ```
 
-### LScreenTransition:type
+#### LScreenTransition:type
 
 #### Definition
 
@@ -5429,7 +5064,7 @@ do
 end
 ```
 
-### LScreenTransition:typeOf
+#### LScreenTransition:typeOf
 
 #### Definition
 
@@ -5461,7 +5096,7 @@ do
 end
 ```
 
-### LScreenTransition:update
+#### LScreenTransition:update
 
 #### Definition
 

@@ -10,233 +10,28 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [engine.rs](#enginers)
+  - [handle.rs](#handlers)
+  - [mod.rs](#modrs)
+  - [spring.rs](#springrs)
+  - [state.rs](#staters)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.tween.cancelAll](#lurektweencancelall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.delay](#lurektweendelay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.getActiveCount](#lurektweengetactivecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.getEasingNames](#lurektweengeteasingnames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.newState](#lurektweennewstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.parallel](#lurektweenparallel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.registerEasing](#lurektweenregistereasing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.sequence](#lurektweensequence)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.spring](#lurektweenspring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.to](#lurektweento)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.tween](#lurektweentween)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.tweenChain](#lurektweentweenchain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.tweenColor](#lurektweentweencolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tween.update](#lurektweenupdate)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LSpring](#lspring)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTween](#ltween)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTweenParallel](#ltweenparallel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTweenSequence](#ltweensequence)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTweenState](#ltweenstate)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LSpring:cancel](#lspringcancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:getPosition](#lspringgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:isActive](#lspringisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:isSettled](#lspringissettled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:setDamping](#lspringsetdamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:setStiffness](#lspringsetstiffness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:setTarget](#lspringsettarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:type](#lspringtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:typeOf](#lspringtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpring:update](#lspringupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:await](#ltweenawait)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:cancel](#ltweencancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getDuration](#ltweengetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getElapsed](#ltweengetelapsed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getFields](#ltweengetfields)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getProgress](#ltweengetprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getRemaining](#ltweengetremaining)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:isActive](#ltweenisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:onCancel](#ltweenoncancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:onComplete](#ltweenoncomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:onUpdate](#ltweenonupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:pause](#ltweenpause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:relative](#ltweenrelative)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:resume](#ltweenresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:setRelative](#ltweensetrelative)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:setRepeat](#ltweensetrepeat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:setYoyo](#ltweensetyoyo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:type](#ltweentype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:typeOf](#ltweentypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:add](#ltweenparalleladd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:cancel](#ltweenparallelcancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:isActive](#ltweenparallelisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:onComplete](#ltweenparalleloncomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:start](#ltweenparallelstart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:tween](#ltweenparalleltween)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:type](#ltweenparalleltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenParallel:typeOf](#ltweenparalleltypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:await](#ltweensequenceawait)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:callback](#ltweensequencecallback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:cancel](#ltweensequencecancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:delay](#ltweensequencedelay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:getProgress](#ltweensequencegetprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:isActive](#ltweensequenceisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:onComplete](#ltweensequenceoncomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:start](#ltweensequencestart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:tween](#ltweensequencetween)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:type](#ltweensequencetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenSequence:typeOf](#ltweensequencetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenState:isComplete](#ltweenstateiscomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenState:lerp](#ltweenstatelerp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenState:reset](#ltweenstatereset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenState:t](#ltweenstatet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenState:tick](#ltweenstatetick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenState:type](#ltweenstatetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTweenState:typeOf](#ltweenstatetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LSpring Methods](#lspring-methods)
+  - [LTween Methods](#ltween-methods)
+  - [LTweenParallel Methods](#ltweenparallel-methods)
+  - [LTweenSequence Methods](#ltweensequence-methods)
+  - [LTweenState Methods](#ltweenstate-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -260,6 +55,43 @@ Smooth value interpolation engine with easing functions, sequenced chains, paral
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `engine.rs`
+
+- Public types and helpers for the engine module.
+
+### `handle.rs`
+
+- Lua-visible tween handles: single-field (`LuaTween`), sequence (`LuaTweenSequence`), and parallel (`LuaTweenParallel`).
+- Each handle owns its easing state, target registry key, start/end values, and lifecycle callbacks.
+- Tick-driven interpolation writes computed values directly into Lua tables each frame.
+- Repeat, yoyo, relative-offset, and custom easing function support on single tweens.
+- Sequences consume multiple steps (tween, delay, callback) in order, carrying leftover dt across boundaries.
+- Parallel groups advance all lanes simultaneously and complete when every lane finishes.
+- Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
+
+### `mod.rs`
+
+- Smooth value interpolation with configurable easing curves.
+- Sequence and parallel combinators for complex multi-step animations.
+- Spring-based physics tweening for natural motion.
+- Shared tween engine driving all active tweens each frame.
+
+### `spring.rs`
+
+- Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
+- Named spring system aggregating multiple axes under shared default parameters.
+- Euler integration with snap-to-target on settle to eliminate micro-oscillation.
+
+### `state.rs`
+
+- Per-tween progress state tracking elapsed time, duration, pause flag, and resolved easing function.
+- Case-insensitive easing name resolution with fallback aliases for common naming conventions (camelCase, LÖVE-style).
+- Built-in easing catalog query used by tooling and Lua autocomplete.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LSpring` (10 methods) - Lua-exposed spring physics simulation that smoothly animates table fields toward target values with configurable stiffness and damping.
@@ -273,29 +105,18 @@ Smooth value interpolation engine with easing functions, sequenced chains, paral
 ## 📖 API Overview
 
 - Source spec: [docs/specs/tween.md](../blob/main/docs/specs/tween.md)
+- Module-level functions: 14
+- Lua-visible types: 5
+- Total type methods: 55
 
-```lua
-lurek.tween.cancelAll() -- Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
-lurek.tween.delay(seconds: number, [cb]: function) -> LTweenSequence -- Creates a one-shot delay. After the specified seconds elapse, the optional callback is invoked.
-lurek.tween.getActiveCount() -> number -- Returns the total number of currently active tweens, sequences, and parallels.
-lurek.tween.getEasingNames() -> string[] -- Returns an array of all available easing function names, including both built-in and custom-registered easi...
-lurek.tween.newState(duration: number, [easing]: string) -> LTweenState -- Creates a standalone tween state for manual interpolation. Useful when you need eased progress without auto...
-lurek.tween.parallel() -> LTweenParallel -- Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to r...
-lurek.tween.registerEasing(name: string, f: function) -- Registers a custom easing function by name. The function receives a progress value (0..1) and must return a...
-lurek.tween.sequence() -> LTweenSequence -- Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:star...
-lurek.tween.spring(target: table, fields: table, [opts]: table) -> LSpring -- Creates a spring-physics animation that smoothly drives table fields toward target values with bounce and s...
-lurek.tween.to(target: table, fields: table, duration: number, [easing]: string) -> LTween -- Creates and starts a property tween with a different parameter order: target first, then fields, duration,...
-lurek.tween.tween(duration: number, target: table, fields: table, [easing]: string) -> LTween -- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the...
-lurek.tween.tweenChain(steps: table) -> LTweenSequence -- Creates a sequence from a table of step descriptors. Each step is a table with `duration`, `target`, `field...
-lurek.tween.tweenColor(duration: number, target: table, color: table, [easing]: string) -> LTween -- Creates and starts a color tween that smoothly interpolates r, g, b, and/or a fields on the target table.
-lurek.tween.update(dt: number) -- Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.tween.cancelAll
+### Module-Level Functions
+
+#### lurek.tween.cancelAll
 
 #### Definition
 
@@ -322,7 +143,7 @@ do
 end
 ```
 
-### lurek.tween.delay
+#### lurek.tween.delay
 
 #### Definition
 
@@ -358,7 +179,7 @@ do
 end
 ```
 
-### lurek.tween.getActiveCount
+#### lurek.tween.getActiveCount
 
 #### Definition
 
@@ -388,7 +209,7 @@ do
 end
 ```
 
-### lurek.tween.getEasingNames
+#### lurek.tween.getEasingNames
 
 #### Definition
 
@@ -418,7 +239,7 @@ do
 end
 ```
 
-### lurek.tween.newState
+#### lurek.tween.newState
 
 #### Definition
 
@@ -455,7 +276,7 @@ do
 end
 ```
 
-### lurek.tween.parallel
+#### lurek.tween.parallel
 
 #### Definition
 
@@ -485,7 +306,7 @@ do
 end
 ```
 
-### lurek.tween.registerEasing
+#### lurek.tween.registerEasing
 
 #### Definition
 
@@ -519,7 +340,7 @@ do
 end
 ```
 
-### lurek.tween.sequence
+#### lurek.tween.sequence
 
 #### Definition
 
@@ -549,7 +370,7 @@ do
 end
 ```
 
-### lurek.tween.spring
+#### lurek.tween.spring
 
 #### Definition
 
@@ -588,7 +409,7 @@ do
 end
 ```
 
-### lurek.tween.to
+#### lurek.tween.to
 
 #### Definition
 
@@ -628,7 +449,7 @@ do
 end
 ```
 
-### lurek.tween.tween
+#### lurek.tween.tween
 
 #### Definition
 
@@ -669,7 +490,7 @@ do
 end
 ```
 
-### lurek.tween.tweenChain
+#### lurek.tween.tweenChain
 
 #### Definition
 
@@ -703,7 +524,7 @@ do
 end
 ```
 
-### lurek.tween.tweenColor
+#### lurek.tween.tweenColor
 
 #### Definition
 
@@ -743,7 +564,7 @@ do
     print("end: r=" .. color.r .. " b=" .. color.b)
 ```
 
-### lurek.tween.update
+#### lurek.tween.update
 
 #### Definition
 
@@ -921,7 +742,9 @@ end
 
 ## 🔹 Module Methods
 
-### LSpring:cancel
+### LSpring Methods
+
+#### LSpring:cancel
 
 #### Definition
 
@@ -948,7 +771,7 @@ do
 end
 ```
 
-### LSpring:getPosition
+#### LSpring:getPosition
 
 #### Definition
 
@@ -983,7 +806,7 @@ do
 end
 ```
 
-### LSpring:isActive
+#### LSpring:isActive
 
 #### Definition
 
@@ -1013,7 +836,7 @@ do
 end
 ```
 
-### LSpring:isSettled
+#### LSpring:isSettled
 
 #### Definition
 
@@ -1043,7 +866,7 @@ do
 end
 ```
 
-### LSpring:setDamping
+#### LSpring:setDamping
 
 #### Definition
 
@@ -1075,7 +898,7 @@ do
 end
 ```
 
-### LSpring:setStiffness
+#### LSpring:setStiffness
 
 #### Definition
 
@@ -1107,7 +930,7 @@ do
 end
 ```
 
-### LSpring:setTarget
+#### LSpring:setTarget
 
 #### Definition
 
@@ -1139,7 +962,7 @@ do
 end
 ```
 
-### LSpring:type
+#### LSpring:type
 
 #### Definition
 
@@ -1169,7 +992,7 @@ do
 end
 ```
 
-### LSpring:typeOf
+#### LSpring:typeOf
 
 #### Definition
 
@@ -1204,7 +1027,7 @@ do
 end
 ```
 
-### LSpring:update
+#### LSpring:update
 
 #### Definition
 
@@ -1239,7 +1062,9 @@ do
 end
 ```
 
-### LTween:await
+### LTween Methods
+
+#### LTween:await
 
 #### Definition
 
@@ -1266,7 +1091,7 @@ do
 end
 ```
 
-### LTween:cancel
+#### LTween:cancel
 
 #### Definition
 
@@ -1293,7 +1118,7 @@ do
 end
 ```
 
-### LTween:getDuration
+#### LTween:getDuration
 
 #### Definition
 
@@ -1323,7 +1148,7 @@ do
 end
 ```
 
-### LTween:getElapsed
+#### LTween:getElapsed
 
 #### Definition
 
@@ -1353,7 +1178,7 @@ do
 end
 ```
 
-### LTween:getFields
+#### LTween:getFields
 
 #### Definition
 
@@ -1383,7 +1208,7 @@ do
 end
 ```
 
-### LTween:getProgress
+#### LTween:getProgress
 
 #### Definition
 
@@ -1413,7 +1238,7 @@ do
 end
 ```
 
-### LTween:getRemaining
+#### LTween:getRemaining
 
 #### Definition
 
@@ -1443,7 +1268,7 @@ do
 end
 ```
 
-### LTween:isActive
+#### LTween:isActive
 
 #### Definition
 
@@ -1473,7 +1298,7 @@ do
 end
 ```
 
-### LTween:onCancel
+#### LTween:onCancel
 
 #### Definition
 
@@ -1507,7 +1332,7 @@ do
 end
 ```
 
-### LTween:onComplete
+#### LTween:onComplete
 
 #### Definition
 
@@ -1543,7 +1368,7 @@ do
 end
 ```
 
-### LTween:onUpdate
+#### LTween:onUpdate
 
 #### Definition
 
@@ -1577,7 +1402,7 @@ do
 end
 ```
 
-### LTween:pause
+#### LTween:pause
 
 #### Definition
 
@@ -1604,7 +1429,7 @@ do
 end
 ```
 
-### LTween:relative
+#### LTween:relative
 
 #### Definition
 
@@ -1639,7 +1464,7 @@ do
 end
 ```
 
-### LTween:resume
+#### LTween:resume
 
 #### Definition
 
@@ -1666,7 +1491,7 @@ do
 end
 ```
 
-### LTween:setRelative
+#### LTween:setRelative
 
 #### Definition
 
@@ -1698,7 +1523,7 @@ do
 end
 ```
 
-### LTween:setRepeat
+#### LTween:setRepeat
 
 #### Definition
 
@@ -1766,7 +1591,7 @@ do
 end
 ```
 
-### LTween:setYoyo
+#### LTween:setYoyo
 
 #### Definition
 
@@ -1798,7 +1623,7 @@ do
 end
 ```
 
-### LTween:type
+#### LTween:type
 
 #### Definition
 
@@ -1828,7 +1653,7 @@ do
 end
 ```
 
-### LTween:typeOf
+#### LTween:typeOf
 
 #### Definition
 
@@ -1863,7 +1688,9 @@ do
 end
 ```
 
-### LTweenParallel:add
+### LTweenParallel Methods
+
+#### LTweenParallel:add
 
 #### Definition
 
@@ -1896,7 +1723,7 @@ do
 end
 ```
 
-### LTweenParallel:cancel
+#### LTweenParallel:cancel
 
 #### Definition
 
@@ -1923,7 +1750,7 @@ do
 end
 ```
 
-### LTweenParallel:isActive
+#### LTweenParallel:isActive
 
 #### Definition
 
@@ -1953,7 +1780,7 @@ do
 end
 ```
 
-### LTweenParallel:onComplete
+#### LTweenParallel:onComplete
 
 #### Definition
 
@@ -1989,7 +1816,7 @@ do
 end
 ```
 
-### LTweenParallel:start
+#### LTweenParallel:start
 
 #### Definition
 
@@ -2019,7 +1846,7 @@ do
 end
 ```
 
-### LTweenParallel:tween
+#### LTweenParallel:tween
 
 #### Definition
 
@@ -2060,7 +1887,7 @@ do
 end
 ```
 
-### LTweenParallel:type
+#### LTweenParallel:type
 
 #### Definition
 
@@ -2090,7 +1917,7 @@ do
 end
 ```
 
-### LTweenParallel:typeOf
+#### LTweenParallel:typeOf
 
 #### Definition
 
@@ -2125,7 +1952,9 @@ do
 end
 ```
 
-### LTweenSequence:await
+### LTweenSequence Methods
+
+#### LTweenSequence:await
 
 #### Definition
 
@@ -2152,7 +1981,7 @@ do
 end
 ```
 
-### LTweenSequence:callback
+#### LTweenSequence:callback
 
 #### Definition
 
@@ -2187,7 +2016,7 @@ do
 end
 ```
 
-### LTweenSequence:cancel
+#### LTweenSequence:cancel
 
 #### Definition
 
@@ -2214,7 +2043,7 @@ do
 end
 ```
 
-### LTweenSequence:delay
+#### LTweenSequence:delay
 
 #### Definition
 
@@ -2252,7 +2081,7 @@ do
 end
 ```
 
-### LTweenSequence:getProgress
+#### LTweenSequence:getProgress
 
 #### Definition
 
@@ -2282,7 +2111,7 @@ do
 end
 ```
 
-### LTweenSequence:isActive
+#### LTweenSequence:isActive
 
 #### Definition
 
@@ -2312,7 +2141,7 @@ do
 end
 ```
 
-### LTweenSequence:onComplete
+#### LTweenSequence:onComplete
 
 #### Definition
 
@@ -2348,7 +2177,7 @@ do
 end
 ```
 
-### LTweenSequence:start
+#### LTweenSequence:start
 
 #### Definition
 
@@ -2378,7 +2207,7 @@ do
 end
 ```
 
-### LTweenSequence:tween
+#### LTweenSequence:tween
 
 #### Definition
 
@@ -2419,7 +2248,7 @@ do
 end
 ```
 
-### LTweenSequence:type
+#### LTweenSequence:type
 
 #### Definition
 
@@ -2449,7 +2278,7 @@ do
 end
 ```
 
-### LTweenSequence:typeOf
+#### LTweenSequence:typeOf
 
 #### Definition
 
@@ -2484,7 +2313,9 @@ do
 end
 ```
 
-### LTweenState:isComplete
+### LTweenState Methods
+
+#### LTweenState:isComplete
 
 #### Definition
 
@@ -2514,7 +2345,7 @@ do
 end
 ```
 
-### LTweenState:lerp
+#### LTweenState:lerp
 
 #### Definition
 
@@ -2551,7 +2382,7 @@ do
 end
 ```
 
-### LTweenState:reset
+#### LTweenState:reset
 
 #### Definition
 
@@ -2578,7 +2409,7 @@ do
 end
 ```
 
-### LTweenState:t
+#### LTweenState:t
 
 #### Definition
 
@@ -2608,7 +2439,7 @@ do
 end
 ```
 
-### LTweenState:tick
+#### LTweenState:tick
 
 #### Definition
 
@@ -2643,7 +2474,7 @@ do
 end
 ```
 
-### LTweenState:type
+#### LTweenState:type
 
 #### Definition
 
@@ -2673,7 +2504,7 @@ do
 end
 ```
 
-### LTweenState:typeOf
+#### LTweenState:typeOf
 
 #### Definition
 

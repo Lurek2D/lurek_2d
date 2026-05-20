@@ -10,338 +10,49 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [ai_flow_field.rs](#aiflowfieldrs)
+  - [astar.rs](#astarrs)
+  - [async_pool.rs](#asyncpoolrs)
+  - [bidir.rs](#bidirrs)
+  - [flow_field.rs](#flowfieldrs)
+  - [graph_nav.rs](#graphnavrs)
+  - [graph_path.rs](#graphpathrs)
+  - [grid.rs](#gridrs)
+  - [hex_grid.rs](#hexgridrs)
+  - [hpa.rs](#hpars)
+  - [influence_map.rs](#influencemaprs)
+  - [iso_grid.rs](#isogridrs)
+  - [jps.rs](#jpsrs)
+  - [mod.rs](#modrs)
+  - [nav_grid.rs](#navgridrs)
+  - [navmesh.rs](#navmeshrs)
+  - [pathgrid.rs](#pathgridrs)
+  - [range_map.rs](#rangemaprs)
+  - [render.rs](#renderrs)
+  - [unit_pathfinder.rs](#unitpathfinderrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.pathfind.getThreadCount](#lurekpathfindgetthreadcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newFlowField](#lurekpathfindnewflowfield)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newHexGrid](#lurekpathfindnewhexgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newJpsGrid](#lurekpathfindnewjpsgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newNavGrid](#lurekpathfindnewnavgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newNavGridFromTileMap](#lurekpathfindnewnavgridfromtilemap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newNavMesh](#lurekpathfindnewnavmesh)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newPathfinder](#lurekpathfindnewpathfinder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newPathFlowField](#lurekpathfindnewpathflowfield)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.newPathGrid](#lurekpathfindnewpathgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.rangeMap](#lurekpathfindrangemap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pathfind.setThreadCount](#lurekpathfindsetthreadcount)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LAIFlowField](#laiflowfield)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LFlowField](#lflowfield)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LHexGrid](#lhexgrid)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LJpsGrid](#ljpsgrid)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNavGrid](#lnavgrid)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNavMesh](#lnavmesh)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPathGrid](#lpathgrid)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LUnitPathfinder](#lunitpathfinder)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LAIFlowField:getDirection](#laiflowfieldgetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:getDistance](#laiflowfieldgetdistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:getGoal](#laiflowfieldgetgoal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:getHeight](#laiflowfieldgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:getWidth](#laiflowfieldgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:hasGoal](#laiflowfieldhasgoal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:setGoal](#laiflowfieldsetgoal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:type](#laiflowfieldtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAIFlowField:typeOf](#laiflowfieldtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:calculate](#lflowfieldcalculate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:calculateMulti](#lflowfieldcalculatemulti)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:getCostToTarget](#lflowfieldgetcosttotarget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:getDirection](#lflowfieldgetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:getDirectionAngle](#lflowfieldgetdirectionangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:getTargets](#lflowfieldgettargets)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:isCalculated](#lflowfieldiscalculated)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:steer](#lflowfieldsteer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:type](#lflowfieldtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFlowField:typeOf](#lflowfieldtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:distance](#lhexgriddistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:fieldOfView](#lhexgridfieldofview)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:findPath](#lhexgridfindpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:isBlocked](#lhexgridisblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:lineOfSight](#lhexgridlineofsight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:rangeOfMovement](#lhexgridrangeofmovement)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:setBlocked](#lhexgridsetblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:setCost](#lhexgridsetcost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:type](#lhexgridtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHexGrid:typeOf](#lhexgridtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LJpsGrid:findPath](#ljpsgridfindpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LJpsGrid:isBlocked](#ljpsgridisblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LJpsGrid:setBlocked](#ljpsgridsetblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LJpsGrid:type](#ljpsgridtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LJpsGrid:typeOf](#ljpsgridtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:clearDirty](#lnavgridcleardirty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:fill](#lnavgridfill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:fillRect](#lnavgridfillrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:getChunkSize](#lnavgridgetchunksize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:getCost](#lnavgridgetcost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:getDiagonalMode](#lnavgridgetdiagonalmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:getDimensions](#lnavgridgetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:getHeight](#lnavgridgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:getWidth](#lnavgridgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:isBlocked](#lnavgridisblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:isWalkable](#lnavgridiswalkable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:loadFromString](#lnavgridloadfromstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:rebuildAbstract](#lnavgridrebuildabstract)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:saveToString](#lnavgridsavetostring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:setBlocked](#lnavgridsetblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:setChunkSize](#lnavgridsetchunksize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:setCost](#lnavgridsetcost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:setDiagonalMode](#lnavgridsetdiagonalmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:setDirty](#lnavgridsetdirty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:type](#lnavgridtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavGrid:typeOf](#lnavgridtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavMesh:addPolygon](#lnavmeshaddpolygon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavMesh:connectPolygons](#lnavmeshconnectpolygons)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavMesh:findPath](#lnavmeshfindpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavMesh:getPolygonCount](#lnavmeshgetpolygoncount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavMesh:type](#lnavmeshtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNavMesh:typeOf](#lnavmeshtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:findPath](#lpathgridfindpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:findPathSmoothed](#lpathgridfindpathsmoothed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:getCellSize](#lpathgridgetcellsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:getCost](#lpathgridgetcost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:getHeight](#lpathgridgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:getWidth](#lpathgridgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:isWalkable](#lpathgridiswalkable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:setCost](#lpathgridsetcost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:setWalkable](#lpathgridsetwalkable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:type](#lpathgridtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPathGrid:typeOf](#lpathgridtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:clearCache](#lunitpathfinderclearcache)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:findNearestWalkable](#lunitpathfinderfindnearestwalkable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:findPartialPath](#lunitpathfinderfindpartialpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:findPath](#lunitpathfinderfindpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:findPathBidirectional](#lunitpathfinderfindpathbidirectional)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:findPathSmooth](#lunitpathfinderfindpathsmooth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:getCacheSize](#lunitpathfindergetcachesize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:getPathCost](#lunitpathfindergetpathcost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:getPathLength](#lunitpathfindergetpathlength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:heuristicDistance](#lunitpathfinderheuristicdistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:isCacheEnabled](#lunitpathfinderiscacheenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:isReachable](#lunitpathfinderisreachable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:lineOfSight](#lunitpathfinderlineofsight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:setCacheEnabled](#lunitpathfindersetcacheenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:setCacheMaxSize](#lunitpathfindersetcachemaxsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:type](#lunitpathfindertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LUnitPathfinder:typeOf](#lunitpathfindertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LAIFlowField Methods](#laiflowfield-methods)
+  - [LFlowField Methods](#lflowfield-methods)
+  - [LHexGrid Methods](#lhexgrid-methods)
+  - [LJpsGrid Methods](#ljpsgrid-methods)
+  - [LNavGrid Methods](#lnavgrid-methods)
+  - [LNavMesh Methods](#lnavmesh-methods)
+  - [LPathGrid Methods](#lpathgrid-methods)
+  - [LUnitPathfinder Methods](#lunitpathfinder-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -365,6 +76,168 @@ Grid, hex, and mesh pathfinding library providing A*, Dijkstra, Jump Point Searc
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `ai_flow_field.rs`
+
+- Precomputed flow field steering multiple agents toward a single goal cell.
+- BFS distance propagation with 8-directional neighbours and diagonal cost.
+- Per-cell normalised direction vectors for smooth unit movement.
+- Walkability mask support for blocking impassable terrain.
+
+### `astar.rs`
+
+- A\* pathfinding on a `NavGrid` with configurable diagonal modes and unit sizes.
+- Heuristic selection: octile distance for diagonal movement, Manhattan otherwise.
+- Early termination via `max_nodes` with partial-path fallback to closest reached cell.
+- Bresenham line-of-sight checks for walkability validation.
+- String-pull path smoothing that removes redundant waypoints.
+
+### `async_pool.rs`
+
+- Fixed-size thread pool that runs A* pathfinding off the game thread.
+- Job submission, cancellation, and non-blocking result polling via channels.
+- Workers share a single work queue and skip cancelled requests early.
+
+### `bidir.rs`
+
+- Bidirectional A* search that expands from both start and goal simultaneously.
+- Meets in the middle when both closed sets overlap, halving explored nodes on large grids.
+- Falls back to a partial forward path when the node budget is exhausted.
+- Respects NavGrid diagonal mode and per-cell movement cost.
+- Supports variable unit sizes for multi-tile pathfinding.
+
+### `flow_field.rs`
+
+- Dijkstra-based flow field that seeds from one or more goal cells and computes shortest paths across a NavGrid.
+- Each reachable cell stores a normalised direction vector toward the nearest goal and its accumulated travel cost.
+- Supports variable unit sizes for clearance-aware pathfinding using the backing grid's walkability checks.
+- Provides world-space steering that converts pixel coordinates to tile lookups and returns a scaled velocity.
+- Includes a debug visualisation helper that renders the field directions and obstacles to an ImageData bitmap.
+
+### `graph_nav.rs`
+
+- A* shortest-path search over weighted directed/bidirectional graphs.
+- Range query returning all nodes reachable within a cost budget.
+- Heuristic support for informed search; falls back to Dijkstra when omitted.
+- Min-heap priority queue node with reverse ordering for `BinaryHeap`.
+- Path reconstruction from predecessor map.
+
+### `graph_path.rs`
+
+- Province-level A* pathfinding across adjacency graphs with configurable move costs.
+- Dijkstra-based reachability flood to find all provinces within a cost budget.
+- Per-province and per-edge-tag cost modelling with blocked-province exclusion.
+- Min-heap priority queue node with reverse ordering for standard `BinaryHeap`.
+- Euclidean centroid heuristic for A* admissibility.
+
+### `grid.rs`
+
+- Flat 2-D grid with per-cell walkability and movement-cost storage.
+- A* pathfinding with optional diagonal movement and Euclidean/Manhattan heuristic.
+- Dijkstra shortest-path search respecting per-cell costs.
+- BFS unweighted shortest path for uniform-cost grids.
+- Dijkstra-based flow-field generation toward a single goal cell.
+- Internal min-heap node and path reconstruction utilities.
+
+### `hex_grid.rs`
+
+- Hex grid with configurable flat-top or pointy-top offset layout.
+- Per-cell blocked flags and movement cost for weighted pathfinding.
+- A* search returning shortest path between two hex cells.
+- Line-of-sight, field-of-view, and range-of-movement queries.
+- Cube-coordinate math for distance, interpolation, and rounding.
+
+### `hpa.rs`
+
+- Hierarchical Pathfinding A* (HPA*) over a chunked NavGrid abstraction.
+- Partition the grid into fixed-size chunks and detect entrance nodes at chunk boundaries.
+- Build an abstract graph of entrance-to-entrance edges with A*-computed costs.
+- Run abstract-level A* search using octile distance heuristic.
+- Refine abstract waypoints back into full grid-level paths via per-segment A*.
+- BFS-based reachability test over chunk connectivity without computing a full path.
+- Temporary start/goal insertion into the abstract graph for single queries.
+- Boundary scanning logic handles both horizontal and vertical chunk edges.
+- Supports variable unit sizes passed through to underlying A* refinement.
+
+### `influence_map.rs`
+
+- Grid-based influence map with named floating-point layers over a uniform cell grid.
+- Stamp radial influence with distance falloff, propagate via neighbourhood smoothing, and decay over time.
+- Query aggregated influence inside world-space rectangles or locate extrema positions.
+- Blend multiple layers with weighted combination into a destination layer.
+- Debug visualisation rendering layers into an RGBA image for inspection.
+
+### `iso_grid.rs`
+
+- Grid-based A* pathfinding over a rectangular isometric cell map.
+- Per-cell blocked flags and movement cost support for weighted searches.
+- Bresenham line-of-sight query between two grid positions.
+- 4-directional neighbour expansion with bounds and passability filtering.
+
+### `jps.rs`
+
+- Jump Point Search (JPS) optimised A* on uniform-cost 8-directional grids.
+- Prunes symmetric neighbours to skip large open areas without expanding every cell.
+- Identifies forced neighbours and jump points along cardinal and diagonal directions.
+- Produces a full tile-by-tile path by interpolating between jump points.
+- Uses octile distance heuristic and a min-heap open list.
+
+### `mod.rs`
+
+- Grid-based and graph-based pathfinding algorithms (A*, bidirectional, JPS, HPA*).
+- Flow fields and influence maps for group movement and tactical queries.
+- Navigation grids, hex grids, isometric grids, and navmesh support.
+- Async thread-pool dispatch for off-thread path computation.
+
+### `nav_grid.rs`
+
+- Integer-cost walkability grid for tile-based pathfinding.
+- Per-cell movement weight (0 = blocked, 1–254 = traversal cost).
+- Cardinal and diagonal neighbour queries with corner-cut policies.
+- Dirty-rectangle tracking for deferred HPA* hierarchy invalidation.
+- Bulk fill, rect fill, byte import/export, and deep-copy snapshot.
+- Debug visualisation: render grid + path overlay to an ImageData buffer.
+
+### `navmesh.rs`
+
+- Polygon-based navigation mesh for 2D pathfinding.
+- A\* search over polygon adjacency graph with centroid heuristic.
+- Ray-cast point-in-polygon containment test.
+- Centroid waypoint extraction from polygon corridors.
+- Directed and bidirectional polygon connectivity.
+
+### `pathgrid.rs`
+
+- Grid-based A* pathfinding with 8-directional movement and variable cell costs.
+- Bresenham line-of-sight checks for post-search path smoothing (string-pull).
+- World-space coordinate conversion: cell indices map to centres via configurable cell size.
+- Diagonal corner-cutting prevention to avoid clipping through blocked corners.
+- Octile distance heuristic for consistent and admissible cost estimation.
+
+### `range_map.rs`
+
+- Dijkstra-based budget-limited range expansion over a 2D grid.
+- Produces a cost map showing which cells are reachable within a travel budget.
+- Supports cardinal and diagonal movement with per-cell cost weights.
+
+### `render.rs`
+
+- Debug visualization for pathfinding structures as colored `RenderCommand` lists.
+- NavGrid renders walkable/blocked cells, FlowField draws directional arrows, InfluenceMap shows signed heat.
+- Each struct exposes `generate_render_commands` returning a `Vec<RenderCommand>` for overlay drawing.
+
+### `unit_pathfinder.rs`
+
+- Stateful per-unit pathfinder wrapping a shared `NavGrid` reference.
+- Full A* path search with optional string-pull smoothing for shorter results.
+- Partial-path expansion with configurable node budget for real-time budgets.
+- BFS reachability test and nearest-walkable-cell search within a radius.
+- LRU path cache with configurable max size and manual invalidation.
+- Octile heuristic and Bresenham line-of-sight utility helpers.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LAIFlowField` (9 methods) - Lua-side wrapper for an AI flow field over a path grid.
@@ -381,27 +254,18 @@ Grid, hex, and mesh pathfinding library providing A*, Dijkstra, Jump Point Searc
 ## 📖 API Overview
 
 - Source spec: [docs/specs/pathfind.md](../blob/main/docs/specs/pathfind.md)
+- Module-level functions: 12
+- Lua-visible types: 8
+- Total type methods: 89
 
-```lua
-lurek.pathfind.getThreadCount() -> integer -- Returns the pathfinding thread count.
-lurek.pathfind.newFlowField(grid_ud: LNavGrid) -> LFlowField -- Creates a flow field for a navigation grid.
-lurek.pathfind.newHexGrid(width: integer, height: integer, [layout_str]: string) -> LHexGrid -- Creates a hex grid with the given dimensions.
-lurek.pathfind.newJpsGrid(width: integer, height: integer) -> LJpsGrid -- Creates a Jump Point Search grid with given dimensions.
-lurek.pathfind.newNavGrid(width: integer, height: integer) -> LNavGrid -- Creates a navigation grid with the given dimensions.
-lurek.pathfind.newNavGridFromTileMap(tm_ud: LTileMap, layer_index: integer, blocked_table: table) -> LNavGrid -- Creates a navigation grid from a tilemap layer and blocked gid table.
-lurek.pathfind.newNavMesh() -> LNavMesh -- Creates an empty navigation mesh for polygon-based pathfinding.
-lurek.pathfind.newPathfinder(grid_ud: LNavGrid) -> LUnitPathfinder -- Creates a unit pathfinder for a navigation grid.
-lurek.pathfind.newPathFlowField(grid_ud: LPathGrid) -> LAIFlowField -- Creates an AI flow field from a path grid.
-lurek.pathfind.newPathGrid(w: integer, h: integer, cell_size: number) -> LPathGrid -- Creates a cell-size path grid with given dimensions.
-lurek.pathfind.rangeMap(opts: table) -> table -- Computes reachable cells from range map options.
-lurek.pathfind.setThreadCount(count: integer) -- Sets pathfinding thread count (not yet implemented; logs a warning).
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.pathfind.getThreadCount
+### Module-Level Functions
+
+#### lurek.pathfind.getThreadCount
 
 #### Definition
 
@@ -429,7 +293,7 @@ do
 end
 ```
 
-### lurek.pathfind.newFlowField
+#### lurek.pathfind.newFlowField
 
 #### Definition
 
@@ -464,7 +328,7 @@ do
 end
 ```
 
-### lurek.pathfind.newHexGrid
+#### lurek.pathfind.newHexGrid
 
 #### Definition
 
@@ -503,7 +367,7 @@ do
 end
 ```
 
-### lurek.pathfind.newJpsGrid
+#### lurek.pathfind.newJpsGrid
 
 #### Definition
 
@@ -540,7 +404,7 @@ do
 end
 ```
 
-### lurek.pathfind.newNavGrid
+#### lurek.pathfind.newNavGrid
 
 #### Definition
 
@@ -577,7 +441,7 @@ do
 end
 ```
 
-### lurek.pathfind.newNavGridFromTileMap
+#### lurek.pathfind.newNavGridFromTileMap
 
 #### Definition
 
@@ -615,7 +479,7 @@ do
 end
 ```
 
-### lurek.pathfind.newNavMesh
+#### lurek.pathfind.newNavMesh
 
 #### Definition
 
@@ -645,7 +509,7 @@ do
 end
 ```
 
-### lurek.pathfind.newPathfinder
+#### lurek.pathfind.newPathfinder
 
 #### Definition
 
@@ -680,7 +544,7 @@ do
 end
 ```
 
-### lurek.pathfind.newPathFlowField
+#### lurek.pathfind.newPathFlowField
 
 #### Definition
 
@@ -715,7 +579,7 @@ do
 end
 ```
 
-### lurek.pathfind.newPathGrid
+#### lurek.pathfind.newPathGrid
 
 #### Definition
 
@@ -752,7 +616,7 @@ do
 end
 ```
 
-### lurek.pathfind.rangeMap
+#### lurek.pathfind.rangeMap
 
 #### Definition
 
@@ -784,7 +648,7 @@ do
 end
 ```
 
-### lurek.pathfind.setThreadCount
+#### lurek.pathfind.setThreadCount
 
 #### Definition
 
@@ -1045,7 +909,9 @@ end
 
 ## 🔹 Module Methods
 
-### LAIFlowField:getDirection
+### LAIFlowField Methods
+
+#### LAIFlowField:getDirection
 
 #### Definition
 
@@ -1083,7 +949,7 @@ do
 end
 ```
 
-### LAIFlowField:getDistance
+#### LAIFlowField:getDistance
 
 #### Definition
 
@@ -1120,7 +986,7 @@ do
 end
 ```
 
-### LAIFlowField:getGoal
+#### LAIFlowField:getGoal
 
 #### Definition
 
@@ -1151,7 +1017,7 @@ do
 end
 ```
 
-### LAIFlowField:getHeight
+#### LAIFlowField:getHeight
 
 #### Definition
 
@@ -1181,7 +1047,7 @@ do
 end
 ```
 
-### LAIFlowField:getWidth
+#### LAIFlowField:getWidth
 
 #### Definition
 
@@ -1211,7 +1077,7 @@ do
 end
 ```
 
-### LAIFlowField:hasGoal
+#### LAIFlowField:hasGoal
 
 #### Definition
 
@@ -1241,7 +1107,7 @@ do
 end
 ```
 
-### LAIFlowField:setGoal
+#### LAIFlowField:setGoal
 
 #### Definition
 
@@ -1275,7 +1141,7 @@ do
 end
 ```
 
-### LAIFlowField:type
+#### LAIFlowField:type
 
 #### Definition
 
@@ -1304,7 +1170,7 @@ do
 end
 ```
 
-### LAIFlowField:typeOf
+#### LAIFlowField:typeOf
 
 #### Definition
 
@@ -1338,7 +1204,9 @@ do
 end
 ```
 
-### LFlowField:calculate
+### LFlowField Methods
+
+#### LFlowField:calculate
 
 #### Definition
 
@@ -1374,7 +1242,7 @@ do
 end
 ```
 
-### LFlowField:calculateMulti
+#### LFlowField:calculateMulti
 
 #### Definition
 
@@ -1408,7 +1276,7 @@ do
 end
 ```
 
-### LFlowField:getCostToTarget
+#### LFlowField:getCostToTarget
 
 #### Definition
 
@@ -1445,7 +1313,7 @@ do
 end
 ```
 
-### LFlowField:getDirection
+#### LFlowField:getDirection
 
 #### Definition
 
@@ -1483,7 +1351,7 @@ do
 end
 ```
 
-### LFlowField:getDirectionAngle
+#### LFlowField:getDirectionAngle
 
 #### Definition
 
@@ -1520,7 +1388,7 @@ do
 end
 ```
 
-### LFlowField:getTargets
+#### LFlowField:getTargets
 
 #### Definition
 
@@ -1550,7 +1418,7 @@ do
 end
 ```
 
-### LFlowField:isCalculated
+#### LFlowField:isCalculated
 
 #### Definition
 
@@ -1580,7 +1448,7 @@ do
 end
 ```
 
-### LFlowField:steer
+#### LFlowField:steer
 
 #### Definition
 
@@ -1624,7 +1492,7 @@ do
 end
 ```
 
-### LFlowField:type
+#### LFlowField:type
 
 #### Definition
 
@@ -1653,7 +1521,7 @@ do
 end
 ```
 
-### LFlowField:typeOf
+#### LFlowField:typeOf
 
 #### Definition
 
@@ -1687,7 +1555,9 @@ do
 end
 ```
 
-### LHexGrid:distance
+### LHexGrid Methods
+
+#### LHexGrid:distance
 
 #### Definition
 
@@ -1728,7 +1598,7 @@ do
 end
 ```
 
-### LHexGrid:fieldOfView
+#### LHexGrid:fieldOfView
 
 #### Definition
 
@@ -1767,7 +1637,7 @@ do
 end
 ```
 
-### LHexGrid:findPath
+#### LHexGrid:findPath
 
 #### Definition
 
@@ -1808,7 +1678,7 @@ do
 end
 ```
 
-### LHexGrid:isBlocked
+#### LHexGrid:isBlocked
 
 #### Definition
 
@@ -1845,7 +1715,7 @@ do
 end
 ```
 
-### LHexGrid:lineOfSight
+#### LHexGrid:lineOfSight
 
 #### Definition
 
@@ -1886,7 +1756,7 @@ do
 end
 ```
 
-### LHexGrid:rangeOfMovement
+#### LHexGrid:rangeOfMovement
 
 #### Definition
 
@@ -1925,7 +1795,7 @@ do
 end
 ```
 
-### LHexGrid:setBlocked
+#### LHexGrid:setBlocked
 
 #### Definition
 
@@ -1961,7 +1831,7 @@ do
 end
 ```
 
-### LHexGrid:setCost
+#### LHexGrid:setCost
 
 #### Definition
 
@@ -1997,7 +1867,7 @@ do
 end
 ```
 
-### LHexGrid:type
+#### LHexGrid:type
 
 #### Definition
 
@@ -2026,7 +1896,7 @@ do
 end
 ```
 
-### LHexGrid:typeOf
+#### LHexGrid:typeOf
 
 #### Definition
 
@@ -2060,7 +1930,9 @@ do
 end
 ```
 
-### LJpsGrid:findPath
+### LJpsGrid Methods
+
+#### LJpsGrid:findPath
 
 #### Definition
 
@@ -2101,7 +1973,7 @@ do
 end
 ```
 
-### LJpsGrid:isBlocked
+#### LJpsGrid:isBlocked
 
 #### Definition
 
@@ -2138,7 +2010,7 @@ do
 end
 ```
 
-### LJpsGrid:setBlocked
+#### LJpsGrid:setBlocked
 
 #### Definition
 
@@ -2174,7 +2046,7 @@ do
 end
 ```
 
-### LJpsGrid:type
+#### LJpsGrid:type
 
 #### Definition
 
@@ -2203,7 +2075,7 @@ do
 end
 ```
 
-### LJpsGrid:typeOf
+#### LJpsGrid:typeOf
 
 #### Definition
 
@@ -2237,7 +2109,9 @@ do
 end
 ```
 
-### LNavGrid:clearDirty
+### LNavGrid Methods
+
+#### LNavGrid:clearDirty
 
 #### Definition
 
@@ -2264,7 +2138,7 @@ do
 end
 ```
 
-### LNavGrid:fill
+#### LNavGrid:fill
 
 #### Definition
 
@@ -2295,7 +2169,7 @@ do
 end
 ```
 
-### LNavGrid:fillRect
+#### LNavGrid:fillRect
 
 #### Definition
 
@@ -2334,7 +2208,7 @@ do
 end
 ```
 
-### LNavGrid:getChunkSize
+#### LNavGrid:getChunkSize
 
 #### Definition
 
@@ -2364,7 +2238,7 @@ do
 end
 ```
 
-### LNavGrid:getCost
+#### LNavGrid:getCost
 
 #### Definition
 
@@ -2400,7 +2274,7 @@ do
 end
 ```
 
-### LNavGrid:getDiagonalMode
+#### LNavGrid:getDiagonalMode
 
 #### Definition
 
@@ -2429,7 +2303,7 @@ do
 end
 ```
 
-### LNavGrid:getDimensions
+#### LNavGrid:getDimensions
 
 #### Definition
 
@@ -2460,7 +2334,7 @@ do
 end
 ```
 
-### LNavGrid:getHeight
+#### LNavGrid:getHeight
 
 #### Definition
 
@@ -2490,7 +2364,7 @@ do
 end
 ```
 
-### LNavGrid:getWidth
+#### LNavGrid:getWidth
 
 #### Definition
 
@@ -2520,7 +2394,7 @@ do
 end
 ```
 
-### LNavGrid:isBlocked
+#### LNavGrid:isBlocked
 
 #### Definition
 
@@ -2556,7 +2430,7 @@ do
 end
 ```
 
-### LNavGrid:isWalkable
+#### LNavGrid:isWalkable
 
 #### Definition
 
@@ -2594,7 +2468,7 @@ do
 end
 ```
 
-### LNavGrid:loadFromString
+#### LNavGrid:loadFromString
 
 #### Definition
 
@@ -2626,7 +2500,7 @@ do
 end
 ```
 
-### LNavGrid:rebuildAbstract
+#### LNavGrid:rebuildAbstract
 
 #### Definition
 
@@ -2653,7 +2527,7 @@ do
 end
 ```
 
-### LNavGrid:saveToString
+#### LNavGrid:saveToString
 
 #### Definition
 
@@ -2683,7 +2557,7 @@ do
 end
 ```
 
-### LNavGrid:setBlocked
+#### LNavGrid:setBlocked
 
 #### Definition
 
@@ -2718,7 +2592,7 @@ do
 end
 ```
 
-### LNavGrid:setChunkSize
+#### LNavGrid:setChunkSize
 
 #### Definition
 
@@ -2750,7 +2624,7 @@ do
 end
 ```
 
-### LNavGrid:setCost
+#### LNavGrid:setCost
 
 #### Definition
 
@@ -2785,7 +2659,7 @@ do
 end
 ```
 
-### LNavGrid:setDiagonalMode
+#### LNavGrid:setDiagonalMode
 
 #### Definition
 
@@ -2816,7 +2690,7 @@ do
 end
 ```
 
-### LNavGrid:setDirty
+#### LNavGrid:setDirty
 
 #### Definition
 
@@ -2854,7 +2728,7 @@ do
 end
 ```
 
-### LNavGrid:type
+#### LNavGrid:type
 
 #### Definition
 
@@ -2883,7 +2757,7 @@ do
 end
 ```
 
-### LNavGrid:typeOf
+#### LNavGrid:typeOf
 
 #### Definition
 
@@ -2917,7 +2791,9 @@ do
 end
 ```
 
-### LNavMesh:addPolygon
+### LNavMesh Methods
+
+#### LNavMesh:addPolygon
 
 #### Definition
 
@@ -2952,7 +2828,7 @@ do
 end
 ```
 
-### LNavMesh:connectPolygons
+#### LNavMesh:connectPolygons
 
 #### Definition
 
@@ -2991,7 +2867,7 @@ do
 end
 ```
 
-### LNavMesh:findPath
+#### LNavMesh:findPath
 
 #### Definition
 
@@ -3032,7 +2908,7 @@ do
 end
 ```
 
-### LNavMesh:getPolygonCount
+#### LNavMesh:getPolygonCount
 
 #### Definition
 
@@ -3060,7 +2936,7 @@ do
 end
 ```
 
-### LNavMesh:type
+#### LNavMesh:type
 
 #### Definition
 
@@ -3089,7 +2965,7 @@ do
 end
 ```
 
-### LNavMesh:typeOf
+#### LNavMesh:typeOf
 
 #### Definition
 
@@ -3123,7 +2999,9 @@ do
 end
 ```
 
-### LPathGrid:findPath
+### LPathGrid Methods
+
+#### LPathGrid:findPath
 
 #### Definition
 
@@ -3164,7 +3042,7 @@ do
 end
 ```
 
-### LPathGrid:findPathSmoothed
+#### LPathGrid:findPathSmoothed
 
 #### Definition
 
@@ -3205,7 +3083,7 @@ do
 end
 ```
 
-### LPathGrid:getCellSize
+#### LPathGrid:getCellSize
 
 #### Definition
 
@@ -3234,7 +3112,7 @@ do
 end
 ```
 
-### LPathGrid:getCost
+#### LPathGrid:getCost
 
 #### Definition
 
@@ -3270,7 +3148,7 @@ do
 end
 ```
 
-### LPathGrid:getHeight
+#### LPathGrid:getHeight
 
 #### Definition
 
@@ -3299,7 +3177,7 @@ do
 end
 ```
 
-### LPathGrid:getWidth
+#### LPathGrid:getWidth
 
 #### Definition
 
@@ -3328,7 +3206,7 @@ do
 end
 ```
 
-### LPathGrid:isWalkable
+#### LPathGrid:isWalkable
 
 #### Definition
 
@@ -3364,7 +3242,7 @@ do
 end
 ```
 
-### LPathGrid:setCost
+#### LPathGrid:setCost
 
 #### Definition
 
@@ -3399,7 +3277,7 @@ do
 end
 ```
 
-### LPathGrid:setWalkable
+#### LPathGrid:setWalkable
 
 #### Definition
 
@@ -3434,7 +3312,7 @@ do
 end
 ```
 
-### LPathGrid:type
+#### LPathGrid:type
 
 #### Definition
 
@@ -3462,7 +3340,7 @@ do
 end
 ```
 
-### LPathGrid:typeOf
+#### LPathGrid:typeOf
 
 #### Definition
 
@@ -3495,7 +3373,9 @@ do
 end
 ```
 
-### LUnitPathfinder:clearCache
+### LUnitPathfinder Methods
+
+#### LUnitPathfinder:clearCache
 
 #### Definition
 
@@ -3522,7 +3402,7 @@ do
 end
 ```
 
-### LUnitPathfinder:findNearestWalkable
+#### LUnitPathfinder:findNearestWalkable
 
 #### Definition
 
@@ -3564,7 +3444,7 @@ do
 end
 ```
 
-### LUnitPathfinder:findPartialPath
+#### LUnitPathfinder:findPartialPath
 
 #### Definition
 
@@ -3610,7 +3490,7 @@ do
 end
 ```
 
-### LUnitPathfinder:findPath
+#### LUnitPathfinder:findPath
 
 #### Definition
 
@@ -3653,7 +3533,7 @@ do
 end
 ```
 
-### LUnitPathfinder:findPathBidirectional
+#### LUnitPathfinder:findPathBidirectional
 
 #### Definition
 
@@ -3699,7 +3579,7 @@ do
 end
 ```
 
-### LUnitPathfinder:findPathSmooth
+#### LUnitPathfinder:findPathSmooth
 
 #### Definition
 
@@ -3742,7 +3622,7 @@ do
 end
 ```
 
-### LUnitPathfinder:getCacheSize
+#### LUnitPathfinder:getCacheSize
 
 #### Definition
 
@@ -3772,7 +3652,7 @@ do
 end
 ```
 
-### LUnitPathfinder:getPathCost
+#### LUnitPathfinder:getPathCost
 
 #### Definition
 
@@ -3807,7 +3687,7 @@ do
 end
 ```
 
-### LUnitPathfinder:getPathLength
+#### LUnitPathfinder:getPathLength
 
 #### Definition
 
@@ -3842,7 +3722,7 @@ do
 end
 ```
 
-### LUnitPathfinder:heuristicDistance
+#### LUnitPathfinder:heuristicDistance
 
 #### Definition
 
@@ -3883,7 +3763,7 @@ do
 end
 ```
 
-### LUnitPathfinder:isCacheEnabled
+#### LUnitPathfinder:isCacheEnabled
 
 #### Definition
 
@@ -3913,7 +3793,7 @@ do
 end
 ```
 
-### LUnitPathfinder:isReachable
+#### LUnitPathfinder:isReachable
 
 #### Definition
 
@@ -3956,7 +3836,7 @@ do
 end
 ```
 
-### LUnitPathfinder:lineOfSight
+#### LUnitPathfinder:lineOfSight
 
 #### Definition
 
@@ -3999,7 +3879,7 @@ do
 end
 ```
 
-### LUnitPathfinder:setCacheEnabled
+#### LUnitPathfinder:setCacheEnabled
 
 #### Definition
 
@@ -4031,7 +3911,7 @@ do
 end
 ```
 
-### LUnitPathfinder:setCacheMaxSize
+#### LUnitPathfinder:setCacheMaxSize
 
 #### Definition
 
@@ -4063,7 +3943,7 @@ do
 end
 ```
 
-### LUnitPathfinder:type
+#### LUnitPathfinder:type
 
 #### Definition
 
@@ -4092,7 +3972,7 @@ do
 end
 ```
 
-### LUnitPathfinder:typeOf
+#### LUnitPathfinder:typeOf
 
 #### Definition
 

@@ -10,275 +10,20 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [minimap.rs](#minimaprs)
+  - [mod.rs](#modrs)
+  - [province_adapter.rs](#provinceadapterrs)
+  - [render.rs](#renderrs)
+  - [types.rs](#typesrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.minimap.newMinimap](#lurekminimapnewminimap)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LMinimap](#lminimap)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LMinimap:addMarker](#lminimapaddmarker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:addObjectType](#lminimapaddobjecttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:addPing](#lminimapaddping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:clearMarkerAnimation](#lminimapclearmarkeranimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:clearMarkerTexture](#lminimapclearmarkertexture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:clearObjects](#lminimapclearobjects)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:clearObjectTypeTexture](#lminimapclearobjecttypetexture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:clearOverlay](#lminimapclearoverlay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:clearPath](#lminimapclearpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:clearViewportRect](#lminimapclearviewportrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:drawLine](#lminimapdrawline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:drawRect](#lminimapdrawrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:drawToImage](#lminimapdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getCellCount](#lminimapgetcellcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getCenter](#lminimapgetcenter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getCenterX](#lminimapgetcenterx)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getCenterY](#lminimapgetcentery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getColorMode](#lminimapgetcolormode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getDisplayHeight](#lminimapgetdisplayheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getDisplaySize](#lminimapgetdisplaysize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getDisplayWidth](#lminimapgetdisplaywidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getFogColor](#lminimapgetfogcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getFogLevel](#lminimapgetfoglevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getGridHeight](#lminimapgetgridheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getGridSize](#lminimapgetgridsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getGridWidth](#lminimapgetgridwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getHoverInfo](#lminimapgethoverinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getLayer](#lminimapgetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getLayerCount](#lminimapgetlayercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getLayerData](#lminimapgetlayerdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getMarkerCount](#lminimapgetmarkercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getMarkerDescription](#lminimapgetmarkerdescription)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getObjectCount](#lminimapgetobjectcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getObjectTypeCount](#lminimapgetobjecttypecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getOverlayShapeCount](#lminimapgetoverlayshapecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getOwnerColor](#lminimapgetownercolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getPathCount](#lminimapgetpathcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getPingCount](#lminimapgetpingcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getTerrain](#lminimapgetterrain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getTerrainColor](#lminimapgetterraincolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getTileDescription](#lminimapgettiledescription)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getViewportColor](#lminimapgetviewportcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getViewportRect](#lminimapgetviewportrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:getZoom](#lminimapgetzoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:gridToScreen](#lminimapgridtoscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:hasMarker](#lminimaphasmarker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:isAntiAlias](#lminimapisantialias)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:isClickable](#lminimapisclickable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:isFogEnabled](#lminimapisfogenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:isObjectTypeVisible](#lminimapisobjecttypevisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:isViewportVisible](#lminimapisviewportvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:removeMarker](#lminimapremovemarker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:removeObject](#lminimapremoveobject)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:render](#lminimaprender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:revealRadius](#lminimaprevealradius)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:screenToGrid](#lminimapscreentogrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setAntiAlias](#lminimapsetantialias)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setCenter](#lminimapsetcenter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setClickable](#lminimapsetclickable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setColorMode](#lminimapsetcolormode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setDisplaySize](#lminimapsetdisplaysize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setFogColor](#lminimapsetfogcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setFogData](#lminimapsetfogdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setFogEnabled](#lminimapsetfogenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setFogLevel](#lminimapsetfoglevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setLayer](#lminimapsetlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setLayerData](#lminimapsetlayerdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setMarkerAnimation](#lminimapsetmarkeranimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setMarkerTexture](#lminimapsetmarkertexture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setObject](#lminimapsetobject)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setObjectTypeTexture](#lminimapsetobjecttypetexture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setObjectTypeVisible](#lminimapsetobjecttypevisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setOwnerColor](#lminimapsetownercolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setTerrain](#lminimapsetterrain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setTerrainColor](#lminimapsetterraincolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setTerrainData](#lminimapsetterraindata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setTileDescription](#lminimapsettiledescription)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setViewportColor](#lminimapsetviewportcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setViewportRect](#lminimapsetviewportrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setViewportVisible](#lminimapsetviewportvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:setZoom](#lminimapsetzoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:showPath](#lminimapshowpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:trackCamera](#lminimaptrackcamera)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:type](#lminimaptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:typeOf](#lminimaptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMinimap:update](#lminimapupdate)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LMinimap Methods](#lminimap-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -302,6 +47,52 @@ Markers are persistent or timed icons at fixed world positions (quest markers, p
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `minimap.rs`
+
+- Grid-based minimap with configurable terrain types, colours, and per-cell fog-of-war.
+- Object tracking with typed, owner-coloured dots and optional texture icons.
+- Political and terrain colour modes for strategic map overlays.
+- Zoom, pan, and camera-tracking viewport with outline rectangle.
+- Timed pings and persistent markers with blink, pulse, and rotate animations.
+- Vector overlay shapes (lines, rectangles) and named polyline paths.
+- Multi-layer cell data for stacked map views.
+- Coordinate conversion between screen pixels and grid cells, with hover info lookup.
+- CPU rasterisation to `ImageData` for export and full `RenderCommand` generation.
+
+### `mod.rs`
+
+- Minimap state, layer composition, marker tracking, and fog-of-war reveal.
+- Pixel-buffer rendering pipeline that writes the minimap texture each frame.
+- Province-map adapter bridging world regions into minimap layers.
+- Shared types for markers, overlays, pings, and color modes.
+
+### `province_adapter.rs`
+
+- Bridge between `ProvinceRegistry` terrain/visibility data and the minimap grid.
+- Copy terrain types, fog levels, and political palette colours into a `Minimap`.
+- Clips to the smaller of the two grids so mismatched sizes never panic.
+
+### `render.rs`
+
+- Convert minimap state into an ordered list of `RenderCommand` values for the renderer.
+- Draw the background, terrain grid cells with zoom and center offset, and fog-of-war tinting.
+- Render overlay shapes (lines, rectangles), multi-segment paths, and the viewport indicator.
+- Draw animated pings with fade, map objects with optional icons, and markers with crosshairs.
+- All coordinates are projected from grid-space to screen-space via the minimap's transform.
+
+### `types.rs`
+
+- Shared data types for the minimap subsystem: enums, structs, and overlay shapes.
+- `ColorMode` selects between terrain-coloured and political-coloured cell rendering.
+- `FogLevel` encodes per-cell fog-of-war visibility as a three-state enum.
+- Object, ping, and marker structs hold live map overlays with position, colour, and animation.
+- `OverlayShape` and `OverlayPath` describe vector geometry drawn over the terrain grid.
+- `LayerData` stores raw cell bytes for named minimap layers.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LMinimap` (86 methods) - Lua-side wrapper for a minimap instance and access to render command state.
@@ -311,16 +102,18 @@ Markers are persistent or timed icons at fixed world positions (quest markers, p
 ## 📖 API Overview
 
 - Source spec: [docs/specs/minimap.md](../blob/main/docs/specs/minimap.md)
+- Module-level functions: 1
+- Lua-visible types: 1
+- Total type methods: 86
 
-```lua
-lurek.minimap.newMinimap(grid_w: integer, grid_h: integer, [display_w]: integer, [display_h]: integer) -> LMinimap -- Creates a minimap with grid dimensions and optional display size.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.minimap.newMinimap
+### Module-Level Functions
+
+#### lurek.minimap.newMinimap
 
 #### Definition
 
@@ -395,7 +188,9 @@ end
 
 ## 🔹 Module Methods
 
-### LMinimap:addMarker
+### LMinimap Methods
+
+#### LMinimap:addMarker
 
 #### Definition
 
@@ -440,7 +235,7 @@ do
 end
 ```
 
-### LMinimap:addObjectType
+#### LMinimap:addObjectType
 
 #### Definition
 
@@ -483,7 +278,7 @@ do
 end
 ```
 
-### LMinimap:addPing
+#### LMinimap:addPing
 
 #### Definition
 
@@ -527,7 +322,7 @@ do
 end
 ```
 
-### LMinimap:clearMarkerAnimation
+#### LMinimap:clearMarkerAnimation
 
 #### Definition
 
@@ -558,7 +353,7 @@ do
 end
 ```
 
-### LMinimap:clearMarkerTexture
+#### LMinimap:clearMarkerTexture
 
 #### Definition
 
@@ -590,7 +385,7 @@ do
 end
 ```
 
-### LMinimap:clearObjects
+#### LMinimap:clearObjects
 
 #### Definition
 
@@ -617,7 +412,7 @@ do
 end
 ```
 
-### LMinimap:clearObjectTypeTexture
+#### LMinimap:clearObjectTypeTexture
 
 #### Definition
 
@@ -649,7 +444,7 @@ do
 end
 ```
 
-### LMinimap:clearOverlay
+#### LMinimap:clearOverlay
 
 #### Definition
 
@@ -676,7 +471,7 @@ do
 end
 ```
 
-### LMinimap:clearPath
+#### LMinimap:clearPath
 
 #### Definition
 
@@ -708,7 +503,7 @@ do
 end
 ```
 
-### LMinimap:clearViewportRect
+#### LMinimap:clearViewportRect
 
 #### Definition
 
@@ -734,7 +529,7 @@ do
 end
 ```
 
-### LMinimap:drawLine
+#### LMinimap:drawLine
 
 #### Definition
 
@@ -774,7 +569,7 @@ do
 end
 ```
 
-### LMinimap:drawRect
+#### LMinimap:drawRect
 
 #### Definition
 
@@ -814,7 +609,7 @@ do
 end
 ```
 
-### LMinimap:drawToImage
+#### LMinimap:drawToImage
 
 #### Definition
 
@@ -849,7 +644,7 @@ do
 end
 ```
 
-### LMinimap:getCellCount
+#### LMinimap:getCellCount
 
 #### Definition
 
@@ -878,7 +673,7 @@ do
 end
 ```
 
-### LMinimap:getCenter
+#### LMinimap:getCenter
 
 #### Definition
 
@@ -908,7 +703,7 @@ do
 end
 ```
 
-### LMinimap:getCenterX
+#### LMinimap:getCenterX
 
 #### Definition
 
@@ -937,7 +732,7 @@ do
 end
 ```
 
-### LMinimap:getCenterY
+#### LMinimap:getCenterY
 
 #### Definition
 
@@ -966,7 +761,7 @@ do
 end
 ```
 
-### LMinimap:getColorMode
+#### LMinimap:getColorMode
 
 #### Definition
 
@@ -995,7 +790,7 @@ do
 end
 ```
 
-### LMinimap:getDisplayHeight
+#### LMinimap:getDisplayHeight
 
 #### Definition
 
@@ -1024,7 +819,7 @@ do
 end
 ```
 
-### LMinimap:getDisplaySize
+#### LMinimap:getDisplaySize
 
 #### Definition
 
@@ -1054,7 +849,7 @@ do
 end
 ```
 
-### LMinimap:getDisplayWidth
+#### LMinimap:getDisplayWidth
 
 #### Definition
 
@@ -1083,7 +878,7 @@ do
 end
 ```
 
-### LMinimap:getFogColor
+#### LMinimap:getFogColor
 
 #### Definition
 
@@ -1116,7 +911,7 @@ do
 end
 ```
 
-### LMinimap:getFogLevel
+#### LMinimap:getFogLevel
 
 #### Definition
 
@@ -1153,7 +948,7 @@ do
 end
 ```
 
-### LMinimap:getGridHeight
+#### LMinimap:getGridHeight
 
 #### Definition
 
@@ -1182,7 +977,7 @@ do
 end
 ```
 
-### LMinimap:getGridSize
+#### LMinimap:getGridSize
 
 #### Definition
 
@@ -1212,7 +1007,7 @@ do
 end
 ```
 
-### LMinimap:getGridWidth
+#### LMinimap:getGridWidth
 
 #### Definition
 
@@ -1241,7 +1036,7 @@ do
 end
 ```
 
-### LMinimap:getHoverInfo
+#### LMinimap:getHoverInfo
 
 #### Definition
 
@@ -1281,7 +1076,7 @@ do
 end
 ```
 
-### LMinimap:getLayer
+#### LMinimap:getLayer
 
 #### Definition
 
@@ -1310,7 +1105,7 @@ do
 end
 ```
 
-### LMinimap:getLayerCount
+#### LMinimap:getLayerCount
 
 #### Definition
 
@@ -1339,7 +1134,7 @@ do
 end
 ```
 
-### LMinimap:getLayerData
+#### LMinimap:getLayerData
 
 #### Definition
 
@@ -1374,7 +1169,7 @@ do
 end
 ```
 
-### LMinimap:getMarkerCount
+#### LMinimap:getMarkerCount
 
 #### Definition
 
@@ -1402,7 +1197,7 @@ do
 end
 ```
 
-### LMinimap:getMarkerDescription
+#### LMinimap:getMarkerDescription
 
 #### Definition
 
@@ -1435,7 +1230,7 @@ do
 end
 ```
 
-### LMinimap:getObjectCount
+#### LMinimap:getObjectCount
 
 #### Definition
 
@@ -1464,7 +1259,7 @@ do
 end
 ```
 
-### LMinimap:getObjectTypeCount
+#### LMinimap:getObjectTypeCount
 
 #### Definition
 
@@ -1494,7 +1289,7 @@ do
 end
 ```
 
-### LMinimap:getOverlayShapeCount
+#### LMinimap:getOverlayShapeCount
 
 #### Definition
 
@@ -1523,7 +1318,7 @@ do
 end
 ```
 
-### LMinimap:getOwnerColor
+#### LMinimap:getOwnerColor
 
 #### Definition
 
@@ -1560,7 +1355,7 @@ do
 end
 ```
 
-### LMinimap:getPathCount
+#### LMinimap:getPathCount
 
 #### Definition
 
@@ -1589,7 +1384,7 @@ do
 end
 ```
 
-### LMinimap:getPingCount
+#### LMinimap:getPingCount
 
 #### Definition
 
@@ -1619,7 +1414,7 @@ do
 end
 ```
 
-### LMinimap:getTerrain
+#### LMinimap:getTerrain
 
 #### Definition
 
@@ -1655,7 +1450,7 @@ do
 end
 ```
 
-### LMinimap:getTerrainColor
+#### LMinimap:getTerrainColor
 
 #### Definition
 
@@ -1693,7 +1488,7 @@ do
 end
 ```
 
-### LMinimap:getTileDescription
+#### LMinimap:getTileDescription
 
 #### Definition
 
@@ -1726,7 +1521,7 @@ do
 end
 ```
 
-### LMinimap:getViewportColor
+#### LMinimap:getViewportColor
 
 #### Definition
 
@@ -1759,7 +1554,7 @@ do
 end
 ```
 
-### LMinimap:getViewportRect
+#### LMinimap:getViewportRect
 
 #### Definition
 
@@ -1791,7 +1586,7 @@ do
 end
 ```
 
-### LMinimap:getZoom
+#### LMinimap:getZoom
 
 #### Definition
 
@@ -1820,7 +1615,7 @@ do
 end
 ```
 
-### LMinimap:gridToScreen
+#### LMinimap:gridToScreen
 
 #### Definition
 
@@ -1861,7 +1656,7 @@ do
 end
 ```
 
-### LMinimap:hasMarker
+#### LMinimap:hasMarker
 
 #### Definition
 
@@ -1894,7 +1689,7 @@ do
 end
 ```
 
-### LMinimap:isAntiAlias
+#### LMinimap:isAntiAlias
 
 #### Definition
 
@@ -1923,7 +1718,7 @@ do
 end
 ```
 
-### LMinimap:isClickable
+#### LMinimap:isClickable
 
 #### Definition
 
@@ -1952,7 +1747,7 @@ do
 end
 ```
 
-### LMinimap:isFogEnabled
+#### LMinimap:isFogEnabled
 
 #### Definition
 
@@ -1981,7 +1776,7 @@ do
 end
 ```
 
-### LMinimap:isObjectTypeVisible
+#### LMinimap:isObjectTypeVisible
 
 #### Definition
 
@@ -2015,7 +1810,7 @@ do
 end
 ```
 
-### LMinimap:isViewportVisible
+#### LMinimap:isViewportVisible
 
 #### Definition
 
@@ -2044,7 +1839,7 @@ do
 end
 ```
 
-### LMinimap:removeMarker
+#### LMinimap:removeMarker
 
 #### Definition
 
@@ -2079,7 +1874,7 @@ do
 end
 ```
 
-### LMinimap:removeObject
+#### LMinimap:removeObject
 
 #### Definition
 
@@ -2114,7 +1909,7 @@ do
 end
 ```
 
-### LMinimap:render
+#### LMinimap:render
 
 #### Definition
 
@@ -2147,7 +1942,7 @@ do
 end
 ```
 
-### LMinimap:revealRadius
+#### LMinimap:revealRadius
 
 #### Definition
 
@@ -2183,7 +1978,7 @@ do
 end
 ```
 
-### LMinimap:screenToGrid
+#### LMinimap:screenToGrid
 
 #### Definition
 
@@ -2224,7 +2019,7 @@ do
 end
 ```
 
-### LMinimap:setAntiAlias
+#### LMinimap:setAntiAlias
 
 #### Definition
 
@@ -2255,7 +2050,7 @@ do
 end
 ```
 
-### LMinimap:setCenter
+#### LMinimap:setCenter
 
 #### Definition
 
@@ -2288,7 +2083,7 @@ do
 end
 ```
 
-### LMinimap:setClickable
+#### LMinimap:setClickable
 
 #### Definition
 
@@ -2319,7 +2114,7 @@ do
 end
 ```
 
-### LMinimap:setColorMode
+#### LMinimap:setColorMode
 
 #### Definition
 
@@ -2350,7 +2145,7 @@ do
 end
 ```
 
-### LMinimap:setDisplaySize
+#### LMinimap:setDisplaySize
 
 #### Definition
 
@@ -2383,7 +2178,7 @@ do
 end
 ```
 
-### LMinimap:setFogColor
+#### LMinimap:setFogColor
 
 #### Definition
 
@@ -2421,7 +2216,7 @@ do
 end
 ```
 
-### LMinimap:setFogData
+#### LMinimap:setFogData
 
 #### Definition
 
@@ -2453,7 +2248,7 @@ do
 end
 ```
 
-### LMinimap:setFogEnabled
+#### LMinimap:setFogEnabled
 
 #### Definition
 
@@ -2484,7 +2279,7 @@ do
 end
 ```
 
-### LMinimap:setFogLevel
+#### LMinimap:setFogLevel
 
 #### Definition
 
@@ -2520,7 +2315,7 @@ do
 end
 ```
 
-### LMinimap:setLayer
+#### LMinimap:setLayer
 
 #### Definition
 
@@ -2551,7 +2346,7 @@ do
 end
 ```
 
-### LMinimap:setLayerData
+#### LMinimap:setLayerData
 
 #### Definition
 
@@ -2585,7 +2380,7 @@ do
 end
 ```
 
-### LMinimap:setMarkerAnimation
+#### LMinimap:setMarkerAnimation
 
 #### Definition
 
@@ -2620,7 +2415,7 @@ do
 end
 ```
 
-### LMinimap:setMarkerTexture
+#### LMinimap:setMarkerTexture
 
 #### Definition
 
@@ -2658,7 +2453,7 @@ do
 end
 ```
 
-### LMinimap:setObject
+#### LMinimap:setObject
 
 #### Definition
 
@@ -2697,7 +2492,7 @@ do
 end
 ```
 
-### LMinimap:setObjectTypeTexture
+#### LMinimap:setObjectTypeTexture
 
 #### Definition
 
@@ -2735,7 +2530,7 @@ do
 end
 ```
 
-### LMinimap:setObjectTypeVisible
+#### LMinimap:setObjectTypeVisible
 
 #### Definition
 
@@ -2768,7 +2563,7 @@ do
 end
 ```
 
-### LMinimap:setOwnerColor
+#### LMinimap:setOwnerColor
 
 #### Definition
 
@@ -2807,7 +2602,7 @@ do
 end
 ```
 
-### LMinimap:setTerrain
+#### LMinimap:setTerrain
 
 #### Definition
 
@@ -2842,7 +2637,7 @@ do
 end
 ```
 
-### LMinimap:setTerrainColor
+#### LMinimap:setTerrainColor
 
 #### Definition
 
@@ -2882,7 +2677,7 @@ do
 end
 ```
 
-### LMinimap:setTerrainData
+#### LMinimap:setTerrainData
 
 #### Definition
 
@@ -2914,7 +2709,7 @@ do
 end
 ```
 
-### LMinimap:setTileDescription
+#### LMinimap:setTileDescription
 
 #### Definition
 
@@ -2946,7 +2741,7 @@ do
 end
 ```
 
-### LMinimap:setViewportColor
+#### LMinimap:setViewportColor
 
 #### Definition
 
@@ -2984,7 +2779,7 @@ do
 end
 ```
 
-### LMinimap:setViewportRect
+#### LMinimap:setViewportRect
 
 #### Definition
 
@@ -3021,7 +2816,7 @@ do
 end
 ```
 
-### LMinimap:setViewportVisible
+#### LMinimap:setViewportVisible
 
 #### Definition
 
@@ -3052,7 +2847,7 @@ do
 end
 ```
 
-### LMinimap:setZoom
+#### LMinimap:setZoom
 
 #### Definition
 
@@ -3083,7 +2878,7 @@ do
 end
 ```
 
-### LMinimap:showPath
+#### LMinimap:showPath
 
 #### Definition
 
@@ -3119,7 +2914,7 @@ do
 end
 ```
 
-### LMinimap:trackCamera
+#### LMinimap:trackCamera
 
 #### Definition
 
@@ -3151,7 +2946,7 @@ do
 end
 ```
 
-### LMinimap:type
+#### LMinimap:type
 
 #### Definition
 
@@ -3181,7 +2976,7 @@ do
 end
 ```
 
-### LMinimap:typeOf
+#### LMinimap:typeOf
 
 #### Definition
 
@@ -3216,7 +3011,7 @@ do
 end
 ```
 
-### LMinimap:update
+#### LMinimap:update
 
 #### Definition
 

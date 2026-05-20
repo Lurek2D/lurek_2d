@@ -10,809 +10,83 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [behavior_tree.rs](#behaviortreers)
+  - [bimap.rs](#bimaprs)
+  - [blackboard.rs](#blackboardrs)
+  - [collections.rs](#collectionsrs)
+  - [command_stack.rs](#commandstackrs)
+  - [event_bus.rs](#eventbusrs)
+  - [factory.rs](#factoryrs)
+  - [funnel.rs](#funnelrs)
+  - [graph.rs](#graphrs)
+  - [mediator.rs](#mediatorrs)
+  - [mod.rs](#modrs)
+  - [object_pool.rs](#objectpoolrs)
+  - [observer.rs](#observerrs)
+  - [priority_queue.rs](#priorityqueuers)
+  - [ring.rs](#ringrs)
+  - [service_locator.rs](#servicelocatorrs)
+  - [simple_state.rs](#simplestaters)
+  - [state_machine.rs](#statemachiners)
+  - [strategy.rs](#strategyrs)
+  - [throttle.rs](#throttlers)
+  - [trie.rs](#triers)
+  - [weighted_random.rs](#weightedrandomrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.patterns.newBehaviorTree](#lurekpatternsnewbehaviortree)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newBlackboard](#lurekpatternsnewblackboard)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newCommandStack](#lurekpatternsnewcommandstack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newDebounce](#lurekpatternsnewdebounce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newEventBus](#lurekpatternsneweventbus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newFactory](#lurekpatternsnewfactory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newFunnel](#lurekpatternsnewfunnel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newGraph](#lurekpatternsnewgraph)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newList](#lurekpatternsnewlist)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newMap](#lurekpatternsnewmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newMediator](#lurekpatternsnewmediator)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newObjectPool](#lurekpatternsnewobjectpool)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newObserver](#lurekpatternsnewobserver)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newPriorityQueue](#lurekpatternsnewpriorityqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newQueue](#lurekpatternsnewqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newRelationshipManager](#lurekpatternsnewrelationshipmanager)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newRing](#lurekpatternsnewring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newServiceLocator](#lurekpatternsnewservicelocator)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newSet](#lurekpatternsnewset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newSimpleState](#lurekpatternsnewsimplestate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newStack](#lurekpatternsnewstack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newStrategy](#lurekpatternsnewstrategy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newThrottle](#lurekpatternsnewthrottle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.patterns.newWeightedRandom](#lurekpatternsnewweightedrandom)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LBehaviorTree](#lbehaviortree)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBlackboard](#lblackboard)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCommandStack](#lcommandstack)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDebounce](#ldebounce)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LEventBus](#leventbus)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LFactory](#lfactory)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LFunnel](#lfunnel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LList](#llist)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMap](#lmap)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMediator](#lmediator)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LObjectPool](#lobjectpool)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LObserver](#lobserver)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPatternGraph](#lpatterngraph)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPriorityQueue](#lpriorityqueue)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LQueue](#lqueue)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LRelationshipManager](#lrelationshipmanager)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LRing](#lring)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LServiceLocator](#lservicelocator)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSet](#lset)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSimpleState](#lsimplestate)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LStack](#lstack)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LStrategy](#lstrategy)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LThrottle](#lthrottle)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LWeightedRandom](#lweightedrandom)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LBehaviorTree:addChild](#lbehaviortreeaddchild)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:addInverter](#lbehaviortreeaddinverter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:addLeaf](#lbehaviortreeaddleaf)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:addParallel](#lbehaviortreeaddparallel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:addRepeat](#lbehaviortreeaddrepeat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:addSelector](#lbehaviortreeaddselector)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:addSequence](#lbehaviortreeaddsequence)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:clearAll](#lbehaviortreeclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:nodeCount](#lbehaviortreenodecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:resetState](#lbehaviortreeresetstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:setLeaf](#lbehaviortreesetleaf)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:setRoot](#lbehaviortreesetroot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBehaviorTree:tick](#lbehaviortreetick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:clear](#lblackboardclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:clearAll](#lblackboardclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:get](#lblackboardget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:getRevision](#lblackboardgetrevision)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:has](#lblackboardhas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:keys](#lblackboardkeys)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:set](#lblackboardset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:snapshot](#lblackboardsnapshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:unwatch](#lblackboardunwatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBlackboard:watch](#lblackboardwatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:canRedo](#lcommandstackcanredo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:canUndo](#lcommandstackcanundo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:clearAll](#lcommandstackclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:execute](#lcommandstackexecute)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:getCurrentName](#lcommandstackgetcurrentname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:getHistorySize](#lcommandstackgethistorysize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:redo](#lcommandstackredo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCommandStack:undo](#lcommandstackundo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDebounce:cancel](#ldebouncecancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDebounce:getFireCount](#ldebouncegetfirecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDebounce:isPending](#ldebounceispending)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDebounce:onFire](#ldebounceonfire)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDebounce:trigger](#ldebouncetrigger)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDebounce:update](#ldebounceupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEventBus:clear](#leventbusclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEventBus:clearAll](#leventbusclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEventBus:emit](#leventbusemit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEventBus:getEvents](#leventbusgetevents)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEventBus:getListenerCount](#leventbusgetlistenercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEventBus:off](#leventbusoff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LEventBus:on](#leventbuson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFactory:alias](#lfactoryalias)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFactory:clearAll](#lfactoryclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFactory:create](#lfactorycreate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFactory:getTypes](#lfactorygettypes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFactory:has](#lfactoryhas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFactory:register](#lfactoryregister)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFactory:remove](#lfactoryremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFunnel:discard](#lfunneldiscard)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFunnel:flush](#lfunnelflush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFunnel:getFlushCount](#lfunnelgetflushcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFunnel:onFlush](#lfunnelonflush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFunnel:pendingCount](#lfunnelpendingcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFunnel:push](#lfunnelpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFunnel:update](#lfunnelupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:add](#llistadd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:clear](#llistclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:contains](#llistcontains)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:get](#llistget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:indexOf](#llistindexof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:insert](#llistinsert)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:isEmpty](#llistisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:len](#llistlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:pop](#llistpop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:push](#llistpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:remove](#llistremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:reverse](#llistreverse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:set](#llistset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:shift](#llistshift)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:toArray](#llisttoarray)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LList:unshift](#llistunshift)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:clear](#lmapclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:entries](#lmapentries)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:get](#lmapget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:has](#lmaphas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:isEmpty](#lmapisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:keys](#lmapkeys)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:len](#lmaplen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:merge](#lmapmerge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:remove](#lmapremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:set](#lmapset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMap:values](#lmapvalues)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:broadcast](#lmediatorbroadcast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:channels](#lmediatorchannels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:clear](#lmediatorclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:handlerCount](#lmediatorhandlercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:off](#lmediatoroff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:on](#lmediatoron)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:removeChannel](#lmediatorremovechannel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMediator:send](#lmediatorsend)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjectPool:acquire](#lobjectpoolacquire)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjectPool:add](#lobjectpooladd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjectPool:clearAll](#lobjectpoolclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjectPool:getActiveCount](#lobjectpoolgetactivecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjectPool:getAvailableCount](#lobjectpoolgetavailablecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjectPool:getTotalCount](#lobjectpoolgettotalcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObjectPool:release](#lobjectpoolrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObserver:get](#lobserverget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObserver:getCount](#lobservergetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObserver:set](#lobserverset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObserver:subscribe](#lobserversubscribe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LObserver:unsubscribe](#lobserverunsubscribe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:addEdge](#lpatterngraphaddedge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:addNode](#lpatterngraphaddnode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:bfs](#lpatterngraphbfs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:clearAll](#lpatterngraphclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:dfs](#lpatterngraphdfs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:edgeCount](#lpatterngraphedgecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:getNodeValue](#lpatterngraphgetnodevalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:hasNode](#lpatterngraphhasnode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:isConnected](#lpatterngraphisconnected)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:neighbors](#lpatterngraphneighbors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:nodeCount](#lpatterngraphnodecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:removeEdge](#lpatterngraphremoveedge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPatternGraph:removeNode](#lpatterngraphremovenode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPriorityQueue:clearAll](#lpriorityqueueclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPriorityQueue:isEmpty](#lpriorityqueueisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPriorityQueue:len](#lpriorityqueuelen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPriorityQueue:peek](#lpriorityqueuepeek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPriorityQueue:pop](#lpriorityqueuepop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPriorityQueue:push](#lpriorityqueuepush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:back](#lqueueback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:clear](#lqueueclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:dequeue](#lqueuedequeue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:dequeueBack](#lqueuedequeueback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:enqueue](#lqueueenqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:enqueueFront](#lqueueenqueuefront)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:front](#lqueuefront)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:insertAt](#lqueueinsertat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:isEmpty](#lqueueisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:isFull](#lqueueisfull)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:len](#lqueuelen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:peekAt](#lqueuepeekat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:removeAt](#lqueueremoveat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQueue:toArray](#lqueuetoarray)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:adjustValue](#lrelationshipmanageradjustvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:defineType](#lrelationshipmanagerdefinetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:getLevel](#lrelationshipmanagergetlevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:getValue](#lrelationshipmanagergetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:pairCount](#lrelationshipmanagerpaircount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:removePair](#lrelationshipmanagerremovepair)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:removeType](#lrelationshipmanagerremovetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:setLevel](#lrelationshipmanagersetlevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:setValue](#lrelationshipmanagersetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRelationshipManager:typeNames](#lrelationshipmanagertypenames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:average](#lringaverage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:clear](#lringclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:isFull](#lringisfull)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:latest](#lringlatest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:len](#lringlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:push](#lringpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:sum](#lringsum)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRing:toArray](#lringtoarray)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LServiceLocator:clearAll](#lservicelocatorclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LServiceLocator:getServices](#lservicelocatorgetservices)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LServiceLocator:has](#lservicelocatorhas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LServiceLocator:locate](#lservicelocatorlocate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LServiceLocator:provide](#lservicelocatorprovide)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LServiceLocator:remove](#lservicelocatorremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:add](#lsetadd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:clear](#lsetclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:has](#lsethas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:intersection](#lsetintersection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:isEmpty](#lsetisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:len](#lsetlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:remove](#lsetremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:toArray](#lsettoarray)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSet:union](#lsetunion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSimpleState:addState](#lsimplestateaddstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSimpleState:clearAll](#lsimplestateclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSimpleState:getCurrent](#lsimplestategetcurrent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSimpleState:getStates](#lsimplestategetstates)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSimpleState:hasState](#lsimplestatehasstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSimpleState:transitionTo](#lsimplestatetransitionto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSimpleState:update](#lsimplestateupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:clear](#lstackclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:insertAt](#lstackinsertat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:isEmpty](#lstackisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:isFull](#lstackisfull)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:len](#lstacklen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:moveWithin](#lstackmovewithin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:peek](#lstackpeek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:peekAt](#lstackpeekat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:peekBottom](#lstackpeekbottom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:pop](#lstackpop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:popBottom](#lstackpopbottom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:popMany](#lstackpopmany)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:push](#lstackpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:pushBottom](#lstackpushbottom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:removeAt](#lstackremoveat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStack:toArray](#lstacktoarray)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:clear](#lstrategyclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:execute](#lstrategyexecute)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:getCurrent](#lstrategygetcurrent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:has](#lstrategyhas)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:names](#lstrategynames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:register](#lstrategyregister)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:remove](#lstrategyremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LStrategy:set](#lstrategyset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThrottle:getFireCount](#lthrottlegetfirecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThrottle:getProgress](#lthrottlegetprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThrottle:onFire](#lthrottleonfire)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThrottle:reset](#lthrottlereset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThrottle:setEnabled](#lthrottlesetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThrottle:update](#lthrottleupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:add](#lweightedrandomadd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:clearAll](#lweightedrandomclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:getRevision](#lweightedrandomgetrevision)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:isEmpty](#lweightedrandomisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:len](#lweightedrandomlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:pick](#lweightedrandompick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:pickN](#lweightedrandompickn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:remove](#lweightedrandomremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:setWeight](#lweightedrandomsetweight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LWeightedRandom:totalWeight](#lweightedrandomtotalweight)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LBehaviorTree Methods](#lbehaviortree-methods)
+  - [LBlackboard Methods](#lblackboard-methods)
+  - [LCommandStack Methods](#lcommandstack-methods)
+  - [LDebounce Methods](#ldebounce-methods)
+  - [LEventBus Methods](#leventbus-methods)
+  - [LFactory Methods](#lfactory-methods)
+  - [LFunnel Methods](#lfunnel-methods)
+  - [LList Methods](#llist-methods)
+  - [LMap Methods](#lmap-methods)
+  - [LMediator Methods](#lmediator-methods)
+  - [LObjectPool Methods](#lobjectpool-methods)
+  - [LObserver Methods](#lobserver-methods)
+  - [LPatternGraph Methods](#lpatterngraph-methods)
+  - [LPriorityQueue Methods](#lpriorityqueue-methods)
+  - [LQueue Methods](#lqueue-methods)
+  - [LRelationshipManager Methods](#lrelationshipmanager-methods)
+  - [LRing Methods](#lring-methods)
+  - [LServiceLocator Methods](#lservicelocator-methods)
+  - [LSet Methods](#lset-methods)
+  - [LSimpleState Methods](#lsimplestate-methods)
+  - [LStack Methods](#lstack-methods)
+  - [LStrategy Methods](#lstrategy-methods)
+  - [LThrottle Methods](#lthrottle-methods)
+  - [LWeightedRandom Methods](#lweightedrandom-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -833,6 +107,147 @@ Twelve classic game-programming design patterns exposed as lurek.patterns.*.
 Twelve classic game-programming design patterns exposed as reusable Lua building blocks via `lurek.patterns.*`. Includes: behavior trees (sequence, selector, parallel, inverter, repeat, cooldown, random), hierarchical state machines with enter/exit/update callbacks, event buses for decoupled pub-sub messaging, observer pattern for property-change notification, command stack with undo/redo history.
 
 Also provides: object pools with acquire/release lifecycle, weighted random selection with priority queues, ring buffers for fixed-size history, bidirectional maps (BiMap), trie-based prefix search, service locators for dependency injection, and blackboard key-value stores for shared AI state. All patterns are standalone Lua userdata objects with no inter-pattern coupling. Foundations tier.
+
+[⬆ back to top](#table-of-contents)
+
+## 📁 Source Files
+
+### `behavior_tree.rs`
+
+- Behavior tree data structure with Sequence, Selector, Parallel, Inverter, Repeat, and Leaf node kinds.
+- Builder API for allocating nodes, linking children, and setting the root.
+- Per-tick runtime state tracking running nodes and repeat counters.
+- Integer `NodeId` addressing; no heap indirection between parent and child.
+- Fully deterministic tick ordering: left-to-right child evaluation.
+
+### `bimap.rs`
+
+- Bidirectional map with O(1) lookup by key or by value.
+- Mirrored forward and reverse `HashMap` tables kept in sync on every mutation.
+- Insert, remove-by-key, remove-by-value, and containment checks in both directions.
+
+### `blackboard.rs`
+
+- Shared key-value store for passing typed state between AI and game systems.
+- Supports bool, number, text, and nil entries with per-key revision tracking.
+- Global and per-key revision counters enable efficient change detection.
+
+### `collections.rs`
+
+- Capacity metadata types for bounded stacks and queues.
+- Full-check logic shared by Lua-facing collection wrappers.
+- Zero capacity means unbounded; non-zero enforces a hard limit.
+
+### `command_stack.rs`
+
+- Linear undo/redo command history with cursor-based navigation.
+- Batch grouping for multi-command atomic operations.
+- Configurable max-size eviction of oldest entries.
+
+### `event_bus.rs`
+
+- Named event bus that routes events to prioritized subscriptions.
+- Supports wildcard listeners, one-shot subscriptions, and per-event clearing.
+- Returns ordered listener ID lists for the Lua callback layer to dispatch.
+
+### `factory.rs`
+
+- Named type registry with alias support for dynamic object construction.
+- Register, unregister, and resolve canonical type names at runtime.
+- Alias mapping allows multiple names to reference the same underlying type.
+
+### `funnel.rs`
+
+- Buffered accumulator that collects tagged numeric entries and flushes on a time window or count threshold.
+- Provides push/update/flush lifecycle: push entries, tick time, drain when ready.
+- Supports immediate flush (window=0), count-triggered flush, and manual discard.
+
+### `graph.rs`
+
+- Adjacency-list graph with directed and undirected mode support.
+- Node and edge CRUD with stable integer identifiers.
+- Weighted, labelled edges with automatic reverse-edge insertion for undirected graphs.
+- BFS and DFS traversals from any start node.
+- Connectivity queries and neighbour enumeration.
+
+### `mediator.rs`
+
+- Channel-based mediator for decoupled handler registration and dispatch.
+- Register/unregister handlers by string channel with unique ids.
+- Query, count, and clear handlers per channel or globally.
+
+### `mod.rs`
+
+- Reusable game-logic design patterns: state machines, behavior trees, event buses, and object pools.
+- Data structures for priority queues, graphs, tries, rings, and bidirectional maps.
+- Command stacking, observer subscriptions, throttling, and weighted random selection.
+
+### `object_pool.rs`
+
+- Capacity-bounded object pool that tracks idle and active ids for reuse.
+- Supports acquire/release lifecycle, prewarming, and optional capacity limits.
+- Useful for entity recycling, bullet pools, and particle systems.
+
+### `observer.rs`
+
+- Named observer pattern with per-key subscription lists and wildcard support.
+- One-shot (`once`) and persistent subscription modes with auto-cleanup on dispatch.
+- Key-scoped and global clear operations for lifecycle management.
+
+### `priority_queue.rs`
+
+- Sorted priority queue with stable FIFO tie-breaking for equal priorities.
+- Push, pop, peek, and remove by id with O(n) insertion via partition point.
+- Each item carries an auto-assigned id, priority, label, and sequence number.
+
+### `ring.rs`
+
+- Fixed-capacity ring buffer backed by `VecDeque` with automatic eviction of oldest entries.
+- Each entry carries an optional numeric or string payload plus a caller-assigned tag.
+- Provides aggregate helpers (sum, average) and ordered iteration from oldest to newest.
+
+### `service_locator.rs`
+
+- Name-based service registry for runtime feature discovery.
+- Register, unregister, and query string-keyed services.
+- Sorted enumeration of all active service names.
+
+### `simple_state.rs`
+
+- Named-state registry with at-most-one active state at a time.
+- Add, remove, query, and switch states; validates transitions against the known set.
+- Sorted enumeration and count helpers for introspection.
+
+### `state_machine.rs`
+
+- Finite state machine with explicit states, guarded transitions, and bounded history.
+- Transition rules with optional guards control allowed state changes.
+- Maintains a capped history ring of visited states for replay or debugging.
+
+### `strategy.rs`
+
+- Named-strategy registry with id assignment and current-selection tracking.
+- Register, remove, query, and switch strategies by string name.
+- Provides id-based lookup for the active strategy.
+
+### `throttle.rs`
+
+- Rate-limiting primitives: throttle (fire at most once per interval) and debounce (fire after quiet period).
+- Both track elapsed time, fire counts, and can be enabled/disabled at runtime.
+- Progress query on throttle; trigger/cancel lifecycle on debounce.
+
+### `trie.rs`
+
+- Prefix trie for character-level string key storage and retrieval.
+- Insert, search, remove, and prefix-match operations.
+- DFS collection of all keys sharing a common prefix.
+- Automatic pruning of empty leaf nodes on removal.
+
+### `weighted_random.rs`
+
+- Weighted random selection over a dynamic entry list with add/remove/update.
+- Single-pick and multi-pick-without-replacement algorithms using normalized samples.
+- Revision counter for detecting structural changes and invalidating external caches.
 
 [⬆ back to top](#table-of-contents)
 
@@ -860,34 +275,18 @@ Also provides: object pools with acquire/release lifecycle, weighted random sele
 ## 📖 API Overview
 
 - Source spec: [docs/specs/patterns.md](../blob/main/docs/specs/patterns.md)
+- Module-level functions: 24
+- Lua-visible types: 24
+- Total type methods: 218
 
-```lua
-lurek.patterns.newBehaviorTree() -> LBehaviorTree -- Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
-lurek.patterns.newBlackboard([name]: string) -> LBlackboard -- Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
-lurek.patterns.newCommandStack([maxSize]: integer) -> LCommandStack -- Create a new undo/redo command stack for recording and reversing player or editor actions.
-lurek.patterns.newDebounce(wait: number) -> LDebounce -- Create a new debounce that delays firing until input stops for a specified wait period.
-lurek.patterns.newEventBus([name]: string) -> LEventBus -- Create a new publish/subscribe event bus for decoupled communication between game systems.
-lurek.patterns.newFactory() -> LFactory -- Create a new factory for producing typed game objects from registered constructor functions.
-lurek.patterns.newFunnel(window: number, [maxEntries]: integer, [name]: string) -> LFunnel -- Create a new batching funnel that collects events over a time window and flushes them together.
-lurek.patterns.newGraph([undirected]: boolean) -> LPatternGraph -- Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.
-lurek.patterns.newList() -> LList -- Create a new dynamic array list with indexed access, insertion, removal, and search.
-lurek.patterns.newMap() -> LMap -- Create a new string-keyed dictionary (map) with keys/values/entries access and merge support.
-lurek.patterns.newMediator() -> LMediator -- Create a new mediator for channel-based message passing between decoupled game systems.
-lurek.patterns.newObjectPool() -> LObjectPool -- Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead.
-lurek.patterns.newObserver([name]: string) -> LObserver -- Create a new reactive observer that stores values and notifies subscribers when they change.
-lurek.patterns.newPriorityQueue([name]: string) -> LPriorityQueue -- Create a new priority queue that orders elements by numeric priority (highest first).
-lurek.patterns.newQueue([capacity]: integer) -> LQueue -- Create a new FIFO queue with optional capacity limit.
-lurek.patterns.newRelationshipManager() -> LRelationshipManager -- Create a new relationship manager for tracking numeric values and named levels between entity pairs.
-lurek.patterns.newRing(capacity: integer, [name]: string) -> LRing -- Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
-lurek.patterns.newServiceLocator() -> LServiceLocator -- Create a new service locator for registering and retrieving shared services by name at runtime.
--- ... 6 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.patterns.newBehaviorTree
+### Module-Level Functions
+
+#### lurek.patterns.newBehaviorTree
 
 #### Definition
 
@@ -917,7 +316,7 @@ do
 end
 ```
 
-### lurek.patterns.newBlackboard
+#### lurek.patterns.newBlackboard
 
 #### Definition
 
@@ -952,7 +351,7 @@ do
 end
 ```
 
-### lurek.patterns.newCommandStack
+#### lurek.patterns.newCommandStack
 
 #### Definition
 
@@ -987,7 +386,7 @@ do
 end
 ```
 
-### lurek.patterns.newDebounce
+#### lurek.patterns.newDebounce
 
 #### Definition
 
@@ -1029,7 +428,7 @@ do
 end
 ```
 
-### lurek.patterns.newEventBus
+#### lurek.patterns.newEventBus
 
 #### Definition
 
@@ -1070,7 +469,7 @@ do
 end
 ```
 
-### lurek.patterns.newFactory
+#### lurek.patterns.newFactory
 
 #### Definition
 
@@ -1109,7 +508,7 @@ do
 end
 ```
 
-### lurek.patterns.newFunnel
+#### lurek.patterns.newFunnel
 
 #### Definition
 
@@ -1152,7 +551,7 @@ do
 end
 ```
 
-### lurek.patterns.newGraph
+#### lurek.patterns.newGraph
 
 #### Definition
 
@@ -1187,7 +586,7 @@ do
 end
 ```
 
-### lurek.patterns.newList
+#### lurek.patterns.newList
 
 #### Definition
 
@@ -1217,7 +616,7 @@ do
 end
 ```
 
-### lurek.patterns.newMap
+#### lurek.patterns.newMap
 
 #### Definition
 
@@ -1247,7 +646,7 @@ do
 end
 ```
 
-### lurek.patterns.newMediator
+#### lurek.patterns.newMediator
 
 #### Definition
 
@@ -1284,7 +683,7 @@ do
 end
 ```
 
-### lurek.patterns.newObjectPool
+#### lurek.patterns.newObjectPool
 
 #### Definition
 
@@ -1312,7 +711,7 @@ do
 end
 ```
 
-### lurek.patterns.newObserver
+#### lurek.patterns.newObserver
 
 #### Definition
 
@@ -1353,7 +752,7 @@ do
 end
 ```
 
-### lurek.patterns.newPriorityQueue
+#### lurek.patterns.newPriorityQueue
 
 #### Definition
 
@@ -1388,7 +787,7 @@ do
 end
 ```
 
-### lurek.patterns.newQueue
+#### lurek.patterns.newQueue
 
 #### Definition
 
@@ -1423,7 +822,7 @@ do
 end
 ```
 
-### lurek.patterns.newRelationshipManager
+#### lurek.patterns.newRelationshipManager
 
 #### Definition
 
@@ -1453,7 +852,7 @@ do
 end
 ```
 
-### lurek.patterns.newRing
+#### lurek.patterns.newRing
 
 #### Definition
 
@@ -1490,7 +889,7 @@ do
 end
 ```
 
-### lurek.patterns.newServiceLocator
+#### lurek.patterns.newServiceLocator
 
 #### Definition
 
@@ -1518,7 +917,7 @@ do
 end
 ```
 
-### lurek.patterns.newSet
+#### lurek.patterns.newSet
 
 #### Definition
 
@@ -1548,7 +947,7 @@ do
 end
 ```
 
-### lurek.patterns.newSimpleState
+#### lurek.patterns.newSimpleState
 
 #### Definition
 
@@ -1578,7 +977,7 @@ do
 end
 ```
 
-### lurek.patterns.newStack
+#### lurek.patterns.newStack
 
 #### Definition
 
@@ -1613,7 +1012,7 @@ do
 end
 ```
 
-### lurek.patterns.newStrategy
+#### lurek.patterns.newStrategy
 
 #### Definition
 
@@ -1655,7 +1054,7 @@ do
 end
 ```
 
-### lurek.patterns.newThrottle
+#### lurek.patterns.newThrottle
 
 #### Definition
 
@@ -1696,7 +1095,7 @@ do
 end
 ```
 
-### lurek.patterns.newWeightedRandom
+#### lurek.patterns.newWeightedRandom
 
 #### Definition
 
@@ -2461,7 +1860,9 @@ end
 
 ## 🔹 Module Methods
 
-### LBehaviorTree:addChild
+### LBehaviorTree Methods
+
+#### LBehaviorTree:addChild
 
 #### Definition
 
@@ -2498,7 +1899,7 @@ do
 end
 ```
 
-### LBehaviorTree:addInverter
+#### LBehaviorTree:addInverter
 
 #### Definition
 
@@ -2533,7 +1934,7 @@ do
 end
 ```
 
-### LBehaviorTree:addLeaf
+#### LBehaviorTree:addLeaf
 
 #### Definition
 
@@ -2570,7 +1971,7 @@ do
 end
 ```
 
-### LBehaviorTree:addParallel
+#### LBehaviorTree:addParallel
 
 #### Definition
 
@@ -2607,7 +2008,7 @@ do
 end
 ```
 
-### LBehaviorTree:addRepeat
+#### LBehaviorTree:addRepeat
 
 #### Definition
 
@@ -2644,7 +2045,7 @@ do
 end
 ```
 
-### LBehaviorTree:addSelector
+#### LBehaviorTree:addSelector
 
 #### Definition
 
@@ -2679,7 +2080,7 @@ do
 end
 ```
 
-### LBehaviorTree:addSequence
+#### LBehaviorTree:addSequence
 
 #### Definition
 
@@ -2714,7 +2115,7 @@ do
 end
 ```
 
-### LBehaviorTree:clearAll
+#### LBehaviorTree:clearAll
 
 #### Definition
 
@@ -2741,7 +2142,7 @@ do
 end
 ```
 
-### LBehaviorTree:nodeCount
+#### LBehaviorTree:nodeCount
 
 #### Definition
 
@@ -2771,7 +2172,7 @@ do
 end
 ```
 
-### LBehaviorTree:resetState
+#### LBehaviorTree:resetState
 
 #### Definition
 
@@ -2810,7 +2211,7 @@ do
 end
 ```
 
-### LBehaviorTree:setLeaf
+#### LBehaviorTree:setLeaf
 
 #### Definition
 
@@ -2856,7 +2257,7 @@ do
 end
 ```
 
-### LBehaviorTree:setRoot
+#### LBehaviorTree:setRoot
 
 #### Definition
 
@@ -2891,7 +2292,7 @@ do
 end
 ```
 
-### LBehaviorTree:tick
+#### LBehaviorTree:tick
 
 #### Definition
 
@@ -2933,7 +2334,9 @@ do
 end
 ```
 
-### LBlackboard:clear
+### LBlackboard Methods
+
+#### LBlackboard:clear
 
 #### Definition
 
@@ -2977,7 +2380,7 @@ do
 end
 ```
 
-### LBlackboard:clearAll
+#### LBlackboard:clearAll
 
 #### Definition
 
@@ -3016,7 +2419,7 @@ do
 end
 ```
 
-### LBlackboard:get
+#### LBlackboard:get
 
 #### Definition
 
@@ -3051,7 +2454,7 @@ do
 end
 ```
 
-### LBlackboard:getRevision
+#### LBlackboard:getRevision
 
 #### Definition
 
@@ -3093,7 +2496,7 @@ do
 end
 ```
 
-### LBlackboard:has
+#### LBlackboard:has
 
 #### Definition
 
@@ -3128,7 +2531,7 @@ do
 end
 ```
 
-### LBlackboard:keys
+#### LBlackboard:keys
 
 #### Definition
 
@@ -3158,7 +2561,7 @@ do
 end
 ```
 
-### LBlackboard:set
+#### LBlackboard:set
 
 #### Definition
 
@@ -3233,7 +2636,7 @@ do
     end)
 ```
 
-### LBlackboard:snapshot
+#### LBlackboard:snapshot
 
 #### Definition
 
@@ -3275,7 +2678,7 @@ do
 end
 ```
 
-### LBlackboard:unwatch
+#### LBlackboard:unwatch
 
 #### Definition
 
@@ -3319,7 +2722,7 @@ do
 end
 ```
 
-### LBlackboard:watch
+#### LBlackboard:watch
 
 #### Definition
 
@@ -3368,7 +2771,9 @@ do
 end
 ```
 
-### LCommandStack:canRedo
+### LCommandStack Methods
+
+#### LCommandStack:canRedo
 
 #### Definition
 
@@ -3398,7 +2803,7 @@ do
 end
 ```
 
-### LCommandStack:canUndo
+#### LCommandStack:canUndo
 
 #### Definition
 
@@ -3428,7 +2833,7 @@ do
 end
 ```
 
-### LCommandStack:clearAll
+#### LCommandStack:clearAll
 
 #### Definition
 
@@ -3455,7 +2860,7 @@ do
 end
 ```
 
-### LCommandStack:execute
+#### LCommandStack:execute
 
 #### Definition
 
@@ -3491,7 +2896,7 @@ do
 end
 ```
 
-### LCommandStack:getCurrentName
+#### LCommandStack:getCurrentName
 
 #### Definition
 
@@ -3521,7 +2926,7 @@ do
 end
 ```
 
-### LCommandStack:getHistorySize
+#### LCommandStack:getHistorySize
 
 #### Definition
 
@@ -3551,7 +2956,7 @@ do
 end
 ```
 
-### LCommandStack:redo
+#### LCommandStack:redo
 
 #### Definition
 
@@ -3581,7 +2986,7 @@ do
 end
 ```
 
-### LCommandStack:undo
+#### LCommandStack:undo
 
 #### Definition
 
@@ -3611,7 +3016,9 @@ do
 end
 ```
 
-### LDebounce:cancel
+### LDebounce Methods
+
+#### LDebounce:cancel
 
 #### Definition
 
@@ -3638,7 +3045,7 @@ do
 end
 ```
 
-### LDebounce:getFireCount
+#### LDebounce:getFireCount
 
 #### Definition
 
@@ -3668,7 +3075,7 @@ do
 end
 ```
 
-### LDebounce:isPending
+#### LDebounce:isPending
 
 #### Definition
 
@@ -3698,7 +3105,7 @@ do
 end
 ```
 
-### LDebounce:onFire
+#### LDebounce:onFire
 
 #### Definition
 
@@ -3737,7 +3144,7 @@ do
 end
 ```
 
-### LDebounce:trigger
+#### LDebounce:trigger
 
 #### Definition
 
@@ -3771,7 +3178,7 @@ do
 end
 ```
 
-### LDebounce:update
+#### LDebounce:update
 
 #### Definition
 
@@ -3813,7 +3220,9 @@ do
 end
 ```
 
-### LEventBus:clear
+### LEventBus Methods
+
+#### LEventBus:clear
 
 #### Definition
 
@@ -3845,7 +3254,7 @@ do
 end
 ```
 
-### LEventBus:clearAll
+#### LEventBus:clearAll
 
 #### Definition
 
@@ -3872,7 +3281,7 @@ do
 end
 ```
 
-### LEventBus:emit
+#### LEventBus:emit
 
 #### Definition
 
@@ -3912,7 +3321,7 @@ do
 end
 ```
 
-### LEventBus:getEvents
+#### LEventBus:getEvents
 
 #### Definition
 
@@ -3942,7 +3351,7 @@ do
 end
 ```
 
-### LEventBus:getListenerCount
+#### LEventBus:getListenerCount
 
 #### Definition
 
@@ -3977,7 +3386,7 @@ do
 end
 ```
 
-### LEventBus:off
+#### LEventBus:off
 
 #### Definition
 
@@ -4015,7 +3424,7 @@ do
 end
 ```
 
-### LEventBus:on
+#### LEventBus:on
 
 #### Definition
 
@@ -4086,7 +3495,9 @@ do
 end
 ```
 
-### LFactory:alias
+### LFactory Methods
+
+#### LFactory:alias
 
 #### Definition
 
@@ -4127,7 +3538,7 @@ do
 end
 ```
 
-### LFactory:clearAll
+#### LFactory:clearAll
 
 #### Definition
 
@@ -4161,7 +3572,7 @@ do
 end
 ```
 
-### LFactory:create
+#### LFactory:create
 
 #### Definition
 
@@ -4205,7 +3616,7 @@ do
 end
 ```
 
-### LFactory:getTypes
+#### LFactory:getTypes
 
 #### Definition
 
@@ -4244,7 +3655,7 @@ do
 end
 ```
 
-### LFactory:has
+#### LFactory:has
 
 #### Definition
 
@@ -4279,7 +3690,7 @@ do
 end
 ```
 
-### LFactory:register
+#### LFactory:register
 
 #### Definition
 
@@ -4322,7 +3733,7 @@ do
 end
 ```
 
-### LFactory:remove
+#### LFactory:remove
 
 #### Definition
 
@@ -4361,7 +3772,9 @@ do
 end
 ```
 
-### LFunnel:discard
+### LFunnel Methods
+
+#### LFunnel:discard
 
 #### Definition
 
@@ -4395,7 +3808,7 @@ do
 end
 ```
 
-### LFunnel:flush
+#### LFunnel:flush
 
 #### Definition
 
@@ -4429,7 +3842,7 @@ do
 end
 ```
 
-### LFunnel:getFlushCount
+#### LFunnel:getFlushCount
 
 #### Definition
 
@@ -4466,7 +3879,7 @@ do
 end
 ```
 
-### LFunnel:onFlush
+#### LFunnel:onFlush
 
 #### Definition
 
@@ -4536,7 +3949,7 @@ do
 end
 ```
 
-### LFunnel:pendingCount
+#### LFunnel:pendingCount
 
 #### Definition
 
@@ -4573,7 +3986,7 @@ do
 end
 ```
 
-### LFunnel:push
+#### LFunnel:push
 
 #### Definition
 
@@ -4611,7 +4024,7 @@ do
 end
 ```
 
-### LFunnel:update
+#### LFunnel:update
 
 #### Definition
 
@@ -4650,7 +4063,9 @@ do
 end
 ```
 
-### LList:add
+### LList Methods
+
+#### LList:add
 
 #### Definition
 
@@ -4682,7 +4097,7 @@ do
 end
 ```
 
-### LList:clear
+#### LList:clear
 
 #### Definition
 
@@ -4709,7 +4124,7 @@ do
 end
 ```
 
-### LList:contains
+#### LList:contains
 
 #### Definition
 
@@ -4744,7 +4159,7 @@ do
 end
 ```
 
-### LList:get
+#### LList:get
 
 #### Definition
 
@@ -4780,7 +4195,7 @@ do
 end
 ```
 
-### LList:indexOf
+#### LList:indexOf
 
 #### Definition
 
@@ -4815,7 +4230,7 @@ do
 end
 ```
 
-### LList:insert
+#### LList:insert
 
 #### Definition
 
@@ -4849,7 +4264,7 @@ do
 end
 ```
 
-### LList:isEmpty
+#### LList:isEmpty
 
 #### Definition
 
@@ -4879,7 +4294,7 @@ do
 end
 ```
 
-### LList:len
+#### LList:len
 
 #### Definition
 
@@ -4909,7 +4324,7 @@ do
 end
 ```
 
-### LList:pop
+#### LList:pop
 
 #### Definition
 
@@ -4940,7 +4355,7 @@ do
 end
 ```
 
-### LList:push
+#### LList:push
 
 #### Definition
 
@@ -4972,7 +4387,7 @@ do
 end
 ```
 
-### LList:remove
+#### LList:remove
 
 #### Definition
 
@@ -5008,7 +4423,7 @@ do
 end
 ```
 
-### LList:reverse
+#### LList:reverse
 
 #### Definition
 
@@ -5035,7 +4450,7 @@ do
 end
 ```
 
-### LList:set
+#### LList:set
 
 #### Definition
 
@@ -5069,7 +4484,7 @@ do
 end
 ```
 
-### LList:shift
+#### LList:shift
 
 #### Definition
 
@@ -5100,7 +4515,7 @@ do
 end
 ```
 
-### LList:toArray
+#### LList:toArray
 
 #### Definition
 
@@ -5130,7 +4545,7 @@ do
 end
 ```
 
-### LList:unshift
+#### LList:unshift
 
 #### Definition
 
@@ -5162,7 +4577,9 @@ do
 end
 ```
 
-### LMap:clear
+### LMap Methods
+
+#### LMap:clear
 
 #### Definition
 
@@ -5189,7 +4606,7 @@ do
 end
 ```
 
-### LMap:entries
+#### LMap:entries
 
 #### Definition
 
@@ -5219,7 +4636,7 @@ do
 end
 ```
 
-### LMap:get
+#### LMap:get
 
 #### Definition
 
@@ -5255,7 +4672,7 @@ do
 end
 ```
 
-### LMap:has
+#### LMap:has
 
 #### Definition
 
@@ -5290,7 +4707,7 @@ do
 end
 ```
 
-### LMap:isEmpty
+#### LMap:isEmpty
 
 #### Definition
 
@@ -5320,7 +4737,7 @@ do
 end
 ```
 
-### LMap:keys
+#### LMap:keys
 
 #### Definition
 
@@ -5350,7 +4767,7 @@ do
 end
 ```
 
-### LMap:len
+#### LMap:len
 
 #### Definition
 
@@ -5380,7 +4797,7 @@ do
 end
 ```
 
-### LMap:merge
+#### LMap:merge
 
 #### Definition
 
@@ -5412,7 +4829,7 @@ do
 end
 ```
 
-### LMap:remove
+#### LMap:remove
 
 #### Definition
 
@@ -5447,7 +4864,7 @@ do
 end
 ```
 
-### LMap:set
+#### LMap:set
 
 #### Definition
 
@@ -5516,7 +4933,7 @@ do
 end
 ```
 
-### LMap:values
+#### LMap:values
 
 #### Definition
 
@@ -5546,7 +4963,9 @@ do
 end
 ```
 
-### LMediator:broadcast
+### LMediator Methods
+
+#### LMediator:broadcast
 
 #### Definition
 
@@ -5578,7 +4997,7 @@ do
 end
 ```
 
-### LMediator:channels
+#### LMediator:channels
 
 #### Definition
 
@@ -5608,7 +5027,7 @@ do
 end
 ```
 
-### LMediator:clear
+#### LMediator:clear
 
 #### Definition
 
@@ -5635,7 +5054,7 @@ do
 end
 ```
 
-### LMediator:handlerCount
+#### LMediator:handlerCount
 
 #### Definition
 
@@ -5670,7 +5089,7 @@ do
 end
 ```
 
-### LMediator:off
+#### LMediator:off
 
 #### Definition
 
@@ -5711,7 +5130,7 @@ do
 end
 ```
 
-### LMediator:on
+#### LMediator:on
 
 #### Definition
 
@@ -5755,7 +5174,7 @@ do
 end
 ```
 
-### LMediator:removeChannel
+#### LMediator:removeChannel
 
 #### Definition
 
@@ -5787,7 +5206,7 @@ do
 end
 ```
 
-### LMediator:send
+#### LMediator:send
 
 #### Definition
 
@@ -5828,7 +5247,9 @@ do
 end
 ```
 
-### LObjectPool:acquire
+### LObjectPool Methods
+
+#### LObjectPool:acquire
 
 #### Definition
 
@@ -5859,7 +5280,7 @@ do
 end
 ```
 
-### LObjectPool:add
+#### LObjectPool:add
 
 #### Definition
 
@@ -5891,7 +5312,7 @@ do
 end
 ```
 
-### LObjectPool:clearAll
+#### LObjectPool:clearAll
 
 #### Definition
 
@@ -5918,7 +5339,7 @@ do
 end
 ```
 
-### LObjectPool:getActiveCount
+#### LObjectPool:getActiveCount
 
 #### Definition
 
@@ -5948,7 +5369,7 @@ do
 end
 ```
 
-### LObjectPool:getAvailableCount
+#### LObjectPool:getAvailableCount
 
 #### Definition
 
@@ -5978,7 +5399,7 @@ do
 end
 ```
 
-### LObjectPool:getTotalCount
+#### LObjectPool:getTotalCount
 
 #### Definition
 
@@ -6008,7 +5429,7 @@ do
 end
 ```
 
-### LObjectPool:release
+#### LObjectPool:release
 
 #### Definition
 
@@ -6040,7 +5461,9 @@ do
 end
 ```
 
-### LObserver:get
+### LObserver Methods
+
+#### LObserver:get
 
 #### Definition
 
@@ -6082,7 +5505,7 @@ do
 end
 ```
 
-### LObserver:getCount
+#### LObserver:getCount
 
 #### Definition
 
@@ -6115,7 +5538,7 @@ do
 end
 ```
 
-### LObserver:set
+#### LObserver:set
 
 #### Definition
 
@@ -6155,7 +5578,7 @@ do
 end
 ```
 
-### LObserver:subscribe
+#### LObserver:subscribe
 
 #### Definition
 
@@ -6200,7 +5623,7 @@ do
 end
 ```
 
-### LObserver:unsubscribe
+#### LObserver:unsubscribe
 
 #### Definition
 
@@ -6238,7 +5661,9 @@ do
 end
 ```
 
-### LPatternGraph:addEdge
+### LPatternGraph Methods
+
+#### LPatternGraph:addEdge
 
 #### Definition
 
@@ -6279,7 +5704,7 @@ do
 end
 ```
 
-### LPatternGraph:addNode
+#### LPatternGraph:addNode
 
 #### Definition
 
@@ -6316,7 +5741,7 @@ do
 end
 ```
 
-### LPatternGraph:bfs
+#### LPatternGraph:bfs
 
 #### Definition
 
@@ -6346,7 +5771,7 @@ do
     local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
-### LPatternGraph:clearAll
+#### LPatternGraph:clearAll
 
 #### Definition
 
@@ -6373,7 +5798,7 @@ do
 end
 ```
 
-### LPatternGraph:dfs
+#### LPatternGraph:dfs
 
 #### Definition
 
@@ -6403,7 +5828,7 @@ do
     local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
-### LPatternGraph:edgeCount
+#### LPatternGraph:edgeCount
 
 #### Definition
 
@@ -6433,7 +5858,7 @@ do
 end
 ```
 
-### LPatternGraph:getNodeValue
+#### LPatternGraph:getNodeValue
 
 #### Definition
 
@@ -6469,7 +5894,7 @@ do
 end
 ```
 
-### LPatternGraph:hasNode
+#### LPatternGraph:hasNode
 
 #### Definition
 
@@ -6499,7 +5924,7 @@ do
     local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
-### LPatternGraph:isConnected
+#### LPatternGraph:isConnected
 
 #### Definition
 
@@ -6531,7 +5956,7 @@ do
     local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
-### LPatternGraph:neighbors
+#### LPatternGraph:neighbors
 
 #### Definition
 
@@ -6561,7 +5986,7 @@ do
     local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
-### LPatternGraph:nodeCount
+#### LPatternGraph:nodeCount
 
 #### Definition
 
@@ -6591,7 +6016,7 @@ do
 end
 ```
 
-### LPatternGraph:removeEdge
+#### LPatternGraph:removeEdge
 
 #### Definition
 
@@ -6626,7 +6051,7 @@ do
 end
 ```
 
-### LPatternGraph:removeNode
+#### LPatternGraph:removeNode
 
 #### Definition
 
@@ -6661,7 +6086,9 @@ do
 end
 ```
 
-### LPriorityQueue:clearAll
+### LPriorityQueue Methods
+
+#### LPriorityQueue:clearAll
 
 #### Definition
 
@@ -6688,7 +6115,7 @@ do
 end
 ```
 
-### LPriorityQueue:isEmpty
+#### LPriorityQueue:isEmpty
 
 #### Definition
 
@@ -6718,7 +6145,7 @@ do
 end
 ```
 
-### LPriorityQueue:len
+#### LPriorityQueue:len
 
 #### Definition
 
@@ -6748,7 +6175,7 @@ do
 end
 ```
 
-### LPriorityQueue:peek
+#### LPriorityQueue:peek
 
 #### Definition
 
@@ -6779,7 +6206,7 @@ do
 end
 ```
 
-### LPriorityQueue:pop
+#### LPriorityQueue:pop
 
 #### Definition
 
@@ -6810,7 +6237,7 @@ do
 end
 ```
 
-### LPriorityQueue:push
+#### LPriorityQueue:push
 
 #### Definition
 
@@ -6849,7 +6276,9 @@ do
 end
 ```
 
-### LQueue:back
+### LQueue Methods
+
+#### LQueue:back
 
 #### Definition
 
@@ -6880,7 +6309,7 @@ do
 end
 ```
 
-### LQueue:clear
+#### LQueue:clear
 
 #### Definition
 
@@ -6907,7 +6336,7 @@ do
 end
 ```
 
-### LQueue:dequeue
+#### LQueue:dequeue
 
 #### Definition
 
@@ -6938,7 +6367,7 @@ do
 end
 ```
 
-### LQueue:dequeueBack
+#### LQueue:dequeueBack
 
 #### Definition
 
@@ -6969,7 +6398,7 @@ do
 end
 ```
 
-### LQueue:enqueue
+#### LQueue:enqueue
 
 #### Definition
 
@@ -7004,7 +6433,7 @@ do
 end
 ```
 
-### LQueue:enqueueFront
+#### LQueue:enqueueFront
 
 #### Definition
 
@@ -7039,7 +6468,7 @@ do
 end
 ```
 
-### LQueue:front
+#### LQueue:front
 
 #### Definition
 
@@ -7070,7 +6499,7 @@ do
 end
 ```
 
-### LQueue:insertAt
+#### LQueue:insertAt
 
 #### Definition
 
@@ -7107,7 +6536,7 @@ do
 end
 ```
 
-### LQueue:isEmpty
+#### LQueue:isEmpty
 
 #### Definition
 
@@ -7137,7 +6566,7 @@ do
 end
 ```
 
-### LQueue:isFull
+#### LQueue:isFull
 
 #### Definition
 
@@ -7167,7 +6596,7 @@ do
 end
 ```
 
-### LQueue:len
+#### LQueue:len
 
 #### Definition
 
@@ -7197,7 +6626,7 @@ do
 end
 ```
 
-### LQueue:peekAt
+#### LQueue:peekAt
 
 #### Definition
 
@@ -7233,7 +6662,7 @@ do
 end
 ```
 
-### LQueue:removeAt
+#### LQueue:removeAt
 
 #### Definition
 
@@ -7269,7 +6698,7 @@ do
 end
 ```
 
-### LQueue:toArray
+#### LQueue:toArray
 
 #### Definition
 
@@ -7299,7 +6728,9 @@ do
 end
 ```
 
-### LRelationshipManager:adjustValue
+### LRelationshipManager Methods
+
+#### LRelationshipManager:adjustValue
 
 #### Definition
 
@@ -7335,7 +6766,7 @@ do
 end
 ```
 
-### LRelationshipManager:defineType
+#### LRelationshipManager:defineType
 
 #### Definition
 
@@ -7371,7 +6802,7 @@ do
 end
 ```
 
-### LRelationshipManager:getLevel
+#### LRelationshipManager:getLevel
 
 #### Definition
 
@@ -7410,7 +6841,7 @@ do
 end
 ```
 
-### LRelationshipManager:getValue
+#### LRelationshipManager:getValue
 
 #### Definition
 
@@ -7447,7 +6878,7 @@ do
 end
 ```
 
-### LRelationshipManager:pairCount
+#### LRelationshipManager:pairCount
 
 #### Definition
 
@@ -7477,7 +6908,7 @@ do
 end
 ```
 
-### LRelationshipManager:removePair
+#### LRelationshipManager:removePair
 
 #### Definition
 
@@ -7511,7 +6942,7 @@ do
 end
 ```
 
-### LRelationshipManager:removeType
+#### LRelationshipManager:removeType
 
 #### Definition
 
@@ -7543,7 +6974,7 @@ do
 end
 ```
 
-### LRelationshipManager:setLevel
+#### LRelationshipManager:setLevel
 
 #### Definition
 
@@ -7584,7 +7015,7 @@ do
 end
 ```
 
-### LRelationshipManager:setValue
+#### LRelationshipManager:setValue
 
 #### Definition
 
@@ -7620,7 +7051,7 @@ do
 end
 ```
 
-### LRelationshipManager:typeNames
+#### LRelationshipManager:typeNames
 
 #### Definition
 
@@ -7650,7 +7081,9 @@ do
 end
 ```
 
-### LRing:average
+### LRing Methods
+
+#### LRing:average
 
 #### Definition
 
@@ -7680,7 +7113,7 @@ do
 end
 ```
 
-### LRing:clear
+#### LRing:clear
 
 #### Definition
 
@@ -7707,7 +7140,7 @@ do
 end
 ```
 
-### LRing:isFull
+#### LRing:isFull
 
 #### Definition
 
@@ -7737,7 +7170,7 @@ do
 end
 ```
 
-### LRing:latest
+#### LRing:latest
 
 #### Definition
 
@@ -7767,7 +7200,7 @@ do
 end
 ```
 
-### LRing:len
+#### LRing:len
 
 #### Definition
 
@@ -7797,7 +7230,7 @@ do
 end
 ```
 
-### LRing:push
+#### LRing:push
 
 #### Definition
 
@@ -7834,7 +7267,7 @@ do
 end
 ```
 
-### LRing:sum
+#### LRing:sum
 
 #### Definition
 
@@ -7864,7 +7297,7 @@ do
 end
 ```
 
-### LRing:toArray
+#### LRing:toArray
 
 #### Definition
 
@@ -7894,7 +7327,9 @@ do
 end
 ```
 
-### LServiceLocator:clearAll
+### LServiceLocator Methods
+
+#### LServiceLocator:clearAll
 
 #### Definition
 
@@ -7921,7 +7356,7 @@ do
 end
 ```
 
-### LServiceLocator:getServices
+#### LServiceLocator:getServices
 
 #### Definition
 
@@ -7951,7 +7386,7 @@ do
 end
 ```
 
-### LServiceLocator:has
+#### LServiceLocator:has
 
 #### Definition
 
@@ -7986,7 +7421,7 @@ do
 end
 ```
 
-### LServiceLocator:locate
+#### LServiceLocator:locate
 
 #### Definition
 
@@ -8021,7 +7456,7 @@ do
 end
 ```
 
-### LServiceLocator:provide
+#### LServiceLocator:provide
 
 #### Definition
 
@@ -8054,7 +7489,7 @@ do
 end
 ```
 
-### LServiceLocator:remove
+#### LServiceLocator:remove
 
 #### Definition
 
@@ -8086,7 +7521,9 @@ do
 end
 ```
 
-### LSet:add
+### LSet Methods
+
+#### LSet:add
 
 #### Definition
 
@@ -8121,7 +7558,7 @@ do
 end
 ```
 
-### LSet:clear
+#### LSet:clear
 
 #### Definition
 
@@ -8148,7 +7585,7 @@ do
 end
 ```
 
-### LSet:has
+#### LSet:has
 
 #### Definition
 
@@ -8183,7 +7620,7 @@ do
 end
 ```
 
-### LSet:intersection
+#### LSet:intersection
 
 #### Definition
 
@@ -8218,7 +7655,7 @@ do
 end
 ```
 
-### LSet:isEmpty
+#### LSet:isEmpty
 
 #### Definition
 
@@ -8248,7 +7685,7 @@ do
 end
 ```
 
-### LSet:len
+#### LSet:len
 
 #### Definition
 
@@ -8278,7 +7715,7 @@ do
 end
 ```
 
-### LSet:remove
+#### LSet:remove
 
 #### Definition
 
@@ -8313,7 +7750,7 @@ do
 end
 ```
 
-### LSet:toArray
+#### LSet:toArray
 
 #### Definition
 
@@ -8343,7 +7780,7 @@ do
 end
 ```
 
-### LSet:union
+#### LSet:union
 
 #### Definition
 
@@ -8378,7 +7815,9 @@ do
 end
 ```
 
-### LSimpleState:addState
+### LSimpleState Methods
+
+#### LSimpleState:addState
 
 #### Definition
 
@@ -8412,7 +7851,7 @@ do
 end
 ```
 
-### LSimpleState:clearAll
+#### LSimpleState:clearAll
 
 #### Definition
 
@@ -8439,7 +7878,7 @@ do
 end
 ```
 
-### LSimpleState:getCurrent
+#### LSimpleState:getCurrent
 
 #### Definition
 
@@ -8469,7 +7908,7 @@ do
 end
 ```
 
-### LSimpleState:getStates
+#### LSimpleState:getStates
 
 #### Definition
 
@@ -8499,7 +7938,7 @@ do
 end
 ```
 
-### LSimpleState:hasState
+#### LSimpleState:hasState
 
 #### Definition
 
@@ -8534,7 +7973,7 @@ do
 end
 ```
 
-### LSimpleState:transitionTo
+#### LSimpleState:transitionTo
 
 #### Definition
 
@@ -8569,7 +8008,7 @@ do
 end
 ```
 
-### LSimpleState:update
+#### LSimpleState:update
 
 #### Definition
 
@@ -8601,7 +8040,9 @@ do
 end
 ```
 
-### LStack:clear
+### LStack Methods
+
+#### LStack:clear
 
 #### Definition
 
@@ -8628,7 +8069,7 @@ do
 end
 ```
 
-### LStack:insertAt
+#### LStack:insertAt
 
 #### Definition
 
@@ -8665,7 +8106,7 @@ do
 end
 ```
 
-### LStack:isEmpty
+#### LStack:isEmpty
 
 #### Definition
 
@@ -8695,7 +8136,7 @@ do
 end
 ```
 
-### LStack:isFull
+#### LStack:isFull
 
 #### Definition
 
@@ -8725,7 +8166,7 @@ do
 end
 ```
 
-### LStack:len
+#### LStack:len
 
 #### Definition
 
@@ -8755,7 +8196,7 @@ do
 end
 ```
 
-### LStack:moveWithin
+#### LStack:moveWithin
 
 #### Definition
 
@@ -8792,7 +8233,7 @@ do
 end
 ```
 
-### LStack:peek
+#### LStack:peek
 
 #### Definition
 
@@ -8823,7 +8264,7 @@ do
 end
 ```
 
-### LStack:peekAt
+#### LStack:peekAt
 
 #### Definition
 
@@ -8859,7 +8300,7 @@ do
 end
 ```
 
-### LStack:peekBottom
+#### LStack:peekBottom
 
 #### Definition
 
@@ -8890,7 +8331,7 @@ do
 end
 ```
 
-### LStack:pop
+#### LStack:pop
 
 #### Definition
 
@@ -8921,7 +8362,7 @@ do
 end
 ```
 
-### LStack:popBottom
+#### LStack:popBottom
 
 #### Definition
 
@@ -8952,7 +8393,7 @@ do
 end
 ```
 
-### LStack:popMany
+#### LStack:popMany
 
 #### Definition
 
@@ -8987,7 +8428,7 @@ do
 end
 ```
 
-### LStack:push
+#### LStack:push
 
 #### Definition
 
@@ -9022,7 +8463,7 @@ do
 end
 ```
 
-### LStack:pushBottom
+#### LStack:pushBottom
 
 #### Definition
 
@@ -9057,7 +8498,7 @@ do
 end
 ```
 
-### LStack:removeAt
+#### LStack:removeAt
 
 #### Definition
 
@@ -9093,7 +8534,7 @@ do
 end
 ```
 
-### LStack:toArray
+#### LStack:toArray
 
 #### Definition
 
@@ -9123,7 +8564,9 @@ do
 end
 ```
 
-### LStrategy:clear
+### LStrategy Methods
+
+#### LStrategy:clear
 
 #### Definition
 
@@ -9150,7 +8593,7 @@ do
 end
 ```
 
-### LStrategy:execute
+#### LStrategy:execute
 
 #### Definition
 
@@ -9198,7 +8641,7 @@ do
 end
 ```
 
-### LStrategy:getCurrent
+#### LStrategy:getCurrent
 
 #### Definition
 
@@ -9228,7 +8671,7 @@ do
 end
 ```
 
-### LStrategy:has
+#### LStrategy:has
 
 #### Definition
 
@@ -9263,7 +8706,7 @@ do
 end
 ```
 
-### LStrategy:names
+#### LStrategy:names
 
 #### Definition
 
@@ -9293,7 +8736,7 @@ do
 end
 ```
 
-### LStrategy:register
+#### LStrategy:register
 
 #### Definition
 
@@ -9339,7 +8782,7 @@ do
 end
 ```
 
-### LStrategy:remove
+#### LStrategy:remove
 
 #### Definition
 
@@ -9374,7 +8817,7 @@ do
 end
 ```
 
-### LStrategy:set
+#### LStrategy:set
 
 #### Definition
 
@@ -9421,7 +8864,9 @@ do
 end
 ```
 
-### LThrottle:getFireCount
+### LThrottle Methods
+
+#### LThrottle:getFireCount
 
 #### Definition
 
@@ -9457,7 +8902,7 @@ do
 end
 ```
 
-### LThrottle:getProgress
+#### LThrottle:getProgress
 
 #### Definition
 
@@ -9487,7 +8932,7 @@ do
 end
 ```
 
-### LThrottle:onFire
+#### LThrottle:onFire
 
 #### Definition
 
@@ -9525,7 +8970,7 @@ do
 end
 ```
 
-### LThrottle:reset
+#### LThrottle:reset
 
 #### Definition
 
@@ -9552,7 +8997,7 @@ do
 end
 ```
 
-### LThrottle:setEnabled
+#### LThrottle:setEnabled
 
 #### Definition
 
@@ -9584,7 +9029,7 @@ do
 end
 ```
 
-### LThrottle:update
+#### LThrottle:update
 
 #### Definition
 
@@ -9625,7 +9070,9 @@ do
 end
 ```
 
-### LWeightedRandom:add
+### LWeightedRandom Methods
+
+#### LWeightedRandom:add
 
 #### Definition
 
@@ -9664,7 +9111,7 @@ do
 end
 ```
 
-### LWeightedRandom:clearAll
+#### LWeightedRandom:clearAll
 
 #### Definition
 
@@ -9691,7 +9138,7 @@ do
 end
 ```
 
-### LWeightedRandom:getRevision
+#### LWeightedRandom:getRevision
 
 #### Definition
 
@@ -9721,7 +9168,7 @@ do
 end
 ```
 
-### LWeightedRandom:isEmpty
+#### LWeightedRandom:isEmpty
 
 #### Definition
 
@@ -9751,7 +9198,7 @@ do
 end
 ```
 
-### LWeightedRandom:len
+#### LWeightedRandom:len
 
 #### Definition
 
@@ -9781,7 +9228,7 @@ do
 end
 ```
 
-### LWeightedRandom:pick
+#### LWeightedRandom:pick
 
 #### Definition
 
@@ -9817,7 +9264,7 @@ do
 end
 ```
 
-### LWeightedRandom:pickN
+#### LWeightedRandom:pickN
 
 #### Definition
 
@@ -9854,7 +9301,7 @@ do
 end
 ```
 
-### LWeightedRandom:remove
+#### LWeightedRandom:remove
 
 #### Definition
 
@@ -9889,7 +9336,7 @@ do
 end
 ```
 
-### LWeightedRandom:setWeight
+#### LWeightedRandom:setWeight
 
 #### Definition
 
@@ -9926,7 +9373,7 @@ do
 end
 ```
 
-### LWeightedRandom:totalWeight
+#### LWeightedRandom:totalWeight
 
 #### Definition
 

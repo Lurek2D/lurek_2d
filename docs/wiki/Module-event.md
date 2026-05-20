@@ -10,98 +10,18 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [event_queue.rs](#eventqueuers)
+  - [mod.rs](#modrs)
+  - [signal.rs](#signalrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.event.clear](#lurekeventclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.clearHistory](#lurekeventclearhistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.enableHistory](#lurekeventenablehistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.exit](#lurekeventexit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.flushDeferred](#lurekeventflushdeferred)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.getHistory](#lurekeventgethistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.newSignal](#lurekeventnewsignal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.poll](#lurekeventpoll)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.pump](#lurekeventpump)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.push](#lurekeventpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.pushDeferred](#lurekeventpushdeferred)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.pushDeferredPriority](#lurekeventpushdeferredpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.pushPriority](#lurekeventpushpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.quit](#lurekeventquit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.restart](#lurekeventrestart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.event.wait](#lurekeventwait)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LSignal](#lsignal)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LSignal:clear](#lsignalclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:clearAll](#lsignalclearall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:connect](#lsignalconnect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:emit](#lsignalemit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:getCount](#lsignalgetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:getTotalCount](#lsignalgettotalcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:once](#lsignalonce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:register](#lsignalregister)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:registerWithFilter](#lsignalregisterwithfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:remove](#lsignalremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:type](#lsignaltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSignal:typeOf](#lsignaltypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LSignal Methods](#lsignal-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -125,6 +45,29 @@ Centralized event queue and signal dispatch layer providing the backbone for int
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `event_queue.rs`
+
+- Dual-priority FIFO event queue (high and normal) with priority-based polling.
+- Event payload types supporting string, number, boolean, nil, and shallow tables.
+- Condvar-based blocking wait with optional timeout for thread synchronization.
+- Lua value conversion utilities for copying event payloads across the Rust-Lua boundary.
+- Table key and value marshalling with shallow-copy semantics.
+
+### `mod.rs`
+
+- Priority queue with ordered dispatch and Lua payload conversion for runtime events.
+- Name-based and wildcard signal subscriptions for decoupled communication.
+
+### `signal.rs`
+
+- Named signal subscription registry with exact-name and wildcard pattern matching.
+- Handle-based subscribe/remove lifecycle with monotonic id allocation.
+- Glob-style wildcard matching (`*`, `?`) for pattern subscriptions.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LSignal` (12 methods) - Lua-side signal object storing subscriptions and Lua callback registry keys.
@@ -134,31 +77,18 @@ Centralized event queue and signal dispatch layer providing the backbone for int
 ## 📖 API Overview
 
 - Source spec: [docs/specs/event.md](../blob/main/docs/specs/event.md)
+- Module-level functions: 16
+- Lua-visible types: 1
+- Total type methods: 12
 
-```lua
-lurek.event.clear() -- Clears all pending events from the shared event queue.
-lurek.event.clearHistory() -- Clears retained pushed event history.
-lurek.event.enableHistory(capacity: integer) -- Enables event push history with a maximum retained capacity.
-lurek.event.exit([code]: integer) -- Requests engine shutdown with an optional process exit code.
-lurek.event.flushDeferred() -> integer -- Moves all deferred events into the shared event queue and clears the deferred buffer.
-lurek.event.getHistory() -> table -- Returns retained pushed event history entries.
-lurek.event.newSignal() -> LSignal -- Creates an isolated signal dispatcher for Lua callbacks.
-lurek.event.poll() -> function -- Creates a polling function that returns the next queued event each time it is called.
-lurek.event.pump() -- Pumps the shared event queue without removing events for Lua.
-lurek.event.push(name: string, ...: any) -- Pushes a normal-priority event into the shared event queue and optional history.
-lurek.event.pushDeferred(name: string, ...: any) -- Adds a normal-priority event to the deferred buffer instead of the live queue.
-lurek.event.pushDeferredPriority(name: string, priority: string, ...: any) -- Adds an event with explicit priority to the deferred buffer.
-lurek.event.pushPriority(name: string, priority: string, ...: any) -- Pushes an event with explicit priority into the shared event queue and optional history.
-lurek.event.quit() -- Requests engine shutdown with exit code zero.
-lurek.event.restart() -- Requests a full engine restart cycle from the runtime.
-lurek.event.wait([timeout]: number) -> boolean -- Waits for the next queued event and returns success, name, and argument table.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.event.clear
+### Module-Level Functions
+
+#### lurek.event.clear
 
 #### Definition
 
@@ -183,7 +113,7 @@ do
 end
 ```
 
-### lurek.event.clearHistory
+#### lurek.event.clearHistory
 
 #### Definition
 
@@ -207,7 +137,7 @@ do
 end
 ```
 
-### lurek.event.enableHistory
+#### lurek.event.enableHistory
 
 #### Definition
 
@@ -236,7 +166,7 @@ do
 end
 ```
 
-### lurek.event.exit
+#### lurek.event.exit
 
 #### Definition
 
@@ -265,7 +195,7 @@ do
 end
 ```
 
-### lurek.event.flushDeferred
+#### lurek.event.flushDeferred
 
 #### Definition
 
@@ -294,7 +224,7 @@ do
 end
 ```
 
-### lurek.event.getHistory
+#### lurek.event.getHistory
 
 #### Definition
 
@@ -323,7 +253,7 @@ do
 end
 ```
 
-### lurek.event.newSignal
+#### lurek.event.newSignal
 
 #### Definition
 
@@ -350,7 +280,7 @@ do
 end
 ```
 
-### lurek.event.poll
+#### lurek.event.poll
 
 #### Definition
 
@@ -379,7 +309,7 @@ do
 end
 ```
 
-### lurek.event.pump
+#### lurek.event.pump
 
 #### Definition
 
@@ -403,7 +333,7 @@ do
 end
 ```
 
-### lurek.event.push
+#### lurek.event.push
 
 #### Definition
 
@@ -434,7 +364,7 @@ do
 end
 ```
 
-### lurek.event.pushDeferred
+#### lurek.event.pushDeferred
 
 #### Definition
 
@@ -465,7 +395,7 @@ do
 end
 ```
 
-### lurek.event.pushDeferredPriority
+#### lurek.event.pushDeferredPriority
 
 #### Definition
 
@@ -498,7 +428,7 @@ do
 end
 ```
 
-### lurek.event.pushPriority
+#### lurek.event.pushPriority
 
 #### Definition
 
@@ -531,7 +461,7 @@ do
 end
 ```
 
-### lurek.event.quit
+#### lurek.event.quit
 
 #### Definition
 
@@ -555,7 +485,7 @@ do
 end
 ```
 
-### lurek.event.restart
+#### lurek.event.restart
 
 #### Definition
 
@@ -579,7 +509,7 @@ do
 end
 ```
 
-### lurek.event.wait
+#### lurek.event.wait
 
 #### Definition
 
@@ -649,7 +579,9 @@ end
 
 ## 🔹 Module Methods
 
-### LSignal:clear
+### LSignal Methods
+
+#### LSignal:clear
 
 #### Definition
 
@@ -684,7 +616,7 @@ do
 end
 ```
 
-### LSignal:clearAll
+#### LSignal:clearAll
 
 #### Definition
 
@@ -714,7 +646,7 @@ do
 end
 ```
 
-### LSignal:connect
+#### LSignal:connect
 
 #### Definition
 
@@ -751,7 +683,7 @@ do
 end
 ```
 
-### LSignal:emit
+#### LSignal:emit
 
 #### Definition
 
@@ -785,7 +717,7 @@ do
 end
 ```
 
-### LSignal:getCount
+#### LSignal:getCount
 
 #### Definition
 
@@ -819,7 +751,7 @@ do
 end
 ```
 
-### LSignal:getTotalCount
+#### LSignal:getTotalCount
 
 #### Definition
 
@@ -849,7 +781,7 @@ do
 end
 ```
 
-### LSignal:once
+#### LSignal:once
 
 #### Definition
 
@@ -886,7 +818,7 @@ do
 end
 ```
 
-### LSignal:register
+#### LSignal:register
 
 #### Definition
 
@@ -923,7 +855,7 @@ do
 end
 ```
 
-### LSignal:registerWithFilter
+#### LSignal:registerWithFilter
 
 #### Definition
 
@@ -960,7 +892,7 @@ do
 end
 ```
 
-### LSignal:remove
+#### LSignal:remove
 
 #### Definition
 
@@ -994,7 +926,7 @@ do
 end
 ```
 
-### LSignal:type
+#### LSignal:type
 
 #### Definition
 
@@ -1021,7 +953,7 @@ do
 end
 ```
 
-### LSignal:typeOf
+#### LSignal:typeOf
 
 #### Definition
 

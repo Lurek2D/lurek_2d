@@ -10,248 +10,43 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [build_scene.rs](#buildsceners)
+  - [column_batch.rs](#columnbatchrs)
+  - [dda.rs](#ddars)
+  - [depth_buffer.rs](#depthbufferrs)
+  - [doors.rs](#doorsrs)
+  - [draw.rs](#drawrs)
+  - [grid_motion.rs](#gridmotionrs)
+  - [heightmap.rs](#heightmaprs)
+  - [lighting.rs](#lightingrs)
+  - [minimap_overlay.rs](#minimapoverlayrs)
+  - [mod.rs](#modrs)
+  - [projection.rs](#projectionrs)
+  - [ray_hit.rs](#rayhitrs)
+  - [render.rs](#renderrs)
+  - [scene.rs](#sceners)
+  - [segment.rs](#segmentrs)
+  - [sprite_manager.rs](#spritemanagerrs)
+  - [sprite_projection.rs](#spriteprojectionrs)
+  - [visibility.rs](#visibilityrs)
+  - [visualization.rs](#visualizationrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.raycaster.distanceShade](#lurekraycasterdistanceshade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.raycaster.new](#lurekraycasternew)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.raycaster.newDoorManager](#lurekraycasternewdoormanager)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.raycaster.newHeightMap](#lurekraycasternewheightmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.raycaster.newMap](#lurekraycasternewmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.raycaster.newPointLight](#lurekraycasternewpointlight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.raycaster.newSpriteManager](#lurekraycasternewspritemanager)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.raycaster.projectColumn](#lurekraycasterprojectcolumn)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LDoorManager](#ldoormanager)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LHeightMap](#lheightmap)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPointLight](#lpointlight)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LRaycaster](#lraycaster)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSpriteManager](#lspritemanager)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LDoorManager:addDoor](#ldoormanageradddoor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDoorManager:closeDoor](#ldoormanagerclosedoor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDoorManager:count](#ldoormanagercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDoorManager:getDoor](#ldoormanagergetdoor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDoorManager:openDoor](#ldoormanageropendoor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDoorManager:type](#ldoormanagertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDoorManager:typeOf](#ldoormanagertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDoorManager:update](#ldoormanagerupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHeightMap:ceilingAt](#lheightmapceilingat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHeightMap:floorAt](#lheightmapfloorat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHeightMap:setCeiling](#lheightmapsetceiling)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHeightMap:setFloor](#lheightmapsetfloor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHeightMap:type](#lheightmaptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHeightMap:typeOf](#lheightmaptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:color](#lpointlightcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:intensity](#lpointlightintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:radius](#lpointlightradius)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:set](#lpointlightset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:type](#lpointlighttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:typeOf](#lpointlighttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:x](#lpointlightx)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPointLight:y](#lpointlighty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:buildMinimapWindow](#lraycasterbuildminimapwindow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:buildScene](#lraycasterbuildscene)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:buildSceneWithModels](#lraycasterbuildscenewithmodels)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:castFloorRow](#lraycastercastfloorrow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:castRay](#lraycastercastray)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:castRayMulti](#lraycastercastraymulti)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:castRays](#lraycastercastrays)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:castRaysFlat](#lraycastercastraysflat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:computeTileLight](#lraycastercomputetilelight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:drawCameraSweep](#lraycasterdrawcamerasweep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:drawDepthMap](#lraycasterdrawdepthmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:drawLineOfSight](#lraycasterdrawlineofsight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:drawTopDown](#lraycasterdrawtopdown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:drawView](#lraycasterdrawview)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:getCeilingTextureCell](#lraycastergetceilingtexturecell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:getCell](#lraycastergetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:getFloorTextureCell](#lraycastergetfloortexturecell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:getLoweredFloorCell](#lraycastergetloweredfloorcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:getWallAlpha](#lraycastergetwallalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:gridMove](#lraycastergridmove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:height](#lraycasterheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:isBlocked](#lraycasterisblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:isWalkBlocked](#lraycasteriswalkblocked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:lineOfSight](#lraycasterlineofsight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:projectSprite](#lraycasterprojectsprite)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:revealCellsFromRays](#lraycasterrevealcellsfromrays)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:setCeilingTextureCell](#lraycastersetceilingtexturecell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:setCell](#lraycastersetcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:setCells](#lraycastersetcells)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:setFloorTextureCell](#lraycastersetfloortexturecell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:setLoweredFloorCell](#lraycastersetloweredfloorcell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:setWallAlpha](#lraycastersetwallalpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:tryMove](#lraycastertrymove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:type](#lraycastertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:typeOf](#lraycastertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRaycaster:width](#lraycasterwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:add](#lspritemanageradd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:clear](#lspritemanagerclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:remove](#lspritemanagerremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:setPosition](#lspritemanagersetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:setVisible](#lspritemanagersetvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:sortAndProject](#lspritemanagersortandproject)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:type](#lspritemanagertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpriteManager:typeOf](#lspritemanagertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LDoorManager Methods](#ldoormanager-methods)
+  - [LHeightMap Methods](#lheightmap-methods)
+  - [LPointLight Methods](#lpointlight-methods)
+  - [LRaycaster Methods](#lraycaster-methods)
+  - [LSpriteManager Methods](#lspritemanager-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -275,6 +70,151 @@ Floor and ceiling rendering uses perspective-correct per-pixel texture mapping w
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `build_scene.rs`
+
+- Build a complete `RaycasterScene` each frame from camera parameters, a DDA grid, and texture lookups.
+- Project floor and ceiling tiles as perspective-correct quads with per-tile lighting and UV mapping.
+- Generate lowered-floor pit geometry including depth-offset surfaces and side-wall extrusions.
+- Emit wall-face quads for every visible solid-cell boundary with roof-side thickness geometry.
+- Project billboard sprites to screen space with distance-based sizing and lighting.
+- Integrate ambient light, point-light contributions, distance shading, and roofed-ambient darkening.
+- Provide camera-space depth projection helpers (`camera_depth`, `project_ground_point`, `project_horizontal_plane`).
+- Snap projected coordinates to half-pixel boundaries to reduce sub-pixel jitter on floor/ceiling edges.
+- Supply UV-generation utilities for axis-aligned quads and world-space column strips.
+
+### `column_batch.rs`
+
+- Per-column wall-slice projection data produced by the DDA stepper.
+- Full-frame column batch holding screen dimensions and flat floor/ceiling colors.
+- Bulk update from packed ray data and per-column depth queries.
+
+### `dda.rs`
+
+- 2D grid map and Digital Differential Analyzer (DDA) ray-stepping engine.
+- Single-ray casting with perpendicular distance correction and texture-U sampling.
+- Multi-hit ray casting through transparent walls up to a configurable depth.
+- Fan-cast (cast_rays) with fish-eye correction for full-screen column rendering.
+- Flat-packed ray output for efficient Lua-side consumption without per-hit tables.
+- Grid-based line-of-sight query using DDA traversal.
+- World-to-screen sprite projection with FOV-aware perspective transform.
+- Per-pixel floor/ceiling UV generation for textured floor casting.
+- Per-tile-type wall alpha overrides enabling transparent and semi-transparent walls.
+- Bounds-safe cell access with silent clamping for out-of-range coordinates.
+
+### `depth_buffer.rs`
+
+- Per-column depth storage for raycaster wall hits.
+- Used during sprite rendering to cull pixels that fall behind walls.
+- Cleared each frame, written during wall-casting, read during sprite-casting.
+
+### `doors.rs`
+
+- Animated sliding doors placed on raycaster grid tiles.
+- Per-door state machine: Closed → Opening → Open → Closing → Closed.
+- DoorManager registry drives batch updates and spatial lookups.
+
+### `draw.rs`
+
+- Software rasterization of a raycaster scene into an `ImageData` pixel buffer.
+- Flat-shaded fills for ceilings, floors, walls, and sprites.
+- Back-to-front draw order for correct painter's-algorithm layering.
+
+### `grid_motion.rs`
+
+- Discrete movement actions (forward, backward, strafe) for grid-locked locomotion.
+- Direction-to-delta conversion for 4-directional facing (E/S/W/N).
+- Collision-checked tile movement with configurable blocking predicate.
+
+### `heightmap.rs`
+
+- Per-tile floor and ceiling height storage for raycaster maps.
+- Supports individual tile and rectangular region height assignment.
+- Out-of-bounds coordinates are silently ignored or return safe defaults.
+
+### `lighting.rs`
+
+- Point-light model with position, radius, intensity, and RGB color.
+- Bresenham line-of-sight check to block light through walls.
+- Per-tile lighting accumulator combining ambient and point-light contributions.
+
+### `minimap_overlay.rs`
+
+- Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
+- Bresenham grid traversal for fast obstruction testing between player and map cells.
+- FOV ray fan that reveals all traversed cells within a max distance and step size.
+- Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
+- Player arrow rendering (filled circle plus direction line) composited onto the minimap.
+
+### `mod.rs`
+
+- Grid-based 2D raycaster using DDA ray-stepping and column projection.
+- Builds per-frame scenes with wall quads, floor/ceiling, sprites, and doors.
+- Supports heightmaps, distance lighting, depth occlusion, and FOV visibility.
+- Provides minimap overlay extraction and debug visualization helpers.
+
+### `projection.rs`
+
+- Wall-column projection from ray distance to screen-pixel height and vertical bounds.
+- Distance-based shading for depth fog attenuation.
+
+### `ray_hit.rs`
+
+- DDA ray-cast result record holding wall distance, hit coordinates, and texture sampling data.
+- Carries both fish-eye-corrected and raw distances for flexible column rendering.
+- Provides side, alpha, and cell value for shading and transparency decisions.
+
+### `render.rs`
+
+- Convert a built raycaster scene into GPU-ready render commands.
+- Emit textured quads for ceilings, floors, walls, and sprites in correct painter order.
+- Fall back to solid-color rectangles when a surface has no texture assigned.
+
+### `scene.rs`
+
+- Scene geometry types emitted by the raycaster build pass and consumed by the renderer.
+- Quad primitives for walls, floors, ceilings, billboard sprites, and static meshes.
+- `RaycasterScene` collects all quads for one frame with depth and perspective-correct UV data.
+
+### `segment.rs`
+
+- 2D line segment representation for raycaster wall geometry.
+- Ray-vs-segment intersection test returning nearest hit point and index.
+- Used by the raycaster module to resolve wall hits from arbitrary origins.
+
+### `sprite_manager.rs`
+
+- Billboard sprite registry for the raycaster subsystem.
+- Manages creation, removal, positioning, and visibility of world-space sprites.
+- Provides distance-sorted iteration for back-to-front rendering.
+
+### `sprite_projection.rs`
+
+- Screen-space sprite projection data for raycaster billboard rendering.
+- Stores position, scale, distance, and visibility after camera-plane projection.
+- Consumed by the depth-buffer occlusion pass to sort and clip sprites.
+
+### `visibility.rs`
+
+- Radial visibility polygon computation from a point source.
+- Casts rays at segment-endpoint angles with epsilon jitter for gap-free coverage.
+- Returns interleaved coordinate arrays suitable for triangle-fan rendering.
+
+### `visualization.rs`
+
+- Software-rendered raycaster visualization helpers for debugging and demo output.
+- Top-down grid map rendering with player position and radial ray overlay.
+- First-person column-based wall rendering with distance-based shading.
+- Depth-map greyscale visualization where brightness encodes proximity.
+- Line-of-sight connectivity check rendered as a coloured line between two points.
+- Camera sweep atlas generating a multi-frame rotation sequence into a single image.
+- Procedural textured first-person view with brick, stone, wood, metal, and mosaic patterns.
+- All outputs produce an `ImageData` bitmap suitable for GPU upload or file export.
+- Procedural texture lookup mapping cell type and UV to RGB without external assets.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LDoorManager` (8 methods) - Lua-visible door manager that controls sliding doors within a raycaster map.
@@ -288,23 +228,18 @@ Floor and ceiling rendering uses perspective-correct per-pixel texture mapping w
 ## 📖 API Overview
 
 - Source spec: [docs/specs/raycaster.md](../blob/main/docs/specs/raycaster.md)
+- Module-level functions: 8
+- Lua-visible types: 5
+- Total type methods: 66
 
-```lua
-lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number -- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
-lurek.raycaster.new(w: integer, h: integer) -> LRaycaster -- Creates a new raycaster map with the given grid dimensions.
-lurek.raycaster.newDoorManager() -> LDoorManager -- Creates a new door manager for tracking and animating sliding doors.
-lurek.raycaster.newHeightMap(w: integer, h: integer) -> LHeightMap -- Creates a new height map for variable floor/ceiling heights across the grid.
-lurek.raycaster.newMap(w: integer, h: integer) -> LRaycaster -- Creates a new raycaster map (alias for `new`).
-lurek.raycaster.newPointLight(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number) -> LPointLight -- Creates a new point light with position, color, radius, and intensity.
-lurek.raycaster.newSpriteManager() -> LSpriteManager -- Creates a new sprite manager for tracking and projecting billboard sprites.
-lurek.raycaster.projectColumn(distance: number, fov: number, screenHeight: number) -> number -- Computes the projected wall-column height for a given distance, FOV, and screen height.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.raycaster.distanceShade
+### Module-Level Functions
+
+#### lurek.raycaster.distanceShade
 
 #### Definition
 
@@ -338,7 +273,7 @@ do
 end
 ```
 
-### lurek.raycaster.new
+#### lurek.raycaster.new
 
 #### Definition
 
@@ -373,7 +308,7 @@ do
 end
 ```
 
-### lurek.raycaster.newDoorManager
+#### lurek.raycaster.newDoorManager
 
 #### Definition
 
@@ -403,7 +338,7 @@ do
 end
 ```
 
-### lurek.raycaster.newHeightMap
+#### lurek.raycaster.newHeightMap
 
 #### Definition
 
@@ -439,7 +374,7 @@ do
 end
 ```
 
-### lurek.raycaster.newMap
+#### lurek.raycaster.newMap
 
 #### Definition
 
@@ -474,7 +409,7 @@ do
 end
 ```
 
-### lurek.raycaster.newPointLight
+#### lurek.raycaster.newPointLight
 
 #### Definition
 
@@ -520,7 +455,7 @@ do
 end
 ```
 
-### lurek.raycaster.newSpriteManager
+#### lurek.raycaster.newSpriteManager
 
 #### Definition
 
@@ -550,7 +485,7 @@ do
 end
 ```
 
-### lurek.raycaster.projectColumn
+#### lurek.raycaster.projectColumn
 
 #### Definition
 
@@ -732,7 +667,9 @@ end
 
 ## 🔹 Module Methods
 
-### LDoorManager:addDoor
+### LDoorManager Methods
+
+#### LDoorManager:addDoor
 
 #### Definition
 
@@ -771,7 +708,7 @@ do
 end
 ```
 
-### LDoorManager:closeDoor
+#### LDoorManager:closeDoor
 
 #### Definition
 
@@ -802,7 +739,7 @@ do
 end
 ```
 
-### LDoorManager:count
+#### LDoorManager:count
 
 #### Definition
 
@@ -830,7 +767,7 @@ do
 end
 ```
 
-### LDoorManager:getDoor
+#### LDoorManager:getDoor
 
 #### Definition
 
@@ -865,7 +802,7 @@ do
 end
 ```
 
-### LDoorManager:openDoor
+#### LDoorManager:openDoor
 
 #### Definition
 
@@ -897,7 +834,7 @@ do
 end
 ```
 
-### LDoorManager:type
+#### LDoorManager:type
 
 #### Definition
 
@@ -925,7 +862,7 @@ do
 end
 ```
 
-### LDoorManager:typeOf
+#### LDoorManager:typeOf
 
 #### Definition
 
@@ -958,7 +895,7 @@ do
 end
 ```
 
-### LDoorManager:update
+#### LDoorManager:update
 
 #### Definition
 
@@ -990,7 +927,9 @@ do
 end
 ```
 
-### LHeightMap:ceilingAt
+### LHeightMap Methods
+
+#### LHeightMap:ceilingAt
 
 #### Definition
 
@@ -1025,7 +964,7 @@ do
 end
 ```
 
-### LHeightMap:floorAt
+#### LHeightMap:floorAt
 
 #### Definition
 
@@ -1060,7 +999,7 @@ do
 end
 ```
 
-### LHeightMap:setCeiling
+#### LHeightMap:setCeiling
 
 #### Definition
 
@@ -1094,7 +1033,7 @@ do
 end
 ```
 
-### LHeightMap:setFloor
+#### LHeightMap:setFloor
 
 #### Definition
 
@@ -1128,7 +1067,7 @@ do
 end
 ```
 
-### LHeightMap:type
+#### LHeightMap:type
 
 #### Definition
 
@@ -1156,7 +1095,7 @@ do
 end
 ```
 
-### LHeightMap:typeOf
+#### LHeightMap:typeOf
 
 #### Definition
 
@@ -1189,7 +1128,9 @@ do
 end
 ```
 
-### LPointLight:color
+### LPointLight Methods
+
+#### LPointLight:color
 
 #### Definition
 
@@ -1219,7 +1160,7 @@ do
 end
 ```
 
-### LPointLight:intensity
+#### LPointLight:intensity
 
 #### Definition
 
@@ -1246,7 +1187,7 @@ do
 end
 ```
 
-### LPointLight:radius
+#### LPointLight:radius
 
 #### Definition
 
@@ -1273,7 +1214,7 @@ do
 end
 ```
 
-### LPointLight:set
+#### LPointLight:set
 
 #### Definition
 
@@ -1315,7 +1256,7 @@ do
 end
 ```
 
-### LPointLight:type
+#### LPointLight:type
 
 #### Definition
 
@@ -1343,7 +1284,7 @@ do
 end
 ```
 
-### LPointLight:typeOf
+#### LPointLight:typeOf
 
 #### Definition
 
@@ -1376,7 +1317,7 @@ do
 end
 ```
 
-### LPointLight:x
+#### LPointLight:x
 
 #### Definition
 
@@ -1403,7 +1344,7 @@ do
 end
 ```
 
-### LPointLight:y
+#### LPointLight:y
 
 #### Definition
 
@@ -1430,7 +1371,9 @@ do
 end
 ```
 
-### LRaycaster:buildMinimapWindow
+### LRaycaster Methods
+
+#### LRaycaster:buildMinimapWindow
 
 #### Definition
 
@@ -1473,7 +1416,7 @@ do
 end
 ```
 
-### LRaycaster:buildScene
+#### LRaycaster:buildScene
 
 #### Definition
 
@@ -1514,7 +1457,7 @@ do
 end
 ```
 
-### LRaycaster:buildSceneWithModels
+#### LRaycaster:buildSceneWithModels
 
 #### Definition
 
@@ -1555,7 +1498,7 @@ do
 end
 ```
 
-### LRaycaster:castFloorRow
+#### LRaycaster:castFloorRow
 
 #### Definition
 
@@ -1600,7 +1543,7 @@ do
 end
 ```
 
-### LRaycaster:castRay
+#### LRaycaster:castRay
 
 #### Definition
 
@@ -1641,7 +1584,7 @@ do
 end
 ```
 
-### LRaycaster:castRayMulti
+#### LRaycaster:castRayMulti
 
 #### Definition
 
@@ -1683,7 +1626,7 @@ do
 end
 ```
 
-### LRaycaster:castRays
+#### LRaycaster:castRays
 
 #### Definition
 
@@ -1727,7 +1670,7 @@ do
 end
 ```
 
-### LRaycaster:castRaysFlat
+#### LRaycaster:castRaysFlat
 
 #### Definition
 
@@ -1772,7 +1715,7 @@ do
 end
 ```
 
-### LRaycaster:computeTileLight
+#### LRaycaster:computeTileLight
 
 #### Definition
 
@@ -1815,7 +1758,7 @@ do
 end
 ```
 
-### LRaycaster:drawCameraSweep
+#### LRaycaster:drawCameraSweep
 
 #### Definition
 
@@ -1861,7 +1804,7 @@ do
 end
 ```
 
-### LRaycaster:drawDepthMap
+#### LRaycaster:drawDepthMap
 
 #### Definition
 
@@ -1909,7 +1852,7 @@ do
 end
 ```
 
-### LRaycaster:drawLineOfSight
+#### LRaycaster:drawLineOfSight
 
 #### Definition
 
@@ -1950,7 +1893,7 @@ do
 end
 ```
 
-### LRaycaster:drawTopDown
+#### LRaycaster:drawTopDown
 
 #### Definition
 
@@ -1990,7 +1933,7 @@ do
 end
 ```
 
-### LRaycaster:drawView
+#### LRaycaster:drawView
 
 #### Definition
 
@@ -2036,7 +1979,7 @@ do
 end
 ```
 
-### LRaycaster:getCeilingTextureCell
+#### LRaycaster:getCeilingTextureCell
 
 #### Definition
 
@@ -2072,7 +2015,7 @@ do
 end
 ```
 
-### LRaycaster:getCell
+#### LRaycaster:getCell
 
 #### Definition
 
@@ -2108,7 +2051,7 @@ do
 end
 ```
 
-### LRaycaster:getFloorTextureCell
+#### LRaycaster:getFloorTextureCell
 
 #### Definition
 
@@ -2144,7 +2087,7 @@ do
 end
 ```
 
-### LRaycaster:getLoweredFloorCell
+#### LRaycaster:getLoweredFloorCell
 
 #### Definition
 
@@ -2180,7 +2123,7 @@ do
 end
 ```
 
-### LRaycaster:getWallAlpha
+#### LRaycaster:getWallAlpha
 
 #### Definition
 
@@ -2214,7 +2157,7 @@ do
 end
 ```
 
-### LRaycaster:gridMove
+#### LRaycaster:gridMove
 
 #### Definition
 
@@ -2258,7 +2201,7 @@ do
 end
 ```
 
-### LRaycaster:height
+#### LRaycaster:height
 
 #### Definition
 
@@ -2286,7 +2229,7 @@ do
 end
 ```
 
-### LRaycaster:isBlocked
+#### LRaycaster:isBlocked
 
 #### Definition
 
@@ -2322,7 +2265,7 @@ do
 end
 ```
 
-### LRaycaster:isWalkBlocked
+#### LRaycaster:isWalkBlocked
 
 #### Definition
 
@@ -2358,7 +2301,7 @@ do
 end
 ```
 
-### LRaycaster:lineOfSight
+#### LRaycaster:lineOfSight
 
 #### Definition
 
@@ -2399,7 +2342,7 @@ do
 end
 ```
 
-### LRaycaster:projectSprite
+#### LRaycaster:projectSprite
 
 #### Definition
 
@@ -2444,7 +2387,7 @@ do
 end
 ```
 
-### LRaycaster:revealCellsFromRays
+#### LRaycaster:revealCellsFromRays
 
 #### Definition
 
@@ -2491,7 +2434,7 @@ do
 end
 ```
 
-### LRaycaster:setCeilingTextureCell
+#### LRaycaster:setCeilingTextureCell
 
 #### Definition
 
@@ -2526,7 +2469,7 @@ do
 end
 ```
 
-### LRaycaster:setCell
+#### LRaycaster:setCell
 
 #### Definition
 
@@ -2561,7 +2504,7 @@ do
 end
 ```
 
-### LRaycaster:setCells
+#### LRaycaster:setCells
 
 #### Definition
 
@@ -2593,7 +2536,7 @@ do
 end
 ```
 
-### LRaycaster:setFloorTextureCell
+#### LRaycaster:setFloorTextureCell
 
 #### Definition
 
@@ -2628,7 +2571,7 @@ do
 end
 ```
 
-### LRaycaster:setLoweredFloorCell
+#### LRaycaster:setLoweredFloorCell
 
 #### Definition
 
@@ -2662,7 +2605,7 @@ do
 end
 ```
 
-### LRaycaster:setWallAlpha
+#### LRaycaster:setWallAlpha
 
 #### Definition
 
@@ -2695,7 +2638,7 @@ do
 end
 ```
 
-### LRaycaster:tryMove
+#### LRaycaster:tryMove
 
 #### Definition
 
@@ -2737,7 +2680,7 @@ do
 end
 ```
 
-### LRaycaster:type
+#### LRaycaster:type
 
 #### Definition
 
@@ -2765,7 +2708,7 @@ do
 end
 ```
 
-### LRaycaster:typeOf
+#### LRaycaster:typeOf
 
 #### Definition
 
@@ -2798,7 +2741,7 @@ do
 end
 ```
 
-### LRaycaster:width
+#### LRaycaster:width
 
 #### Definition
 
@@ -2826,7 +2769,9 @@ do
 end
 ```
 
-### LSpriteManager:add
+### LSpriteManager Methods
+
+#### LSpriteManager:add
 
 #### Definition
 
@@ -2865,7 +2810,7 @@ do
 end
 ```
 
-### LSpriteManager:clear
+#### LSpriteManager:clear
 
 #### Definition
 
@@ -2892,7 +2837,7 @@ do
 end
 ```
 
-### LSpriteManager:remove
+#### LSpriteManager:remove
 
 #### Definition
 
@@ -2923,7 +2868,7 @@ do
 end
 ```
 
-### LSpriteManager:setPosition
+#### LSpriteManager:setPosition
 
 #### Definition
 
@@ -2958,7 +2903,7 @@ do
 end
 ```
 
-### LSpriteManager:setVisible
+#### LSpriteManager:setVisible
 
 #### Definition
 
@@ -2991,7 +2936,7 @@ do
 end
 ```
 
-### LSpriteManager:sortAndProject
+#### LSpriteManager:sortAndProject
 
 #### Definition
 
@@ -3029,7 +2974,7 @@ do
 end
 ```
 
-### LSpriteManager:type
+#### LSpriteManager:type
 
 #### Definition
 
@@ -3057,7 +3002,7 @@ do
 end
 ```
 
-### LSpriteManager:typeOf
+#### LSpriteManager:typeOf
 
 #### Definition
 

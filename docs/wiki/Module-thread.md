@@ -10,152 +10,26 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [channel.rs](#channelrs)
+  - [mod.rs](#modrs)
+  - [pool.rs](#poolrs)
+  - [promise.rs](#promisers)
+  - [worker.rs](#workerrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.thread.async](#lurekthreadasync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.thread.getChannel](#lurekthreadgetchannel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.thread.getWorkerCapabilities](#lurekthreadgetworkercapabilities)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.thread.newBoundedChannel](#lurekthreadnewboundedchannel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.thread.newChannel](#lurekthreadnewchannel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.thread.newPool](#lurekthreadnewpool)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.thread.newThread](#lurekthreadnewthread)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LChannel](#lchannel)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPromise](#lpromise)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LThread](#lthread)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LThreadPool](#lthreadpool)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LChannel:clear](#lchannelclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:demand](#lchanneldemand)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:getCapacity](#lchannelgetcapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:getCount](#lchannelgetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:isBounded](#lchannelisbounded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:peek](#lchannelpeek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:pop](#lchannelpop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:popBytes](#lchannelpopbytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:popTable](#lchannelpoptable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:push](#lchannelpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:pushBytes](#lchannelpushbytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:pushTable](#lchannelpushtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:supply](#lchannelsupply)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:tryPush](#lchanneltrypush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:type](#lchanneltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChannel:typeOf](#lchanneltypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPromise:chain](#lpromisechain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPromise:getError](#lpromisegeterror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPromise:isDone](#lpromiseisdone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPromise:result](#lpromiseresult)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPromise:type](#lpromisetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPromise:typeOf](#lpromisetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThread:getError](#lthreadgeterror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThread:isRunning](#lthreadisrunning)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThread:start](#lthreadstart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThread:type](#lthreadtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThread:typeOf](#lthreadtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThread:wait](#lthreadwait)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:collect](#lthreadpoolcollect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:getInputChannel](#lthreadpoolgetinputchannel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:getOutputChannel](#lthreadpoolgetoutputchannel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:join](#lthreadpooljoin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:size](#lthreadpoolsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:submit](#lthreadpoolsubmit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:type](#lthreadpooltype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LThreadPool:typeOf](#lthreadpooltypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LChannel Methods](#lchannel-methods)
+  - [LPromise Methods](#lpromise-methods)
+  - [LThread Methods](#lthread-methods)
+  - [LThreadPool Methods](#lthreadpool-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -179,6 +53,45 @@ Background threading with isolated per-thread Lua VMs communicating via typed MP
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `channel.rs`
+
+- Thread-safe MPMC channel for passing typed values between Lua VMs.
+- Bounded and unbounded variants with configurable overflow policy.
+- Blocking `push`/`demand` and non-blocking `try_push`/`pop`/`peek` operations.
+- Recursive Lua-to-ChannelValue and ChannelValue-to-Lua conversion (nil, bool, number, string, table, bytes).
+- Named channels for diagnostics; monotonic push-count IDs for tracing.
+
+### `mod.rs`
+
+- Cross-thread messaging via typed MPMC channels for Lua VM isolation.
+- Fixed-size thread pool for CPU-bound background tasks.
+- Promise containers for single-value async results.
+- Worker harness owning secondary Lua VMs for parallel script execution.
+
+### `pool.rs`
+
+- Fixed-size worker pool backed by LuaThread instances sharing input/output channels.
+- Submit work items, collect results non-blocking, and join with optional timeout.
+- Workers auto-register `__pool_input`/`__pool_output` named channels for Lua-side access.
+
+### `promise.rs`
+
+- One-shot async computation that spawns a LuaThread and collects a single result.
+- Lifecycle tracking via PromiseState (Pending, Done, Error).
+- Result delivery through an internal named channel polled by the caller.
+
+### `worker.rs`
+
+- Worker VM lifecycle: spawn an OS thread with an isolated Lua VM, track Pending/Running/Completed/Error states.
+- Restricted API surface: inject only `lurek.thread.getChannel`, `lurek.fs.read`, and `arg` into worker VMs.
+- Channel-based communication: workers receive a shared channel registry for typed cross-VM messaging.
+- Blocking and timeout joins: wait indefinitely or poll with a deadline for worker completion.
+- Path-traversal guard: `fs.read` in worker VMs rejects `..` segments to prevent sandbox escape.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LChannel` (16 methods) - Creates a new unbounded channel for sending typed values between threads.
@@ -191,22 +104,18 @@ Background threading with isolated per-thread Lua VMs communicating via typed MP
 ## 📖 API Overview
 
 - Source spec: [docs/specs/thread.md](../blob/main/docs/specs/thread.md)
+- Module-level functions: 7
+- Lua-visible types: 4
+- Total type methods: 36
 
-```lua
-lurek.thread.async(codeOrFunc: string|function, ...: any) -> LPromise -- Runs a Lua code string or dumped function asynchronously on a new worker thread, returning a promise for th...
-lurek.thread.getChannel(name: string) -> LChannel -- Returns a named shared channel, creating it on first access. Repeated calls with the same name return the s...
-lurek.thread.getWorkerCapabilities() -> string[] -- Returns a list of capability names available inside worker VMs (e.g. which `lurek.*` modules are accessible).
-lurek.thread.newBoundedChannel(capacity: integer) -> LChannel -- Creates a new bounded channel with a fixed capacity, blocking pushes when full.
-lurek.thread.newChannel() -> LChannel -- Creates a new unbounded channel for sending typed values between threads.
-lurek.thread.newPool(size: integer, code: string) -> LThreadPool -- Creates a fixed-size thread pool where each worker runs the same Lua code and consumes items from a shared...
-lurek.thread.newThread(code: string) -> LThread -- Creates a new worker thread that will execute the given Lua code string when started.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.thread.async
+### Module-Level Functions
+
+#### lurek.thread.async
 
 #### Definition
 
@@ -241,7 +150,7 @@ do
 end
 ```
 
-### lurek.thread.getChannel
+#### lurek.thread.getChannel
 
 #### Definition
 
@@ -276,7 +185,7 @@ do
 end
 ```
 
-### lurek.thread.getWorkerCapabilities
+#### lurek.thread.getWorkerCapabilities
 
 #### Definition
 
@@ -303,7 +212,7 @@ do
 end
 ```
 
-### lurek.thread.newBoundedChannel
+#### lurek.thread.newBoundedChannel
 
 #### Definition
 
@@ -338,7 +247,7 @@ do
 end
 ```
 
-### lurek.thread.newChannel
+#### lurek.thread.newChannel
 
 #### Definition
 
@@ -367,7 +276,7 @@ do
 end
 ```
 
-### lurek.thread.newPool
+#### lurek.thread.newPool
 
 #### Definition
 
@@ -402,7 +311,7 @@ do
 end
 ```
 
-### lurek.thread.newThread
+#### lurek.thread.newThread
 
 #### Definition
 
@@ -555,7 +464,9 @@ end
 
 ## 🔹 Module Methods
 
-### LChannel:clear
+### LChannel Methods
+
+#### LChannel:clear
 
 #### Definition
 
@@ -582,7 +493,7 @@ do
 end
 ```
 
-### LChannel:demand
+#### LChannel:demand
 
 #### Definition
 
@@ -617,7 +528,7 @@ do
 end
 ```
 
-### LChannel:getCapacity
+#### LChannel:getCapacity
 
 #### Definition
 
@@ -644,7 +555,7 @@ do
 end
 ```
 
-### LChannel:getCount
+#### LChannel:getCount
 
 #### Definition
 
@@ -672,7 +583,7 @@ do
 end
 ```
 
-### LChannel:isBounded
+#### LChannel:isBounded
 
 #### Definition
 
@@ -699,7 +610,7 @@ do
 end
 ```
 
-### LChannel:peek
+#### LChannel:peek
 
 #### Definition
 
@@ -729,7 +640,7 @@ do
 end
 ```
 
-### LChannel:pop
+#### LChannel:pop
 
 #### Definition
 
@@ -760,7 +671,7 @@ do
 end
 ```
 
-### LChannel:popBytes
+#### LChannel:popBytes
 
 #### Definition
 
@@ -788,7 +699,7 @@ do
 end
 ```
 
-### LChannel:popTable
+#### LChannel:popTable
 
 #### Definition
 
@@ -817,7 +728,7 @@ do
 end
 ```
 
-### LChannel:push
+#### LChannel:push
 
 #### Definition
 
@@ -852,7 +763,7 @@ do
 end
 ```
 
-### LChannel:pushBytes
+#### LChannel:pushBytes
 
 #### Definition
 
@@ -887,7 +798,7 @@ do
 end
 ```
 
-### LChannel:pushTable
+#### LChannel:pushTable
 
 #### Definition
 
@@ -922,7 +833,7 @@ do
 end
 ```
 
-### LChannel:supply
+#### LChannel:supply
 
 #### Definition
 
@@ -956,7 +867,7 @@ do
 end
 ```
 
-### LChannel:tryPush
+#### LChannel:tryPush
 
 #### Definition
 
@@ -990,7 +901,7 @@ do
 end
 ```
 
-### LChannel:type
+#### LChannel:type
 
 #### Definition
 
@@ -1017,7 +928,7 @@ do
 end
 ```
 
-### LChannel:typeOf
+#### LChannel:typeOf
 
 #### Definition
 
@@ -1049,7 +960,9 @@ do
 end
 ```
 
-### LPromise:chain
+### LPromise Methods
+
+#### LPromise:chain
 
 #### Definition
 
@@ -1086,7 +999,7 @@ do
 end
 ```
 
-### LPromise:getError
+#### LPromise:getError
 
 #### Definition
 
@@ -1114,7 +1027,7 @@ do
 end
 ```
 
-### LPromise:isDone
+#### LPromise:isDone
 
 #### Definition
 
@@ -1142,7 +1055,7 @@ do
 end
 ```
 
-### LPromise:result
+#### LPromise:result
 
 #### Definition
 
@@ -1170,7 +1083,7 @@ do
 end
 ```
 
-### LPromise:type
+#### LPromise:type
 
 #### Definition
 
@@ -1198,7 +1111,7 @@ do
 end
 ```
 
-### LPromise:typeOf
+#### LPromise:typeOf
 
 #### Definition
 
@@ -1231,7 +1144,9 @@ do
 end
 ```
 
-### LThread:getError
+### LThread Methods
+
+#### LThread:getError
 
 #### Definition
 
@@ -1259,7 +1174,7 @@ do
 end
 ```
 
-### LThread:isRunning
+#### LThread:isRunning
 
 #### Definition
 
@@ -1287,7 +1202,7 @@ do
 end
 ```
 
-### LThread:start
+#### LThread:start
 
 #### Definition
 
@@ -1317,7 +1232,7 @@ do
 end
 ```
 
-### LThread:type
+#### LThread:type
 
 #### Definition
 
@@ -1344,7 +1259,7 @@ do
 end
 ```
 
-### LThread:typeOf
+#### LThread:typeOf
 
 #### Definition
 
@@ -1376,7 +1291,7 @@ do
 end
 ```
 
-### LThread:wait
+#### LThread:wait
 
 #### Definition
 
@@ -1402,7 +1317,9 @@ do
 end
 ```
 
-### LThreadPool:collect
+### LThreadPool Methods
+
+#### LThreadPool:collect
 
 #### Definition
 
@@ -1431,7 +1348,7 @@ do
 end
 ```
 
-### LThreadPool:getInputChannel
+#### LThreadPool:getInputChannel
 
 #### Definition
 
@@ -1459,7 +1376,7 @@ do
 end
 ```
 
-### LThreadPool:getOutputChannel
+#### LThreadPool:getOutputChannel
 
 #### Definition
 
@@ -1487,7 +1404,7 @@ do
 end
 ```
 
-### LThreadPool:join
+#### LThreadPool:join
 
 #### Definition
 
@@ -1519,7 +1436,7 @@ do
 end
 ```
 
-### LThreadPool:size
+#### LThreadPool:size
 
 #### Definition
 
@@ -1547,7 +1464,7 @@ do
 end
 ```
 
-### LThreadPool:submit
+#### LThreadPool:submit
 
 #### Definition
 
@@ -1577,7 +1494,7 @@ do
 end
 ```
 
-### LThreadPool:type
+#### LThreadPool:type
 
 #### Definition
 
@@ -1605,7 +1522,7 @@ do
 end
 ```
 
-### LThreadPool:typeOf
+#### LThreadPool:typeOf
 
 #### Definition
 

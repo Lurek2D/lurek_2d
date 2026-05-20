@@ -10,803 +10,62 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [aabb_tree.rs](#aabbtreers)
+  - [bezier.rs](#bezierrs)
+  - [circle.rs](#circlers)
+  - [color.rs](#colorrs)
+  - [easing.rs](#easingrs)
+  - [facade.rs](#facaders)
+  - [geometry.rs](#geometryrs)
+  - [mat3.rs](#mat3rs)
+  - [mod.rs](#modrs)
+  - [noise_functions.rs](#noisefunctionsrs)
+  - [noise_generator.rs](#noisegeneratorrs)
+  - [polygon.rs](#polygonrs)
+  - [random.rs](#randomrs)
+  - [rect.rs](#rectrs)
+  - [rect_packing.rs](#rectpackingrs)
+  - [spatial_hash.rs](#spatialhashrs)
+  - [sphere.rs](#spherers)
+  - [spline.rs](#spliners)
+  - [transform.rs](#transformrs)
+  - [tween.rs](#tweenrs)
+  - [vec2.rs](#vec2rs)
+  - [vec3.rs](#vec3rs)
+  - [voronoi.rs](#voronoirs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.math.aabbTree](#lurekmathaabbtree)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.abs](#lurekmathabs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.acos](#lurekmathacos)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.angleBetween](#lurekmathanglebetween)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.applyEasing](#lurekmathapplyeasing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.asin](#lurekmathasin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.atan](#lurekmathatan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.atan2](#lurekmathatan2)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.bresenham](#lurekmathbresenham)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.catmullRom](#lurekmathcatmullrom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.ceil](#lurekmathceil)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.circleContainsPoint](#lurekmathcirclecontainspoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.circleIntersectsCircle](#lurekmathcircleintersectscircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.circleIntersectsLine](#lurekmathcircleintersectsline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.circleIntersectsSegment](#lurekmathcircleintersectssegment)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.clamp](#lurekmathclamp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.closestPointOnSegment](#lurekmathclosestpointonsegment)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.convexHull](#lurekmathconvexhull)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.cos](#lurekmathcos)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.deg](#lurekmathdeg)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.delaunayTriangulate](#lurekmathdelaunaytriangulate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.distance](#lurekmathdistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.distanceSq](#lurekmathdistancesq)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.exp](#lurekmathexp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.fbm](#lurekmathfbm)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.floor](#lurekmathfloor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.fmod](#lurekmathfmod)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.fromHex](#lurekmathfromhex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.gammaToLinear](#lurekmathgammatolinear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.hermite](#lurekmathhermite)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.hslToRgb](#lurekmathhsltorgb)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inBack](#lurekmathinback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inBounce](#lurekmathinbounce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inCubic](#lurekmathincubic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inElastic](#lurekmathinelastic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inExpo](#lurekmathinexpo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutBack](#lurekmathinoutback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutBounce](#lurekmathinoutbounce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutCubic](#lurekmathinoutcubic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutElastic](#lurekmathinoutelastic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutExpo](#lurekmathinoutexpo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutQuad](#lurekmathinoutquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutQuart](#lurekmathinoutquart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inOutSine](#lurekmathinoutsine)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inQuad](#lurekmathinquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inQuart](#lurekmathinquart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inSine](#lurekmathinsine)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.inverseLerp](#lurekmathinverselerp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.isConvex](#lurekmathisconvex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.lerp](#lurekmathlerp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.linear](#lurekmathlinear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.linearToGamma](#lurekmathlineartogamma)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.lineIntersect](#lurekmathlineintersect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.log](#lurekmathlog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.max](#lurekmathmax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.min](#lurekmathmin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newBezierCurve](#lurekmathnewbeziercurve)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newCircle](#lurekmathnewcircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newNoiseGenerator](#lurekmathnewnoisegenerator)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newRandomGenerator](#lurekmathnewrandomgenerator)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newRectPacker](#lurekmathnewrectpacker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newSpatialHash](#lurekmathnewspatialhash)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newTransform](#lurekmathnewtransform)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.newTween](#lurekmathnewtween)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outBack](#lurekmathoutback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outBounce](#lurekmathoutbounce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outCubic](#lurekmathoutcubic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outElastic](#lurekmathoutelastic)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outExpo](#lurekmathoutexpo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outQuad](#lurekmathoutquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outQuart](#lurekmathoutquart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.outSine](#lurekmathoutsine)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.perlin2d](#lurekmathperlin2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.perlin3d](#lurekmathperlin3d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.pointInPolygon](#lurekmathpointinpolygon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.polygonArea](#lurekmathpolygonarea)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.polygonCentroid](#lurekmathpolygoncentroid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.polygonClip](#lurekmathpolygonclip)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.polygonDifference](#lurekmathpolygondifference)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.polygonIntersection](#lurekmathpolygonintersection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.polygonUnion](#lurekmathpolygonunion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.pow](#lurekmathpow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.rad](#lurekmathrad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.random](#lurekmathrandom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.randomInt](#lurekmathrandomint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.rectFromCenter](#lurekmathrectfromcenter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.rectUnion](#lurekmathrectunion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.remap](#lurekmathremap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.rgbToHsl](#lurekmathrgbtohsl)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.round](#lurekmathround)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.segmentIntersectsSegment](#lurekmathsegmentintersectssegment)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.sign](#lurekmathsign)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.simplex2d](#lurekmathsimplex2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.simplexNoise](#lurekmathsimplexnoise)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.sin](#lurekmathsin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.smoothstep](#lurekmathsmoothstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.sqrt](#lurekmathsqrt)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.tan](#lurekmathtan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.triangulate](#lurekmathtriangulate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.vec2](#lurekmathvec2)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.vec3](#lurekmathvec3)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.math.voronoi](#lurekmathvoronoi)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LAabbTree](#laabbtree)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LBezierCurve](#lbeziercurve)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCatmullRom](#lcatmullrom)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LCircle](#lcircle)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LHermite](#lhermite)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNoiseGenerator](#lnoisegenerator)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LRandomGenerator](#lrandomgenerator)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LRectPacker](#lrectpacker)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSpatialHash](#lspatialhash)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTransform](#ltransform)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTween](#ltween)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LVec2](#lvec2)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LVec3](#lvec3)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LAabbTree:clear](#laabbtreeclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:contains](#laabbtreecontains)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:insert](#laabbtreeinsert)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:isEmpty](#laabbtreeisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:len](#laabbtreelen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:query](#laabbtreequery)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:queryPoint](#laabbtreequerypoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:remove](#laabbtreeremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:type](#laabbtreetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:typeOf](#laabbtreetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAabbTree:update](#laabbtreeupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:evaluate](#lbeziercurveevaluate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:evaluateAtDistance](#lbeziercurveevaluateatdistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:getControlPoint](#lbeziercurvegetcontrolpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:getControlPointCount](#lbeziercurvegetcontrolpointcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:getDerivative](#lbeziercurvegetderivative)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:insertControlPoint](#lbeziercurveinsertcontrolpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:length](#lbeziercurvelength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:removeControlPoint](#lbeziercurveremovecontrolpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:render](#lbeziercurverender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:rotate](#lbeziercurverotate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:scale](#lbeziercurvescale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:setControlPoint](#lbeziercurvesetcontrolpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:translate](#lbeziercurvetranslate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:type](#lbeziercurvetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LBezierCurve:typeOf](#lbeziercurvetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCatmullRom:addPoint](#lcatmullromaddpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCatmullRom:len](#lcatmullromlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCatmullRom:removePoint](#lcatmullromremovepoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCatmullRom:sample](#lcatmullromsample)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCatmullRom:sampleSegment](#lcatmullromsamplesegment)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCatmullRom:type](#lcatmullromtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCatmullRom:typeOf](#lcatmullromtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:aabb](#lcircleaabb)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:area](#lcirclearea)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:contains](#lcirclecontains)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:intersects](#lcircleintersects)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:perimeter](#lcircleperimeter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:radius](#lcircleradius)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:type](#lcircletype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:typeOf](#lcircletypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:x](#lcirclex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LCircle:y](#lcircley)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHermite:sample](#lhermitesample)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHermite:type](#lhermitetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LHermite:typeOf](#lhermitetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:fbm](#lnoisegeneratorfbm)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:generateMap](#lnoisegeneratorgeneratemap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:generateMapCompute](#lnoisegeneratorgeneratemapcompute)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:getSeed](#lnoisegeneratorgetseed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:perlin1d](#lnoisegeneratorperlin1d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:perlin2d](#lnoisegeneratorperlin2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:perlin3d](#lnoisegeneratorperlin3d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:perlin4d](#lnoisegeneratorperlin4d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:ridged](#lnoisegeneratorridged)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:setSeed](#lnoisegeneratorsetseed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:simplex1d](#lnoisegeneratorsimplex1d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:simplex2d](#lnoisegeneratorsimplex2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:simplex3d](#lnoisegeneratorsimplex3d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:turbulence](#lnoisegeneratorturbulence)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:type](#lnoisegeneratortype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:typeOf](#lnoisegeneratortypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:warpDomain](#lnoisegeneratorwarpdomain)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:worley2d](#lnoisegeneratorworley2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNoiseGenerator:worley3d](#lnoisegeneratorworley3d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:getSeed](#lrandomgeneratorgetseed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:getState](#lrandomgeneratorgetstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:random](#lrandomgeneratorrandom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:randomFloat](#lrandomgeneratorrandomfloat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:randomInt](#lrandomgeneratorrandomint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:randomNormal](#lrandomgeneratorrandomnormal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:setSeed](#lrandomgeneratorsetseed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:setState](#lrandomgeneratorsetstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:type](#lrandomgeneratortype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRandomGenerator:typeOf](#lrandomgeneratortypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRectPacker:clear](#lrectpackerclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRectPacker:getPacked](#lrectpackergetpacked)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRectPacker:occupancy](#lrectpackeroccupancy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRectPacker:pack](#lrectpackerpack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:clear](#lspatialhashclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:getCellSize](#lspatialhashgetcellsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:getItemCount](#lspatialhashgetitemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:insert](#lspatialhashinsert)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:queryCircle](#lspatialhashquerycircle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:queryRect](#lspatialhashqueryrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:querySegment](#lspatialhashquerysegment)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:remove](#lspatialhashremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:type](#lspatialhashtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:typeOf](#lspatialhashtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSpatialHash:update](#lspatialhashupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:clone](#ltransformclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:decompose](#ltransformdecompose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:getMatrix](#ltransformgetmatrix)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:inverse](#ltransforminverse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:inverseTransformPoint](#ltransforminversetransformpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:reset](#ltransformreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:rotate](#ltransformrotate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:scale](#ltransformscale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:setTransformation](#ltransformsettransformation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:shear](#ltransformshear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:transformPoint](#ltransformtransformpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:translate](#ltransformtranslate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:type](#ltransformtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTransform:typeOf](#ltransformtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:addValue](#ltweenaddvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getAllValues](#ltweengetallvalues)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getClock](#ltweengetclock)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getDuration](#ltweengetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getEasingName](#ltweengeteasingname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getTime](#ltweengettime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getValue](#ltweengetvalue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:getValueCount](#ltweengetvaluecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:isComplete](#ltweeniscomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:reset](#ltweenreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:set](#ltweenset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:setTime](#ltweensettime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:type](#ltweentype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:typeOf](#ltweentypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTween:update](#ltweenupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:angle](#lvec2angle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:cross](#lvec2cross)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:distance](#lvec2distance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:dot](#lvec2dot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:fromAngle](#lvec2fromangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:length](#lvec2length)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:lengthSquared](#lvec2lengthsquared)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:lerp](#lvec2lerp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:normalize](#lvec2normalize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:normalized](#lvec2normalized)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:perpendicular](#lvec2perpendicular)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:reflect](#lvec2reflect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:rotate](#lvec2rotate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:type](#lvec2type)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:typeOf](#lvec2typeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:x](#lvec2x)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec2:y](#lvec2y)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:add](#lvec3add)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:cross](#lvec3cross)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:distance](#lvec3distance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:dot](#lvec3dot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:length](#lvec3length)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:lengthSquared](#lvec3lengthsquared)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:lerp](#lvec3lerp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:normalize](#lvec3normalize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:scale](#lvec3scale)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:splat](#lvec3splat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:sub](#lvec3sub)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:type](#lvec3type)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LVec3:typeOf](#lvec3typeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LAabbTree Methods](#laabbtree-methods)
+  - [LBezierCurve Methods](#lbeziercurve-methods)
+  - [LCatmullRom Methods](#lcatmullrom-methods)
+  - [LCircle Methods](#lcircle-methods)
+  - [LHermite Methods](#lhermite-methods)
+  - [LNoiseGenerator Methods](#lnoisegenerator-methods)
+  - [LRandomGenerator Methods](#lrandomgenerator-methods)
+  - [LRectPacker Methods](#lrectpacker-methods)
+  - [LSpatialHash Methods](#lspatialhash-methods)
+  - [LTransform Methods](#ltransform-methods)
+  - [LTween Methods](#ltween-methods)
+  - [LVec2 Methods](#lvec2-methods)
+  - [LVec3 Methods](#lvec3-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -827,6 +86,187 @@ Foundational 2D math, geometry, and color types. Leaf of the engine dependency g
 Foundational 2D math, geometry, color, and spatial utility types forming the leaf of the engine dependency graph. Core types: `Vec2`/`Vec3` (f32 vectors), `Mat3` (3x3 transform matrix), `Color` (RGBA f32 with named constructors and HSL/HSV conversion), `Rect` (axis-aligned rectangle), `Transform` (position + rotation + scale).
 
 Geometry: line intersection, point-in-polygon, polygon area/centroid, convex hull, circle-circle/circle-rect overlap, ray-segment intersection. Curves: `BezierCurve` (quadratic/cubic), `CatmullRomSpline` (smooth interpolation through control points). Noise: Perlin, Simplex, Worley, FBM with octave stacking. Spatial indexing: `SpatialHash` for O(1) neighbor queries, `QuadTree` for recursive spatial subdivision. Random: `RandomGenerator` with seeded PCG and weighted/shuffled selection. 50+ easing functions. Exposed as `lurek.math.*`. Foundations tier — imported by nearly every module.
+
+[⬆ back to top](#table-of-contents)
+
+## 📁 Source Files
+
+### `aabb_tree.rs`
+
+- Dynamic AABB bounding-volume hierarchy for broad-phase 2D spatial queries.
+- Insertion, removal, and in-place update of axis-aligned bounding boxes keyed by numeric id.
+- Query primitives: rectangle overlap, point containment, circle overlap, and segment intersection.
+- Surface-area heuristic descent for high-quality sibling selection on insert.
+- Free-list node pool avoiding repeated allocation and fragmentation.
+- Incremental bottom-up refit keeping ancestor bounds tight after mutations.
+- Helper geometry routines: AABB area, merged bounds, box-box, box-circle, and box-segment tests.
+- Leaf-centric design mapping each entry id to a single leaf node for O(1) lookup.
+- Suitable for hundreds to low thousands of dynamic bodies at interactive frame rates.
+
+### `bezier.rs`
+
+- Arbitrary-degree Bézier curve with dynamic control-point list.
+- Evaluation via Bernstein basis, clamped to [0,1].
+- Sampling helpers for full curves, sub-segments, and arc-length walks.
+- First-derivative computation and tangent-angle extraction.
+- Geometric transforms: translate, rotate, scale relative to an origin.
+- Control-point CRUD with minimum-count safety.
+
+### `circle.rs`
+
+- Circle primitive defined by center + radius, clamped non-negative on construction.
+- Point-containment, circle-circle intersection, and AABB queries.
+- Area and perimeter helpers using `std::f32::consts::PI`.
+
+### `color.rs`
+
+- Linear RGBA float color type with f32 channels in [0, 1].
+- Named constants for common colors and Lurek2D brand palette.
+- Construction from u8 components and `#RRGGBB` / `#RRGGBBAA` hex strings.
+- Conversion to packed u32 RGB and u8 tuples.
+- Color-space transforms: RGB↔HSL, HSV→RGB, sRGB gamma↔linear.
+
+### `easing.rs`
+
+- Standard easing curves: quad, cubic, quart, sine, expo, elastic, bounce, back.
+- Each family provides in, out, and in-out variants mapping t∈[0,1]→[0,1].
+- Boundary-clamped functions (expo, elastic) handle t≤0 and t≥1 explicitly.
+- Name-based lookup via `apply` and `resolve_easing_fn` for string-driven tween systems.
+- Linear passthrough for identity interpolation.
+
+### `facade.rs`
+
+- Scalar interpolation helpers: lerp, inverse_lerp, remap, smoothstep.
+- Numeric utilities: clamp, sign.
+- All functions operate on `f32` and are pure (no side effects).
+
+### `geometry.rs`
+
+- Circle queries: containment, circle-circle overlap, circle-line and circle-segment intersection with hit points.
+- Polygon operations: signed area (shoelace), centroid, point-in-polygon (ray cast), convex hull (Andrew monotone chain).
+- Segment and line utilities: segment-segment intersection, closest point on segment, infinite-line intersection.
+- Grid rasterization: Bresenham line for integer cell traversal.
+- Triangulation: Delaunay via Bowyer-Watson with super-triangle removal.
+- Angle computation: atan2-based bearing between two points.
+- All routines are standalone free functions operating on flat coordinate scalars or flat vertex arrays.
+- f32 used for game-facing geometry; f64 used for Delaunay where precision matters.
+
+### `mat3.rs`
+
+- Row-major 3×3 matrix type for 2D affine transformations.
+- Factory constructors for identity, translation, rotation, scale, and shear.
+- Inverse computation with degenerate-determinant fallback.
+- Point transformation and matrix multiplication via `std::ops::Mul`.
+
+### `mod.rs`
+
+- Math primitives: Vec2, Vec3, Mat3, Rect, Circle, Color, Transform.
+- Noise and procedural generation: Perlin, simplex, value noise, Voronoi diagrams.
+- Spatial structures: AABB tree, spatial hash grid, rectangle bin-packing.
+- Curves and interpolation: bezier, splines, tweens, easing functions, scalar helpers.
+
+### `noise_functions.rs`
+
+- Perlin noise helpers (2-D, 3-D, 4-D) with per-call seeding.
+- Simplex noise (2-D, 3-D) with optional fixed seed.
+- Fractional Brownian motion (fBm) layering multiple Perlin octaves.
+
+### `noise_generator.rs`
+
+- Seeded permutation-table noise generator supporting Perlin gradient noise in 1-D through 4-D dimensions.
+- Simplex noise variants in 1-D, 2-D, and 3-D using skewed simplex grids for faster evaluation.
+- Worley (cell/Voronoi) noise in 2-D and 3-D with selectable distance metrics: Euclidean, Manhattan, Chebyshev.
+- Fractal layering strategies: fractional Brownian motion (fBm), ridged multifractal, and turbulence.
+- Configurable heightmap generation producing row-major f64 arrays from combined multi-octave passes.
+- Gradient contribution helpers mapping hash bytes to directional dot products in 1-D through 4-D.
+- Smoothstep fade curve and linear interpolation primitives used across all Perlin evaluations.
+- Deterministic cell hashing for reproducible procedural feature point placement from any u64 seed.
+- Domain warping via Perlin displacement fields for organic terrain and texture distortion.
+- MapGenOptions controlling scale, octaves, lacunarity, persistence, offset, algorithm, and fractal type.
+
+### `polygon.rs`
+
+- Ear-clipping triangulation for simple polygons and convexity testing.
+- Sutherland-Hodgman polygon clipping against arbitrary half-planes.
+- Boolean-style polygon operations: intersection, union, and difference.
+- Andrew monotone-chain convex hull and winding-order normalization.
+- Internal helpers for signed area, point-in-triangle, and cross-product sign tests.
+
+### `random.rs`
+
+- Seedable pseudo-random number generator wrapping `fastrand` with save/restore support.
+- Uniform integer, float, and Gaussian sampling primitives.
+- Seed persistence via string serialisation for deterministic replay.
+
+### `rect.rs`
+
+- Axis-aligned rectangle defined by top-left corner and size (y-down convention).
+- Containment, intersection, union, and bounding-box construction from point sets.
+- Center-based and corner-based constructors for layout and collision use cases.
+
+### `rect_packing.rs`
+
+- Shelf-first rectangle packing for texture atlas layout.
+- Configurable atlas dimensions and uniform pixel padding between rects.
+- Tracks occupancy ratio and returns placement coordinates in insertion order.
+
+### `spatial_hash.rs`
+
+- Uniform-grid spatial hashing for broad-phase 2D collision and proximity queries.
+- AABB insert/remove/update with automatic cell-bucket management.
+- Rectangle, circle, and segment query shapes with deduplication.
+- Parametric slab-based segment-vs-AABB intersection test.
+- O(1) cell lookup per query tile; scales with world density, not total item count.
+
+### `sphere.rs`
+
+- Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
+- Great-circle distance (Haversine) and arc interpolation between two geo-points.
+- Ray-sphere intersection returning the nearest positive hit distance.
+- Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
+- Matrix-vector and matrix-matrix multiplication for globe-view transforms.
+
+### `spline.rs`
+
+- Catmull-Rom multi-segment spline with dynamic control-point management.
+- Hermite cubic segment defined by endpoints and tangents.
+- Normalized parameter sampling across full spline or individual segments.
+
+### `transform.rs`
+
+- Accumulated 2D affine transform backed by a 3×3 matrix.
+- Chainable translate, rotate, scale, and shear mutations.
+- Forward and inverse point mapping plus SRT decomposition.
+
+### `tween.rs`
+
+- Multi-channel tween interpolator that drives values from start to target over a fixed duration.
+- Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
+- Each tween holds an independent clock, supports reset, seek, and completion query.
+- Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
+- Falls back to linear when an unknown easing name is provided.
+
+### `vec2.rs`
+
+- 2D float vector type used for all position, direction, and velocity math.
+- Arithmetic operators: add, sub, mul, div, negate, and assign variants.
+- Geometric helpers: length, normalize, distance, dot, cross, perpendicular.
+- Rotation, reflection, and angle conversion utilities.
+- Linear interpolation and unit-direction construction from radians.
+
+### `vec3.rs`
+
+- 3D float vector for cross-product normals, raycasting directions, and noise inputs.
+- Arithmetic ops (add, sub, mul, div, neg) and geometric helpers (dot, cross, normalize, reflect, project).
+- Lerp, distance, and length utilities for interpolation and spatial queries.
+
+### `voronoi.rs`
+
+- Voronoi diagram generation from 2D point sets via Bowyer-Watson Delaunay triangulation.
+- Circumcenter and circumcircle predicates for incremental insertion.
+- Boundary-edge extraction and super-triangle cleanup.
+- CCW vertex sorting and deduplication to produce closed polygonal cells.
+- Input deduplication to handle coincident sites gracefully.
 
 [⬆ back to top](#table-of-contents)
 
@@ -851,34 +291,18 @@ Geometry: line intersection, point-in-polygon, polygon area/centroid, convex hul
 ## 📖 API Overview
 
 - Source spec: [docs/specs/math.md](../blob/main/docs/specs/math.md)
+- Module-level functions: 102
+- Lua-visible types: 13
+- Total type methods: 149
 
-```lua
-lurek.math.aabbTree() -> LAabbTree -- Creates an empty AABB tree. This function is exposed to Lua scripts.
-lurek.math.abs(x: number) -> number -- Returns absolute value. This function is exposed to Lua scripts.
-lurek.math.acos(x: number) -> number -- Returns arccosine of a value. This function is exposed to Lua scripts.
-lurek.math.angleBetween(x1: number, y1: number, x2: number, y2: number) -> number -- Returns the angle between two points.
-lurek.math.applyEasing(name: string, t: number) -> number -- Applies a named easing function to a normalized value.
-lurek.math.asin(x: number) -> number -- Returns arcsine of a value. This function is exposed to Lua scripts.
-lurek.math.atan(y: number, [x]: number) -> number -- Returns arctangent or two-argument arctangent.
-lurek.math.atan2(y: number, x: number) -> number -- Returns two-argument arctangent.
-lurek.math.bresenham(x1: integer, y1: integer, x2: integer, y2: integer) -> table -- Returns integer grid points along a Bresenham line.
-lurek.math.catmullRom(points: table) -> LCatmullRom -- Creates a Catmull-Rom spline from point tables.
-lurek.math.ceil(x: number) -> number -- Returns ceiling of a value. This function is exposed to Lua scripts.
-lurek.math.circleContainsPoint(cx: number, cy: number, r: number, px: number, py: number) -> boolean -- Returns whether a circle contains a point.
-lurek.math.circleIntersectsCircle(x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) -> boolean -- Returns whether two circles intersect.
-lurek.math.circleIntersectsLine(cx: number, cy: number, r: number, lx1: number, ly1: number, lx2: number, ly2: number) -> boolean -- Returns circle-line intersection state and hit points when present.
-lurek.math.circleIntersectsSegment(cx: number, cy: number, r: number, sx1: number, sy1: number, sx2: number, sy2: number) -> boolean -- Returns circle-segment intersection state and hit points when present.
-lurek.math.clamp(v: number, min: number, max: number) -> number -- Clamps a value to a range. This function is exposed to Lua scripts.
-lurek.math.closestPointOnSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) -> number -- Returns the closest point on a segment to an input point.
-lurek.math.convexHull(pts: table) -> number[] -- Computes the convex hull for a flat point table.
--- ... 84 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.math.aabbTree
+### Module-Level Functions
+
+#### lurek.math.aabbTree
 
 #### Definition
 
@@ -908,7 +332,7 @@ do
 end
 ```
 
-### lurek.math.abs
+#### lurek.math.abs
 
 #### Definition
 
@@ -940,7 +364,7 @@ do
 end
 ```
 
-### lurek.math.acos
+#### lurek.math.acos
 
 #### Definition
 
@@ -972,7 +396,7 @@ do
 end
 ```
 
-### lurek.math.angleBetween
+#### lurek.math.angleBetween
 
 #### Definition
 
@@ -1012,7 +436,7 @@ do
 end
 ```
 
-### lurek.math.applyEasing
+#### lurek.math.applyEasing
 
 #### Definition
 
@@ -1048,7 +472,7 @@ do
 end
 ```
 
-### lurek.math.asin
+#### lurek.math.asin
 
 #### Definition
 
@@ -1080,7 +504,7 @@ do
 end
 ```
 
-### lurek.math.atan
+#### lurek.math.atan
 
 #### Definition
 
@@ -1114,7 +538,7 @@ do
 end
 ```
 
-### lurek.math.atan2
+#### lurek.math.atan2
 
 #### Definition
 
@@ -1148,7 +572,7 @@ do
 end
 ```
 
-### lurek.math.bresenham
+#### lurek.math.bresenham
 
 #### Definition
 
@@ -1189,7 +613,7 @@ do
 end
 ```
 
-### lurek.math.catmullRom
+#### lurek.math.catmullRom
 
 #### Definition
 
@@ -1222,7 +646,7 @@ do
 end
 ```
 
-### lurek.math.ceil
+#### lurek.math.ceil
 
 #### Definition
 
@@ -1254,7 +678,7 @@ do
 end
 ```
 
-### lurek.math.circleContainsPoint
+#### lurek.math.circleContainsPoint
 
 #### Definition
 
@@ -1294,7 +718,7 @@ do
 end
 ```
 
-### lurek.math.circleIntersectsCircle
+#### lurek.math.circleIntersectsCircle
 
 #### Definition
 
@@ -1336,7 +760,7 @@ do
 end
 ```
 
-### lurek.math.circleIntersectsLine
+#### lurek.math.circleIntersectsLine
 
 #### Definition
 
@@ -1386,7 +810,7 @@ do
 end
 ```
 
-### lurek.math.circleIntersectsSegment
+#### lurek.math.circleIntersectsSegment
 
 #### Definition
 
@@ -1437,7 +861,7 @@ do
 end
 ```
 
-### lurek.math.clamp
+#### lurek.math.clamp
 
 #### Definition
 
@@ -1474,7 +898,7 @@ do
 end
 ```
 
-### lurek.math.closestPointOnSegment
+#### lurek.math.closestPointOnSegment
 
 #### Definition
 
@@ -1517,7 +941,7 @@ do
 end
 ```
 
-### lurek.math.convexHull
+#### lurek.math.convexHull
 
 #### Definition
 
@@ -1550,7 +974,7 @@ do
 end
 ```
 
-### lurek.math.cos
+#### lurek.math.cos
 
 #### Definition
 
@@ -1582,7 +1006,7 @@ do
 end
 ```
 
-### lurek.math.deg
+#### lurek.math.deg
 
 #### Definition
 
@@ -1614,7 +1038,7 @@ do
 end
 ```
 
-### lurek.math.delaunayTriangulate
+#### lurek.math.delaunayTriangulate
 
 #### Definition
 
@@ -1647,7 +1071,7 @@ do
 end
 ```
 
-### lurek.math.distance
+#### lurek.math.distance
 
 #### Definition
 
@@ -1685,7 +1109,7 @@ do
 end
 ```
 
-### lurek.math.distanceSq
+#### lurek.math.distanceSq
 
 #### Definition
 
@@ -1723,7 +1147,7 @@ do
 end
 ```
 
-### lurek.math.exp
+#### lurek.math.exp
 
 #### Definition
 
@@ -1755,7 +1179,7 @@ do
 end
 ```
 
-### lurek.math.fbm
+#### lurek.math.fbm
 
 #### Definition
 
@@ -1798,7 +1222,7 @@ do
 end
 ```
 
-### lurek.math.floor
+#### lurek.math.floor
 
 #### Definition
 
@@ -1830,7 +1254,7 @@ do
 end
 ```
 
-### lurek.math.fmod
+#### lurek.math.fmod
 
 #### Definition
 
@@ -1864,7 +1288,7 @@ do
 end
 ```
 
-### lurek.math.fromHex
+#### lurek.math.fromHex
 
 #### Definition
 
@@ -1899,7 +1323,7 @@ do
 end
 ```
 
-### lurek.math.gammaToLinear
+#### lurek.math.gammaToLinear
 
 #### Definition
 
@@ -1932,7 +1356,7 @@ do
 end
 ```
 
-### lurek.math.hermite
+#### lurek.math.hermite
 
 #### Definition
 
@@ -1980,7 +1404,7 @@ do
     print("end   = " .. x1 .. "," .. y1)
 ```
 
-### lurek.math.hslToRgb
+#### lurek.math.hslToRgb
 
 #### Definition
 
@@ -2021,7 +1445,7 @@ do
 end
 ```
 
-### lurek.math.inBack
+#### lurek.math.inBack
 
 #### Definition
 
@@ -2055,7 +1479,7 @@ do
 end
 ```
 
-### lurek.math.inBounce
+#### lurek.math.inBounce
 
 #### Definition
 
@@ -2089,7 +1513,7 @@ do
 end
 ```
 
-### lurek.math.inCubic
+#### lurek.math.inCubic
 
 #### Definition
 
@@ -2124,7 +1548,7 @@ do
 end
 ```
 
-### lurek.math.inElastic
+#### lurek.math.inElastic
 
 #### Definition
 
@@ -2159,7 +1583,7 @@ do
 end
 ```
 
-### lurek.math.inExpo
+#### lurek.math.inExpo
 
 #### Definition
 
@@ -2194,7 +1618,7 @@ do
 end
 ```
 
-### lurek.math.inOutBack
+#### lurek.math.inOutBack
 
 #### Definition
 
@@ -2229,7 +1653,7 @@ do
 end
 ```
 
-### lurek.math.inOutBounce
+#### lurek.math.inOutBounce
 
 #### Definition
 
@@ -2264,7 +1688,7 @@ do
 end
 ```
 
-### lurek.math.inOutCubic
+#### lurek.math.inOutCubic
 
 #### Definition
 
@@ -2299,7 +1723,7 @@ do
 end
 ```
 
-### lurek.math.inOutElastic
+#### lurek.math.inOutElastic
 
 #### Definition
 
@@ -2334,7 +1758,7 @@ do
 end
 ```
 
-### lurek.math.inOutExpo
+#### lurek.math.inOutExpo
 
 #### Definition
 
@@ -2369,7 +1793,7 @@ do
 end
 ```
 
-### lurek.math.inOutQuad
+#### lurek.math.inOutQuad
 
 #### Definition
 
@@ -2404,7 +1828,7 @@ do
 end
 ```
 
-### lurek.math.inOutQuart
+#### lurek.math.inOutQuart
 
 #### Definition
 
@@ -2439,7 +1863,7 @@ do
 end
 ```
 
-### lurek.math.inOutSine
+#### lurek.math.inOutSine
 
 #### Definition
 
@@ -2474,7 +1898,7 @@ do
 end
 ```
 
-### lurek.math.inQuad
+#### lurek.math.inQuad
 
 #### Definition
 
@@ -2509,7 +1933,7 @@ do
 end
 ```
 
-### lurek.math.inQuart
+#### lurek.math.inQuart
 
 #### Definition
 
@@ -2544,7 +1968,7 @@ do
 end
 ```
 
-### lurek.math.inSine
+#### lurek.math.inSine
 
 #### Definition
 
@@ -2579,7 +2003,7 @@ do
 end
 ```
 
-### lurek.math.inverseLerp
+#### lurek.math.inverseLerp
 
 #### Definition
 
@@ -2615,7 +2039,7 @@ do
 end
 ```
 
-### lurek.math.isConvex
+#### lurek.math.isConvex
 
 #### Definition
 
@@ -2649,7 +2073,7 @@ do
 end
 ```
 
-### lurek.math.lerp
+#### lurek.math.lerp
 
 #### Definition
 
@@ -2685,7 +2109,7 @@ do
 end
 ```
 
-### lurek.math.linear
+#### lurek.math.linear
 
 #### Definition
 
@@ -2720,7 +2144,7 @@ do
 end
 ```
 
-### lurek.math.linearToGamma
+#### lurek.math.linearToGamma
 
 #### Definition
 
@@ -2755,7 +2179,7 @@ do
 end
 ```
 
-### lurek.math.lineIntersect
+#### lurek.math.lineIntersect
 
 #### Definition
 
@@ -2802,7 +2226,7 @@ do
 end
 ```
 
-### lurek.math.log
+#### lurek.math.log
 
 #### Definition
 
@@ -2836,7 +2260,7 @@ do
 end
 ```
 
-### lurek.math.max
+#### lurek.math.max
 
 #### Definition
 
@@ -2867,7 +2291,7 @@ do
 end
 ```
 
-### lurek.math.min
+#### lurek.math.min
 
 #### Definition
 
@@ -2898,7 +2322,7 @@ do
 end
 ```
 
-### lurek.math.newBezierCurve
+#### lurek.math.newBezierCurve
 
 #### Definition
 
@@ -2931,7 +2355,7 @@ do
 end
 ```
 
-### lurek.math.newCircle
+#### lurek.math.newCircle
 
 #### Definition
 
@@ -2970,7 +2394,7 @@ do
 end
 ```
 
-### lurek.math.newNoiseGenerator
+#### lurek.math.newNoiseGenerator
 
 #### Definition
 
@@ -3003,7 +2427,7 @@ do
 end
 ```
 
-### lurek.math.newRandomGenerator
+#### lurek.math.newRandomGenerator
 
 #### Definition
 
@@ -3036,7 +2460,7 @@ do
 end
 ```
 
-### lurek.math.newRectPacker
+#### lurek.math.newRectPacker
 
 #### Definition
 
@@ -3075,7 +2499,7 @@ do
 end
 ```
 
-### lurek.math.newSpatialHash
+#### lurek.math.newSpatialHash
 
 #### Definition
 
@@ -3110,7 +2534,7 @@ do
 end
 ```
 
-### lurek.math.newTransform
+#### lurek.math.newTransform
 
 #### Definition
 
@@ -3160,7 +2584,7 @@ do
 end
 ```
 
-### lurek.math.newTween
+#### lurek.math.newTween
 
 #### Definition
 
@@ -3196,7 +2620,7 @@ do
 end
 ```
 
-### lurek.math.outBack
+#### lurek.math.outBack
 
 #### Definition
 
@@ -3231,7 +2655,7 @@ do
 end
 ```
 
-### lurek.math.outBounce
+#### lurek.math.outBounce
 
 #### Definition
 
@@ -3266,7 +2690,7 @@ do
 end
 ```
 
-### lurek.math.outCubic
+#### lurek.math.outCubic
 
 #### Definition
 
@@ -3301,7 +2725,7 @@ do
 end
 ```
 
-### lurek.math.outElastic
+#### lurek.math.outElastic
 
 #### Definition
 
@@ -3336,7 +2760,7 @@ do
 end
 ```
 
-### lurek.math.outExpo
+#### lurek.math.outExpo
 
 #### Definition
 
@@ -3371,7 +2795,7 @@ do
 end
 ```
 
-### lurek.math.outQuad
+#### lurek.math.outQuad
 
 #### Definition
 
@@ -3406,7 +2830,7 @@ do
 end
 ```
 
-### lurek.math.outQuart
+#### lurek.math.outQuart
 
 #### Definition
 
@@ -3441,7 +2865,7 @@ do
 end
 ```
 
-### lurek.math.outSine
+#### lurek.math.outSine
 
 #### Definition
 
@@ -3476,7 +2900,7 @@ do
 end
 ```
 
-### lurek.math.perlin2d
+#### lurek.math.perlin2d
 
 #### Definition
 
@@ -3513,7 +2937,7 @@ do
 end
 ```
 
-### lurek.math.perlin3d
+#### lurek.math.perlin3d
 
 #### Definition
 
@@ -3554,7 +2978,7 @@ do
 end
 ```
 
-### lurek.math.pointInPolygon
+#### lurek.math.pointInPolygon
 
 #### Definition
 
@@ -3592,7 +3016,7 @@ do
 end
 ```
 
-### lurek.math.polygonArea
+#### lurek.math.polygonArea
 
 #### Definition
 
@@ -3625,7 +3049,7 @@ do
 end
 ```
 
-### lurek.math.polygonCentroid
+#### lurek.math.polygonCentroid
 
 #### Definition
 
@@ -3659,7 +3083,7 @@ do
 end
 ```
 
-### lurek.math.polygonClip
+#### lurek.math.polygonClip
 
 #### Definition
 
@@ -3698,7 +3122,7 @@ do
 end
 ```
 
-### lurek.math.polygonDifference
+#### lurek.math.polygonDifference
 
 #### Definition
 
@@ -3734,7 +3158,7 @@ do
 end
 ```
 
-### lurek.math.polygonIntersection
+#### lurek.math.polygonIntersection
 
 #### Definition
 
@@ -3770,7 +3194,7 @@ do
 end
 ```
 
-### lurek.math.polygonUnion
+#### lurek.math.polygonUnion
 
 #### Definition
 
@@ -3806,7 +3230,7 @@ do
 end
 ```
 
-### lurek.math.pow
+#### lurek.math.pow
 
 #### Definition
 
@@ -3840,7 +3264,7 @@ do
 end
 ```
 
-### lurek.math.rad
+#### lurek.math.rad
 
 #### Definition
 
@@ -3872,7 +3296,7 @@ do
 end
 ```
 
-### lurek.math.random
+#### lurek.math.random
 
 #### Definition
 
@@ -3908,7 +3332,7 @@ do
 end
 ```
 
-### lurek.math.randomInt
+#### lurek.math.randomInt
 
 #### Definition
 
@@ -3942,7 +3366,7 @@ do
 end
 ```
 
-### lurek.math.rectFromCenter
+#### lurek.math.rectFromCenter
 
 #### Definition
 
@@ -3983,7 +3407,7 @@ do
 end
 ```
 
-### lurek.math.rectUnion
+#### lurek.math.rectUnion
 
 #### Definition
 
@@ -4032,7 +3456,7 @@ do
 end
 ```
 
-### lurek.math.remap
+#### lurek.math.remap
 
 #### Definition
 
@@ -4072,7 +3496,7 @@ do
 end
 ```
 
-### lurek.math.rgbToHsl
+#### lurek.math.rgbToHsl
 
 #### Definition
 
@@ -4113,7 +3537,7 @@ do
 end
 ```
 
-### lurek.math.round
+#### lurek.math.round
 
 #### Definition
 
@@ -4145,7 +3569,7 @@ do
 end
 ```
 
-### lurek.math.segmentIntersectsSegment
+#### lurek.math.segmentIntersectsSegment
 
 #### Definition
 
@@ -4237,7 +3661,7 @@ do
 end
 ```
 
-### lurek.math.sign
+#### lurek.math.sign
 
 #### Definition
 
@@ -4270,7 +3694,7 @@ do
 end
 ```
 
-### lurek.math.simplex2d
+#### lurek.math.simplex2d
 
 #### Definition
 
@@ -4307,7 +3731,7 @@ do
 end
 ```
 
-### lurek.math.simplexNoise
+#### lurek.math.simplexNoise
 
 #### Definition
 
@@ -4346,7 +3770,7 @@ do
 end
 ```
 
-### lurek.math.sin
+#### lurek.math.sin
 
 #### Definition
 
@@ -4378,7 +3802,7 @@ do
 end
 ```
 
-### lurek.math.smoothstep
+#### lurek.math.smoothstep
 
 #### Definition
 
@@ -4415,7 +3839,7 @@ do
 end
 ```
 
-### lurek.math.sqrt
+#### lurek.math.sqrt
 
 #### Definition
 
@@ -4447,7 +3871,7 @@ do
 end
 ```
 
-### lurek.math.tan
+#### lurek.math.tan
 
 #### Definition
 
@@ -4479,7 +3903,7 @@ do
 end
 ```
 
-### lurek.math.triangulate
+#### lurek.math.triangulate
 
 #### Definition
 
@@ -4512,7 +3936,7 @@ do
 end
 ```
 
-### lurek.math.vec2
+#### lurek.math.vec2
 
 #### Definition
 
@@ -4547,7 +3971,7 @@ do
 end
 ```
 
-### lurek.math.vec3
+#### lurek.math.vec3
 
 #### Definition
 
@@ -4584,7 +4008,7 @@ do
 end
 ```
 
-### lurek.math.voronoi
+#### lurek.math.voronoi
 
 #### Definition
 
@@ -4976,7 +4400,9 @@ end
 
 ## 🔹 Module Methods
 
-### LAabbTree:clear
+### LAabbTree Methods
+
+#### LAabbTree:clear
 
 #### Definition
 
@@ -5003,7 +4429,7 @@ do
 end
 ```
 
-### LAabbTree:contains
+#### LAabbTree:contains
 
 #### Definition
 
@@ -5038,7 +4464,7 @@ do
 end
 ```
 
-### LAabbTree:insert
+#### LAabbTree:insert
 
 #### Definition
 
@@ -5078,7 +4504,7 @@ do
 end
 ```
 
-### LAabbTree:isEmpty
+#### LAabbTree:isEmpty
 
 #### Definition
 
@@ -5108,7 +4534,7 @@ do
 end
 ```
 
-### LAabbTree:len
+#### LAabbTree:len
 
 #### Definition
 
@@ -5138,7 +4564,7 @@ do
 end
 ```
 
-### LAabbTree:query
+#### LAabbTree:query
 
 #### Definition
 
@@ -5179,7 +4605,7 @@ do
 end
 ```
 
-### LAabbTree:queryPoint
+#### LAabbTree:queryPoint
 
 #### Definition
 
@@ -5216,7 +4642,7 @@ do
 end
 ```
 
-### LAabbTree:remove
+#### LAabbTree:remove
 
 #### Definition
 
@@ -5251,7 +4677,7 @@ do
 end
 ```
 
-### LAabbTree:type
+#### LAabbTree:type
 
 #### Definition
 
@@ -5281,7 +4707,7 @@ do
 end
 ```
 
-### LAabbTree:typeOf
+#### LAabbTree:typeOf
 
 #### Definition
 
@@ -5316,7 +4742,7 @@ do
 end
 ```
 
-### LAabbTree:update
+#### LAabbTree:update
 
 #### Definition
 
@@ -5359,7 +4785,9 @@ do
 end
 ```
 
-### LBezierCurve:evaluate
+### LBezierCurve Methods
+
+#### LBezierCurve:evaluate
 
 #### Definition
 
@@ -5394,7 +4822,7 @@ do
 end
 ```
 
-### LBezierCurve:evaluateAtDistance
+#### LBezierCurve:evaluateAtDistance
 
 #### Definition
 
@@ -5432,7 +4860,7 @@ do
 end
 ```
 
-### LBezierCurve:getControlPoint
+#### LBezierCurve:getControlPoint
 
 #### Definition
 
@@ -5468,7 +4896,7 @@ do
 end
 ```
 
-### LBezierCurve:getControlPointCount
+#### LBezierCurve:getControlPointCount
 
 #### Definition
 
@@ -5498,7 +4926,7 @@ do
 end
 ```
 
-### LBezierCurve:getDerivative
+#### LBezierCurve:getDerivative
 
 #### Definition
 
@@ -5527,7 +4955,7 @@ do
 end
 ```
 
-### LBezierCurve:insertControlPoint
+#### LBezierCurve:insertControlPoint
 
 #### Definition
 
@@ -5563,7 +4991,7 @@ do
 end
 ```
 
-### LBezierCurve:length
+#### LBezierCurve:length
 
 #### Definition
 
@@ -5592,7 +5020,7 @@ do
 end
 ```
 
-### LBezierCurve:removeControlPoint
+#### LBezierCurve:removeControlPoint
 
 #### Definition
 
@@ -5627,7 +5055,7 @@ do
 end
 ```
 
-### LBezierCurve:render
+#### LBezierCurve:render
 
 #### Definition
 
@@ -5661,7 +5089,7 @@ do
 end
 ```
 
-### LBezierCurve:rotate
+#### LBezierCurve:rotate
 
 #### Definition
 
@@ -5697,7 +5125,7 @@ do
 end
 ```
 
-### LBezierCurve:scale
+#### LBezierCurve:scale
 
 #### Definition
 
@@ -5733,7 +5161,7 @@ do
 end
 ```
 
-### LBezierCurve:setControlPoint
+#### LBezierCurve:setControlPoint
 
 #### Definition
 
@@ -5772,7 +5200,7 @@ do
 end
 ```
 
-### LBezierCurve:translate
+#### LBezierCurve:translate
 
 #### Definition
 
@@ -5806,7 +5234,7 @@ do
 end
 ```
 
-### LBezierCurve:type
+#### LBezierCurve:type
 
 #### Definition
 
@@ -5836,7 +5264,7 @@ do
 end
 ```
 
-### LBezierCurve:typeOf
+#### LBezierCurve:typeOf
 
 #### Definition
 
@@ -5871,7 +5299,9 @@ do
 end
 ```
 
-### LCatmullRom:addPoint
+### LCatmullRom Methods
+
+#### LCatmullRom:addPoint
 
 #### Definition
 
@@ -5905,7 +5335,7 @@ do
 end
 ```
 
-### LCatmullRom:len
+#### LCatmullRom:len
 
 #### Definition
 
@@ -5935,7 +5365,7 @@ do
 end
 ```
 
-### LCatmullRom:removePoint
+#### LCatmullRom:removePoint
 
 #### Definition
 
@@ -5971,7 +5401,7 @@ do
 end
 ```
 
-### LCatmullRom:sample
+#### LCatmullRom:sample
 
 #### Definition
 
@@ -6006,7 +5436,7 @@ do
 end
 ```
 
-### LCatmullRom:sampleSegment
+#### LCatmullRom:sampleSegment
 
 #### Definition
 
@@ -6043,7 +5473,7 @@ do
 end
 ```
 
-### LCatmullRom:type
+#### LCatmullRom:type
 
 #### Definition
 
@@ -6073,7 +5503,7 @@ do
 end
 ```
 
-### LCatmullRom:typeOf
+#### LCatmullRom:typeOf
 
 #### Definition
 
@@ -6108,7 +5538,9 @@ do
 end
 ```
 
-### LCircle:aabb
+### LCircle Methods
+
+#### LCircle:aabb
 
 #### Definition
 
@@ -6141,7 +5573,7 @@ do
 end
 ```
 
-### LCircle:area
+#### LCircle:area
 
 #### Definition
 
@@ -6171,7 +5603,7 @@ do
 end
 ```
 
-### LCircle:contains
+#### LCircle:contains
 
 #### Definition
 
@@ -6208,7 +5640,7 @@ do
 end
 ```
 
-### LCircle:intersects
+#### LCircle:intersects
 
 #### Definition
 
@@ -6243,7 +5675,7 @@ do
 end
 ```
 
-### LCircle:perimeter
+#### LCircle:perimeter
 
 #### Definition
 
@@ -6273,7 +5705,7 @@ do
 end
 ```
 
-### LCircle:radius
+#### LCircle:radius
 
 #### Definition
 
@@ -6303,7 +5735,7 @@ do
 end
 ```
 
-### LCircle:type
+#### LCircle:type
 
 #### Definition
 
@@ -6333,7 +5765,7 @@ do
 end
 ```
 
-### LCircle:typeOf
+#### LCircle:typeOf
 
 #### Definition
 
@@ -6368,7 +5800,7 @@ do
 end
 ```
 
-### LCircle:x
+#### LCircle:x
 
 #### Definition
 
@@ -6398,7 +5830,7 @@ do
 end
 ```
 
-### LCircle:y
+#### LCircle:y
 
 #### Definition
 
@@ -6428,7 +5860,9 @@ do
 end
 ```
 
-### LHermite:sample
+### LHermite Methods
+
+#### LHermite:sample
 
 #### Definition
 
@@ -6464,7 +5898,7 @@ do
 end
 ```
 
-### LHermite:type
+#### LHermite:type
 
 #### Definition
 
@@ -6494,7 +5928,7 @@ do
 end
 ```
 
-### LHermite:typeOf
+#### LHermite:typeOf
 
 #### Definition
 
@@ -6529,7 +5963,9 @@ do
 end
 ```
 
-### LNoiseGenerator:fbm
+### LNoiseGenerator Methods
+
+#### LNoiseGenerator:fbm
 
 #### Definition
 
@@ -6574,7 +6010,7 @@ do
 end
 ```
 
-### LNoiseGenerator:generateMap
+#### LNoiseGenerator:generateMap
 
 #### Definition
 
@@ -6612,7 +6048,7 @@ do
 end
 ```
 
-### LNoiseGenerator:generateMapCompute
+#### LNoiseGenerator:generateMapCompute
 
 #### Definition
 
@@ -6650,7 +6086,7 @@ do
 end
 ```
 
-### LNoiseGenerator:getSeed
+#### LNoiseGenerator:getSeed
 
 #### Definition
 
@@ -6679,7 +6115,7 @@ do
 end
 ```
 
-### LNoiseGenerator:perlin1d
+#### LNoiseGenerator:perlin1d
 
 #### Definition
 
@@ -6714,7 +6150,7 @@ do
 end
 ```
 
-### LNoiseGenerator:perlin2d
+#### LNoiseGenerator:perlin2d
 
 #### Definition
 
@@ -6751,7 +6187,7 @@ do
 end
 ```
 
-### LNoiseGenerator:perlin3d
+#### LNoiseGenerator:perlin3d
 
 #### Definition
 
@@ -6790,7 +6226,7 @@ do
 end
 ```
 
-### LNoiseGenerator:perlin4d
+#### LNoiseGenerator:perlin4d
 
 #### Definition
 
@@ -6831,7 +6267,7 @@ do
 end
 ```
 
-### LNoiseGenerator:ridged
+#### LNoiseGenerator:ridged
 
 #### Definition
 
@@ -6876,7 +6312,7 @@ do
 end
 ```
 
-### LNoiseGenerator:setSeed
+#### LNoiseGenerator:setSeed
 
 #### Definition
 
@@ -6907,7 +6343,7 @@ do
 end
 ```
 
-### LNoiseGenerator:simplex1d
+#### LNoiseGenerator:simplex1d
 
 #### Definition
 
@@ -6942,7 +6378,7 @@ do
 end
 ```
 
-### LNoiseGenerator:simplex2d
+#### LNoiseGenerator:simplex2d
 
 #### Definition
 
@@ -6979,7 +6415,7 @@ do
 end
 ```
 
-### LNoiseGenerator:simplex3d
+#### LNoiseGenerator:simplex3d
 
 #### Definition
 
@@ -7018,7 +6454,7 @@ do
 end
 ```
 
-### LNoiseGenerator:turbulence
+#### LNoiseGenerator:turbulence
 
 #### Definition
 
@@ -7063,7 +6499,7 @@ do
 end
 ```
 
-### LNoiseGenerator:type
+#### LNoiseGenerator:type
 
 #### Definition
 
@@ -7093,7 +6529,7 @@ do
 end
 ```
 
-### LNoiseGenerator:typeOf
+#### LNoiseGenerator:typeOf
 
 #### Definition
 
@@ -7128,7 +6564,7 @@ do
 end
 ```
 
-### LNoiseGenerator:warpDomain
+#### LNoiseGenerator:warpDomain
 
 #### Definition
 
@@ -7166,7 +6602,7 @@ do
 end
 ```
 
-### LNoiseGenerator:worley2d
+#### LNoiseGenerator:worley2d
 
 #### Definition
 
@@ -7207,7 +6643,7 @@ do
 end
 ```
 
-### LNoiseGenerator:worley3d
+#### LNoiseGenerator:worley3d
 
 #### Definition
 
@@ -7250,7 +6686,9 @@ do
 end
 ```
 
-### LRandomGenerator:getSeed
+### LRandomGenerator Methods
+
+#### LRandomGenerator:getSeed
 
 #### Definition
 
@@ -7280,7 +6718,7 @@ do
 end
 ```
 
-### LRandomGenerator:getState
+#### LRandomGenerator:getState
 
 #### Definition
 
@@ -7310,7 +6748,7 @@ do
 end
 ```
 
-### LRandomGenerator:random
+#### LRandomGenerator:random
 
 #### Definition
 
@@ -7340,7 +6778,7 @@ do
 end
 ```
 
-### LRandomGenerator:randomFloat
+#### LRandomGenerator:randomFloat
 
 #### Definition
 
@@ -7377,7 +6815,7 @@ do
 end
 ```
 
-### LRandomGenerator:randomInt
+#### LRandomGenerator:randomInt
 
 #### Definition
 
@@ -7414,7 +6852,7 @@ do
 end
 ```
 
-### LRandomGenerator:randomNormal
+#### LRandomGenerator:randomNormal
 
 #### Definition
 
@@ -7451,7 +6889,7 @@ do
 end
 ```
 
-### LRandomGenerator:setSeed
+#### LRandomGenerator:setSeed
 
 #### Definition
 
@@ -7483,7 +6921,7 @@ do
 end
 ```
 
-### LRandomGenerator:setState
+#### LRandomGenerator:setState
 
 #### Definition
 
@@ -7515,7 +6953,7 @@ do
 end
 ```
 
-### LRandomGenerator:type
+#### LRandomGenerator:type
 
 #### Definition
 
@@ -7545,7 +6983,7 @@ do
 end
 ```
 
-### LRandomGenerator:typeOf
+#### LRandomGenerator:typeOf
 
 #### Definition
 
@@ -7580,7 +7018,9 @@ do
 end
 ```
 
-### LRectPacker:clear
+### LRectPacker Methods
+
+#### LRectPacker:clear
 
 #### Definition
 
@@ -7607,7 +7047,7 @@ do
 end
 ```
 
-### LRectPacker:getPacked
+#### LRectPacker:getPacked
 
 #### Definition
 
@@ -7637,7 +7077,7 @@ do
 end
 ```
 
-### LRectPacker:occupancy
+#### LRectPacker:occupancy
 
 #### Definition
 
@@ -7667,7 +7107,7 @@ do
 end
 ```
 
-### LRectPacker:pack
+#### LRectPacker:pack
 
 #### Definition
 
@@ -7707,7 +7147,9 @@ do
 end
 ```
 
-### LSpatialHash:clear
+### LSpatialHash Methods
+
+#### LSpatialHash:clear
 
 #### Definition
 
@@ -7734,7 +7176,7 @@ do
 end
 ```
 
-### LSpatialHash:getCellSize
+#### LSpatialHash:getCellSize
 
 #### Definition
 
@@ -7764,7 +7206,7 @@ do
 end
 ```
 
-### LSpatialHash:getItemCount
+#### LSpatialHash:getItemCount
 
 #### Definition
 
@@ -7794,7 +7236,7 @@ do
 end
 ```
 
-### LSpatialHash:insert
+#### LSpatialHash:insert
 
 #### Definition
 
@@ -7834,7 +7276,7 @@ do
 end
 ```
 
-### LSpatialHash:queryCircle
+#### LSpatialHash:queryCircle
 
 #### Definition
 
@@ -7873,7 +7315,7 @@ do
 end
 ```
 
-### LSpatialHash:queryRect
+#### LSpatialHash:queryRect
 
 #### Definition
 
@@ -7914,7 +7356,7 @@ do
 end
 ```
 
-### LSpatialHash:querySegment
+#### LSpatialHash:querySegment
 
 #### Definition
 
@@ -7955,7 +7397,7 @@ do
 end
 ```
 
-### LSpatialHash:remove
+#### LSpatialHash:remove
 
 #### Definition
 
@@ -7987,7 +7429,7 @@ do
 end
 ```
 
-### LSpatialHash:type
+#### LSpatialHash:type
 
 #### Definition
 
@@ -8017,7 +7459,7 @@ do
 end
 ```
 
-### LSpatialHash:typeOf
+#### LSpatialHash:typeOf
 
 #### Definition
 
@@ -8052,7 +7494,7 @@ do
 end
 ```
 
-### LSpatialHash:update
+#### LSpatialHash:update
 
 #### Definition
 
@@ -8092,7 +7534,9 @@ do
 end
 ```
 
-### LTransform:clone
+### LTransform Methods
+
+#### LTransform:clone
 
 #### Definition
 
@@ -8114,15 +7558,16 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(10, 20, 0.5); local c = t:clone()
-    local inv = t:inverse(); local x, y = t:transformPoint(0, 0)
-    local rx, ry = inv:transformPoint(x, y); print("original point = " .. x .. "," .. y)
+    local t = lurek.math.newTransform(10, 20, 0.5)
+    local c = t:clone()
+    local x, y = c:transformPoint(0, 0)
+    print("original point = " .. x .. "," .. y)
+    local rx, ry = t:transformPoint(0, 0)
     print("roundtrip = " .. rx .. "," .. ry)
-    _ = c
 end
 ```
 
-### LTransform:decompose
+#### LTransform:decompose
 
 #### Definition
 
@@ -8155,7 +7600,7 @@ do
 end
 ```
 
-### LTransform:getMatrix
+#### LTransform:getMatrix
 
 #### Definition
 
@@ -8184,7 +7629,7 @@ do
 end
 ```
 
-### LTransform:inverse
+#### LTransform:inverse
 
 #### Definition
 
@@ -8206,15 +7651,16 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(10, 20, 0.5); local c = t:clone()
-    local inv = t:inverse(); local x, y = t:transformPoint(0, 0)
-    local rx, ry = inv:transformPoint(x, y); print("original point = " .. x .. "," .. y)
+    local t = lurek.math.newTransform(10, 20, 0.5)
+    local inv = t:inverse()
+    local x, y = t:transformPoint(0, 0)
+    local rx, ry = inv:transformPoint(x, y)
+    print("original point = " .. x .. "," .. y)
     print("roundtrip = " .. rx .. "," .. ry)
-    _ = c
 end
 ```
 
-### LTransform:inverseTransformPoint
+#### LTransform:inverseTransformPoint
 
 #### Definition
 
@@ -8252,7 +7698,7 @@ do
 end
 ```
 
-### LTransform:reset
+#### LTransform:reset
 
 #### Definition
 
@@ -8271,15 +7717,14 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2); t:reset()
-    local x1, y1 = t:transformPoint(10, 10); print("after reset = " .. x1 .. "," .. y1)
-    t:setTransformation(0, 0, math.pi, 1, 1)
-    local x2, y2 = t:transformPoint(10, 0)
-    print("after set = " .. x2 .. "," .. y2)
+    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
+    t:reset()
+    local x1, y1 = t:transformPoint(10, 10)
+    print("after reset = " .. x1 .. "," .. y1)
 end
 ```
 
-### LTransform:rotate
+#### LTransform:rotate
 
 #### Definition
 
@@ -8303,15 +7748,14 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(); t:translate(50, 50)
-    t:rotate(math.pi / 6); t:scale(2, 2)
-    t:shear(0.1, 0)
+    local t = lurek.math.newTransform()
+    t:rotate(math.pi / 6)
     local x, y = t:transformPoint(10, 0)
     print("point = " .. x .. "," .. y)
 end
 ```
 
-### LTransform:scale
+#### LTransform:scale
 
 #### Definition
 
@@ -8337,15 +7781,14 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(); t:translate(50, 50)
-    t:rotate(math.pi / 6); t:scale(2, 2)
-    t:shear(0.1, 0)
+    local t = lurek.math.newTransform()
+    t:scale(2, 2)
     local x, y = t:transformPoint(10, 0)
     print("point = " .. x .. "," .. y)
 end
 ```
 
-### LTransform:setTransformation
+#### LTransform:setTransformation
 
 #### Definition
 
@@ -8385,15 +7828,14 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2); t:reset()
-    local x1, y1 = t:transformPoint(10, 10); print("after reset = " .. x1 .. "," .. y1)
+    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
     t:setTransformation(0, 0, math.pi, 1, 1)
     local x2, y2 = t:transformPoint(10, 0)
     print("after set = " .. x2 .. "," .. y2)
 end
 ```
 
-### LTransform:shear
+#### LTransform:shear
 
 #### Definition
 
@@ -8419,15 +7861,14 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(); t:translate(50, 50)
-    t:rotate(math.pi / 6); t:scale(2, 2)
+    local t = lurek.math.newTransform()
     t:shear(0.1, 0)
     local x, y = t:transformPoint(10, 0)
     print("point = " .. x .. "," .. y)
 end
 ```
 
-### LTransform:transformPoint
+#### LTransform:transformPoint
 
 #### Definition
 
@@ -8465,7 +7906,7 @@ do
 end
 ```
 
-### LTransform:translate
+#### LTransform:translate
 
 #### Definition
 
@@ -8491,15 +7932,14 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(); t:translate(50, 50)
-    t:rotate(math.pi / 6); t:scale(2, 2)
-    t:shear(0.1, 0)
+    local t = lurek.math.newTransform()
+    t:translate(50, 50)
     local x, y = t:transformPoint(10, 0)
     print("point = " .. x .. "," .. y)
 end
 ```
 
-### LTransform:type
+#### LTransform:type
 
 #### Definition
 
@@ -8529,7 +7969,7 @@ do
 end
 ```
 
-### LTransform:typeOf
+#### LTransform:typeOf
 
 #### Definition
 
@@ -8564,7 +8004,9 @@ do
 end
 ```
 
-### LTween:addValue
+### LTween Methods
+
+#### LTween:addValue
 
 #### Definition
 
@@ -8601,7 +8043,7 @@ do
 end
 ```
 
-### LTween:getAllValues
+#### LTween:getAllValues
 
 #### Definition
 
@@ -8631,7 +8073,7 @@ do
 end
 ```
 
-### LTween:getClock
+#### LTween:getClock
 
 #### Definition
 
@@ -8661,7 +8103,7 @@ do
 end
 ```
 
-### LTween:getDuration
+#### LTween:getDuration
 
 #### Definition
 
@@ -8691,7 +8133,7 @@ do
 end
 ```
 
-### LTween:getEasingName
+#### LTween:getEasingName
 
 #### Definition
 
@@ -8721,7 +8163,7 @@ do
 end
 ```
 
-### LTween:getTime
+#### LTween:getTime
 
 #### Definition
 
@@ -8751,7 +8193,7 @@ do
 end
 ```
 
-### LTween:getValue
+#### LTween:getValue
 
 #### Definition
 
@@ -8786,7 +8228,7 @@ do
 end
 ```
 
-### LTween:getValueCount
+#### LTween:getValueCount
 
 #### Definition
 
@@ -8816,7 +8258,7 @@ do
 end
 ```
 
-### LTween:isComplete
+#### LTween:isComplete
 
 #### Definition
 
@@ -8846,7 +8288,7 @@ do
 end
 ```
 
-### LTween:reset
+#### LTween:reset
 
 #### Definition
 
@@ -8873,7 +8315,7 @@ do
 end
 ```
 
-### LTween:set
+#### LTween:set
 
 #### Definition
 
@@ -8905,7 +8347,7 @@ do
 end
 ```
 
-### LTween:setTime
+#### LTween:setTime
 
 #### Definition
 
@@ -8937,7 +8379,7 @@ do
 end
 ```
 
-### LTween:type
+#### LTween:type
 
 #### Definition
 
@@ -8967,7 +8409,7 @@ do
 end
 ```
 
-### LTween:typeOf
+#### LTween:typeOf
 
 #### Definition
 
@@ -9002,7 +8444,7 @@ do
 end
 ```
 
-### LTween:update
+#### LTween:update
 
 #### Definition
 
@@ -9037,7 +8479,9 @@ do
 end
 ```
 
-### LVec2:angle
+### LVec2 Methods
+
+#### LVec2:angle
 
 #### Definition
 
@@ -9065,7 +8509,7 @@ do
 end
 ```
 
-### LVec2:cross
+#### LVec2:cross
 
 #### Definition
 
@@ -9099,7 +8543,7 @@ do
 end
 ```
 
-### LVec2:distance
+#### LVec2:distance
 
 #### Definition
 
@@ -9134,7 +8578,7 @@ do
 end
 ```
 
-### LVec2:dot
+#### LVec2:dot
 
 #### Definition
 
@@ -9168,7 +8612,7 @@ do
 end
 ```
 
-### LVec2:fromAngle
+#### LVec2:fromAngle
 
 #### Definition
 
@@ -9203,7 +8647,7 @@ do
 end
 ```
 
-### LVec2:length
+#### LVec2:length
 
 #### Definition
 
@@ -9232,7 +8676,7 @@ do
 end
 ```
 
-### LVec2:lengthSquared
+#### LVec2:lengthSquared
 
 #### Definition
 
@@ -9261,7 +8705,7 @@ do
 end
 ```
 
-### LVec2:lerp
+#### LVec2:lerp
 
 #### Definition
 
@@ -9297,7 +8741,7 @@ do
 end
 ```
 
-### LVec2:normalize
+#### LVec2:normalize
 
 #### Definition
 
@@ -9327,7 +8771,7 @@ do
 end
 ```
 
-### LVec2:normalized
+#### LVec2:normalized
 
 #### Definition
 
@@ -9357,7 +8801,7 @@ do
 end
 ```
 
-### LVec2:perpendicular
+#### LVec2:perpendicular
 
 #### Definition
 
@@ -9386,7 +8830,7 @@ do
 end
 ```
 
-### LVec2:reflect
+#### LVec2:reflect
 
 #### Definition
 
@@ -9420,7 +8864,7 @@ do
 end
 ```
 
-### LVec2:rotate
+#### LVec2:rotate
 
 #### Definition
 
@@ -9454,7 +8898,7 @@ do
 end
 ```
 
-### LVec2:type
+#### LVec2:type
 
 #### Definition
 
@@ -9481,7 +8925,7 @@ do
 end
 ```
 
-### LVec2:typeOf
+#### LVec2:typeOf
 
 #### Definition
 
@@ -9513,7 +8957,7 @@ do
 end
 ```
 
-### LVec2:x
+#### LVec2:x
 
 #### Definition
 
@@ -9540,7 +8984,7 @@ do
 end
 ```
 
-### LVec2:y
+#### LVec2:y
 
 #### Definition
 
@@ -9567,7 +9011,9 @@ do
 end
 ```
 
-### LVec3:add
+### LVec3 Methods
+
+#### LVec3:add
 
 #### Definition
 
@@ -9601,7 +9047,7 @@ do
 end
 ```
 
-### LVec3:cross
+#### LVec3:cross
 
 #### Definition
 
@@ -9636,7 +9082,7 @@ do
 end
 ```
 
-### LVec3:distance
+#### LVec3:distance
 
 #### Definition
 
@@ -9669,7 +9115,7 @@ do
 end
 ```
 
-### LVec3:dot
+#### LVec3:dot
 
 #### Definition
 
@@ -9704,7 +9150,7 @@ do
 end
 ```
 
-### LVec3:length
+#### LVec3:length
 
 #### Definition
 
@@ -9733,7 +9179,7 @@ do
 end
 ```
 
-### LVec3:lengthSquared
+#### LVec3:lengthSquared
 
 #### Definition
 
@@ -9762,7 +9208,7 @@ do
 end
 ```
 
-### LVec3:lerp
+#### LVec3:lerp
 
 #### Definition
 
@@ -9798,7 +9244,7 @@ do
 end
 ```
 
-### LVec3:normalize
+#### LVec3:normalize
 
 #### Definition
 
@@ -9827,7 +9273,7 @@ do
 end
 ```
 
-### LVec3:scale
+#### LVec3:scale
 
 #### Definition
 
@@ -9860,7 +9306,7 @@ do
 end
 ```
 
-### LVec3:splat
+#### LVec3:splat
 
 #### Definition
 
@@ -9895,7 +9341,7 @@ do
 end
 ```
 
-### LVec3:sub
+#### LVec3:sub
 
 #### Definition
 
@@ -9929,7 +9375,7 @@ do
 end
 ```
 
-### LVec3:type
+#### LVec3:type
 
 #### Definition
 
@@ -9956,7 +9402,7 @@ do
 end
 ```
 
-### LVec3:typeOf
+#### LVec3:typeOf
 
 #### Definition
 

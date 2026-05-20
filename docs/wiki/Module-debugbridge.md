@@ -10,57 +10,14 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [bridge.rs](#bridgers)
+  - [mod.rs](#modrs)
+  - [server.rs](#serverrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.debugbridge.broadcast](#lurekdebugbridgebroadcast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.capturePrint](#lurekdebugbridgecaptureprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.clearPrintHistory](#lurekdebugbridgeclearprinthistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.consumeHotReloadRequest](#lurekdebugbridgeconsumehotreloadrequest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.getClientCount](#lurekdebugbridgegetclientcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.getPerformance](#lurekdebugbridgegetperformance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.getPort](#lurekdebugbridgegetport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.getPrintHistory](#lurekdebugbridgegetprinthistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.getProtocolInfo](#lurekdebugbridgegetprotocolinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.isRunning](#lurekdebugbridgeisrunning)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.isScreenshotRequested](#lurekdebugbridgeisscreenshotrequested)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.poll](#lurekdebugbridgepoll)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.requestScreenshot](#lurekdebugbridgerequestscreenshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.setMaxPrintHistory](#lurekdebugbridgesetmaxprinthistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.start](#lurekdebugbridgestart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.debugbridge.stop](#lurekdebugbridgestop)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -84,6 +41,33 @@ TCP debug bridge enabling external tools (VS Code extension, remote inspectors) 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `bridge.rs`
+
+- Define shared state and queue structures for the debug bridge protocol.
+- Hold pending request and response buffers for runtime-client communication.
+- Track rolling frame-time performance metrics with bounded sample windows.
+- Maintain bounded print history captured from runtime Lua output.
+- Manage session configuration: port, protocol version, capabilities, and nonce.
+- Provide broadcast queue for event delivery to all connected clients.
+
+### `mod.rs`
+
+- Expose the debug bridge subsystem for runtime-to-IDE communication.
+- Provide shared state queues, TCP server loop, and JSON-RPC dispatch.
+- Re-export integration types used by the engine runtime layer.
+
+### `server.rs`
+
+- Run a non-blocking TCP server loop accepting debug bridge client connections.
+- Parse JSON-RPC messages and dispatch to built-in handlers or runtime queue.
+- Deliver pending responses and broadcast events to connected clients.
+- Handle protocol handshake, nonce authentication, and version negotiation.
+- Support ping, hello, eval, performance, print history, and screenshot requests.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -93,31 +77,18 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/debugbridge.md](../blob/main/docs/specs/debugbridge.md)
+- Module-level functions: 16
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.debugbridge.broadcast(event: string, json_data: string) -- Queues a JSON string payload broadcast for debug bridge clients.
-lurek.debugbridge.capturePrint(msg: string, [source]: string, [line]: integer) -- Captures a print message and broadcasts it to debug bridge clients.
-lurek.debugbridge.clearPrintHistory() -- Clears all entries from the captured print history buffer.
-lurek.debugbridge.consumeHotReloadRequest() -> boolean -- Returns and clears the pending hot reload request flag.
-lurek.debugbridge.getClientCount() -> integer -- Returns the number of connected debug bridge clients.
-lurek.debugbridge.getPerformance() -> table -- Returns debug bridge performance metrics.
-lurek.debugbridge.getPort() -> integer -- Returns the configured TCP port for the debug bridge.
-lurek.debugbridge.getPrintHistory([count]: integer) -> table -- Returns captured print history entries.
-lurek.debugbridge.getProtocolInfo() -> table -- Returns debug bridge protocol version, capabilities, and handshake nonce.
-lurek.debugbridge.isRunning() -> boolean -- Returns whether the debug bridge server is currently running.
-lurek.debugbridge.isScreenshotRequested() -> boolean -- Returns whether a screenshot request is pending.
-lurek.debugbridge.poll() -- Polls pending debugger requests, evaluates supported methods, and queues responses.
-lurek.debugbridge.requestScreenshot([scale]: integer) -- Requests a screenshot from the runtime.
-lurek.debugbridge.setMaxPrintHistory(max: integer) -- Sets the maximum retained print history entry count.
-lurek.debugbridge.start([port]: integer) -> boolean -- Starts the localhost debug bridge server on a port.
-lurek.debugbridge.stop() -- Stops the debug bridge server and joins its server thread.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.debugbridge.broadcast
+### Module-Level Functions
+
+#### lurek.debugbridge.broadcast
 
 #### Definition
 
@@ -148,7 +119,7 @@ do
 end
 ```
 
-### lurek.debugbridge.capturePrint
+#### lurek.debugbridge.capturePrint
 
 #### Definition
 
@@ -181,7 +152,7 @@ do
 end
 ```
 
-### lurek.debugbridge.clearPrintHistory
+#### lurek.debugbridge.clearPrintHistory
 
 #### Definition
 
@@ -207,7 +178,7 @@ do
 end
 ```
 
-### lurek.debugbridge.consumeHotReloadRequest
+#### lurek.debugbridge.consumeHotReloadRequest
 
 #### Definition
 
@@ -234,7 +205,7 @@ do
 end
 ```
 
-### lurek.debugbridge.getClientCount
+#### lurek.debugbridge.getClientCount
 
 #### Definition
 
@@ -260,7 +231,7 @@ do
 end
 ```
 
-### lurek.debugbridge.getPerformance
+#### lurek.debugbridge.getPerformance
 
 #### Definition
 
@@ -287,7 +258,7 @@ do
 end
 ```
 
-### lurek.debugbridge.getPort
+#### lurek.debugbridge.getPort
 
 #### Definition
 
@@ -313,7 +284,7 @@ do
 end
 ```
 
-### lurek.debugbridge.getPrintHistory
+#### lurek.debugbridge.getPrintHistory
 
 #### Definition
 
@@ -346,7 +317,7 @@ do
 end
 ```
 
-### lurek.debugbridge.getProtocolInfo
+#### lurek.debugbridge.getProtocolInfo
 
 #### Definition
 
@@ -373,7 +344,7 @@ do
 end
 ```
 
-### lurek.debugbridge.isRunning
+#### lurek.debugbridge.isRunning
 
 #### Definition
 
@@ -399,7 +370,7 @@ do
 end
 ```
 
-### lurek.debugbridge.isScreenshotRequested
+#### lurek.debugbridge.isScreenshotRequested
 
 #### Definition
 
@@ -426,7 +397,7 @@ do
 end
 ```
 
-### lurek.debugbridge.poll
+#### lurek.debugbridge.poll
 
 #### Definition
 
@@ -453,7 +424,7 @@ do
 end
 ```
 
-### lurek.debugbridge.requestScreenshot
+#### lurek.debugbridge.requestScreenshot
 
 #### Definition
 
@@ -482,7 +453,7 @@ do
 end
 ```
 
-### lurek.debugbridge.setMaxPrintHistory
+#### lurek.debugbridge.setMaxPrintHistory
 
 #### Definition
 
@@ -511,7 +482,7 @@ do
 end
 ```
 
-### lurek.debugbridge.start
+#### lurek.debugbridge.start
 
 #### Definition
 
@@ -545,7 +516,7 @@ do
 end
 ```
 
-### lurek.debugbridge.stop
+#### lurek.debugbridge.stop
 
 #### Definition
 

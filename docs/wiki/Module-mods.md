@@ -10,185 +10,21 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [mod.rs](#modrs)
+  - [mod_manager.rs](#modmanagerrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.mods.checkApiVersion](#lurekmodscheckapiversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.mods.newMod](#lurekmodsnewmod)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.mods.newModManager](#lurekmodsnewmodmanager)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.mods.newRegistry](#lurekmodsnewregistry)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LContentRegistry](#lcontentregistry)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMod](#lmod)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LModManager](#lmodmanager)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LContentRegistry:get](#lcontentregistryget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContentRegistry:getAll](#lcontentregistrygetall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContentRegistry:getTypes](#lcontentregistrygettypes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContentRegistry:register](#lcontentregistryregister)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContentRegistry:registerType](#lcontentregistryregistertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContentRegistry:type](#lcontentregistrytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LContentRegistry:typeOf](#lcontentregistrytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getApiVersion](#lmodgetapiversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getAuthor](#lmodgetauthor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getCapabilities](#lmodgetcapabilities)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getConfig](#lmodgetconfig)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getConfigSchema](#lmodgetconfigschema)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getDependencies](#lmodgetdependencies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getDescription](#lmodgetdescription)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getHook](#lmodgethook)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getHookNames](#lmodgethooknames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getId](#lmodgetid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getName](#lmodgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getPriority](#lmodgetpriority)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:getVersion](#lmodgetversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:hasHook](#lmodhashook)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:isEnabled](#lmodisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:isLoaded](#lmodisloaded)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:releaseRefs](#lmodreleaserefs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:setApiVersion](#lmodsetapiversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:setCapabilities](#lmodsetcapabilities)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:setConfig](#lmodsetconfig)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:setConfigSchema](#lmodsetconfigschema)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:setEnabled](#lmodsetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:setHook](#lmodsethook)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:type](#lmodtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMod:typeOf](#lmodtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:clearLoadOrder](#lmodmanagerclearloadorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:clearReloadQueue](#lmodmanagerclearreloadqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:getAllMods](#lmodmanagergetallmods)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:getLoadOrder](#lmodmanagergetloadorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:getModCount](#lmodmanagergetmodcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:getModPath](#lmodmanagergetmodpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:getModsByCapability](#lmodmanagergetmodsbycapability)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:getReloadQueue](#lmodmanagergetreloadqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:hasCircularDependencies](#lmodmanagerhascirculardependencies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:hasMod](#lmodmanagerhasmod)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:markForReload](#lmodmanagermarkforreload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:processReloadQueue](#lmodmanagerprocessreloadqueue)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:registerMod](#lmodmanagerregistermod)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:scanFolder](#lmodmanagerscanfolder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:setLoadOrder](#lmodmanagersetloadorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:type](#lmodmanagertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:typeOf](#lmodmanagertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:unregisterMod](#lmodmanagerunregistermod)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LModManager:validateDependencies](#lmodmanagervalidatedependencies)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LContentRegistry Methods](#lcontentregistry-methods)
+  - [LMod Methods](#lmod-methods)
+  - [LModManager Methods](#lmodmanager-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -212,6 +48,27 @@ Mod-loading framework providing discovery, manifest parsing, dependency resoluti
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `mod.rs`
+
+- Mod system entry point exposing lifecycle management for game mods.
+- Handles discovery, enabling/disabling, and Lua script integration of mods.
+- Re-exports all public items from the mod manager submodule.
+
+### `mod_manager.rs`
+
+- Mod registry: register, unregister, and look up mods by id or capability.
+- Manifest parsing: load `mod.toml` files, validate fields, and compute SHA-256 signatures.
+- Load ordering: topological sort with dependency resolution, priority tie-breaking, and custom override.
+- Asset conflict detection: prevent two mods from declaring the same asset path.
+- Hot-reload queue: mark mods dirty, re-parse their manifests, and re-register atomically.
+- Folder scanning: discover mod directories on disk and batch-register valid entries.
+- Dependency validation: detect missing deps and circular dependency cycles.
+- Config schema: carry typed key/default triples from manifests for runtime config UI.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LContentRegistry` (7 methods) - Lua-side content registry for storing typed Lua values by id.
@@ -223,19 +80,18 @@ Mod-loading framework providing discovery, manifest parsing, dependency resoluti
 ## 📖 API Overview
 
 - Source spec: [docs/specs/mods.md](../blob/main/docs/specs/mods.md)
+- Module-level functions: 4
+- Lua-visible types: 3
+- Total type methods: 51
 
-```lua
-lurek.mods.checkApiVersion(mod_ud: LMod, host_version: string) -> boolean -- Checks whether a mod API version is compatible with a host version.
-lurek.mods.newMod(info: table) -> LMod -- Creates a mod metadata handle from a Lua table.
-lurek.mods.newModManager() -> LModManager -- Creates an empty mod manager. This function is exposed to Lua scripts.
-lurek.mods.newRegistry() -> LContentRegistry -- Creates an empty content registry.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.mods.checkApiVersion
+### Module-Level Functions
+
+#### lurek.mods.checkApiVersion
 
 #### Definition
 
@@ -273,7 +129,7 @@ do
 end
 ```
 
-### lurek.mods.newMod
+#### lurek.mods.newMod
 
 #### Definition
 
@@ -306,7 +162,7 @@ do
 end
 ```
 
-### lurek.mods.newModManager
+#### lurek.mods.newModManager
 
 #### Definition
 
@@ -334,7 +190,7 @@ do
 end
 ```
 
-### lurek.mods.newRegistry
+#### lurek.mods.newRegistry
 
 #### Definition
 
@@ -450,7 +306,9 @@ end
 
 ## 🔹 Module Methods
 
-### LContentRegistry:get
+### LContentRegistry Methods
+
+#### LContentRegistry:get
 
 #### Definition
 
@@ -488,7 +346,7 @@ do
 end
 ```
 
-### LContentRegistry:getAll
+#### LContentRegistry:getAll
 
 #### Definition
 
@@ -522,7 +380,7 @@ do
 end
 ```
 
-### LContentRegistry:getTypes
+#### LContentRegistry:getTypes
 
 #### Definition
 
@@ -550,7 +408,7 @@ do
 end
 ```
 
-### LContentRegistry:register
+#### LContentRegistry:register
 
 #### Definition
 
@@ -585,7 +443,7 @@ do
 end
 ```
 
-### LContentRegistry:registerType
+#### LContentRegistry:registerType
 
 #### Definition
 
@@ -616,7 +474,7 @@ do
 end
 ```
 
-### LContentRegistry:type
+#### LContentRegistry:type
 
 #### Definition
 
@@ -643,7 +501,7 @@ do
 end
 ```
 
-### LContentRegistry:typeOf
+#### LContentRegistry:typeOf
 
 #### Definition
 
@@ -675,7 +533,9 @@ do
 end
 ```
 
-### LMod:getApiVersion
+### LMod Methods
+
+#### LMod:getApiVersion
 
 #### Definition
 
@@ -704,7 +564,7 @@ do
 end
 ```
 
-### LMod:getAuthor
+#### LMod:getAuthor
 
 #### Definition
 
@@ -731,7 +591,7 @@ do
 end
 ```
 
-### LMod:getCapabilities
+#### LMod:getCapabilities
 
 #### Definition
 
@@ -761,7 +621,7 @@ do
 end
 ```
 
-### LMod:getConfig
+#### LMod:getConfig
 
 #### Definition
 
@@ -791,7 +651,7 @@ do
 end
 ```
 
-### LMod:getConfigSchema
+#### LMod:getConfigSchema
 
 #### Definition
 
@@ -821,7 +681,7 @@ do
 end
 ```
 
-### LMod:getDependencies
+#### LMod:getDependencies
 
 #### Definition
 
@@ -850,7 +710,7 @@ do
 end
 ```
 
-### LMod:getDescription
+#### LMod:getDescription
 
 #### Definition
 
@@ -877,7 +737,7 @@ do
 end
 ```
 
-### LMod:getHook
+#### LMod:getHook
 
 #### Definition
 
@@ -912,7 +772,7 @@ do
 end
 ```
 
-### LMod:getHookNames
+#### LMod:getHookNames
 
 #### Definition
 
@@ -942,7 +802,7 @@ do
 end
 ```
 
-### LMod:getId
+#### LMod:getId
 
 #### Definition
 
@@ -969,7 +829,7 @@ do
 end
 ```
 
-### LMod:getName
+#### LMod:getName
 
 #### Definition
 
@@ -996,7 +856,7 @@ do
 end
 ```
 
-### LMod:getPriority
+#### LMod:getPriority
 
 #### Definition
 
@@ -1023,7 +883,7 @@ do
 end
 ```
 
-### LMod:getVersion
+#### LMod:getVersion
 
 #### Definition
 
@@ -1050,7 +910,7 @@ do
 end
 ```
 
-### LMod:hasHook
+#### LMod:hasHook
 
 #### Definition
 
@@ -1084,7 +944,7 @@ do
 end
 ```
 
-### LMod:isEnabled
+#### LMod:isEnabled
 
 #### Definition
 
@@ -1113,7 +973,7 @@ do
 end
 ```
 
-### LMod:isLoaded
+#### LMod:isLoaded
 
 #### Definition
 
@@ -1141,7 +1001,7 @@ do
 end
 ```
 
-### LMod:releaseRefs
+#### LMod:releaseRefs
 
 #### Definition
 
@@ -1168,7 +1028,7 @@ do
 end
 ```
 
-### LMod:setApiVersion
+#### LMod:setApiVersion
 
 #### Definition
 
@@ -1199,7 +1059,7 @@ do
 end
 ```
 
-### LMod:setCapabilities
+#### LMod:setCapabilities
 
 #### Definition
 
@@ -1230,7 +1090,7 @@ do
 end
 ```
 
-### LMod:setConfig
+#### LMod:setConfig
 
 #### Definition
 
@@ -1261,7 +1121,7 @@ do
 end
 ```
 
-### LMod:setConfigSchema
+#### LMod:setConfigSchema
 
 #### Definition
 
@@ -1292,7 +1152,7 @@ do
 end
 ```
 
-### LMod:setEnabled
+#### LMod:setEnabled
 
 #### Definition
 
@@ -1323,7 +1183,7 @@ do
 end
 ```
 
-### LMod:setHook
+#### LMod:setHook
 
 #### Definition
 
@@ -1356,7 +1216,7 @@ do
 end
 ```
 
-### LMod:type
+#### LMod:type
 
 #### Definition
 
@@ -1383,7 +1243,7 @@ do
 end
 ```
 
-### LMod:typeOf
+#### LMod:typeOf
 
 #### Definition
 
@@ -1415,7 +1275,9 @@ do
 end
 ```
 
-### LModManager:clearLoadOrder
+### LModManager Methods
+
+#### LModManager:clearLoadOrder
 
 #### Definition
 
@@ -1442,7 +1304,7 @@ do
 end
 ```
 
-### LModManager:clearReloadQueue
+#### LModManager:clearReloadQueue
 
 #### Definition
 
@@ -1469,7 +1331,7 @@ do
 end
 ```
 
-### LModManager:getAllMods
+#### LModManager:getAllMods
 
 #### Definition
 
@@ -1499,7 +1361,7 @@ do
 end
 ```
 
-### LModManager:getLoadOrder
+#### LModManager:getLoadOrder
 
 #### Definition
 
@@ -1529,7 +1391,7 @@ do
 end
 ```
 
-### LModManager:getModCount
+#### LModManager:getModCount
 
 #### Definition
 
@@ -1558,7 +1420,7 @@ do
 end
 ```
 
-### LModManager:getModPath
+#### LModManager:getModPath
 
 #### Definition
 
@@ -1593,7 +1455,7 @@ do
 end
 ```
 
-### LModManager:getModsByCapability
+#### LModManager:getModsByCapability
 
 #### Definition
 
@@ -1628,7 +1490,7 @@ do
 end
 ```
 
-### LModManager:getReloadQueue
+#### LModManager:getReloadQueue
 
 #### Definition
 
@@ -1657,7 +1519,7 @@ do
 end
 ```
 
-### LModManager:hasCircularDependencies
+#### LModManager:hasCircularDependencies
 
 #### Definition
 
@@ -1686,7 +1548,7 @@ do
 end
 ```
 
-### LModManager:hasMod
+#### LModManager:hasMod
 
 #### Definition
 
@@ -1720,7 +1582,7 @@ do
 end
 ```
 
-### LModManager:markForReload
+#### LModManager:markForReload
 
 #### Definition
 
@@ -1754,7 +1616,7 @@ do
 end
 ```
 
-### LModManager:processReloadQueue
+#### LModManager:processReloadQueue
 
 #### Definition
 
@@ -1784,7 +1646,7 @@ do
 end
 ```
 
-### LModManager:registerMod
+#### LModManager:registerMod
 
 #### Definition
 
@@ -1815,7 +1677,7 @@ do
 end
 ```
 
-### LModManager:scanFolder
+#### LModManager:scanFolder
 
 #### Definition
 
@@ -1848,7 +1710,7 @@ do
 end
 ```
 
-### LModManager:setLoadOrder
+#### LModManager:setLoadOrder
 
 #### Definition
 
@@ -1880,7 +1742,7 @@ do
 end
 ```
 
-### LModManager:type
+#### LModManager:type
 
 #### Definition
 
@@ -1907,7 +1769,7 @@ do
 end
 ```
 
-### LModManager:typeOf
+#### LModManager:typeOf
 
 #### Definition
 
@@ -1939,7 +1801,7 @@ do
 end
 ```
 
-### LModManager:unregisterMod
+#### LModManager:unregisterMod
 
 #### Definition
 
@@ -1974,7 +1836,7 @@ do
 end
 ```
 
-### LModManager:validateDependencies
+#### LModManager:validateDependencies
 
 #### Definition
 

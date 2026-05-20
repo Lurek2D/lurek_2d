@@ -10,239 +10,31 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [bin_pack.rs](#binpackrs)
+  - [byte_data.rs](#bytedatars)
+  - [compress.rs](#compressrs)
+  - [data_writer.rs](#datawriterrs)
+  - [dataview.rs](#dataviewrs)
+  - [encode.rs](#encoders)
+  - [hash.rs](#hashrs)
+  - [mod.rs](#modrs)
+  - [pack.rs](#packrs)
+  - [ring_buffer.rs](#ringbufferrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.data.compress](#lurekdatacompress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.compressChunks](#lurekdatacompresschunks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.crc32](#lurekdatacrc32)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.decode](#lurekdatadecode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.decompress](#lurekdatadecompress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.decompressChunks](#lurekdatadecompresschunks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.encode](#lurekdataencode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.encodeToml](#lurekdataencodetoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.fromMsgPack](#lurekdatafrommsgpack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.getPackedSize](#lurekdatagetpackedsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.hash](#lurekdatahash)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.newByteData](#lurekdatanewbytedata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.newDataView](#lurekdatanewdataview)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.newRingBuffer](#lurekdatanewringbuffer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.newWriter](#lurekdatanewwriter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.pack](#lurekdatapack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.parseToml](#lurekdataparsetoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.read](#lurekdataread)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.size](#lurekdatasize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.toMsgPack](#lurekdatatomsgpack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.unpack](#lurekdataunpack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.data.write](#lurekdatawrite)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LByteData](#lbytedata)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDataView](#ldataview)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDataWriter](#ldatawriter)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LRingBuffer](#lringbuffer)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LByteData:clone](#lbytedataclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:getBit](#lbytedatagetbit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:getByte](#lbytedatagetbyte)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:getSize](#lbytedatagetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:getString](#lbytedatagetstring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:readBits](#lbytedatareadbits)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:setBit](#lbytedatasetbit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:setByte](#lbytedatasetbyte)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:type](#lbytedatatype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LByteData:typeOf](#lbytedatatypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getDouble](#ldataviewgetdouble)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getFloat](#ldataviewgetfloat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getInt16](#ldataviewgetint16)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getInt32](#ldataviewgetint32)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getInt8](#ldataviewgetint8)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getSize](#ldataviewgetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getUInt16](#ldataviewgetuint16)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getUInt32](#ldataviewgetuint32)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:getUInt8](#ldataviewgetuint8)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:type](#ldataviewtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataView:typeOf](#ldataviewtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:len](#ldatawriterlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:seek](#ldatawriterseek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:tell](#ldatawritertell)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:toBytes](#ldatawritertobytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:type](#ldatawritertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:typeOf](#ldatawritertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeBytes](#ldatawriterwritebytes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeF32LE](#ldatawriterwritef32le)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeF64LE](#ldatawriterwritef64le)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeI16LE](#ldatawriterwritei16le)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeI32LE](#ldatawriterwritei32le)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeI8](#ldatawriterwritei8)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeString](#ldatawriterwritestring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeU16BE](#ldatawriterwriteu16be)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeU16LE](#ldatawriterwriteu16le)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeU32LE](#ldatawriterwriteu32le)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDataWriter:writeU8](#ldatawriterwriteu8)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:capacity](#lringbuffercapacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:clear](#lringbufferclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:isEmpty](#lringbufferisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:isFull](#lringbufferisfull)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:len](#lringbufferlen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:peek](#lringbufferpeek)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:peekNewest](#lringbufferpeeknewest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:pop](#lringbufferpop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:push](#lringbufferpush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:toTable](#lringbuffertotable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:type](#lringbuffertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LRingBuffer:typeOf](#lringbuffertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LByteData Methods](#lbytedata-methods)
+  - [LDataView Methods](#ldataview-methods)
+  - [LDataWriter Methods](#ldatawriter-methods)
+  - [LRingBuffer Methods](#lringbuffer-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -266,6 +58,86 @@ Compression supports LZ4, Zstd, Deflate, and Gzip via `CompressFormat`. Hashing 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `bin_pack.rs`
+
+- Token-based binary packing and unpacking using whitespace-separated format strings
+- Endian-aware serialization of integers, floats, booleans, strings, and raw bytes
+- Coercion helpers that convert between BinValue variants at write time
+- Length-prefixed and null-terminated string support for wire protocols
+- Padding tokens for alignment and fixed-layout binary structures
+- Bounds-checked reads with descriptive underflow error messages
+- Static size measurement for formats without variable-width tokens
+- ByteData output for zero-copy integration with the data module pipeline
+
+### `byte_data.rs`
+
+- Owned mutable byte buffer with indexed read and write access
+- UTF-8 string encoding and lossy decoding from raw bytes
+- Immutable and mutable slice views for zero-copy downstream use
+
+### `compress.rs`
+
+- Multi-codec compression and decompression (deflate, gzip, zlib, lz4)
+- Full-buffer and streaming APIs for both single slices and chunk lists
+- Configurable compression level clamped to valid range (0-9)
+- ChunkReader adapter that flattens multiple borrowed slices into one Read stream
+- Consistent error wrapping with codec-specific context messages
+
+### `data_writer.rs`
+
+- Sequential binary writer with a movable cursor over a growable byte buffer
+- Little-endian and big-endian integer, float, and string write methods
+- Seek support with automatic zero-fill when moving past buffer end
+
+### `dataview.rs`
+
+- Read-only typed accessor over a shared Arc byte buffer
+- Bounds-checked scalar reads for u8, i8, u16, i16, u32, i32, f32, f64
+- Sub-slice views with validated offset and size
+- LuaDataView wrapper for Lua-facing ownership patterns
+
+### `encode.rs`
+
+- Base64 and hexadecimal encoding and decoding for opaque byte payloads
+- Format selection via enum variant parsed from user-facing labels
+- Consistent error wrapping for malformed input
+
+### `hash.rs`
+
+- Cryptographic hash digest computation (MD5, SHA-1, SHA-256, SHA-512)
+- CRC32 checksum for fast integrity checks
+- Hex-encoded string output for all digest algorithms
+
+### `mod.rs`
+
+- Binary packing, unpacking, and struct-style format-string serialization
+- Owned byte buffers, shared data views, and sequential writers
+- Compression codecs (deflate, gzip, zlib, lz4) with stream and chunk APIs
+- Encoding helpers (base64, hex) and hash digests (MD5, SHA, CRC32)
+- Fixed-capacity ring buffer with overwrite-on-full FIFO semantics
+
+### `pack.rs`
+
+- Python struct-style format-string packing and unpacking
+- Single-character format tokens for integers, floats, strings, and padding
+- Endian switching via '<' (little) and '>' (big) prefix characters
+- Length-prefixed ('s') and null-terminated ('z') string support
+- Coercion helpers that widen numeric PackValue variants at write time
+- Bounds-checked reads with per-token underflow error messages
+- Static and dynamic packed-size calculation for buffer pre-allocation
+- ByteData output for integration with the data module pipeline
+
+### `ring_buffer.rs`
+
+- Fixed-capacity circular buffer with oldest-overwrite FIFO semantics
+- Push, pop, peek, and index-based access with O(1) operations
+- Iteration and collection helpers from oldest to newest element
+- Copy-optimized collection for `Clone + Copy` element types
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LByteData` (10 methods) - Exposes byte-buffer inspection and bit editing methods to Lua.
@@ -278,34 +150,18 @@ Compression supports LZ4, Zstd, Deflate, and Gzip via `CompressFormat`. Hashing 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/data.md](../blob/main/docs/specs/data.md)
+- Module-level functions: 22
+- Lua-visible types: 4
+- Total type methods: 50
 
-```lua
-lurek.data.compress(format_str: string, raw_data: string, [level]: integer) -> string -- Compresses a binary string using a named compression format.
-lurek.data.compressChunks(format_str: string, chunks: any, [level]: integer) -> string -- Compresses a string or table of strings as a chunked byte stream.
-lurek.data.crc32(raw_data: string) -> integer -- Computes CRC32 for a binary string.
-lurek.data.decode(format_str: string, encoded: string) -> string -- Decodes a string using a named text encoding format.
-lurek.data.decompress(format_str: string, compressed: string) -> string -- Decompresses a binary string using a named compression format.
-lurek.data.decompressChunks(format_str: string, chunks: any) -> string -- Decompresses a string or table of strings as a chunked byte stream.
-lurek.data.encode(format_str: string, raw_data: string) -> string -- Encodes a binary string using a named text encoding format.
-lurek.data.encodeToml(tbl: table) -> string -- Encodes a Lua table into a TOML document string.
-lurek.data.fromMsgPack(bytes: string) -> LuaValue -- Decodes a structured binary interchange payload back into Lua values.
-lurek.data.getPackedSize(fmt: string, ...: any) -> integer -- Computes the packed byte size for values and a format string.
-lurek.data.hash(algo_str: string, raw_data: string) -> string -- Hashes a binary string with a named algorithm.
-lurek.data.newByteData(value: any) -> LByteData -- Creates ByteData from a size or string.
-lurek.data.newDataView(raw: string, [offset]: integer, [size]: integer) -> LDataView -- Creates a DataView over a binary string slice.
-lurek.data.newRingBuffer(capacity: integer) -> LRingBuffer -- Creates a fixed-capacity ring buffer for Lua values.
-lurek.data.newWriter() -> LDataWriter -- Creates an empty binary data writer.
-lurek.data.pack(fmt: string, ...: any) -> string -- Packs Lua values into a binary string using a format string.
-lurek.data.parseToml(text: string) -> table -- Parses TOML text into Lua tables and scalar values.
-lurek.data.read(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Reads binary values from a byte string using a format string.
--- ... 4 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.data.compress
+### Module-Level Functions
+
+#### lurek.data.compress
 
 #### Definition
 
@@ -342,7 +198,7 @@ do
 end
 ```
 
-### lurek.data.compressChunks
+#### lurek.data.compressChunks
 
 #### Definition
 
@@ -379,7 +235,7 @@ do
 end
 ```
 
-### lurek.data.crc32
+#### lurek.data.crc32
 
 #### Definition
 
@@ -411,7 +267,7 @@ do
 end
 ```
 
-### lurek.data.decode
+#### lurek.data.decode
 
 #### Definition
 
@@ -446,7 +302,7 @@ do
 end
 ```
 
-### lurek.data.decompress
+#### lurek.data.decompress
 
 #### Definition
 
@@ -482,7 +338,7 @@ do
 end
 ```
 
-### lurek.data.decompressChunks
+#### lurek.data.decompressChunks
 
 #### Definition
 
@@ -518,7 +374,7 @@ do
 end
 ```
 
-### lurek.data.encode
+#### lurek.data.encode
 
 #### Definition
 
@@ -552,7 +408,7 @@ do
 end
 ```
 
-### lurek.data.encodeToml
+#### lurek.data.encodeToml
 
 #### Definition
 
@@ -585,7 +441,7 @@ do
 end
 ```
 
-### lurek.data.fromMsgPack
+#### lurek.data.fromMsgPack
 
 #### Definition
 
@@ -619,7 +475,7 @@ do
 end
 ```
 
-### lurek.data.getPackedSize
+#### lurek.data.getPackedSize
 
 #### Definition
 
@@ -653,7 +509,7 @@ do
 end
 ```
 
-### lurek.data.hash
+#### lurek.data.hash
 
 #### Definition
 
@@ -687,7 +543,7 @@ do
 end
 ```
 
-### lurek.data.newByteData
+#### lurek.data.newByteData
 
 #### Definition
 
@@ -719,7 +575,7 @@ do
 end
 ```
 
-### lurek.data.newDataView
+#### lurek.data.newDataView
 
 #### Definition
 
@@ -756,7 +612,7 @@ do
 end
 ```
 
-### lurek.data.newRingBuffer
+#### lurek.data.newRingBuffer
 
 #### Definition
 
@@ -788,7 +644,7 @@ do
 end
 ```
 
-### lurek.data.newWriter
+#### lurek.data.newWriter
 
 #### Definition
 
@@ -815,7 +671,7 @@ do
 end
 ```
 
-### lurek.data.pack
+#### lurek.data.pack
 
 #### Definition
 
@@ -849,7 +705,7 @@ do
 end
 ```
 
-### lurek.data.parseToml
+#### lurek.data.parseToml
 
 #### Definition
 
@@ -882,7 +738,7 @@ do
 end
 ```
 
-### lurek.data.read
+#### lurek.data.read
 
 #### Definition
 
@@ -919,7 +775,7 @@ do
 end
 ```
 
-### lurek.data.size
+#### lurek.data.size
 
 #### Definition
 
@@ -951,7 +807,7 @@ do
 end
 ```
 
-### lurek.data.toMsgPack
+#### lurek.data.toMsgPack
 
 #### Definition
 
@@ -984,7 +840,7 @@ do
 end
 ```
 
-### lurek.data.unpack
+#### lurek.data.unpack
 
 #### Definition
 
@@ -1021,7 +877,7 @@ do
 end
 ```
 
-### lurek.data.write
+#### lurek.data.write
 
 #### Definition
 
@@ -1166,7 +1022,9 @@ end
 
 ## 🔹 Module Methods
 
-### LByteData:clone
+### LByteData Methods
+
+#### LByteData:clone
 
 #### Definition
 
@@ -1195,7 +1053,7 @@ do
 end
 ```
 
-### LByteData:getBit
+#### LByteData:getBit
 
 #### Definition
 
@@ -1230,7 +1088,7 @@ do
 end
 ```
 
-### LByteData:getByte
+#### LByteData:getByte
 
 #### Definition
 
@@ -1262,7 +1120,7 @@ do
 end
 ```
 
-### LByteData:getSize
+#### LByteData:getSize
 
 #### Definition
 
@@ -1289,7 +1147,7 @@ do
 end
 ```
 
-### LByteData:getString
+#### LByteData:getString
 
 #### Definition
 
@@ -1316,7 +1174,7 @@ do
 end
 ```
 
-### LByteData:readBits
+#### LByteData:readBits
 
 #### Definition
 
@@ -1355,7 +1213,7 @@ do
 end
 ```
 
-### LByteData:setBit
+#### LByteData:setBit
 
 #### Definition
 
@@ -1390,7 +1248,7 @@ do
 end
 ```
 
-### LByteData:setByte
+#### LByteData:setByte
 
 #### Definition
 
@@ -1422,7 +1280,7 @@ do
 end
 ```
 
-### LByteData:type
+#### LByteData:type
 
 #### Definition
 
@@ -1449,7 +1307,7 @@ do
 end
 ```
 
-### LByteData:typeOf
+#### LByteData:typeOf
 
 #### Definition
 
@@ -1481,7 +1339,9 @@ do
 end
 ```
 
-### LDataView:getDouble
+### LDataView Methods
+
+#### LDataView:getDouble
 
 #### Definition
 
@@ -1514,7 +1374,7 @@ do
 end
 ```
 
-### LDataView:getFloat
+#### LDataView:getFloat
 
 #### Definition
 
@@ -1547,7 +1407,7 @@ do
 end
 ```
 
-### LDataView:getInt16
+#### LDataView:getInt16
 
 #### Definition
 
@@ -1580,7 +1440,7 @@ do
 end
 ```
 
-### LDataView:getInt32
+#### LDataView:getInt32
 
 #### Definition
 
@@ -1613,7 +1473,7 @@ do
 end
 ```
 
-### LDataView:getInt8
+#### LDataView:getInt8
 
 #### Definition
 
@@ -1646,7 +1506,7 @@ do
 end
 ```
 
-### LDataView:getSize
+#### LDataView:getSize
 
 #### Definition
 
@@ -1674,7 +1534,7 @@ do
 end
 ```
 
-### LDataView:getUInt16
+#### LDataView:getUInt16
 
 #### Definition
 
@@ -1707,7 +1567,7 @@ do
 end
 ```
 
-### LDataView:getUInt32
+#### LDataView:getUInt32
 
 #### Definition
 
@@ -1740,7 +1600,7 @@ do
 end
 ```
 
-### LDataView:getUInt8
+#### LDataView:getUInt8
 
 #### Definition
 
@@ -1773,7 +1633,7 @@ do
 end
 ```
 
-### LDataView:type
+#### LDataView:type
 
 #### Definition
 
@@ -1800,7 +1660,7 @@ do
 end
 ```
 
-### LDataView:typeOf
+#### LDataView:typeOf
 
 #### Definition
 
@@ -1832,7 +1692,9 @@ do
 end
 ```
 
-### LDataWriter:len
+### LDataWriter Methods
+
+#### LDataWriter:len
 
 #### Definition
 
@@ -1861,7 +1723,7 @@ do
 end
 ```
 
-### LDataWriter:seek
+#### LDataWriter:seek
 
 #### Definition
 
@@ -1934,7 +1796,7 @@ do
     local bd = lurek.data.newByteData(32)
 ```
 
-### LDataWriter:tell
+#### LDataWriter:tell
 
 #### Definition
 
@@ -1963,7 +1825,7 @@ do
 end
 ```
 
-### LDataWriter:toBytes
+#### LDataWriter:toBytes
 
 #### Definition
 
@@ -1993,7 +1855,7 @@ do
 end
 ```
 
-### LDataWriter:type
+#### LDataWriter:type
 
 #### Definition
 
@@ -2020,7 +1882,7 @@ do
 end
 ```
 
-### LDataWriter:typeOf
+#### LDataWriter:typeOf
 
 #### Definition
 
@@ -2052,7 +1914,7 @@ do
 end
 ```
 
-### LDataWriter:writeBytes
+#### LDataWriter:writeBytes
 
 #### Definition
 
@@ -2082,7 +1944,7 @@ do
 end
 ```
 
-### LDataWriter:writeF32LE
+#### LDataWriter:writeF32LE
 
 #### Definition
 
@@ -2112,7 +1974,7 @@ do
 end
 ```
 
-### LDataWriter:writeF64LE
+#### LDataWriter:writeF64LE
 
 #### Definition
 
@@ -2142,7 +2004,7 @@ do
 end
 ```
 
-### LDataWriter:writeI16LE
+#### LDataWriter:writeI16LE
 
 #### Definition
 
@@ -2172,7 +2034,7 @@ do
 end
 ```
 
-### LDataWriter:writeI32LE
+#### LDataWriter:writeI32LE
 
 #### Definition
 
@@ -2202,7 +2064,7 @@ do
 end
 ```
 
-### LDataWriter:writeI8
+#### LDataWriter:writeI8
 
 #### Definition
 
@@ -2232,7 +2094,7 @@ do
 end
 ```
 
-### LDataWriter:writeString
+#### LDataWriter:writeString
 
 #### Definition
 
@@ -2262,7 +2124,7 @@ do
 end
 ```
 
-### LDataWriter:writeU16BE
+#### LDataWriter:writeU16BE
 
 #### Definition
 
@@ -2292,7 +2154,7 @@ do
 end
 ```
 
-### LDataWriter:writeU16LE
+#### LDataWriter:writeU16LE
 
 #### Definition
 
@@ -2322,7 +2184,7 @@ do
 end
 ```
 
-### LDataWriter:writeU32LE
+#### LDataWriter:writeU32LE
 
 #### Definition
 
@@ -2352,7 +2214,7 @@ do
 end
 ```
 
-### LDataWriter:writeU8
+#### LDataWriter:writeU8
 
 #### Definition
 
@@ -2382,7 +2244,9 @@ do
 end
 ```
 
-### LRingBuffer:capacity
+### LRingBuffer Methods
+
+#### LRingBuffer:capacity
 
 #### Definition
 
@@ -2409,7 +2273,7 @@ do
 end
 ```
 
-### LRingBuffer:clear
+#### LRingBuffer:clear
 
 #### Definition
 
@@ -2436,7 +2300,7 @@ do
 end
 ```
 
-### LRingBuffer:isEmpty
+#### LRingBuffer:isEmpty
 
 #### Definition
 
@@ -2463,7 +2327,7 @@ do
 end
 ```
 
-### LRingBuffer:isFull
+#### LRingBuffer:isFull
 
 #### Definition
 
@@ -2492,7 +2356,7 @@ do
 end
 ```
 
-### LRingBuffer:len
+#### LRingBuffer:len
 
 #### Definition
 
@@ -2521,7 +2385,7 @@ do
 end
 ```
 
-### LRingBuffer:peek
+#### LRingBuffer:peek
 
 #### Definition
 
@@ -2550,7 +2414,7 @@ do
 end
 ```
 
-### LRingBuffer:peekNewest
+#### LRingBuffer:peekNewest
 
 #### Definition
 
@@ -2579,7 +2443,7 @@ do
 end
 ```
 
-### LRingBuffer:pop
+#### LRingBuffer:pop
 
 #### Definition
 
@@ -2609,7 +2473,7 @@ do
 end
 ```
 
-### LRingBuffer:push
+#### LRingBuffer:push
 
 #### Definition
 
@@ -2644,7 +2508,7 @@ do
 end
 ```
 
-### LRingBuffer:toTable
+#### LRingBuffer:toTable
 
 #### Definition
 
@@ -2674,7 +2538,7 @@ do
 end
 ```
 
-### LRingBuffer:type
+#### LRingBuffer:type
 
 #### Definition
 
@@ -2701,7 +2565,7 @@ do
 end
 ```
 
-### LRingBuffer:typeOf
+#### LRingBuffer:typeOf
 
 #### Definition
 

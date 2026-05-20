@@ -10,329 +10,29 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [config.rs](#configrs)
+  - [emission.rs](#emissionrs)
+  - [emitter.rs](#emitterrs)
+  - [math.rs](#mathrs)
+  - [mod.rs](#modrs)
+  - [particle.rs](#particlers)
+  - [physics_collision.rs](#physicscollisionrs)
+  - [presets.rs](#presetsrs)
+  - [render.rs](#renderrs)
+  - [shapes.rs](#shapesrs)
+  - [trail.rs](#trailrs)
+  - [visualization.rs](#visualizationrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.particle.fromTOML](#lurekparticlefromtoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.particle.newPreset](#lurekparticlenewpreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.particle.newSystem](#lurekparticlenewsystem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.particle.newTrail](#lurekparticlenewtrail)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LParticleSystem](#lparticlesystem)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTrail](#ltrail)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LParticleSystem:addAttractor](#lparticlesystemaddattractor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:addSubEmitter](#lparticlesystemaddsubemitter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:addSubSystem](#lparticlesystemaddsubsystem)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:clearAttractors](#lparticlesystemclearattractors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:clearBounds](#lparticlesystemclearbounds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:clearCollidesWithPhysics](#lparticlesystemclearcollideswithphysics)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:clone](#lparticlesystemclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:count](#lparticlesystemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:drawToImage](#lparticlesystemdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:emit](#lparticlesystememit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getAttractorCount](#lparticlesystemgetattractorcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getBufferSize](#lparticlesystemgetbuffersize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getColors](#lparticlesystemgetcolors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getCount](#lparticlesystemgetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getDirection](#lparticlesystemgetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getEmissionArea](#lparticlesystemgetemissionarea)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getEmissionRate](#lparticlesystemgetemissionrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getEmitterLifetime](#lparticlesystemgetemitterlifetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getFlipbook](#lparticlesystemgetflipbook)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getGravity](#lparticlesystemgetgravity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getInsertMode](#lparticlesystemgetinsertmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getLinearAcceleration](#lparticlesystemgetlinearacceleration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getLinearDamping](#lparticlesystemgetlineardamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getOffset](#lparticlesystemgetoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getParticleLifetime](#lparticlesystemgetparticlelifetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getPosition](#lparticlesystemgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getRadialAcceleration](#lparticlesystemgetradialacceleration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getRotation](#lparticlesystemgetrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getShape](#lparticlesystemgetshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getSizes](#lparticlesystemgetsizes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getSizeVariation](#lparticlesystemgetsizevariation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getSpeed](#lparticlesystemgetspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getSpin](#lparticlesystemgetspin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getSpinVariation](#lparticlesystemgetspinvariation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getSpread](#lparticlesystemgetspread)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:getTangentialAcceleration](#lparticlesystemgettangentialacceleration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:hasCollidesWithPhysics](#lparticlesystemhascollideswithphysics)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:hasRelativeRotation](#lparticlesystemhasrelativerotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:isActive](#lparticlesystemisactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:isEmpty](#lparticlesystemisempty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:isFull](#lparticlesystemisfull)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:isPaused](#lparticlesystemispaused)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:isStopped](#lparticlesystemisstopped)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:moveTo](#lparticlesystemmoveto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:pause](#lparticlesystempause)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:release](#lparticlesystemrelease)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:render](#lparticlesystemrender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:reset](#lparticlesystemreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:resume](#lparticlesystemresume)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setBounds](#lparticlesystemsetbounds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setBufferSize](#lparticlesystemsetbuffersize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setCollidesWithPhysics](#lparticlesystemsetcollideswithphysics)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setColors](#lparticlesystemsetcolors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setCustomEmissionShape](#lparticlesystemsetcustomemissionshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setDirection](#lparticlesystemsetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setEmissionArea](#lparticlesystemsetemissionarea)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setEmissionRate](#lparticlesystemsetemissionrate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setEmitterLifetime](#lparticlesystemsetemitterlifetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setFlipbook](#lparticlesystemsetflipbook)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setGravity](#lparticlesystemsetgravity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setInsertMode](#lparticlesystemsetinsertmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setLinearAcceleration](#lparticlesystemsetlinearacceleration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setLinearDamping](#lparticlesystemsetlineardamping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setOffset](#lparticlesystemsetoffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setOnDeathBatch](#lparticlesystemsetondeathbatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setParticleLifetime](#lparticlesystemsetparticlelifetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setPosition](#lparticlesystemsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setRadialAcceleration](#lparticlesystemsetradialacceleration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setRelativeRotation](#lparticlesystemsetrelativerotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setRotation](#lparticlesystemsetrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setShape](#lparticlesystemsetshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setSizes](#lparticlesystemsetsizes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setSizeVariation](#lparticlesystemsetsizevariation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setSpeed](#lparticlesystemsetspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setSpin](#lparticlesystemsetspin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setSpinVariation](#lparticlesystemsetspinvariation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setSpread](#lparticlesystemsetspread)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:setTangentialAcceleration](#lparticlesystemsettangentialacceleration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:start](#lparticlesystemstart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:stop](#lparticlesystemstop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:subSystemCount](#lparticlesystemsubsystemcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:toImage](#lparticlesystemtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:type](#lparticlesystemtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:typeOf](#lparticlesystemtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:update](#lparticlesystemupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LParticleSystem:warmUp](#lparticlesystemwarmup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:clear](#ltrailclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:drawToImage](#ltraildrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:getLifetime](#ltrailgetlifetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:getPointCount](#ltrailgetpointcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:getWidth](#ltrailgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:pushPoint](#ltrailpushpoint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:setHeadColor](#ltrailsetheadcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:setLifetime](#ltrailsetlifetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:setMinDistance](#ltrailsetmindistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:setTailColor](#ltrailsettailcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:setWidth](#ltrailsetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:type](#ltrailtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:typeOf](#ltrailtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTrail:update](#ltrailupdate)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LParticleSystem Methods](#lparticlesystem-methods)
+  - [LTrail Methods](#ltrail-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -356,6 +56,96 @@ Trails render connected segments behind moving particles. Attractors and force z
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `config.rs`
+
+- Emitter configuration struct (`ParticleConfig`) with all tunable parameters serialisable to TOML.
+- Enums controlling spawn distribution, insertion order, operating state, and coordinate mode.
+- Geometric emission shapes: point, circle, rectangle, ring, line, cone, star, spiral, and custom callback.
+- Helper types for point attractors and axis-aligned bounce boundaries.
+- Relative-mode and area-distribution strategies for world-space vs emitter-attached particles.
+
+### `emission.rs`
+
+- Spawn-offset sampling for particle emission shapes and area distributions.
+- Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes.
+- Handles area-angle rotation for distribution-based offsets.
+
+### `emitter.rs`
+
+- Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
+- Per-frame integration: gravity, radial/tangential acceleration, linear damping, drag, orbit, and turbulence.
+- Point-attractor influence applied per particle each frame with distance falloff.
+- Axis-aligned bounce boundaries that reflect particles with configurable restitution.
+- Continuous emission via fractional accumulator, burst spawning, and three insert-order modes.
+- Child sub-system spawning on particle death with configurable burst count and config clone.
+- State machine: Active, Paused, Stopped with lifetime-based auto-stop.
+- Render command building: shape mapping, color/alpha/size interpolation, texture quads, and animated frames.
+- Warm-up simulation pre-populates the pool by stepping in fixed 50 ms increments.
+- Custom emission shape callback support via pending offset indices drained by the Lua bridge.
+- Death event queue exposing world-space position and velocity for gameplay hooks.
+
+### `math.rs`
+
+- Keyframe interpolation for particle size, colour, and alpha over normalised lifetime.
+- Uniform and normal random number helpers for emission variance.
+- All evaluators clamp `t` to `[0.0, 1.0]` and return sensible defaults on empty input.
+
+### `mod.rs`
+
+- Particle emitter lifecycle: spawn, simulate, and recycle pooled particles each frame.
+- Configurable emission shapes, rates, bursts, and per-particle property ranges (colour, size, alpha).
+- Physics collision response, trail ribbons, spawn-shape geometry, and preset constructors.
+- Render integration translating live particle state into batched draw commands.
+
+### `particle.rs`
+
+- Per-particle runtime state: position, velocity, lifetime, rotation, and acceleration.
+- Holds spawn-time origin for radial/tangential force calculations.
+- Carries a shape seed for deterministic procedural polygon generation.
+
+### `physics_collision.rs`
+
+- Bounce particles off rapier colliders using AABB overlap probes.
+- Reflect velocity with a configurable restitution coefficient.
+- Operates per-frame on all live particles in a system.
+
+### `presets.rs`
+
+- Ready-made `ParticleConfig` constructors for common visual effects (fire, smoke, rain, snow, sparks).
+- Each preset returns a standalone config with tuned lifetime, speed, color ramp, and shape.
+- Designed for one-call usage; callers can override individual fields after construction.
+
+### `render.rs`
+
+- Render-command generation for particle systems and trails.
+- Expansion of batched `DrawParticleSystem` into individual textured draw calls.
+- Untextured particles remain batched for efficient rendering.
+
+### `shapes.rs`
+
+- Geometric shape primitives controlling how individual particles are rendered.
+- Includes simple fills (square, circle, triangle), directional shapes (spark, ray, capsule), and composite outlines (ring).
+- Each variant may carry inline parameters (edge count, aspect ratio, thickness).
+
+### `trail.rs`
+
+- Ribbon trail built from a deque of aged world-space points.
+- Automatic point retirement when age exceeds configurable lifetime.
+- Width tapering and head-to-tail colour interpolation.
+- Render output as triangle-strip render commands or CPU-rasterised image.
+
+### `visualization.rs`
+
+- Particle visualization helpers that render live `ParticleSystem` state to `ImageData` bitmaps.
+- Generic renderer using colour/size/alpha keyframes from the emitter configuration.
+- Themed preset renderers for explosions, rain, and spark-trail effects.
+- Compositing support: overlay particles onto an existing background or paint in-place.
+- Bar-chart lifecycle diagram showing particle count over time steps.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LParticleSystem` (86 methods) - Lua-side handle for a particle system stored in shared runtime state.
@@ -366,19 +156,18 @@ Trails render connected segments behind moving particles. Attractors and force z
 ## 📖 API Overview
 
 - Source spec: [docs/specs/particle.md](../blob/main/docs/specs/particle.md)
+- Module-level functions: 4
+- Lua-visible types: 2
+- Total type methods: 100
 
-```lua
-lurek.particle.fromTOML(path: string) -> LParticleSystem -- Creates a particle system from a TOML config file.
-lurek.particle.newPreset(name: string) -> LParticleSystem -- Creates a particle system from a named preset.
-lurek.particle.newSystem([config]: table) -> LParticleSystem -- Creates a particle system from an optional config table.
-lurek.particle.newTrail(lifetime: number, start_width: number) -> LTrail -- Creates a trail effect. This function is exposed to Lua scripts.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.particle.fromTOML
+### Module-Level Functions
+
+#### lurek.particle.fromTOML
 
 #### Definition
 
@@ -411,7 +200,7 @@ do
 end
 ```
 
-### lurek.particle.newPreset
+#### lurek.particle.newPreset
 
 #### Definition
 
@@ -444,7 +233,7 @@ do
 end
 ```
 
-### lurek.particle.newSystem
+#### lurek.particle.newSystem
 
 #### Definition
 
@@ -477,7 +266,7 @@ do
 end
 ```
 
-### lurek.particle.newTrail
+#### lurek.particle.newTrail
 
 #### Definition
 
@@ -576,7 +365,9 @@ end
 
 ## 🔹 Module Methods
 
-### LParticleSystem:addAttractor
+### LParticleSystem Methods
+
+#### LParticleSystem:addAttractor
 
 #### Definition
 
@@ -614,7 +405,7 @@ do
 end
 ```
 
-### LParticleSystem:addSubEmitter
+#### LParticleSystem:addSubEmitter
 
 #### Definition
 
@@ -648,7 +439,7 @@ do
 end
 ```
 
-### LParticleSystem:addSubSystem
+#### LParticleSystem:addSubSystem
 
 #### Definition
 
@@ -683,7 +474,7 @@ do
 end
 ```
 
-### LParticleSystem:clearAttractors
+#### LParticleSystem:clearAttractors
 
 #### Definition
 
@@ -710,7 +501,7 @@ do
 end
 ```
 
-### LParticleSystem:clearBounds
+#### LParticleSystem:clearBounds
 
 #### Definition
 
@@ -737,7 +528,7 @@ do
 end
 ```
 
-### LParticleSystem:clearCollidesWithPhysics
+#### LParticleSystem:clearCollidesWithPhysics
 
 #### Definition
 
@@ -764,7 +555,7 @@ do
 end
 ```
 
-### LParticleSystem:clone
+#### LParticleSystem:clone
 
 #### Definition
 
@@ -794,7 +585,7 @@ do
 end
 ```
 
-### LParticleSystem:count
+#### LParticleSystem:count
 
 #### Definition
 
@@ -824,7 +615,7 @@ do
 end
 ```
 
-### LParticleSystem:drawToImage
+#### LParticleSystem:drawToImage
 
 #### Definition
 
@@ -861,7 +652,7 @@ do
 end
 ```
 
-### LParticleSystem:emit
+#### LParticleSystem:emit
 
 #### Definition
 
@@ -893,7 +684,7 @@ do
 end
 ```
 
-### LParticleSystem:getAttractorCount
+#### LParticleSystem:getAttractorCount
 
 #### Definition
 
@@ -923,7 +714,7 @@ do
 end
 ```
 
-### LParticleSystem:getBufferSize
+#### LParticleSystem:getBufferSize
 
 #### Definition
 
@@ -952,7 +743,7 @@ do
 end
 ```
 
-### LParticleSystem:getColors
+#### LParticleSystem:getColors
 
 #### Definition
 
@@ -980,7 +771,7 @@ do
 end
 ```
 
-### LParticleSystem:getCount
+#### LParticleSystem:getCount
 
 #### Definition
 
@@ -1010,7 +801,7 @@ do
 end
 ```
 
-### LParticleSystem:getDirection
+#### LParticleSystem:getDirection
 
 #### Definition
 
@@ -1039,7 +830,7 @@ do
 end
 ```
 
-### LParticleSystem:getEmissionArea
+#### LParticleSystem:getEmissionArea
 
 #### Definition
 
@@ -1071,7 +862,7 @@ do
 end
 ```
 
-### LParticleSystem:getEmissionRate
+#### LParticleSystem:getEmissionRate
 
 #### Definition
 
@@ -1100,7 +891,7 @@ do
 end
 ```
 
-### LParticleSystem:getEmitterLifetime
+#### LParticleSystem:getEmitterLifetime
 
 #### Definition
 
@@ -1129,7 +920,7 @@ do
 end
 ```
 
-### LParticleSystem:getFlipbook
+#### LParticleSystem:getFlipbook
 
 #### Definition
 
@@ -1161,7 +952,7 @@ do
 end
 ```
 
-### LParticleSystem:getGravity
+#### LParticleSystem:getGravity
 
 #### Definition
 
@@ -1192,7 +983,7 @@ do
 end
 ```
 
-### LParticleSystem:getInsertMode
+#### LParticleSystem:getInsertMode
 
 #### Definition
 
@@ -1222,7 +1013,7 @@ do
 end
 ```
 
-### LParticleSystem:getLinearAcceleration
+#### LParticleSystem:getLinearAcceleration
 
 #### Definition
 
@@ -1255,7 +1046,7 @@ do
 end
 ```
 
-### LParticleSystem:getLinearDamping
+#### LParticleSystem:getLinearDamping
 
 #### Definition
 
@@ -1286,7 +1077,7 @@ do
 end
 ```
 
-### LParticleSystem:getOffset
+#### LParticleSystem:getOffset
 
 #### Definition
 
@@ -1317,7 +1108,7 @@ do
 end
 ```
 
-### LParticleSystem:getParticleLifetime
+#### LParticleSystem:getParticleLifetime
 
 #### Definition
 
@@ -1348,7 +1139,7 @@ do
 end
 ```
 
-### LParticleSystem:getPosition
+#### LParticleSystem:getPosition
 
 #### Definition
 
@@ -1379,7 +1170,7 @@ do
 end
 ```
 
-### LParticleSystem:getRadialAcceleration
+#### LParticleSystem:getRadialAcceleration
 
 #### Definition
 
@@ -1410,7 +1201,7 @@ do
 end
 ```
 
-### LParticleSystem:getRotation
+#### LParticleSystem:getRotation
 
 #### Definition
 
@@ -1441,7 +1232,7 @@ do
 end
 ```
 
-### LParticleSystem:getShape
+#### LParticleSystem:getShape
 
 #### Definition
 
@@ -1470,7 +1261,7 @@ do
 end
 ```
 
-### LParticleSystem:getSizes
+#### LParticleSystem:getSizes
 
 #### Definition
 
@@ -1500,7 +1291,7 @@ do
 end
 ```
 
-### LParticleSystem:getSizeVariation
+#### LParticleSystem:getSizeVariation
 
 #### Definition
 
@@ -1530,7 +1321,7 @@ do
 end
 ```
 
-### LParticleSystem:getSpeed
+#### LParticleSystem:getSpeed
 
 #### Definition
 
@@ -1561,7 +1352,7 @@ do
 end
 ```
 
-### LParticleSystem:getSpin
+#### LParticleSystem:getSpin
 
 #### Definition
 
@@ -1592,7 +1383,7 @@ do
 end
 ```
 
-### LParticleSystem:getSpinVariation
+#### LParticleSystem:getSpinVariation
 
 #### Definition
 
@@ -1622,7 +1413,7 @@ do
 end
 ```
 
-### LParticleSystem:getSpread
+#### LParticleSystem:getSpread
 
 #### Definition
 
@@ -1651,7 +1442,7 @@ do
 end
 ```
 
-### LParticleSystem:getTangentialAcceleration
+#### LParticleSystem:getTangentialAcceleration
 
 #### Definition
 
@@ -1682,7 +1473,7 @@ do
 end
 ```
 
-### LParticleSystem:hasCollidesWithPhysics
+#### LParticleSystem:hasCollidesWithPhysics
 
 #### Definition
 
@@ -1712,7 +1503,7 @@ do
 end
 ```
 
-### LParticleSystem:hasRelativeRotation
+#### LParticleSystem:hasRelativeRotation
 
 #### Definition
 
@@ -1742,7 +1533,7 @@ do
 end
 ```
 
-### LParticleSystem:isActive
+#### LParticleSystem:isActive
 
 #### Definition
 
@@ -1772,7 +1563,7 @@ do
 end
 ```
 
-### LParticleSystem:isEmpty
+#### LParticleSystem:isEmpty
 
 #### Definition
 
@@ -1802,7 +1593,7 @@ do
 end
 ```
 
-### LParticleSystem:isFull
+#### LParticleSystem:isFull
 
 #### Definition
 
@@ -1832,7 +1623,7 @@ do
 end
 ```
 
-### LParticleSystem:isPaused
+#### LParticleSystem:isPaused
 
 #### Definition
 
@@ -1862,7 +1653,7 @@ do
 end
 ```
 
-### LParticleSystem:isStopped
+#### LParticleSystem:isStopped
 
 #### Definition
 
@@ -1892,7 +1683,7 @@ do
 end
 ```
 
-### LParticleSystem:moveTo
+#### LParticleSystem:moveTo
 
 #### Definition
 
@@ -1926,7 +1717,7 @@ do
 end
 ```
 
-### LParticleSystem:pause
+#### LParticleSystem:pause
 
 #### Definition
 
@@ -1953,7 +1744,7 @@ do
 end
 ```
 
-### LParticleSystem:release
+#### LParticleSystem:release
 
 #### Definition
 
@@ -1983,7 +1774,7 @@ do
 end
 ```
 
-### LParticleSystem:render
+#### LParticleSystem:render
 
 #### Definition
 
@@ -2017,7 +1808,7 @@ do
 end
 ```
 
-### LParticleSystem:reset
+#### LParticleSystem:reset
 
 #### Definition
 
@@ -2044,7 +1835,7 @@ do
 end
 ```
 
-### LParticleSystem:resume
+#### LParticleSystem:resume
 
 #### Definition
 
@@ -2071,7 +1862,7 @@ do
 end
 ```
 
-### LParticleSystem:setBounds
+#### LParticleSystem:setBounds
 
 #### Definition
 
@@ -2111,7 +1902,7 @@ do
 end
 ```
 
-### LParticleSystem:setBufferSize
+#### LParticleSystem:setBufferSize
 
 #### Definition
 
@@ -2142,7 +1933,7 @@ do
 end
 ```
 
-### LParticleSystem:setCollidesWithPhysics
+#### LParticleSystem:setCollidesWithPhysics
 
 #### Definition
 
@@ -2178,7 +1969,7 @@ do
 end
 ```
 
-### LParticleSystem:setColors
+#### LParticleSystem:setColors
 
 #### Definition
 
@@ -2208,7 +1999,7 @@ do
 end
 ```
 
-### LParticleSystem:setCustomEmissionShape
+#### LParticleSystem:setCustomEmissionShape
 
 #### Definition
 
@@ -2239,7 +2030,7 @@ do
 end
 ```
 
-### LParticleSystem:setDirection
+#### LParticleSystem:setDirection
 
 #### Definition
 
@@ -2270,7 +2061,7 @@ do
 end
 ```
 
-### LParticleSystem:setEmissionArea
+#### LParticleSystem:setEmissionArea
 
 #### Definition
 
@@ -2310,7 +2101,7 @@ do
 end
 ```
 
-### LParticleSystem:setEmissionRate
+#### LParticleSystem:setEmissionRate
 
 #### Definition
 
@@ -2341,7 +2132,7 @@ do
 end
 ```
 
-### LParticleSystem:setEmitterLifetime
+#### LParticleSystem:setEmitterLifetime
 
 #### Definition
 
@@ -2372,7 +2163,7 @@ do
 end
 ```
 
-### LParticleSystem:setFlipbook
+#### LParticleSystem:setFlipbook
 
 #### Definition
 
@@ -2408,7 +2199,7 @@ do
 end
 ```
 
-### LParticleSystem:setGravity
+#### LParticleSystem:setGravity
 
 #### Definition
 
@@ -2442,7 +2233,7 @@ do
 end
 ```
 
-### LParticleSystem:setInsertMode
+#### LParticleSystem:setInsertMode
 
 #### Definition
 
@@ -2474,7 +2265,7 @@ do
 end
 ```
 
-### LParticleSystem:setLinearAcceleration
+#### LParticleSystem:setLinearAcceleration
 
 #### Definition
 
@@ -2512,7 +2303,7 @@ do
 end
 ```
 
-### LParticleSystem:setLinearDamping
+#### LParticleSystem:setLinearDamping
 
 #### Definition
 
@@ -2546,7 +2337,7 @@ do
 end
 ```
 
-### LParticleSystem:setOffset
+#### LParticleSystem:setOffset
 
 #### Definition
 
@@ -2580,7 +2371,7 @@ do
 end
 ```
 
-### LParticleSystem:setOnDeathBatch
+#### LParticleSystem:setOnDeathBatch
 
 #### Definition
 
@@ -2612,7 +2403,7 @@ do
 end
 ```
 
-### LParticleSystem:setParticleLifetime
+#### LParticleSystem:setParticleLifetime
 
 #### Definition
 
@@ -2646,7 +2437,7 @@ do
 end
 ```
 
-### LParticleSystem:setPosition
+#### LParticleSystem:setPosition
 
 #### Definition
 
@@ -2679,7 +2470,7 @@ do
 end
 ```
 
-### LParticleSystem:setRadialAcceleration
+#### LParticleSystem:setRadialAcceleration
 
 #### Definition
 
@@ -2713,7 +2504,7 @@ do
 end
 ```
 
-### LParticleSystem:setRelativeRotation
+#### LParticleSystem:setRelativeRotation
 
 #### Definition
 
@@ -2745,7 +2536,7 @@ do
 end
 ```
 
-### LParticleSystem:setRotation
+#### LParticleSystem:setRotation
 
 #### Definition
 
@@ -2779,7 +2570,7 @@ do
 end
 ```
 
-### LParticleSystem:setShape
+#### LParticleSystem:setShape
 
 #### Definition
 
@@ -2810,7 +2601,7 @@ do
 end
 ```
 
-### LParticleSystem:setSizes
+#### LParticleSystem:setSizes
 
 #### Definition
 
@@ -2842,7 +2633,7 @@ do
 end
 ```
 
-### LParticleSystem:setSizeVariation
+#### LParticleSystem:setSizeVariation
 
 #### Definition
 
@@ -2874,7 +2665,7 @@ do
 end
 ```
 
-### LParticleSystem:setSpeed
+#### LParticleSystem:setSpeed
 
 #### Definition
 
@@ -2908,7 +2699,7 @@ do
 end
 ```
 
-### LParticleSystem:setSpin
+#### LParticleSystem:setSpin
 
 #### Definition
 
@@ -2942,7 +2733,7 @@ do
 end
 ```
 
-### LParticleSystem:setSpinVariation
+#### LParticleSystem:setSpinVariation
 
 #### Definition
 
@@ -2974,7 +2765,7 @@ do
 end
 ```
 
-### LParticleSystem:setSpread
+#### LParticleSystem:setSpread
 
 #### Definition
 
@@ -3005,7 +2796,7 @@ do
 end
 ```
 
-### LParticleSystem:setTangentialAcceleration
+#### LParticleSystem:setTangentialAcceleration
 
 #### Definition
 
@@ -3039,7 +2830,7 @@ do
 end
 ```
 
-### LParticleSystem:start
+#### LParticleSystem:start
 
 #### Definition
 
@@ -3066,7 +2857,7 @@ do
 end
 ```
 
-### LParticleSystem:stop
+#### LParticleSystem:stop
 
 #### Definition
 
@@ -3093,7 +2884,7 @@ do
 end
 ```
 
-### LParticleSystem:subSystemCount
+#### LParticleSystem:subSystemCount
 
 #### Definition
 
@@ -3123,7 +2914,7 @@ do
 end
 ```
 
-### LParticleSystem:toImage
+#### LParticleSystem:toImage
 
 #### Definition
 
@@ -3160,7 +2951,7 @@ do
 end
 ```
 
-### LParticleSystem:type
+#### LParticleSystem:type
 
 #### Definition
 
@@ -3190,7 +2981,7 @@ do
 end
 ```
 
-### LParticleSystem:typeOf
+#### LParticleSystem:typeOf
 
 #### Definition
 
@@ -3225,7 +3016,7 @@ do
 end
 ```
 
-### LParticleSystem:update
+#### LParticleSystem:update
 
 #### Definition
 
@@ -3257,7 +3048,7 @@ do
 end
 ```
 
-### LParticleSystem:warmUp
+#### LParticleSystem:warmUp
 
 #### Definition
 
@@ -3289,7 +3080,9 @@ do
 end
 ```
 
-### LTrail:clear
+### LTrail Methods
+
+#### LTrail:clear
 
 #### Definition
 
@@ -3316,7 +3109,7 @@ do
 end
 ```
 
-### LTrail:drawToImage
+#### LTrail:drawToImage
 
 #### Definition
 
@@ -3353,7 +3146,7 @@ do
 end
 ```
 
-### LTrail:getLifetime
+#### LTrail:getLifetime
 
 #### Definition
 
@@ -3383,7 +3176,7 @@ do
 end
 ```
 
-### LTrail:getPointCount
+#### LTrail:getPointCount
 
 #### Definition
 
@@ -3413,7 +3206,7 @@ do
 end
 ```
 
-### LTrail:getWidth
+#### LTrail:getWidth
 
 #### Definition
 
@@ -3444,7 +3237,7 @@ do
 end
 ```
 
-### LTrail:pushPoint
+#### LTrail:pushPoint
 
 #### Definition
 
@@ -3478,7 +3271,7 @@ do
 end
 ```
 
-### LTrail:setHeadColor
+#### LTrail:setHeadColor
 
 #### Definition
 
@@ -3516,7 +3309,7 @@ do
 end
 ```
 
-### LTrail:setLifetime
+#### LTrail:setLifetime
 
 #### Definition
 
@@ -3548,7 +3341,7 @@ do
 end
 ```
 
-### LTrail:setMinDistance
+#### LTrail:setMinDistance
 
 #### Definition
 
@@ -3580,7 +3373,7 @@ do
 end
 ```
 
-### LTrail:setTailColor
+#### LTrail:setTailColor
 
 #### Definition
 
@@ -3618,7 +3411,7 @@ do
 end
 ```
 
-### LTrail:setWidth
+#### LTrail:setWidth
 
 #### Definition
 
@@ -3652,7 +3445,7 @@ do
 end
 ```
 
-### LTrail:type
+#### LTrail:type
 
 #### Definition
 
@@ -3679,7 +3472,7 @@ do
 end
 ```
 
-### LTrail:typeOf
+#### LTrail:typeOf
 
 #### Definition
 
@@ -3714,7 +3507,7 @@ do
 end
 ```
 
-### LTrail:update
+#### LTrail:update
 
 #### Definition
 

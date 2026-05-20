@@ -10,611 +10,47 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [autotile_sheet.rs](#autotilesheetrs)
+  - [chunk.rs](#chunkrs)
+  - [coords.rs](#coordsrs)
+  - [isomap.rs](#isomaprs)
+  - [large_map_renderer.rs](#largemaprendererrs)
+  - [ldtk.rs](#ldtkrs)
+  - [mapgen.rs](#mapgenrs)
+  - [mod.rs](#modrs)
+  - [polygon_map.rs](#polygonmaprs)
+  - [render.rs](#renderrs)
+  - [tile_walker.rs](#tilewalkerrs)
+  - [tilemap.rs](#tilemaprs)
+  - [tileset.rs](#tilesetrs)
+  - [tmx.rs](#tmxrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.tilemap.fromLDtk](#lurektilemapfromldtk)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.fromScreenHex](#lurektilemapfromscreenhex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.fromScreenIso](#lurektilemapfromscreeniso)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexArea](#lurektilemaphexarea)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexDistance](#lurektilemaphexdistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexLine](#lurektilemaphexline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexNeighbors](#lurektilemaphexneighbors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexReflect](#lurektilemaphexreflect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexRing](#lurektilemaphexring)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexRotate](#lurektilemaphexrotate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexRound](#lurektilemaphexround)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.hexSpiral](#lurektilemaphexspiral)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.isoDirectionFromAngle](#lurektilemapisodirectionfromangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.isoDirectionName](#lurektilemapisodirectionname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.isoRotate](#lurektilemapisorotate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.loadTMX](#lurektilemaploadtmx)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newAutoTileSheet](#lurektilemapnewautotilesheet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newChunkMap](#lurektilemapnewchunkmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newIsoMap](#lurektilemapnewisomap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newLargeMapRenderer](#lurektilemapnewlargemaprenderer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newMapBlock](#lurektilemapnewmapblock)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newMapGen](#lurektilemapnewmapgen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newMapGroup](#lurektilemapnewmapgroup)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newMapScript](#lurektilemapnewmapscript)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newTileMap](#lurektilemapnewtilemap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.newTileSet](#lurektilemapnewtileset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.toScreenHex](#lurektilemaptoscreenhex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.tilemap.toScreenIso](#lurektilemaptoscreeniso)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LAutoTileSheet](#lautotilesheet)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LChunkMap](#lchunkmap)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LIsoMap](#lisomap)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LLargeMapRenderer](#llargemaprenderer)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMapBlock](#lmapblock)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMapGen](#lmapgen)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMapGroup](#lmapgroup)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LMapScript](#lmapscript)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTileMap](#ltilemap)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LTileSet](#ltileset)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LAutoTileSheet:applyToTileSet](#lautotilesheetapplytotileset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:getBitmaskForTile](#lautotilesheetgetbitmaskfortile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:getLayout](#lautotilesheetgetlayout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:getQuad](#lautotilesheetgetquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:getTileCount](#lautotilesheetgettilecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:getTileForBitmask](#lautotilesheetgettileforbitmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:getTileHeight](#lautotilesheetgettileheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:getTileWidth](#lautotilesheetgettilewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:type](#lautotilesheettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LAutoTileSheet:typeOf](#lautotilesheettypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:chunkTileRange](#lchunkmapchunktilerange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:clearTile](#lchunkmapcleartile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:fillRect](#lchunkmapfillrect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:getChunksInView](#lchunkmapgetchunksinview)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:getChunkSize](#lchunkmapgetchunksize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:getLoadedChunks](#lchunkmapgetloadedchunks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:getTile](#lchunkmapgettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:loadChunk](#lchunkmaploadchunk)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:setTile](#lchunkmapsettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:type](#lchunkmaptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:typeOf](#lchunkmaptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LChunkMap:unloadChunk](#lchunkmapunloadchunk)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:addLevel](#lisomapaddlevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:fillLevel](#lisomapfilllevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getHeight](#lisomapgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getLevelCount](#lisomapgetlevelcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getLevelHeight](#lisomapgetlevelheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getPartCount](#lisomapgetpartcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getPartOrder](#lisomapgetpartorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getTileHeight](#lisomapgettileheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getTilePart](#lisomapgettilepart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getTileWidth](#lisomapgettilewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:getWidth](#lisomapgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:isLevelVisible](#lisomapislevelvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:screenToTile](#lisomapscreentotile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:setLevelVisible](#lisomapsetlevelvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:setOrigin](#lisomapsetorigin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:setPartOrder](#lisomapsetpartorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:setTilePart](#lisomapsettilepart)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:tileToScreen](#lisomaptiletoscreen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:type](#lisomaptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LIsoMap:typeOf](#lisomaptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:getChunkSize](#llargemaprenderergetchunksize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:getMapSize](#llargemaprenderergetmapsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:getTile](#llargemaprenderergettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:getTilesetColumns](#llargemaprenderergettilesetcolumns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:getTotalChunks](#llargemaprenderergettotalchunks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:getVisibleChunks](#llargemaprenderergetvisiblechunks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:invalidateAll](#llargemaprendererinvalidateall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:invalidateChunk](#llargemaprendererinvalidatechunk)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:isLodEnabled](#llargemaprendererislodenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setCamera](#llargemaprenderersetcamera)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setChunkSize](#llargemaprenderersetchunksize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setLodEnabled](#llargemaprenderersetlodenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setLodThresholds](#llargemaprenderersetlodthresholds)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setMapData](#llargemaprenderersetmapdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setTile](#llargemaprenderersettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setTilesetColumns](#llargemaprenderersettilesetcolumns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:setViewport](#llargemaprenderersetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:type](#llargemaprenderertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLargeMapRenderer:typeOf](#llargemaprenderertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getDimensions](#lmapblockgetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getHeight](#lmapblockgetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getHeightInSegments](#lmapblockgetheightinsegments)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getLayerCount](#lmapblockgetlayercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getName](#lmapblockgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getSegmentSize](#lmapblockgetsegmentsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getSide](#lmapblockgetside)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getTile](#lmapblockgettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getWeight](#lmapblockgetweight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getWidth](#lmapblockgetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:getWidthInSegments](#lmapblockgetwidthinsegments)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:setName](#lmapblocksetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:setSide](#lmapblocksetside)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:setTile](#lmapblocksettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:setWeight](#lmapblocksetweight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:type](#lmapblocktype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapBlock:typeOf](#lmapblocktypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGen:generate](#lmapgengenerate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGen:type](#lmapgentype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGen:typeOf](#lmapgentypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:addBlock](#lmapgroupaddblock)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:addScript](#lmapgroupaddscript)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:getBlockCount](#lmapgroupgetblockcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:getName](#lmapgroupgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:getScriptCount](#lmapgroupgetscriptcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:removeBlock](#lmapgroupremoveblock)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:type](#lmapgrouptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapGroup:typeOf](#lmapgrouptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapScript:addStep](#lmapscriptaddstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapScript:getStepCount](#lmapscriptgetstepcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapScript:type](#lmapscripttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LMapScript:typeOf](#lmapscripttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:addLayer](#ltilemapaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:addTileSet](#ltilemapaddtileset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:applyAutoTile](#ltilemapapplyautotile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:applyAutoTile8](#ltilemapapplyautotile8)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:applyAutoTile8At](#ltilemapapplyautotile8at)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:applyAutoTileAt](#ltilemapapplyautotileat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:checkEntities](#ltilemapcheckentities)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:clearTile](#ltilemapcleartile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:drawToImage](#ltilemapdrawtoimage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:fill](#ltilemapfill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:findTilesByGid](#ltilemapfindtilesbygid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:fireTileExit](#ltilemapfiretileexit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:fireTileStep](#ltilemapfiretilestep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getChunkSize](#ltilemapgetchunksize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getLayerColor](#ltilemapgetlayercolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getLayerCount](#ltilemapgetlayercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getLayerName](#ltilemapgetlayername)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getLayerOffset](#ltilemapgetlayeroffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getLayerParallax](#ltilemapgetlayerparallax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getLayerVisible](#ltilemapgetlayervisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getOrientation](#ltilemapgetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getTile](#ltilemapgettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getTileDimensions](#ltilemapgettiledimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getTileHeight](#ltilemapgettileheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getTileSet](#ltilemapgettileset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getTileSetCount](#ltilemapgettilesetcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getTileWidth](#ltilemapgettilewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:getViewport](#ltilemapgetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:isSolid](#ltilemapissolid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:onTileEnter](#ltilemapontileenter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:onTileExit](#ltilemapontileexit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:onTileStep](#ltilemapontilestep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:rectOverlapsSolid](#ltilemaprectoverlapssolid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:render](#ltilemaprender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setLayerColor](#ltilemapsetlayercolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setLayerOffset](#ltilemapsetlayeroffset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setLayerParallax](#ltilemapsetlayerparallax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setLayerVisible](#ltilemapsetlayervisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setOrientation](#ltilemapsetorientation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setTile](#ltilemapsettile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setTileTint](#ltilemapsettiletint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:setViewport](#ltilemapsetviewport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:sweepRect](#ltilemapsweeprect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:tileToWorld](#ltilemaptiletoworld)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:tileTypeIndex](#ltilemaptiletypeindex)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:toNavGrid](#ltilemaptonavgrid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:type](#ltilemaptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:typeOf](#ltilemaptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:update](#ltilemapupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileMap:worldToTile](#ltilemapworldtotile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getAnimation](#ltilesetgetanimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getAutoTileId](#ltilesetgetautotileid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getAutoTileId8](#ltilesetgetautotileid8)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getColumns](#ltilesetgetcolumns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getFirstGid](#ltilesetgetfirstgid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getMargin](#ltilesetgetmargin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getQuad](#ltilesetgetquad)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getSpacing](#ltilesetgetspacing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getTileCount](#ltilesetgettilecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getTileDimensions](#ltilesetgettiledimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getTileHeight](#ltilesetgettileheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:getTileWidth](#ltilesetgettilewidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:isSolid](#ltilesetissolid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:setAnimation](#ltilesetsetanimation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:setAutoTileRule](#ltilesetsetautotilerule)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:setAutoTileRule8](#ltilesetsetautotilerule8)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:setSolid](#ltilesetsetsolid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:type](#ltilesettype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LTileSet:typeOf](#ltilesettypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LAutoTileSheet Methods](#lautotilesheet-methods)
+  - [LChunkMap Methods](#lchunkmap-methods)
+  - [LIsoMap Methods](#lisomap-methods)
+  - [LLargeMapRenderer Methods](#llargemaprenderer-methods)
+  - [LMapBlock Methods](#lmapblock-methods)
+  - [LMapGen Methods](#lmapgen-methods)
+  - [LMapGroup Methods](#lmapgroup-methods)
+  - [LMapScript Methods](#lmapscript-methods)
+  - [LTileMap Methods](#ltilemap-methods)
+  - [LTileSet Methods](#ltileset-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -638,6 +74,133 @@ Multi-layer tile map system supporting TMX (Tiled) and LDtk import, autotile rul
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `autotile_sheet.rs`
+
+- Autotile sprite-sheet abstraction: blob-47, composite-48, and minimal-16 layouts.
+- Bitmask table generation and reverse lookup from neighbor mask to tile index.
+- 8-bit diagonal collapse for correct cardinal-gated corner resolution.
+- Quarter-tile compositing helpers for sub-tile source and destination rects.
+- Sheet-to-tileset rule registration for runtime autotile placement.
+
+### `chunk.rs`
+
+- Infinite sparse tile grid partitioned into fixed-size square chunks.
+- On-demand chunk allocation and explicit load/unload lifecycle.
+- Tile read/write by world coordinates with automatic chunk decomposition.
+- Rectangular fill, chunk enumeration, and view-frustum culling helpers.
+- World-space geometry queries for chunk bounds and overlap testing.
+
+### `coords.rs`
+
+- Isometric tile-to-screen and screen-to-tile coordinate conversions.
+- Cardinal direction rotation, naming, and angle snapping for iso grids.
+- Hex axial coordinate conversions between screen and grid space.
+- Hex neighbor lookup, distance, and rounding for fractional coordinates.
+- Line drawing, ring enumeration, spiral traversal, and area fill on hex grids.
+- Hex rotation and reflection transforms around arbitrary center cells.
+
+### `isomap.rs`
+
+- Multi-level isometric tile map with per-tile draw-layer parts (floor, walls, objects).
+- Diamond-projection coordinate conversion between tile space and screen space.
+- Painter-sorted draw iteration via diagonal-strip traversal across elevation levels.
+- Per-level visibility toggling and configurable part draw order.
+- Bulk fill and individual GID get/set for each tile-part slot.
+
+### `large_map_renderer.rs`
+
+- Chunk-based large-map renderer for tilemaps that exceed single-pass draw limits.
+- Splits the full tile grid into fixed-size square chunks with dirty-flag tracking.
+- Camera and viewport state drive visibility culling at chunk granularity.
+- Supports per-tile mutation with automatic chunk invalidation.
+- Optional LOD down-sampling controlled by configurable zoom thresholds.
+- Tileset column count stored for atlas UV computation by the draw backend.
+
+### `ldtk.rs`
+
+- Import LDtk project JSON into the engine tilemap representation.
+- Parse levels, tile layers, and auto-layers with tileset geometry reconstruction.
+- Map LDtk pixel-based tile coordinates to grid-cell indices.
+
+### `mapgen.rs`
+
+- Procedural tile-map generation driven by reusable block stamps and scripted steps.
+- `MapBlock` stores rectangular tile grids with edge side-IDs for neighbour matching.
+- `MapGroup` collects blocks and `MapScript`s into named generation palettes.
+- `ScriptStep` parameterises operations: fill, place, scatter, flood-fill, path drawing.
+- `MapGen` orchestrates generation using seeded LCG RNG, zones, orientation, and layer modes.
+- Supports single-region and multi-region world tiling with independent seeds per region.
+- Deterministic output: same seed + script always produces the same map.
+- Grid presets (`MapSize`) and horizontal zone bands constrain placement areas.
+- Orientation tags (top-down, side-view, isometric, hexagonal) stored for downstream renderers.
+- Layer modes control whether blocks share a unified layer or write independently.
+
+### `mod.rs`
+
+- Tile map storage, rendering, and chunk streaming for large worlds.
+- Supports orthogonal and isometric layouts with layered tiles.
+- Imports LDtk and Tiled TMX formats; procedural generation via MapGen.
+- Autotile rules, tile-space coordinates, and polygon-region maps.
+
+### `polygon_map.rs`
+
+- Named convex/concave polygon regions with fill color and optional text labels.
+- Spatial query via ray-casting point-in-polygon test for hit detection.
+- Global outline and highlight styling shared across all regions.
+- Region management: add, remove, recolor, label, and enumerate.
+- Bounding-box and centroid computation for layout and camera framing.
+
+### `render.rs`
+
+- Camera-culled render-command generation for tile-map layers.
+- GID-to-color debug palette for fallback colored tile rendering.
+- Per-layer visibility and tint applied during command emission.
+
+### `tile_walker.rs`
+
+- Cardinal facing direction with angle, delta, and rotation helpers.
+- Discrete grid walker with forward, backward, and strafe movement.
+- Previous-state snapshot for smooth frame interpolation of position and heading.
+- Relative-facing query to classify adjacent tiles as front, back, left, or right.
+- Passability checks decoupled from actual collision data.
+
+### `tilemap.rs`
+
+- Multi-layer tile map with per-tile GID storage, tint overrides, and parallax scroll factors.
+- Tileset attachment and GID resolution across multiple tileset ranges.
+- 4-neighbour and 8-neighbour autotile bitmask computation and GID substitution.
+- Continuous AABB sweep-cast collision against solid tiles for platformer and top-down physics.
+- Per-GID animation timer advancement using tileset frame data.
+- World-to-tile and tile-to-world coordinate conversion respecting tile dimensions.
+- Viewport-aware culled render-command generation for debug colour-coded output.
+- Debug image rendering: full-map, per-layer side-by-side, and highlight-overlay modes.
+- Boolean walkability grid export for pathfinding integration.
+- GID-to-position reverse index cache for fast spatial queries by tile type.
+
+### `tileset.rs`
+
+- Tileset geometry: tile dimensions, spacing, margin, column count, and GID range ownership.
+- Source-rect lookup: compute pixel `Rect` for any local tile ID within the sprite-sheet.
+- Collision metadata: per-tile solid flag storage and query.
+- Animation sequences: frame-based tile animations keyed by local ID.
+- Autotile rules: 4-bit and 8-bit bitmask-to-tile mappings for terrain transitions.
+
+### `tmx.rs`
+
+- Parse the Tiled TMX XML map format into engine-native structs for tile and object layers.
+- Support orthogonal, isometric, staggered, and hexagonal map orientations.
+- Decode tile GID arrays from CSV, raw XML, and base64 encodings with zlib/gzip decompression.
+- Extract tileset metadata including image paths, spacing, margins, and solid-tile markers.
+- Parse object layers with position, size, type, and optional tile-GID references.
+- Mask Tiled flip flags (horizontal, vertical, diagonal) from raw GID values before storage.
+- Detect solid tiles via embedded objectgroups or `solid=true` custom properties.
+- Propagate parse failures as descriptive error strings with element and attribute context.
+- Parse Tiled hex color strings (`#RRGGBB` / `#AARRGGBB`) for map background color.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LAutoTileSheet` (10 methods) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
@@ -656,34 +219,18 @@ Multi-layer tile map system supporting TMX (Tiled) and LDtk import, autotile rul
 ## 📖 API Overview
 
 - Source spec: [docs/specs/tilemap.md](../blob/main/docs/specs/tilemap.md)
+- Module-level functions: 28
+- Lua-visible types: 10
+- Total type methods: 162
 
-```lua
-lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string) -> LTileMap -- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
-lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -> integer -- Converts screen-space pixel coordinates to axial hex coordinates.
-lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -> number -- Converts screen-space coordinates back to tile coordinates for isometric projection.
-lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -> table -- Returns all hex cells within a filled area of a given radius.
-lurek.tilemap.hexDistance(q1: integer, r1: integer, q2: integer, r2: integer) -> integer -- Computes the hex grid distance between two axial coordinates.
-lurek.tilemap.hexLine(q1: integer, r1: integer, q2: integer, r2: integer) -> table -- Returns all hex cells along a line between two axial coordinates.
-lurek.tilemap.hexNeighbors(q: integer, r: integer) -> table -- Returns the six neighboring hex cells of a given axial coordinate.
-lurek.tilemap.hexReflect(q: integer, r: integer, centerQ: integer, centerR: integer, axis: string) -> integer -- Reflects a hex cell across an axis through a center point.
-lurek.tilemap.hexRing(q: integer, r: integer, radius: integer) -> table -- Returns all hex cells forming a ring at a given radius around a center.
-lurek.tilemap.hexRotate(q: integer, r: integer, centerQ: integer, centerR: integer, steps: integer) -> integer -- Rotates a hex cell around a center point by a number of 60-degree steps.
-lurek.tilemap.hexRound(q: number, r: number) -> integer -- Rounds fractional axial hex coordinates to the nearest integer hex cell.
-lurek.tilemap.hexSpiral(q: integer, r: integer, radius: integer) -> table -- Returns all hex cells in a spiral pattern out to a given radius.
-lurek.tilemap.isoDirectionFromAngle(angle: number) -> integer -- Converts an angle in degrees to the nearest isometric direction index.
-lurek.tilemap.isoDirectionName(direction: integer) -> string -- Returns a human-readable name for an isometric direction index.
-lurek.tilemap.isoRotate(direction: integer, steps: integer) -> integer -- Rotates an isometric direction index by a number of 90-degree steps.
-lurek.tilemap.loadTMX(xml: string) -> table -- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
-lurek.tilemap.newAutoTileSheet(tileW: integer, tileH: integer, layout: string) -> LAutoTileSheet -- Creates an auto-tile sheet with a given tile size and layout.
-lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap -- Creates a new infinite chunk-based tile map.
--- ... 10 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.tilemap.fromLDtk
+### Module-Level Functions
+
+#### lurek.tilemap.fromLDtk
 
 #### Definition
 
@@ -720,7 +267,7 @@ do
 end
 ```
 
-### lurek.tilemap.fromScreenHex
+#### lurek.tilemap.fromScreenHex
 
 #### Definition
 
@@ -757,7 +304,7 @@ do
 end
 ```
 
-### lurek.tilemap.fromScreenIso
+#### lurek.tilemap.fromScreenIso
 
 #### Definition
 
@@ -796,7 +343,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexArea
+#### lurek.tilemap.hexArea
 
 #### Definition
 
@@ -834,7 +381,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexDistance
+#### lurek.tilemap.hexDistance
 
 #### Definition
 
@@ -875,7 +422,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexLine
+#### lurek.tilemap.hexLine
 
 #### Definition
 
@@ -916,7 +463,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexNeighbors
+#### lurek.tilemap.hexNeighbors
 
 #### Definition
 
@@ -953,7 +500,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexReflect
+#### lurek.tilemap.hexReflect
 
 #### Definition
 
@@ -996,7 +543,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexRing
+#### lurek.tilemap.hexRing
 
 #### Definition
 
@@ -1035,7 +582,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexRotate
+#### lurek.tilemap.hexRotate
 
 #### Definition
 
@@ -1078,7 +625,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexRound
+#### lurek.tilemap.hexRound
 
 #### Definition
 
@@ -1115,7 +662,7 @@ do
 end
 ```
 
-### lurek.tilemap.hexSpiral
+#### lurek.tilemap.hexSpiral
 
 #### Definition
 
@@ -1152,7 +699,7 @@ do
 end
 ```
 
-### lurek.tilemap.isoDirectionFromAngle
+#### lurek.tilemap.isoDirectionFromAngle
 
 #### Definition
 
@@ -1184,7 +731,7 @@ do
 end
 ```
 
-### lurek.tilemap.isoDirectionName
+#### lurek.tilemap.isoDirectionName
 
 #### Definition
 
@@ -1216,7 +763,7 @@ do
 end
 ```
 
-### lurek.tilemap.isoRotate
+#### lurek.tilemap.isoRotate
 
 #### Definition
 
@@ -1250,7 +797,7 @@ do
 end
 ```
 
-### lurek.tilemap.loadTMX
+#### lurek.tilemap.loadTMX
 
 #### Definition
 
@@ -1285,7 +832,7 @@ do
 end
 ```
 
-### lurek.tilemap.newAutoTileSheet
+#### lurek.tilemap.newAutoTileSheet
 
 #### Definition
 
@@ -1324,7 +871,7 @@ do
 end
 ```
 
-### lurek.tilemap.newChunkMap
+#### lurek.tilemap.newChunkMap
 
 #### Definition
 
@@ -1358,7 +905,7 @@ do
 end
 ```
 
-### lurek.tilemap.newIsoMap
+#### lurek.tilemap.newIsoMap
 
 #### Definition
 
@@ -1403,7 +950,7 @@ do
 end
 ```
 
-### lurek.tilemap.newLargeMapRenderer
+#### lurek.tilemap.newLargeMapRenderer
 
 #### Definition
 
@@ -1439,7 +986,7 @@ do
 end
 ```
 
-### lurek.tilemap.newMapBlock
+#### lurek.tilemap.newMapBlock
 
 #### Definition
 
@@ -1480,7 +1027,7 @@ do
 end
 ```
 
-### lurek.tilemap.newMapGen
+#### lurek.tilemap.newMapGen
 
 #### Definition
 
@@ -1521,7 +1068,7 @@ do
 end
 ```
 
-### lurek.tilemap.newMapGroup
+#### lurek.tilemap.newMapGroup
 
 #### Definition
 
@@ -1556,7 +1103,7 @@ do
 end
 ```
 
-### lurek.tilemap.newMapScript
+#### lurek.tilemap.newMapScript
 
 #### Definition
 
@@ -1586,7 +1133,7 @@ do
 end
 ```
 
-### lurek.tilemap.newTileMap
+#### lurek.tilemap.newTileMap
 
 #### Definition
 
@@ -1625,7 +1172,7 @@ do
 end
 ```
 
-### lurek.tilemap.newTileSet
+#### lurek.tilemap.newTileSet
 
 #### Definition
 
@@ -1672,7 +1219,7 @@ do
 end
 ```
 
-### lurek.tilemap.toScreenHex
+#### lurek.tilemap.toScreenHex
 
 #### Definition
 
@@ -1709,7 +1256,7 @@ do
 end
 ```
 
-### lurek.tilemap.toScreenIso
+#### lurek.tilemap.toScreenIso
 
 #### Definition
 
@@ -2036,7 +1583,9 @@ end
 
 ## 🔹 Module Methods
 
-### LAutoTileSheet:applyToTileSet
+### LAutoTileSheet Methods
+
+#### LAutoTileSheet:applyToTileSet
 
 #### Definition
 
@@ -2072,7 +1621,7 @@ do
 end
 ```
 
-### LAutoTileSheet:getBitmaskForTile
+#### LAutoTileSheet:getBitmaskForTile
 
 #### Definition
 
@@ -2106,7 +1655,7 @@ do
 end
 ```
 
-### LAutoTileSheet:getLayout
+#### LAutoTileSheet:getLayout
 
 #### Definition
 
@@ -2134,7 +1683,7 @@ do
 end
 ```
 
-### LAutoTileSheet:getQuad
+#### LAutoTileSheet:getQuad
 
 #### Definition
 
@@ -2172,7 +1721,7 @@ do
 end
 ```
 
-### LAutoTileSheet:getTileCount
+#### LAutoTileSheet:getTileCount
 
 #### Definition
 
@@ -2200,7 +1749,7 @@ do
 end
 ```
 
-### LAutoTileSheet:getTileForBitmask
+#### LAutoTileSheet:getTileForBitmask
 
 #### Definition
 
@@ -2234,7 +1783,7 @@ do
 end
 ```
 
-### LAutoTileSheet:getTileHeight
+#### LAutoTileSheet:getTileHeight
 
 #### Definition
 
@@ -2262,7 +1811,7 @@ do
 end
 ```
 
-### LAutoTileSheet:getTileWidth
+#### LAutoTileSheet:getTileWidth
 
 #### Definition
 
@@ -2290,7 +1839,7 @@ do
 end
 ```
 
-### LAutoTileSheet:type
+#### LAutoTileSheet:type
 
 #### Definition
 
@@ -2318,7 +1867,7 @@ do
 end
 ```
 
-### LAutoTileSheet:typeOf
+#### LAutoTileSheet:typeOf
 
 #### Definition
 
@@ -2351,7 +1900,9 @@ do
 end
 ```
 
-### LChunkMap:chunkTileRange
+### LChunkMap Methods
+
+#### LChunkMap:chunkTileRange
 
 #### Definition
 
@@ -2391,7 +1942,7 @@ do
 end
 ```
 
-### LChunkMap:clearTile
+#### LChunkMap:clearTile
 
 #### Definition
 
@@ -2425,7 +1976,7 @@ do
 end
 ```
 
-### LChunkMap:fillRect
+#### LChunkMap:fillRect
 
 #### Definition
 
@@ -2465,7 +2016,7 @@ do
 end
 ```
 
-### LChunkMap:getChunksInView
+#### LChunkMap:getChunksInView
 
 #### Definition
 
@@ -2509,7 +2060,7 @@ do
 end
 ```
 
-### LChunkMap:getChunkSize
+#### LChunkMap:getChunkSize
 
 #### Definition
 
@@ -2537,7 +2088,7 @@ do
 end
 ```
 
-### LChunkMap:getLoadedChunks
+#### LChunkMap:getLoadedChunks
 
 #### Definition
 
@@ -2567,7 +2118,7 @@ do
 end
 ```
 
-### LChunkMap:getTile
+#### LChunkMap:getTile
 
 #### Definition
 
@@ -2604,7 +2155,7 @@ do
 end
 ```
 
-### LChunkMap:loadChunk
+#### LChunkMap:loadChunk
 
 #### Definition
 
@@ -2638,7 +2189,7 @@ do
 end
 ```
 
-### LChunkMap:setTile
+#### LChunkMap:setTile
 
 #### Definition
 
@@ -2674,7 +2225,7 @@ do
 end
 ```
 
-### LChunkMap:type
+#### LChunkMap:type
 
 #### Definition
 
@@ -2702,7 +2253,7 @@ do
 end
 ```
 
-### LChunkMap:typeOf
+#### LChunkMap:typeOf
 
 #### Definition
 
@@ -2735,7 +2286,7 @@ do
 end
 ```
 
-### LChunkMap:unloadChunk
+#### LChunkMap:unloadChunk
 
 #### Definition
 
@@ -2769,7 +2320,9 @@ do
 end
 ```
 
-### LIsoMap:addLevel
+### LIsoMap Methods
+
+#### LIsoMap:addLevel
 
 #### Definition
 
@@ -2798,7 +2351,7 @@ do
 end
 ```
 
-### LIsoMap:fillLevel
+#### LIsoMap:fillLevel
 
 #### Definition
 
@@ -2834,7 +2387,7 @@ do
 end
 ```
 
-### LIsoMap:getHeight
+#### LIsoMap:getHeight
 
 #### Definition
 
@@ -2862,7 +2415,7 @@ do
 end
 ```
 
-### LIsoMap:getLevelCount
+#### LIsoMap:getLevelCount
 
 #### Definition
 
@@ -2891,7 +2444,7 @@ do
 end
 ```
 
-### LIsoMap:getLevelHeight
+#### LIsoMap:getLevelHeight
 
 #### Definition
 
@@ -2919,7 +2472,7 @@ do
 end
 ```
 
-### LIsoMap:getPartCount
+#### LIsoMap:getPartCount
 
 #### Definition
 
@@ -2947,7 +2500,7 @@ do
 end
 ```
 
-### LIsoMap:getPartOrder
+#### LIsoMap:getPartOrder
 
 #### Definition
 
@@ -2977,7 +2530,7 @@ do
 end
 ```
 
-### LIsoMap:getTileHeight
+#### LIsoMap:getTileHeight
 
 #### Definition
 
@@ -3005,7 +2558,7 @@ do
 end
 ```
 
-### LIsoMap:getTilePart
+#### LIsoMap:getTilePart
 
 #### Definition
 
@@ -3046,7 +2599,7 @@ do
 end
 ```
 
-### LIsoMap:getTileWidth
+#### LIsoMap:getTileWidth
 
 #### Definition
 
@@ -3074,7 +2627,7 @@ do
 end
 ```
 
-### LIsoMap:getWidth
+#### LIsoMap:getWidth
 
 #### Definition
 
@@ -3102,7 +2655,7 @@ do
 end
 ```
 
-### LIsoMap:isLevelVisible
+#### LIsoMap:isLevelVisible
 
 #### Definition
 
@@ -3136,7 +2689,7 @@ do
 end
 ```
 
-### LIsoMap:screenToTile
+#### LIsoMap:screenToTile
 
 #### Definition
 
@@ -3174,7 +2727,7 @@ do
 end
 ```
 
-### LIsoMap:setLevelVisible
+#### LIsoMap:setLevelVisible
 
 #### Definition
 
@@ -3208,7 +2761,7 @@ do
 end
 ```
 
-### LIsoMap:setOrigin
+#### LIsoMap:setOrigin
 
 #### Definition
 
@@ -3241,7 +2794,7 @@ do
 end
 ```
 
-### LIsoMap:setPartOrder
+#### LIsoMap:setPartOrder
 
 #### Definition
 
@@ -3273,7 +2826,7 @@ do
 end
 ```
 
-### LIsoMap:setTilePart
+#### LIsoMap:setTilePart
 
 #### Definition
 
@@ -3313,7 +2866,7 @@ do
 end
 ```
 
-### LIsoMap:tileToScreen
+#### LIsoMap:tileToScreen
 
 #### Definition
 
@@ -3353,7 +2906,7 @@ do
 end
 ```
 
-### LIsoMap:type
+#### LIsoMap:type
 
 #### Definition
 
@@ -3381,7 +2934,7 @@ do
 end
 ```
 
-### LIsoMap:typeOf
+#### LIsoMap:typeOf
 
 #### Definition
 
@@ -3414,7 +2967,9 @@ do
 end
 ```
 
-### LLargeMapRenderer:getChunkSize
+### LLargeMapRenderer Methods
+
+#### LLargeMapRenderer:getChunkSize
 
 #### Definition
 
@@ -3442,7 +2997,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:getMapSize
+#### LLargeMapRenderer:getMapSize
 
 #### Definition
 
@@ -3473,7 +3028,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:getTile
+#### LLargeMapRenderer:getTile
 
 #### Definition
 
@@ -3510,7 +3065,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:getTilesetColumns
+#### LLargeMapRenderer:getTilesetColumns
 
 #### Definition
 
@@ -3538,7 +3093,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:getTotalChunks
+#### LLargeMapRenderer:getTotalChunks
 
 #### Definition
 
@@ -3568,7 +3123,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:getVisibleChunks
+#### LLargeMapRenderer:getVisibleChunks
 
 #### Definition
 
@@ -3598,7 +3153,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:invalidateAll
+#### LLargeMapRenderer:invalidateAll
 
 #### Definition
 
@@ -3625,7 +3180,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:invalidateChunk
+#### LLargeMapRenderer:invalidateChunk
 
 #### Definition
 
@@ -3659,7 +3214,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:isLodEnabled
+#### LLargeMapRenderer:isLodEnabled
 
 #### Definition
 
@@ -3689,7 +3244,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setCamera
+#### LLargeMapRenderer:setCamera
 
 #### Definition
 
@@ -3725,7 +3280,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setChunkSize
+#### LLargeMapRenderer:setChunkSize
 
 #### Definition
 
@@ -3757,7 +3312,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setLodEnabled
+#### LLargeMapRenderer:setLodEnabled
 
 #### Definition
 
@@ -3789,7 +3344,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setLodThresholds
+#### LLargeMapRenderer:setLodThresholds
 
 #### Definition
 
@@ -3821,7 +3376,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setMapData
+#### LLargeMapRenderer:setMapData
 
 #### Definition
 
@@ -3857,7 +3412,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setTile
+#### LLargeMapRenderer:setTile
 
 #### Definition
 
@@ -3893,7 +3448,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setTilesetColumns
+#### LLargeMapRenderer:setTilesetColumns
 
 #### Definition
 
@@ -3925,7 +3480,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:setViewport
+#### LLargeMapRenderer:setViewport
 
 #### Definition
 
@@ -3959,7 +3514,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:type
+#### LLargeMapRenderer:type
 
 #### Definition
 
@@ -3987,7 +3542,7 @@ do
 end
 ```
 
-### LLargeMapRenderer:typeOf
+#### LLargeMapRenderer:typeOf
 
 #### Definition
 
@@ -4020,7 +3575,9 @@ do
 end
 ```
 
-### LMapBlock:getDimensions
+### LMapBlock Methods
+
+#### LMapBlock:getDimensions
 
 #### Definition
 
@@ -4049,7 +3606,7 @@ do
 end
 ```
 
-### LMapBlock:getHeight
+#### LMapBlock:getHeight
 
 #### Definition
 
@@ -4077,7 +3634,7 @@ do
 end
 ```
 
-### LMapBlock:getHeightInSegments
+#### LMapBlock:getHeightInSegments
 
 #### Definition
 
@@ -4105,7 +3662,7 @@ do
 end
 ```
 
-### LMapBlock:getLayerCount
+#### LMapBlock:getLayerCount
 
 #### Definition
 
@@ -4133,7 +3690,7 @@ do
 end
 ```
 
-### LMapBlock:getName
+#### LMapBlock:getName
 
 #### Definition
 
@@ -4162,7 +3719,7 @@ do
 end
 ```
 
-### LMapBlock:getSegmentSize
+#### LMapBlock:getSegmentSize
 
 #### Definition
 
@@ -4190,7 +3747,7 @@ do
 end
 ```
 
-### LMapBlock:getSide
+#### LMapBlock:getSide
 
 #### Definition
 
@@ -4227,7 +3784,7 @@ do
 end
 ```
 
-### LMapBlock:getTile
+#### LMapBlock:getTile
 
 #### Definition
 
@@ -4266,7 +3823,7 @@ do
 end
 ```
 
-### LMapBlock:getWeight
+#### LMapBlock:getWeight
 
 #### Definition
 
@@ -4295,7 +3852,7 @@ do
 end
 ```
 
-### LMapBlock:getWidth
+#### LMapBlock:getWidth
 
 #### Definition
 
@@ -4323,7 +3880,7 @@ do
 end
 ```
 
-### LMapBlock:getWidthInSegments
+#### LMapBlock:getWidthInSegments
 
 #### Definition
 
@@ -4351,7 +3908,7 @@ do
 end
 ```
 
-### LMapBlock:setName
+#### LMapBlock:setName
 
 #### Definition
 
@@ -4382,7 +3939,7 @@ do
 end
 ```
 
-### LMapBlock:setSide
+#### LMapBlock:setSide
 
 #### Definition
 
@@ -4418,7 +3975,7 @@ do
 end
 ```
 
-### LMapBlock:setTile
+#### LMapBlock:setTile
 
 #### Definition
 
@@ -4456,7 +4013,7 @@ do
 end
 ```
 
-### LMapBlock:setWeight
+#### LMapBlock:setWeight
 
 #### Definition
 
@@ -4487,7 +4044,7 @@ do
 end
 ```
 
-### LMapBlock:type
+#### LMapBlock:type
 
 #### Definition
 
@@ -4515,7 +4072,7 @@ do
 end
 ```
 
-### LMapBlock:typeOf
+#### LMapBlock:typeOf
 
 #### Definition
 
@@ -4549,7 +4106,9 @@ do
 end
 ```
 
-### LMapGen:generate
+### LMapGen Methods
+
+#### LMapGen:generate
 
 #### Definition
 
@@ -4588,7 +4147,7 @@ do
 end
 ```
 
-### LMapGen:type
+#### LMapGen:type
 
 #### Definition
 
@@ -4618,7 +4177,7 @@ do
 end
 ```
 
-### LMapGen:typeOf
+#### LMapGen:typeOf
 
 #### Definition
 
@@ -4653,7 +4212,9 @@ do
 end
 ```
 
-### LMapGroup:addBlock
+### LMapGroup Methods
+
+#### LMapGroup:addBlock
 
 #### Definition
 
@@ -4684,7 +4245,7 @@ do
 end
 ```
 
-### LMapGroup:addScript
+#### LMapGroup:addScript
 
 #### Definition
 
@@ -4716,7 +4277,7 @@ do
 end
 ```
 
-### LMapGroup:getBlockCount
+#### LMapGroup:getBlockCount
 
 #### Definition
 
@@ -4746,7 +4307,7 @@ do
 end
 ```
 
-### LMapGroup:getName
+#### LMapGroup:getName
 
 #### Definition
 
@@ -4776,7 +4337,7 @@ do
 end
 ```
 
-### LMapGroup:getScriptCount
+#### LMapGroup:getScriptCount
 
 #### Definition
 
@@ -4806,7 +4367,7 @@ do
 end
 ```
 
-### LMapGroup:removeBlock
+#### LMapGroup:removeBlock
 
 #### Definition
 
@@ -4838,7 +4399,7 @@ do
 end
 ```
 
-### LMapGroup:type
+#### LMapGroup:type
 
 #### Definition
 
@@ -4868,7 +4429,7 @@ do
 end
 ```
 
-### LMapGroup:typeOf
+#### LMapGroup:typeOf
 
 #### Definition
 
@@ -4901,7 +4462,9 @@ do
 end
 ```
 
-### LMapScript:addStep
+### LMapScript Methods
+
+#### LMapScript:addStep
 
 #### Definition
 
@@ -4932,7 +4495,7 @@ do
 end
 ```
 
-### LMapScript:getStepCount
+#### LMapScript:getStepCount
 
 #### Definition
 
@@ -4962,7 +4525,7 @@ do
 end
 ```
 
-### LMapScript:type
+#### LMapScript:type
 
 #### Definition
 
@@ -4990,7 +4553,7 @@ do
 end
 ```
 
-### LMapScript:typeOf
+#### LMapScript:typeOf
 
 #### Definition
 
@@ -5023,7 +4586,9 @@ do
 end
 ```
 
-### LTileMap:addLayer
+### LTileMap Methods
+
+#### LTileMap:addLayer
 
 #### Definition
 
@@ -5061,7 +4626,7 @@ do
 end
 ```
 
-### LTileMap:addTileSet
+#### LTileMap:addTileSet
 
 #### Definition
 
@@ -5093,7 +4658,7 @@ do
 end
 ```
 
-### LTileMap:applyAutoTile
+#### LTileMap:applyAutoTile
 
 #### Definition
 
@@ -5127,7 +4692,7 @@ do
 end
 ```
 
-### LTileMap:applyAutoTile8
+#### LTileMap:applyAutoTile8
 
 #### Definition
 
@@ -5161,7 +4726,7 @@ do
 end
 ```
 
-### LTileMap:applyAutoTile8At
+#### LTileMap:applyAutoTile8At
 
 #### Definition
 
@@ -5199,7 +4764,7 @@ do
 end
 ```
 
-### LTileMap:applyAutoTileAt
+#### LTileMap:applyAutoTileAt
 
 #### Definition
 
@@ -5237,7 +4802,7 @@ do
 end
 ```
 
-### LTileMap:checkEntities
+#### LTileMap:checkEntities
 
 #### Definition
 
@@ -5271,7 +4836,7 @@ do
 end
 ```
 
-### LTileMap:clearTile
+#### LTileMap:clearTile
 
 #### Definition
 
@@ -5307,7 +4872,7 @@ do
 end
 ```
 
-### LTileMap:drawToImage
+#### LTileMap:drawToImage
 
 #### Definition
 
@@ -5342,7 +4907,7 @@ do
 end
 ```
 
-### LTileMap:fill
+#### LTileMap:fill
 
 #### Definition
 
@@ -5376,7 +4941,7 @@ do
 end
 ```
 
-### LTileMap:findTilesByGid
+#### LTileMap:findTilesByGid
 
 #### Definition
 
@@ -5413,7 +4978,7 @@ do
 end
 ```
 
-### LTileMap:fireTileExit
+#### LTileMap:fireTileExit
 
 #### Definition
 
@@ -5451,7 +5016,7 @@ do
 end
 ```
 
-### LTileMap:fireTileStep
+#### LTileMap:fireTileStep
 
 #### Definition
 
@@ -5489,7 +5054,7 @@ do
 end
 ```
 
-### LTileMap:getChunkSize
+#### LTileMap:getChunkSize
 
 #### Definition
 
@@ -5517,7 +5082,7 @@ do
 end
 ```
 
-### LTileMap:getLayerColor
+#### LTileMap:getLayerColor
 
 #### Definition
 
@@ -5555,7 +5120,7 @@ do
 end
 ```
 
-### LTileMap:getLayerCount
+#### LTileMap:getLayerCount
 
 #### Definition
 
@@ -5584,7 +5149,7 @@ do
 end
 ```
 
-### LTileMap:getLayerName
+#### LTileMap:getLayerName
 
 #### Definition
 
@@ -5618,7 +5183,7 @@ do
 end
 ```
 
-### LTileMap:getLayerOffset
+#### LTileMap:getLayerOffset
 
 #### Definition
 
@@ -5654,7 +5219,7 @@ do
 end
 ```
 
-### LTileMap:getLayerParallax
+#### LTileMap:getLayerParallax
 
 #### Definition
 
@@ -5690,7 +5255,7 @@ do
 end
 ```
 
-### LTileMap:getLayerVisible
+#### LTileMap:getLayerVisible
 
 #### Definition
 
@@ -5724,7 +5289,7 @@ do
 end
 ```
 
-### LTileMap:getOrientation
+#### LTileMap:getOrientation
 
 #### Definition
 
@@ -5753,7 +5318,7 @@ do
 end
 ```
 
-### LTileMap:getTile
+#### LTileMap:getTile
 
 #### Definition
 
@@ -5792,7 +5357,7 @@ do
 end
 ```
 
-### LTileMap:getTileDimensions
+#### LTileMap:getTileDimensions
 
 #### Definition
 
@@ -5821,7 +5386,7 @@ do
 end
 ```
 
-### LTileMap:getTileHeight
+#### LTileMap:getTileHeight
 
 #### Definition
 
@@ -5849,7 +5414,7 @@ do
 end
 ```
 
-### LTileMap:getTileSet
+#### LTileMap:getTileSet
 
 #### Definition
 
@@ -5884,7 +5449,7 @@ do
 end
 ```
 
-### LTileMap:getTileSetCount
+#### LTileMap:getTileSetCount
 
 #### Definition
 
@@ -5914,7 +5479,7 @@ do
 end
 ```
 
-### LTileMap:getTileWidth
+#### LTileMap:getTileWidth
 
 #### Definition
 
@@ -5942,7 +5507,7 @@ do
 end
 ```
 
-### LTileMap:getViewport
+#### LTileMap:getViewport
 
 #### Definition
 
@@ -5975,7 +5540,7 @@ do
 end
 ```
 
-### LTileMap:isSolid
+#### LTileMap:isSolid
 
 #### Definition
 
@@ -6014,7 +5579,7 @@ do
 end
 ```
 
-### LTileMap:onTileEnter
+#### LTileMap:onTileEnter
 
 #### Definition
 
@@ -6048,7 +5613,7 @@ do
 end
 ```
 
-### LTileMap:onTileExit
+#### LTileMap:onTileExit
 
 #### Definition
 
@@ -6082,7 +5647,7 @@ do
 end
 ```
 
-### LTileMap:onTileStep
+#### LTileMap:onTileStep
 
 #### Definition
 
@@ -6116,7 +5681,7 @@ do
 end
 ```
 
-### LTileMap:rectOverlapsSolid
+#### LTileMap:rectOverlapsSolid
 
 #### Definition
 
@@ -6159,7 +5724,7 @@ do
 end
 ```
 
-### LTileMap:render
+#### LTileMap:render
 
 #### Definition
 
@@ -6193,7 +5758,7 @@ do
 end
 ```
 
-### LTileMap:setLayerColor
+#### LTileMap:setLayerColor
 
 #### Definition
 
@@ -6233,7 +5798,7 @@ do
 end
 ```
 
-### LTileMap:setLayerOffset
+#### LTileMap:setLayerOffset
 
 #### Definition
 
@@ -6269,7 +5834,7 @@ do
 end
 ```
 
-### LTileMap:setLayerParallax
+#### LTileMap:setLayerParallax
 
 #### Definition
 
@@ -6305,7 +5870,7 @@ do
 end
 ```
 
-### LTileMap:setLayerVisible
+#### LTileMap:setLayerVisible
 
 #### Definition
 
@@ -6339,7 +5904,7 @@ do
 end
 ```
 
-### LTileMap:setOrientation
+#### LTileMap:setOrientation
 
 #### Definition
 
@@ -6371,7 +5936,7 @@ do
 end
 ```
 
-### LTileMap:setTile
+#### LTileMap:setTile
 
 #### Definition
 
@@ -6409,7 +5974,7 @@ do
 end
 ```
 
-### LTileMap:setTileTint
+#### LTileMap:setTileTint
 
 #### Definition
 
@@ -6453,7 +6018,7 @@ do
 end
 ```
 
-### LTileMap:setViewport
+#### LTileMap:setViewport
 
 #### Definition
 
@@ -6491,7 +6056,7 @@ do
 end
 ```
 
-### LTileMap:sweepRect
+#### LTileMap:sweepRect
 
 #### Definition
 
@@ -6543,7 +6108,7 @@ do
 end
 ```
 
-### LTileMap:tileToWorld
+#### LTileMap:tileToWorld
 
 #### Definition
 
@@ -6581,7 +6146,7 @@ do
 end
 ```
 
-### LTileMap:tileTypeIndex
+#### LTileMap:tileTypeIndex
 
 #### Definition
 
@@ -6616,7 +6181,7 @@ do
 end
 ```
 
-### LTileMap:toNavGrid
+#### LTileMap:toNavGrid
 
 #### Definition
 
@@ -6653,7 +6218,7 @@ do
 end
 ```
 
-### LTileMap:type
+#### LTileMap:type
 
 #### Definition
 
@@ -6680,7 +6245,7 @@ do
 end
 ```
 
-### LTileMap:typeOf
+#### LTileMap:typeOf
 
 #### Definition
 
@@ -6712,7 +6277,7 @@ do
 end
 ```
 
-### LTileMap:update
+#### LTileMap:update
 
 #### Definition
 
@@ -6744,7 +6309,7 @@ do
 end
 ```
 
-### LTileMap:worldToTile
+#### LTileMap:worldToTile
 
 #### Definition
 
@@ -6782,7 +6347,9 @@ do
 end
 ```
 
-### LTileSet:getAnimation
+### LTileSet Methods
+
+#### LTileSet:getAnimation
 
 #### Definition
 
@@ -6817,7 +6384,7 @@ do
 end
 ```
 
-### LTileSet:getAutoTileId
+#### LTileSet:getAutoTileId
 
 #### Definition
 
@@ -6854,7 +6421,7 @@ do
 end
 ```
 
-### LTileSet:getAutoTileId8
+#### LTileSet:getAutoTileId8
 
 #### Definition
 
@@ -6891,7 +6458,7 @@ do
 end
 ```
 
-### LTileSet:getColumns
+#### LTileSet:getColumns
 
 #### Definition
 
@@ -6919,7 +6486,7 @@ do
 end
 ```
 
-### LTileSet:getFirstGid
+#### LTileSet:getFirstGid
 
 #### Definition
 
@@ -6947,7 +6514,7 @@ do
 end
 ```
 
-### LTileSet:getMargin
+#### LTileSet:getMargin
 
 #### Definition
 
@@ -6975,7 +6542,7 @@ do
 end
 ```
 
-### LTileSet:getQuad
+#### LTileSet:getQuad
 
 #### Definition
 
@@ -7010,7 +6577,7 @@ do
 end
 ```
 
-### LTileSet:getSpacing
+#### LTileSet:getSpacing
 
 #### Definition
 
@@ -7038,7 +6605,7 @@ do
 end
 ```
 
-### LTileSet:getTileCount
+#### LTileSet:getTileCount
 
 #### Definition
 
@@ -7066,7 +6633,7 @@ do
 end
 ```
 
-### LTileSet:getTileDimensions
+#### LTileSet:getTileDimensions
 
 #### Definition
 
@@ -7096,7 +6663,7 @@ do
 end
 ```
 
-### LTileSet:getTileHeight
+#### LTileSet:getTileHeight
 
 #### Definition
 
@@ -7124,7 +6691,7 @@ do
 end
 ```
 
-### LTileSet:getTileWidth
+#### LTileSet:getTileWidth
 
 #### Definition
 
@@ -7152,7 +6719,7 @@ do
 end
 ```
 
-### LTileSet:isSolid
+#### LTileSet:isSolid
 
 #### Definition
 
@@ -7187,7 +6754,7 @@ do
 end
 ```
 
-### LTileSet:setAnimation
+#### LTileSet:setAnimation
 
 #### Definition
 
@@ -7221,7 +6788,7 @@ do
 end
 ```
 
-### LTileSet:setAutoTileRule
+#### LTileSet:setAutoTileRule
 
 #### Definition
 
@@ -7257,7 +6824,7 @@ do
 end
 ```
 
-### LTileSet:setAutoTileRule8
+#### LTileSet:setAutoTileRule8
 
 #### Definition
 
@@ -7293,7 +6860,7 @@ do
 end
 ```
 
-### LTileSet:setSolid
+#### LTileSet:setSolid
 
 #### Definition
 
@@ -7326,7 +6893,7 @@ do
 end
 ```
 
-### LTileSet:type
+#### LTileSet:type
 
 #### Definition
 
@@ -7354,7 +6921,7 @@ do
 end
 ```
 
-### LTileSet:typeOf
+#### LTileSet:typeOf
 
 #### Definition
 

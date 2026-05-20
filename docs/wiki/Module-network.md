@@ -10,200 +10,29 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [constants.rs](#constantsrs)
+  - [error.rs](#errorrs)
+  - [host.rs](#hostrs)
+  - [http.rs](#httprs)
+  - [lobby.rs](#lobbyrs)
+  - [message.rs](#messagers)
+  - [mod.rs](#modrs)
+  - [net_sync.rs](#netsyncrs)
+  - [net_thread.rs](#netthreadrs)
+  - [relay.rs](#relayrs)
+  - [tcp.rs](#tcprs)
+  - [websocket.rs](#websocketrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.network.createLobby](#lureknetworkcreatelobby)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.createRoom](#lureknetworkcreateroom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.discoverLobbies](#lureknetworkdiscoverlobbies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.joinRoom](#lureknetworkjoinroom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.leaveRoom](#lureknetworkleaveroom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.listRooms](#lureknetworklistrooms)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.makePunchProbe](#lureknetworkmakepunchprobe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.newClient](#lureknetworknewclient)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.newHost](#lureknetworknewhost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.newRelayTicket](#lureknetworknewrelayticket)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.newRuntime](#lureknetworknewruntime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.newServer](#lureknetworknewserver)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.pack](#lureknetworkpack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.parsePunchProbe](#lureknetworkparsepunchprobe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.parseRelayTicket](#lureknetworkparserelayticket)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.predictLinear](#lureknetworkpredictlinear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.reconcileSnapshot](#lureknetworkreconcilesnapshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.syncEntity](#lureknetworksyncentity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.network.unpack](#lureknetworkunpack)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LNetworkHost](#lnetworkhost)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LNetworkRuntime](#lnetworkruntime)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LNetworkHost:broadcast](#lnetworkhostbroadcast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:connect](#lnetworkhostconnect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:destroy](#lnetworkhostdestroy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:disconnect](#lnetworkhostdisconnect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:disconnectLater](#lnetworkhostdisconnectlater)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:disconnectNow](#lnetworkhostdisconnectnow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:flush](#lnetworkhostflush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getAddress](#lnetworkhostgetaddress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getBandwidthLimit](#lnetworkhostgetbandwidthlimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getChannelLimit](#lnetworkhostgetchannellimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getConnectedPeerCount](#lnetworkhostgetconnectedpeercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getConnectedPeerIds](#lnetworkhostgetconnectedpeerids)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getPeerAddress](#lnetworkhostgetpeeraddress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getPeerLimit](#lnetworkhostgetpeerlimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getPeerState](#lnetworkhostgetpeerstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getPeerStats](#lnetworkhostgetpeerstats)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getRole](#lnetworkhostgetrole)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:getRoundTripTime](#lnetworkhostgetroundtriptime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:isClient](#lnetworkhostisclient)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:isDestroyed](#lnetworkhostisdestroyed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:isServer](#lnetworkhostisserver)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:ping](#lnetworkhostping)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:resetPeer](#lnetworkhostresetpeer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:send](#lnetworkhostsend)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:service](#lnetworkhostservice)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:setBandwidthLimit](#lnetworkhostsetbandwidthlimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:setChannelLimit](#lnetworkhostsetchannellimit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:type](#lnetworkhosttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkHost:typeOf](#lnetworkhosttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:httpGet](#lnetworkruntimehttpget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:httpPost](#lnetworkruntimehttppost)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:httpRequest](#lnetworkruntimehttprequest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:poll](#lnetworkruntimepoll)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:shutdown](#lnetworkruntimeshutdown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:tcpClose](#lnetworkruntimetcpclose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:tcpConnect](#lnetworkruntimetcpconnect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:tcpSend](#lnetworkruntimetcpsend)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:type](#lnetworkruntimetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:typeOf](#lnetworkruntimetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:wsClose](#lnetworkruntimewsclose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:wsConnect](#lnetworkruntimewsconnect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LNetworkRuntime:wsSend](#lnetworkruntimewssend)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LNetworkHost Methods](#lnetworkhost-methods)
+  - [LNetworkRuntime Methods](#lnetworkruntime-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -227,6 +56,97 @@ Entity synchronization replicates state snapshots with delta compression and cli
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `constants.rs`
+
+- Numeric limits for peer connections, channels, and buffer sizes.
+- Default fallback values when game config omits network parameters.
+- Timeout durations for HTTP and transport-level operations.
+
+### `error.rs`
+
+- Unified error enum for all network subsystem failures.
+- Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
+- Integrates with `thiserror` for automatic `Display` and `From` impls.
+
+### `host.rs`
+
+- ENet host wrapper owning a non-blocking UDP socket and all peer slots for one endpoint.
+- Host role classification (Server, Client, combined Host) for session routing.
+- Event-driven poll loop yielding Connect, Disconnect, and Receive events.
+- Connection lifecycle: initiate, graceful disconnect, forced disconnect, and reset.
+- Unicast and broadcast packet sending with reliable or unreliable delivery.
+- Peer diagnostics: round-trip time, connection state, address, and full statistics snapshot.
+- Bandwidth and channel limit configuration at runtime.
+- Convenience constructors for common server and client bind patterns.
+
+### `http.rs`
+
+- Synchronous HTTP client built on `ureq` for GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.
+- Configurable per-request timeout via agent builder.
+- Unified `HttpResponse` captures status, body, headers, and optional error message.
+
+### `lobby.rs`
+
+- LAN lobby discovery via timed UDP broadcast listen on a fixed port.
+- Lobby advertisement encoding and parsing in a `key=value;...` wire format.
+- In-process room registry for create, join, leave, and list operations.
+- Broadcast helper that sends a single SO_BROADCAST datagram on all interfaces.
+- Deduplication of discovered lobbies by host+port during the scan window.
+
+### `message.rs`
+
+- Wire-format value type (`NetValue`) mirroring Lua's dynamic type system for cross-peer messaging.
+- MessagePack serialization and deserialization via `pack`/`unpack`.
+- Zero-allocation size estimation for budget checks before sending.
+
+### `mod.rs`
+
+- Multiplayer networking: TCP, WebSocket, and relay transports with binary message framing.
+- Host/client model with lobby state machine, peer management, and game-state sync.
+- Background async runtime (Tokio) for non-blocking socket I/O and HTTP helpers.
+
+### `net_sync.rs`
+
+- Entity snapshot capture and wire serialization for networked state.
+- Linear dead-reckoning prediction between ticks.
+- Server-authoritative reconciliation with configurable blend factor.
+
+### `net_thread.rs`
+
+- Background network thread that owns all blocking I/O (HTTP, TCP, WebSocket).
+- MPSC request/response channels isolate the game thread from socket latency.
+- `NetworkRequest` enum drives HTTP fetches, TCP streams, and WebSocket frames.
+- `NetworkResponse` carries completed results and lifecycle events back to the game loop.
+- `TcpEvent` / `WsEvent` model connection state machines (connect, data, close, error).
+- `NetworkRuntime` struct spawns the thread, assigns IDs, and exposes typed helpers.
+- 10 ms poll loop processes transports and drains the request channel.
+- Graceful shutdown closes all connections and joins the thread on drop.
+- Correlation IDs let the game thread match responses to outstanding requests.
+
+### `relay.rs`
+
+- Relay ticket encoding and decoding for room+peer identification over the wire.
+- UDP hole-punch probe construction and parsing with a magic prefix.
+- Lightweight helpers for relay-based NAT traversal signalling.
+
+### `tcp.rs`
+
+- Non-blocking TCP connection pool for the background network thread.
+- Round-robin polling across all active streams with event-based notification.
+- Connect, send, close, and bulk-poll operations with automatic error cleanup.
+
+### `websocket.rs`
+
+- Manage a pool of active WebSocket connections keyed by caller-assigned ID.
+- Spawn background threads for TLS/TCP handshakes so connect never blocks the game loop.
+- Non-blocking poll loop reads text, binary, and close frames from all live sockets.
+- Send text or binary frames, and perform graceful close with drain semantics.
+- Post all connection lifecycle events (open, message, error, close) through an MPSC channel.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LNetworkHost` (29 methods) - Lua-side wrapper for a network host.
@@ -237,34 +157,18 @@ Entity synchronization replicates state snapshots with delta compression and cli
 ## 📖 API Overview
 
 - Source spec: [docs/specs/network.md](../blob/main/docs/specs/network.md)
+- Module-level functions: 19
+- Lua-visible types: 2
+- Total type methods: 42
 
-```lua
-lurek.network.createLobby(name: string, port: integer, [player_count]: integer, [max_players]: integer) -> table -- Broadcasts lobby information and returns it as a table.
-lurek.network.createRoom(name: string, host: string, [max_players]: integer) -> table -- Creates a local room record. This function is exposed to Lua scripts.
-lurek.network.discoverLobbies([timeout_ms]: integer) -> table -- Discovers broadcast lobbies. This function is exposed to Lua scripts.
-lurek.network.joinRoom(id: string) -> table -- Joins a room by id when available. This function is exposed to Lua scripts.
-lurek.network.leaveRoom(id: string) -> table -- Leaves a room by id when available. This function is exposed to Lua scripts.
-lurek.network.listRooms() -> table -- Lists known local room records. This function is exposed to Lua scripts.
-lurek.network.makePunchProbe(peer_id: string) -> string -- Creates a relay punch probe payload for a peer id.
-lurek.network.newClient(opts: table) -> LNetworkHost -- Creates a client host and connects to an address.
-lurek.network.newHost(opts: table) -> LNetworkHost -- Creates a network host from an options table.
-lurek.network.newRelayTicket(room_id: string, peer_id: string) -> string -- Creates an encoded relay ticket. This function is exposed to Lua scripts.
-lurek.network.newRuntime() -> LNetworkRuntime -- Creates a background network runtime.
-lurek.network.newServer(opts: table) -> LNetworkHost -- Creates a server host from an options table.
-lurek.network.pack(value: table) -> string -- Packs a supported Lua value into a binary network message string.
-lurek.network.parsePunchProbe(payload: string) -> string -- Parses a relay punch probe payload.
-lurek.network.parseRelayTicket(token: string) -> table -- Parses an encoded relay ticket. This function is exposed to Lua scripts.
-lurek.network.predictLinear(snapshot: table, dt: number) -> table -- Predicts an entity snapshot forward by linear velocity.
-lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table -- Reconciles a predicted snapshot toward an authoritative snapshot.
-lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean) -- Broadcasts a packed entity sync payload through a network host.
--- ... 1 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.network.createLobby
+### Module-Level Functions
+
+#### lurek.network.createLobby
 
 #### Definition
 
@@ -304,7 +208,7 @@ do
 end
 ```
 
-### lurek.network.createRoom
+#### lurek.network.createRoom
 
 #### Definition
 
@@ -342,7 +246,7 @@ do
 end
 ```
 
-### lurek.network.discoverLobbies
+#### lurek.network.discoverLobbies
 
 #### Definition
 
@@ -374,7 +278,7 @@ do
 end
 ```
 
-### lurek.network.joinRoom
+#### lurek.network.joinRoom
 
 #### Definition
 
@@ -405,7 +309,7 @@ do
 end
 ```
 
-### lurek.network.leaveRoom
+#### lurek.network.leaveRoom
 
 #### Definition
 
@@ -436,7 +340,7 @@ do
 end
 ```
 
-### lurek.network.listRooms
+#### lurek.network.listRooms
 
 #### Definition
 
@@ -463,7 +367,7 @@ do
 end
 ```
 
-### lurek.network.makePunchProbe
+#### lurek.network.makePunchProbe
 
 #### Definition
 
@@ -495,7 +399,7 @@ do
 end
 ```
 
-### lurek.network.newClient
+#### lurek.network.newClient
 
 #### Definition
 
@@ -529,7 +433,7 @@ do
 end
 ```
 
-### lurek.network.newHost
+#### lurek.network.newHost
 
 #### Definition
 
@@ -563,7 +467,7 @@ do
 end
 ```
 
-### lurek.network.newRelayTicket
+#### lurek.network.newRelayTicket
 
 #### Definition
 
@@ -597,7 +501,7 @@ do
 end
 ```
 
-### lurek.network.newRuntime
+#### lurek.network.newRuntime
 
 #### Definition
 
@@ -626,7 +530,7 @@ do
 end
 ```
 
-### lurek.network.newServer
+#### lurek.network.newServer
 
 #### Definition
 
@@ -660,7 +564,7 @@ do
 end
 ```
 
-### lurek.network.pack
+#### lurek.network.pack
 
 #### Definition
 
@@ -695,7 +599,7 @@ do
 end
 ```
 
-### lurek.network.parsePunchProbe
+#### lurek.network.parsePunchProbe
 
 #### Definition
 
@@ -729,7 +633,7 @@ do
 end
 ```
 
-### lurek.network.parseRelayTicket
+#### lurek.network.parseRelayTicket
 
 #### Definition
 
@@ -763,7 +667,7 @@ do
 end
 ```
 
-### lurek.network.predictLinear
+#### lurek.network.predictLinear
 
 #### Definition
 
@@ -798,7 +702,7 @@ do
 end
 ```
 
-### lurek.network.reconcileSnapshot
+#### lurek.network.reconcileSnapshot
 
 #### Definition
 
@@ -836,7 +740,7 @@ do
 end
 ```
 
-### lurek.network.syncEntity
+#### lurek.network.syncEntity
 
 #### Definition
 
@@ -876,7 +780,7 @@ do
 end
 ```
 
-### lurek.network.unpack
+#### lurek.network.unpack
 
 #### Definition
 
@@ -973,7 +877,9 @@ end
 
 ## 🔹 Module Methods
 
-### LNetworkHost:broadcast
+### LNetworkHost Methods
+
+#### LNetworkHost:broadcast
 
 #### Definition
 
@@ -1008,7 +914,7 @@ do
 end
 ```
 
-### LNetworkHost:connect
+#### LNetworkHost:connect
 
 #### Definition
 
@@ -1047,7 +953,7 @@ do
 end
 ```
 
-### LNetworkHost:destroy
+#### LNetworkHost:destroy
 
 #### Definition
 
@@ -1072,7 +978,7 @@ do
 end
 ```
 
-### LNetworkHost:disconnect
+#### LNetworkHost:disconnect
 
 #### Definition
 
@@ -1105,7 +1011,7 @@ do
 end
 ```
 
-### LNetworkHost:disconnectLater
+#### LNetworkHost:disconnectLater
 
 #### Definition
 
@@ -1138,7 +1044,7 @@ do
 end
 ```
 
-### LNetworkHost:disconnectNow
+#### LNetworkHost:disconnectNow
 
 #### Definition
 
@@ -1171,7 +1077,7 @@ do
 end
 ```
 
-### LNetworkHost:flush
+#### LNetworkHost:flush
 
 #### Definition
 
@@ -1198,7 +1104,7 @@ do
 end
 ```
 
-### LNetworkHost:getAddress
+#### LNetworkHost:getAddress
 
 #### Definition
 
@@ -1226,7 +1132,7 @@ do
 end
 ```
 
-### LNetworkHost:getBandwidthLimit
+#### LNetworkHost:getBandwidthLimit
 
 #### Definition
 
@@ -1256,7 +1162,7 @@ do
 end
 ```
 
-### LNetworkHost:getChannelLimit
+#### LNetworkHost:getChannelLimit
 
 #### Definition
 
@@ -1284,7 +1190,7 @@ do
 end
 ```
 
-### LNetworkHost:getConnectedPeerCount
+#### LNetworkHost:getConnectedPeerCount
 
 #### Definition
 
@@ -1313,7 +1219,7 @@ do
 end
 ```
 
-### LNetworkHost:getConnectedPeerIds
+#### LNetworkHost:getConnectedPeerIds
 
 #### Definition
 
@@ -1343,7 +1249,7 @@ do
 end
 ```
 
-### LNetworkHost:getPeerAddress
+#### LNetworkHost:getPeerAddress
 
 #### Definition
 
@@ -1377,7 +1283,7 @@ do
 end
 ```
 
-### LNetworkHost:getPeerLimit
+#### LNetworkHost:getPeerLimit
 
 #### Definition
 
@@ -1405,7 +1311,7 @@ do
 end
 ```
 
-### LNetworkHost:getPeerState
+#### LNetworkHost:getPeerState
 
 #### Definition
 
@@ -1439,7 +1345,7 @@ do
 end
 ```
 
-### LNetworkHost:getPeerStats
+#### LNetworkHost:getPeerStats
 
 #### Definition
 
@@ -1473,7 +1379,7 @@ do
 end
 ```
 
-### LNetworkHost:getRole
+#### LNetworkHost:getRole
 
 #### Definition
 
@@ -1501,7 +1407,7 @@ do
 end
 ```
 
-### LNetworkHost:getRoundTripTime
+#### LNetworkHost:getRoundTripTime
 
 #### Definition
 
@@ -1535,7 +1441,7 @@ do
 end
 ```
 
-### LNetworkHost:isClient
+#### LNetworkHost:isClient
 
 #### Definition
 
@@ -1563,7 +1469,7 @@ do
 end
 ```
 
-### LNetworkHost:isDestroyed
+#### LNetworkHost:isDestroyed
 
 #### Definition
 
@@ -1591,7 +1497,7 @@ do
 end
 ```
 
-### LNetworkHost:isServer
+#### LNetworkHost:isServer
 
 #### Definition
 
@@ -1619,7 +1525,7 @@ do
 end
 ```
 
-### LNetworkHost:ping
+#### LNetworkHost:ping
 
 #### Definition
 
@@ -1650,7 +1556,7 @@ do
 end
 ```
 
-### LNetworkHost:resetPeer
+#### LNetworkHost:resetPeer
 
 #### Definition
 
@@ -1681,7 +1587,7 @@ do
 end
 ```
 
-### LNetworkHost:send
+#### LNetworkHost:send
 
 #### Definition
 
@@ -1718,7 +1624,7 @@ do
 end
 ```
 
-### LNetworkHost:service
+#### LNetworkHost:service
 
 #### Definition
 
@@ -1748,7 +1654,7 @@ do
 end
 ```
 
-### LNetworkHost:setBandwidthLimit
+#### LNetworkHost:setBandwidthLimit
 
 #### Definition
 
@@ -1782,7 +1688,7 @@ do
 end
 ```
 
-### LNetworkHost:setChannelLimit
+#### LNetworkHost:setChannelLimit
 
 #### Definition
 
@@ -1814,7 +1720,7 @@ do
 end
 ```
 
-### LNetworkHost:type
+#### LNetworkHost:type
 
 #### Definition
 
@@ -1842,7 +1748,7 @@ do
 end
 ```
 
-### LNetworkHost:typeOf
+#### LNetworkHost:typeOf
 
 #### Definition
 
@@ -1875,7 +1781,9 @@ do
 end
 ```
 
-### LNetworkRuntime:httpGet
+### LNetworkRuntime Methods
+
+#### LNetworkRuntime:httpGet
 
 #### Definition
 
@@ -1912,7 +1820,7 @@ do
 end
 ```
 
-### LNetworkRuntime:httpPost
+#### LNetworkRuntime:httpPost
 
 #### Definition
 
@@ -1951,7 +1859,7 @@ do
 end
 ```
 
-### LNetworkRuntime:httpRequest
+#### LNetworkRuntime:httpRequest
 
 #### Definition
 
@@ -1986,7 +1894,7 @@ do
 end
 ```
 
-### LNetworkRuntime:poll
+#### LNetworkRuntime:poll
 
 #### Definition
 
@@ -2016,7 +1924,7 @@ do
 end
 ```
 
-### LNetworkRuntime:shutdown
+#### LNetworkRuntime:shutdown
 
 #### Definition
 
@@ -2042,7 +1950,7 @@ do
 end
 ```
 
-### LNetworkRuntime:tcpClose
+#### LNetworkRuntime:tcpClose
 
 #### Definition
 
@@ -2074,7 +1982,7 @@ do
 end
 ```
 
-### LNetworkRuntime:tcpConnect
+#### LNetworkRuntime:tcpConnect
 
 #### Definition
 
@@ -2109,7 +2017,7 @@ do
 end
 ```
 
-### LNetworkRuntime:tcpSend
+#### LNetworkRuntime:tcpSend
 
 #### Definition
 
@@ -2143,7 +2051,7 @@ do
 end
 ```
 
-### LNetworkRuntime:type
+#### LNetworkRuntime:type
 
 #### Definition
 
@@ -2172,7 +2080,7 @@ do
 end
 ```
 
-### LNetworkRuntime:typeOf
+#### LNetworkRuntime:typeOf
 
 #### Definition
 
@@ -2206,7 +2114,7 @@ do
 end
 ```
 
-### LNetworkRuntime:wsClose
+#### LNetworkRuntime:wsClose
 
 #### Definition
 
@@ -2238,7 +2146,7 @@ do
 end
 ```
 
-### LNetworkRuntime:wsConnect
+#### LNetworkRuntime:wsConnect
 
 #### Definition
 
@@ -2273,7 +2181,7 @@ do
 end
 ```
 
-### LNetworkRuntime:wsSend
+#### LNetworkRuntime:wsSend
 
 #### Definition
 

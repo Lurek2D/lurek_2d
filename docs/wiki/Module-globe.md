@@ -10,248 +10,34 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [composition.rs](#compositionrs)
+  - [draw.rs](#drawrs)
+  - [export.rs](#exportrs)
+  - [fog.rs](#fogrs)
+  - [label.rs](#labelrs)
+  - [layer.rs](#layerrs)
+  - [lighting.rs](#lightingrs)
+  - [loader.rs](#loaderrs)
+  - [marker.rs](#markerrs)
+  - [mod.rs](#modrs)
+  - [picking.rs](#pickingrs)
+  - [projection.rs](#projectionrs)
+  - [province_adapter.rs](#provinceadapterrs)
+  - [registry.rs](#registryrs)
+  - [sync.rs](#syncrs)
+  - [topology.rs](#topologyrs)
+  - [types.rs](#typesrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.globe.generateVoronoi](#lurekglobegeneratevoronoi)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.globe.get](#lurekglobeget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.globe.greatCircleDistance](#lurekglobegreatcircledistance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.globe.greatCirclePath](#lurekglobegreatcirclepath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.globe.latLonToUnit](#lurekglobelatlontounit)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.globe.loadFromPNG](#lurekglobeloadfrompng)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.globe.loadFromTOML](#lurekglobeloadfromtoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.globe.new](#lurekglobenew)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LGlobe](#lglobe)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LGlobeRegistry](#lgloberegistry)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LGlobe:addArc](#lglobeaddarc)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:addLabel](#lglobeaddlabel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:addLayer](#lglobeaddlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:addMarker](#lglobeaddmarker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:addProvince](#lglobeaddprovince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:cacheReachability](#lglobecachereachability)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:clearProvinceTexture](#lglobeclearprovincetexture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:decodeFogBase64](#lglobedecodefogbase64)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:encodeFogBase64](#lglobeencodefogbase64)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:exportProvinceMeshOBJ](#lglobeexportprovincemeshobj)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:findPath](#lglobefindpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getCachedReachability](#lglobegetcachedreachability)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getCamera](#lglobegetcamera)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getFogState](#lglobegetfogstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getLod](#lglobegetlod)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getMarkerAttr](#lglobegetmarkerattr)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getName](#lglobegetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getNeighbors](#lglobegetneighbors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getProvinceAttr](#lglobegetprovinceattr)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getProvinceSector](#lglobegetprovincesector)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getSectorProvinces](#lglobegetsectorprovinces)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:getTimeOfDay](#lglobegettimeofday)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:hideProvince](#lglobehideprovince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:isVisible](#lglobeisvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:moveMarker](#lglobemovemarker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:pan](#lglobepan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:pick](#lglobepick)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:pickLatLon](#lglobepicklatlon)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:pickRaycast](#lglobepickraycast)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:provinceCount](#lglobeprovincecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:reachable](#lglobereachable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:removeArc](#lgloberemovearc)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:removeHeatLayer](#lgloberemoveheatlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:removeLabel](#lgloberemovelabel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:removeLayer](#lgloberemovelayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:removeMarker](#lgloberemovemarker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:removeProvince](#lgloberemoveprovince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:revealAll](#lgloberevealall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:revealProvince](#lgloberevealprovince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setActiveViewer](#lglobesetactiveviewer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setAutoRotationSpeed](#lglobesetautorotationspeed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setBorders](#lglobesetborders)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setCamera](#lglobesetcamera)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setFogState](#lglobesetfogstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setHeatLayer](#lglobesetheatlayer)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setLabelText](#lglobesetlabeltext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setLabelVisible](#lglobesetlabelvisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setLayerAlpha](#lglobesetlayeralpha)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setLayerColor](#lglobesetlayercolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setLayerVisible](#lglobesetlayervisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setMarkerAttr](#lglobesetmarkerattr)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setMarkerPulse](#lglobesetmarkerpulse)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setMarkerRotation](#lglobesetmarkerrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setMarkerVisible](#lglobesetmarkervisible)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setProvinceAttr](#lglobesetprovinceattr)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setProvinceSector](#lglobesetprovincesector)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setProvinceTexture](#lglobesetprovincetexture)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setRotation](#lglobesetrotation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:setTimeOfDay](#lglobesettimeofday)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:type](#lglobetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:typeOf](#lglobetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:update](#lglobeupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobe:zoom](#lglobezoom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobeRegistry:get](#lgloberegistryget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobeRegistry:names](#lgloberegistrynames)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobeRegistry:new](#lgloberegistrynew)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobeRegistry:remove](#lgloberegistryremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobeRegistry:type](#lgloberegistrytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LGlobeRegistry:typeOf](#lgloberegistrytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LGlobe Methods](#lglobe-methods)
+  - [LGlobeRegistry Methods](#lgloberegistry-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -275,6 +61,132 @@ XCOM-style Geoscape globe rendering a province-based sphere with orbit camera, f
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `composition.rs`
+
+- Compose multiple globe views into a single frame via split viewports.
+- Emit render commands for each named globe with per-entry screen center overrides.
+- Iterate the registry, clone camera state, and collect draw output into one batch.
+
+### `draw.rs`
+
+- Emit a complete globe frame as a list of render commands.
+- Draw provinces with fog-of-war, lighting, heat-layer blending, and texture mapping.
+- Render borders with optional polyline smoothing passes.
+- Project and draw great-circle arcs between coordinate pairs.
+- Display animated markers with pulse, rotation, and labels.
+- Emit atmosphere halo circles and LOD-gated text labels.
+
+### `export.rs`
+
+- Export globe province geometry to standard mesh formats.
+- Generate flat OBJ output with one named object per province polygon.
+- Vertex data uses (lon, lat) mapping onto a 2D plane at z=0.
+
+### `fog.rs`
+
+- Compact per-province fog mask storing hidden, explored, and visible states.
+- Bit-packed base64 serialization for save/load round-trips.
+- Per-viewer fog store keyed by viewer name with automatic mask creation.
+- Reveal, hide, explore, and toggle operations on individual or batched provinces.
+- Query helpers for visible/explored id lists and province counts.
+
+### `label.rs`
+
+- Id-keyed label storage for globe map annotations.
+- Insert, remove, move, and toggle visibility of positioned text labels.
+- LOD-aware iteration filters labels by minimum detail tier.
+
+### `layer.rs`
+
+- Named layer storage keyed by string, with insert, remove, and lookup.
+- Per-province color overrides, visibility toggling, and alpha clamping.
+- Z-order–aware color resolution across all visible layers.
+
+### `lighting.rs`
+
+- Globe day/night lighting: sun direction from rotation and time-of-day.
+- Per-province diffuse intensity with ambient floor.
+- Batch intensity computation for province centroid sequences.
+- Terminator-band alpha for smooth day/night transition rendering.
+
+### `loader.rs`
+
+- Load provinces from TOML strings or files using a lightweight inline parser.
+- Load provinces from PNG province-grid images with bounding-box extraction and adjacency detection.
+- Generate approximate province geometry from Voronoi seed points.
+- Convert between internal builder representations and the shared `Province` type.
+- Parse TOML primitives: u32 literals, float pairs, float-4 arrays, string key-value lines.
+
+### `marker.rs`
+
+- Stable-id marker collection for globe pin management.
+- Insert, remove, move, and query markers by id or type.
+- Per-marker visibility toggle and arbitrary string attributes.
+
+### `mod.rs`
+
+- Globe rendering with orbit camera projection and LOD tiers.
+- Province registry, fog-of-war masks, and picking queries.
+- Label, marker, and layer management for map overlays.
+- Synchronization channels for background globe updates.
+
+### `picking.rs`
+
+- Screen-space province picking via ray-polygon intersection.
+- Projects province polygons from 3D globe to 2D screen for hit testing.
+- Selects the front-most visible province under a pointer position.
+
+### `projection.rs`
+
+- Orbit camera with latitude, longitude, zoom, and level-of-detail selection.
+- View-matrix construction from globe rotation, axial tilt, and camera angles.
+- Single-point and polygon projection from lat/lon to screen space.
+- Back-face culling via z-depth test for hidden-hemisphere rejection.
+- Screen-drag-to-pan conversion and vector normalization helpers.
+
+### `province_adapter.rs`
+
+- Sync political colors and fog visibility from the province registry into the globe.
+- Bridge between province game-state and globe rendering data.
+
+### `registry.rs`
+
+- Mutable globe state combining topology, fog, markers, labels, layers, and arcs.
+- Province add/remove/get and sector grouping operations.
+- Heat-layer and arc overlay management with add/replace/remove.
+- Orbit camera integration and screen-space province picking.
+- Frame emission producing render commands for the full globe state.
+- Named globe registry for storing and retrieving multiple globes by name.
+- Reachability caching per faction for path-cost queries.
+
+### `sync.rs`
+
+- Snapshot serialization of globe state for cross-thread transfer.
+- Channel pair for sending and receiving globe snapshots.
+- Build and apply helpers to capture or restore globe state.
+
+### `topology.rs`
+
+- Province graph structure with adjacency caching, centroid lookup, and edge tags.
+- Pathfinding integration via cost functions and reachability queries.
+- Province attribute storage and neighbor-list access.
+- Cache rebuild for bulk topology mutations.
+- Default-cost convenience wrappers for quick path and range checks.
+
+### `types.rs`
+
+- Core data types for the globe subsystem: provinces, markers, labels, arcs, and layers.
+- Province geometry with polygon vertices, centroids, adjacency, and per-edge tags.
+- Render parameters via GlobeSpec: lighting, atmosphere, borders, rotation.
+- Overlay and heat-map layers with per-province color overrides.
+- Marker and label types with style, LOD gating, and pulse animation.
+- Projection output types for screen-space rendering of provinces and arcs.
+- Globe-level error enum for load, lookup, and pathfinding failures.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LGlobe` (63 methods) - Lua-side handle for a named globe stored inside a shared registry.
@@ -285,23 +197,18 @@ XCOM-style Geoscape globe rendering a province-based sphere with orbit camera, f
 ## 📖 API Overview
 
 - Source spec: [docs/specs/globe.md](../blob/main/docs/specs/globe.md)
+- Module-level functions: 8
+- Lua-visible types: 2
+- Total type methods: 69
 
-```lua
-lurek.globe.generateVoronoi(name: string, seeds_tbl: table, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from latitude-longitude seed points.
-lurek.globe.get(name: string) -> LGlobe -- Returns a globe from the module registry by name.
-lurek.globe.greatCircleDistance(la: number, lo: number, lb: number, lo2: number) -> number -- Computes great-circle distance between two latitude-longitude points.
-lurek.globe.greatCirclePath(la: number, lo: number, lb: number, lo2: number, n: integer) -> table -- Computes sampled latitude-longitude points along a great-circle path.
-lurek.globe.latLonToUnit(lat: number, lon: number) -> table -- Converts latitude and longitude to a unit-sphere 3D vector table.
-lurek.globe.loadFromPNG(name: string, png_path: string, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from a PNG file.
-lurek.globe.loadFromTOML(name: string, toml_src: string, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from TOML source text.
-lurek.globe.new(name: string, [spec_tbl]: table) -> LGlobe -- Creates a named globe with optional specification fields in the module registry.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.globe.generateVoronoi
+### Module-Level Functions
+
+#### lurek.globe.generateVoronoi
 
 #### Definition
 
@@ -337,7 +244,7 @@ do
 end
 ```
 
-### lurek.globe.get
+#### lurek.globe.get
 
 #### Definition
 
@@ -372,7 +279,7 @@ do
 end
 ```
 
-### lurek.globe.greatCircleDistance
+#### lurek.globe.greatCircleDistance
 
 #### Definition
 
@@ -410,7 +317,7 @@ do
 end
 ```
 
-### lurek.globe.greatCirclePath
+#### lurek.globe.greatCirclePath
 
 #### Definition
 
@@ -453,7 +360,7 @@ do
 end
 ```
 
-### lurek.globe.latLonToUnit
+#### lurek.globe.latLonToUnit
 
 #### Definition
 
@@ -487,7 +394,7 @@ do
 end
 ```
 
-### lurek.globe.loadFromPNG
+#### lurek.globe.loadFromPNG
 
 #### Definition
 
@@ -523,7 +430,7 @@ do
 end
 ```
 
-### lurek.globe.loadFromTOML
+#### lurek.globe.loadFromTOML
 
 #### Definition
 
@@ -560,7 +467,7 @@ do
 end
 ```
 
-### lurek.globe.new
+#### lurek.globe.new
 
 #### Definition
 
@@ -697,7 +604,9 @@ do
 
 ## 🔹 Module Methods
 
-### LGlobe:addArc
+### LGlobe Methods
+
+#### LGlobe:addArc
 
 #### Definition
 
@@ -738,7 +647,7 @@ do
 end
 ```
 
-### LGlobe:addLabel
+#### LGlobe:addLabel
 
 #### Definition
 
@@ -777,7 +686,7 @@ do
 end
 ```
 
-### LGlobe:addLayer
+#### LGlobe:addLayer
 
 #### Definition
 
@@ -810,7 +719,7 @@ do
 end
 ```
 
-### LGlobe:addMarker
+#### LGlobe:addMarker
 
 #### Definition
 
@@ -849,7 +758,7 @@ do
 end
 ```
 
-### LGlobe:addProvince
+#### LGlobe:addProvince
 
 #### Definition
 
@@ -882,7 +791,7 @@ do
 end
 ```
 
-### LGlobe:cacheReachability
+#### LGlobe:cacheReachability
 
 #### Definition
 
@@ -917,7 +826,7 @@ do
 end
 ```
 
-### LGlobe:clearProvinceTexture
+#### LGlobe:clearProvinceTexture
 
 #### Definition
 
@@ -952,7 +861,7 @@ do
 end
 ```
 
-### LGlobe:decodeFogBase64
+#### LGlobe:decodeFogBase64
 
 #### Definition
 
@@ -988,7 +897,7 @@ do
 end
 ```
 
-### LGlobe:encodeFogBase64
+#### LGlobe:encodeFogBase64
 
 #### Definition
 
@@ -1021,7 +930,7 @@ do
 end
 ```
 
-### LGlobe:exportProvinceMeshOBJ
+#### LGlobe:exportProvinceMeshOBJ
 
 #### Definition
 
@@ -1050,7 +959,7 @@ do
 end
 ```
 
-### LGlobe:findPath
+#### LGlobe:findPath
 
 #### Definition
 
@@ -1086,7 +995,7 @@ do
 end
 ```
 
-### LGlobe:getCachedReachability
+#### LGlobe:getCachedReachability
 
 #### Definition
 
@@ -1121,7 +1030,7 @@ do
 end
 ```
 
-### LGlobe:getCamera
+#### LGlobe:getCamera
 
 #### Definition
 
@@ -1152,7 +1061,7 @@ do
 end
 ```
 
-### LGlobe:getFogState
+#### LGlobe:getFogState
 
 #### Definition
 
@@ -1189,7 +1098,7 @@ do
 end
 ```
 
-### LGlobe:getLod
+#### LGlobe:getLod
 
 #### Definition
 
@@ -1217,7 +1126,7 @@ do
 end
 ```
 
-### LGlobe:getMarkerAttr
+#### LGlobe:getMarkerAttr
 
 #### Definition
 
@@ -1254,7 +1163,7 @@ do
 end
 ```
 
-### LGlobe:getName
+#### LGlobe:getName
 
 #### Definition
 
@@ -1281,7 +1190,7 @@ do
 end
 ```
 
-### LGlobe:getNeighbors
+#### LGlobe:getNeighbors
 
 #### Definition
 
@@ -1315,7 +1224,7 @@ do
 end
 ```
 
-### LGlobe:getProvinceAttr
+#### LGlobe:getProvinceAttr
 
 #### Definition
 
@@ -1352,7 +1261,7 @@ do
 end
 ```
 
-### LGlobe:getProvinceSector
+#### LGlobe:getProvinceSector
 
 #### Definition
 
@@ -1387,7 +1296,7 @@ do
 end
 ```
 
-### LGlobe:getSectorProvinces
+#### LGlobe:getSectorProvinces
 
 #### Definition
 
@@ -1422,7 +1331,7 @@ do
 end
 ```
 
-### LGlobe:getTimeOfDay
+#### LGlobe:getTimeOfDay
 
 #### Definition
 
@@ -1451,7 +1360,7 @@ do
 end
 ```
 
-### LGlobe:hideProvince
+#### LGlobe:hideProvince
 
 #### Definition
 
@@ -1484,7 +1393,7 @@ do
 end
 ```
 
-### LGlobe:isVisible
+#### LGlobe:isVisible
 
 #### Definition
 
@@ -1520,7 +1429,7 @@ do
 end
 ```
 
-### LGlobe:moveMarker
+#### LGlobe:moveMarker
 
 #### Definition
 
@@ -1558,7 +1467,7 @@ do
 end
 ```
 
-### LGlobe:pan
+#### LGlobe:pan
 
 #### Definition
 
@@ -1592,7 +1501,7 @@ do
 end
 ```
 
-### LGlobe:pick
+#### LGlobe:pick
 
 #### Definition
 
@@ -1627,7 +1536,7 @@ do
 end
 ```
 
-### LGlobe:pickLatLon
+#### LGlobe:pickLatLon
 
 #### Definition
 
@@ -1663,7 +1572,7 @@ do
 end
 ```
 
-### LGlobe:pickRaycast
+#### LGlobe:pickRaycast
 
 #### Definition
 
@@ -1700,7 +1609,7 @@ do
 end
 ```
 
-### LGlobe:provinceCount
+#### LGlobe:provinceCount
 
 #### Definition
 
@@ -1727,7 +1636,7 @@ do
 end
 ```
 
-### LGlobe:reachable
+#### LGlobe:reachable
 
 #### Definition
 
@@ -1764,7 +1673,7 @@ do
 end
 ```
 
-### LGlobe:removeArc
+#### LGlobe:removeArc
 
 #### Definition
 
@@ -1798,7 +1707,7 @@ do
 end
 ```
 
-### LGlobe:removeHeatLayer
+#### LGlobe:removeHeatLayer
 
 #### Definition
 
@@ -1832,7 +1741,7 @@ do
 end
 ```
 
-### LGlobe:removeLabel
+#### LGlobe:removeLabel
 
 #### Definition
 
@@ -1866,7 +1775,7 @@ do
 end
 ```
 
-### LGlobe:removeLayer
+#### LGlobe:removeLayer
 
 #### Definition
 
@@ -1900,7 +1809,7 @@ do
 end
 ```
 
-### LGlobe:removeMarker
+#### LGlobe:removeMarker
 
 #### Definition
 
@@ -1934,7 +1843,7 @@ do
 end
 ```
 
-### LGlobe:removeProvince
+#### LGlobe:removeProvince
 
 #### Definition
 
@@ -1968,7 +1877,7 @@ do
 end
 ```
 
-### LGlobe:revealAll
+#### LGlobe:revealAll
 
 #### Definition
 
@@ -1998,7 +1907,7 @@ do
 end
 ```
 
-### LGlobe:revealProvince
+#### LGlobe:revealProvince
 
 #### Definition
 
@@ -2031,7 +1940,7 @@ do
 end
 ```
 
-### LGlobe:setActiveViewer
+#### LGlobe:setActiveViewer
 
 #### Definition
 
@@ -2061,7 +1970,7 @@ do
 end
 ```
 
-### LGlobe:setAutoRotationSpeed
+#### LGlobe:setAutoRotationSpeed
 
 #### Definition
 
@@ -2091,7 +2000,7 @@ do
 end
 ```
 
-### LGlobe:setBorders
+#### LGlobe:setBorders
 
 #### Definition
 
@@ -2121,7 +2030,7 @@ do
 end
 ```
 
-### LGlobe:setCamera
+#### LGlobe:setCamera
 
 #### Definition
 
@@ -2155,7 +2064,7 @@ do
 end
 ```
 
-### LGlobe:setFogState
+#### LGlobe:setFogState
 
 #### Definition
 
@@ -2190,7 +2099,7 @@ do
 end
 ```
 
-### LGlobe:setHeatLayer
+#### LGlobe:setHeatLayer
 
 #### Definition
 
@@ -2228,7 +2137,7 @@ do
 end
 ```
 
-### LGlobe:setLabelText
+#### LGlobe:setLabelText
 
 #### Definition
 
@@ -2264,7 +2173,7 @@ do
 end
 ```
 
-### LGlobe:setLabelVisible
+#### LGlobe:setLabelVisible
 
 #### Definition
 
@@ -2300,7 +2209,7 @@ do
 end
 ```
 
-### LGlobe:setLayerAlpha
+#### LGlobe:setLayerAlpha
 
 #### Definition
 
@@ -2336,7 +2245,7 @@ do
 end
 ```
 
-### LGlobe:setLayerColor
+#### LGlobe:setLayerColor
 
 #### Definition
 
@@ -2381,7 +2290,7 @@ do
 end
 ```
 
-### LGlobe:setLayerVisible
+#### LGlobe:setLayerVisible
 
 #### Definition
 
@@ -2417,7 +2326,7 @@ do
 end
 ```
 
-### LGlobe:setMarkerAttr
+#### LGlobe:setMarkerAttr
 
 #### Definition
 
@@ -2455,7 +2364,7 @@ do
 end
 ```
 
-### LGlobe:setMarkerPulse
+#### LGlobe:setMarkerPulse
 
 #### Definition
 
@@ -2493,7 +2402,7 @@ do
 end
 ```
 
-### LGlobe:setMarkerRotation
+#### LGlobe:setMarkerRotation
 
 #### Definition
 
@@ -2529,7 +2438,7 @@ do
 end
 ```
 
-### LGlobe:setMarkerVisible
+#### LGlobe:setMarkerVisible
 
 #### Definition
 
@@ -2565,7 +2474,7 @@ do
 end
 ```
 
-### LGlobe:setProvinceAttr
+#### LGlobe:setProvinceAttr
 
 #### Definition
 
@@ -2603,7 +2512,7 @@ do
 end
 ```
 
-### LGlobe:setProvinceSector
+#### LGlobe:setProvinceSector
 
 #### Definition
 
@@ -2639,7 +2548,7 @@ do
 end
 ```
 
-### LGlobe:setProvinceTexture
+#### LGlobe:setProvinceTexture
 
 #### Definition
 
@@ -2683,7 +2592,7 @@ do
 end
 ```
 
-### LGlobe:setRotation
+#### LGlobe:setRotation
 
 #### Definition
 
@@ -2713,7 +2622,7 @@ do
 end
 ```
 
-### LGlobe:setTimeOfDay
+#### LGlobe:setTimeOfDay
 
 #### Definition
 
@@ -2743,7 +2652,7 @@ do
 end
 ```
 
-### LGlobe:type
+#### LGlobe:type
 
 #### Definition
 
@@ -2770,7 +2679,7 @@ do
 end
 ```
 
-### LGlobe:typeOf
+#### LGlobe:typeOf
 
 #### Definition
 
@@ -2802,7 +2711,7 @@ do
 end
 ```
 
-### LGlobe:update
+#### LGlobe:update
 
 #### Definition
 
@@ -2832,7 +2741,7 @@ do
 end
 ```
 
-### LGlobe:zoom
+#### LGlobe:zoom
 
 #### Definition
 
@@ -2864,7 +2773,9 @@ do
 end
 ```
 
-### LGlobeRegistry:get
+### LGlobeRegistry Methods
+
+#### LGlobeRegistry:get
 
 #### Definition
 
@@ -2897,7 +2808,7 @@ do
 end
 ```
 
-### LGlobeRegistry:names
+#### LGlobeRegistry:names
 
 #### Definition
 
@@ -2925,7 +2836,7 @@ do
 end
 ```
 
-### LGlobeRegistry:new
+#### LGlobeRegistry:new
 
 #### Definition
 
@@ -2960,7 +2871,7 @@ do
 end
 ```
 
-### LGlobeRegistry:remove
+#### LGlobeRegistry:remove
 
 #### Definition
 
@@ -2993,7 +2904,7 @@ do
 end
 ```
 
-### LGlobeRegistry:type
+#### LGlobeRegistry:type
 
 #### Definition
 
@@ -3021,7 +2932,7 @@ do
 end
 ```
 
-### LGlobeRegistry:typeOf
+#### LGlobeRegistry:typeOf
 
 #### Definition
 

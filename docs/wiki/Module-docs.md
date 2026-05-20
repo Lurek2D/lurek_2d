@@ -10,284 +10,29 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [catalog.rs](#catalogrs)
+  - [entry.rs](#entryrs)
+  - [export.rs](#exportrs)
+  - [mod.rs](#modrs)
+  - [report.rs](#reportrs)
+  - [schema.rs](#schemars)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.docs.checkStaleness](#lurekdocscheckstaleness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.coverage](#lurekdocscoverage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.coverageModule](#lurekdocscoveragemodule)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.describe](#lurekdocsdescribe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.exportAll](#lurekdocsexportall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.exportCheatsheet](#lurekdocsexportcheatsheet)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.exportCompletions](#lurekdocsexportcompletions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.exportHover](#lurekdocsexporthover)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.exportMarkdown](#lurekdocsexportmarkdown)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.exportSignatures](#lurekdocsexportsignatures)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.getCatalog](#lurekdocsgetcatalog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.loadAll](#lurekdocsloadall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.loadToml](#lurekdocsloadtoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.quality](#lurekdocsquality)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.qualityModule](#lurekdocsqualitymodule)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.reflectLive](#lurekdocsreflectlive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.reflectTable](#lurekdocsreflecttable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.resetCatalog](#lurekdocsresetcatalog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.scan](#lurekdocsscan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.scanModule](#lurekdocsscanmodule)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.schema](#lurekdocsschema)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.schemaFromToml](#lurekdocsschemafromtoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.setParamInfo](#lurekdocssetparaminfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.setReturnInfo](#lurekdocssetreturninfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.validate](#lurekdocsvalidate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.docs.validateModule](#lurekdocsvalidatemodule)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LApiCatalog](#lapicatalog)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LDocEntry](#ldocentry)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LQualityReport](#lqualityreport)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LSchema](#lschema)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LValidationReport](#lvalidationreport)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LApiCatalog:entryCount](#lapicatalogentrycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:filter](#lapicatalogfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:getEntries](#lapicataloggetentries)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:getEntry](#lapicataloggetentry)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:getModules](#lapicataloggetmodules)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:getTypeMethods](#lapicataloggettypemethods)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:getTypes](#lapicataloggettypes)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:merge](#lapicatalogmerge)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:search](#lapicatalogsearch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:toJSON](#lapicatalogtojson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:toTable](#lapicatalogtotable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:type](#lapicatalogtype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LApiCatalog:typeOf](#lapicatalogtypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getDeprecated](#ldocentrygetdeprecated)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getDescription](#ldocentrygetdescription)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getExample](#ldocentrygetexample)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getKind](#ldocentrygetkind)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getModule](#ldocentrygetmodule)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getName](#ldocentrygetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getParameters](#ldocentrygetparameters)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getQualifiedName](#ldocentrygetqualifiedname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getReturns](#ldocentrygetreturns)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getScore](#ldocentrygetscore)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:getSince](#ldocentrygetsince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:hasDescription](#ldocentryhasdescription)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:hasExample](#ldocentryhasexample)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:hasParameters](#ldocentryhasparameters)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:hasReturnType](#ldocentryhasreturntype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:type](#ldocentrytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LDocEntry:typeOf](#ldocentrytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:getBest](#lqualityreportgetbest)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:getByGrade](#lqualityreportgetbygrade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:getGrade](#lqualityreportgetgrade)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:getModuleScores](#lqualityreportgetmodulescores)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:getOverallScore](#lqualityreportgetoverallscore)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:getSummary](#lqualityreportgetsummary)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:getWorst](#lqualityreportgetworst)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:toJSON](#lqualityreporttojson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:toTable](#lqualityreporttotable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:type](#lqualityreporttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LQualityReport:typeOf](#lqualityreporttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSchema:assert](#lschemaassert)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSchema:check](#lschemacheck)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSchema:getFields](#lschemagetfields)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSchema:getName](#lschemagetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSchema:type](#lschematype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSchema:typeOf](#lschematypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSchema:validate](#lschemavalidate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:getIncomplete](#lvalidationreportgetincomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:getMissing](#lvalidationreportgetmissing)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:getPhantom](#lvalidationreportgetphantom)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:getSummary](#lvalidationreportgetsummary)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:incompleteCount](#lvalidationreportincompletecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:isValid](#lvalidationreportisvalid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:missingCount](#lvalidationreportmissingcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:phantomCount](#lvalidationreportphantomcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:toJSON](#lvalidationreporttojson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:toTable](#lvalidationreporttotable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:type](#lvalidationreporttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LValidationReport:typeOf](#lvalidationreporttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LApiCatalog Methods](#lapicatalog-methods)
+  - [LDocEntry Methods](#ldocentry-methods)
+  - [LQualityReport Methods](#lqualityreport-methods)
+  - [LSchema Methods](#lschema-methods)
+  - [LValidationReport Methods](#lvalidationreport-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -311,6 +56,50 @@ Validation and quality reporting (`validate`, `quality`, `coverage`) check docum
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `catalog.rs`
+
+- Provide in-memory catalog storage for documentation entries collected from Rust source.
+- Support insertion-order preservation, module grouping, and text search.
+- Offer merge, filter, and deduplication for multi-source doc aggregation.
+
+### `entry.rs`
+
+- Define normalized documentation record types for lurek API symbols.
+- Model parameter, return, and metadata fields used by export and report stages.
+- Provide completeness validation helpers for entry quality checks.
+
+### `export.rs`
+
+- Build JSON payloads for IDE completion, hover, and signature help from doc entries.
+- Support compact and rich output modes for different consumer needs.
+- Write individual or bundled JSON files to an output directory.
+- Serialize via buffered writers with human-readable pretty formatting.
+- Separate public export entry points from internal payload builders.
+
+### `mod.rs`
+
+- Aggregate documentation infrastructure: catalog, entry models, export, reporting, and schema.
+- Re-export primary types so callers can import from the top-level docs module.
+- Support the doc generation pipeline and IDE tooling data flow.
+
+### `report.rs`
+
+- Compute per-entry quality scores from completeness of description, params, and metadata.
+- Convert scores to letter grades for human-readable reporting.
+- Validate catalogs for missing, phantom, and incomplete entries.
+- Aggregate module-level and overall quality metrics from a catalog snapshot.
+- Support both catalog-based and standalone entry-based report construction.
+
+### `schema.rs`
+
+- Re-export schema validation types from the lurek_schema crate.
+- Provide field rules, type definitions, and error types to docs modules.
+- Keep schema source of truth external; this file is an access bridge.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LApiCatalog` (13 methods) - Provides Lua methods for querying, merging, filtering, and exporting catalog data.
@@ -324,34 +113,18 @@ Validation and quality reporting (`validate`, `quality`, `coverage`) check docum
 ## 📖 API Overview
 
 - Source spec: [docs/specs/docs.md](../blob/main/docs/specs/docs.md)
+- Module-level functions: 26
+- Lua-visible types: 5
+- Total type methods: 60
 
-```lua
-lurek.docs.checkStaleness(catalog_ud: LApiCatalog, source_dir: string) -> table -- Lists source files in a directory for simple documentation staleness checks.
-lurek.docs.coverage([catalog_ud]: LApiCatalog) -> integer -- Returns documented and live API counts for the full `lurek` table.
-lurek.docs.coverageModule(module_name: string, [catalog_ud]: LApiCatalog) -> integer -- Returns documented and live API counts for one module.
-lurek.docs.describe(qualified_name: string, description: string) -- Adds or updates the description for one editable catalog entry.
-lurek.docs.exportAll(catalog_ud: LApiCatalog, output_dir: string) -- Exports all editor documentation artifacts for a catalog into a directory.
-lurek.docs.exportCheatsheet(catalog_ud: LApiCatalog, path: string) -- Writes a compact text cheatsheet from catalog entries.
-lurek.docs.exportCompletions(catalog_ud: LApiCatalog, path: string) -- Exports catalog completion metadata to a file.
-lurek.docs.exportHover(catalog_ud: LApiCatalog, path: string) -- Exports catalog hover metadata to a file.
-lurek.docs.exportMarkdown(catalog_ud: LApiCatalog, path: string) -- Writes a Markdown API reference from catalog entries.
-lurek.docs.exportSignatures(catalog_ud: LApiCatalog, path: string) -- Exports catalog signature metadata to a file.
-lurek.docs.getCatalog() -> LApiCatalog -- Returns the editable in-memory documentation catalog.
-lurek.docs.loadAll(directory: string) -> LApiCatalog -- Loads all TOML documentation catalog files from a directory and combines their entries.
-lurek.docs.loadToml(path: string) -> LApiCatalog -- Loads a TOML documentation catalog file and converts its entries into an API catalog.
-lurek.docs.quality([catalog_ud]: LApiCatalog) -> LQualityReport -- Computes documentation quality for a supplied catalog or the editable in-memory catalog.
-lurek.docs.qualityModule(module_name: string, [catalog_ud]: LApiCatalog) -> LQualityReport -- Computes documentation quality for entries belonging to one module.
-lurek.docs.reflectLive([ns]: string) -> table -- Reflects live `lurek` module tables into plain name and type rows.
-lurek.docs.reflectTable(tbl: table, [name]: string) -> table -- Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
-lurek.docs.resetCatalog() -- Clears the editable in-memory documentation catalog.
--- ... 8 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.docs.checkStaleness
+### Module-Level Functions
+
+#### lurek.docs.checkStaleness
 
 #### Definition
 
@@ -386,7 +159,7 @@ do
 end
 ```
 
-### lurek.docs.coverage
+#### lurek.docs.coverage
 
 #### Definition
 
@@ -420,7 +193,7 @@ do
 end
 ```
 
-### lurek.docs.coverageModule
+#### lurek.docs.coverageModule
 
 #### Definition
 
@@ -456,7 +229,7 @@ do
 end
 ```
 
-### lurek.docs.describe
+#### lurek.docs.describe
 
 #### Definition
 
@@ -487,7 +260,7 @@ do
 end
 ```
 
-### lurek.docs.exportAll
+#### lurek.docs.exportAll
 
 #### Definition
 
@@ -519,7 +292,7 @@ do
 end
 ```
 
-### lurek.docs.exportCheatsheet
+#### lurek.docs.exportCheatsheet
 
 #### Definition
 
@@ -551,7 +324,7 @@ do
 end
 ```
 
-### lurek.docs.exportCompletions
+#### lurek.docs.exportCompletions
 
 #### Definition
 
@@ -583,7 +356,7 @@ do
 end
 ```
 
-### lurek.docs.exportHover
+#### lurek.docs.exportHover
 
 #### Definition
 
@@ -615,7 +388,7 @@ do
 end
 ```
 
-### lurek.docs.exportMarkdown
+#### lurek.docs.exportMarkdown
 
 #### Definition
 
@@ -647,7 +420,7 @@ do
 end
 ```
 
-### lurek.docs.exportSignatures
+#### lurek.docs.exportSignatures
 
 #### Definition
 
@@ -679,7 +452,7 @@ do
 end
 ```
 
-### lurek.docs.getCatalog
+#### lurek.docs.getCatalog
 
 #### Definition
 
@@ -706,7 +479,7 @@ do
 end
 ```
 
-### lurek.docs.loadAll
+#### lurek.docs.loadAll
 
 #### Definition
 
@@ -782,7 +555,7 @@ end
 --@api-stub: lurek.docs.validateModule
 ```
 
-### lurek.docs.loadToml
+#### lurek.docs.loadToml
 
 #### Definition
 
@@ -857,7 +630,7 @@ do
 end
 ```
 
-### lurek.docs.quality
+#### lurek.docs.quality
 
 #### Definition
 
@@ -890,7 +663,7 @@ do
 end
 ```
 
-### lurek.docs.qualityModule
+#### lurek.docs.qualityModule
 
 #### Definition
 
@@ -925,7 +698,7 @@ do
 end
 ```
 
-### lurek.docs.reflectLive
+#### lurek.docs.reflectLive
 
 #### Definition
 
@@ -957,7 +730,7 @@ do
 end
 ```
 
-### lurek.docs.reflectTable
+#### lurek.docs.reflectTable
 
 #### Definition
 
@@ -992,7 +765,7 @@ do
 end
 ```
 
-### lurek.docs.resetCatalog
+#### lurek.docs.resetCatalog
 
 #### Definition
 
@@ -1017,7 +790,7 @@ do
 end
 ```
 
-### lurek.docs.scan
+#### lurek.docs.scan
 
 #### Definition
 
@@ -1049,7 +822,7 @@ do
 end
 ```
 
-### lurek.docs.scanModule
+#### lurek.docs.scanModule
 
 #### Definition
 
@@ -1081,7 +854,7 @@ do
 end
 ```
 
-### lurek.docs.schema
+#### lurek.docs.schema
 
 #### Definition
 
@@ -1115,7 +888,7 @@ do
 end
 ```
 
-### lurek.docs.schemaFromToml
+#### lurek.docs.schemaFromToml
 
 #### Definition
 
@@ -1148,7 +921,7 @@ do
 end
 ```
 
-### lurek.docs.setParamInfo
+#### lurek.docs.setParamInfo
 
 #### Definition
 
@@ -1179,7 +952,7 @@ do
 end
 ```
 
-### lurek.docs.setReturnInfo
+#### lurek.docs.setReturnInfo
 
 #### Definition
 
@@ -1212,7 +985,7 @@ do
 end
 ```
 
-### lurek.docs.validate
+#### lurek.docs.validate
 
 #### Definition
 
@@ -1245,7 +1018,7 @@ do
 end
 ```
 
-### lurek.docs.validateModule
+#### lurek.docs.validateModule
 
 #### Definition
 
@@ -1460,7 +1233,9 @@ end
 
 ## 🔹 Module Methods
 
-### LApiCatalog:entryCount
+### LApiCatalog Methods
+
+#### LApiCatalog:entryCount
 
 #### Definition
 
@@ -1494,7 +1269,7 @@ do
 end
 ```
 
-### LApiCatalog:filter
+#### LApiCatalog:filter
 
 #### Definition
 
@@ -1570,7 +1345,7 @@ end
 do
 ```
 
-### LApiCatalog:getEntries
+#### LApiCatalog:getEntries
 
 #### Definition
 
@@ -1604,7 +1379,7 @@ do
 end
 ```
 
-### LApiCatalog:getEntry
+#### LApiCatalog:getEntry
 
 #### Definition
 
@@ -1636,7 +1411,7 @@ do
 end
 ```
 
-### LApiCatalog:getModules
+#### LApiCatalog:getModules
 
 #### Definition
 
@@ -1664,7 +1439,7 @@ do
 end
 ```
 
-### LApiCatalog:getTypeMethods
+#### LApiCatalog:getTypeMethods
 
 #### Definition
 
@@ -1697,7 +1472,7 @@ do
 end
 ```
 
-### LApiCatalog:getTypes
+#### LApiCatalog:getTypes
 
 #### Definition
 
@@ -1730,7 +1505,7 @@ do
 end
 ```
 
-### LApiCatalog:merge
+#### LApiCatalog:merge
 
 #### Definition
 
@@ -1764,7 +1539,7 @@ do
 end
 ```
 
-### LApiCatalog:search
+#### LApiCatalog:search
 
 #### Definition
 
@@ -1797,7 +1572,7 @@ do
 end
 ```
 
-### LApiCatalog:toJSON
+#### LApiCatalog:toJSON
 
 #### Definition
 
@@ -1825,7 +1600,7 @@ do
 end
 ```
 
-### LApiCatalog:toTable
+#### LApiCatalog:toTable
 
 #### Definition
 
@@ -1853,7 +1628,7 @@ do
 end
 ```
 
-### LApiCatalog:type
+#### LApiCatalog:type
 
 #### Definition
 
@@ -1880,7 +1655,7 @@ do
 end
 ```
 
-### LApiCatalog:typeOf
+#### LApiCatalog:typeOf
 
 #### Definition
 
@@ -1912,7 +1687,9 @@ do
 end
 ```
 
-### LDocEntry:getDeprecated
+### LDocEntry Methods
+
+#### LDocEntry:getDeprecated
 
 #### Definition
 
@@ -1939,7 +1716,7 @@ do
 end
 ```
 
-### LDocEntry:getDescription
+#### LDocEntry:getDescription
 
 #### Definition
 
@@ -1966,7 +1743,7 @@ do
 end
 ```
 
-### LDocEntry:getExample
+#### LDocEntry:getExample
 
 #### Definition
 
@@ -1993,7 +1770,7 @@ do
 end
 ```
 
-### LDocEntry:getKind
+#### LDocEntry:getKind
 
 #### Definition
 
@@ -2020,7 +1797,7 @@ do
 end
 ```
 
-### LDocEntry:getModule
+#### LDocEntry:getModule
 
 #### Definition
 
@@ -2047,7 +1824,7 @@ do
 end
 ```
 
-### LDocEntry:getName
+#### LDocEntry:getName
 
 #### Definition
 
@@ -2074,7 +1851,7 @@ do
 end
 ```
 
-### LDocEntry:getParameters
+#### LDocEntry:getParameters
 
 #### Definition
 
@@ -2101,7 +1878,7 @@ do
 end
 ```
 
-### LDocEntry:getQualifiedName
+#### LDocEntry:getQualifiedName
 
 #### Definition
 
@@ -2128,7 +1905,7 @@ do
 end
 ```
 
-### LDocEntry:getReturns
+#### LDocEntry:getReturns
 
 #### Definition
 
@@ -2155,7 +1932,7 @@ do
 end
 ```
 
-### LDocEntry:getScore
+#### LDocEntry:getScore
 
 #### Definition
 
@@ -2182,7 +1959,7 @@ do
 end
 ```
 
-### LDocEntry:getSince
+#### LDocEntry:getSince
 
 #### Definition
 
@@ -2209,7 +1986,7 @@ do
 end
 ```
 
-### LDocEntry:hasDescription
+#### LDocEntry:hasDescription
 
 #### Definition
 
@@ -2236,7 +2013,7 @@ do
 end
 ```
 
-### LDocEntry:hasExample
+#### LDocEntry:hasExample
 
 #### Definition
 
@@ -2263,7 +2040,7 @@ do
 end
 ```
 
-### LDocEntry:hasParameters
+#### LDocEntry:hasParameters
 
 #### Definition
 
@@ -2290,7 +2067,7 @@ do
 end
 ```
 
-### LDocEntry:hasReturnType
+#### LDocEntry:hasReturnType
 
 #### Definition
 
@@ -2317,7 +2094,7 @@ do
 end
 ```
 
-### LDocEntry:type
+#### LDocEntry:type
 
 #### Definition
 
@@ -2344,7 +2121,7 @@ do
 end
 ```
 
-### LDocEntry:typeOf
+#### LDocEntry:typeOf
 
 #### Definition
 
@@ -2376,7 +2153,9 @@ do
 end
 ```
 
-### LQualityReport:getBest
+### LQualityReport Methods
+
+#### LQualityReport:getBest
 
 #### Definition
 
@@ -2410,7 +2189,7 @@ do
 end
 ```
 
-### LQualityReport:getByGrade
+#### LQualityReport:getByGrade
 
 #### Definition
 
@@ -2444,7 +2223,7 @@ do
 end
 ```
 
-### LQualityReport:getGrade
+#### LQualityReport:getGrade
 
 #### Definition
 
@@ -2472,7 +2251,7 @@ do
 end
 ```
 
-### LQualityReport:getModuleScores
+#### LQualityReport:getModuleScores
 
 #### Definition
 
@@ -2501,7 +2280,7 @@ do
 end
 ```
 
-### LQualityReport:getOverallScore
+#### LQualityReport:getOverallScore
 
 #### Definition
 
@@ -2529,7 +2308,7 @@ do
 end
 ```
 
-### LQualityReport:getSummary
+#### LQualityReport:getSummary
 
 #### Definition
 
@@ -2557,7 +2336,7 @@ do
 end
 ```
 
-### LQualityReport:getWorst
+#### LQualityReport:getWorst
 
 #### Definition
 
@@ -2591,7 +2370,7 @@ do
 end
 ```
 
-### LQualityReport:toJSON
+#### LQualityReport:toJSON
 
 #### Definition
 
@@ -2620,7 +2399,7 @@ do
 end
 ```
 
-### LQualityReport:toTable
+#### LQualityReport:toTable
 
 #### Definition
 
@@ -2649,7 +2428,7 @@ do
 end
 ```
 
-### LQualityReport:type
+#### LQualityReport:type
 
 #### Definition
 
@@ -2677,7 +2456,7 @@ do
 end
 ```
 
-### LQualityReport:typeOf
+#### LQualityReport:typeOf
 
 #### Definition
 
@@ -2710,7 +2489,9 @@ do
 end
 ```
 
-### LSchema:assert
+### LSchema Methods
+
+#### LSchema:assert
 
 #### Definition
 
@@ -2740,7 +2521,7 @@ do
 end
 ```
 
-### LSchema:check
+#### LSchema:check
 
 #### Definition
 
@@ -2772,7 +2553,7 @@ do
 end
 ```
 
-### LSchema:getFields
+#### LSchema:getFields
 
 #### Definition
 
@@ -2800,7 +2581,7 @@ do
 end
 ```
 
-### LSchema:getName
+#### LSchema:getName
 
 #### Definition
 
@@ -2827,7 +2608,7 @@ do
 end
 ```
 
-### LSchema:type
+#### LSchema:type
 
 #### Definition
 
@@ -2854,7 +2635,7 @@ do
 end
 ```
 
-### LSchema:typeOf
+#### LSchema:typeOf
 
 #### Definition
 
@@ -2886,7 +2667,7 @@ do
 end
 ```
 
-### LSchema:validate
+#### LSchema:validate
 
 #### Definition
 
@@ -2920,7 +2701,9 @@ do
 end
 ```
 
-### LValidationReport:getIncomplete
+### LValidationReport Methods
+
+#### LValidationReport:getIncomplete
 
 #### Definition
 
@@ -2949,7 +2732,7 @@ do
 end
 ```
 
-### LValidationReport:getMissing
+#### LValidationReport:getMissing
 
 #### Definition
 
@@ -2978,7 +2761,7 @@ do
 end
 ```
 
-### LValidationReport:getPhantom
+#### LValidationReport:getPhantom
 
 #### Definition
 
@@ -3007,7 +2790,7 @@ do
 end
 ```
 
-### LValidationReport:getSummary
+#### LValidationReport:getSummary
 
 #### Definition
 
@@ -3035,7 +2818,7 @@ do
 end
 ```
 
-### LValidationReport:incompleteCount
+#### LValidationReport:incompleteCount
 
 #### Definition
 
@@ -3063,7 +2846,7 @@ do
 end
 ```
 
-### LValidationReport:isValid
+#### LValidationReport:isValid
 
 #### Definition
 
@@ -3091,7 +2874,7 @@ do
 end
 ```
 
-### LValidationReport:missingCount
+#### LValidationReport:missingCount
 
 #### Definition
 
@@ -3119,7 +2902,7 @@ do
 end
 ```
 
-### LValidationReport:phantomCount
+#### LValidationReport:phantomCount
 
 #### Definition
 
@@ -3147,7 +2930,7 @@ do
 end
 ```
 
-### LValidationReport:toJSON
+#### LValidationReport:toJSON
 
 #### Definition
 
@@ -3176,7 +2959,7 @@ do
 end
 ```
 
-### LValidationReport:toTable
+#### LValidationReport:toTable
 
 #### Definition
 
@@ -3205,7 +2988,7 @@ do
 end
 ```
 
-### LValidationReport:type
+#### LValidationReport:type
 
 #### Definition
 
@@ -3233,7 +3016,7 @@ do
 end
 ```
 
-### LValidationReport:typeOf
+#### LValidationReport:typeOf
 
 #### Definition
 

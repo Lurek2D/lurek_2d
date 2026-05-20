@@ -10,93 +10,11 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.runtime.errorSnapshot](#lurekruntimeerrorsnapshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getArch](#lurekruntimegetarch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getArgs](#lurekruntimegetargs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getBatchResults](#lurekruntimegetbatchresults)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getClipboardText](#lurekruntimegetclipboardtext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getConfig](#lurekruntimegetconfig)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getDebugOverlay](#lurekruntimegetdebugoverlay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getEnv](#lurekruntimegetenv)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getInfo](#lurekruntimegetinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getLastError](#lurekruntimegetlasterror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getLogLevel](#lurekruntimegetloglevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getMemorySize](#lurekruntimegetmemorysize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getMessage](#lurekruntimegetmessage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getMessageCount](#lurekruntimegetmessagecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getOS](#lurekruntimegetos)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getPowerInfo](#lurekruntimegetpowerinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getPreferredLocales](#lurekruntimegetpreferredlocales)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getProcessorCount](#lurekruntimegetprocessorcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.getVersion](#lurekruntimegetversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.hasMessage](#lurekruntimehasmessage)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.log](#lurekruntimelog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.openURL](#lurekruntimeopenurl)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.parseArgs](#lurekruntimeparseargs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.reloadConfig](#lurekruntimereloadconfig)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.runBatch](#lurekruntimerunbatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.setClipboardText](#lurekruntimesetclipboardtext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.setDebugOverlay](#lurekruntimesetdebugoverlay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.runtime.setLogLevel](#lurekruntimesetloglevel)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -118,6 +36,12 @@ lurek.system - Provides OS-level utilities including clipboard, system info, env
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+No source-file descriptions were found in the module spec.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -126,34 +50,18 @@ This module has no separate Lua-visible classes in the generated API data.
 
 ## 📖 API Overview
 
+- Module-level functions: 28
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.runtime.errorSnapshot(msg: string) -> string -- Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
-lurek.runtime.getArch() -> string -- Returns the CPU architecture of the host system.
-lurek.runtime.getArgs() -> string[] -- Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
-lurek.runtime.getBatchResults(results: table) -> number -- Summarizes batch results by counting passed, failed, and skipped tasks.
-lurek.runtime.getClipboardText() -> string -- Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unava...
-lurek.runtime.getConfig() -> table -- Returns a table containing the current engine runtime configuration values.
-lurek.runtime.getDebugOverlay() -> boolean -- Returns whether the on-screen debug overlay is currently enabled.
-lurek.runtime.getEnv(name: string) -> string -- Reads an environment variable by name. Returns `nil` if the variable is not set.
-lurek.runtime.getInfo() -> table -- Returns a table with comprehensive engine and host information.
-lurek.runtime.getLastError() -> table -- Returns the last error for Lua scripts in this module.
-lurek.runtime.getLogLevel() -> string -- Returns the current engine log verbosity level as a string.
-lurek.runtime.getMemorySize() -> number -- Returns the total physical memory of the host system in megabytes.
-lurek.runtime.getMessage(id: string) -> string -- Resolves a message string by its identifier from the engine message catalog.
-lurek.runtime.getMessageCount() -> number -- Returns the total number of messages registered in the engine message catalog.
-lurek.runtime.getOS() -> string -- Returns the name of the host operating system as a string.
-lurek.runtime.getPowerInfo() -> string -- Returns the current power supply state, battery percentage, and estimated time remaining.
-lurek.runtime.getPreferredLocales() -> string[] -- Returns a list of the user's preferred locale identifiers from the operating system.
-lurek.runtime.getProcessorCount() -> number -- Returns the number of logical processors available on the host machine.
--- ... 10 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.runtime.errorSnapshot
+### Module-Level Functions
+
+#### lurek.runtime.errorSnapshot
 
 #### Definition
 
@@ -188,7 +96,7 @@ do
 end
 ```
 
-### lurek.runtime.getArch
+#### lurek.runtime.getArch
 
 #### Definition
 
@@ -214,7 +122,7 @@ do
 end
 ```
 
-### lurek.runtime.getArgs
+#### lurek.runtime.getArgs
 
 #### Definition
 
@@ -241,7 +149,7 @@ do
 end
 ```
 
-### lurek.runtime.getBatchResults
+#### lurek.runtime.getBatchResults
 
 #### Definition
 
@@ -275,7 +183,7 @@ do
 end
 ```
 
-### lurek.runtime.getClipboardText
+#### lurek.runtime.getClipboardText
 
 #### Definition
 
@@ -303,7 +211,7 @@ do
 end
 ```
 
-### lurek.runtime.getConfig
+#### lurek.runtime.getConfig
 
 #### Definition
 
@@ -331,7 +239,7 @@ do
 end
 ```
 
-### lurek.runtime.getDebugOverlay
+#### lurek.runtime.getDebugOverlay
 
 #### Definition
 
@@ -360,7 +268,7 @@ do
 end
 ```
 
-### lurek.runtime.getEnv
+#### lurek.runtime.getEnv
 
 #### Definition
 
@@ -393,7 +301,7 @@ do
 end
 ```
 
-### lurek.runtime.getInfo
+#### lurek.runtime.getInfo
 
 #### Definition
 
@@ -422,7 +330,7 @@ do
 end
 ```
 
-### lurek.runtime.getLastError
+#### lurek.runtime.getLastError
 
 #### Definition
 
@@ -450,7 +358,7 @@ do
 end
 ```
 
-### lurek.runtime.getLogLevel
+#### lurek.runtime.getLogLevel
 
 #### Definition
 
@@ -476,7 +384,7 @@ do
 end
 ```
 
-### lurek.runtime.getMemorySize
+#### lurek.runtime.getMemorySize
 
 #### Definition
 
@@ -502,7 +410,7 @@ do
 end
 ```
 
-### lurek.runtime.getMessage
+#### lurek.runtime.getMessage
 
 #### Definition
 
@@ -535,7 +443,7 @@ do
 end
 ```
 
-### lurek.runtime.getMessageCount
+#### lurek.runtime.getMessageCount
 
 #### Definition
 
@@ -561,7 +469,7 @@ do
 end
 ```
 
-### lurek.runtime.getOS
+#### lurek.runtime.getOS
 
 #### Definition
 
@@ -587,7 +495,7 @@ do
 end
 ```
 
-### lurek.runtime.getPowerInfo
+#### lurek.runtime.getPowerInfo
 
 #### Definition
 
@@ -618,7 +526,7 @@ do
 end
 ```
 
-### lurek.runtime.getPreferredLocales
+#### lurek.runtime.getPreferredLocales
 
 #### Definition
 
@@ -648,7 +556,7 @@ do
 end
 ```
 
-### lurek.runtime.getProcessorCount
+#### lurek.runtime.getProcessorCount
 
 #### Definition
 
@@ -675,7 +583,7 @@ do
 end
 ```
 
-### lurek.runtime.getVersion
+#### lurek.runtime.getVersion
 
 #### Definition
 
@@ -702,7 +610,7 @@ do
 end
 ```
 
-### lurek.runtime.hasMessage
+#### lurek.runtime.hasMessage
 
 #### Definition
 
@@ -733,7 +641,7 @@ do
 end
 ```
 
-### lurek.runtime.log
+#### lurek.runtime.log
 
 #### Definition
 
@@ -763,7 +671,7 @@ do
 end
 ```
 
-### lurek.runtime.openURL
+#### lurek.runtime.openURL
 
 #### Definition
 
@@ -797,7 +705,7 @@ do
 end
 ```
 
-### lurek.runtime.parseArgs
+#### lurek.runtime.parseArgs
 
 #### Definition
 
@@ -831,7 +739,7 @@ do
 end
 ```
 
-### lurek.runtime.reloadConfig
+#### lurek.runtime.reloadConfig
 
 #### Definition
 
@@ -857,7 +765,7 @@ do
 end
 ```
 
-### lurek.runtime.runBatch
+#### lurek.runtime.runBatch
 
 #### Definition
 
@@ -892,7 +800,7 @@ do
 end
 ```
 
-### lurek.runtime.setClipboardText
+#### lurek.runtime.setClipboardText
 
 #### Definition
 
@@ -921,7 +829,7 @@ do
 end
 ```
 
-### lurek.runtime.setDebugOverlay
+#### lurek.runtime.setDebugOverlay
 
 #### Definition
 
@@ -953,7 +861,7 @@ do
 end
 ```
 
-### lurek.runtime.setLogLevel
+#### lurek.runtime.setLogLevel
 
 #### Definition
 

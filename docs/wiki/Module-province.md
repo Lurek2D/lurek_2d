@@ -10,131 +10,28 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [borders.rs](#bordersrs)
+  - [cache.rs](#cachers)
+  - [events.rs](#eventsrs)
+  - [gpu_bridge.rs](#gpubridgers)
+  - [import.rs](#importrs)
+  - [labels.rs](#labelsrs)
+  - [map_modes.rs](#mapmodesrs)
+  - [mod.rs](#modrs)
+  - [registry.rs](#registryrs)
+  - [render.rs](#renderrs)
+  - [topology.rs](#topologyrs)
+  - [types.rs](#typesrs)
+  - [view_transform.rs](#viewtransformrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.province.exists](#lurekprovinceexists)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.province.get](#lurekprovinceget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.province.getActive](#lurekprovincegetactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.province.newFromPng](#lurekprovincenewfrompng)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.province.remove](#lurekprovinceremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.province.sanitizeMarkedPng](#lurekprovincesanitizemarkedpng)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.province.setActive](#lurekprovincesetactive)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.province.zoomCameraAt](#lurekprovincezoomcameraat)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LProvinceRegistry](#lprovinceregistry)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LProvinceRegistry:adjacencies](#lprovinceregistryadjacencies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:borderSegments](#lprovinceregistrybordersegments)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:fitCamera](#lprovinceregistryfitcamera)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getAt](#lprovinceregistrygetat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getBorderClass](#lprovinceregistrygetborderclass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getChangesSince](#lprovinceregistrygetchangessince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getHeight](#lprovinceregistrygetheight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getName](#lprovinceregistrygetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getNeighbors](#lprovinceregistrygetneighbors)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getProvince](#lprovinceregistrygetprovince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getRevision](#lprovinceregistrygetrevision)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:getWidth](#lprovinceregistrygetwidth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:importMetadataFromFiles](#lprovinceregistryimportmetadatafromfiles)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:provinceCount](#lprovinceregistryprovincecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:provinceIds](#lprovinceregistryprovinceids)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:provinceSpans](#lprovinceregistryprovincespans)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:render](#lprovinceregistryrender)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:screenToMap](#lprovinceregistryscreentomap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:screenToProvince](#lprovinceregistryscreentoprovince)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setAttr](#lprovinceregistrysetattr)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setBorderClass](#lprovinceregistrysetborderclass)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setBorderStyle](#lprovinceregistrysetborderstyle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setCapital](#lprovinceregistrysetcapital)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setFogState](#lprovinceregistrysetfogstate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setLabelLine](#lprovinceregistrysetlabelline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setLabelText](#lprovinceregistrysetlabeltext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setPoliticalColor](#lprovinceregistrysetpoliticalcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setTerrainType](#lprovinceregistrysetterraintype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:setVisibilityState](#lprovinceregistrysetvisibilitystate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:type](#lprovinceregistrytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LProvinceRegistry:typeOf](#lprovinceregistrytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LProvinceRegistry Methods](#lprovinceregistry-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -158,6 +55,104 @@ Engine-native province runtime for strategy-game maps providing topology managem
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `borders.rs`
+
+- Classify shared borders between adjacent provinces by terrain type.
+- Map land/water combinations to discrete border classes (land-land, coast, sea-sea).
+- Provide a single pure function with no side effects for pipeline integration.
+
+### `cache.rs`
+
+- Serialisable geometry cache for province spans and border segments.
+- Binary encode/decode with versioned little-endian format.
+- Built from a ProvinceRegistry snapshot for fast load without re-scanning.
+
+### `events.rs`
+
+- Change-log entries for single-field province mutations (colour, terrain, border, fog, visibility).
+- High-level map events emitted to Lua callbacks after batched province updates.
+- Typed signals for map-mode switches, palette replacements, and fog overlays.
+
+### `gpu_bridge.rs`
+
+- GPU-uploadable province data bridge between registry and render pipeline.
+- Packs province style fields into a repr(C) record for direct buffer upload.
+- Builds sorted record arrays from the province registry for deterministic GPU ordering.
+
+### `import.rs`
+
+- Province metadata import pipeline: colour-map PNG + RGB CSV + optional TOML → registry.
+- Marker PNG sanitization: replace capital and label marker pixels with nearest non-marker neighbour.
+- RGB colour CSV parsing mapping packed (R,G,B) tuples to numeric game_id values.
+- TOML province info parsing for display name and terrain token fields.
+- Pixel-level marker detection with configurable thresholds for capital (near-white) and label (magenta) markers.
+- Expanding-ring neighbour search to resolve marker pixel ownership from surrounding province colours.
+- Deterministic political colour derivation from game_id with fixed sea-blue for water provinces.
+- Label line extraction: find longest-distance pair from label marker point clusters per province.
+- Full import pipeline wiring terrain type, political colour, attributes, capitals, and label lines into the registry.
+
+### `labels.rs`
+
+- Compute pixel-weighted centroids from province span data.
+- Map province IDs to their geometric center for label placement.
+
+### `map_modes.rs`
+
+- Map-mode enum selecting which province style field drives fill colour.
+- Colour resolution logic mapping political, terrain, and visibility modes to RGBA.
+- String round-trip helpers for mode serialisation and Lua interop.
+
+### `mod.rs`
+
+- Province map system: registry, geometry cache, GPU bridge, and rendering.
+- Imports colour-map PNG + CSV/TOML metadata into an authoritative ProvinceRegistry.
+- Generates RenderCommands for fills, borders, capitals, and text labels.
+- Provides view-transform helpers for camera fitting and screen-to-map projection.
+
+### `registry.rs`
+
+- Central province registry: owns pixel grid, span runs, adjacency graph, and per-province records.
+- Builds from a ProvinceGrid or PNG colour-map; computes spans, bounding boxes, and centroids.
+- Provides fast lookup by pixel coordinate, province id, or bounding box.
+- Manages mutable province style (political colour, terrain, fog, visibility, border style).
+- Stores capital positions, label anchor lines, and label text per province.
+- Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
+- Maintains a monotonic revision counter and ordered change log for incremental sync.
+- Supports border class overrides keyed by normalised province pair.
+- Stores arbitrary string key-value attributes per province via set_attr.
+
+### `render.rs`
+
+- Province map rendering: convert registry data into a flat RenderCommand list.
+- Viewport culling based on screen bounds and zoom/pan transform.
+- Fill rendering via per-province span rectangles coloured by the active map mode.
+- Border rendering with colour classification (land-land, coast, sea-sea, special).
+- Capital dot markers and text labels with shadow offset.
+- Hover and selection highlight outlines for interactive feedback.
+
+### `topology.rs`
+
+- Undirected adjacency graph storing sorted neighbour lists per province.
+- Rebuild from raw id pairs with dedup and self-loop filtering.
+- Binary-search-based neighbour lookup and adjacency queries.
+- Extraction of all province ids and unique adjacency pairs.
+
+### `types.rs`
+
+- Core type definitions for the province map system.
+- ProvinceId alias, BorderClass enum for adjacency classification, and ProvinceStyle for per-province visuals.
+- ProvinceSnapshot provides an immutable point-in-time view of province state.
+
+### `view_transform.rs`
+
+- Camera fitting, zoom-at-anchor, and coordinate conversion between screen, map, and cell space.
+- Screen-to-map and map-to-cell transforms with safe clamping for zero-size or non-finite inputs.
+- All functions are pure (no state); denominators clamped to avoid division by zero.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LProvinceRegistry` (31 methods) - Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
@@ -167,23 +162,18 @@ Engine-native province runtime for strategy-game maps providing topology managem
 ## 📖 API Overview
 
 - Source spec: [docs/specs/province.md](../blob/main/docs/specs/province.md)
+- Module-level functions: 8
+- Lua-visible types: 1
+- Total type methods: 31
 
-```lua
-lurek.province.exists(name: string) -> boolean -- Checks whether a province registry with the given name exists.
-lurek.province.get(name: string) -> LProvinceRegistry -- Retrieves an existing province registry by name. Returns nil if no registry with that name has been created.
-lurek.province.getActive() -> LProvinceRegistry -- Returns the currently active province registry, or nil if none is set.
-lurek.province.newFromPng(name: string, png_path: string) -> LProvinceRegistry -- Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct...
-lurek.province.remove(name: string) -> boolean -- Removes a province registry by name and clears the active registry if it was the one removed. Returns true...
-lurek.province.sanitizeMarkedPng(input_png: string, output_png: string, [opts]: table) -> table -- Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color...
-lurek.province.setActive(name: string) -> boolean -- Sets the named registry as the active province registry. Returns false if no registry with that name exists.
-lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, cam_y: number, old_zoom: number, new_zoom: number) -> number, number -- Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually sta...
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.province.exists
+### Module-Level Functions
+
+#### lurek.province.exists
 
 #### Definition
 
@@ -215,7 +205,7 @@ do
 end
 ```
 
-### lurek.province.get
+#### lurek.province.get
 
 #### Definition
 
@@ -247,7 +237,7 @@ do
 end
 ```
 
-### lurek.province.getActive
+#### lurek.province.getActive
 
 #### Definition
 
@@ -275,7 +265,7 @@ do
 end
 ```
 
-### lurek.province.newFromPng
+#### lurek.province.newFromPng
 
 #### Definition
 
@@ -310,7 +300,7 @@ do
 end
 ```
 
-### lurek.province.remove
+#### lurek.province.remove
 
 #### Definition
 
@@ -343,7 +333,7 @@ do
 end
 ```
 
-### lurek.province.sanitizeMarkedPng
+#### lurek.province.sanitizeMarkedPng
 
 #### Definition
 
@@ -379,7 +369,7 @@ do
 end
 ```
 
-### lurek.province.setActive
+#### lurek.province.setActive
 
 #### Definition
 
@@ -414,7 +404,7 @@ do
 end
 ```
 
-### lurek.province.zoomCameraAt
+#### lurek.province.zoomCameraAt
 
 #### Definition
 
@@ -495,7 +485,9 @@ end
 
 ## 🔹 Module Methods
 
-### LProvinceRegistry:adjacencies
+### LProvinceRegistry Methods
+
+#### LProvinceRegistry:adjacencies
 
 #### Definition
 
@@ -524,7 +516,7 @@ do
 end
 ```
 
-### LProvinceRegistry:borderSegments
+#### LProvinceRegistry:borderSegments
 
 #### Definition
 
@@ -553,7 +545,7 @@ do
 end
 ```
 
-### LProvinceRegistry:fitCamera
+#### LProvinceRegistry:fitCamera
 
 #### Definition
 
@@ -593,7 +585,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getAt
+#### LProvinceRegistry:getAt
 
 #### Definition
 
@@ -629,7 +621,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getBorderClass
+#### LProvinceRegistry:getBorderClass
 
 #### Definition
 
@@ -666,7 +658,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getChangesSince
+#### LProvinceRegistry:getChangesSince
 
 #### Definition
 
@@ -701,7 +693,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getHeight
+#### LProvinceRegistry:getHeight
 
 #### Definition
 
@@ -729,7 +721,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getName
+#### LProvinceRegistry:getName
 
 #### Definition
 
@@ -756,7 +748,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getNeighbors
+#### LProvinceRegistry:getNeighbors
 
 #### Definition
 
@@ -790,7 +782,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getProvince
+#### LProvinceRegistry:getProvince
 
 #### Definition
 
@@ -825,7 +817,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getRevision
+#### LProvinceRegistry:getRevision
 
 #### Definition
 
@@ -853,7 +845,7 @@ do
 end
 ```
 
-### LProvinceRegistry:getWidth
+#### LProvinceRegistry:getWidth
 
 #### Definition
 
@@ -881,7 +873,7 @@ do
 end
 ```
 
-### LProvinceRegistry:importMetadataFromFiles
+#### LProvinceRegistry:importMetadataFromFiles
 
 #### Definition
 
@@ -914,7 +906,7 @@ do
 end
 ```
 
-### LProvinceRegistry:provinceCount
+#### LProvinceRegistry:provinceCount
 
 #### Definition
 
@@ -942,7 +934,7 @@ do
 end
 ```
 
-### LProvinceRegistry:provinceIds
+#### LProvinceRegistry:provinceIds
 
 #### Definition
 
@@ -971,7 +963,7 @@ do
 end
 ```
 
-### LProvinceRegistry:provinceSpans
+#### LProvinceRegistry:provinceSpans
 
 #### Definition
 
@@ -1000,7 +992,7 @@ do
 end
 ```
 
-### LProvinceRegistry:render
+#### LProvinceRegistry:render
 
 #### Definition
 
@@ -1031,7 +1023,7 @@ do
 end
 ```
 
-### LProvinceRegistry:screenToMap
+#### LProvinceRegistry:screenToMap
 
 #### Definition
 
@@ -1077,7 +1069,7 @@ do
 end
 ```
 
-### LProvinceRegistry:screenToProvince
+#### LProvinceRegistry:screenToProvince
 
 #### Definition
 
@@ -1122,7 +1114,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setAttr
+#### LProvinceRegistry:setAttr
 
 #### Definition
 
@@ -1160,7 +1152,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setBorderClass
+#### LProvinceRegistry:setBorderClass
 
 #### Definition
 
@@ -1196,7 +1188,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setBorderStyle
+#### LProvinceRegistry:setBorderStyle
 
 #### Definition
 
@@ -1232,7 +1224,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setCapital
+#### LProvinceRegistry:setCapital
 
 #### Definition
 
@@ -1270,7 +1262,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setFogState
+#### LProvinceRegistry:setFogState
 
 #### Definition
 
@@ -1306,7 +1298,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setLabelLine
+#### LProvinceRegistry:setLabelLine
 
 #### Definition
 
@@ -1348,7 +1340,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setLabelText
+#### LProvinceRegistry:setLabelText
 
 #### Definition
 
@@ -1384,7 +1376,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setPoliticalColor
+#### LProvinceRegistry:setPoliticalColor
 
 #### Definition
 
@@ -1426,7 +1418,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setTerrainType
+#### LProvinceRegistry:setTerrainType
 
 #### Definition
 
@@ -1462,7 +1454,7 @@ do
 end
 ```
 
-### LProvinceRegistry:setVisibilityState
+#### LProvinceRegistry:setVisibilityState
 
 #### Definition
 
@@ -1498,7 +1490,7 @@ do
 end
 ```
 
-### LProvinceRegistry:type
+#### LProvinceRegistry:type
 
 #### Definition
 
@@ -1526,7 +1518,7 @@ do
 end
 ```
 
-### LProvinceRegistry:typeOf
+#### LProvinceRegistry:typeOf
 
 #### Definition
 

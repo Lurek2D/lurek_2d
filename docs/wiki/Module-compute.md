@@ -10,293 +10,22 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [analytics.rs](#analyticsrs)
+  - [array.rs](#arrayrs)
+  - [fft.rs](#fftrs)
+  - [linalg.rs](#linalgrs)
+  - [mod.rs](#modrs)
+  - [ops.rs](#opsrs)
+  - [spatial.rs](#spatialrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.compute.affine2d](#lurekcomputeaffine2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.fft](#lurekcomputefft)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.fftMagnitude](#lurekcomputefftmagnitude)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.fromTable](#lurekcomputefromtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.gaussianKernel](#lurekcomputegaussiankernel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.getParThreshold](#lurekcomputegetparthreshold)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.ifft](#lurekcomputeifft)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.newArray](#lurekcomputenewarray)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.ones](#lurekcomputeones)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.range](#lurekcomputerange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.rotate2dMatrix](#lurekcomputerotate2dmatrix)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.setParThreshold](#lurekcomputesetparthreshold)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.compute.zeros](#lurekcomputezeros)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LArray](#larray)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LArray:abs](#larrayabs)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:add](#larrayadd)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:addInplace](#larrayaddinplace)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:all](#larrayall)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:any](#larrayany)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:argmax](#larrayargmax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:argmin](#larrayargmin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:bitwiseAnd](#larraybitwiseand)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:bitwiseLShift](#larraybitwiselshift)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:bitwiseNot](#larraybitwisenot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:bitwiseOr](#larraybitwiseor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:bitwiseRShift](#larraybitwisershift)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:bitwiseXor](#larraybitwisexor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:clamp](#larrayclamp)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:clone](#larrayclone)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:convolve1d](#larrayconvolve1d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:convolve2D](#larrayconvolve2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:correlate1d](#larraycorrelate1d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:countNonZero](#larraycountnonzero)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:covariance](#larraycovariance)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:cross2d](#larraycross2d)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:cumsum](#larraycumsum)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:diff](#larraydiff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:dilate](#larraydilate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:div](#larraydiv)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:divInplace](#larraydivinplace)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:dot](#larraydot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:eigenPower](#larrayeigenpower)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:eq](#larrayeq)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:erode](#larrayerode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:eval](#larrayeval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:fill](#larrayfill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:floodFill](#larrayfloodfill)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:get](#larrayget)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:getDataType](#larraygetdatatype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:getDimensions](#larraygetdimensions)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:getRegion](#larraygetregion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:getShape](#larraygetshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:getSize](#larraygetsize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:gt](#larraygt)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:gte](#larraygte)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:histogram](#larrayhistogram)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:isOnGPU](#larrayisongpu)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:linsolve](#larraylinsolve)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:lt](#larraylt)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:lte](#larraylte)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:luDecompose](#larrayludecompose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:map](#larraymap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:matmul](#larraymatmul)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:max](#larraymax)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:mean](#larraymean)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:min](#larraymin)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:mul](#larraymul)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:mulInplace](#larraymulinplace)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:neg](#larrayneg)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:neq](#larrayneq)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:normalizeRange](#larraynormalizerange)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:normalizeVec](#larraynormalizevec)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:outer](#larrayouter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:pearsonCorr](#larraypearsoncorr)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:percentile](#larraypercentile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:pow](#larraypow)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:reduce](#larrayreduce)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:reshape](#larrayreshape)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:scan](#larrayscan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:set](#larrayset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:setRegion](#larraysetregion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:sobel](#larraysobel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:sqrt](#larraysqrt)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:sub](#larraysub)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:subInplace](#larraysubinplace)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:sum](#larraysum)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:threshold](#larraythreshold)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:toTable](#larraytotable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:transformPoints](#larraytransformpoints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:transpose](#larraytranspose)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:type](#larraytype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:typeOf](#larraytypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:where](#larraywhere)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LArray:zscore](#larrayzscore)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LArray Methods](#larray-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -322,6 +51,66 @@ Lua API doc contract: all Lua-visible params, returns, and fields for `lurek.com
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `analytics.rs`
+
+- Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d)
+- Histogram binning with configurable range and bin count
+- Percentile extraction with linear interpolation
+- Pairwise statistical measures (covariance, Pearson correlation)
+- Value normalization helpers (range scaling, z-score standardization)
+
+### `array.rs`
+
+- Dense n-dimensional array container with typed storage (float32, float64, int32)
+- Shape validation, stride computation, and flat-index addressing
+- Constructors for zeros, ones, range, and from-slice initialization
+- Element access by flat index or multidimensional coordinates
+- Utility iterators, fill, map, and display formatting
+
+### `fft.rs`
+
+- Radix-2 in-place FFT and inverse FFT for power-of-two length buffers
+- Real-to-complex forward transform with automatic zero-padding
+- Complex-to-real inverse transform for spectrum reconstruction
+- Magnitude spectrum extraction from complex bin pairs
+
+### `linalg.rs`
+
+- Vector operations (normalize, cross2d, outer product, dot via spatial)
+- 2D transformation matrices (rotation, affine, point transform)
+- Convolution kernels (Gaussian) and edge detection (Sobel)
+- Linear system solving via Gaussian elimination with partial pivoting
+- LU decomposition with row permutation and determinant sign tracking
+- Dominant eigenpair estimation via power iteration
+
+### `mod.rs`
+
+- N-dimensional array container, element-wise and reduction operations
+- FFT, linear algebra, spatial filtering, and statistical analytics
+- Configurable parallel dispatch threshold for large arrays
+
+### `ops.rs`
+
+- Element-wise arithmetic, comparison, and bitwise operations on NdArray
+- Scalar and array binary operations with row-broadcast support
+- Reduction operations (sum, mean, min, max) globally and along axes
+- In-place mutation variants for add, sub, mul, div
+- Reshape, transpose, clone, fill, threshold, and conditional select
+- Configurable parallel dispatch via rayon above a tunable threshold
+- Argmin, argmax, count_nonzero, any, all logical queries
+
+### `spatial.rs`
+
+- 2D convolution with zero-padded boundary handling
+- Binary morphology operators (dilate, erode) using Manhattan radius
+- Flood fill with 4-connected BFS propagation
+- Sub-region extraction and insertion for 2D arrays
+- Matrix multiplication and 1D dot product
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LArray` (80 methods) - Lua-side multidimensional numeric array handle.
@@ -331,28 +120,18 @@ Lua API doc contract: all Lua-visible params, returns, and fields for `lurek.com
 ## 📖 API Overview
 
 - Source spec: [docs/specs/compute.md](../blob/main/docs/specs/compute.md)
+- Module-level functions: 13
+- Lua-visible types: 1
+- Total type methods: 80
 
-```lua
-lurek.compute.affine2d(tx: number, ty: number, angle_rad: number, sx: number, sy: number) -> LArray -- Creates a 2D affine transform matrix.
-lurek.compute.fft(samples: table) -> table -- Computes the FFT of real-valued samples.
-lurek.compute.fftMagnitude(samples: table) -> number[] -- Computes FFT magnitudes for real-valued samples.
-lurek.compute.fromTable(data: table, [shape]: table, [dtype]: string) -> LArray -- Creates an array from a flat Lua table and optional shape.
-lurek.compute.gaussianKernel(size: integer, sigma: number) -> LArray -- Creates a square Gaussian kernel array.
-lurek.compute.getParThreshold() -> integer -- Returns the global compute parallelism threshold.
-lurek.compute.ifft(freqs: table) -> number[] -- Computes the inverse FFT of complex frequency pairs.
-lurek.compute.newArray(shape: table, [dtype]: string) -> LArray -- Creates a zero-filled array with the requested shape and data type.
-lurek.compute.ones(shape: table, [dtype]: string) -> LArray -- Creates a one-filled array with the requested shape and data type.
-lurek.compute.range(start: number, stop: number, [step]: number, [dtype]: string) -> LArray -- Creates a one-dimensional range array.
-lurek.compute.rotate2dMatrix(angle_rad: number) -> LArray -- Creates a 2D rotation matrix from an angle in radians.
-lurek.compute.setParThreshold(threshold: integer) -> integer -- Sets the global compute parallelism threshold and returns the previous value.
-lurek.compute.zeros(shape: table, [dtype]: string) -> LArray -- Creates a zero-filled array with the requested shape and data type.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.compute.affine2d
+### Module-Level Functions
+
+#### lurek.compute.affine2d
 
 #### Definition
 
@@ -392,7 +171,7 @@ do
 end
 ```
 
-### lurek.compute.fft
+#### lurek.compute.fft
 
 #### Definition
 
@@ -424,7 +203,7 @@ do
 end
 ```
 
-### lurek.compute.fftMagnitude
+#### lurek.compute.fftMagnitude
 
 #### Definition
 
@@ -456,7 +235,7 @@ do
 end
 ```
 
-### lurek.compute.fromTable
+#### lurek.compute.fromTable
 
 #### Definition
 
@@ -492,7 +271,7 @@ do
 end
 ```
 
-### lurek.compute.gaussianKernel
+#### lurek.compute.gaussianKernel
 
 #### Definition
 
@@ -526,7 +305,7 @@ do
 end
 ```
 
-### lurek.compute.getParThreshold
+#### lurek.compute.getParThreshold
 
 #### Definition
 
@@ -553,7 +332,7 @@ do
 end
 ```
 
-### lurek.compute.ifft
+#### lurek.compute.ifft
 
 #### Definition
 
@@ -586,7 +365,7 @@ do
 end
 ```
 
-### lurek.compute.newArray
+#### lurek.compute.newArray
 
 #### Definition
 
@@ -620,7 +399,7 @@ do
 end
 ```
 
-### lurek.compute.ones
+#### lurek.compute.ones
 
 #### Definition
 
@@ -654,7 +433,7 @@ do
 end
 ```
 
-### lurek.compute.range
+#### lurek.compute.range
 
 #### Definition
 
@@ -692,7 +471,7 @@ do
 end
 ```
 
-### lurek.compute.rotate2dMatrix
+#### lurek.compute.rotate2dMatrix
 
 #### Definition
 
@@ -724,7 +503,7 @@ do
 end
 ```
 
-### lurek.compute.setParThreshold
+#### lurek.compute.setParThreshold
 
 #### Definition
 
@@ -756,7 +535,7 @@ do
 end
 ```
 
-### lurek.compute.zeros
+#### lurek.compute.zeros
 
 #### Definition
 
@@ -825,7 +604,9 @@ end
 
 ## 🔹 Module Methods
 
-### LArray:abs
+### LArray Methods
+
+#### LArray:abs
 
 #### Definition
 
@@ -853,7 +634,7 @@ do
 end
 ```
 
-### LArray:add
+#### LArray:add
 
 #### Definition
 
@@ -886,7 +667,7 @@ do
 end
 ```
 
-### LArray:addInplace
+#### LArray:addInplace
 
 #### Definition
 
@@ -917,7 +698,7 @@ do
 end
 ```
 
-### LArray:all
+#### LArray:all
 
 #### Definition
 
@@ -944,7 +725,7 @@ do
 end
 ```
 
-### LArray:any
+#### LArray:any
 
 #### Definition
 
@@ -971,7 +752,7 @@ do
 end
 ```
 
-### LArray:argmax
+#### LArray:argmax
 
 #### Definition
 
@@ -998,7 +779,7 @@ do
 end
 ```
 
-### LArray:argmin
+#### LArray:argmin
 
 #### Definition
 
@@ -1025,7 +806,7 @@ do
 end
 ```
 
-### LArray:bitwiseAnd
+#### LArray:bitwiseAnd
 
 #### Definition
 
@@ -1059,7 +840,7 @@ do
 end
 ```
 
-### LArray:bitwiseLShift
+#### LArray:bitwiseLShift
 
 #### Definition
 
@@ -1092,7 +873,7 @@ do
 end
 ```
 
-### LArray:bitwiseNot
+#### LArray:bitwiseNot
 
 #### Definition
 
@@ -1120,7 +901,7 @@ do
 end
 ```
 
-### LArray:bitwiseOr
+#### LArray:bitwiseOr
 
 #### Definition
 
@@ -1154,7 +935,7 @@ do
 end
 ```
 
-### LArray:bitwiseRShift
+#### LArray:bitwiseRShift
 
 #### Definition
 
@@ -1187,7 +968,7 @@ do
 end
 ```
 
-### LArray:bitwiseXor
+#### LArray:bitwiseXor
 
 #### Definition
 
@@ -1221,7 +1002,7 @@ do
 end
 ```
 
-### LArray:clamp
+#### LArray:clamp
 
 #### Definition
 
@@ -1256,7 +1037,7 @@ do
 end
 ```
 
-### LArray:clone
+#### LArray:clone
 
 #### Definition
 
@@ -1285,7 +1066,7 @@ do
 end
 ```
 
-### LArray:convolve1d
+#### LArray:convolve1d
 
 #### Definition
 
@@ -1319,7 +1100,7 @@ do
 end
 ```
 
-### LArray:convolve2D
+#### LArray:convolve2D
 
 #### Definition
 
@@ -1354,7 +1135,7 @@ do
 end
 ```
 
-### LArray:correlate1d
+#### LArray:correlate1d
 
 #### Definition
 
@@ -1388,7 +1169,7 @@ do
 end
 ```
 
-### LArray:countNonZero
+#### LArray:countNonZero
 
 #### Definition
 
@@ -1415,7 +1196,7 @@ do
 end
 ```
 
-### LArray:covariance
+#### LArray:covariance
 
 #### Definition
 
@@ -1448,7 +1229,7 @@ do
 end
 ```
 
-### LArray:cross2d
+#### LArray:cross2d
 
 #### Definition
 
@@ -1481,7 +1262,7 @@ do
 end
 ```
 
-### LArray:cumsum
+#### LArray:cumsum
 
 #### Definition
 
@@ -1509,7 +1290,7 @@ do
 end
 ```
 
-### LArray:diff
+#### LArray:diff
 
 #### Definition
 
@@ -1542,7 +1323,7 @@ do
 end
 ```
 
-### LArray:dilate
+#### LArray:dilate
 
 #### Definition
 
@@ -1576,7 +1357,7 @@ do
 end
 ```
 
-### LArray:div
+#### LArray:div
 
 #### Definition
 
@@ -1609,7 +1390,7 @@ do
 end
 ```
 
-### LArray:divInplace
+#### LArray:divInplace
 
 #### Definition
 
@@ -1640,7 +1421,7 @@ do
 end
 ```
 
-### LArray:dot
+#### LArray:dot
 
 #### Definition
 
@@ -1673,7 +1454,7 @@ do
 end
 ```
 
-### LArray:eigenPower
+#### LArray:eigenPower
 
 #### Definition
 
@@ -1708,7 +1489,7 @@ do
 end
 ```
 
-### LArray:eq
+#### LArray:eq
 
 #### Definition
 
@@ -1741,7 +1522,7 @@ do
 end
 ```
 
-### LArray:erode
+#### LArray:erode
 
 #### Definition
 
@@ -1775,7 +1556,7 @@ do
 end
 ```
 
-### LArray:eval
+#### LArray:eval
 
 #### Definition
 
@@ -1808,7 +1589,7 @@ do
 end
 ```
 
-### LArray:fill
+#### LArray:fill
 
 #### Definition
 
@@ -1838,7 +1619,7 @@ do
 end
 ```
 
-### LArray:floodFill
+#### LArray:floodFill
 
 #### Definition
 
@@ -1877,7 +1658,7 @@ do
 end
 ```
 
-### LArray:get
+#### LArray:get
 
 #### Definition
 
@@ -1909,7 +1690,7 @@ do
 end
 ```
 
-### LArray:getDataType
+#### LArray:getDataType
 
 #### Definition
 
@@ -1936,7 +1717,7 @@ do
 end
 ```
 
-### LArray:getDimensions
+#### LArray:getDimensions
 
 #### Definition
 
@@ -1963,7 +1744,7 @@ do
 end
 ```
 
-### LArray:getRegion
+#### LArray:getRegion
 
 #### Definition
 
@@ -2003,7 +1784,7 @@ do
 end
 ```
 
-### LArray:getShape
+#### LArray:getShape
 
 #### Definition
 
@@ -2031,7 +1812,7 @@ do
 end
 ```
 
-### LArray:getSize
+#### LArray:getSize
 
 #### Definition
 
@@ -2058,7 +1839,7 @@ do
 end
 ```
 
-### LArray:gt
+#### LArray:gt
 
 #### Definition
 
@@ -2091,7 +1872,7 @@ do
 end
 ```
 
-### LArray:gte
+#### LArray:gte
 
 #### Definition
 
@@ -2124,7 +1905,7 @@ do
 end
 ```
 
-### LArray:histogram
+#### LArray:histogram
 
 #### Definition
 
@@ -2161,7 +1942,7 @@ do
 end
 ```
 
-### LArray:isOnGPU
+#### LArray:isOnGPU
 
 #### Definition
 
@@ -2188,7 +1969,7 @@ do
 end
 ```
 
-### LArray:linsolve
+#### LArray:linsolve
 
 #### Definition
 
@@ -2222,7 +2003,7 @@ do
 end
 ```
 
-### LArray:lt
+#### LArray:lt
 
 #### Definition
 
@@ -2255,7 +2036,7 @@ do
 end
 ```
 
-### LArray:lte
+#### LArray:lte
 
 #### Definition
 
@@ -2288,7 +2069,7 @@ do
 end
 ```
 
-### LArray:luDecompose
+#### LArray:luDecompose
 
 #### Definition
 
@@ -2316,7 +2097,7 @@ do
 end
 ```
 
-### LArray:map
+#### LArray:map
 
 #### Definition
 
@@ -2349,7 +2130,7 @@ do
 end
 ```
 
-### LArray:matmul
+#### LArray:matmul
 
 #### Definition
 
@@ -2383,7 +2164,7 @@ do
 end
 ```
 
-### LArray:max
+#### LArray:max
 
 #### Definition
 
@@ -2416,7 +2197,7 @@ do
 end
 ```
 
-### LArray:mean
+#### LArray:mean
 
 #### Definition
 
@@ -2449,7 +2230,7 @@ do
 end
 ```
 
-### LArray:min
+#### LArray:min
 
 #### Definition
 
@@ -2482,7 +2263,7 @@ do
 end
 ```
 
-### LArray:mul
+#### LArray:mul
 
 #### Definition
 
@@ -2515,7 +2296,7 @@ do
 end
 ```
 
-### LArray:mulInplace
+#### LArray:mulInplace
 
 #### Definition
 
@@ -2546,7 +2327,7 @@ do
 end
 ```
 
-### LArray:neg
+#### LArray:neg
 
 #### Definition
 
@@ -2574,7 +2355,7 @@ do
 end
 ```
 
-### LArray:neq
+#### LArray:neq
 
 #### Definition
 
@@ -2607,7 +2388,7 @@ do
 end
 ```
 
-### LArray:normalizeRange
+#### LArray:normalizeRange
 
 #### Definition
 
@@ -2642,7 +2423,7 @@ do
 end
 ```
 
-### LArray:normalizeVec
+#### LArray:normalizeVec
 
 #### Definition
 
@@ -2670,7 +2451,7 @@ do
 end
 ```
 
-### LArray:outer
+#### LArray:outer
 
 #### Definition
 
@@ -2704,7 +2485,7 @@ do
 end
 ```
 
-### LArray:pearsonCorr
+#### LArray:pearsonCorr
 
 #### Definition
 
@@ -2737,7 +2518,7 @@ do
 end
 ```
 
-### LArray:percentile
+#### LArray:percentile
 
 #### Definition
 
@@ -2770,7 +2551,7 @@ do
 end
 ```
 
-### LArray:pow
+#### LArray:pow
 
 #### Definition
 
@@ -2803,7 +2584,7 @@ do
 end
 ```
 
-### LArray:reduce
+#### LArray:reduce
 
 #### Definition
 
@@ -2838,7 +2619,7 @@ do
 end
 ```
 
-### LArray:reshape
+#### LArray:reshape
 
 #### Definition
 
@@ -2871,7 +2652,7 @@ do
 end
 ```
 
-### LArray:scan
+#### LArray:scan
 
 #### Definition
 
@@ -2906,7 +2687,7 @@ do
 end
 ```
 
-### LArray:set
+#### LArray:set
 
 #### Definition
 
@@ -2936,7 +2717,7 @@ do
 end
 ```
 
-### LArray:setRegion
+#### LArray:setRegion
 
 #### Definition
 
@@ -2971,7 +2752,7 @@ do
 end
 ```
 
-### LArray:sobel
+#### LArray:sobel
 
 #### Definition
 
@@ -3000,7 +2781,7 @@ do
 end
 ```
 
-### LArray:sqrt
+#### LArray:sqrt
 
 #### Definition
 
@@ -3028,7 +2809,7 @@ do
 end
 ```
 
-### LArray:sub
+#### LArray:sub
 
 #### Definition
 
@@ -3061,7 +2842,7 @@ do
 end
 ```
 
-### LArray:subInplace
+#### LArray:subInplace
 
 #### Definition
 
@@ -3092,7 +2873,7 @@ do
 end
 ```
 
-### LArray:sum
+#### LArray:sum
 
 #### Definition
 
@@ -3125,7 +2906,7 @@ do
 end
 ```
 
-### LArray:threshold
+#### LArray:threshold
 
 #### Definition
 
@@ -3158,7 +2939,7 @@ do
 end
 ```
 
-### LArray:toTable
+#### LArray:toTable
 
 #### Definition
 
@@ -3186,7 +2967,7 @@ do
 end
 ```
 
-### LArray:transformPoints
+#### LArray:transformPoints
 
 #### Definition
 
@@ -3220,7 +3001,7 @@ do
 end
 ```
 
-### LArray:transpose
+#### LArray:transpose
 
 #### Definition
 
@@ -3249,7 +3030,7 @@ do
 end
 ```
 
-### LArray:type
+#### LArray:type
 
 #### Definition
 
@@ -3276,7 +3057,7 @@ do
 end
 ```
 
-### LArray:typeOf
+#### LArray:typeOf
 
 #### Definition
 
@@ -3309,7 +3090,7 @@ do
 end
 ```
 
-### LArray:where
+#### LArray:where
 
 #### Definition
 
@@ -3346,7 +3127,7 @@ do
 end
 ```
 
-### LArray:zscore
+#### LArray:zscore
 
 #### Definition
 

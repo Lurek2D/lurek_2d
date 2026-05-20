@@ -10,54 +10,21 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [codec.rs](#codecrs)
+  - [csv.rs](#csvrs)
+  - [ini.rs](#inirs)
+  - [json.rs](#jsonrs)
+  - [lua_table.rs](#luatablers)
+  - [mod.rs](#modrs)
+  - [msgpack.rs](#msgpackrs)
+  - [schema.rs](#schemars)
+  - [toml.rs](#tomlrs)
+  - [xml.rs](#xmlrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.serial.applyDefaults](#lurekserialapplydefaults)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.decode](#lurekserialdecode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.decodeMsgPack](#lurekserialdecodemsgpack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.decodeXml](#lurekserialdecodexml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.detectFormat](#lurekserialdetectformat)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.encode](#lurekserialencode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.encodeMsgPack](#lurekserialencodemsgpack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.fromCsv](#lurekserialfromcsv)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.fromIni](#lurekserialfromini)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.fromJson](#lurekserialfromjson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.fromToml](#lurekserialfromtoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.toCsv](#lurekserialtocsv)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.toJson](#lurekserialtojson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.toToml](#lurekserialtotoml)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.serial.validate](#lurekserialvalidate)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -81,6 +48,75 @@ CSV parsing handles headers, delimiters, quoting, and multi-line fields. TOML su
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `codec.rs`
+
+- Format detection, decoding, and encoding for the serial module.
+- Supports JSON, TOML, CSV, MsgPack, XML, and INI formats.
+- Provides auto-detection of text formats by content inspection.
+- Separates text-based and binary decode paths.
+
+### `csv.rs`
+
+- Parse CSV text or streams into `SerialValue` sequences of maps or arrays.
+- Serialize `SerialValue` back to CSV with configurable delimiter and header behavior.
+- Support both header-keyed (map rows) and index-only (sequence rows) modes.
+
+### `ini.rs`
+
+- Parse INI text into a nested `SerialValue` map.
+- Support sections, key=value pairs, and comment lines.
+- Preserve insertion order via `IndexMap`.
+
+### `json.rs`
+
+- Parse JSON strings into the engine's `SerialValue` intermediate representation.
+- Encode `SerialValue` trees back to JSON (compact or pretty-printed).
+- Map JSON types (null, bool, number, string, array, object) to `SerialValue` variants bidirectionally.
+
+### `lua_table.rs`
+
+- Bidirectional conversion between Lua tables and a typed serial value tree.
+- Supports null, bool, int, float, string, sequence, and map variants.
+- Detects array-like tables automatically and emits `Seq`; otherwise emits `Map`.
+
+### `mod.rs`
+
+- Serialization and deserialization for multiple formats (JSON, TOML, CSV, XML, MsgPack, INI)
+- Unified codec interface with auto-detection and round-trip encode/decode
+- Schema validation and default application for structured data
+- Lua table ↔ Rust value bridging via SerialValue
+
+### `msgpack.rs`
+
+- MessagePack binary encoding and decoding for SerialValue trees.
+- Intermediate MsgValue enum bridging SerialValue to rmp_serde.
+- Size estimation for pre-allocated encode buffers.
+- JSON-compatible encode/decode path via serde_json::Value.
+
+### `schema.rs`
+
+- Validate a `SerialValue` tree against a schema describing expected types, ranges, and structure.
+- Enforce required fields, numeric min/max, string length bounds, nested table fields, and array items.
+- Apply default values from a schema to fill missing fields in a value tree.
+- Report path-qualified error messages when validation fails.
+- Log schema pass/fail outcomes through the engine log system.
+
+### `toml.rs`
+
+- Parse TOML strings into engine-internal `SerialValue` trees.
+- Encode `SerialValue` back to TOML text for config persistence.
+- Bridge between the `toml` crate's value types and the serial layer.
+
+### `xml.rs`
+
+- Parse XML strings into a SerialValue tree using roxmltree.
+- Recursively convert elements, attributes, text, and children into map/seq structures.
+- Provide a single `decode` entry point for the serial module.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -90,30 +126,18 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/serial.md](../blob/main/docs/specs/serial.md)
+- Module-level functions: 15
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.serial.applyDefaults(value: table, schema: table) -> table -- Merges a schema's default values into a data table, filling in any missing fields without overwriting exist...
-lurek.serial.decode(payload: string, [format]: string, [opts]: table) -> table -- Universal decoder that parses a string payload into a Lua table using the specified format. If no format is...
-lurek.serial.decodeMsgPack(bytes: string) -> table -- Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or...
-lurek.serial.decodeXml(text: string) -> table -- Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Usef...
-lurek.serial.detectFormat(text: string) -> string -- Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` f...
-lurek.serial.encode(value: table, format: string, [opts]: table) -> string -- Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and Mess...
-lurek.serial.encodeMsgPack(value: table) -> string -- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON,...
-lurek.serial.fromCsv(text: string, [delimiter]: string, [hasHeaders]: boolean) -> table -- Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are pr...
-lurek.serial.fromIni(text: string) -> table -- Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become str...
-lurek.serial.fromJson(text: string) -> table -- Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any stru...
-lurek.serial.fromToml(text: string) -> table -- Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and e...
-lurek.serial.toCsv(value: table, [delimiter]: string, [hasHeaders]: boolean) -> string -- Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consis...
-lurek.serial.toJson(value: table, [pretty]: boolean) -> string -- Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game...
-lurek.serial.toToml(value: table) -> string -- Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured...
-lurek.serial.validate(value: table, schema: table) -> boolean -- Validates a Lua value against a schema table. The schema defines expected types, required fields, and const...
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.serial.applyDefaults
+### Module-Level Functions
+
+#### lurek.serial.applyDefaults
 
 #### Definition
 
@@ -150,7 +174,7 @@ do
 end
 ```
 
-### lurek.serial.decode
+#### lurek.serial.decode
 
 #### Definition
 
@@ -188,7 +212,7 @@ do
 end
 ```
 
-### lurek.serial.decodeMsgPack
+#### lurek.serial.decodeMsgPack
 
 #### Definition
 
@@ -223,7 +247,7 @@ do
 end
 ```
 
-### lurek.serial.decodeXml
+#### lurek.serial.decodeXml
 
 #### Definition
 
@@ -256,7 +280,7 @@ do
 end
 ```
 
-### lurek.serial.detectFormat
+#### lurek.serial.detectFormat
 
 #### Definition
 
@@ -287,7 +311,7 @@ do
 end
 ```
 
-### lurek.serial.encode
+#### lurek.serial.encode
 
 #### Definition
 
@@ -324,7 +348,7 @@ do
 end
 ```
 
-### lurek.serial.encodeMsgPack
+#### lurek.serial.encodeMsgPack
 
 #### Definition
 
@@ -358,7 +382,7 @@ do
 end
 ```
 
-### lurek.serial.fromCsv
+#### lurek.serial.fromCsv
 
 #### Definition
 
@@ -396,7 +420,7 @@ do
 end
 ```
 
-### lurek.serial.fromIni
+#### lurek.serial.fromIni
 
 #### Definition
 
@@ -430,7 +454,7 @@ do
 end
 ```
 
-### lurek.serial.fromJson
+#### lurek.serial.fromJson
 
 #### Definition
 
@@ -464,7 +488,7 @@ do
 end
 ```
 
-### lurek.serial.fromToml
+#### lurek.serial.fromToml
 
 #### Definition
 
@@ -498,7 +522,7 @@ do
 end
 ```
 
-### lurek.serial.toCsv
+#### lurek.serial.toCsv
 
 #### Definition
 
@@ -534,7 +558,7 @@ do
 end
 ```
 
-### lurek.serial.toJson
+#### lurek.serial.toJson
 
 #### Definition
 
@@ -568,7 +592,7 @@ do
 end
 ```
 
-### lurek.serial.toToml
+#### lurek.serial.toToml
 
 #### Definition
 
@@ -600,7 +624,7 @@ do
 end
 ```
 
-### lurek.serial.validate
+#### lurek.serial.validate
 
 #### Definition
 

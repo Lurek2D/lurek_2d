@@ -10,63 +10,14 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [facade.rs](#facaders)
+  - [mod.rs](#modrs)
+  - [sinks.rs](#sinksrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.log.addSink](#lureklogaddsink)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.clearSinks](#lureklogclearsinks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.debug](#lureklogdebug)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.debug_fields](#lureklogdebugfields)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.error](#lureklogerror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.error_fields](#lureklogerrorfields)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.flushFile](#lureklogflushfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.getLevel](#lurekloggetlevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.info](#lurekloginfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.info_fields](#lurekloginfofields)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.listSinks](#lurekloglistsinks)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.print](#lureklogprint)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.readMemory](#lureklogreadmemory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.removeSink](#lureklogremovesink)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.setLevel](#lureklogsetlevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.struct](#lureklogstruct)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.warn](#lureklogwarn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.log.warn_fields](#lureklogwarnfields)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -90,6 +41,35 @@ Level filtering is per-sink via `SinkLevel` — each sink independently chooses 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `facade.rs`
+
+- Structured log dispatch with level, tag, and key-value fields.
+- Runtime log-level query and mutation via string names.
+- Level-filter check without emitting a message.
+
+### `mod.rs`
+
+- Structured logging facade with global level control and dispatch to registered sinks.
+- Rotating file sink and in-memory ring buffer for runtime log capture.
+- Level-gated emission so disabled messages cost near-zero.
+
+### `sinks.rs`
+
+- Log severity levels and string parsing for sink-level filtering.
+- In-memory ring-buffer sink for captured log entries with structured fields.
+- Output format selection: plain text, JSON, and NDJSON line formats.
+- Timestamp and ANSI color formatting helpers for human-readable output.
+- Rotating file sink with configurable size limit and backup management.
+- Buffered write coalescing to reduce OS syscall frequency.
+- Tag-based allow-list filtering per sink instance.
+- Callback sink variant for Lua-side log dispatch.
+- Unified `Sink` abstraction combining level, format, and storage backend.
+- `SinkRegistry` for multi-sink dispatch of unstructured and structured messages.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
@@ -99,33 +79,18 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/log.md](../blob/main/docs/specs/log.md)
+- Module-level functions: 18
+- Lua-visible types: 0
+- Total type methods: 0
 
-```lua
-lurek.log.addSink(config: table) -> integer -- Adds a memory, file, rotating, or callback sink from a config table.
-lurek.log.clearSinks() -- Removes all sinks and releases callback registry keys.
-lurek.log.debug(message: string, [tag]: string) -- Logs a debug message with an optional tag.
-lurek.log.debug_fields(message: string, fields_tbl: table) -- Logs a debug message with structured fields.
-lurek.log.error(message: string, [tag]: string) -- Logs an error message with an optional tag.
-lurek.log.error_fields(message: string, fields_tbl: table) -- Logs an error message with structured fields.
-lurek.log.flushFile(id: integer) -- Flushes a file-backed sink by id when it exists.
-lurek.log.getLevel() -> string -- Returns the global log level string.
-lurek.log.info(message: string, [tag]: string) -- Logs an info message with an optional tag.
-lurek.log.info_fields(message: string, fields_tbl: table) -- Logs an info message with structured fields.
-lurek.log.listSinks() -> table -- Returns metadata for all registered sinks.
-lurek.log.print(level: string, message: string, [tag]: string) -- Logs a message at a runtime-selected level with an optional tag.
-lurek.log.readMemory(id: integer, [drain]: boolean) -> table -- Reads entries from a memory sink and optionally drains them.
-lurek.log.removeSink(id: integer) -> boolean -- Removes a sink by id and releases any callback registry key.
-lurek.log.setLevel(level: string) -- Sets the global log level. This function is exposed to Lua scripts.
-lurek.log.struct(level_str: string, message: string, fields_tbl: table) -- Logs a structured message at a runtime-selected level.
-lurek.log.warn(message: string, [tag]: string) -- Logs a warning message with an optional tag.
-lurek.log.warn_fields(message: string, fields_tbl: table) -- Logs a warning message with structured fields.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.log.addSink
+### Module-Level Functions
+
+#### lurek.log.addSink
 
 #### Definition
 
@@ -157,7 +122,7 @@ do
 end
 ```
 
-### lurek.log.clearSinks
+#### lurek.log.clearSinks
 
 #### Definition
 
@@ -182,7 +147,7 @@ do
 end
 ```
 
-### lurek.log.debug
+#### lurek.log.debug
 
 #### Definition
 
@@ -213,7 +178,7 @@ do
 end
 ```
 
-### lurek.log.debug_fields
+#### lurek.log.debug_fields
 
 #### Definition
 
@@ -244,7 +209,7 @@ do
 end
 ```
 
-### lurek.log.error
+#### lurek.log.error
 
 #### Definition
 
@@ -276,7 +241,7 @@ do
 end
 ```
 
-### lurek.log.error_fields
+#### lurek.log.error_fields
 
 #### Definition
 
@@ -307,7 +272,7 @@ do
 end
 ```
 
-### lurek.log.flushFile
+#### lurek.log.flushFile
 
 #### Definition
 
@@ -338,7 +303,7 @@ do
 end
 ```
 
-### lurek.log.getLevel
+#### lurek.log.getLevel
 
 #### Definition
 
@@ -367,7 +332,7 @@ do
 end
 ```
 
-### lurek.log.info
+#### lurek.log.info
 
 #### Definition
 
@@ -399,7 +364,7 @@ do
 end
 ```
 
-### lurek.log.info_fields
+#### lurek.log.info_fields
 
 #### Definition
 
@@ -430,7 +395,7 @@ do
 end
 ```
 
-### lurek.log.listSinks
+#### lurek.log.listSinks
 
 #### Definition
 
@@ -457,7 +422,7 @@ do
 end
 ```
 
-### lurek.log.print
+#### lurek.log.print
 
 #### Definition
 
@@ -491,7 +456,7 @@ do
 end
 ```
 
-### lurek.log.readMemory
+#### lurek.log.readMemory
 
 #### Definition
 
@@ -527,7 +492,7 @@ do
 end
 ```
 
-### lurek.log.removeSink
+#### lurek.log.removeSink
 
 #### Definition
 
@@ -560,7 +525,7 @@ do
 end
 ```
 
-### lurek.log.setLevel
+#### lurek.log.setLevel
 
 #### Definition
 
@@ -589,7 +554,7 @@ do
 end
 ```
 
-### lurek.log.struct
+#### lurek.log.struct
 
 #### Definition
 
@@ -622,7 +587,7 @@ do
 end
 ```
 
-### lurek.log.warn
+#### lurek.log.warn
 
 #### Definition
 
@@ -654,7 +619,7 @@ do
 end
 ```
 
-### lurek.log.warn_fields
+#### lurek.log.warn_fields
 
 #### Definition
 

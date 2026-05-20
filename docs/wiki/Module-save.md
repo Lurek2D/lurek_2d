@@ -10,98 +10,17 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [mod.rs](#modrs)
+  - [save_manager.rs](#savemanagerrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.save.newSaveManager](#lureksavenewsavemanager)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LSaveManager](#lsavemanager)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LSaveManager:addMigration](#lsavemanageraddmigration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:collect](#lsavemanagercollect)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:delete](#lsavemanagerdelete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:disableAutoSave](#lsavemanagerdisableautosave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:enableAutoSave](#lsavemanagerenableautosave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:exists](#lsavemanagerexists)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:getSchemaVersion](#lsavemanagergetschemaversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:getSlotInfo](#lsavemanagergetslotinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:getSlots](#lsavemanagergetslots)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:getSummary](#lsavemanagergetsummary)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:isCompressed](#lsavemanageriscompressed)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:isDirty](#lsavemanagerisdirty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:load](#lsavemanagerload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:markDirty](#lsavemanagermarkdirty)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:onAfterLoad](#lsavemanageronafterload)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:onBeforeSave](#lsavemanageronbeforesave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:register](#lsavemanagerregister)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:reset](#lsavemanagerreset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:restore](#lsavemanagerrestore)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:save](#lsavemanagersave)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:setCompress](#lsavemanagersetcompress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:setSchemaVersion](#lsavemanagersetschemaversion)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:setSummary](#lsavemanagersetsummary)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:type](#lsavemanagertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:typeOf](#lsavemanagertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:unregister](#lsavemanagerunregister)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LSaveManager:update](#lsavemanagerupdate)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LSaveManager Methods](#lsavemanager-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -125,6 +44,24 @@ Serialization converts Lua tables to a `SaveValue` tree, then emits Lua-literal 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `mod.rs`
+
+- Slot-based save/load with compression and rotation
+- Serialize Lua tables to binary SaveValue format
+- Backup management with configurable slot count
+
+### `save_manager.rs`
+
+- Dirty-tracking, auto-save scheduling, and schema-versioned migration for `lurek.save`.
+- `SaveManager` owns registration of Lua tables, auto-save interval logic, and migration routing.
+- `SaveValue` tree converts between Lua tables and a serializable Rust enum.
+- Serialization emits Lua table literals; compression uses LZ4 + Base64 with a marker header.
+- Slot file naming, parse validation, and summary forwarding to `SlotMeta`.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LSaveManager` (27 methods) - Manages persistent game state: registering data collectors/restorers, serializing to named.
@@ -134,16 +71,18 @@ Serialization converts Lua tables to a `SaveValue` tree, then emits Lua-literal 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/save.md](../blob/main/docs/specs/save.md)
+- Module-level functions: 1
+- Lua-visible types: 1
+- Total type methods: 27
 
-```lua
-lurek.save.newSaveManager() -> LSaveManager -- Create a new SaveManager instance for managing persistent game saves.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.save.newSaveManager
+### Module-Level Functions
+
+#### lurek.save.newSaveManager
 
 #### Definition
 
@@ -209,7 +148,9 @@ end
 
 ## 🔹 Module Methods
 
-### LSaveManager:addMigration
+### LSaveManager Methods
+
+#### LSaveManager:addMigration
 
 #### Definition
 
@@ -243,7 +184,7 @@ do
 end
 ```
 
-### LSaveManager:collect
+#### LSaveManager:collect
 
 #### Definition
 
@@ -272,7 +213,7 @@ do
 end
 ```
 
-### LSaveManager:delete
+#### LSaveManager:delete
 
 #### Definition
 
@@ -307,7 +248,7 @@ do
 end
 ```
 
-### LSaveManager:disableAutoSave
+#### LSaveManager:disableAutoSave
 
 #### Definition
 
@@ -333,7 +274,7 @@ do
 end
 ```
 
-### LSaveManager:enableAutoSave
+#### LSaveManager:enableAutoSave
 
 #### Definition
 
@@ -367,7 +308,7 @@ do
 end
 ```
 
-### LSaveManager:exists
+#### LSaveManager:exists
 
 #### Definition
 
@@ -402,7 +343,7 @@ do
 end
 ```
 
-### LSaveManager:getSchemaVersion
+#### LSaveManager:getSchemaVersion
 
 #### Definition
 
@@ -432,7 +373,7 @@ do
 end
 ```
 
-### LSaveManager:getSlotInfo
+#### LSaveManager:getSlotInfo
 
 #### Definition
 
@@ -466,7 +407,7 @@ do
 end
 ```
 
-### LSaveManager:getSlots
+#### LSaveManager:getSlots
 
 #### Definition
 
@@ -496,7 +437,7 @@ do
 end
 ```
 
-### LSaveManager:getSummary
+#### LSaveManager:getSummary
 
 #### Definition
 
@@ -524,7 +465,7 @@ do
 end
 ```
 
-### LSaveManager:isCompressed
+#### LSaveManager:isCompressed
 
 #### Definition
 
@@ -552,7 +493,7 @@ do
 end
 ```
 
-### LSaveManager:isDirty
+#### LSaveManager:isDirty
 
 #### Definition
 
@@ -582,7 +523,7 @@ do
 end
 ```
 
-### LSaveManager:load
+#### LSaveManager:load
 
 #### Definition
 
@@ -618,7 +559,7 @@ do
 end
 ```
 
-### LSaveManager:markDirty
+#### LSaveManager:markDirty
 
 #### Definition
 
@@ -645,7 +586,7 @@ do
 end
 ```
 
-### LSaveManager:onAfterLoad
+#### LSaveManager:onAfterLoad
 
 #### Definition
 
@@ -677,7 +618,7 @@ do
 end
 ```
 
-### LSaveManager:onBeforeSave
+#### LSaveManager:onBeforeSave
 
 #### Definition
 
@@ -709,7 +650,7 @@ do
 end
 ```
 
-### LSaveManager:register
+#### LSaveManager:register
 
 #### Definition
 
@@ -744,7 +685,7 @@ do
 end
 ```
 
-### LSaveManager:reset
+#### LSaveManager:reset
 
 #### Definition
 
@@ -771,7 +712,7 @@ do
 end
 ```
 
-### LSaveManager:restore
+#### LSaveManager:restore
 
 #### Definition
 
@@ -803,7 +744,7 @@ do
 end
 ```
 
-### LSaveManager:save
+#### LSaveManager:save
 
 #### Definition
 
@@ -834,7 +775,7 @@ do
 end
 ```
 
-### LSaveManager:setCompress
+#### LSaveManager:setCompress
 
 #### Definition
 
@@ -864,7 +805,7 @@ do
 end
 ```
 
-### LSaveManager:setSchemaVersion
+#### LSaveManager:setSchemaVersion
 
 #### Definition
 
@@ -896,7 +837,7 @@ do
 end
 ```
 
-### LSaveManager:setSummary
+#### LSaveManager:setSummary
 
 #### Definition
 
@@ -926,7 +867,7 @@ do
 end
 ```
 
-### LSaveManager:type
+#### LSaveManager:type
 
 #### Definition
 
@@ -956,7 +897,7 @@ do
 end
 ```
 
-### LSaveManager:typeOf
+#### LSaveManager:typeOf
 
 #### Definition
 
@@ -991,7 +932,7 @@ do
 end
 ```
 
-### LSaveManager:unregister
+#### LSaveManager:unregister
 
 #### Definition
 
@@ -1023,7 +964,7 @@ do
 end
 ```
 
-### LSaveManager:update
+#### LSaveManager:update
 
 #### Definition
 

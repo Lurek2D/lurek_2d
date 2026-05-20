@@ -10,311 +10,28 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [attenuation.rs](#attenuationrs)
+  - [blend_mode.rs](#blendmoders)
+  - [falloff.rs](#falloffrs)
+  - [flicker.rs](#flickerrs)
+  - [light2d.rs](#light2drs)
+  - [light_type.rs](#lighttypers)
+  - [light_world.rs](#lightworldrs)
+  - [mod.rs](#modrs)
+  - [occluder.rs](#occluderrs)
+  - [shadow.rs](#shadowrs)
+  - [transition.rs](#transitionrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.light.advanceFlickers](#lureklightadvanceflickers)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.clear](#lureklightclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.getAmbient](#lureklightgetambient)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.getGodRayHints](#lureklightgetgodrayhints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.getGroupCount](#lureklightgetgroupcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.getLightCount](#lureklightgetlightcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.getMaxLights](#lureklightgetmaxlights)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.getNormalMapHints](#lureklightgetnormalmaphints)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.getOccluderCount](#lureklightgetoccludercount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.isEnabled](#lureklightisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.newLight](#lureklightnewlight)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.newOccluder](#lureklightnewoccluder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.setAmbient](#lureklightsetambient)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.setEnabled](#lureklightsetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.setGroupColor](#lureklightsetgroupcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.setGroupEnabled](#lureklightsetgroupenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.setGroupIntensity](#lureklightsetgroupintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.setMaxLights](#lureklightsetmaxlights)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.light.syncAmbient](#lureklightsyncambient)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LLight](#llight)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LOccluder](#loccluder)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LLight:addFlicker](#llightaddflicker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:clearCookie](#llightclearcookie)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:clearNormalMap](#llightclearnormalmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getAttenuation](#llightgetattenuation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getBlendMode](#llightgetblendmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getColor](#llightgetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getCookie](#llightgetcookie)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getDirection](#llightgetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getEnergy](#llightgetenergy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getFalloff](#llightgetfalloff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getFlicker](#llightgetflicker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getGroupId](#llightgetgroupid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getInnerAngle](#llightgetinnerangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getIntensity](#llightgetintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getLightMask](#llightgetlightmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getLightType](#llightgetlighttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getNormalMap](#llightgetnormalmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getNormalStrength](#llightgetnormalstrength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getOuterAngle](#llightgetouterangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getPosition](#llightgetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getRadius](#llightgetradius)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getShadowColor](#llightgetshadowcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getShadowFilter](#llightgetshadowfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getShadowMask](#llightgetshadowmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getShadowSmooth](#llightgetshadowsmooth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:getShadowSoftness](#llightgetshadowsoftness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:isEnabled](#llightisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:isFlickerEnabled](#llightisflickerenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:isShadowEnabled](#llightisshadowenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:isValid](#llightisvalid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:isVolumetric](#llightisvolumetric)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:remove](#llightremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setAttenuation](#llightsetattenuation)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setBlendMode](#llightsetblendmode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setColor](#llightsetcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setCookie](#llightsetcookie)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setDirection](#llightsetdirection)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setEnabled](#llightsetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setEnergy](#llightsetenergy)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setFalloff](#llightsetfalloff)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setFlicker](#llightsetflicker)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setFlickerEnabled](#llightsetflickerenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setGroupId](#llightsetgroupid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setInnerAngle](#llightsetinnerangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setIntensity](#llightsetintensity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setLightMask](#llightsetlightmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setLightType](#llightsetlighttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setNormalMap](#llightsetnormalmap)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setNormalStrength](#llightsetnormalstrength)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setOuterAngle](#llightsetouterangle)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setPosition](#llightsetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setRadius](#llightsetradius)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setShadowColor](#llightsetshadowcolor)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setShadowEnabled](#llightsetshadowenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setShadowFilter](#llightsetshadowfilter)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setShadowMask](#llightsetshadowmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setShadowSmooth](#llightsetshadowsmooth)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setShadowSoftness](#llightsetshadowsoftness)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:setVolumetric](#llightsetvolumetric)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:stopTransition](#llightstoptransition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:transitionProgress](#llighttransitionprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:transitionTo](#llighttransitionto)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:type](#llighttype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:typeOf](#llighttypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LLight:updateTransition](#llightupdatetransition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:getLightMask](#loccludergetlightmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:getOpacity](#loccludergetopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:getPosition](#loccludergetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:getVertices](#loccludergetvertices)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:isEnabled](#loccluderisenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:isValid](#loccluderisvalid)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:remove](#loccluderremove)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:setEnabled](#loccludersetenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:setLightMask](#loccludersetlightmask)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:setOpacity](#loccludersetopacity)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:setPosition](#loccludersetposition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:setVertices](#loccludersetvertices)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:type](#loccludertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LOccluder:typeOf](#loccludertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LLight Methods](#llight-methods)
+  - [LOccluder Methods](#loccluder-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -338,6 +55,84 @@ Attenuation supports quadratic, linear, and inverse-square falloff models plus c
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `attenuation.rs`
+
+- Distance-based light intensity falloff using quadratic attenuation coefficients.
+- Computes attenuation factor from constant, linear, and quadratic terms.
+- Debug visualization of attenuation curves rendered to an image buffer.
+
+### `blend_mode.rs`
+
+- Define blend modes controlling how each light merges into the accumulation buffer.
+- Support additive, subtractive, and alpha-mix compositing strategies.
+
+### `falloff.rs`
+
+- Radial intensity falloff shapes applied on top of distance attenuation.
+- Variants control how brightness decreases from a light's center to its radius edge.
+
+### `flicker.rs`
+
+- Sine-based flicker configuration that modulates light intensity over time.
+- Phase accumulates each frame and wraps at TAU for continuous oscillation.
+- Strength controls peak deviation from base intensity; speed sets radians per second.
+- Disabled by default; enable to animate torches, candles, or neon lights.
+
+### `light2d.rs`
+
+- Complete `Light2D` struct holding position, color, radius, type, shadow, masks, flicker, and attenuation.
+- Constructor defaults to a white point light with full-layer masks and no shadows.
+- Getter/setter API for every field: position, color, intensity, energy, blend mode, falloff, masks.
+- Spot-light parameters: direction, inner/outer cone angles.
+- Shadow controls: enable, tint color, filter preset, smooth, and softness.
+- Normal-map attachment with optional path and contribution strength.
+- Volumetric scattering toggle and group-id batching support.
+- Debug visualization helper rendering falloff-mode comparison panels to `ImageData`.
+
+### `light_type.rs`
+
+- Define the geometric illumination models available for 2D lights.
+- Discriminate between point, directional, and spot light behavior.
+- Drive intensity falloff and ray direction logic in the lighting pipeline.
+
+### `light_world.rs`
+
+- Scene-level container (`LightWorld`) managing all `Light2D` instances and `Occluder` shapes via slotmaps.
+- Add, remove, query, and bulk-update lights and occluders by stable keys.
+- Group operations: enable/disable, intensity, and color changes on a named group ID.
+- Flicker system: lazy-indexed advance loop that only touches lights with active flicker state.
+- Renderer hints: ambient color array, directional light tuples, and normal-map snapshot extraction.
+- Debug visualization: rasterize an approximate light-map preview into an `ImageData` bitmap.
+
+### `mod.rs`
+
+- 2D lighting system with point, spot, and area light types supporting color, falloff, and flicker.
+- Shadow casting via occluder shapes with configurable filter quality.
+- Light world accumulator that processes all active lights and emits composited render commands.
+- Blend modes and attenuation curves for flexible intensity decay and compositing.
+
+### `occluder.rs`
+
+- Convex polygon shape that blocks light and casts shadows in the 2D lighting system.
+- Vertex management: construction from Vec2 list or flat coordinate arrays, runtime replacement.
+- Per-occluder properties: world position offset, shadow opacity, light-layer bitmask, enabled toggle.
+
+### `shadow.rs`
+
+- Shadow filtering quality presets for soft-shadow rendering.
+- Defines PCF sample kernels at varying tap counts.
+- Default is hard shadows (no filtering) for maximum performance.
+
+### `transition.rs`
+
+- Time-based linear interpolation of light color, intensity, and radius.
+- Clamps duration to a safe minimum and tracks elapsed progress.
+- Returns interpolated values each frame until the transition completes.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LLight` (65 methods) - Lua-side handle for a light stored in the shared light world.
@@ -348,34 +143,18 @@ Attenuation supports quadratic, linear, and inverse-square falloff models plus c
 ## 📖 API Overview
 
 - Source spec: [docs/specs/light.md](../blob/main/docs/specs/light.md)
+- Module-level functions: 19
+- Lua-visible types: 2
+- Total type methods: 79
 
-```lua
-lurek.light.advanceFlickers(dt: number) -- Advances flicker animation for all indexed flickering lights.
-lurek.light.clear() -- Removes all lights and occluders from the light world.
-lurek.light.getAmbient() -> number -- Returns global ambient light color.
-lurek.light.getGodRayHints() -> table -- Returns directional light hints for god-ray style effects.
-lurek.light.getGroupCount(group_id: integer) -> integer -- Returns the number of lights in a group.
-lurek.light.getLightCount() -> integer -- Returns the number of live lights. This function is exposed to Lua scripts.
-lurek.light.getMaxLights() -> integer -- Returns the maximum configured light count.
-lurek.light.getNormalMapHints() -> table -- Returns light hints that reference normal maps.
-lurek.light.getOccluderCount() -> integer -- Returns the number of live occluders.
-lurek.light.isEnabled() -> boolean -- Returns whether the shared light world is enabled.
-lurek.light.newLight(x: number, y: number, radius: number, [opts]: table) -> LLight -- Creates a light and applies optional light settings.
-lurek.light.newOccluder(vtbl: table, [opts]: table) -> LOccluder -- Creates an occluder from a flat vertex coordinate table and optional settings.
-lurek.light.setAmbient(r: number, g: number, b: number, [a]: number) -- Sets global ambient light color. This function is exposed to Lua scripts.
-lurek.light.setEnabled(enabled: boolean) -- Enables or disables the shared light world.
-lurek.light.setGroupColor(group_id: integer, r: number, g: number, b: number, [a]: number) -- Sets color for all lights in a group.
-lurek.light.setGroupEnabled(group_id: integer, enabled: boolean) -- Enables or disables all lights in a group.
-lurek.light.setGroupIntensity(group_id: integer, intensity: number) -- Sets intensity for all lights in a group.
-lurek.light.setMaxLights(n: integer) -- Sets the maximum configured light count, clamped to 1 through 256.
--- ... 1 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.light.advanceFlickers
+### Module-Level Functions
+
+#### lurek.light.advanceFlickers
 
 #### Definition
 
@@ -407,7 +186,7 @@ do
 end
 ```
 
-### lurek.light.clear
+#### lurek.light.clear
 
 #### Definition
 
@@ -432,7 +211,7 @@ do
 end
 ```
 
-### lurek.light.getAmbient
+#### lurek.light.getAmbient
 
 #### Definition
 
@@ -462,7 +241,7 @@ do
 end
 ```
 
-### lurek.light.getGodRayHints
+#### lurek.light.getGodRayHints
 
 #### Definition
 
@@ -489,7 +268,7 @@ do
 end
 ```
 
-### lurek.light.getGroupCount
+#### lurek.light.getGroupCount
 
 #### Definition
 
@@ -524,7 +303,7 @@ do
 end
 ```
 
-### lurek.light.getLightCount
+#### lurek.light.getLightCount
 
 #### Definition
 
@@ -553,7 +332,7 @@ do
 end
 ```
 
-### lurek.light.getMaxLights
+#### lurek.light.getMaxLights
 
 #### Definition
 
@@ -580,7 +359,7 @@ do
 end
 ```
 
-### lurek.light.getNormalMapHints
+#### lurek.light.getNormalMapHints
 
 #### Definition
 
@@ -607,7 +386,7 @@ do
 end
 ```
 
-### lurek.light.getOccluderCount
+#### lurek.light.getOccluderCount
 
 #### Definition
 
@@ -636,7 +415,7 @@ do
 end
 ```
 
-### lurek.light.isEnabled
+#### lurek.light.isEnabled
 
 #### Definition
 
@@ -663,7 +442,7 @@ do
 end
 ```
 
-### lurek.light.newLight
+#### lurek.light.newLight
 
 #### Definition
 
@@ -701,7 +480,7 @@ do
 end
 ```
 
-### lurek.light.newOccluder
+#### lurek.light.newOccluder
 
 #### Definition
 
@@ -736,7 +515,7 @@ do
 end
 ```
 
-### lurek.light.setAmbient
+#### lurek.light.setAmbient
 
 #### Definition
 
@@ -772,7 +551,7 @@ do
 end
 ```
 
-### lurek.light.setEnabled
+#### lurek.light.setEnabled
 
 #### Definition
 
@@ -801,7 +580,7 @@ do
 end
 ```
 
-### lurek.light.setGroupColor
+#### lurek.light.setGroupColor
 
 #### Definition
 
@@ -838,7 +617,7 @@ do
 end
 ```
 
-### lurek.light.setGroupEnabled
+#### lurek.light.setGroupEnabled
 
 #### Definition
 
@@ -869,7 +648,7 @@ do
 end
 ```
 
-### lurek.light.setGroupIntensity
+#### lurek.light.setGroupIntensity
 
 #### Definition
 
@@ -900,7 +679,7 @@ do
 end
 ```
 
-### lurek.light.setMaxLights
+#### lurek.light.setMaxLights
 
 #### Definition
 
@@ -929,7 +708,7 @@ do
 end
 ```
 
-### lurek.light.syncAmbient
+#### lurek.light.syncAmbient
 
 #### Definition
 
@@ -1020,7 +799,9 @@ end
 
 ## 🔹 Module Methods
 
-### LLight:addFlicker
+### LLight Methods
+
+#### LLight:addFlicker
 
 #### Definition
 
@@ -1054,7 +835,7 @@ do
 end
 ```
 
-### LLight:clearCookie
+#### LLight:clearCookie
 
 #### Definition
 
@@ -1080,7 +861,7 @@ do
 end
 ```
 
-### LLight:clearNormalMap
+#### LLight:clearNormalMap
 
 #### Definition
 
@@ -1106,7 +887,7 @@ do
 end
 ```
 
-### LLight:getAttenuation
+#### LLight:getAttenuation
 
 #### Definition
 
@@ -1137,7 +918,7 @@ do
 end
 ```
 
-### LLight:getBlendMode
+#### LLight:getBlendMode
 
 #### Definition
 
@@ -1165,7 +946,7 @@ do
 end
 ```
 
-### LLight:getColor
+#### LLight:getColor
 
 #### Definition
 
@@ -1197,7 +978,7 @@ do
 end
 ```
 
-### LLight:getCookie
+#### LLight:getCookie
 
 #### Definition
 
@@ -1225,7 +1006,7 @@ do
 end
 ```
 
-### LLight:getDirection
+#### LLight:getDirection
 
 #### Definition
 
@@ -1254,7 +1035,7 @@ do
 end
 ```
 
-### LLight:getEnergy
+#### LLight:getEnergy
 
 #### Definition
 
@@ -1282,7 +1063,7 @@ do
 end
 ```
 
-### LLight:getFalloff
+#### LLight:getFalloff
 
 #### Definition
 
@@ -1310,7 +1091,7 @@ do
 end
 ```
 
-### LLight:getFlicker
+#### LLight:getFlicker
 
 #### Definition
 
@@ -1340,7 +1121,7 @@ do
 end
 ```
 
-### LLight:getGroupId
+#### LLight:getGroupId
 
 #### Definition
 
@@ -1368,7 +1149,7 @@ do
 end
 ```
 
-### LLight:getInnerAngle
+#### LLight:getInnerAngle
 
 #### Definition
 
@@ -1398,7 +1179,7 @@ do
 end
 ```
 
-### LLight:getIntensity
+#### LLight:getIntensity
 
 #### Definition
 
@@ -1426,7 +1207,7 @@ do
 end
 ```
 
-### LLight:getLightMask
+#### LLight:getLightMask
 
 #### Definition
 
@@ -1454,7 +1235,7 @@ do
 end
 ```
 
-### LLight:getLightType
+#### LLight:getLightType
 
 #### Definition
 
@@ -1482,7 +1263,7 @@ do
 end
 ```
 
-### LLight:getNormalMap
+#### LLight:getNormalMap
 
 #### Definition
 
@@ -1510,7 +1291,7 @@ do
 end
 ```
 
-### LLight:getNormalStrength
+#### LLight:getNormalStrength
 
 #### Definition
 
@@ -1538,7 +1319,7 @@ do
 end
 ```
 
-### LLight:getOuterAngle
+#### LLight:getOuterAngle
 
 #### Definition
 
@@ -1568,7 +1349,7 @@ do
 end
 ```
 
-### LLight:getPosition
+#### LLight:getPosition
 
 #### Definition
 
@@ -1598,7 +1379,7 @@ do
 end
 ```
 
-### LLight:getRadius
+#### LLight:getRadius
 
 #### Definition
 
@@ -1626,7 +1407,7 @@ do
 end
 ```
 
-### LLight:getShadowColor
+#### LLight:getShadowColor
 
 #### Definition
 
@@ -1659,7 +1440,7 @@ do
 end
 ```
 
-### LLight:getShadowFilter
+#### LLight:getShadowFilter
 
 #### Definition
 
@@ -1688,7 +1469,7 @@ do
 end
 ```
 
-### LLight:getShadowMask
+#### LLight:getShadowMask
 
 #### Definition
 
@@ -1716,7 +1497,7 @@ do
 end
 ```
 
-### LLight:getShadowSmooth
+#### LLight:getShadowSmooth
 
 #### Definition
 
@@ -1745,7 +1526,7 @@ do
 end
 ```
 
-### LLight:getShadowSoftness
+#### LLight:getShadowSoftness
 
 #### Definition
 
@@ -1774,7 +1555,7 @@ do
 end
 ```
 
-### LLight:isEnabled
+#### LLight:isEnabled
 
 #### Definition
 
@@ -1802,7 +1583,7 @@ do
 end
 ```
 
-### LLight:isFlickerEnabled
+#### LLight:isFlickerEnabled
 
 #### Definition
 
@@ -1831,7 +1612,7 @@ do
 end
 ```
 
-### LLight:isShadowEnabled
+#### LLight:isShadowEnabled
 
 #### Definition
 
@@ -1859,7 +1640,7 @@ do
 end
 ```
 
-### LLight:isValid
+#### LLight:isValid
 
 #### Definition
 
@@ -1888,7 +1669,7 @@ do
 end
 ```
 
-### LLight:isVolumetric
+#### LLight:isVolumetric
 
 #### Definition
 
@@ -1916,7 +1697,7 @@ do
 end
 ```
 
-### LLight:remove
+#### LLight:remove
 
 #### Definition
 
@@ -1942,7 +1723,7 @@ do
 end
 ```
 
-### LLight:setAttenuation
+#### LLight:setAttenuation
 
 #### Definition
 
@@ -1977,7 +1758,7 @@ do
 end
 ```
 
-### LLight:setBlendMode
+#### LLight:setBlendMode
 
 #### Definition
 
@@ -2007,7 +1788,7 @@ do
 end
 ```
 
-### LLight:setColor
+#### LLight:setColor
 
 #### Definition
 
@@ -2044,7 +1825,7 @@ do
 end
 ```
 
-### LLight:setCookie
+#### LLight:setCookie
 
 #### Definition
 
@@ -2074,7 +1855,7 @@ do
 end
 ```
 
-### LLight:setDirection
+#### LLight:setDirection
 
 #### Definition
 
@@ -2105,7 +1886,7 @@ do
 end
 ```
 
-### LLight:setEnabled
+#### LLight:setEnabled
 
 #### Definition
 
@@ -2135,7 +1916,7 @@ do
 end
 ```
 
-### LLight:setEnergy
+#### LLight:setEnergy
 
 #### Definition
 
@@ -2165,7 +1946,7 @@ do
 end
 ```
 
-### LLight:setFalloff
+#### LLight:setFalloff
 
 #### Definition
 
@@ -2195,7 +1976,7 @@ do
 end
 ```
 
-### LLight:setFlicker
+#### LLight:setFlicker
 
 #### Definition
 
@@ -2228,7 +2009,7 @@ do
 end
 ```
 
-### LLight:setFlickerEnabled
+#### LLight:setFlickerEnabled
 
 #### Definition
 
@@ -2259,7 +2040,7 @@ do
 end
 ```
 
-### LLight:setGroupId
+#### LLight:setGroupId
 
 #### Definition
 
@@ -2289,7 +2070,7 @@ do
 end
 ```
 
-### LLight:setInnerAngle
+#### LLight:setInnerAngle
 
 #### Definition
 
@@ -2321,7 +2102,7 @@ do
 end
 ```
 
-### LLight:setIntensity
+#### LLight:setIntensity
 
 #### Definition
 
@@ -2351,7 +2132,7 @@ do
 end
 ```
 
-### LLight:setLightMask
+#### LLight:setLightMask
 
 #### Definition
 
@@ -2381,7 +2162,7 @@ do
 end
 ```
 
-### LLight:setLightType
+#### LLight:setLightType
 
 #### Definition
 
@@ -2411,7 +2192,7 @@ do
 end
 ```
 
-### LLight:setNormalMap
+#### LLight:setNormalMap
 
 #### Definition
 
@@ -2441,7 +2222,7 @@ do
 end
 ```
 
-### LLight:setNormalStrength
+#### LLight:setNormalStrength
 
 #### Definition
 
@@ -2471,7 +2252,7 @@ do
 end
 ```
 
-### LLight:setOuterAngle
+#### LLight:setOuterAngle
 
 #### Definition
 
@@ -2503,7 +2284,7 @@ do
 end
 ```
 
-### LLight:setPosition
+#### LLight:setPosition
 
 #### Definition
 
@@ -2536,7 +2317,7 @@ do
 end
 ```
 
-### LLight:setRadius
+#### LLight:setRadius
 
 #### Definition
 
@@ -2566,7 +2347,7 @@ do
 end
 ```
 
-### LLight:setShadowColor
+#### LLight:setShadowColor
 
 #### Definition
 
@@ -2604,7 +2385,7 @@ do
 end
 ```
 
-### LLight:setShadowEnabled
+#### LLight:setShadowEnabled
 
 #### Definition
 
@@ -2634,7 +2415,7 @@ do
 end
 ```
 
-### LLight:setShadowFilter
+#### LLight:setShadowFilter
 
 #### Definition
 
@@ -2665,7 +2446,7 @@ do
 end
 ```
 
-### LLight:setShadowMask
+#### LLight:setShadowMask
 
 #### Definition
 
@@ -2695,7 +2476,7 @@ do
 end
 ```
 
-### LLight:setShadowSmooth
+#### LLight:setShadowSmooth
 
 #### Definition
 
@@ -2726,7 +2507,7 @@ do
 end
 ```
 
-### LLight:setShadowSoftness
+#### LLight:setShadowSoftness
 
 #### Definition
 
@@ -2757,7 +2538,7 @@ do
 end
 ```
 
-### LLight:setVolumetric
+#### LLight:setVolumetric
 
 #### Definition
 
@@ -2787,7 +2568,7 @@ do
 end
 ```
 
-### LLight:stopTransition
+#### LLight:stopTransition
 
 #### Definition
 
@@ -2813,7 +2594,7 @@ do
 end
 ```
 
-### LLight:transitionProgress
+#### LLight:transitionProgress
 
 #### Definition
 
@@ -2842,7 +2623,7 @@ do
 end
 ```
 
-### LLight:transitionTo
+#### LLight:transitionTo
 
 #### Definition
 
@@ -2875,7 +2656,7 @@ do
 end
 ```
 
-### LLight:type
+#### LLight:type
 
 #### Definition
 
@@ -2903,7 +2684,7 @@ do
 end
 ```
 
-### LLight:typeOf
+#### LLight:typeOf
 
 #### Definition
 
@@ -2936,7 +2717,7 @@ do
 end
 ```
 
-### LLight:updateTransition
+#### LLight:updateTransition
 
 #### Definition
 
@@ -2970,7 +2751,9 @@ do
 end
 ```
 
-### LOccluder:getLightMask
+### LOccluder Methods
+
+#### LOccluder:getLightMask
 
 #### Definition
 
@@ -2998,7 +2781,7 @@ do
 end
 ```
 
-### LOccluder:getOpacity
+#### LOccluder:getOpacity
 
 #### Definition
 
@@ -3026,7 +2809,7 @@ do
 end
 ```
 
-### LOccluder:getPosition
+#### LOccluder:getPosition
 
 #### Definition
 
@@ -3056,7 +2839,7 @@ do
 end
 ```
 
-### LOccluder:getVertices
+#### LOccluder:getVertices
 
 #### Definition
 
@@ -3085,7 +2868,7 @@ do
 end
 ```
 
-### LOccluder:isEnabled
+#### LOccluder:isEnabled
 
 #### Definition
 
@@ -3113,7 +2896,7 @@ do
 end
 ```
 
-### LOccluder:isValid
+#### LOccluder:isValid
 
 #### Definition
 
@@ -3142,7 +2925,7 @@ do
 end
 ```
 
-### LOccluder:remove
+#### LOccluder:remove
 
 #### Definition
 
@@ -3169,7 +2952,7 @@ do
 end
 ```
 
-### LOccluder:setEnabled
+#### LOccluder:setEnabled
 
 #### Definition
 
@@ -3199,7 +2982,7 @@ do
 end
 ```
 
-### LOccluder:setLightMask
+#### LOccluder:setLightMask
 
 #### Definition
 
@@ -3229,7 +3012,7 @@ do
 end
 ```
 
-### LOccluder:setOpacity
+#### LOccluder:setOpacity
 
 #### Definition
 
@@ -3259,7 +3042,7 @@ do
 end
 ```
 
-### LOccluder:setPosition
+#### LOccluder:setPosition
 
 #### Definition
 
@@ -3292,7 +3075,7 @@ do
 end
 ```
 
-### LOccluder:setVertices
+#### LOccluder:setVertices
 
 #### Definition
 
@@ -3323,7 +3106,7 @@ do
 end
 ```
 
-### LOccluder:type
+#### LOccluder:type
 
 #### Definition
 
@@ -3351,7 +3134,7 @@ do
 end
 ```
 
-### LOccluder:typeOf
+#### LOccluder:typeOf
 
 #### Definition
 

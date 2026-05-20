@@ -10,203 +10,25 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [frame_stats.rs](#framestatsrs)
+  - [logger.rs](#loggerrs)
+  - [lua_display.rs](#luadisplayrs)
+  - [mod.rs](#modrs)
+  - [profiler.rs](#profilerrs)
+  - [repl.rs](#replrs)
+  - [time_anchor.rs](#timeanchorrs)
+  - [watcher.rs](#watcherrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.devtools.clearLog](#lurekdevtoolsclearlog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.clearWatches](#lurekdevtoolsclearwatches)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.debug](#lurekdevtoolsdebug)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.error](#lurekdevtoolserror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.eval](#lurekdevtoolseval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.exposeWatch](#lurekdevtoolsexposewatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.fatal](#lurekdevtoolsfatal)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getCallStack](#lurekdevtoolsgetcallstack)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getFrameHistory](#lurekdevtoolsgetframehistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getFrameHistorySize](#lurekdevtoolsgetframehistorysize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getFrameStats](#lurekdevtoolsgetframestats)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getGpuFrameStats](#lurekdevtoolsgetgpuframestats)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getLogConsole](#lurekdevtoolsgetlogconsole)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getLogFile](#lurekdevtoolsgetlogfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getLogHistory](#lurekdevtoolsgetloghistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getLogLevel](#lurekdevtoolsgetloglevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getProfileData](#lurekdevtoolsgetprofiledata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getProfileFrameCount](#lurekdevtoolsgetprofileframecount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getWatchedPaths](#lurekdevtoolsgetwatchedpaths)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getWatches](#lurekdevtoolsgetwatches)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.getWatchInterval](#lurekdevtoolsgetwatchinterval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.info](#lurekdevtoolsinfo)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.isConsoleOpen](#lurekdevtoolsisconsoleopen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.isEntityInspectorOpen](#lurekdevtoolsisentityinspectoropen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.isProfilingEnabled](#lurekdevtoolsisprofilingenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.log](#lurekdevtoolslog)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.newFileWatcher](#lurekdevtoolsnewfilewatcher)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.newRepl](#lurekdevtoolsnewrepl)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.openConsole](#lurekdevtoolsopenconsole)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.openEntityInspector](#lurekdevtoolsopenentityinspector)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.profileFrame](#lurekdevtoolsprofileframe)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.profilePop](#lurekdevtoolsprofilepop)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.profilePush](#lurekdevtoolsprofilepush)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.profilerReport](#lurekdevtoolsprofilerreport)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.recordFrameTime](#lurekdevtoolsrecordframetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.recordGpuFrameTime](#lurekdevtoolsrecordgpuframetime)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.removeWatch](#lurekdevtoolsremovewatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.resetProfile](#lurekdevtoolsresetprofile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.scan](#lurekdevtoolsscan)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.setFrameHistorySize](#lurekdevtoolssetframehistorysize)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.setLogConsole](#lurekdevtoolssetlogconsole)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.setLogFile](#lurekdevtoolssetlogfile)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.setLogLevel](#lurekdevtoolssetloglevel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.setProfilingEnabled](#lurekdevtoolssetprofilingenabled)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.setWatchInterval](#lurekdevtoolssetwatchinterval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.snapshot](#lurekdevtoolssnapshot)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.trace](#lurekdevtoolstrace)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.unwatch](#lurekdevtoolsunwatch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.warn](#lurekdevtoolswarn)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.devtools.watch](#lurekdevtoolswatch)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LFileWatcher](#lfilewatcher)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LReplConsole](#lreplconsole)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LFileWatcher:cancel](#lfilewatchercancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileWatcher:check](#lfilewatchercheck)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileWatcher:getPath](#lfilewatchergetpath)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileWatcher:onChanged](#lfilewatcheronchanged)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileWatcher:type](#lfilewatchertype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LFileWatcher:typeOf](#lfilewatchertypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplConsole:clear](#lreplconsoleclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplConsole:eval](#lreplconsoleeval)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplConsole:history](#lreplconsolehistory)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplConsole:len](#lreplconsolelen)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplConsole:type](#lreplconsoletype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LReplConsole:typeOf](#lreplconsoletypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LFileWatcher Methods](#lfilewatcher-methods)
+  - [LReplConsole Methods](#lreplconsole-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -230,6 +52,66 @@ Development-time diagnostic utilities exposed as `lurek.devtools.*` for runtime 
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `frame_stats.rs`
+
+- Collect bounded rolling history of frame-delta samples
+- Compute aggregate metrics: FPS, average, min, max, and percentiles
+- Produce immutable snapshots summarizing recent frame performance
+
+### `logger.rs`
+
+- Define ordered severity levels with case-insensitive parsing
+- Store bounded in-memory log history with timestamped entries
+- Filter log output by minimum severity and optional category prefix
+- Mirror accepted entries to stderr and optional append-only file
+- Provide tail and category query access over retained entries
+
+### `lua_display.rs`
+
+- Convert Lua values to human-readable text for REPL and debug display
+- Handle nil, boolean, number, string, table, function, and userdata variants
+- Return safe fallback labels for unrecognized value kinds
+
+### `mod.rs`
+
+- Aggregate frame-time statistics and FPS percentile snapshots
+- Structured logging with severity filtering, file output, and history
+- Hierarchical profiler with zone stacking and per-frame capture
+- Interactive Lua REPL console with bounded command history
+- File-watcher polling and native notify integration for hot-reload
+
+### `profiler.rs`
+
+- Record hierarchical profiling zones with push/pop stack semantics
+- Compute total and self (exclusive) duration per zone
+- Capture per-frame zone trees into bounded rolling history
+- Retrieve frames by positive or negative index
+- Flatten nested zone trees for aggregate reporting
+
+### `repl.rs`
+
+- Compatibility wrapper around the release-safe REPL core
+- Preserves the devtools `ReplConsole` API and bounded history behavior
+- Returns expression results, success markers, command text, or formatted error text
+
+### `time_anchor.rs`
+
+- Capture a monotonic instant at construction time
+- Compute elapsed seconds from that anchor on demand
+- Provide a shared timing primitive for logger and profiler
+
+### `watcher.rs`
+
+- Track watched file paths with last-observed modification timestamps
+- Poll for mtime changes and report modified paths on each tick
+- Integrate native notify backend when devtools-plugin feature is enabled
+- Support forced-stale marking, path registration, and full clear
+- Deduplicate change reports via sorted set collection
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LFileWatcher` (6 methods) - Lua-side file watcher with an optional change callback.
@@ -240,34 +122,18 @@ Development-time diagnostic utilities exposed as `lurek.devtools.*` for runtime 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/devtools.md](../blob/main/docs/specs/devtools.md)
+- Module-level functions: 50
+- Lua-visible types: 2
+- Total type methods: 12
 
-```lua
-lurek.devtools.clearLog() -- Clears all in-memory devtools log entries.
-lurek.devtools.clearWatches() -- Removes every path from the module-level file watcher.
-lurek.devtools.debug(message: string) -- Adds a debug-level diagnostic message to the devtools log.
-lurek.devtools.error(message: string) -- Adds an error-level diagnostic message to the devtools log.
-lurek.devtools.eval(code: string) -> LuaValue -- Evaluates Lua code in the current state and returns success plus values or failure plus an error message.
-lurek.devtools.exposeWatch(name: string, getter: function, [category]: string) -> integer -- Registers a watch expression callback for snapshots and watch panels.
-lurek.devtools.fatal(message: string) -- Adds a fatal-level diagnostic message to the devtools log.
-lurek.devtools.getCallStack([max_depth]: integer) -> any[] -- Returns Lua call stack frames using the Lua debug library.
-lurek.devtools.getFrameHistory() -> number[] -- Returns retained CPU frame duration samples in insertion order.
-lurek.devtools.getFrameHistorySize() -> integer -- Returns the current CPU frame history capacity.
-lurek.devtools.getFrameStats() -> table -- Returns aggregate CPU frame timing statistics from recorded samples.
-lurek.devtools.getGpuFrameStats() -> table -- Returns aggregate GPU frame timing statistics from recorded samples.
-lurek.devtools.getLogConsole() -> boolean -- Returns whether devtools log entries are mirrored to the console.
-lurek.devtools.getLogFile() -> string -- Returns the file path currently stored as the devtools log target.
-lurek.devtools.getLogHistory([count]: integer) -> table -- Returns recent devtools log entries as structured tables.
-lurek.devtools.getLogLevel() -> string -- Returns the minimum severity currently used by devtools log output.
-lurek.devtools.getProfileData([frame]: integer) -> table -- Returns the profiler zone tree for a retained frame.
-lurek.devtools.getProfileFrameCount() -> integer -- Returns how many profiling frames are currently stored.
--- ... 32 more module functions
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.devtools.clearLog
+### Module-Level Functions
+
+#### lurek.devtools.clearLog
 
 #### Definition
 
@@ -292,7 +158,7 @@ do
 end
 ```
 
-### lurek.devtools.clearWatches
+#### lurek.devtools.clearWatches
 
 #### Definition
 
@@ -317,7 +183,7 @@ do
 end
 ```
 
-### lurek.devtools.debug
+#### lurek.devtools.debug
 
 #### Definition
 
@@ -346,7 +212,7 @@ do
 end
 ```
 
-### lurek.devtools.error
+#### lurek.devtools.error
 
 #### Definition
 
@@ -375,7 +241,7 @@ do
 end
 ```
 
-### lurek.devtools.eval
+#### lurek.devtools.eval
 
 #### Definition
 
@@ -407,7 +273,7 @@ do
 end
 ```
 
-### lurek.devtools.exposeWatch
+#### lurek.devtools.exposeWatch
 
 #### Definition
 
@@ -443,7 +309,7 @@ do
 end
 ```
 
-### lurek.devtools.fatal
+#### lurek.devtools.fatal
 
 #### Definition
 
@@ -472,7 +338,7 @@ do
 end
 ```
 
-### lurek.devtools.getCallStack
+#### lurek.devtools.getCallStack
 
 #### Definition
 
@@ -504,7 +370,7 @@ do
 end
 ```
 
-### lurek.devtools.getFrameHistory
+#### lurek.devtools.getFrameHistory
 
 #### Definition
 
@@ -532,7 +398,7 @@ do
 end
 ```
 
-### lurek.devtools.getFrameHistorySize
+#### lurek.devtools.getFrameHistorySize
 
 #### Definition
 
@@ -558,7 +424,7 @@ do
 end
 ```
 
-### lurek.devtools.getFrameStats
+#### lurek.devtools.getFrameStats
 
 #### Definition
 
@@ -586,7 +452,7 @@ do
 end
 ```
 
-### lurek.devtools.getGpuFrameStats
+#### lurek.devtools.getGpuFrameStats
 
 #### Definition
 
@@ -614,7 +480,7 @@ do
 end
 ```
 
-### lurek.devtools.getLogConsole
+#### lurek.devtools.getLogConsole
 
 #### Definition
 
@@ -640,7 +506,7 @@ do
 end
 ```
 
-### lurek.devtools.getLogFile
+#### lurek.devtools.getLogFile
 
 #### Definition
 
@@ -667,7 +533,7 @@ do
 end
 ```
 
-### lurek.devtools.getLogHistory
+#### lurek.devtools.getLogHistory
 
 #### Definition
 
@@ -700,7 +566,7 @@ do
 end
 ```
 
-### lurek.devtools.getLogLevel
+#### lurek.devtools.getLogLevel
 
 #### Definition
 
@@ -727,7 +593,7 @@ do
 end
 ```
 
-### lurek.devtools.getProfileData
+#### lurek.devtools.getProfileData
 
 #### Definition
 
@@ -759,7 +625,7 @@ do
 end
 ```
 
-### lurek.devtools.getProfileFrameCount
+#### lurek.devtools.getProfileFrameCount
 
 #### Definition
 
@@ -785,7 +651,7 @@ do
 end
 ```
 
-### lurek.devtools.getWatchedPaths
+#### lurek.devtools.getWatchedPaths
 
 #### Definition
 
@@ -813,7 +679,7 @@ do
 end
 ```
 
-### lurek.devtools.getWatches
+#### lurek.devtools.getWatches
 
 #### Definition
 
@@ -841,7 +707,7 @@ do
 end
 ```
 
-### lurek.devtools.getWatchInterval
+#### lurek.devtools.getWatchInterval
 
 #### Definition
 
@@ -867,7 +733,7 @@ do
 end
 ```
 
-### lurek.devtools.info
+#### lurek.devtools.info
 
 #### Definition
 
@@ -896,7 +762,7 @@ do
 end
 ```
 
-### lurek.devtools.isConsoleOpen
+#### lurek.devtools.isConsoleOpen
 
 #### Definition
 
@@ -922,7 +788,7 @@ do
 end
 ```
 
-### lurek.devtools.isEntityInspectorOpen
+#### lurek.devtools.isEntityInspectorOpen
 
 #### Definition
 
@@ -948,7 +814,7 @@ do
 end
 ```
 
-### lurek.devtools.isProfilingEnabled
+#### lurek.devtools.isProfilingEnabled
 
 #### Definition
 
@@ -974,7 +840,7 @@ do
 end
 ```
 
-### lurek.devtools.log
+#### lurek.devtools.log
 
 #### Definition
 
@@ -1005,7 +871,7 @@ do
 end
 ```
 
-### lurek.devtools.newFileWatcher
+#### lurek.devtools.newFileWatcher
 
 #### Definition
 
@@ -1037,7 +903,7 @@ do
 end
 ```
 
-### lurek.devtools.newRepl
+#### lurek.devtools.newRepl
 
 #### Definition
 
@@ -1069,7 +935,7 @@ do
 end
 ```
 
-### lurek.devtools.openConsole
+#### lurek.devtools.openConsole
 
 #### Definition
 
@@ -1096,7 +962,7 @@ do
 end
 ```
 
-### lurek.devtools.openEntityInspector
+#### lurek.devtools.openEntityInspector
 
 #### Definition
 
@@ -1123,7 +989,7 @@ do
 end
 ```
 
-### lurek.devtools.profileFrame
+#### lurek.devtools.profileFrame
 
 #### Definition
 
@@ -1150,7 +1016,7 @@ do
 end
 ```
 
-### lurek.devtools.profilePop
+#### lurek.devtools.profilePop
 
 #### Definition
 
@@ -1181,7 +1047,7 @@ do
 end
 ```
 
-### lurek.devtools.profilePush
+#### lurek.devtools.profilePush
 
 #### Definition
 
@@ -1211,7 +1077,7 @@ do
 end
 ```
 
-### lurek.devtools.profilerReport
+#### lurek.devtools.profilerReport
 
 #### Definition
 
@@ -1238,7 +1104,7 @@ do
 end
 ```
 
-### lurek.devtools.recordFrameTime
+#### lurek.devtools.recordFrameTime
 
 #### Definition
 
@@ -1268,7 +1134,7 @@ do
 end
 ```
 
-### lurek.devtools.recordGpuFrameTime
+#### lurek.devtools.recordGpuFrameTime
 
 #### Definition
 
@@ -1297,7 +1163,7 @@ do
 end
 ```
 
-### lurek.devtools.removeWatch
+#### lurek.devtools.removeWatch
 
 #### Definition
 
@@ -1330,7 +1196,7 @@ do
 end
 ```
 
-### lurek.devtools.resetProfile
+#### lurek.devtools.resetProfile
 
 #### Definition
 
@@ -1354,7 +1220,7 @@ do
 end
 ```
 
-### lurek.devtools.scan
+#### lurek.devtools.scan
 
 #### Definition
 
@@ -1381,7 +1247,7 @@ do
 end
 ```
 
-### lurek.devtools.setFrameHistorySize
+#### lurek.devtools.setFrameHistorySize
 
 #### Definition
 
@@ -1410,7 +1276,7 @@ do
 end
 ```
 
-### lurek.devtools.setLogConsole
+#### lurek.devtools.setLogConsole
 
 #### Definition
 
@@ -1439,7 +1305,7 @@ do
 end
 ```
 
-### lurek.devtools.setLogFile
+#### lurek.devtools.setLogFile
 
 #### Definition
 
@@ -1468,7 +1334,7 @@ do
 end
 ```
 
-### lurek.devtools.setLogLevel
+#### lurek.devtools.setLogLevel
 
 #### Definition
 
@@ -1497,7 +1363,7 @@ do
 end
 ```
 
-### lurek.devtools.setProfilingEnabled
+#### lurek.devtools.setProfilingEnabled
 
 #### Definition
 
@@ -1526,7 +1392,7 @@ do
 end
 ```
 
-### lurek.devtools.setWatchInterval
+#### lurek.devtools.setWatchInterval
 
 #### Definition
 
@@ -1555,7 +1421,7 @@ do
 end
 ```
 
-### lurek.devtools.snapshot
+#### lurek.devtools.snapshot
 
 #### Definition
 
@@ -1582,7 +1448,7 @@ do
 end
 ```
 
-### lurek.devtools.trace
+#### lurek.devtools.trace
 
 #### Definition
 
@@ -1611,7 +1477,7 @@ do
 end
 ```
 
-### lurek.devtools.unwatch
+#### lurek.devtools.unwatch
 
 #### Definition
 
@@ -1644,7 +1510,7 @@ do
 end
 ```
 
-### lurek.devtools.warn
+#### lurek.devtools.warn
 
 #### Definition
 
@@ -1673,7 +1539,7 @@ do
 end
 ```
 
-### lurek.devtools.watch
+#### lurek.devtools.watch
 
 #### Definition
 
@@ -1765,7 +1631,9 @@ end
 
 ## 🔹 Module Methods
 
-### LFileWatcher:cancel
+### LFileWatcher Methods
+
+#### LFileWatcher:cancel
 
 #### Definition
 
@@ -1790,7 +1658,7 @@ do
 end
 ```
 
-### LFileWatcher:check
+#### LFileWatcher:check
 
 #### Definition
 
@@ -1818,7 +1686,7 @@ do
 end
 ```
 
-### LFileWatcher:getPath
+#### LFileWatcher:getPath
 
 #### Definition
 
@@ -1845,7 +1713,7 @@ do
 end
 ```
 
-### LFileWatcher:onChanged
+#### LFileWatcher:onChanged
 
 #### Definition
 
@@ -1877,7 +1745,7 @@ do
 end
 ```
 
-### LFileWatcher:type
+#### LFileWatcher:type
 
 #### Definition
 
@@ -1904,7 +1772,7 @@ do
 end
 ```
 
-### LFileWatcher:typeOf
+#### LFileWatcher:typeOf
 
 #### Definition
 
@@ -1936,7 +1804,9 @@ do
 end
 ```
 
-### LReplConsole:clear
+### LReplConsole Methods
+
+#### LReplConsole:clear
 
 #### Definition
 
@@ -1962,7 +1832,7 @@ do
 end
 ```
 
-### LReplConsole:eval
+#### LReplConsole:eval
 
 #### Definition
 
@@ -1995,7 +1865,7 @@ do
 end
 ```
 
-### LReplConsole:history
+#### LReplConsole:history
 
 #### Definition
 
@@ -2025,7 +1895,7 @@ do
 end
 ```
 
-### LReplConsole:len
+#### LReplConsole:len
 
 #### Definition
 
@@ -2054,7 +1924,7 @@ do
 end
 ```
 
-### LReplConsole:type
+#### LReplConsole:type
 
 #### Definition
 
@@ -2081,7 +1951,7 @@ do
 end
 ```
 
-### LReplConsole:typeOf
+#### LReplConsole:typeOf
 
 #### Definition
 

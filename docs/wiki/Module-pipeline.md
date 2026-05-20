@@ -10,215 +10,22 @@
 
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
+- [📁 Source Files](#source-files)
+  - [dag.rs](#dagrs)
+  - [mod.rs](#modrs)
+  - [result.rs](#resultrs)
+  - [scheduler.rs](#schedulerrs)
+  - [step.rs](#steprs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
-  - [lurek.pipeline.fromTable](#lurekpipelinefromtable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pipeline.newPipeline](#lurekpipelinenewpipeline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [lurek.pipeline.newStep](#lurekpipelinenewstep)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
   - [LPipeline](#lpipeline)
-    - [Definition](#definition)
-    - [Description](#description)
   - [LPipelineStep](#lpipelinestep)
-    - [Definition](#definition)
-    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
-  - [LPipeline:addBranch](#lpipelineaddbranch)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:addConditional](#lpipelineaddconditional)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:addStep](#lpipelineaddstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:addSubPipeline](#lpipelineaddsubpipeline)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:cancel](#lpipelinecancel)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:clear](#lpipelineclear)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getContext](#lpipelinegetcontext)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getErrorMode](#lpipelinegeterrormode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getExecutionOrder](#lpipelinegetexecutionorder)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getName](#lpipelinegetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getParallelGroups](#lpipelinegetparallelgroups)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getResult](#lpipelinegetresult)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getStep](#lpipelinegetstep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getStepCount](#lpipelinegetstepcount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getSteps](#lpipelinegetsteps)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:getStepsByTag](#lpipelinegetstepsbytag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:isComplete](#lpipelineiscomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:isRunning](#lpipelineisrunning)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:onEvent](#lpipelineonevent)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:onProgress](#lpipelineonprogress)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:removeStep](#lpipelineremovestep)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:reset](#lpipelinereset)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:run](#lpipelinerun)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:runAsync](#lpipelinerunasync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:setErrorMode](#lpipelineseterrormode)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:setName](#lpipelinesetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:setOnComplete](#lpipelinesetoncomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:setOnStepComplete](#lpipelinesetonstepcomplete)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:setOnStepError](#lpipelinesetonsteperror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:toAscii](#lpipelinetoascii)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:toTable](#lpipelinetotable)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:type](#lpipelinetype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:typeOf](#lpipelinetypeof)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:update](#lpipelineupdate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipeline:validate](#lpipelinevalidate)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:dependsOn](#lpipelinestepdependson)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getAttempt](#lpipelinestepgetattempt)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getData](#lpipelinestepgetdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getDelay](#lpipelinestepgetdelay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getDependencies](#lpipelinestepgetdependencies)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getDependencyCount](#lpipelinestepgetdependencycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getDuration](#lpipelinestepgetduration)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getError](#lpipelinestepgeterror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getName](#lpipelinestepgetname)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getRetryCount](#lpipelinestepgetretrycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getStatus](#lpipelinestepgetstatus)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getTag](#lpipelinestepgettag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:getTimeout](#lpipelinestepgettimeout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:isAsync](#lpipelinestepisasync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:isOptional](#lpipelinestepisoptional)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setAsync](#lpipelinestepsetasync)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setCallback](#lpipelinestepsetcallback)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setCondition](#lpipelinestepsetcondition)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setData](#lpipelinestepsetdata)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setDelay](#lpipelinestepsetdelay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setOnError](#lpipelinestepsetonerror)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setOptional](#lpipelinestepsetoptional)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setRetryCount](#lpipelinestepsetretrycount)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setRetryDelay](#lpipelinestepsetretrydelay)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setTag](#lpipelinestepsettag)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:setTimeout](#lpipelinestepsettimeout)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:type](#lpipelinesteptype)
-    - [Definition](#definition)
-    - [Description](#description)
-  - [LPipelineStep:typeOf](#lpipelinesteptypeof)
-    - [Definition](#definition)
-    - [Description](#description)
+  - [LPipeline Methods](#lpipeline-methods)
+  - [LPipelineStep Methods](#lpipelinestep-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -242,6 +49,44 @@ Steps support conditional execution (run-if predicates), retry with backoff, tim
 
 [⬆ back to top](#table-of-contents)
 
+## 📁 Source Files
+
+### `dag.rs`
+
+- DAG-based pipeline representing named steps with explicit dependency edges.
+- Topological ordering via Kahn's algorithm with cycle detection.
+- Parallel-level grouping for concurrent scheduling of independent steps.
+- Sub-pipeline merging under a namespace prefix with outer dependency wiring.
+- Validation of dependency references, execution-order queries, and ASCII diagram rendering.
+- Result collection from final step statuses into a typed `PipelineResult`.
+
+### `mod.rs`
+
+- DAG-based pipeline for dependency-ordered step execution.
+- Frame-driven scheduler ticks steps when delay timers expire.
+- Per-step error policies with abort-on-failure or continue modes.
+- Result types report completed, skipped, and failed steps after a run.
+
+### `result.rs`
+
+- Lifecycle status enum tracking pipeline progression from pending through completion or failure.
+- Aggregated result struct collecting per-step outcomes, durations, and error messages.
+- Convenience queries for success checks and human-readable summaries.
+
+### `scheduler.rs`
+
+- Frame-driven delay scheduler that counts down per-step timers each update.
+- Report which pipeline steps become ready once their configured delay expires.
+- Track wall-clock elapsed time and running state for the owning pipeline.
+
+### `step.rs`
+
+- Pipeline step definition: named unit of work with dependency, timing, and retry config.
+- Execution lifecycle via `StepStatus` (pending → waiting → running → terminal).
+- Per-step error policy overriding pipeline-level failure behavior.
+
+[⬆ back to top](#table-of-contents)
+
 ## 🧩 Key Types
 
 - `LPipeline` (35 methods) - A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
@@ -252,18 +97,18 @@ Steps support conditional execution (run-if predicates), retry with backoff, tim
 ## 📖 API Overview
 
 - Source spec: [docs/specs/pipeline.md](../blob/main/docs/specs/pipeline.md)
+- Module-level functions: 3
+- Lua-visible types: 2
+- Total type methods: 63
 
-```lua
-lurek.pipeline.fromTable(definition: table) -> LPipeline -- Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specif...
-lurek.pipeline.newPipeline([name]: string) -> LPipeline -- Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().
-lurek.pipeline.newStep(name: string, [callback]: function) -> LPipelineStep -- Creates a new pipeline step with the given name and an optional callback function.
-```
 
 [⬆ back to top](#table-of-contents)
 
 ## ⚙️ Module Functions
 
-### lurek.pipeline.fromTable
+### Module-Level Functions
+
+#### lurek.pipeline.fromTable
 
 #### Definition
 
@@ -296,7 +141,7 @@ do
 end
 ```
 
-### lurek.pipeline.newPipeline
+#### lurek.pipeline.newPipeline
 
 #### Definition
 
@@ -328,7 +173,7 @@ do
 end
 ```
 
-### lurek.pipeline.newStep
+#### lurek.pipeline.newStep
 
 #### Definition
 
@@ -423,7 +268,9 @@ end
 
 ## 🔹 Module Methods
 
-### LPipeline:addBranch
+### LPipeline Methods
+
+#### LPipeline:addBranch
 
 #### Definition
 
@@ -466,7 +313,7 @@ do
 end
 ```
 
-### LPipeline:addConditional
+#### LPipeline:addConditional
 
 #### Definition
 
@@ -507,7 +354,7 @@ do
 end
 ```
 
-### LPipeline:addStep
+#### LPipeline:addStep
 
 #### Definition
 
@@ -542,7 +389,7 @@ do
 end
 ```
 
-### LPipeline:addSubPipeline
+#### LPipeline:addSubPipeline
 
 #### Definition
 
@@ -578,7 +425,7 @@ do
 end
 ```
 
-### LPipeline:cancel
+#### LPipeline:cancel
 
 #### Definition
 
@@ -604,7 +451,7 @@ do
 end
 ```
 
-### LPipeline:clear
+#### LPipeline:clear
 
 #### Definition
 
@@ -630,7 +477,7 @@ do
 end
 ```
 
-### LPipeline:getContext
+#### LPipeline:getContext
 
 #### Definition
 
@@ -660,7 +507,7 @@ do
 end
 ```
 
-### LPipeline:getErrorMode
+#### LPipeline:getErrorMode
 
 #### Definition
 
@@ -688,7 +535,7 @@ do
 end
 ```
 
-### LPipeline:getExecutionOrder
+#### LPipeline:getExecutionOrder
 
 #### Definition
 
@@ -719,7 +566,7 @@ do
 end
 ```
 
-### LPipeline:getName
+#### LPipeline:getName
 
 #### Definition
 
@@ -747,7 +594,7 @@ do
 end
 ```
 
-### LPipeline:getParallelGroups
+#### LPipeline:getParallelGroups
 
 #### Definition
 
@@ -778,7 +625,7 @@ do
 end
 ```
 
-### LPipeline:getResult
+#### LPipeline:getResult
 
 #### Definition
 
@@ -808,7 +655,7 @@ do
 end
 ```
 
-### LPipeline:getStep
+#### LPipeline:getStep
 
 #### Definition
 
@@ -842,7 +689,7 @@ do
 end
 ```
 
-### LPipeline:getStepCount
+#### LPipeline:getStepCount
 
 #### Definition
 
@@ -870,7 +717,7 @@ do
 end
 ```
 
-### LPipeline:getSteps
+#### LPipeline:getSteps
 
 #### Definition
 
@@ -899,7 +746,7 @@ do
 end
 ```
 
-### LPipeline:getStepsByTag
+#### LPipeline:getStepsByTag
 
 #### Definition
 
@@ -933,7 +780,7 @@ do
 end
 ```
 
-### LPipeline:isComplete
+#### LPipeline:isComplete
 
 #### Definition
 
@@ -962,7 +809,7 @@ do
 end
 ```
 
-### LPipeline:isRunning
+#### LPipeline:isRunning
 
 #### Definition
 
@@ -991,7 +838,7 @@ do
 end
 ```
 
-### LPipeline:onEvent
+#### LPipeline:onEvent
 
 #### Definition
 
@@ -1022,7 +869,7 @@ do
 end
 ```
 
-### LPipeline:onProgress
+#### LPipeline:onProgress
 
 #### Definition
 
@@ -1053,7 +900,7 @@ do
 end
 ```
 
-### LPipeline:removeStep
+#### LPipeline:removeStep
 
 #### Definition
 
@@ -1084,7 +931,7 @@ do
 end
 ```
 
-### LPipeline:reset
+#### LPipeline:reset
 
 #### Definition
 
@@ -1110,7 +957,7 @@ do
 end
 ```
 
-### LPipeline:run
+#### LPipeline:run
 
 #### Definition
 
@@ -1143,7 +990,7 @@ do
 end
 ```
 
-### LPipeline:runAsync
+#### LPipeline:runAsync
 
 #### Definition
 
@@ -1174,7 +1021,7 @@ do
 end
 ```
 
-### LPipeline:setErrorMode
+#### LPipeline:setErrorMode
 
 #### Definition
 
@@ -1205,7 +1052,7 @@ do
 end
 ```
 
-### LPipeline:setName
+#### LPipeline:setName
 
 #### Definition
 
@@ -1235,7 +1082,7 @@ do
 end
 ```
 
-### LPipeline:setOnComplete
+#### LPipeline:setOnComplete
 
 #### Definition
 
@@ -1266,7 +1113,7 @@ do
 end
 ```
 
-### LPipeline:setOnStepComplete
+#### LPipeline:setOnStepComplete
 
 #### Definition
 
@@ -1297,7 +1144,7 @@ do
 end
 ```
 
-### LPipeline:setOnStepError
+#### LPipeline:setOnStepError
 
 #### Definition
 
@@ -1328,7 +1175,7 @@ do
 end
 ```
 
-### LPipeline:toAscii
+#### LPipeline:toAscii
 
 #### Definition
 
@@ -1357,7 +1204,7 @@ do
 end
 ```
 
-### LPipeline:toTable
+#### LPipeline:toTable
 
 #### Definition
 
@@ -1386,7 +1233,7 @@ do
 end
 ```
 
-### LPipeline:type
+#### LPipeline:type
 
 #### Definition
 
@@ -1413,7 +1260,7 @@ do
 end
 ```
 
-### LPipeline:typeOf
+#### LPipeline:typeOf
 
 #### Definition
 
@@ -1445,7 +1292,7 @@ do
 end
 ```
 
-### LPipeline:update
+#### LPipeline:update
 
 #### Definition
 
@@ -1479,7 +1326,7 @@ do
 end
 ```
 
-### LPipeline:validate
+#### LPipeline:validate
 
 #### Definition
 
@@ -1510,7 +1357,9 @@ do
 end
 ```
 
-### LPipelineStep:dependsOn
+### LPipelineStep Methods
+
+#### LPipelineStep:dependsOn
 
 #### Definition
 
@@ -1544,7 +1393,7 @@ do
 end
 ```
 
-### LPipelineStep:getAttempt
+#### LPipelineStep:getAttempt
 
 #### Definition
 
@@ -1573,7 +1422,7 @@ do
 end
 ```
 
-### LPipelineStep:getData
+#### LPipelineStep:getData
 
 #### Definition
 
@@ -1606,7 +1455,7 @@ do
 end
 ```
 
-### LPipelineStep:getDelay
+#### LPipelineStep:getDelay
 
 #### Definition
 
@@ -1634,7 +1483,7 @@ do
 end
 ```
 
-### LPipelineStep:getDependencies
+#### LPipelineStep:getDependencies
 
 #### Definition
 
@@ -1663,7 +1512,7 @@ do
 end
 ```
 
-### LPipelineStep:getDependencyCount
+#### LPipelineStep:getDependencyCount
 
 #### Definition
 
@@ -1691,7 +1540,7 @@ do
 end
 ```
 
-### LPipelineStep:getDuration
+#### LPipelineStep:getDuration
 
 #### Definition
 
@@ -1720,7 +1569,7 @@ do
 end
 ```
 
-### LPipelineStep:getError
+#### LPipelineStep:getError
 
 #### Definition
 
@@ -1748,7 +1597,7 @@ do
 end
 ```
 
-### LPipelineStep:getName
+#### LPipelineStep:getName
 
 #### Definition
 
@@ -1775,7 +1624,7 @@ do
 end
 ```
 
-### LPipelineStep:getRetryCount
+#### LPipelineStep:getRetryCount
 
 #### Definition
 
@@ -1804,7 +1653,7 @@ do
 end
 ```
 
-### LPipelineStep:getStatus
+#### LPipelineStep:getStatus
 
 #### Definition
 
@@ -1833,7 +1682,7 @@ do
 end
 ```
 
-### LPipelineStep:getTag
+#### LPipelineStep:getTag
 
 #### Definition
 
@@ -1861,7 +1710,7 @@ do
 end
 ```
 
-### LPipelineStep:getTimeout
+#### LPipelineStep:getTimeout
 
 #### Definition
 
@@ -1889,7 +1738,7 @@ do
 end
 ```
 
-### LPipelineStep:isAsync
+#### LPipelineStep:isAsync
 
 #### Definition
 
@@ -1917,7 +1766,7 @@ do
 end
 ```
 
-### LPipelineStep:isOptional
+#### LPipelineStep:isOptional
 
 #### Definition
 
@@ -1945,7 +1794,7 @@ do
 end
 ```
 
-### LPipelineStep:setAsync
+#### LPipelineStep:setAsync
 
 #### Definition
 
@@ -1975,7 +1824,7 @@ do
 end
 ```
 
-### LPipelineStep:setCallback
+#### LPipelineStep:setCallback
 
 #### Definition
 
@@ -2007,7 +1856,7 @@ do
 end
 ```
 
-### LPipelineStep:setCondition
+#### LPipelineStep:setCondition
 
 #### Definition
 
@@ -2039,7 +1888,7 @@ do
 end
 ```
 
-### LPipelineStep:setData
+#### LPipelineStep:setData
 
 #### Definition
 
@@ -2071,7 +1920,7 @@ do
 end
 ```
 
-### LPipelineStep:setDelay
+#### LPipelineStep:setDelay
 
 #### Definition
 
@@ -2101,7 +1950,7 @@ do
 end
 ```
 
-### LPipelineStep:setOnError
+#### LPipelineStep:setOnError
 
 #### Definition
 
@@ -2132,7 +1981,7 @@ do
 end
 ```
 
-### LPipelineStep:setOptional
+#### LPipelineStep:setOptional
 
 #### Definition
 
@@ -2164,7 +2013,7 @@ do
 end
 ```
 
-### LPipelineStep:setRetryCount
+#### LPipelineStep:setRetryCount
 
 #### Definition
 
@@ -2195,7 +2044,7 @@ do
 end
 ```
 
-### LPipelineStep:setRetryDelay
+#### LPipelineStep:setRetryDelay
 
 #### Definition
 
@@ -2226,7 +2075,7 @@ do
 end
 ```
 
-### LPipelineStep:setTag
+#### LPipelineStep:setTag
 
 #### Definition
 
@@ -2257,7 +2106,7 @@ do
 end
 ```
 
-### LPipelineStep:setTimeout
+#### LPipelineStep:setTimeout
 
 #### Definition
 
@@ -2287,7 +2136,7 @@ do
 end
 ```
 
-### LPipelineStep:type
+#### LPipelineStep:type
 
 #### Definition
 
@@ -2314,7 +2163,7 @@ do
 end
 ```
 
-### LPipelineStep:typeOf
+#### LPipelineStep:typeOf
 
 #### Definition
 
