@@ -157,20 +157,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 
 ```lua
 do
-    local cfg = {
-        texW = 64,
-        texH = 16,
-        frameW = 16,
-        frameH = 16,
-        clips = {
-            { name = "idle", start = 0, count = 2, fps = 4, looping = true, mode = "forward" },
-        },
-        states = {
-            { name = "idle", clip = "idle", looping = true },
-        },
-        initialState = "idle",
-    }
-    local char = lurek.animation.buildCharacter(cfg)
+    local char = lurek.animation.buildCharacter({ texW = 64, texH = 16, frameW = 16, frameH = 16, clips = { { name = "idle", start = 0, count = 2, fps = 4, looping = true, mode = "forward" } }, states = { { name = "idle", clip = "idle", looping = true } }, initialState = "idle" })
     print("character built = " .. tostring(char ~= nil))
 end
 ```
@@ -627,10 +614,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFramesFromRects({
-        { x = 0, y = 0, w = 16, h = 16 },
-        { x = 16, y = 0, w = 16, h = 16 },
-    })
+    anim:addFramesFromRects({ { x = 0, y = 0, w = 16, h = 16 }, { x = 16, y = 0, w = 16, h = 16 } })
     print("frames from rects = " .. anim:getFrameCount())
 end
 ```
@@ -666,9 +650,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
-    anim:addClip("idle", { 0, 1 }, 4, true)
-    anim:addClip("run", { 2, 3 }, 8, true)
-    anim:play("idle")
+    anim:addClip("idle", { 0, 1 }, 4, true); anim:addClip("run", { 2, 3 }, 8, true); anim:play("idle")
     anim:crossfade("run", 0.3)
     print("crossfading to run")
 end
@@ -740,9 +722,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("snap", { 0 }, 1, false)
-    anim:play("snap")
+    anim:addFrame(0, 0, 32, 32); anim:addClip("snap", { 0 }, 1, false); anim:play("snap")
     local img = anim:drawToImage(64, 64)
     print("drawn to image = " .. tostring(img ~= nil))
 end
@@ -771,9 +751,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("a", { 0 }, 5, true)
-    anim:play("a")
+    anim:addFrame(0, 0, 32, 32); anim:addClip("a", { 0 }, 5, true); anim:play("a")
     local bs = anim:getBlendState()
     print("blend state = " .. tostring(bs ~= nil))
 end
@@ -956,9 +934,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("single", { 0 }, 1, false)
-    anim:play("single")
+    anim:addFrame(0, 0, 32, 32); anim:addClip("single", { 0 }, 1, false); anim:play("single")
     local q = anim:getQuad()
     print("quad = " .. tostring(q ~= nil))
 end
@@ -1071,9 +1047,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("b", { 0 }, 5, true)
-    anim:play("b")
+    anim:addFrame(0, 0, 32, 32); anim:addClip("b", { 0 }, 5, true); anim:play("b")
     anim:pause()
     print("playing after pause = " .. tostring(anim:isPlaying()))
 end
@@ -1137,9 +1111,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("once", { 0 }, 10, false)
-    anim:play("once")
+    anim:addFrame(0, 0, 32, 32); anim:addClip("once", { 0 }, 10, false); anim:play("once")
     anim:update(1.0)
     local events = anim:pollEvents()
     print("events count = " .. #events)
@@ -1166,9 +1138,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("c", { 0 }, 5, true)
-    anim:play("c")
+    anim:addFrame(0, 0, 32, 32); anim:addClip("c", { 0 }, 5, true); anim:play("c")
     anim:pause()
     anim:resume()
     print("playing after resume = " .. tostring(anim:isPlaying()))
@@ -1237,9 +1207,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
-    anim:addClip("seq", { 0, 1, 2, 3 }, 8, true)
-    anim:play("seq")
+    anim:addFramesFromGrid(128, 32, 32, 32, 0, 4); anim:addClip("seq", { 0, 1, 2, 3 }, 8, true); anim:play("seq")
     anim:setFrame(2)
     print("frame after setFrame = " .. anim:getCurrentFrame())
 end
@@ -1295,9 +1263,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("a", { 0 }, 5, true)
-    anim:play("a")
+    anim:addFrame(0, 0, 32, 32); anim:addClip("a", { 0 }, 5, true); anim:play("a")
     anim:stop()
     print("playing after stop = " .. tostring(anim:isPlaying()))
 end
@@ -1387,10 +1353,8 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
-    anim:addClip("tick", { 0, 1 }, 2, true)
-    anim:play("tick")
-    anim:update(0.6)
+    anim:addFramesFromGrid(64, 32, 32, 32, 0, 2); anim:addClip("tick", { 0, 1 }, 2, true)
+    anim:play("tick"); anim:update(0.6)
     print("current frame after update = " .. anim:getCurrentFrame())
 end
 ```
@@ -1544,11 +1508,9 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local curve = lurek.animation.newCurve()
-    curve:addKeyframe(0.0, 0.0)
-    curve:addKeyframe(1.0, 100.0)
+    curve:addKeyframe(0.0, 0.0); curve:addKeyframe(1.0, 100.0)
     curve:setCustomEasing(function(t) return t * t end)
-    local val = curve:eval(0.5)
-    print("custom eased at 0.5 = " .. val)
+    print("custom eased at 0.5 = " .. curve:eval(0.5))
 end
 ```
 
@@ -1577,11 +1539,9 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local curve = lurek.animation.newCurve()
-    curve:addKeyframe(0.0, 0.0)
-    curve:addKeyframe(1.0, 1.0)
+    curve:addKeyframe(0.0, 0.0); curve:addKeyframe(1.0, 1.0)
     curve:setEasing("ease_in_out")
-    local val = curve:eval(0.5)
-    print("eased value at 0.5 = " .. val)
+    print("eased value at 0.5 = " .. curve:eval(0.5))
 end
 ```
 
@@ -1673,8 +1633,7 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("idle", { 0 }, 5, true)
+    anim:addFrame(0, 0, 32, 32); anim:addClip("idle", { 0 }, 5, true)
     local sm = lurek.animation.newStateMachine(anim, "idle")
     sm:addState("idle", "idle", true)
     print("states added")
@@ -1710,12 +1669,8 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("idle", { 0 }, 5, true)
-    anim:addClip("run", { 0 }, 10, true)
-    local sm = lurek.animation.newStateMachine(anim, "idle")
-    sm:addState("idle", "idle", true)
-    sm:addState("run", "run", true)
+    anim:addFrame(0, 0, 32, 32); anim:addClip("idle", { 0 }, 5, true); anim:addClip("run", { 0 }, 10, true)
+    local sm = lurek.animation.newStateMachine(anim, "idle"); sm:addState("idle", "idle", true); sm:addState("run", "run", true)
     sm:addTransition("idle", "run", "speed > 0.1")
     print("transition added: idle -> run")
 end
@@ -1749,12 +1704,8 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
-    anim:addClip("a", { 0 }, 5, true)
-    anim:addClip("b", { 1 }, 5, true)
-    local sm = lurek.animation.newStateMachine(anim, "a")
-    sm:addState("a", "a", true)
-    sm:addState("b", "b", true)
+    anim:addFramesFromGrid(64, 32, 32, 32, 0, 2); anim:addClip("a", { 0 }, 5, true); anim:addClip("b", { 1 }, 5, true)
+    local sm = lurek.animation.newStateMachine(anim, "a"); sm:addState("a", "a", true); sm:addState("b", "b", true)
     sm:forceState("b")
     print("forced to state = " .. sm:getState())
 end
@@ -1783,13 +1734,10 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("idle", { 0 }, 5, true)
-    local sm = lurek.animation.newStateMachine(anim, "idle")
-    sm:addState("idle", "idle", true)
+    anim:addFrame(0, 0, 32, 32); anim:addClip("idle", { 0 }, 5, true)
+    local sm = lurek.animation.newStateMachine(anim, "idle"); sm:addState("idle", "idle", true)
     sm:update(0.0)
-    local q = sm:getQuad()
-    print("sm quad = " .. tostring(q ~= nil))
+    print("sm quad = " .. tostring(sm:getQuad() ~= nil))
 end
 ```
 
@@ -1816,10 +1764,8 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("stand", { 0 }, 1, true)
-    local sm = lurek.animation.newStateMachine(anim, "stand")
-    sm:addState("stand", "stand", true)
+    anim:addFrame(0, 0, 32, 32); anim:addClip("stand", { 0 }, 1, true)
+    local sm = lurek.animation.newStateMachine(anim, "stand"); sm:addState("stand", "stand", true)
     print("state = " .. sm:getState())
 end
 ```
@@ -1851,10 +1797,8 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("idle", { 0 }, 5, true)
-    local sm = lurek.animation.newStateMachine(anim, "idle")
-    sm:addState("idle", "idle", true)
+    anim:addFrame(0, 0, 32, 32); anim:addClip("idle", { 0 }, 5, true)
+    local sm = lurek.animation.newStateMachine(anim, "idle"); sm:addState("idle", "idle", true)
     sm:setParam("speed", 2.5)
     print("params set")
 end
@@ -1950,10 +1894,8 @@ Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
 ```lua
 do
     local anim = lurek.animation.new()
-    anim:addFrame(0, 0, 32, 32)
-    anim:addClip("idle", { 0 }, 5, true)
-    local sm = lurek.animation.newStateMachine(anim, "idle")
-    sm:addState("idle", "idle", true)
+    anim:addFrame(0, 0, 32, 32); anim:addClip("idle", { 0 }, 5, true)
+    local sm = lurek.animation.newStateMachine(anim, "idle"); sm:addState("idle", "idle", true)
     sm:update(0.016)
     print("sm updated, state = " .. sm:getState())
 end

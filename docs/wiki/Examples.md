@@ -17,6 +17,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [ai.lua](../blob/main/content/examples/ai.lua) | `lurek.ai` | API example |
 | [animation.lua](../blob/main/content/examples/animation.lua) | `lurek.animation` | API example |
 | [audio.lua](../blob/main/content/examples/audio.lua) | `lurek.audio` | API example |
+| [z_asset_diag.lua](../blob/main/content/examples/z_asset_diag.lua) | `lurek.audio` | API example |
 | [automation.lua](../blob/main/content/examples/automation.lua) | `lurek.automation` | API example |
 | [camera.lua](../blob/main/content/examples/camera.lua) | `lurek.camera` | API example |
 | [compute.lua](../blob/main/content/examples/compute.lua) | `lurek.compute` | API example |
@@ -42,6 +43,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [minimap.lua](../blob/main/content/examples/minimap.lua) | `lurek.minimap` | API example |
 | [mods.lua](../blob/main/content/examples/mods.lua) | `lurek.mods` | API example |
 | [network.lua](../blob/main/content/examples/network.lua) | `lurek.network` | API example |
+| [parallax.lua](../blob/main/content/examples/parallax.lua) | `lurek.parallax` | API example |
 | [particle.lua](../blob/main/content/examples/particle.lua) | `lurek.particle` | API example |
 | [pathfind.lua](../blob/main/content/examples/pathfind.lua) | `lurek.pathfind` | API example |
 | [patterns.lua](../blob/main/content/examples/patterns.lua) | `lurek.patterns` | API example |
@@ -50,7 +52,6 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [procgen.lua](../blob/main/content/examples/procgen.lua) | `lurek.procgen` | API example |
 | [province.lua](../blob/main/content/examples/province.lua) | `lurek.province` | API example |
 | [raycaster.lua](../blob/main/content/examples/raycaster.lua) | `lurek.raycaster` | API example |
-| [parallax.lua](../blob/main/content/examples/parallax.lua) | `lurek.render` | API example |
 | [render.lua](../blob/main/content/examples/render.lua) | `lurek.render` | API example |
 | [repl.lua](../blob/main/content/examples/repl.lua) | `lurek.repl` | API example |
 | [system.lua](../blob/main/content/examples/system.lua) | `lurek.runtime` | API example |

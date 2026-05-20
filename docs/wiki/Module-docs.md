@@ -440,52 +440,53 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", table.concat({
-        "[[entries]]",
-        'name = "one"',
-        'qualifiedName = "lurek.test.one"',
-        'module = "test"',
-        'kind = "function"',
-        'description = "First entry"',
-    }, "\n"))
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", table.concat({
-        "[[entries]]",
-        'name = "two"',
-        'qualifiedName = "lurek.test.two"',
-        'module = "test"',
-        'kind = "function"',
-        'description = "Second entry"',
-    }, "\n"))
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
     local cat = lurek.docs.loadAll("save/_fs_tests/")
     print("all entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.describe
--- Adds or updates the description for a catalog entry.
 do
     lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
     print("description set")
 end
 
 --@api-stub: lurek.docs.setParamInfo
--- Replaces parameter metadata for a catalog entry.
 do
-    lurek.docs.setParamInfo("lurek.math.lerp", {
-        {name = "a", type = "number", description = "Start value", optional = false},
-        {name = "b", type = "number", description = "End value", optional = false},
-        {name = "t", type = "number", description = "Interpolation factor", optional = false},
-    })
+    lurek.docs.setParamInfo("lurek.math.lerp", {{name = "t", type = "number", description = "Interpolation factor", optional = false}})
     print("params set")
 end
 
 --@api-stub: lurek.docs.setReturnInfo
--- Replaces return-value metadata for a catalog entry.
 do
     lurek.docs.setReturnInfo("lurek.math.lerp", {
         {type = "number", description = "Interpolated value"},
     })
     print("returns set")
 end
+
+--@api-stub: lurek.docs.getCatalog
+do
+    local cat = lurek.docs.getCatalog()
+    print("catalog entries = " .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.resetCatalog
+do
+    lurek.docs.resetCatalog()
+    local cat = lurek.docs.getCatalog()
+    print("after reset entries = " .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.validate
+do
+    local cat = lurek.docs.scan()
+    local report = lurek.docs.validate(cat)
+    print("valid = " .. tostring(report:isValid()))
+end
+
+--@api-stub: lurek.docs.validateModule
 ```
 
 ### lurek.docs.loadToml
@@ -507,52 +508,51 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 ```lua
 do
     local path = "save/_fs_tests/docs_load_toml_example.toml"
-    lurek.filesystem.write(path, table.concat({
-        "[[entries]]",
-        'name = "play"',
-        'qualifiedName = "lurek.audio.play"',
-        'module = "audio"',
-        'kind = "function"',
-        'description = "Plays a sound"',
-    }, "\n"))
+    lurek.filesystem.write(path, '[[entries]]\nname = "play"\nqualifiedName = "lurek.audio.play"\nmodule = "audio"\nkind = "function"\ndescription = "Plays a sound"')
     local cat = lurek.docs.loadToml(path)
     print("loaded entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.loadAll
--- Loads all TOML catalog files from a directory.
 do
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", table.concat({
-        "[[entries]]",
-        'name = "one"',
-        'qualifiedName = "lurek.test.one"',
-        'module = "test"',
-        'kind = "function"',
-        'description = "First entry"',
-    }, "\n"))
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", table.concat({
-        "[[entries]]",
-        'name = "two"',
-        'qualifiedName = "lurek.test.two"',
-        'module = "test"',
-        'kind = "function"',
-        'description = "Second entry"',
-    }, "\n"))
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
     local cat = lurek.docs.loadAll("save/_fs_tests/")
     print("all entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.describe
--- Adds or updates the description for a catalog entry.
 do
     lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
     print("description set")
 end
 
 --@api-stub: lurek.docs.setParamInfo
--- Replaces parameter metadata for a catalog entry.
 do
-    lurek.docs.setParamInfo("lurek.math.lerp", {
+    lurek.docs.setParamInfo("lurek.math.lerp", {{name = "t", type = "number", description = "Interpolation factor", optional = false}})
+    print("params set")
+end
+
+--@api-stub: lurek.docs.setReturnInfo
+do
+    lurek.docs.setReturnInfo("lurek.math.lerp", {
+        {type = "number", description = "Interpolated value"},
+    })
+    print("returns set")
+end
+
+--@api-stub: lurek.docs.getCatalog
+do
+    local cat = lurek.docs.getCatalog()
+    print("catalog entries = " .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.resetCatalog
+do
+    lurek.docs.resetCatalog()
+    local cat = lurek.docs.getCatalog()
+    print("after reset entries = " .. cat:entryCount())
+end
 ```
 
 ### lurek.docs.quality
@@ -735,10 +735,7 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local s = lurek.docs.schema({
-        name = {type = "string", required = true},
-        age = {type = "number"},
-    }, "PlayerSchema")
+    local s = lurek.docs.schema({ name = { type = "string", required = true }, age = { type = "number" } }, "PlayerSchema")
     print("schema name = " .. s:getName())
 end
 ```
@@ -784,11 +781,7 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    lurek.docs.setParamInfo("lurek.math.lerp", {
-        {name = "a", type = "number", description = "Start value", optional = false},
-        {name = "b", type = "number", description = "End value", optional = false},
-        {name = "t", type = "number", description = "Interpolation factor", optional = false},
-    })
+    lurek.docs.setParamInfo("lurek.math.lerp", {{name = "t", type = "number", description = "Interpolation factor", optional = false}})
     print("params set")
 end
 ```
@@ -911,52 +904,53 @@ LDocEntry = {}
 Module-level example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
+--- Docs Module Part 1: Scanning, Catalog, Schema, DocEntry, Validation, Quality, Export
+
+
 --@api-stub: lurek.docs.scan
--- Reflects the live lurek table and builds a catalog.
 do
     local cat = lurek.docs.scan()
     print("scanned entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.scanModule
--- Reflects one module and builds a catalog for it.
 do
     local cat = lurek.docs.scanModule("math")
     print("math entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.loadToml
--- Loads a TOML documentation catalog file.
 do
     local path = "save/_fs_tests/docs_load_toml_example.toml"
-    lurek.filesystem.write(path, table.concat({
-        "[[entries]]",
-        'name = "play"',
-        'qualifiedName = "lurek.audio.play"',
-        'module = "audio"',
-        'kind = "function"',
-        'description = "Plays a sound"',
-    }, "\n"))
+    lurek.filesystem.write(path, '[[entries]]\nname = "play"\nqualifiedName = "lurek.audio.play"\nmodule = "audio"\nkind = "function"\ndescription = "Plays a sound"')
     local cat = lurek.docs.loadToml(path)
     print("loaded entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.loadAll
--- Loads all TOML catalog files from a directory.
 do
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", table.concat({
-        "[[entries]]",
-        'name = "one"',
-        'qualifiedName = "lurek.test.one"',
-        'module = "test"',
-        'kind = "function"',
-        'description = "First entry"',
-    }, "\n"))
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", table.concat({
-        "[[entries]]",
-        'name = "two"',
-        'qualifiedName = "lurek.test.two"',
-        'module = "test"',
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
+    local cat = lurek.docs.loadAll("save/_fs_tests/")
+    print("all entries = " .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.describe
+do
+    lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
+    print("description set")
+end
+
+--@api-stub: lurek.docs.setParamInfo
+do
+    lurek.docs.setParamInfo("lurek.math.lerp", {{name = "t", type = "number", description = "Interpolation factor", optional = false}})
+    print("params set")
+end
+
+--@api-stub: lurek.docs.setReturnInfo
+do
+    lurek.docs.setReturnInfo("lurek.math.lerp", {
+        {type = "number", description = "Interpolated value"},
 ```
 
 ### LQualityReport
@@ -1001,10 +995,7 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local s = lurek.docs.schema({
-        name = {type = "string", required = true},
-        age = {type = "number"},
-    }, "PlayerSchema")
+    local s = lurek.docs.schema({ name = { type = "string", required = true }, age = { type = "number" } }, "PlayerSchema")
     print("schema name = " .. s:getName())
 end
 ```
@@ -1100,14 +1091,11 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 ```lua
 do
     local cat = lurek.docs.scan()
-    local fns = cat:filter(function(entry)
-        return entry:getKind() == "function"
-    end)
+    local fns = cat:filter(function(entry) return entry:getKind() == "function" end)
     print("functions = " .. fns:entryCount())
 end
 
 --@api-stub: LApiCatalog:search
--- Fuzzy-searches entries by name and returns matches.
 do
     local cat = lurek.docs.scan()
     local results = cat:search("lerp")
@@ -1115,17 +1103,13 @@ do
 end
 
 --@api-stub: LApiCatalog:toTable
--- Converts the catalog to a plain Lua array of row tables.
 do
     local cat = lurek.docs.scanModule("math")
     local rows = cat:toTable()
-    if #rows > 0 then
-        print("first row name = " .. rows[1].name)
-    end
+    print("rows = " .. #rows)
 end
 
 --@api-stub: LApiCatalog:toJSON
--- Serializes the catalog to a JSON string.
 do
     local cat = lurek.docs.scanModule("timer")
     local json = cat:toJSON()
@@ -1133,18 +1117,26 @@ do
 end
 
 --@api-stub: LApiCatalog:type
--- Returns the type name ("LApiCatalog").
 do
     local cat = lurek.docs.scan()
     print("type = " .. cat:type())
 end
 
 --@api-stub: LApiCatalog:typeOf
--- Returns whether this handle matches a type name.
 do
     local cat = lurek.docs.scan()
     print("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
 end
+
+--@api-stub: LValidationReport:isValid
+do
+    local cat = lurek.docs.scan()
+    local report = lurek.docs.validate(cat)
+    print("valid = " .. tostring(report:isValid()))
+end
+
+--@api-stub: LValidationReport:getMissing
+do
 ```
 
 ### LApiCatalog:getEntries
@@ -1209,10 +1201,7 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 ```lua
 do
     local cat = lurek.docs.scan()
-    local entry = cat:getEntry("lurek.math.lerp")
-    if entry then
-        print("found entry")
-    end
+    print("found entry = " .. tostring(cat:getEntry("lurek.math.lerp") ~= nil))
 end
 ```
 
@@ -1429,9 +1418,7 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 do
     local cat = lurek.docs.scanModule("math")
     local rows = cat:toTable()
-    if #rows > 0 then
-        print("first row name = " .. rows[1].name)
-    end
+    print("rows = " .. #rows)
 end
 ```
 
@@ -1516,12 +1503,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        local dep = entries[1]:getDeprecated()
-        print("deprecated = " .. type(dep))
-    end
+    local deprecated = lurek.docs.scan():getEntries()[1]:getDeprecated()
+    print("deprecated = " .. type(deprecated))
 end
 ```
 
@@ -1547,11 +1530,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("desc len = " .. #entries[1]:getDescription())
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("desc len = " .. #entry:getDescription())
 end
 ```
 
@@ -1577,12 +1557,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        local ex = entries[1]:getExample()
-        print("example = " .. type(ex))
-    end
+    local example = lurek.docs.scan():getEntries()[1]:getExample()
+    print("example = " .. type(example))
 end
 ```
 
@@ -1608,11 +1584,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("kind = " .. entries[1]:getKind())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("kind = " .. entry:getKind())
 end
 ```
 
@@ -1638,11 +1611,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("module = " .. entries[1]:getModule())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("module = " .. entry:getModule())
 end
 ```
 
@@ -1668,11 +1638,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("name = " .. entries[1]:getName())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("name = " .. entry:getName())
 end
 ```
 
@@ -1698,12 +1665,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        local params = entries[1]:getParameters()
-        print("params = " .. #params)
-    end
+    local params = lurek.docs.scan():getEntries("math")[1]:getParameters()
+    print("params = " .. #params)
 end
 ```
 
@@ -1729,11 +1692,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("qualified = " .. entries[1]:getQualifiedName())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("qualified = " .. entry:getQualifiedName())
 end
 ```
 
@@ -1759,12 +1719,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        local rets = entries[1]:getReturns()
-        print("returns = " .. #rets)
-    end
+    local returns = lurek.docs.scan():getEntries("math")[1]:getReturns()
+    print("returns = " .. #returns)
 end
 ```
 
@@ -1790,11 +1746,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("score = " .. entries[1]:getScore())
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("score = " .. entry:getScore())
 end
 ```
 
@@ -1820,12 +1773,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        local since = entries[1]:getSince()
-        print("since = " .. type(since))
-    end
+    local since = lurek.docs.scan():getEntries()[1]:getSince()
+    print("since = " .. type(since))
 end
 ```
 
@@ -1851,11 +1800,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasDesc = " .. tostring(entries[1]:hasDescription()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasDesc = " .. tostring(entry:hasDescription()))
 end
 ```
 
@@ -1881,11 +1827,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasExample = " .. tostring(entries[1]:hasExample()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasExample = " .. tostring(entry:hasExample()))
 end
 ```
 
@@ -1911,11 +1854,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasParams = " .. tostring(entries[1]:hasParameters()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasParams = " .. tostring(entry:hasParameters()))
 end
 ```
 
@@ -1941,11 +1881,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasReturn = " .. tostring(entries[1]:hasReturnType()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasReturn = " .. tostring(entry:hasReturnType()))
 end
 ```
 
@@ -1971,11 +1908,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("type = " .. entries[1]:type())
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("type = " .. entry:type())
 end
 ```
 
@@ -2006,11 +1940,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("is LDocEntry = " .. tostring(entries[1]:typeOf("LDocEntry")))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
 end
 ```
 
@@ -2373,8 +2304,8 @@ Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
 ```lua
 do
     local s = lurek.docs.schema({v = {type = "number"}})
-    s:assert({v = 10})
-    print("assert passed")
+    local ok = pcall(function() s["assert"](s, {v = 10}) end)
+    print("assert passed = " .. tostring(ok))
 end
 ```
 

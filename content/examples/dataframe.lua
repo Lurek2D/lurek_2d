@@ -346,7 +346,7 @@ do
     df:addColumn("x")
     df:addRow({})
     df:fillNil("x", 0)
-    print("filled = " .. df:getValue(2, "x"))
+    print("filled = " .. df:getValue(1, "x"))
 end
 
 --@api-stub: LDataFrame:apply
@@ -905,8 +905,8 @@ end
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     local vf = lurek.dataframe.toVec(df)
-    vf:colCast("v", "f64")
-    print("cast to f64 done")
+    vf:colCast("v", "float64")
+    print("cast to float64 done")
 end
 
 --@api-stub: LVecFrame:nrows

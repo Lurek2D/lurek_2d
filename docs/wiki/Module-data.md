@@ -1512,14 +1512,12 @@ Exact example from [data.lua](../blob/main/content/examples/data.lua):
 do
     local w = lurek.data.newWriter()
     w:writeU32LE(0)
-    w:writeU32LE(0)
     w:seek(0)
     w:writeU32LE(42)
     print("seek then overwrite, len = " .. w:len())
 end
 
 --@api-stub: LDataWriter:tell
--- Returns the current writer cursor position.
 do
     local w = lurek.data.newWriter()
     w:writeU8(1)
@@ -1528,7 +1526,6 @@ do
 end
 
 --@api-stub: LDataWriter:len
--- Returns the buffer length in bytes.
 do
     local w = lurek.data.newWriter()
     w:writeU16LE(100)
@@ -1537,7 +1534,6 @@ do
 end
 
 --@api-stub: LDataWriter:toBytes
--- Returns the buffer as a binary string.
 do
     local w = lurek.data.newWriter()
     w:writeU8(65)
@@ -1547,16 +1543,20 @@ do
 end
 
 --@api-stub: LDataWriter:type
--- Returns the type name ("LDataWriter").
 do
     local w = lurek.data.newWriter()
     print("type = " .. w:type())
 end
 
 --@api-stub: LDataWriter:typeOf
--- Returns whether this handle matches a type name.
 do
     local w = lurek.data.newWriter()
+    print("is LDataWriter = " .. tostring(w:typeOf("LDataWriter")))
+end
+
+--@api-stub: LByteData:getSize
+do
+    local bd = lurek.data.newByteData(32)
 ```
 
 ### LDataWriter:tell

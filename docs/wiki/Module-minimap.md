@@ -244,14 +244,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
-    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1)
-    local id2 = mm:addMarker(20, 5, "Enemy", 1, 0, 0)
-    print("markers = " .. mm:getMarkerCount())
-    print("has id1 = " .. tostring(mm:hasMarker(id1)))
-    print("desc = " .. mm:getMarkerDescription(id1))
-    _ = id2
+    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1); mm:addMarker(20, 5, "Enemy", 1, 0, 0)
+    print("markers = " .. mm:getMarkerCount() .. " has id1 = " .. tostring(mm:hasMarker(id1)) .. " desc = " .. mm:getMarkerDescription(id1))
 end
 ```
 
@@ -290,7 +285,6 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local idx1 = mm:addObjectType("unit", 0, 0, 1)
     local idx2 = mm:addObjectType("building", 1, 1, 0, 0.8)
@@ -335,10 +329,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:addPing(8, 8, 2.0, 1, 1, 0)
-    mm:addPing(4, 4, 1.0)
+    mm:addPing(8, 8, 2.0, 1, 1, 0); mm:addPing(4, 4, 1.0)
     print("pings = " .. mm:getPingCount())
     mm:update(2.5)
     print("pings after time = " .. mm:getPingCount())
@@ -369,12 +361,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local id = mm:addMarker(8, 8, "Pulse")
-    mm:setMarkerAnimation(id, "pulse", 2.0)
-    mm:update(0.5)
-    mm:clearMarkerAnimation(id)
+    mm:setMarkerAnimation(id, "pulse", 2.0); mm:update(0.5); mm:clearMarkerAnimation(id)
     print("animation cleared")
 end
 ```
@@ -403,12 +392,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     mm:addMarker(16, 16, "Hero")
-    local img = lurek.render.newImage("assets/textures/ray_water.png")
-    mm:setMarkerTexture(1, img, 32, 32)
-    mm:clearMarkerTexture(1)
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    mm:setMarkerTexture(1, img, 32, 32); mm:clearMarkerTexture(1)
     print("marker texture cleared")
 end
 ```
@@ -432,15 +419,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("npc", 0, 1, 0)
-    mm:setObject(1, 4, 4, t, 0)
-    mm:setObject(2, 8, 8, t, 1)
-    mm:setObject(3, 12, 12, t, 0)
-    print("objects = " .. mm:getObjectCount())
-    mm:removeObject(2)
-    print("after remove = " .. mm:getObjectCount())
+    mm:setObject(1, 4, 4, t, 0); mm:setObject(2, 8, 8, t, 1)
     mm:clearObjects()
     print("after clear = " .. mm:getObjectCount())
 end
@@ -470,12 +451,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     mm:addObjectType("unit", 0, 1, 0, 1)
-    local img = lurek.render.newImage("assets/textures/ray_water.png")
-    mm:setObjectTypeTexture(1, img, 16, 16)
-    mm:clearObjectTypeTexture(1)
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    mm:setObjectTypeTexture(1, img, 16, 16); mm:clearObjectTypeTexture(1)
     print("object type texture cleared")
 end
 ```
@@ -499,10 +478,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255})
-    mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
+    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255}); mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
     print("shapes = " .. mm:getOverlayShapeCount())
     mm:clearOverlay()
     print("after clear = " .. mm:getOverlayShapeCount())
@@ -533,12 +510,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    local pts = {{2, 2}, {4, 4}, {6, 2}, {8, 4}}
-    local color = {255, 0, 0, 255}
+    local pts = {{2, 2}, {4, 4}, {6, 2}, {8, 4}}; local color = {255, 0, 0, 255}
     local pid = mm:showPath(pts, color)
-    print("paths = " .. mm:getPathCount() .. " id = " .. pid)
     mm:clearPath(pid)
     print("after clear = " .. mm:getPathCount())
 end
@@ -563,12 +537,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setViewportRect(4, 4, 12, 12)
-    local x, y, w, h = mm:getViewportRect()
-    print("viewport = " .. x .. "," .. y .. " " .. w .. "x" .. h)
     mm:clearViewportRect()
+    print("viewport cleared")
 end
 ```
 
@@ -604,10 +576,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255})
-    mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
+    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255}); mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
     print("shapes = " .. mm:getOverlayShapeCount())
     mm:clearOverlay()
     print("after clear = " .. mm:getOverlayShapeCount())
@@ -646,10 +616,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255})
-    mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
+    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255}); mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
     print("shapes = " .. mm:getOverlayShapeCount())
     mm:clearOverlay()
     print("after clear = " .. mm:getOverlayShapeCount())
@@ -743,12 +711,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(16, 16)
     local cx, cy = mm:getCenter()
-    print("center = " .. cx .. "," .. cy)
-    print("x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
+    print("center = " .. cx .. "," .. cy .. " x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
 end
 ```
 
@@ -774,12 +740,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(16, 16)
     local cx, cy = mm:getCenter()
-    print("center = " .. cx .. "," .. cy)
-    print("x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
+    print("center = " .. cx .. "," .. cy .. " x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
 end
 ```
 
@@ -805,12 +769,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(16, 16)
     local cx, cy = mm:getCenter()
-    print("center = " .. cx .. "," .. cy)
-    print("x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
+    print("center = " .. cx .. "," .. cy .. " x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
 end
 ```
 
@@ -895,12 +857,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
     local dw, dh = mm:getDisplaySize()
     local gw, gh = mm:getGridSize()
-    print("display=" .. dw .. "x" .. dh)
-    print("grid=" .. gw .. "x" .. gh)
+    print("display=" .. dw .. "x" .. dh .. " grid=" .. gw .. "x" .. gh)
 end
 ```
 
@@ -1055,12 +1015,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
     local dw, dh = mm:getDisplaySize()
     local gw, gh = mm:getGridSize()
-    print("display=" .. dw .. "x" .. dh)
-    print("grid=" .. gw .. "x" .. gh)
+    print("display=" .. dw .. "x" .. dh .. " grid=" .. gw .. "x" .. gh)
 end
 ```
 
@@ -1126,10 +1084,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(8, 8)
-    mm:setTileDescription(1, "Plains")
-    mm:setTerrain(1, 1, 1)
+    mm:setTileDescription(1, "Plains"); mm:setTerrain(1, 1, 1)
     local info = mm:getHoverInfo(5, 5, 0, 0)
     print("hover = " .. tostring(info))
 end
@@ -1220,15 +1176,11 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
     local data = {}
     for i = 1, 16 do data[i] = i end
-    mm:setLayerData(1, data)
-    local out = mm:getLayerData(1)
-    if out then
-        print("layer data len = " .. #out)
-    end
+    mm:setLayerData(1, data); local out = mm:getLayerData(1)
+    print("layer data len = " .. #(out or {}))
 end
 ```
 
@@ -1254,14 +1206,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
-    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1)
-    local id2 = mm:addMarker(20, 5, "Enemy", 1, 0, 0)
-    print("markers = " .. mm:getMarkerCount())
-    print("has id1 = " .. tostring(mm:hasMarker(id1)))
-    print("desc = " .. mm:getMarkerDescription(id1))
-    _ = id2
+    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1); mm:addMarker(20, 5, "Enemy", 1, 0, 0)
+    print("markers = " .. mm:getMarkerCount() .. " has id1 = " .. tostring(mm:hasMarker(id1)) .. " desc = " .. mm:getMarkerDescription(id1))
 end
 ```
 
@@ -1292,14 +1239,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
-    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1)
-    local id2 = mm:addMarker(20, 5, "Enemy", 1, 0, 0)
-    print("markers = " .. mm:getMarkerCount())
-    print("has id1 = " .. tostring(mm:hasMarker(id1)))
-    print("desc = " .. mm:getMarkerDescription(id1))
-    _ = id2
+    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1); mm:addMarker(20, 5, "Enemy", 1, 0, 0)
+    print("markers = " .. mm:getMarkerCount() .. " has id1 = " .. tostring(mm:hasMarker(id1)) .. " desc = " .. mm:getMarkerDescription(id1))
 end
 ```
 
@@ -1325,17 +1267,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("npc", 0, 1, 0)
-    mm:setObject(1, 4, 4, t, 0)
-    mm:setObject(2, 8, 8, t, 1)
-    mm:setObject(3, 12, 12, t, 0)
+    mm:setObject(1, 4, 4, t, 0); mm:setObject(2, 8, 8, t, 1)
     print("objects = " .. mm:getObjectCount())
-    mm:removeObject(2)
-    print("after remove = " .. mm:getObjectCount())
-    mm:clearObjects()
-    print("after clear = " .. mm:getObjectCount())
 end
 ```
 
@@ -1361,7 +1296,6 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local idx1 = mm:addObjectType("unit", 0, 0, 1)
     local idx2 = mm:addObjectType("building", 1, 1, 0, 0.8)
@@ -1392,13 +1326,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255})
-    mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
+    mm:drawLine(0, 0, 15, 15, {255, 255, 255, 255}); mm:drawRect(2, 2, 4, 4, {0, 255, 0, 200})
     print("shapes = " .. mm:getOverlayShapeCount())
-    mm:clearOverlay()
-    print("after clear = " .. mm:getOverlayShapeCount())
+    mm:clearOverlay(); print("after clear = " .. mm:getOverlayShapeCount())
 end
 ```
 
@@ -1432,10 +1363,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:setOwnerColor(1, 0, 0, 1, 1)
-    mm:setOwnerColor(2, 1, 0, 0, 1)
+    mm:setOwnerColor(1, 0, 0, 1, 1); mm:setOwnerColor(2, 1, 0, 0, 1)
     local r, g, b, a = mm:getOwnerColor(1)
     print("owner 1 = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
@@ -1463,14 +1392,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    local pts = {{2, 2}, {4, 4}, {6, 2}, {8, 4}}
-    local color = {255, 0, 0, 255}
+    local pts = {{2, 2}, {4, 4}, {6, 2}, {8, 4}}; local color = {255, 0, 0, 255}
     local pid = mm:showPath(pts, color)
     print("paths = " .. mm:getPathCount() .. " id = " .. pid)
-    mm:clearPath(pid)
-    print("after clear = " .. mm:getPathCount())
 end
 ```
 
@@ -1496,10 +1421,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:addPing(8, 8, 2.0, 1, 1, 0)
-    mm:addPing(4, 4, 1.0)
+    mm:addPing(8, 8, 2.0, 1, 1, 0); mm:addPing(4, 4, 1.0)
     print("pings = " .. mm:getPingCount())
     mm:update(2.5)
     print("pings after time = " .. mm:getPingCount())
@@ -1607,12 +1530,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(8, 8)
-    mm:setTileDescription(1, "Grass")
-    mm:setTileDescription(2, "Water")
-    print("tile 1 = " .. mm:getTileDescription(1))
-    print("tile 2 = " .. mm:getTileDescription(2))
+    mm:setTileDescription(1, "Grass"); mm:setTileDescription(2, "Water")
+    print("tile 1 = " .. mm:getTileDescription(1) .. " tile 2 = " .. mm:getTileDescription(2))
 end
 ```
 
@@ -1674,12 +1594,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setViewportRect(4, 4, 12, 12)
     local x, y, w, h = mm:getViewportRect()
     print("viewport = " .. x .. "," .. y .. " " .. w .. "x" .. h)
-    mm:clearViewportRect()
 end
 ```
 
@@ -1746,12 +1664,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
-    print("grid(8,8) → screen = " .. sx .. "," .. sy)
     local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
-    print("screen → grid = " .. gx .. "," .. gy)
+    print("grid(8,8) â†’ screen = " .. sx .. "," .. sy .. " screen â†’ grid = " .. gx .. "," .. gy)
 end
 ```
 
@@ -1782,14 +1698,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
-    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1)
-    local id2 = mm:addMarker(20, 5, "Enemy", 1, 0, 0)
-    print("markers = " .. mm:getMarkerCount())
-    print("has id1 = " .. tostring(mm:hasMarker(id1)))
-    print("desc = " .. mm:getMarkerDescription(id1))
-    _ = id2
+    local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1); mm:addMarker(20, 5, "Enemy", 1, 0, 0)
+    print("markers = " .. mm:getMarkerCount() .. " has id1 = " .. tostring(mm:hasMarker(id1)) .. " desc = " .. mm:getMarkerDescription(id1))
 end
 ```
 
@@ -1907,13 +1818,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("hidden", 1, 0, 0)
-    mm:setObjectTypeVisible(t, false)
-    print("visible = " .. tostring(mm:isObjectTypeVisible(t)))
-    mm:setObjectTypeVisible(t, true)
-    print("visible = " .. tostring(mm:isObjectTypeVisible(t)))
+    mm:setObjectTypeVisible(t, false); local hidden = mm:isObjectTypeVisible(t); mm:setObjectTypeVisible(t, true)
+    print("hidden = " .. tostring(hidden) .. " visible = " .. tostring(mm:isObjectTypeVisible(t)))
 end
 ```
 
@@ -1973,7 +1881,6 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local id = mm:addMarker(5, 5, "Temp")
     print("before = " .. mm:getMarkerCount())
@@ -2009,17 +1916,11 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("npc", 0, 1, 0)
-    mm:setObject(1, 4, 4, t, 0)
-    mm:setObject(2, 8, 8, t, 1)
-    mm:setObject(3, 12, 12, t, 0)
-    print("objects = " .. mm:getObjectCount())
+    mm:setObject(1, 4, 4, t, 0); mm:setObject(2, 8, 8, t, 1)
     mm:removeObject(2)
     print("after remove = " .. mm:getObjectCount())
-    mm:clearObjects()
-    print("after clear = " .. mm:getObjectCount())
 end
 ```
 
@@ -2084,13 +1985,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
-    mm:setFogEnabled(true)
-    local fog = {}
+    mm:setFogEnabled(true); local fog = {}
     for i = 1, 32 * 32 do fog[i] = 255 end
-    mm:setFogData(fog)
-    mm:revealRadius(16, 16, 5)
+    mm:setFogData(fog); mm:revealRadius(16, 16, 5)
     print("center fog after reveal = " .. mm:getFogLevel(16, 16))
 end
 ```
@@ -2129,12 +2027,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
-    print("grid(8,8) → screen = " .. sx .. "," .. sy)
     local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
-    print("screen → grid = " .. gx .. "," .. gy)
+    print("grid(8,8) â†’ screen = " .. sx .. "," .. sy .. " screen â†’ grid = " .. gx .. "," .. gy)
 end
 ```
 
@@ -2195,12 +2091,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(16, 16)
     local cx, cy = mm:getCenter()
-    print("center = " .. cx .. "," .. cy)
-    print("x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
+    print("center = " .. cx .. "," .. cy .. " x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
 end
 ```
 
@@ -2361,10 +2255,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
-    mm:setFogEnabled(true)
-    local fog = {}
+    mm:setFogEnabled(true); local fog = {}
     for i = 1, 16 do fog[i] = 200 end
     mm:setFogData(fog)
     print("fog after setData = " .. mm:getFogLevel(1, 1))
@@ -2495,7 +2387,6 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
     local data = {}
     for i = 1, 16 do data[i] = i end
@@ -2532,12 +2423,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local id = mm:addMarker(8, 8, "Pulse")
-    mm:setMarkerAnimation(id, "pulse", 2.0)
-    mm:update(0.5)
-    mm:clearMarkerAnimation(id)
+    mm:setMarkerAnimation(id, "pulse", 2.0); mm:update(0.5); mm:clearMarkerAnimation(id)
     print("animation cleared")
 end
 ```
@@ -2572,12 +2460,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     mm:addMarker(16, 16, "Hero")
-    local img = lurek.render.newImage("assets/textures/ray_water.png")
-    mm:setMarkerTexture(1, img, 32, 32)
-    mm:clearMarkerTexture(1)
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    mm:setMarkerTexture(1, img, 32, 32); mm:clearMarkerTexture(1)
     print("marker texture cleared")
 end
 ```
@@ -2614,17 +2500,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("npc", 0, 1, 0)
     mm:setObject(1, 4, 4, t, 0)
-    mm:setObject(2, 8, 8, t, 1)
-    mm:setObject(3, 12, 12, t, 0)
     print("objects = " .. mm:getObjectCount())
-    mm:removeObject(2)
-    print("after remove = " .. mm:getObjectCount())
-    mm:clearObjects()
-    print("after clear = " .. mm:getObjectCount())
 end
 ```
 
@@ -2658,12 +2537,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
     mm:addObjectType("unit", 0, 1, 0, 1)
-    local img = lurek.render.newImage("assets/textures/ray_water.png")
-    mm:setObjectTypeTexture(1, img, 16, 16)
-    mm:clearObjectTypeTexture(1)
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    mm:setObjectTypeTexture(1, img, 16, 16); mm:clearObjectTypeTexture(1)
     print("object type texture cleared")
 end
 ```
@@ -2694,13 +2571,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("hidden", 1, 0, 0)
-    mm:setObjectTypeVisible(t, false)
-    print("visible = " .. tostring(mm:isObjectTypeVisible(t)))
-    mm:setObjectTypeVisible(t, true)
-    print("visible = " .. tostring(mm:isObjectTypeVisible(t)))
+    mm:setObjectTypeVisible(t, false); local hidden = mm:isObjectTypeVisible(t); mm:setObjectTypeVisible(t, true)
+    print("hidden = " .. tostring(hidden) .. " visible = " .. tostring(mm:isObjectTypeVisible(t)))
 end
 ```
 
@@ -2736,10 +2610,8 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:setOwnerColor(1, 0, 0, 1, 1)
-    mm:setOwnerColor(2, 1, 0, 0, 1)
+    mm:setOwnerColor(1, 0, 0, 1, 1); mm:setOwnerColor(2, 1, 0, 0, 1)
     local r, g, b, a = mm:getOwnerColor(1)
     print("owner 1 = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
@@ -2844,7 +2716,6 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
     local data = {}
     for i = 1, 16 do data[i] = (i % 3) + 1 end
@@ -2879,12 +2750,9 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(8, 8)
-    mm:setTileDescription(1, "Grass")
-    mm:setTileDescription(2, "Water")
-    print("tile 1 = " .. mm:getTileDescription(1))
-    print("tile 2 = " .. mm:getTileDescription(2))
+    mm:setTileDescription(1, "Grass"); mm:setTileDescription(2, "Water")
+    print("tile 1 = " .. mm:getTileDescription(1) .. " tile 2 = " .. mm:getTileDescription(2))
 end
 ```
 
@@ -2956,12 +2824,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setViewportRect(4, 4, 12, 12)
     local x, y, w, h = mm:getViewportRect()
     print("viewport = " .. x .. "," .. y .. " " .. w .. "x" .. h)
-    mm:clearViewportRect()
 end
 ```
 
@@ -3056,14 +2922,10 @@ Exact example from [minimap.lua](../blob/main/content/examples/minimap.lua):
 
 ```lua
 do
-    ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
-    local pts = {{2, 2}, {4, 4}, {6, 2}, {8, 4}}
-    local color = {255, 0, 0, 255}
+    local pts = {{2, 2}, {4, 4}, {6, 2}, {8, 4}}; local color = {255, 0, 0, 255}
     local pid = mm:showPath(pts, color)
     print("paths = " .. mm:getPathCount() .. " id = " .. pid)
-    mm:clearPath(pid)
-    print("after clear = " .. mm:getPathCount())
 end
 ```
 

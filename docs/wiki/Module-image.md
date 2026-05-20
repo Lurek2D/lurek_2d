@@ -193,11 +193,8 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 ```lua
 do
     local capture = lurek.image.fromScreen()
-    if capture then
-        print("screen capture " .. capture:getWidth() .. "x" .. capture:getHeight())
-    else
-        print("capture requested, not ready yet")
-    end
+    local status = capture and (capture:getWidth() .. "x" .. capture:getHeight()) or "not ready yet"
+    print("screen capture " .. status)
 end
 ```
 
@@ -219,7 +216,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local dds = lurek.image.isCompressed("assets/textures/test.dds")
+    local dds = lurek.image.isCompressed("content/examples/assets/images/sample_normal.dds")
     print("is compressed = " .. tostring(dds))
 end
 ```
@@ -269,14 +266,12 @@ do
 end
 
 --@api-stub: lurek.image.newPaletteLut
--- Creates an empty palette lookup table.
 do
     local lut = lurek.image.newPaletteLut()
     print("palette LUT colors = " .. lut:getColorCount())
 end
 
 --@api-stub: lurek.image.newProvinceGrid
--- Loads a province id grid from an image file.
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
@@ -284,7 +279,6 @@ do
 end
 
 --@api-stub: LImageData:getDimensions
--- Returns width and height.
 do
     local img = lurek.image.newImageData(100, 50)
     local w, h = img:getDimensions()
@@ -292,26 +286,29 @@ do
 end
 
 --@api-stub: LImageData:getWidth
--- Returns image width.
 do
     local img = lurek.image.newImageData(80, 40)
     print("width = " .. img:getWidth())
 end
 
 --@api-stub: LImageData:getHeight
--- Returns image height.
 do
     local img = lurek.image.newImageData(80, 40)
     print("height = " .. img:getHeight())
 end
 
 --@api-stub: LImageData:getPixel
--- Returns RGBA at a pixel coordinate.
 do
     local img = lurek.image.newImageData(10, 10)
     img:fill(1, 0.5, 0, 1)
     local r, g, b, a = img:getPixel(5, 5)
     print("pixel = " .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+
+--@api-stub: LImageData:setPixel
+do
+    local img = lurek.image.newImageData(10, 10)
+    img:setPixel(0, 0, 1, 1, 1, 1)
 ```
 
 ### lurek.image.newCompressedData
@@ -332,7 +329,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("compressed " .. cdata:getWidth() .. "x" .. cdata:getHeight())
     print("format = " .. cdata:getFormat())
     print("mipmaps = " .. cdata:getMipmapCount())
@@ -528,7 +525,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("compressed " .. cdata:getWidth() .. "x" .. cdata:getHeight())
     print("format = " .. cdata:getFormat())
     print("mipmaps = " .. cdata:getMipmapCount())
@@ -554,11 +551,8 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 ```lua
 do
     local capture = lurek.image.fromScreen()
-    if capture then
-        print("screen capture " .. capture:getWidth() .. "x" .. capture:getHeight())
-    else
-        print("capture requested, not ready yet")
-    end
+    local status = capture and (capture:getWidth() .. "x" .. capture:getHeight()) or "not ready yet"
+    print("screen capture " .. status)
 end
 ```
 
@@ -584,14 +578,12 @@ do
 end
 
 --@api-stub: lurek.image.newPaletteLut
--- Creates an empty palette lookup table.
 do
     local lut = lurek.image.newPaletteLut()
     print("palette LUT colors = " .. lut:getColorCount())
 end
 
 --@api-stub: lurek.image.newProvinceGrid
--- Loads a province id grid from an image file.
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
@@ -599,7 +591,6 @@ do
 end
 
 --@api-stub: LImageData:getDimensions
--- Returns width and height.
 do
     local img = lurek.image.newImageData(100, 50)
     local w, h = img:getDimensions()
@@ -607,26 +598,29 @@ do
 end
 
 --@api-stub: LImageData:getWidth
--- Returns image width.
 do
     local img = lurek.image.newImageData(80, 40)
     print("width = " .. img:getWidth())
 end
 
 --@api-stub: LImageData:getHeight
--- Returns image height.
 do
     local img = lurek.image.newImageData(80, 40)
     print("height = " .. img:getHeight())
 end
 
 --@api-stub: LImageData:getPixel
--- Returns RGBA at a pixel coordinate.
 do
     local img = lurek.image.newImageData(10, 10)
     img:fill(1, 0.5, 0, 1)
     local r, g, b, a = img:getPixel(5, 5)
     print("pixel = " .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+
+--@api-stub: LImageData:setPixel
+do
+    local img = lurek.image.newImageData(10, 10)
+    img:setPixel(0, 0, 1, 1, 1, 1)
 ```
 
 ### LPaletteLUT
@@ -704,7 +698,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w, h = cdata:getDimensions()
     print("compressed = " .. w .. "x" .. h)
 end
@@ -732,7 +726,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("format = " .. cdata:getFormat())
 end
 ```
@@ -759,7 +753,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cd = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w = cd:getWidth()
     local h = cd:getHeight()
     local mips = cd:getMipmapCount()
@@ -789,7 +783,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("mipmaps = " .. cdata:getMipmapCount())
 end
 ```
@@ -816,7 +810,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cd = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w = cd:getWidth()
     local h = cd:getHeight()
     local mips = cd:getMipmapCount()
@@ -846,7 +840,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
     print("is CompressedImageData = " .. tostring(cdata:typeOf("CompressedImageData")))
 end
@@ -879,7 +873,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 
 ```lua
 do
-    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
     print("is CompressedImageData = " .. tostring(cdata:typeOf("CompressedImageData")))
 end
@@ -942,12 +936,10 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 ```lua
 do
     local img = lurek.image.newImageData(16, 16)
-    img:fill(1, 0, 0, 1)
     local lut = lurek.image.newPaletteLut()
     lut:setColor(1, 0, 0, 1, 0, 1, 0, 1)
     img:applyPaletteLut(lut)
-    local r, g, _, _ = img:getPixel(0, 0)
-    print("after LUT r=" .. r .. " g=" .. g)
+    print("palette LUT applied")
 end
 ```
 
@@ -1187,8 +1179,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 do
     local a = lurek.image.newImageData(8, 8)
     local b = lurek.image.newImageData(8, 8)
-    a:fill(1, 0, 0, 1)
-    b:fill(0, 1, 0, 1)
+    b:setPixel(0, 0, 1, 0, 0, 1)
     local score = a:diff(b)
     print("diff score = " .. score)
 end
@@ -1834,9 +1825,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 do
     local img = lurek.image.newImageData(8, 8)
     img:fill(1, 1, 1, 1)
-    img:mapPixel(function(x, y, r, g, b, a)
-        return r * 0.5, g * 0.5, b * 0.5, a
-    end)
+    img:mapPixel(function(_, _, r, g, b, a) return r * 0.5, g * 0.5, b * 0.5, a end)
     print("mapped pixels to half brightness")
 end
 ```
@@ -1866,10 +1855,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 ```lua
 do
     local img = lurek.image.newImageData(8, 8)
-    img:fill(0, 0, 0, 1)
-    img:mapPixels(function(x, y, r, g, b, a)
-        return x / 8, y / 8, 0, 1
-    end)
+    img:mapPixels(function(x, y) return x / 8, y / 8, 0, 1 end)
     print("gradient mapped")
 end
 ```
@@ -2767,9 +2753,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 do
     local li = lurek.image.newLayeredImage(16, 16)
     li:addLayer("slot")
-    local replacement = lurek.image.newImageData(16, 16)
-    replacement:fill(0, 0, 1, 1)
-    li:setLayer(1, replacement)
+    li:setLayer(1, lurek.image.newImageData(16, 16))
     print("layer replaced")
 end
 ```
@@ -3106,7 +3090,7 @@ Exact example from [image.lua](../blob/main/content/examples/image.lua):
 do
     local lut = lurek.image.newPaletteLut()
     lut:setColor(1, 0, 0, 1, 0, 1, 0, 1)
-    print("red → green mapping set")
+    print("red â†’ green mapping set")
 end
 ```
 

@@ -121,15 +121,8 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
+    lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
     print("exists=" .. tostring(lurek.province.exists("check_reg")))
-    local got = lurek.province.get("check_reg")
-    print("got=" .. tostring(got ~= nil))
-    lurek.province.setActive("check_reg")
-    local active = lurek.province.getActive()
-    print("active=" .. tostring(active ~= nil))
-    lurek.province.remove("check_reg")
-    print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
 end
 ```
 
@@ -151,15 +144,8 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
-    print("exists=" .. tostring(lurek.province.exists("check_reg")))
-    local got = lurek.province.get("check_reg")
-    print("got=" .. tostring(got ~= nil))
-    lurek.province.setActive("check_reg")
-    local active = lurek.province.getActive()
-    print("active=" .. tostring(active ~= nil))
-    lurek.province.remove("check_reg")
-    print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
+    lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
+    print("got=" .. tostring(lurek.province.get("check_reg") ~= nil))
 end
 ```
 
@@ -177,15 +163,9 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
-    print("exists=" .. tostring(lurek.province.exists("check_reg")))
-    local got = lurek.province.get("check_reg")
-    print("got=" .. tostring(got ~= nil))
+    lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
     lurek.province.setActive("check_reg")
-    local active = lurek.province.getActive()
-    print("active=" .. tostring(active ~= nil))
-    lurek.province.remove("check_reg")
-    print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
+    print("active=" .. tostring(lurek.province.getActive() ~= nil))
 end
 ```
 
@@ -232,13 +212,7 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
-    print("exists=" .. tostring(lurek.province.exists("check_reg")))
-    local got = lurek.province.get("check_reg")
-    print("got=" .. tostring(got ~= nil))
-    lurek.province.setActive("check_reg")
-    local active = lurek.province.getActive()
-    print("active=" .. tostring(active ~= nil))
+    lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
     lurek.province.remove("check_reg")
     print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
 end
@@ -264,11 +238,7 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    lurek.province.sanitizeMarkedPng(
-        "assets/textures/ray_water.png",
-        "save/province_sanitized.png",
-        {}
-    )
+    lurek.province.sanitizeMarkedPng("content/examples/assets/images/sample_texture.png", "save/province_sanitized.png", {})
     print("sanitize ok")
 end
 ```
@@ -291,17 +261,11 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    lurek.province.newFromPng("map_a", "assets/textures/province_map.png")
-    lurek.province.newFromPng("map_b", "assets/textures/province_map.png")
+    lurek.province.newFromPng("map_a", "assets/textures/province_map.png"); lurek.province.newFromPng("map_b", "assets/textures/province_map.png")
     lurek.province.setActive("map_a")
-    ---@type LProvinceRegistry
-    local active = lurek.province.getActive()
-    print("active = " .. active:getName())
+    print("active = " .. lurek.province.getActive():getName())
     lurek.province.setActive("map_b")
-    active = lurek.province.getActive()
-    print("active = " .. active:getName())
-    lurek.province.remove("map_a")
-    print("map_a exists = " .. tostring(lurek.province.exists("map_a")))
+    print("active = " .. lurek.province.getActive():getName())
 end
 ```
 
@@ -359,15 +323,8 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
-    print("exists=" .. tostring(lurek.province.exists("check_reg")))
-    local got = lurek.province.get("check_reg")
-    print("got=" .. tostring(got ~= nil))
-    lurek.province.setActive("check_reg")
-    local active = lurek.province.getActive()
-    print("active=" .. tostring(active ~= nil))
-    lurek.province.remove("check_reg")
-    print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
+    lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
+    print("got=" .. tostring(lurek.province.get("check_reg") ~= nil))
 end
 ```
 
@@ -539,15 +496,11 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("borders_get", "assets/textures/province_map.png")
     local pairs = reg:adjacencies()
-    if #pairs >= 1 then
-        local p = pairs[1]
-        reg:setBorderClass(p.province_a, p.province_b, "coast")
-        local cls = reg:getBorderClass(p.province_a, p.province_b)
-        print("border class = " .. tostring(cls))
-    end
+    local p = pairs[1]
+    reg:setBorderClass(p.province_a, p.province_b, "coast")
+    print("border class = " .. tostring(reg:getBorderClass(p.province_a, p.province_b)))
 end
 ```
 
@@ -578,16 +531,11 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("changes_since", "assets/textures/province_map.png")
     local rev0 = reg:getRevision()
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setPoliticalColor(ids[1], 1.0, 0.0, 0.0)
-        reg:setTerrainType(ids[1], 5)
-    end
-    local changes = reg:getChangesSince(rev0)
-    print("changes since rev0 = " .. #changes)
+    reg:setPoliticalColor(ids[1], 1.0, 0.0, 0.0)
+    print("changes since rev0 = " .. #reg:getChangesSince(rev0))
 end
 ```
 
@@ -643,13 +591,6 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 do
     local reg = lurek.province.newFromPng("test_reg", "content/games/strategy/eu2/map.png")
     print("name=" .. reg:getName())
-    reg:importMetadataFromFiles({
-        color_map_png = "content/games/strategy/eu2/map.png",
-        marker_png = "content/games/strategy/eu2/map.png",
-        color_csv = "content/games/strategy/eu2/prov_cols.csv",
-        province_toml = "content/games/strategy/eu2/province.toml",
-    })
-    print("metadata imported")
 end
 ```
 
@@ -680,13 +621,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("adj", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids > 0 then
-        local neighbors = reg:getNeighbors(ids[1])
-        print("province " .. ids[1] .. " neighbors = " .. #neighbors)
-    end
+    local neighbors = reg:getNeighbors(ids[1])
+    print("province " .. tostring(ids[1]) .. " neighbors = " .. #neighbors)
 end
 ```
 
@@ -717,16 +655,11 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("snap", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids > 0 then
-        local snap = reg:getProvince(ids[1])
-        if snap then
-            print("province_id = " .. snap.province_id)
-            print("revision = " .. snap.revision)
-        end
-    end
+    local snap = reg:getProvince(ids[1])
+    print("province_id = " .. tostring(snap and snap.province_id))
+    print("revision = " .. tostring(snap and snap.revision))
 end
 ```
 
@@ -814,13 +747,7 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 ```lua
 do
     local reg = lurek.province.newFromPng("test_reg", "content/games/strategy/eu2/map.png")
-    print("name=" .. reg:getName())
-    reg:importMetadataFromFiles({
-        color_map_png = "content/games/strategy/eu2/map.png",
-        marker_png = "content/games/strategy/eu2/map.png",
-        color_csv = "content/games/strategy/eu2/prov_cols.csv",
-        province_toml = "content/games/strategy/eu2/province.toml",
-    })
+    reg:importMetadataFromFiles({ color_map_png = "content/games/strategy/eu2/map.png", marker_png = "content/games/strategy/eu2/map.png", color_csv = "content/games/strategy/eu2/prov_cols.csv", province_toml = "content/games/strategy/eu2/province.toml" })
     print("metadata imported")
 end
 ```
@@ -875,13 +802,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("info_ids", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
     print("id count = " .. #ids)
-    if #ids > 0 then
-        print("first id = " .. ids[1])
-    end
+    print("first id = " .. tostring(ids[1]))
 end
 ```
 
@@ -938,25 +862,9 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("render", "assets/textures/province_map.png")
     local cx, cy, zoom = reg:fitCamera(800, 600, 1.0)
-    reg:render({
-        map_mode = "political",
-        x = cx,
-        y = cy,
-        zoom = zoom,
-        pixel_size = 1.0,
-        screen_w = 800,
-        screen_h = 600,
-        draw_fills = true,
-        draw_borders = true,
-        draw_labels = true,
-        draw_capitals = true,
-        border_width = 1.5,
-        hovered_id = 0,
-        selected_id = 0
-    })
+    reg:render({ map_mode = "political", x = cx, y = cy, zoom = zoom, pixel_size = 1.0, screen_w = 800, screen_h = 600, draw_fills = true, draw_borders = true, draw_labels = true, draw_capitals = true, border_width = 1.5, hovered_id = 0, selected_id = 0 })
     print("map rendered")
 end
 ```
@@ -1083,19 +991,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("attrs", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setAttr(ids[1], "owner", "player1")
-        reg:setAttr(ids[1], "population", "5000")
-        reg:setAttr(ids[1], "resource", "iron")
-        print("attributes set")
-        local snap = reg:getProvince(ids[1])
-        if snap then
-            print("attrs = " .. tostring(snap.attrs))
-        end
-    end
+    reg:setAttr(ids[1], "owner", "player1")
+    print("attributes set for " .. tostring(ids[1]))
 end
 ```
 
@@ -1127,14 +1026,11 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("borders_set", "assets/textures/province_map.png")
     local pairs = reg:adjacencies()
-    if #pairs >= 1 then
-        local p = pairs[1]
-        reg:setBorderClass(p.province_a, p.province_b, "coast")
-        print("border class assigned")
-    end
+    local p = pairs[1]
+    reg:setBorderClass(p.province_a, p.province_b, "coast")
+    print("border class assigned")
 end
 ```
 
@@ -1167,13 +1063,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("style_border", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setBorderStyle(ids[1], 2)
-        print("border style set")
-    end
+    reg:setBorderStyle(ids[1], 2)
+    print("border style set")
 end
 ```
 
@@ -1208,13 +1101,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("labels_capital", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setCapital(ids[1], 30, 25)
-        print("capital set")
-    end
+    reg:setCapital(ids[1], 30, 25)
+    print("capital set")
 end
 ```
 
@@ -1247,13 +1137,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("style_fog", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setFogState(ids[1], 0)
-        print("fog state set")
-    end
+    reg:setFogState(ids[1], 0)
+    print("fog state set")
 end
 ```
 
@@ -1292,13 +1179,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("labels_line", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setLabelLine(ids[1], 10, 20, 50, 20)
-        print("label line set")
-    end
+    reg:setLabelLine(ids[1], 10, 20, 50, 20)
+    print("label line set")
 end
 ```
 
@@ -1331,13 +1215,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("labels_text", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setLabelText(ids[1], "Nordland")
-        print("label text set")
-    end
+    reg:setLabelText(ids[1], "Nordland")
+    print("label text set")
 end
 ```
 
@@ -1376,15 +1257,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("colors", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 3 then
-        reg:setPoliticalColor(ids[1], 0.8, 0.2, 0.2)
-        reg:setPoliticalColor(ids[2], 0.2, 0.8, 0.2)
-        reg:setPoliticalColor(ids[3], 0.2, 0.2, 0.8, 0.5)
-        print("colors set for 3 provinces")
-    end
+    reg:setPoliticalColor(ids[1], 0.8, 0.2, 0.2)
+    print("color set for province " .. tostring(ids[1]))
 end
 ```
 
@@ -1417,13 +1293,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("style_terrain", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setTerrainType(ids[1], 1)
-        print("terrain type set")
-    end
+    reg:setTerrainType(ids[1], 1)
+    print("terrain type set")
 end
 ```
 
@@ -1456,13 +1329,10 @@ Exact example from [province.lua](../blob/main/content/examples/province.lua):
 
 ```lua
 do
-    ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("style_visibility", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 1 then
-        reg:setVisibilityState(ids[1], 1)
-        print("visibility state set")
-    end
+    reg:setVisibilityState(ids[1], 1)
+    print("visibility state set")
 end
 ```
 

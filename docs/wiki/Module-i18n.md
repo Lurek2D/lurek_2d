@@ -867,7 +867,7 @@ Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
 ```lua
 do
     lurek.i18n.loadTable("en", {["test.key"] = "value"})
-    lurek.i18n.unloadTable("content/examples/locale_en.toml")
+    lurek.i18n.unloadTable("en")
     print("unloaded")
 end
 ```

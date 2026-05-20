@@ -783,9 +783,7 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("blur")
     local fx = ie:getEffect("blur")
-    if fx then
-        print("found effect")
-    end
+    print("found effect = " .. tostring(fx ~= nil))
 end
 ```
 
@@ -1063,8 +1061,6 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    local r, g, b, a = ov:getAmbientColor()
-    print("ambient", r, g, b, a)
     ov:setCustomShader("chromatic")
     local img = ov:drawToImage(800, 600)
     print("img type = " .. tostring(img))
@@ -1175,9 +1171,6 @@ do
     local ov = lurek.effect.newOverlay(800, 600)
     local r, g, b, a = ov:getAmbientColor()
     print("ambient", r, g, b, a)
-    ov:setCustomShader("chromatic")
-    local img = ov:drawToImage(800, 600)
-    print("img type = " .. tostring(img))
 end
 ```
 
@@ -1604,10 +1597,6 @@ do
     local ov = lurek.effect.newOverlay(800, 600)
     local tod = ov:getTimeOfDay()
     print("time_of_day = " .. tostring(tod))
-    ov:setTimeOfDay(0.5)
-    ov:setTimeOfDay(0.0)
-    ov:setTimeOfDay(1.0)
-    print("time_of_day set")
 end
 ```
 
@@ -1664,10 +1653,6 @@ do
     local ov = lurek.effect.newOverlay(800, 600)
     local water = ov:getWater()
     print("water = " .. tostring(water))
-    ov:setWater(0.5, 2.0, 1.0)
-    ov:setWaterTint(0.1, 0.4, 0.8, 0.9)
-    ov:setWaterTint(0.0, 0.0, 0.0, 0.5)
-    print("water configured")
 end
 ```
 
@@ -2128,10 +2113,7 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 do
     local ov = lurek.effect.newOverlay(800, 600)
     ov:pullAmbientFromLight()
-    ov:pushAmbientToLight()
-    ov:syncAmbientWithLight("avg")
-    ov:syncAmbientWithLight("light")
-    print("ambient synced")
+    print("ambient pulled")
 end
 ```
 
@@ -2155,11 +2137,8 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    ov:pullAmbientFromLight()
     ov:pushAmbientToLight()
-    ov:syncAmbientWithLight("avg")
-    ov:syncAmbientWithLight("light")
-    print("ambient synced")
+    print("ambient pushed")
 end
 ```
 
@@ -2462,11 +2441,8 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    local r, g, b, a = ov:getAmbientColor()
-    print("ambient", r, g, b, a)
     ov:setCustomShader("chromatic")
-    local img = ov:drawToImage(800, 600)
-    print("img type = " .. tostring(img))
+    print("custom shader set")
 end
 ```
 
@@ -2749,12 +2725,8 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    local tod = ov:getTimeOfDay()
-    print("time_of_day = " .. tostring(tod))
     ov:setTimeOfDay(0.5)
-    ov:setTimeOfDay(0.0)
-    ov:setTimeOfDay(1.0)
-    print("time_of_day set")
+    print("time_of_day = " .. tostring(ov:getTimeOfDay()))
 end
 ```
 
@@ -2847,12 +2819,8 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    local water = ov:getWater()
-    print("water = " .. tostring(water))
     ov:setWater(0.5, 2.0, 1.0)
-    ov:setWaterTint(0.1, 0.4, 0.8, 0.9)
-    ov:setWaterTint(0.0, 0.0, 0.0, 0.5)
-    print("water configured")
+    print("water = " .. tostring(ov:getWater()))
 end
 ```
 
@@ -2887,12 +2855,9 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    local water = ov:getWater()
-    print("water = " .. tostring(water))
     ov:setWater(0.5, 2.0, 1.0)
     ov:setWaterTint(0.1, 0.4, 0.8, 0.9)
-    ov:setWaterTint(0.0, 0.0, 0.0, 0.5)
-    print("water configured")
+    print("water tint set")
 end
 ```
 
@@ -3103,10 +3068,7 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    ov:pullAmbientFromLight()
-    ov:pushAmbientToLight()
     ov:syncAmbientWithLight("avg")
-    ov:syncAmbientWithLight("light")
     print("ambient synced")
 end
 ```
@@ -4085,9 +4047,7 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    stack:add(lurek.effect.newEffect("bloom"))
-    stack:beginCapture()
-    stack:endCapture()
+    stack:add(lurek.effect.newEffect("bloom")); stack:beginCapture(); stack:endCapture()
     stack:apply()
     print("applied")
 end
@@ -4195,8 +4155,7 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
-    stack:add(fx)
-    stack:add(fx)
+    stack:add(fx); stack:add(fx)
     local removed = stack:dedup()
     print("dedup removed = " .. removed)
 end
@@ -4288,9 +4247,7 @@ do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     local fx = stack:getEffect(1)
-    if fx then
-        print("got effect at 1")
-    end
+    print("got effect at 1 = " .. tostring(fx ~= nil))
 end
 ```
 
@@ -4462,10 +4419,8 @@ Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    local a = lurek.effect.newEffect("bloom")
-    local b = lurek.effect.newEffect("blur")
-    stack:add(a)
-    stack:insert(1, b)
+    stack:add(lurek.effect.newEffect("bloom"))
+    stack:insert(1, lurek.effect.newEffect("blur"))
     print("after insert count = " .. stack:getEffectCount())
 end
 ```

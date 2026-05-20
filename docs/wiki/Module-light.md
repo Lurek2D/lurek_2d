@@ -233,14 +233,6 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 do
     local r, g, b, a = lurek.light.getAmbient()
     print("ambient", r, g, b, a)
-    local mx = lurek.light.getMaxLights()
-    print("max lights = " .. mx)
-    local enabled = lurek.light.isEnabled()
-    print("enabled = " .. tostring(enabled))
-    lurek.light.setMaxLights(64)
-    lurek.light.setEnabled(true)
-    local r2, g2, b2, a2 = lurek.light.getAmbient()
-    print("ambient2", r2, g2, b2, a2)
 end
 ```
 
@@ -383,16 +375,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-    local r, g, b, a = lurek.light.getAmbient()
-    print("ambient", r, g, b, a)
-    local mx = lurek.light.getMaxLights()
-    print("max lights = " .. mx)
     local enabled = lurek.light.isEnabled()
     print("enabled = " .. tostring(enabled))
-    lurek.light.setMaxLights(64)
-    lurek.light.setEnabled(true)
-    local r2, g2, b2, a2 = lurek.light.getAmbient()
-    print("ambient2", r2, g2, b2, a2)
 end
 ```
 
@@ -444,11 +428,6 @@ do
     local verts = {0, 0, 100, 0, 100, 50, 0, 50}
     local occ = lurek.light.newOccluder(verts)
     print("occluder valid = " .. tostring(occ:isValid()))
-
-    -- Creates an occluder with options.
-    local verts = {0, 0, 50, 0, 50, 80, 0, 80}
-    local occ = lurek.light.newOccluder(verts, {opacity = 0.8})
-    print("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -583,16 +562,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-    local r, g, b, a = lurek.light.getAmbient()
-    print("ambient", r, g, b, a)
-    local mx = lurek.light.getMaxLights()
-    print("max lights = " .. mx)
-    local enabled = lurek.light.isEnabled()
-    print("enabled = " .. tostring(enabled))
     lurek.light.setMaxLights(64)
-    lurek.light.setEnabled(true)
-    local r2, g2, b2, a2 = lurek.light.getAmbient()
-    print("ambient2", r2, g2, b2, a2)
+    print("max lights = " .. lurek.light.getMaxLights())
 end
 ```
 
@@ -664,11 +635,6 @@ do
     local verts = {0, 0, 100, 0, 100, 50, 0, 50}
     local occ = lurek.light.newOccluder(verts)
     print("occluder valid = " .. tostring(occ:isValid()))
-
-    -- Creates an occluder with options.
-    local verts = {0, 0, 50, 0, 50, 80, 0, 80}
-    local occ = lurek.light.newOccluder(verts, {opacity = 0.8})
-    print("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -731,11 +697,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setCookie("assets/textures/cookie_star.png")
-    local path = light:getCookie()
-    print("cookie = " .. path)
+    light:setCookie("content/examples/assets/images/sample_texture.png")
     light:clearCookie()
-    print("cookie cleared")
+    print("cookie = " .. tostring(light:getCookie()))
 end
 ```
 
@@ -759,11 +723,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setNormalMap("assets/textures/stone_normal.png")
-    local nm = light:getNormalMap()
-    print("normal map = " .. nm)
+    light:setNormalMap("content/examples/assets/images/sample_normal.dds")
     light:clearNormalMap()
-    print("normal map cleared")
+    print("normal map = " .. tostring(light:getNormalMap()))
 end
 ```
 
@@ -881,11 +843,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setCookie("assets/textures/cookie_star.png")
-    local path = light:getCookie()
-    print("cookie = " .. path)
-    light:clearCookie()
-    print("cookie cleared")
+    light:setCookie("content/examples/assets/images/sample_texture.png")
+    print("cookie = " .. light:getCookie())
 end
 ```
 
@@ -1169,11 +1128,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setNormalMap("assets/textures/stone_normal.png")
-    local nm = light:getNormalMap()
-    print("normal map = " .. nm)
-    light:clearNormalMap()
-    print("normal map cleared")
+    light:setNormalMap("content/examples/assets/images/sample_normal.dds")
+    print("normal map = " .. light:getNormalMap())
 end
 ```
 
@@ -1603,13 +1559,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local lt = lurek.light.newLight(200, 300, 150)
-    local r, g, b, a = lurek.light.getAmbient()
-    print("ambient", r, g, b, a)
-    local count = lurek.light.getLightCount()
-    print("lights = " .. count)
+    print("lights = " .. lurek.light.getLightCount())
     lt:remove()
-    local count2 = lurek.light.getLightCount()
-    print("after remove = " .. count2)
+    print("after remove = " .. lurek.light.getLightCount())
 end
 ```
 
@@ -1740,11 +1692,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setCookie("assets/textures/cookie_star.png")
-    local path = light:getCookie()
-    print("cookie = " .. path)
-    light:clearCookie()
-    print("cookie cleared")
+    light:setCookie("content/examples/assets/images/sample_texture.png")
+    print("cookie = " .. light:getCookie())
 end
 ```
 
@@ -2110,11 +2059,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setNormalMap("assets/textures/stone_normal.png")
-    local nm = light:getNormalMap()
-    print("normal map = " .. nm)
-    light:clearNormalMap()
-    print("normal map cleared")
+    light:setNormalMap("content/examples/assets/images/sample_normal.dds")
+    print("normal map = " .. light:getNormalMap())
 end
 ```
 
@@ -2484,12 +2430,7 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setColor(1, 0, 0, 1)
-    light:setIntensity(1.0)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
-    local applied = light:updateTransition(0.5)
-    print("applied = " .. tostring(applied))
-    print("progress = " .. light:transitionProgress())
     light:stopTransition()
     print("stopped, progress = " .. light:transitionProgress())
 end
@@ -2518,14 +2459,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setColor(1, 0, 0, 1)
-    light:setIntensity(1.0)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
-    local applied = light:updateTransition(0.5)
-    print("applied = " .. tostring(applied))
+    light:updateTransition(0.5)
     print("progress = " .. light:transitionProgress())
-    light:stopTransition()
-    print("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -2556,14 +2492,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setColor(1, 0, 0, 1)
-    light:setIntensity(1.0)
+    light:setColor(1, 0, 0, 1); light:setIntensity(1.0)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
-    local applied = light:updateTransition(0.5)
-    print("applied = " .. tostring(applied))
     print("progress = " .. light:transitionProgress())
-    light:stopTransition()
-    print("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -2656,14 +2587,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    light:setColor(1, 0, 0, 1)
-    light:setIntensity(1.0)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
     local applied = light:updateTransition(0.5)
     print("applied = " .. tostring(applied))
-    print("progress = " .. light:transitionProgress())
-    light:stopTransition()
-    print("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -2860,11 +2786,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 do
     local vtbl = { 0, 0, 100, 0, 100, 100, 0, 100 }
     local occ = lurek.light.newOccluder(vtbl)
-    local n = lurek.light.getOccluderCount()
-    print("occluders = " .. n)
+    print("occluders = " .. lurek.light.getOccluderCount())
     occ:remove()
-    local n2 = lurek.light.getOccluderCount()
-    print("after remove = " .. n2)
+    print("after remove = " .. lurek.light.getOccluderCount())
 end
 ```
 

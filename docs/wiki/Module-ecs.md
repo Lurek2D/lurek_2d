@@ -241,9 +241,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local sys = {
-        update = function(self, universe, dt) end
-    }
+    local sys = { update = function(self, universe, dt) end }
     uni:addSystem(sys, {name = "movement", priority = 1})
     print("systems = " .. uni:getSystemCount())
 end
@@ -277,16 +275,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    local e2 = u:spawn()
-    u:addTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
-    print(u:hasTag(e2, "enemy"))
-    local tags = u:getTags(e1)
-    for _, t in ipairs(tags) do print(t) end
-    u:removeTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
+    u:defineTag("enemy"); local e = u:spawn()
+    u:addTag(e, "enemy")
+    print(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -317,9 +308,7 @@ do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:set(e, "pos", { x = 1, y = 2 })
-    local snap = u:snapshot()
-    u:clear()
-    u:applySnapshot(snap)
+    local snap = u:snapshot(); u:clear(); u:applySnapshot(snap)
     print("entities after apply = " .. u:getEntityCount())
 end
 ```
@@ -355,17 +344,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    u:bitmapTag(e1, "enemy")
-    local bit = u:getBitmapTagBit("enemy")
-    print("bit = " .. tostring(bit))
-    print(u:hasBitmapTag(e1, "enemy"))
-    local all = u:queryBitmapAll({ "enemy" })
-    local any = u:queryBitmapAny({ "enemy" })
-    local tagged = u:queryBitmapTag("enemy")
-    for _, id in ipairs(tagged) do print(id) end
-    u:bitmapUntag(e1, "enemy")
+    u:defineTag("enemy"); local e = u:spawn()
+    u:bitmapTag(e, "enemy")
+    print(u:hasBitmapTag(e, "enemy"))
 end
 ```
 
@@ -397,17 +378,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    u:bitmapTag(e1, "enemy")
-    local bit = u:getBitmapTagBit("enemy")
-    print("bit = " .. tostring(bit))
-    print(u:hasBitmapTag(e1, "enemy"))
-    local all = u:queryBitmapAll({ "enemy" })
-    local any = u:queryBitmapAny({ "enemy" })
-    local tagged = u:queryBitmapTag("enemy")
-    for _, id in ipairs(tagged) do print(id) end
-    u:bitmapUntag(e1, "enemy")
+    u:defineTag("enemy"); local e = u:spawn()
+    u:bitmapTag(e, "enemy"); u:bitmapUntag(e, "enemy")
+    print(u:hasBitmapTag(e, "enemy"))
 end
 ```
 
@@ -464,9 +437,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local a = uni:spawn()
-    local b = uni:spawn()
-    uni:addRelation(a, "sees", b)
+    local a, b = uni:spawn(), uni:spawn(); uni:addRelation(a, "sees", b)
     uni:clearRelations(a, "sees")
     local targets = uni:getRelated(a, "sees")
     print("after clear = " .. #targets)
@@ -500,11 +471,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    uni:defineBlueprint("enemy", {
-        pos = {x = 0, y = 0},
-        hp = {value = 50},
-        tag = {value = "hostile"},
-    })
+    uni:defineBlueprint("enemy", {pos = {x = 0, y = 0}, hp = {value = 50}, tag = {value = "hostile"}})
     print("blueprint defined")
 end
 ```
@@ -539,15 +506,8 @@ do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
-    local e1 = u:spawn()
-    local e2 = u:spawn()
-    u:addTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
-    print(u:hasTag(e2, "enemy"))
-    local tags = u:getTags(e1)
-    for _, t in ipairs(tags) do print(t) end
-    u:removeTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
+    local e = u:spawn()
+    print(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -578,8 +538,7 @@ do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "score", {value = 99})
-    local snap = uni:serialize()
-    uni:deserialize(snap)
+    uni:deserialize(uni:serialize())
     print("deserialized, count = " .. uni:getEntityCount())
 end
 ```
@@ -613,10 +572,7 @@ do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "name", {value = "hero"})
-    local count = 0
-    uni:each("name", function(eid)
-        count = count + 1
-    end)
+    local count = 0; uni:each("name", function() count = count + 1 end)
     print("each count = " .. count)
 end
 ```
@@ -687,11 +643,6 @@ do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
-    print(u:hasBlueprint("enemy"))
-    print(u:hasBlueprint("missing"))
-    local names = u:listBlueprints()
-    for _, n in ipairs(names) do print(n) end
-    u:removeBlueprint("enemy")
     print(u:hasBlueprint("enemy"))
 end
 ```
@@ -788,16 +739,7 @@ do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
-    local e1 = u:spawn()
-    u:bitmapTag(e1, "enemy")
-    local bit = u:getBitmapTagBit("enemy")
-    print("bit = " .. tostring(bit))
-    print(u:hasBitmapTag(e1, "enemy"))
-    local all = u:queryBitmapAll({ "enemy" })
-    local any = u:queryBitmapAny({ "enemy" })
-    local tagged = u:queryBitmapTag("enemy")
-    for _, id in ipairs(tagged) do print(id) end
-    u:bitmapUntag(e1, "enemy")
+    print("bit = " .. tostring(u:getBitmapTagBit("enemy")))
 end
 ```
 
@@ -864,10 +806,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     local uni = lurek.ecs.newUniverse()
     local parent = uni:spawn()
-    local c1 = uni:spawn()
-    local c2 = uni:spawn()
-    uni:setParent(c1, parent)
-    uni:setParent(c2, parent)
+    local c1, c2 = uni:spawn(), uni:spawn(); uni:setParent(c1, parent); uni:setParent(c2, parent)
     local children = uni:getChildren(parent)
     print("children = " .. #children)
 end
@@ -902,8 +841,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
-    uni:set(id, "pos", {x = 0, y = 0})
-    uni:set(id, "vel", {x = 1, y = 0})
+    uni:set(id, "pos", {x = 0, y = 0}); uni:set(id, "vel", {x = 1, y = 0})
     local names = uni:getComponents(id)
     print("components = " .. #names)
 end
@@ -998,18 +936,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("unit")
     local e = u:spawn()
     u:setLayer(e, 2)
-    local layer = u:getLayer(e)
-    print("layer = " .. tostring(layer))
-    local byLayer = u:getEntitiesByLayer(2)
-    for _, id in ipairs(byLayer) do print(id) end
-    u:addTag(e, "unit")
-    local byTag = u:getEntitiesByTag("unit")
-    for _, id in ipairs(byTag) do print(id) end
-    local sorted = u:getEntitiesSorted()
-    print("sorted count = " .. #sorted)
+    print(#u:getEntitiesByLayer(2))
 end
 ```
 
@@ -1042,18 +971,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("unit")
-    local e = u:spawn()
-    u:setLayer(e, 2)
-    local layer = u:getLayer(e)
-    print("layer = " .. tostring(layer))
-    local byLayer = u:getEntitiesByLayer(2)
-    for _, id in ipairs(byLayer) do print(id) end
+    u:defineTag("unit"); local e = u:spawn()
     u:addTag(e, "unit")
-    local byTag = u:getEntitiesByTag("unit")
-    for _, id in ipairs(byTag) do print(id) end
-    local sorted = u:getEntitiesSorted()
-    print("sorted count = " .. #sorted)
+    print(#u:getEntitiesByTag("unit"))
 end
 ```
 
@@ -1081,18 +1001,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("unit")
     local e = u:spawn()
     u:setLayer(e, 2)
-    local layer = u:getLayer(e)
-    print("layer = " .. tostring(layer))
-    local byLayer = u:getEntitiesByLayer(2)
-    for _, id in ipairs(byLayer) do print(id) end
-    u:addTag(e, "unit")
-    local byTag = u:getEntitiesByTag("unit")
-    for _, id in ipairs(byTag) do print(id) end
-    local sorted = u:getEntitiesSorted()
-    print("sorted count = " .. #sorted)
+    print("sorted count = " .. #u:getEntitiesSorted())
 end
 ```
 
@@ -1155,18 +1066,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("unit")
     local e = u:spawn()
     u:setLayer(e, 2)
-    local layer = u:getLayer(e)
-    print("layer = " .. tostring(layer))
-    local byLayer = u:getEntitiesByLayer(2)
-    for _, id in ipairs(byLayer) do print(id) end
-    u:addTag(e, "unit")
-    local byTag = u:getEntitiesByTag("unit")
-    for _, id in ipairs(byTag) do print(id) end
-    local sorted = u:getEntitiesSorted()
-    print("sorted count = " .. #sorted)
+    print("layer = " .. tostring(u:getLayer(e)))
 end
 ```
 
@@ -1198,8 +1100,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local parent = uni:spawn()
-    local child = uni:spawn()
+    local parent, child = uni:spawn(), uni:spawn()
     uni:setParent(child, parent)
     local p = uni:getParent(child)
     print("parent = " .. p)
@@ -1236,11 +1137,8 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local a = uni:spawn()
-    local b = uni:spawn()
-    local c = uni:spawn()
-    uni:addRelation(a, "friend", b)
-    uni:addRelation(a, "friend", c)
+    local a, b, c = uni:spawn(), uni:spawn(), uni:spawn()
+    uni:addRelation(a, "friend", b); uni:addRelation(a, "friend", c)
     local friends = uni:getRelated(a, "friend")
     print("friends = " .. #friends)
 end
@@ -1304,16 +1202,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    local e2 = u:spawn()
-    u:addTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
-    print(u:hasTag(e2, "enemy"))
-    local tags = u:getTags(e1)
-    for _, t in ipairs(tags) do print(t) end
-    u:removeTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
+    u:defineTag("enemy"); local e = u:spawn()
+    u:addTag(e, "enemy")
+    print(#u:getTags(e))
 end
 ```
 
@@ -1384,17 +1275,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    u:bitmapTag(e1, "enemy")
-    local bit = u:getBitmapTagBit("enemy")
-    print("bit = " .. tostring(bit))
-    print(u:hasBitmapTag(e1, "enemy"))
-    local all = u:queryBitmapAll({ "enemy" })
-    local any = u:queryBitmapAny({ "enemy" })
-    local tagged = u:queryBitmapTag("enemy")
-    for _, id in ipairs(tagged) do print(id) end
-    u:bitmapUntag(e1, "enemy")
+    u:defineTag("enemy"); local e = u:spawn()
+    u:bitmapTag(e, "enemy")
+    print(u:hasBitmapTag(e, "enemy"))
 end
 ```
 
@@ -1429,11 +1312,6 @@ do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
-    print(u:hasBlueprint("enemy"))
-    print(u:hasBlueprint("missing"))
-    local names = u:listBlueprints()
-    for _, n in ipairs(names) do print(n) end
-    u:removeBlueprint("enemy")
     print(u:hasBlueprint("enemy"))
 end
 ```
@@ -1508,16 +1386,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    local e2 = u:spawn()
-    u:addTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
-    print(u:hasTag(e2, "enemy"))
-    local tags = u:getTags(e1)
-    for _, t in ipairs(tags) do print(t) end
-    u:removeTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
+    u:defineTag("enemy"); local e = u:spawn()
+    u:addTag(e, "enemy")
+    print(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -1610,11 +1481,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local root = uni:spawn()
-    local child = uni:spawn()
+    local root, child = uni:spawn(), uni:spawn()
     uni:setParent(child, root)
     uni:killRecursive(root)
-    print("root alive = " .. tostring(uni:isAlive(root)))
     print("child alive = " .. tostring(uni:isAlive(child)))
 end
 ```
@@ -1645,12 +1514,7 @@ do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
-    print(u:hasBlueprint("enemy"))
-    print(u:hasBlueprint("missing"))
-    local names = u:listBlueprints()
-    for _, n in ipairs(names) do print(n) end
-    u:removeBlueprint("enemy")
-    print(u:hasBlueprint("enemy"))
+    print(#u:listBlueprints())
 end
 ```
 
@@ -1680,14 +1544,10 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 
 ```lua
 do
-    local uni = lurek.ecs.newUniverse()
-    local added = false
-    uni:onComponentAdded("hp", function(eid, name)
-        added = true
-    end)
+    local uni = lurek.ecs.newUniverse(); local added = false
+    uni:onComponentAdded("hp", function() added = true end)
     local id = uni:spawn()
-    uni:set(id, "hp", {value = 100})
-    uni:flushObservers()
+    uni:set(id, "hp", {value = 100}); uni:flushObservers()
     print("added callback fired = " .. tostring(added))
 end
 ```
@@ -1718,15 +1578,10 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 
 ```lua
 do
-    local uni = lurek.ecs.newUniverse()
-    local removed = false
-    uni:onComponentRemoved("hp", function(eid, name)
-        removed = true
-    end)
+    local uni = lurek.ecs.newUniverse(); local removed = false
+    uni:onComponentRemoved("hp", function() removed = true end)
     local id = uni:spawn()
-    uni:set(id, "hp", {value = 50})
-    uni:remove(id, "hp")
-    uni:flushObservers()
+    uni:set(id, "hp", {value = 50}); uni:remove(id, "hp"); uni:flushObservers()
     print("removed callback fired = " .. tostring(removed))
 end
 ```
@@ -1760,12 +1615,8 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
-    uni:set(a, "pos", {x = 0, y = 0})
-    uni:set(a, "vel", {x = 1, y = 0})
-    local b = uni:spawn()
-    uni:set(b, "pos", {x = 5, y = 5})
-    local results = uni:query("pos", "vel")
-    print("with pos+vel = " .. #results)
+    uni:set(a, "pos", {x = 0, y = 0}); uni:set(a, "vel", {x = 1, y = 0})
+    local b = uni:spawn(); uni:set(b, "pos", {x = 5, y = 5}); print("with pos+vel = " .. #uni:query("pos", "vel"))
 end
 ```
 
@@ -1798,17 +1649,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    u:bitmapTag(e1, "enemy")
-    local bit = u:getBitmapTagBit("enemy")
-    print("bit = " .. tostring(bit))
-    print(u:hasBitmapTag(e1, "enemy"))
-    local all = u:queryBitmapAll({ "enemy" })
-    local any = u:queryBitmapAny({ "enemy" })
-    local tagged = u:queryBitmapTag("enemy")
-    for _, id in ipairs(tagged) do print(id) end
-    u:bitmapUntag(e1, "enemy")
+    u:defineTag("enemy"); local e = u:spawn()
+    u:bitmapTag(e, "enemy")
+    print(#u:queryBitmapAll({"enemy"}))
 end
 ```
 
@@ -1841,17 +1684,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    u:bitmapTag(e1, "enemy")
-    local bit = u:getBitmapTagBit("enemy")
-    print("bit = " .. tostring(bit))
-    print(u:hasBitmapTag(e1, "enemy"))
-    local all = u:queryBitmapAll({ "enemy" })
-    local any = u:queryBitmapAny({ "enemy" })
-    local tagged = u:queryBitmapTag("enemy")
-    for _, id in ipairs(tagged) do print(id) end
-    u:bitmapUntag(e1, "enemy")
+    u:defineTag("enemy"); local e = u:spawn()
+    u:bitmapTag(e, "enemy")
+    print(#u:queryBitmapAny({"enemy"}))
 end
 ```
 
@@ -1884,17 +1719,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    u:bitmapTag(e1, "enemy")
-    local bit = u:getBitmapTagBit("enemy")
-    print("bit = " .. tostring(bit))
-    print(u:hasBitmapTag(e1, "enemy"))
-    local all = u:queryBitmapAll({ "enemy" })
-    local any = u:queryBitmapAny({ "enemy" })
-    local tagged = u:queryBitmapTag("enemy")
-    for _, id in ipairs(tagged) do print(id) end
-    u:bitmapUntag(e1, "enemy")
+    u:defineTag("enemy"); local e = u:spawn()
+    u:bitmapTag(e, "enemy")
+    print(#u:queryBitmapTag("enemy"))
 end
 ```
 
@@ -1926,12 +1753,8 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
-    uni:set(id, "a", {value = 1})
-    uni:set(id, "b", {value = 2})
-    local count = 0
-    uni:queryMulti({"a", "b"}, function(eid)
-        count = count + 1
-    end)
+    uni:set(id, "a", {value = 1}); uni:set(id, "b", {value = 2})
+    local count = 0; uni:queryMulti({"a", "b"}, function() count = count + 1 end)
     print("queryMulti = " .. count)
 end
 ```
@@ -1966,13 +1789,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local a = uni:spawn()
-    uni:set(a, "pos", {x = 0, y = 0})
-    uni:set(a, "static", {flag = true})
-    local b = uni:spawn()
-    uni:set(b, "pos", {x = 1, y = 1})
-    local moving = uni:queryNot({"pos"}, {"static"})
-    print("moving entities = " .. #moving)
+    local a, b = uni:spawn(), uni:spawn()
+    uni:set(a, "pos", {x = 0, y = 0}); uni:set(a, "static", {flag = true})
+    uni:set(b, "pos", {x = 1, y = 1}); print("moving entities = " .. #uni:queryNot({"pos"}, {"static"}))
 end
 ```
 
@@ -2064,12 +1883,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineBlueprint("base", { hp = 100 })
-    u:extendBlueprint("enemy", "base", { damage = 10 })
-    print(u:hasBlueprint("enemy"))
-    print(u:hasBlueprint("missing"))
-    local names = u:listBlueprints()
-    for _, n in ipairs(names) do print(n) end
+    u:defineBlueprint("base", { hp = 100 }); u:extendBlueprint("enemy", "base", { damage = 10 })
     u:removeBlueprint("enemy")
     print(u:hasBlueprint("enemy"))
 end
@@ -2104,8 +1918,7 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local a = uni:spawn()
-    local b = uni:spawn()
+    local a, b = uni:spawn(), uni:spawn()
     uni:addRelation(a, "owns", b)
     uni:removeRelation(a, "owns", b)
     print("relation removed")
@@ -2172,16 +1985,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    local e1 = u:spawn()
-    local e2 = u:spawn()
-    u:addTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
-    print(u:hasTag(e2, "enemy"))
-    local tags = u:getTags(e1)
-    for _, t in ipairs(tags) do print(t) end
-    u:removeTag(e1, "enemy")
-    print(u:hasTag(e1, "enemy"))
+    u:defineTag("enemy"); local e = u:spawn()
+    u:addTag(e, "enemy"); u:removeTag(e, "enemy")
+    print(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -2305,18 +2111,9 @@ Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    u:defineTag("unit")
     local e = u:spawn()
     u:setLayer(e, 2)
-    local layer = u:getLayer(e)
-    print("layer = " .. tostring(layer))
-    local byLayer = u:getEntitiesByLayer(2)
-    for _, id in ipairs(byLayer) do print(id) end
-    u:addTag(e, "unit")
-    local byTag = u:getEntitiesByTag("unit")
-    for _, id in ipairs(byTag) do print(id) end
-    local sorted = u:getEntitiesSorted()
-    print("sorted count = " .. #sorted)
+    print("layer = " .. tostring(u:getLayer(e)))
 end
 ```
 

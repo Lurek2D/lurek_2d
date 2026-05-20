@@ -478,8 +478,8 @@ end
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
-    local mn, mx = cam:getZoomConstraints()
-    print("zoom range = " .. mn .. " to " .. mx)
+    local hasMin, mn, hasMax, mx = cam:getZoomConstraints()
+    print("zoom range = " .. tostring(hasMin) .. ":" .. mn .. " to " .. tostring(hasMax) .. ":" .. mx)
 end
 
 --@api-stub: LCamera:setZoomDamping
@@ -508,8 +508,8 @@ end
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
-    local mn, mx = cam:getRotationConstraints()
-    print("rotation range = " .. mn .. " to " .. mx)
+    local hasMin, mn, hasMax, mx = cam:getRotationConstraints()
+    print("rotation range = " .. tostring(hasMin) .. ":" .. mn .. " to " .. tostring(hasMax) .. ":" .. mx)
 end
 
 --@api-stub: LCamera:setRotationDamping

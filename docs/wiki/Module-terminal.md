@@ -182,16 +182,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 ```lua
 do
     lurek.terminal.clearCompletions()
-    lurek.terminal.addCompletion("help")
-    lurek.terminal.addCompletion("health")
-    lurek.terminal.addCompletion("heal")
-    lurek.terminal.addCompletion("inventory")
-    lurek.terminal.addCompletion("inspect")
-    local matches = lurek.terminal.getCompletions("he")
-    print("matches for 'he':")
-    for _, m in ipairs(matches) do
-        print("  " .. m)
-    end
+    lurek.terminal.addCompletion("help"); lurek.terminal.addCompletion("health"); lurek.terminal.addCompletion("heal"); lurek.terminal.addCompletion("inventory")
+    lurek.terminal.addCompletion("inspect"); local matches = lurek.terminal.getCompletions("he"); print("matches for 'he': " .. table.concat(matches, ", "))
     local inv = lurek.terminal.getCompletions("in")
     print("matches for 'in' = " .. #inv)
 end
@@ -214,16 +206,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.applyTheme(term, "solarized_dark")
-    print("applied solarized_dark")
-    lurek.terminal.applyTheme(term, "monokai")
-    print("applied monokai")
-    lurek.terminal.applyTheme(term, "dracula")
-    print("applied dracula")
-    lurek.terminal.applyTheme(term, "nord")
-    print("applied nord")
+    lurek.terminal.applyTheme(term, "solarized_dark"); print("applied solarized_dark"); lurek.terminal.applyTheme(term, "monokai"); print("applied monokai")
+    lurek.terminal.applyTheme(term, "dracula"); print("applied dracula"); lurek.terminal.applyTheme(term, "nord"); print("applied nord")
     lurek.terminal.applyTheme(term, "solarized_light")
     print("applied solarized_light")
 end
@@ -246,10 +231,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 ```lua
 do
     local term = lurek.terminal.newTerminal(40, 10)
-
     lurek.terminal.clearCmdHistory(term)
-    local prev = lurek.terminal.prevCmd(term)
-    print("prev_cmd=" .. tostring(prev))
+    local prev = lurek.terminal.prevCmd(term); print("prev_cmd=" .. tostring(prev))
     local next_cmd = lurek.terminal.nextCmd(term)
     print("next_cmd=" .. tostring(next_cmd))
 end
@@ -291,11 +274,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.pushCmdHistory(term, "look")
-    lurek.terminal.pushCmdHistory(term, "go north")
-    lurek.terminal.pushCmdHistory(term, "take sword")
+    lurek.terminal.pushCmdHistory(term, "look"); lurek.terminal.pushCmdHistory(term, "go north"); lurek.terminal.pushCmdHistory(term, "take sword")
     print("history len = " .. lurek.terminal.cmdHistoryLen(term))
     lurek.terminal.clearCmdHistory(term)
     print("after clear len = " .. lurek.terminal.cmdHistoryLen(term))
@@ -411,11 +391,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LWidget
     local border = lurek.terminal.newBorder(1, 1, 30, 10)
     print("border style = " .. border:getStyle())
-    border:setStyle("double")
-    print("new style = " .. border:getStyle())
+    border:setStyle("double"); print("new style = " .. border:getStyle())
     border:setTitle("Inventory")
     print("title = " .. border:getTitle())
 end
@@ -444,15 +422,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 ```lua
 do
     local clickCount = 0
-    ---@type LWidget
-    local btn = lurek.terminal.newButton(10, 5, 12, 1, "Click Me")
-    print("button text = " .. btn:getText())
-    local w, h = btn:getSize()
-    print("button size = " .. w .. "x" .. h)
-    btn:setOnClick(function()
-        clickCount = clickCount + 1
-        print("clicked! count = " .. clickCount)
-    end)
+    local btn = lurek.terminal.newButton(10, 5, 12, 1, "Click Me"); print("button text = " .. btn:getText())
+    local w, h = btn:getSize(); print("button size = " .. w .. "x" .. h)
+    btn:setOnClick(function() clickCount = clickCount + 1; print("clicked! count = " .. clickCount) end)
     print("click handler set")
 end
 ```
@@ -477,14 +449,10 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LWidget
     local label = lurek.terminal.newLabel(5, 3, "Score: 0")
-    print("label type = " .. label:type())
-    print("is LWidget = " .. tostring(label:typeOf("LWidget")))
-    print("text = " .. label:getText())
     local col, row = label:getPosition()
-    print("position = " .. col .. ", " .. row)
-    label:setText("Score: 1500")
+    print("label type = " .. label:type() .. " is LWidget = " .. tostring(label:typeOf("LWidget")))
+    print("text = " .. label:getText() .. " position = " .. col .. ", " .. row); label:setText("Score: 1500")
     print("updated text = " .. label:getText())
 end
 ```
@@ -510,21 +478,11 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LWidget
     local list = lurek.terminal.newList(2, 3, 20, 8)
-    list:addItem("Sword")
-    list:addItem("Shield")
-    list:addItem("Potion")
-    list:addItem("Scroll")
-    list:addItem("Bow")
-    print("item count = " .. list:getItemCount())
-    print("item 1 = " .. list:getItem(1))
-    print("item 3 = " .. list:getItem(3))
-    list:setSelected(2)
-    print("selected = " .. list:getSelected())
-    list:setOnSelect(function()
-        print("selection changed to " .. list:getSelected())
-    end)
+    list:addItem("Sword"); list:addItem("Shield"); list:addItem("Potion"); list:addItem("Scroll"); list:addItem("Bow")
+    print("item count = " .. list:getItemCount() .. " item 1 = " .. list:getItem(1) .. " item 3 = " .. list:getItem(3))
+    list:setSelected(2); print("selected = " .. list:getSelected())
+    list:setOnSelect(function() print("selection changed to " .. list:getSelected()) end)
 end
 ```
 
@@ -549,12 +507,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LWidget
     local panel = lurek.terminal.newPanel(1, 1, 40, 20)
-    local label1 = lurek.terminal.newLabel(2, 2, "Name:")
-    local label2 = lurek.terminal.newLabel(2, 3, "Class:")
-    panel:addChild(label1)
-    panel:addChild(label2)
+    panel:addChild(lurek.terminal.newLabel(2, 2, "Name:")); panel:addChild(lurek.terminal.newLabel(2, 3, "Class:"))
     print("panel children = " .. panel:getChildCount())
     local child1 = panel:getChild(1)
     print("child 1 text = " .. child1:getText())
@@ -608,16 +562,11 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LWidget
     local input = lurek.terminal.newTextBox(5, 8, 20)
     print("input text = '" .. input:getText() .. "'")
-    input:setText("Hello")
-    print("set text = " .. input:getText())
-    input:setMaxLength(30)
-    print("max length = " .. input:getMaxLength())
-    input:setOnChange(function()
-        print("text changed to: " .. input:getText())
-    end)
+    input:setText("Hello"); print("set text = " .. input:getText())
+    input:setMaxLength(30); print("max length = " .. input:getMaxLength())
+    input:setOnChange(function() print("text changed to: " .. input:getText()) end)
 end
 ```
 
@@ -666,15 +615,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 ```lua
 do
     lurek.terminal.clearCompletions()
-    lurek.terminal.addCompletion("attack")
-    lurek.terminal.addCompletion("attune")
-    lurek.terminal.addCompletion("attract")
-    lurek.terminal.resetCompletion()
-    local c1 = lurek.terminal.nextCompletion("att")
-    print("cycle 1 = " .. tostring(c1))
-    local c2 = lurek.terminal.nextCompletion("att")
-    print("cycle 2 = " .. tostring(c2))
-    local c3 = lurek.terminal.nextCompletion("att")
+    lurek.terminal.addCompletion("attack"); lurek.terminal.addCompletion("attune"); lurek.terminal.addCompletion("attract")
+    lurek.terminal.resetCompletion(); local c1 = lurek.terminal.nextCompletion("att"); print("cycle 1 = " .. tostring(c1))
+    local c2 = lurek.terminal.nextCompletion("att"); print("cycle 2 = " .. tostring(c2)); local c3 = lurek.terminal.nextCompletion("att")
     print("cycle 3 = " .. tostring(c3))
 end
 ```
@@ -700,9 +643,7 @@ do
     local ansiText = "\27[1;31mError:\27[0m File not found"
     local spans = lurek.terminal.parseAnsi(ansiText)
     print("span count = " .. #spans)
-    for i, span in ipairs(spans) do
-        print("  span " .. i .. ": text='" .. span.text .. "' bold=" .. tostring(span.bold))
-    end
+    if spans[1] then print("span 1: text='" .. spans[1].text .. "' bold=" .. tostring(spans[1].bold)) end
 end
 ```
 
@@ -751,7 +692,6 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
     lurek.terminal.printAnsi(term, 1, 1, "\27[1;33mWarning:\27[0m Low health")
     lurek.terminal.printAnsi(term, 1, 2, "\27[34mInfo:\27[0m Checkpoint saved")
@@ -780,14 +720,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    local rules = {
-        { pattern = "local%s+%w+", fg = { r = 100, g = 150, b = 255 } },
-        { pattern = '\"[^\"]*\"', fg = { r = 200, g = 200, b = 100 } },
-        { pattern = "%-%-%s.*$", fg = { r = 100, g = 100, b = 100 } },
-        { pattern = "%d+", fg = { r = 255, g = 150, b = 50 } },
-    }
+    local rules = { { pattern = "local%s+%w+", fg = { r = 100, g = 150, b = 255 } }, { pattern = '\"[^\"]*\"', fg = { r = 200, g = 200, b = 100 } }, { pattern = "%-%-%s.*$", fg = { r = 100, g = 100, b = 100 } }, { pattern = "%d+", fg = { r = 255, g = 150, b = 50 } } }
     local code = 'local name = "hero" -- player name'
     lurek.terminal.printHighlighted(term, 1, 1, code, rules)
     print("highlighted code rendered")
@@ -811,14 +745,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.pushCmdHistory(term, "status")
-    lurek.terminal.pushCmdHistory(term, "inventory")
-    local prev = lurek.terminal.prevCmd(term)
-    print("prev 1 = " .. tostring(prev))
-    prev = lurek.terminal.prevCmd(term)
-    print("prev 2 = " .. tostring(prev))
+    lurek.terminal.pushCmdHistory(term, "status"); lurek.terminal.pushCmdHistory(term, "inventory")
+    local prev = lurek.terminal.prevCmd(term); print("prev 1 = " .. tostring(prev)); prev = lurek.terminal.prevCmd(term); print("prev 2 = " .. tostring(prev))
     local next_cmd = lurek.terminal.nextCmd(term)
     print("next = " .. tostring(next_cmd))
 end
@@ -841,18 +770,11 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.pushScrollback(term, "You see a dark corridor.")
-    lurek.terminal.pushScrollback(term, "A torch flickers on the wall.")
-    lurek.terminal.pushScrollback(term, "You hear footsteps.")
-    lurek.terminal.pushScrollback(term, "An enemy appears!")
-    print("scrollback len = " .. lurek.terminal.scrollbackLen(term))
+    lurek.terminal.pushScrollback(term, "You see a dark corridor."); lurek.terminal.pushScrollback(term, "A torch flickers on the wall.")
+    lurek.terminal.pushScrollback(term, "You hear footsteps."); lurek.terminal.pushScrollback(term, "An enemy appears!"); print("scrollback len = " .. lurek.terminal.scrollbackLen(term))
     local lines = lurek.terminal.getScrollback(term, 0, 3)
-    print("recent 3 lines:")
-    for i, line in ipairs(lines) do
-        print("  " .. i .. ": " .. line)
-    end
+    print("recent 3 lines: " .. table.concat(lines, " | "))
 end
 ```
 
@@ -938,12 +860,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.setScrollbackCap(term, 100)
-    for i = 1, 150 do
-        lurek.terminal.pushScrollback(term, "Line " .. i)
-    end
+    lurek.terminal.setScrollbackCap(term, 2)
+    lurek.terminal.pushScrollback(term, "Line 1"); lurek.terminal.pushScrollback(term, "Line 2"); lurek.terminal.pushScrollback(term, "Line 3")
     print("scrollback after overflow = " .. lurek.terminal.scrollbackLen(term))
 end
 ```
@@ -1023,11 +942,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LWidget
     local border = lurek.terminal.newBorder(1, 1, 30, 10)
     print("border style = " .. border:getStyle())
-    border:setStyle("double")
-    print("new style = " .. border:getStyle())
+    border:setStyle("double"); print("new style = " .. border:getStyle())
     border:setTitle("Inventory")
     print("title = " .. border:getTitle())
 end
@@ -1062,12 +979,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    local lbl = lurek.terminal.newLabel(1, 1, "Status")
-    local btn = lurek.terminal.newButton(1, 3, 10, 1, "OK")
-    term:addWidget(lbl)
-    term:addWidget(btn)
+    term:addWidget(lurek.terminal.newLabel(1, 1, "Status"))
+    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, "OK"))
     print("widget count = " .. term:getWidgetCount())
 end
 ```
@@ -1117,10 +1031,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(40, 10)
-    term:print(1, 1, "This will be erased")
-    term:print(1, 2, "And this too")
+    term:print(1, 1, "This will be erased"); term:print(1, 2, "And this too")
     term:clear()
     local ch = term:get(1, 1)
     print("after clear ch = " .. ch)
@@ -1146,12 +1058,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    local lbl = lurek.terminal.newLabel(1, 1, "Status")
-    local btn = lurek.terminal.newButton(1, 3, 10, 1, "OK")
-    term:addWidget(lbl)
-    term:addWidget(btn)
+    term:addWidget(lurek.terminal.newLabel(1, 1, "Status")); term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, "OK"))
     print("widget count = " .. term:getWidgetCount())
     term:clearWidgets()
     print("after clear = " .. term:getWidgetCount())
@@ -1285,20 +1193,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    local input1 = lurek.terminal.newTextBox(1, 1, 15)
-    local input2 = lurek.terminal.newTextBox(1, 3, 15)
-    term:addWidget(input1)
-    term:addWidget(input2)
-    term:setFocus(input1)
-    local focused = term:getFocused()
-    print("focused = " .. tostring(focused == input1))
-    term:setFocus(input2)
-    focused = term:getFocused()
-    print("focused = " .. tostring(focused == input2))
-    term:setFocus(nil)
-    focused = term:getFocused()
+    term:addWidget(lurek.terminal.newTextBox(1, 1, 15)); local input2 = lurek.terminal.newTextBox(1, 3, 15); term:addWidget(input2)
+    term:setFocus(input2); local focused = term:getFocused(); print("focused = " .. tostring(focused == input2)); term:setFocus(nil); focused = term:getFocused()
     print("no focus = " .. tostring(focused == nil))
 end
 ```
@@ -1325,12 +1222,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    local lbl = lurek.terminal.newLabel(1, 1, "Status")
-    local btn = lurek.terminal.newButton(1, 3, 10, 1, "OK")
-    term:addWidget(lbl)
-    term:addWidget(btn)
+    term:addWidget(lurek.terminal.newLabel(1, 1, "Status"))
+    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, "OK"))
     print("widget count = " .. term:getWidgetCount())
 end
 ```
@@ -1362,16 +1256,10 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    local input = lurek.terminal.newTextBox(1, 1, 20)
-    term:addWidget(input)
-    term:setFocus(input)
-    local consumed = term:textinput("A")
-    print("textinput consumed = " .. tostring(consumed))
-    consumed = term:keypressed("backspace")
-    print("keypressed consumed = " .. tostring(consumed))
-    term:mousepressed(50, 10, 1)
+    local input = lurek.terminal.newTextBox(1, 1, 20); term:addWidget(input); term:setFocus(input)
+    local consumed = term:textinput("A"); print("textinput consumed = " .. tostring(consumed))
+    consumed = term:keypressed("backspace"); print("keypressed consumed = " .. tostring(consumed)); term:mousepressed(50, 10, 1)
     print("mousepressed sent")
 end
 ```
@@ -1404,11 +1292,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
     local input = lurek.terminal.newTextBox(1, 1, 20)
-    term:addWidget(input)
-    term:setFocus(input)
+    term:addWidget(input); term:setFocus(input)
     term:mousepressed(50, 10, 1)
     print("mousepressed sent")
 end
@@ -1442,12 +1328,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    term:print(1, 1, "Hello, Terminal!")
-    term:print(1, 2, "Line two here")
-    term:print(5, 5, "Centered text at col 5, row 5")
-    term:print(1, 20, "Bottom row")
+    term:print(1, 1, "Hello, Terminal!"); term:print(1, 2, "Line two here")
+    term:print(5, 5, "Centered text at col 5, row 5"); term:print(1, 20, "Bottom row")
 end
 ```
 
@@ -1475,13 +1358,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    local lbl = lurek.terminal.newLabel(1, 1, "Status")
     local btn = lurek.terminal.newButton(1, 3, 10, 1, "OK")
-    term:addWidget(lbl)
-    term:addWidget(btn)
-    print("widget count = " .. term:getWidgetCount())
+    term:addWidget(lurek.terminal.newLabel(1, 1, "Status")); term:addWidget(btn); print("widget count = " .. term:getWidgetCount())
     term:removeWidget(btn)
     print("after remove = " .. term:getWidgetCount())
 end
@@ -1540,10 +1419,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    term:setCellSize(12, 20)
-    term:resetCellSize()
+    term:setCellSize(12, 20); term:resetCellSize()
     local w, h = term:getCellSize()
     print("reset cell = " .. w .. "x" .. h)
 end
@@ -1658,20 +1535,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    local input1 = lurek.terminal.newTextBox(1, 1, 15)
-    local input2 = lurek.terminal.newTextBox(1, 3, 15)
-    term:addWidget(input1)
-    term:addWidget(input2)
-    term:setFocus(input1)
-    local focused = term:getFocused()
-    print("focused = " .. tostring(focused == input1))
-    term:setFocus(input2)
-    focused = term:getFocused()
-    print("focused = " .. tostring(focused == input2))
-    term:setFocus(nil)
-    focused = term:getFocused()
+    local input1 = lurek.terminal.newTextBox(1, 1, 15); term:addWidget(input1); term:addWidget(lurek.terminal.newTextBox(1, 3, 15))
+    term:setFocus(input1); local focused = term:getFocused(); print("focused = " .. tostring(focused == input1)); term:setFocus(nil); focused = term:getFocused()
     print("no focus = " .. tostring(focused == nil))
 end
 ```
@@ -1700,13 +1566,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    term:setFont(16)
-    local w, h = term:getCellSize()
-    print("font 16: cell = " .. w .. "x" .. h)
-    term:setFont(12)
-    w, h = term:getCellSize()
+    term:setFont(16); local w, h = term:getCellSize(); print("font 16: cell = " .. w .. "x" .. h)
+    term:setFont(12); w, h = term:getCellSize()
     print("font 12: cell = " .. w .. "x" .. h)
 end
 ```
@@ -1738,11 +1600,9 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 
 ```lua
 do
-    ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
     local input = lurek.terminal.newTextBox(1, 1, 20)
-    term:addWidget(input)
-    term:setFocus(input)
+    term:addWidget(input); term:setFocus(input)
     local consumed = term:textinput("A")
     print("textinput consumed = " .. tostring(consumed))
 end
@@ -2687,10 +2547,8 @@ Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
 ```lua
 do
     local list = lurek.terminal.newList(0, 0, 20, 8)
-    list:addItem("choice1")
-    list:addItem("choice2")
-    list:setSelected(2)
-    local sel = list:getSelected()
+    list:addItem("choice1"); list:addItem("choice2")
+    list:setSelected(2); local sel = list:getSelected()
     print("setSelected:", sel)
 end
 ```

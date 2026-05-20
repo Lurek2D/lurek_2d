@@ -137,16 +137,7 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    local os_name = lurek.runtime.getOS()
-    print("os=" .. os_name)
-    local arch = lurek.runtime.getArch()
-    print("arch=" .. arch)
-    local mem = lurek.runtime.getMemorySize()
-    print("mem_mb=" .. mem)
-    local locales = lurek.runtime.getPreferredLocales()
-    print("locales=" .. #locales)
-    local state, pct, secs = lurek.runtime.getPowerInfo()
-    print("power_state=" .. state)
+    print("arch=" .. lurek.runtime.getArch())
 end
 ```
 
@@ -187,12 +178,8 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    lurek.runtime.errorSnapshot("test_snapshot")
-    local results = lurek.runtime.getBatchResults({
-        { success = true, result = "ok" },
-        { success = false, result = "err" }
-    })
-    print("batch_results=" .. tostring(results ~= nil))
+    local passed, failed, skipped = lurek.runtime.getBatchResults({ { success = true }, { success = false } })
+    print("batch_results=" .. passed .. "/" .. failed .. "/" .. skipped)
 end
 ```
 
@@ -276,17 +263,8 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 ```lua
 do
     local path = lurek.runtime.getEnv("PATH")
-    if path then
-        print("PATH length = " .. #path)
-    else
-        print("PATH not set")
-    end
-    local home = lurek.runtime.getEnv("USERPROFILE")
-    if home then
-        print("home = " .. home)
-    end
-    local missing = lurek.runtime.getEnv("LUREK_NONEXISTENT_VAR")
-    print("missing var = " .. tostring(missing))
+    print("PATH set = " .. tostring(path ~= nil))
+    print("missing var = " .. tostring(lurek.runtime.getEnv("LUREK_NONEXISTENT_VAR")))
 end
 ```
 
@@ -305,13 +283,9 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 ```lua
 do
     local info = lurek.runtime.getInfo()
-    print("engine = " .. info.engine)
-    print("version = " .. info.version)
-    print("lua version = " .. info.lua_version)
-    print("renderer = " .. info.renderer)
-    print("os = " .. info.os)
+    print("engine = " .. info.engine .. " version = " .. info.version)
+    print("os = " .. info.os .. " lua = " .. info.lua_version)
     print("processors = " .. info.processors)
-    print("memory = " .. info.memory .. " MiB")
 end
 ```
 
@@ -330,16 +304,8 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 ```lua
 do
     local err = lurek.runtime.getLastError()
-    if err then
-        print("last error message = " .. tostring(err.message))
-        print("last error code = " .. tostring(err.code))
-        print("last error category = " .. tostring(err.category))
-        if err.hint then
-            print("hint = " .. err.hint)
-        end
-    else
-        print("last error = nil")
-    end
+    print("last error = " .. tostring(err and err.message))
+    print("category = " .. tostring(err and err.category))
 end
 ```
 
@@ -357,18 +323,7 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    lurek.runtime.setLogLevel("info")
-    local lvl = lurek.runtime.getLogLevel()
-    print("log_level=" .. lvl)
-
-    lurek.runtime.setClipboardText("lurek_test")
-    local clip = lurek.runtime.getClipboardText()
-    print("clipboard=" .. (clip or "nil"))
-
-    local count = lurek.runtime.getMessageCount()
-    print("msg_count=" .. count)
-    local has = lurek.runtime.hasMessage("test_msg")
-    print("has_msg=" .. tostring(has))
+    print("log_level=" .. lurek.runtime.getLogLevel())
 end
 ```
 
@@ -386,16 +341,7 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    local os_name = lurek.runtime.getOS()
-    print("os=" .. os_name)
-    local arch = lurek.runtime.getArch()
-    print("arch=" .. arch)
-    local mem = lurek.runtime.getMemorySize()
-    print("mem_mb=" .. mem)
-    local locales = lurek.runtime.getPreferredLocales()
-    print("locales=" .. #locales)
-    local state, pct, secs = lurek.runtime.getPowerInfo()
-    print("power_state=" .. state)
+    print("mem_mb=" .. lurek.runtime.getMemorySize())
 end
 ```
 
@@ -417,16 +363,9 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    local count = lurek.runtime.getMessageCount()
-    print("message count = " .. count)
-    local hasWelcome = lurek.runtime.hasMessage("engine.welcome")
-    print("has engine.welcome = " .. tostring(hasWelcome))
-    if hasWelcome then
-        local msg = lurek.runtime.getMessage("engine.welcome")
-        print("welcome = " .. msg)
-    end
-    local hasMissing = lurek.runtime.hasMessage("nonexistent.message")
-    print("has nonexistent = " .. tostring(hasMissing))
+    local key = "engine.welcome"
+    print("has engine.welcome = " .. tostring(lurek.runtime.hasMessage(key)))
+    print("message = " .. tostring(lurek.runtime.getMessage(key)))
 end
 ```
 
@@ -444,18 +383,7 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    lurek.runtime.setLogLevel("info")
-    local lvl = lurek.runtime.getLogLevel()
-    print("log_level=" .. lvl)
-
-    lurek.runtime.setClipboardText("lurek_test")
-    local clip = lurek.runtime.getClipboardText()
-    print("clipboard=" .. (clip or "nil"))
-
-    local count = lurek.runtime.getMessageCount()
-    print("msg_count=" .. count)
-    local has = lurek.runtime.hasMessage("test_msg")
-    print("has_msg=" .. tostring(has))
+    print("msg_count=" .. lurek.runtime.getMessageCount())
 end
 ```
 
@@ -473,16 +401,7 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    local os_name = lurek.runtime.getOS()
-    print("os=" .. os_name)
-    local arch = lurek.runtime.getArch()
-    print("arch=" .. arch)
-    local mem = lurek.runtime.getMemorySize()
-    print("mem_mb=" .. mem)
-    local locales = lurek.runtime.getPreferredLocales()
-    print("locales=" .. #locales)
-    local state, pct, secs = lurek.runtime.getPowerInfo()
-    print("power_state=" .. state)
+    print("os=" .. lurek.runtime.getOS())
 end
 ```
 
@@ -502,17 +421,8 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 do
     local state, percent, seconds = lurek.runtime.getPowerInfo()
     print("power state = " .. state)
-    if percent then
-        print("battery = " .. percent .. "%")
-    else
-        print("battery = unknown")
-    end
-    if seconds then
-        local minutes = math.floor(seconds / 60)
-        print("remaining = " .. minutes .. " min")
-    else
-        print("remaining = unknown")
-    end
+    print("battery = " .. tostring(percent))
+    print("seconds = " .. tostring(seconds))
 end
 ```
 
@@ -594,18 +504,7 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    lurek.runtime.setLogLevel("info")
-    local lvl = lurek.runtime.getLogLevel()
-    print("log_level=" .. lvl)
-
-    lurek.runtime.setClipboardText("lurek_test")
-    local clip = lurek.runtime.getClipboardText()
-    print("clipboard=" .. (clip or "nil"))
-
-    local count = lurek.runtime.getMessageCount()
-    print("msg_count=" .. count)
-    local has = lurek.runtime.hasMessage("test_msg")
-    print("has_msg=" .. tostring(has))
+    print("has_msg=" .. tostring(lurek.runtime.hasMessage("engine.welcome")))
 end
 ```
 
@@ -718,36 +617,9 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    local results = lurek.runtime.runBatch({
-        load_config = function()
-            local data = { width = 800, height = 600 }
-        end,
-        validate_assets = function()
-            local files = { "player.png", "enemy.png", "tileset.png" }
-        end,
-        init_audio = function()
-            local channels = 16
-        end,
-    })
+    local results = lurek.runtime.runBatch({ ping = function() return true end })
     local passed, failed, skipped = lurek.runtime.getBatchResults(results)
-    print("passed = " .. passed)
-    print("failed = " .. failed)
-    print("skipped = " .. skipped)
-
-    -- Stopping batch on first failure.
-    local results = lurek.runtime.runBatch({
-        step1 = function()
-            print("step1 ok")
-        end,
-        step2 = function()
-            error("step2 failed intentionally")
-        end,
-        step3 = function()
-            print("step3 should be skipped")
-        end,
-    }, { stopOnError = true })
-    local passed, failed, skipped = lurek.runtime.getBatchResults(results)
-    print("with stop: passed=" .. passed .. " failed=" .. failed .. " skipped=" .. skipped)
+    print("passed = " .. passed .. " failed = " .. failed .. " skipped = " .. skipped)
 end
 ```
 
@@ -767,18 +639,8 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 
 ```lua
 do
-    lurek.runtime.setLogLevel("info")
-    local lvl = lurek.runtime.getLogLevel()
-    print("log_level=" .. lvl)
-
     lurek.runtime.setClipboardText("lurek_test")
-    local clip = lurek.runtime.getClipboardText()
-    print("clipboard=" .. (clip or "nil"))
-
-    local count = lurek.runtime.getMessageCount()
-    print("msg_count=" .. count)
-    local has = lurek.runtime.hasMessage("test_msg")
-    print("has_msg=" .. tostring(has))
+    print("clipboard=" .. tostring(lurek.runtime.getClipboardText()))
 end
 ```
 
@@ -823,17 +685,7 @@ Exact example from [system.lua](../blob/main/content/examples/system.lua):
 ```lua
 do
     lurek.runtime.setLogLevel("info")
-    local lvl = lurek.runtime.getLogLevel()
-    print("log_level=" .. lvl)
-
-    lurek.runtime.setClipboardText("lurek_test")
-    local clip = lurek.runtime.getClipboardText()
-    print("clipboard=" .. (clip or "nil"))
-
-    local count = lurek.runtime.getMessageCount()
-    print("msg_count=" .. count)
-    local has = lurek.runtime.hasMessage("test_msg")
-    print("has_msg=" .. tostring(has))
+    print("log_level=" .. lurek.runtime.getLogLevel())
 end
 ```
 

@@ -107,11 +107,7 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-    local id = lurek.log.addSink({
-        type = "memory",
-        level = "debug",
-        capacity = 10,
-    })
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 10})
     print("memory sink id = " .. id)
 end
 ```
@@ -444,11 +440,7 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-    lurek.log.struct("info", "combat hit", {
-        attacker = "goblin",
-        target = "player",
-        damage = 15,
-    })
+    lurek.log.struct("info", "combat hit", {attacker = "goblin", target = "player", damage = 15})
     print("struct logged")
 end
 ```

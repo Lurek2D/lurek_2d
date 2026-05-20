@@ -141,9 +141,7 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    lurek.timer.afterReal(1.0, function()
-        print("1 second of real time passed")
-    end)
+    lurek.timer.afterReal(1.0, function() end)
     local fired = lurek.timer.tickRealTimers()
     print("real timers fired = " .. fired)
 end
@@ -167,15 +165,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
-    local sched = lurek.timer.chain({
-        { delay = 0.5, func = function() print("step 1 at 0.5s") end },
-        { delay = 1.0, func = function() print("step 2 at 1.5s") end },
-        { delay = 0.5, func = function() print("step 3 at 2.0s") end },
-    })
-    sched:update(0.5)
-    sched:update(1.0)
-    sched:update(0.5)
+    local count = 0
+    local sched = lurek.timer.chain({ { delay = 0.5, func = function() count = count + 1 end }, { delay = 1.0, func = function() count = count + 1 end } })
+    sched:update(0.5); sched:update(1.0)
+    print("chain steps = " .. count)
 end
 ```
 
@@ -518,10 +511,7 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    local co = coroutine.create(function()
-        lurek.timer.waitFrames(1)
-        lurek.timer.waitSeconds(0)
-    end)
+    local co = coroutine.create(function() lurek.timer.waitFrames(1); lurek.timer.waitSeconds(0) end)
     coroutine.resume(co)
     lurek.timer.tickWaits()
     lurek.timer.tickWaits()
@@ -545,9 +535,7 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    local co = coroutine.create(function()
-        lurek.timer.waitFrames(1)
-    end)
+    local co = coroutine.create(function() lurek.timer.waitFrames(1) end)
     coroutine.resume(co)
     lurek.timer.tickWaits()
     lurek.timer.tickWaits()
@@ -571,9 +559,7 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    local co = coroutine.create(function()
-        lurek.timer.waitSeconds(0)
-    end)
+    local co = coroutine.create(function() lurek.timer.waitSeconds(0) end)
     coroutine.resume(co)
     lurek.timer.tickWaits()
     print("wait coroutine = " .. coroutine.status(co))
@@ -603,15 +589,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
-    local sched = lurek.timer.chain({
-        { delay = 0.5, func = function() print("step 1 at 0.5s") end },
-        { delay = 1.0, func = function() print("step 2 at 1.5s") end },
-        { delay = 0.5, func = function() print("step 3 at 2.0s") end },
-    })
-    sched:update(0.5)
-    sched:update(1.0)
-    sched:update(0.5)
+    local count = 0
+    local sched = lurek.timer.chain({ { delay = 0.5, func = function() count = count + 1 end }, { delay = 1.0, func = function() count = count + 1 end } })
+    sched:update(0.5); sched:update(1.0)
+    print("chain steps = " .. count)
 end
 ```
 
@@ -649,13 +630,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    local fired = false
-    local id = sched:after(0.5, function()
-        fired = true
-        print("callback fired after 0.5s")
-    end)
+    local id = sched:after(0.5, function() end)
     print("scheduled id = " .. id)
 end
 ```
@@ -689,17 +665,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    sched:afterFrames(3, function()
-        print("fired after 3 frames")
-    end)
-    for i = 1, 6 do
-        local n = sched:updateFrames()
-        if n > 0 then
-            print("  frame " .. i .. ": " .. n .. " fired")
-        end
-    end
+    sched:afterFrames(3, function() end)
+    sched:updateFrames(); sched:updateFrames(); local fired = sched:updateFrames()
+    print("frame events = " .. fired)
 end
 ```
 
@@ -734,11 +703,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    sched:afterNamed("save", 2.0, function()
-        print("save triggered")
-    end)
+    sched:afterNamed("save", 2.0, function() end)
     print("named timer scheduled")
 end
 ```
@@ -770,14 +736,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
-    local sched = lurek.timer.newScheduler()
-    local id1 = sched:after(1.0, function() end)
-    local id2 = sched:after(2.0, function() end)
-    local id3 = sched:after(3.0, function() end)
-    print("count = " .. sched:getCount())
-    local ok = sched:cancel(id2)
-    print("cancel id2 = " .. tostring(ok))
+    local sched = lurek.timer.newScheduler(); sched:after(1.0, function() end); sched:after(3.0, function() end)
+    local id = sched:after(2.0, function() end)
+    local ok = sched:cancel(id)
+    print("cancel id = " .. tostring(ok))
     print("count after = " .. sched:getCount())
 end
 ```
@@ -804,12 +766,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    local id1 = sched:after(1.0, function() end)
-    local id2 = sched:after(2.0, function() end)
-    local id3 = sched:after(3.0, function() end)
-    print("count = " .. sched:getCount())
+    sched:after(1.0, function() end); sched:after(2.0, function() end); sched:after(3.0, function() end)
     local removed = sched:cancelAll()
     print("cancelAll removed = " .. removed)
     print("empty = " .. tostring(sched:isEmpty()))
@@ -843,11 +801,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    sched:afterNamed("save", 2.0, function()
-        print("save triggered")
-    end)
+    sched:afterNamed("save", 2.0, function() end)
     local cancelled = sched:cancelNamed("save")
     print("cancelled = " .. tostring(cancelled))
 end
@@ -884,17 +839,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
-    local sched = lurek.timer.newScheduler()
     local count = 0
-    local id = sched:every(0.25, function()
-        count = count + 1
-        print("tick " .. count)
-    end, 4)
-    print("repeating id = " .. id)
-    for i = 1, 8 do
-        sched:update(0.25)
-    end
+    local sched = lurek.timer.newScheduler()
+    sched:every(0.25, function() count = count + 1 end, 2)
+    sched:update(0.25); sched:update(0.25)
     print("final count = " .. count)
 end
 ```
@@ -930,17 +878,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
+    local count = 0
     local sched = lurek.timer.newScheduler()
-    sched:everyFrames(2, function()
-        print("every 2 frames")
-    end, 3)
-    for i = 1, 6 do
-        local n = sched:updateFrames()
-        if n > 0 then
-            print("  frame " .. i .. ": " .. n .. " fired")
-        end
-    end
+    sched:everyFrames(2, function() count = count + 1 end, 2)
+    sched:updateFrames(); sched:updateFrames(); sched:updateFrames(); sched:updateFrames()
+    print("frame ticks = " .. count)
 end
 ```
 
@@ -977,13 +919,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
+    local count = 0
     local sched = lurek.timer.newScheduler()
-    sched:everyNamed("regen", 1.0, function()
-        print("health regen tick")
-    end)
-    sched:update(1.0)
-    sched:update(1.0)
+    sched:everyNamed("regen", 1.0, function() count = count + 1 end)
+    sched:update(1.0); sched:update(1.0)
+    print("ticks = " .. count)
 end
 ```
 
@@ -1125,31 +1065,23 @@ do
 end
 
 --@api-stub: LScheduler:resetEvent
--- Querying event state. Focus: resetEvent.
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
     local id = sched:every(0.5, function() end, 10)
-    sched:update(0.3)
-    sched:resetEvent(id)
+    sched:update(0.3); sched:resetEvent(id)
     local found, remaining = sched:getRemaining(id)
     print("after reset, remaining = " .. remaining)
 end
 
 --@api-stub: LScheduler:setInterval
--- Dynamic interval and time scaling. Focus: setInterval.
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    local id = sched:every(1.0, function()
-        print("tick")
-    end)
+    local id = sched:every(1.0, function() end)
     sched:setInterval(id, 0.5)
     print("interval changed to 0.5")
 end
 
 --@api-stub: LScheduler:setTimeScale
--- Dynamic interval and time scaling. Focus: setTimeScale.
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
@@ -1158,12 +1090,20 @@ do
 end
 
 --@api-stub: LScheduler:getTimeScale
--- Dynamic interval and time scaling. Focus: getTimeScale.
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
     sched:setTimeScale(2.0)
     print("time scale = " .. sched:getTimeScale())
+end
+
+--@api-stub: lurek.timer.chain
+do
+    local count = 0
+    local sched = lurek.timer.chain({ { delay = 0.5, func = function() count = count + 1 end }, { delay = 1.0, func = function() count = count + 1 end } })
+    sched:update(0.5); sched:update(1.0)
+    print("chain steps = " .. count)
+end
 ```
 
 ### LScheduler:getTimeScale
@@ -1251,11 +1191,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    local id = sched:after(1.0, function()
-        print("should not fire while paused")
-    end)
+    local id = sched:after(1.0, function() end)
     sched:pause(id)
     print("paused = " .. tostring(sched:isPaused(id)))
 end
@@ -1289,7 +1226,7 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 ```lua
 do
     local sched = lurek.timer.newScheduler()
-    sched:afterNamed("named_once", 2.0, function() print("named_once") end)
+    sched:afterNamed("named_once", 2.0, function() end)
     sched:pauseNamed("named_once")
     print("paused_named=" .. tostring(sched:isPausedNamed("named_once")))
 end
@@ -1322,11 +1259,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    local id = sched:after(1.0, function()
-        print("should not fire while paused")
-    end)
+    local id = sched:after(1.0, function() end)
     sched:pause(id)
     print("paused = " .. tostring(sched:isPaused(id)))
 end
@@ -1360,7 +1294,7 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 ```lua
 do
     local sched = lurek.timer.newScheduler()
-    sched:afterNamed("named_once", 2.0, function() print("named_once") end)
+    sched:afterNamed("named_once", 2.0, function() end)
     sched:pauseNamed("named_once")
     print("paused_named=" .. tostring(sched:isPausedNamed("named_once")))
 end
@@ -1393,11 +1327,9 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
     local id = sched:every(0.5, function() end, 10)
-    sched:update(0.3)
-    sched:resetEvent(id)
+    sched:update(0.3); sched:resetEvent(id)
     local found, remaining = sched:getRemaining(id)
     print("after reset, remaining = " .. remaining)
 end
@@ -1430,11 +1362,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    local id = sched:after(1.0, function()
-        print("should not fire while paused")
-    end)
+    local id = sched:after(1.0, function() end)
     sched:pause(id)
     sched:resume(id)
     print("resumed, paused = " .. tostring(sched:isPaused(id)))
@@ -1469,7 +1398,7 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 ```lua
 do
     local sched = lurek.timer.newScheduler()
-    sched:afterNamed("named_once", 2.0, function() print("named_once") end)
+    sched:afterNamed("named_once", 2.0, function() end)
     sched:pauseNamed("named_once")
     sched:resumeNamed("named_once")
     print("resumeNamed ok")
@@ -1505,11 +1434,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    local id = sched:every(1.0, function()
-        print("tick")
-    end)
+    local id = sched:every(1.0, function() end)
     sched:setInterval(id, 0.5)
     print("interval changed to 0.5")
 end
@@ -1632,15 +1558,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
+    local fired = 0
     local sched = lurek.timer.newScheduler()
-    local fired = false
-    local id = sched:after(0.5, function()
-        fired = true
-        print("callback fired after 0.5s")
-    end)
-    sched:update(0.3)
-    print("after 0.3s, fired = " .. tostring(fired))
+    sched:after(0.5, function() fired = fired + 1 end)
+    sched:update(0.5)
+    print("fired = " .. fired)
 end
 ```
 
@@ -1666,17 +1588,9 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-    ---@type LScheduler
     local sched = lurek.timer.newScheduler()
-    sched:afterFrames(3, function()
-        print("fired after 3 frames")
-    end)
-    for i = 1, 6 do
-        local n = sched:updateFrames()
-        if n > 0 then
-            print("  frame " .. i .. ": " .. n .. " fired")
-        end
-    end
+    sched:afterFrames(1, function() end)
+    print("frame events = " .. sched:updateFrames())
 end
 ```
 

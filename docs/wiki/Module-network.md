@@ -161,13 +161,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
     print("lobby=" .. lobby.name .. " port=" .. lobby.port)
-    print("max=" .. lobby.max_players)
-
     local found = lurek.network.discoverLobbies(2000)
     print("discovered = " .. #found)
-    for _, l in ipairs(found) do
-        print("  " .. l.name .. " at " .. l.host .. ":" .. l.port)
-    end
 end
 ```
 
@@ -193,14 +188,6 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     local room = lurek.network.createRoom("Arena", "player1", 8)
     print("room id=" .. room.id .. " name=" .. room.name)
-    print("host=" .. room.host .. " max=" .. room.max_players)
-
-    local joined = lurek.network.joinRoom(room.id)
-    if joined then print("joined room") end
-
-    local rooms = lurek.network.listRooms()
-    print("rooms available = " .. #rooms)
-
     lurek.network.leaveRoom(room.id)
     print("left room")
 end
@@ -226,11 +213,6 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     local lobbies = lurek.network.discoverLobbies(1000)
     print("lobbies=" .. #lobbies)
-    local rooms = lurek.network.listRooms()
-    print("rooms=" .. #rooms)
-    lurek.network.joinRoom("room_id_1")
-    lurek.network.leaveRoom("room_id_1")
-    print("room lifecycle ok")
 end
 ```
 
@@ -252,13 +234,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local lobbies = lurek.network.discoverLobbies(1000)
-    print("lobbies=" .. #lobbies)
-    local rooms = lurek.network.listRooms()
-    print("rooms=" .. #rooms)
-    lurek.network.joinRoom("room_id_1")
-    lurek.network.leaveRoom("room_id_1")
-    print("room lifecycle ok")
+    print("joined=" .. tostring(pcall(lurek.network.joinRoom, "room_id_1")))
 end
 ```
 
@@ -280,13 +256,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local lobbies = lurek.network.discoverLobbies(1000)
-    print("lobbies=" .. #lobbies)
-    local rooms = lurek.network.listRooms()
-    print("rooms=" .. #rooms)
-    lurek.network.joinRoom("room_id_1")
-    lurek.network.leaveRoom("room_id_1")
-    print("room lifecycle ok")
+    print("left=" .. tostring(pcall(lurek.network.leaveRoom, "room_id_1")))
 end
 ```
 
@@ -304,13 +274,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local lobbies = lurek.network.discoverLobbies(1000)
-    print("lobbies=" .. #lobbies)
     local rooms = lurek.network.listRooms()
     print("rooms=" .. #rooms)
-    lurek.network.joinRoom("room_id_1")
-    lurek.network.leaveRoom("room_id_1")
-    print("room lifecycle ok")
 end
 ```
 
@@ -334,10 +299,6 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     local probe = lurek.network.makePunchProbe("peer_99")
     print("probe = " .. probe)
-    local peer_id = lurek.network.parsePunchProbe(probe)
-    if peer_id then
-        print("parsed peer = " .. peer_id)
-    end
 end
 ```
 
@@ -412,10 +373,6 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     local token = lurek.network.newRelayTicket("room_abc", "peer_42")
     print("ticket = " .. token)
-    local parsed = lurek.network.parseRelayTicket(token)
-    if parsed then
-        print("parsed room = " .. (parsed --[[@as table]]).room_id)
-    end
 end
 ```
 
@@ -563,10 +520,6 @@ do
     local snapshot = {id = 1, tick = 10, x = 10, y = 20, vx = 5, vy = 0}
     local predicted = lurek.network.predictLinear(snapshot, 0.016)
     print("predicted x = " .. (predicted --[[@as table]]).x)
-
-    local auth = {id = 1, tick = 11, x = 10.1, y = 20, vx = 5, vy = 0}
-    local reconciled = lurek.network.reconcileSnapshot(predicted, auth, 0.3)
-    print("reconciled x = " .. (reconciled --[[@as table]]).x)
 end
 ```
 
@@ -619,8 +572,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7790, maxPeers = 4})
-    local entity_data = {x = 100, y = 200, hp = 50}
-    lurek.network.syncEntity(server, 1, entity_data, 0, true)
+    lurek.network.syncEntity(server, 1, {x = 100, y = 200, hp = 50}, 0, true)
     print("entity synced")
     server:destroy()
 end
@@ -803,16 +755,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
+    print("destroyable = " .. tostring(not host:isDestroyed()))
     host:destroy()
 end
 ```
@@ -845,11 +789,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
-    -- With peer_id=1:
-    -- host:disconnect(1, 0)
-    -- host:disconnectLater(1, 0)
-    -- host:disconnectNow(1, 0)
-    print("disconnect methods ready")
+    print("disconnect = " .. tostring(pcall(host.disconnect, host, 1, 0)))
     host:destroy()
 end
 ```
@@ -882,11 +822,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
-    -- With peer_id=1:
-    -- host:disconnect(1, 0)
-    -- host:disconnectLater(1, 0)
-    -- host:disconnectNow(1, 0)
-    print("disconnect methods ready")
+    print("disconnectLater = " .. tostring(pcall(host.disconnectLater, host, 1, 0)))
     host:destroy()
 end
 ```
@@ -919,11 +855,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
-    -- With peer_id=1:
-    -- host:disconnect(1, 0)
-    -- host:disconnectLater(1, 0)
-    -- host:disconnectNow(1, 0)
-    print("disconnect methods ready")
+    print("disconnectNow = " .. tostring(pcall(host.disconnectNow, host, 1, 0)))
     host:destroy()
 end
 ```
@@ -950,9 +882,7 @@ do
     ---@type LNetworkHost
     local host = lurek.network.newServer({port = 7786, maxPeers = 4})
     host:flush()
-    -- host:ping(1)
-    -- host:resetPeer(1)
-    print("utility methods ready")
+    print("flushed")
     host:destroy()
 end
 ```
@@ -979,16 +909,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1017,7 +939,6 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7783, maxPeers = 4})
-    server:setBandwidthLimit(100000, 50000)
     local bw = server:getBandwidthLimit()
     print("bw in=" .. bw.incoming .. " out=" .. bw.outgoing)
     server:destroy()
@@ -1046,16 +967,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1148,11 +1061,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7781, maxPeers = 4})
-    -- With a connected peer_id=1:
-    -- print(server:getPeerState(1))
-    -- print(server:getPeerAddress(1))
-    -- print(server:getRoundTripTime(1))
-    print("peer queries ready")
+    print("peer addr = " .. tostring(pcall(server.getPeerAddress, server, 1)))
     server:destroy()
 end
 ```
@@ -1179,16 +1088,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1222,11 +1123,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7781, maxPeers = 4})
-    -- With a connected peer_id=1:
-    -- print(server:getPeerState(1))
-    -- print(server:getPeerAddress(1))
-    -- print(server:getRoundTripTime(1))
-    print("peer queries ready")
+    print("peer state = " .. tostring(pcall(server.getPeerState, server, 1)))
     server:destroy()
 end
 ```
@@ -1260,13 +1157,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7782, maxPeers = 4})
-    -- With a connected peer_id=1:
-    -- local stats = server:getPeerStats(1)
-    -- print("rtt=" .. stats.round_trip_time)
-    -- print("sent=" .. stats.packets_sent)
-    -- print("lost=" .. stats.packets_lost)
-    -- print("loss=" .. stats.packet_loss)
-    print("stats query ready")
+    print("peer stats = " .. tostring(pcall(server.getPeerStats, server, 1)))
     server:destroy()
 end
 ```
@@ -1293,16 +1184,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1336,11 +1219,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7781, maxPeers = 4})
-    -- With a connected peer_id=1:
-    -- print(server:getPeerState(1))
-    -- print(server:getPeerAddress(1))
-    -- print(server:getRoundTripTime(1))
-    print("peer queries ready")
+    print("peer rtt = " .. tostring(pcall(server.getRoundTripTime, server, 1)))
     server:destroy()
 end
 ```
@@ -1367,16 +1246,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1403,16 +1274,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1439,16 +1302,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1479,10 +1334,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local host = lurek.network.newServer({port = 7786, maxPeers = 4})
-    host:flush()
-    -- host:ping(1)
-    -- host:resetPeer(1)
-    print("utility methods ready")
+    print("ping = " .. tostring(pcall(host.ping, host, 1)))
     host:destroy()
 end
 ```
@@ -1513,10 +1365,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkHost
     local host = lurek.network.newServer({port = 7786, maxPeers = 4})
-    host:flush()
-    -- host:ping(1)
-    -- host:resetPeer(1)
-    print("utility methods ready")
+    print("reset = " .. tostring(pcall(host.resetPeer, host, 1)))
     host:destroy()
 end
 ```
@@ -1583,13 +1432,7 @@ do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7778, maxPeers = 4})
     local ev = server:service()
-    if ev then
-        print("event type = " .. ev.type)
-        if ev.peer_id then print("peer = " .. ev.peer_id) end
-        if ev.payload then print("payload len = " .. #ev.payload) end
-    else
-        print("no events")
-    end
+    print("service = " .. tostring(ev ~= nil))
     server:destroy()
 end
 ```
@@ -1682,16 +1525,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("type=" .. host:type())
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 ```
@@ -1723,15 +1558,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
-    print("addr=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
-    print("peer_limit=" .. host:getPeerLimit())
-    print("role=" .. host:getRole())
-    print("is_server=" .. tostring(host:isServer()))
-    print("is_client=" .. tostring(host:isClient()))
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
-    print("type=" .. host:type())
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
@@ -1807,11 +1634,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
-    local req_id = rt:httpPost(
-        "https://example.com/api/data",
-        '{"key":"value"}',
-        {["Content-Type"] = "application/json"}
-    )
+    local req_id = rt:httpPost("https://example.com/api/data", '{"key":"value"}', {["Content-Type"] = "application/json"})
     print("POST request id = " .. req_id)
     rt:shutdown()
 end
@@ -1846,13 +1669,7 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
-    local req_id = rt:httpRequest({
-        url = "https://example.com/api/resource",
-        method = "PUT",
-        headers = {["Authorization"] = "Bearer token123"},
-        body = "updated data",
-        timeout = 5000,
-    })
+    local req_id = rt:httpRequest({url = "https://example.com/api/resource", method = "PUT", body = "updated data", timeout = 5000})
     print("custom request id = " .. req_id)
     rt:shutdown()
 end
@@ -1882,13 +1699,8 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
-    rt:httpGet("https://example.com/ping")
     local events = rt:poll()
-    for _, ev in ipairs(events) do
-        print("event type = " .. ev.type)
-        if ev.status then print("  status = " .. ev.status) end
-        if ev.body then print("  body len = " .. #ev.body) end
-    end
+    print("events = " .. #events)
     rt:shutdown()
 end
 ```
@@ -1946,9 +1758,7 @@ do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9000")
-    print("tcp id = " .. id)
-    rt:tcpSend(id, "PING\n")
-    rt:tcpClose(id)
+    print("tcp close = " .. tostring(pcall(rt.tcpClose, rt, id)))
     rt:shutdown()
 end
 ```
@@ -1984,8 +1794,6 @@ do
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9000")
     print("tcp id = " .. id)
-    rt:tcpSend(id, "PING\n")
-    rt:tcpClose(id)
     rt:shutdown()
 end
 ```
@@ -2019,9 +1827,7 @@ do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9000")
-    print("tcp id = " .. id)
-    rt:tcpSend(id, "PING\n")
-    rt:tcpClose(id)
+    print("tcp send = " .. tostring(pcall(rt.tcpSend, rt, id, "PING\n")))
     rt:shutdown()
 end
 ```
@@ -2116,9 +1922,7 @@ do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:9001/game")
-    print("ws id = " .. id)
-    rt:wsSend(id, '{"action":"join","room":"lobby"}')
-    rt:wsClose(id)
+    print("ws close = " .. tostring(pcall(rt.wsClose, rt, id)))
     rt:shutdown()
 end
 ```
@@ -2154,8 +1958,6 @@ do
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:9001/game")
     print("ws id = " .. id)
-    rt:wsSend(id, '{"action":"join","room":"lobby"}')
-    rt:wsClose(id)
     rt:shutdown()
 end
 ```
@@ -2189,9 +1991,7 @@ do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:9001/game")
-    print("ws id = " .. id)
-    rt:wsSend(id, '{"action":"join","room":"lobby"}')
-    rt:wsClose(id)
+    print("ws send = " .. tostring(pcall(rt.wsSend, rt, id, '{"action":"join","room":"lobby"}')))
     rt:shutdown()
 end
 ```

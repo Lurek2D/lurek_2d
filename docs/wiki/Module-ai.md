@@ -838,14 +838,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- MCTS explores game states via random simulations to find the best action.
-  -- Parameters: iterations, exploration constant, max depth, random seed.
-  local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42)
-  local get_actions = function(state) return { 1, 2, 3 } end
+  local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42) ; local get_actions = function(state) return { 1, 2, 3 } end
   local apply = function(state, action) return state + action end
   local evaluate = function(state) return state % 5 end
   local best_action = mcts:search(0, get_actions, apply, evaluate)
-  -- Deterministic seed makes results repeatable for testing and replays.
   print("lurek.ai.newMCTSEngine: action=" .. tostring(best_action))
 end
 ```
@@ -908,11 +904,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local layers = {
-    { inputs = 3, outputs = 6, activation = "relu" },
-    { inputs = 6, outputs = 2, activation = "softmax" },
-  }
-  local ne = lurek.ai.newNeuroevolution(layers, 8, 1)
+  local layers = { { inputs = 3, outputs = 6, activation = "relu" }, { inputs = 6, outputs = 2, activation = "softmax" }, } local ne = lurek.ai.newNeuroevolution(layers, 8, 1)
   print("lurek.ai.newNeuroevolution: ok=" .. tostring(ne ~= nil))
 end
 ```
@@ -1621,14 +1613,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- MCTS explores game states via random simulations to find the best action.
-  -- Parameters: iterations, exploration constant, max depth, random seed.
-  local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42)
-  local get_actions = function(state) return { 1, 2, 3 } end
+  local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42) ; local get_actions = function(state) return { 1, 2, 3 } end
   local apply = function(state, action) return state + action end
   local evaluate = function(state) return state % 5 end
   local best_action = mcts:search(0, get_actions, apply, evaluate)
-  -- Deterministic seed makes results repeatable for testing and replays.
   print("lurek.ai.newMCTSEngine: action=" .. tostring(best_action))
 end
 ```
@@ -1697,11 +1685,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local layers = {
-    { inputs = 3, outputs = 6, activation = "relu" },
-    { inputs = 6, outputs = 2, activation = "softmax" },
-  }
-  local ne = lurek.ai.newNeuroevolution(layers, 8, 1)
+  local layers = { { inputs = 3, outputs = 6, activation = "relu" }, { inputs = 6, outputs = 2, activation = "softmax" }, } local ne = lurek.ai.newNeuroevolution(layers, 8, 1)
   print("lurek.ai.newNeuroevolution: ok=" .. tostring(ne ~= nil))
 end
 ```
@@ -1972,8 +1956,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("ranger")
+  local world = lurek.ai.newWorld() ; local npc = world:addAgent("ranger")
   local bb = npc:getBlackboard()
   bb:setNumber("hp", 100)
   local hp = bb:getNumber("hp", 0)
@@ -2093,11 +2076,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- getName() returns the string passed to addAgent. It never changes.
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("knight_03")
   local name = npc:getName()
-  -- Use the name as a stable ID for save data, squad membership, or lookups.
   print("LAgent:getName: " .. name)
 end
 ```
@@ -2221,8 +2202,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("merchant")
+  local world = lurek.ai.newWorld() ; local npc = world:addAgent("merchant")
   npc:addTag("friendly")
   local friendly = npc:hasTag("friendly")
   local hostile = npc:hasTag("hostile")
@@ -2254,8 +2234,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("spy")
+  local world = lurek.ai.newWorld() ; local npc = world:addAgent("spy")
   npc:addTag("visible")
   npc:removeTag("visible")
   local still_has = npc:hasTag("visible")
@@ -2287,13 +2266,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("thinker")
-  npc:setDecisionModel("custom")
-  local called_with_dt = 0
-  npc:setCustomModel(function(agent, bb, dt)
-    called_with_dt = dt
-  end)
+  local world = lurek.ai.newWorld() ; local npc = world:addAgent("thinker")
+  npc:setDecisionModel("custom") ; local called_with_dt = 0
+  npc:setCustomModel(function(agent, bb, dt) called_with_dt = dt end)
   world:update(0.016)
   print("LAgent:setCustomModel: dt=" .. tostring(called_with_dt))
 end
@@ -2386,11 +2361,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- setMaxSpeed(speed) limits how fast the agent can move regardless of steering force.
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("sprinter")
   npc:setMaxSpeed(200)
-  -- Max speed clamps velocity magnitude during movement integration.
   print("LAgent:setMaxSpeed: done")
 end
 ```
@@ -2514,11 +2487,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- type() returns the string "LAgent" for agent handles.
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("villager")
   local t = npc:type()
-  -- Use type() for runtime type checks in generic code.
   print("LAgent:type: " .. t)
 end
 ```
@@ -2550,12 +2521,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- typeOf accepts "LAgent" and "Object". Other strings return false.
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("knight")
   local is_agent = npc:typeOf("LAgent")
   local is_image = npc:typeOf("LImage")
-  -- typeOf is useful for polymorphic code that handles mixed userdata.
   print("LAgent:typeOf: LAgent=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
 end
 ```
@@ -2579,14 +2548,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- clear() is useful on scene transitions or agent respawn.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("a", 1)
-  bb:setString("b", "x")
-  bb:setBool("c", true)
+  local bb = lurek.ai.newBlackboard() ; bb:setNumber("a", 1)
+  bb:setString("b", "x") ; bb:setBool("c", true)
   bb:clear()
   local size = bb:getSize()
-  -- After clear, getSize returns 0 and all get calls return their defaults.
   print("LAIBlackboard:clear: size=" .. tostring(size))
 end
 ```
@@ -2620,12 +2585,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- The second argument is the default value returned when the key is absent.
   local bb = lurek.ai.newBlackboard()
   bb:setBool("alert", true)
   local alert = bb:getBool("alert", false)
   local calm = bb:getBool("calm", true)
-  -- Use getBool in condition nodes and guard predicates.
   print("LAIBlackboard:getBool: alert=" .. tostring(alert) .. " calm=" .. tostring(calm))
 end
 ```
@@ -2689,12 +2652,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- The second argument is the default value returned when the key is absent.
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("score", 95.5)
   local score = bb:getNumber("score", 0)
   local missing = bb:getNumber("nonexistent", -1)
-  -- Default values prevent nil errors in decision code.
   print("LAIBlackboard:getNumber: score=" .. tostring(score) .. " missing=" .. tostring(missing))
 end
 ```
@@ -2758,12 +2719,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- The second argument is the default string returned when the key is absent.
   local bb = lurek.ai.newBlackboard()
   bb:setString("weapon", "sword")
   local weapon = bb:getString("weapon", "fists")
   local shield = bb:getString("shield", "none")
-  -- Default strings avoid nil concatenation errors.
   print("LAIBlackboard:getString: weapon=" .. weapon .. " shield=" .. shield)
 end
 ```
@@ -2795,12 +2754,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- has() checks existence regardless of value type (number, bool, string).
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("hp", 80)
   local has_hp = bb:has("hp")
   local has_mp = bb:has("mp")
-  -- Use has() before remove() to avoid unnecessary work.
   print("LAIBlackboard:has: hp=" .. tostring(has_hp) .. " mp=" .. tostring(has_mp))
 end
 ```
@@ -2863,12 +2820,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- setBool overwrites any existing value at the same key.
   local bb = lurek.ai.newBlackboard()
   bb:setBool("can_attack", true)
   bb:setBool("is_hiding", false)
   local attack = bb:getBool("can_attack", false)
-  -- Boolean facts are common for condition checks in behavior trees.
   print("LAIBlackboard:setBool: can_attack=" .. tostring(attack))
 end
 ```
@@ -2899,12 +2854,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- setNumber overwrites any existing value at the same key.
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("distance", 42.5)
   bb:setNumber("ammo", 30)
   local dist = bb:getNumber("distance", 0)
-  -- Numbers are stored as f64 internally; integers and floats both work.
   print("LAIBlackboard:setNumber: distance=" .. tostring(dist))
 end
 ```
@@ -2935,12 +2888,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- setString overwrites any existing value at the same key.
   local bb = lurek.ai.newBlackboard()
   bb:setString("target_name", "dragon")
   bb:setString("current_zone", "forest")
   local target = bb:getString("target_name", "none")
-  -- String facts hold entity references, zone names, or state labels.
   print("LAIBlackboard:setString: target=" .. target)
 end
 ```
@@ -3002,11 +2953,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- typeOf accepts "LAIBlackboard" and "Object". Other strings return false.
   local bb = lurek.ai.newBlackboard()
   local is_bb = bb:typeOf("LAIBlackboard")
   local is_agent = bb:typeOf("LAgent")
-  -- typeOf helps distinguish objects in polymorphic containers.
   print("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LAgent=" .. tostring(is_agent))
 end
 ```
@@ -3613,13 +3562,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Use agent count for debug overlays or spawn budget checks.
-  local world = lurek.ai.newWorld()
-  world:addAgent("unit_a")
+  local world = lurek.ai.newWorld() ; world:addAgent("unit_a")
   world:addAgent("unit_b")
   world:addAgent("unit_c")
   local count = world:getAgentCount()
-  -- Count reflects active agents only; removed agents are not counted.
   print("LAIWorld:getAgentCount: " .. tostring(count))
 end
 ```
@@ -3740,11 +3686,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- typeOf() checks if the handle is of a given type. Accepts "LAIWorld" and "Object".
   local world = lurek.ai.newWorld()
   local is_world = world:typeOf("LAIWorld")
   local is_wrong = world:typeOf("LImage")
-  -- typeOf is useful for generic code that handles multiple object types.
   print("LAIWorld:typeOf: LAIWorld=" .. tostring(is_world) .. " LImage=" .. tostring(is_wrong))
 end
 ```
@@ -3773,13 +3717,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("worker")
-  npc:setDecisionModel("custom")
-  local ticked = false
-  npc:setCustomModel(function(agent, blackboard, dt)
-    ticked = true
-  end)
+  local world = lurek.ai.newWorld() ; local npc = world:addAgent("worker")
+  npc:setDecisionModel("custom") ; local ticked = false
+  npc:setCustomModel(function(agent, blackboard, dt) ticked = true end)
   world:update(1 / 60)
   print("LAIWorld:update: ticked=" .. tostring(ticked))
 end
@@ -4102,12 +4042,9 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local bt = lurek.patterns.newBehaviorTree()
-    local seq = bt:addSequence("root_seq")
-    local leaf1 = bt:addLeaf("check", "check_label")
-    local leaf2 = bt:addLeaf("act", "act_label")
-    bt:addChild(seq, leaf1)
-    bt:addChild(seq, leaf2)
+    local bt = lurek.patterns.newBehaviorTree(); local seq = bt:addSequence("root_seq")
+    local leaf1 = bt:addLeaf("check", "check_label"); local leaf2 = bt:addLeaf("act", "act_label")
+    bt:addChild(seq, leaf1); bt:addChild(seq, leaf2)
     bt:setRoot(seq)
     print("node_count=" .. bt:nodeCount())
 end
@@ -4494,11 +4431,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- typeOf accepts "LBTNode" and "Object". Other strings return false.
   local node = lurek.ai.newSelector()
   local is_node = node:typeOf("LBTNode")
   local is_other = node:typeOf("LImage")
-  -- All BT node kinds (action, selector, etc.) respond true to "LBTNode".
   print("LBTNode:typeOf: LBTNode=" .. tostring(is_node) .. " LImage=" .. tostring(is_other))
 end
 ```
@@ -5206,19 +5141,11 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Branches subdivide a topic into specific lines or responses.
-  -- Args: topic_name, branch_name, base_weight, fsm_gate, bt_gate, score_key.
-  local dlg = lurek.ai.newDialogueAI()
-  dlg:addTopic("threat", 0.5, nil, nil, "threat_score")
-  dlg:addBranch("threat", "mock", 0.4, nil, nil, "mock_score")
-  dlg:addBranch("threat", "demand", 0.6, nil, nil, "demand_score")
-  dlg:setUtilityScore("threat_score", 0.8)
-  dlg:setUtilityScore("mock_score", 0.3)
-  dlg:setUtilityScore("demand_score", 0.7)
-  local topic = dlg:selectTopic()
-  local branch = topic and dlg:selectBranch(topic) or nil
-  -- Branch selection narrows the topic to a specific dialogue line.
-  print("LDialogueAI:addBranch: branch=" .. tostring(branch))
+  local dlg = lurek.ai.newDialogueAI() ; dlg:addTopic("threat", 0.5, nil, nil, "threat_score")
+  dlg:addBranch("threat", "mock", 0.4, nil, nil, "mock_score") ; dlg:addBranch("threat", "demand", 0.6, nil, nil, "demand_score")
+  dlg:setUtilityScore("threat_score", 0.8) ; dlg:setUtilityScore("mock_score", 0.3)
+  dlg:setUtilityScore("demand_score", 0.7) ; local topic = dlg:selectTopic()
+  local branch = topic and dlg:selectBranch(topic) or nil ; print("LDialogueAI:addBranch: branch=" .. tostring(branch))
 end
 ```
 
@@ -5254,12 +5181,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Args: name, base_weight, required_fsm_state (nil=any), required_bt_status (nil=any), score_key.
   local dlg = lurek.ai.newDialogueAI()
   dlg:addTopic("weather_chat", 0.4, nil, nil, "chat_score")
   dlg:addTopic("combat_taunt", 0.3, "combat", "running", "taunt_score")
   local count = dlg:getTopicCount()
-  -- Topics form the first level of dialogue selection.
   print("LDialogueAI:addTopic: count=" .. tostring(count))
 end
 ```
@@ -5287,7 +5212,6 @@ do
   dlg:setUtilityScore("a", 1.0)
   dlg:setUtilityScore("b", 0.5)
   dlg:clearUtilityScores()
-  -- After clear, topics fall back to their base weight for selection.
   print("LDialogueAI:clearUtilityScores: done")
 end
 ```
@@ -5314,12 +5238,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local dlg = lurek.ai.newDialogueAI()
-  dlg:addTopic("a", 0.5, nil, nil, "a_v")
+  local dlg = lurek.ai.newDialogueAI() ; dlg:addTopic("a", 0.5, nil, nil, "a_v")
   dlg:addTopic("b", 0.3, nil, nil, "b_v")
   dlg:addTopic("c", 0.2, nil, nil, "c_v")
   local count = dlg:getTopicCount()
-  -- Topic count helps validate setup completeness.
   print("LDialogueAI:getTopicCount: " .. tostring(count))
 end
 ```
@@ -5351,16 +5273,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- selectBranch(topic_name) returns nil if the topic has no branches.
-  local dlg = lurek.ai.newDialogueAI()
-  dlg:addTopic("trade", 0.5, nil, nil, "trade_v")
-  dlg:addBranch("trade", "buy", 0.5, nil, nil, "buy_v")
-  dlg:addBranch("trade", "sell", 0.5, nil, nil, "sell_v")
-  dlg:setUtilityScore("trade_v", 1.0)
-  dlg:setUtilityScore("buy_v", 0.3)
-  dlg:setUtilityScore("sell_v", 0.7)
-  local branch = dlg:selectBranch("trade") or "none"
-  -- Use the selected branch to pick dialogue text from a table.
+  local dlg = lurek.ai.newDialogueAI() ; dlg:addTopic("trade", 0.5, nil, nil, "trade_v")
+  dlg:addBranch("trade", "buy", 0.5, nil, nil, "buy_v") ; dlg:addBranch("trade", "sell", 0.5, nil, nil, "sell_v")
+  dlg:setUtilityScore("trade_v", 1.0) ; dlg:setUtilityScore("buy_v", 0.3)
+  dlg:setUtilityScore("sell_v", 0.7) ; local branch = dlg:selectBranch("trade") or "none"
   print("LDialogueAI:selectBranch: " .. branch)
 end
 ```
@@ -5387,14 +5303,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Selection considers base_weight * utility_score, filtered by FSM/BT gates.
-  local dlg = lurek.ai.newDialogueAI()
-  dlg:addTopic("joke", 0.2, nil, nil, "joke_v")
-  dlg:addTopic("quest_hint", 0.8, nil, nil, "hint_v")
-  dlg:setUtilityScore("joke_v", 0.5)
+  local dlg = lurek.ai.newDialogueAI() ; dlg:addTopic("joke", 0.2, nil, nil, "joke_v")
+  dlg:addTopic("quest_hint", 0.8, nil, nil, "hint_v") ; dlg:setUtilityScore("joke_v", 0.5)
   dlg:setUtilityScore("hint_v", 0.9)
   local topic = dlg:selectTopic() or "none"
-  -- Nil result means no topic passes all gates.
   print("LDialogueAI:selectTopic: " .. topic)
 end
 ```
@@ -5423,13 +5335,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Topics can gate on BT status: "success", "failure", "running".
-  local dlg = lurek.ai.newDialogueAI()
-  dlg:addTopic("victory", 0.6, nil, "success", "vic_score")
+  local dlg = lurek.ai.newDialogueAI() ; dlg:addTopic("victory", 0.6, nil, "success", "vic_score")
   dlg:setBTStatus("success")
   dlg:setUtilityScore("vic_score", 0.9)
   local topic = dlg:selectTopic()
-  -- BT status reflects the outcome of the agent's last behavior tick.
   print("LDialogueAI:setBTStatus: topic=" .. tostring(topic))
 end
 ```
@@ -5458,13 +5367,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Topics and branches can require a specific FSM state to be eligible.
-  local dlg = lurek.ai.newDialogueAI()
-  dlg:addTopic("battle_cry", 0.5, "combat", nil, "cry_score")
+  local dlg = lurek.ai.newDialogueAI() ; dlg:addTopic("battle_cry", 0.5, "combat", nil, "cry_score")
   dlg:setFSMState("combat")
   dlg:setUtilityScore("cry_score", 0.8)
   local topic = dlg:selectTopic()
-  -- Without matching FSM state, gated topics are skipped.
   print("LDialogueAI:setFSMState: topic=" .. tostring(topic))
 end
 ```
@@ -5495,14 +5401,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Each topic/branch references a score key. Higher score = more likely selected.
-  local dlg = lurek.ai.newDialogueAI()
-  dlg:addTopic("greeting", 0.3, nil, nil, "greet_val")
-  dlg:addTopic("farewell", 0.3, nil, nil, "bye_val")
-  dlg:setUtilityScore("greet_val", 0.2)
+  local dlg = lurek.ai.newDialogueAI() ; dlg:addTopic("greeting", 0.3, nil, nil, "greet_val")
+  dlg:addTopic("farewell", 0.3, nil, nil, "bye_val") ; dlg:setUtilityScore("greet_val", 0.2)
   dlg:setUtilityScore("bye_val", 0.9)
   local topic = dlg:selectTopic()
-  -- Update scores each frame from game state for dynamic dialogue.
   print("LDialogueAI:setUtilityScore: topic=" .. tostring(topic))
 end
 ```
@@ -5628,8 +5530,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local em = lurek.ai.newEmotionModel()
-    em:add("joy", 0.0, 0.1, 0.1)
+    local em = lurek.ai.newEmotionModel() ; em:add("joy", 0.0, 0.1, 0.1)
     em:add("anger", 0.0, 0.1, 0.1)
     em:trigger("joy", 0.3)
     em:trigger("anger", 0.8)
@@ -5699,8 +5600,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local em = lurek.ai.newEmotionModel()
-    em:add("surprise", 0.0, 0.1, 0.5)
+    local em = lurek.ai.newEmotionModel() ; em:add("surprise", 0.0, 0.1, 0.5)
     em:trigger("surprise", 0.2)
     print("surprise active = " .. tostring(em:isActive("surprise")))
     em:trigger("surprise", 0.5)
@@ -5882,9 +5782,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 ```lua
 do
     local ga = lurek.ai.newGeneticAlgorithm(5, 4, 7)
-    for i = 0, 4 do
-        ga:setFitness(i, i * 2.0)
-    end
+    for i = 0, 4 do ga:setFitness(i, i * 2.0) end
     ga:evolve()
     local best = ga:bestGenes()
     print("best genes length = " .. #best)
@@ -5911,9 +5809,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 ```lua
 do
     local ga = lurek.ai.newGeneticAlgorithm(10, 5, 42)
-    for i = 0, 9 do
-        ga:setFitness(i, math.random())
-    end
+    for i = 0, 9 do ga:setFitness(i, math.random()) end
     ga:evolve()
     print("evolved to generation " .. ga:generation())
 end
@@ -6286,16 +6182,11 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local goap = lurek.ai.newGOAPPlanner()
-    goap:addAction("get_wood", 1, function() end)
-    goap:setEffect("get_wood", "has_wood", true)
-    goap:addAction("build", 2, function() end)
-    goap:setPrecondition("build", "has_wood", true)
-    goap:setEffect("build", "house_done", true)
-    goap:addGoal("build_house", 10)
-    goap:setGoalState("build_house", "house_done", true)
-    local plan = goap:plan({ has_wood = false, house_done = false }, 10)
-    print("plan steps = " .. #plan)
+    local goap = lurek.ai.newGOAPPlanner() ; goap:addAction("get_wood", 1, function() end)
+    goap:setEffect("get_wood", "has_wood", true) ; goap:addAction("build", 2, function() end)
+    goap:setPrecondition("build", "has_wood", true) ; goap:setEffect("build", "house_done", true)
+    goap:addGoal("build_house", 10) ; goap:setGoalState("build_house", "house_done", true)
+    local plan = goap:plan({ has_wood = false, house_done = false }, 10) ; print("plan steps = " .. #plan)
 end
 ```
 
@@ -6522,10 +6413,7 @@ do
     local htn = lurek.ai.newHTNDomain()
     htn:addPrimitive("mine", {}, { "has_ore" }, {})
     htn:addPrimitive("smelt", { "has_ore" }, { "has_metal" }, { "has_ore" })
-    htn:addCompound("get_metal", {
-        { name = "mine_and_smelt", preconditions = {}, sub_tasks = { "mine", "smelt" } },
-    })
-    print("compound added, tasks = " .. htn:taskCount())
+    htn:addCompound("get_metal", { { name = "mine_and_smelt", preconditions = {}, sub_tasks = { "mine", "smelt" } }, }) print("compound added, tasks = " .. htn:taskCount())
 end
 ```
 
@@ -6598,14 +6486,50 @@ do
     local htn = lurek.ai.newHTNDomain()
     htn:addPrimitive("gather", {}, { "has_food" }, {})
     htn:addPrimitive("cook", { "has_food" }, { "meal_ready" }, { "has_food" })
-    htn:addCompound("prepare_meal", {
-        { name = "full_cook", preconditions = {}, sub_tasks = { "gather", "cook" } },
-    })
-    local plan = htn:plan("prepare_meal", { has_food = 0, meal_ready = 0 })
-    if plan then
-        print("plan = " .. table.concat(plan --[[@as table]], " -> "))
-    end
+    htn:addCompound("prepare_meal", { { name = "full_cook", preconditions = {}, sub_tasks = { "gather", "cook" } }, }) local plan = htn:plan("prepare_meal", { has_food = 0, meal_ready = 0 })
+    if plan then print("plan = " .. table.concat(plan --[[@as table]], " -> ")) end
 end
+
+--@api-stub: LHTNDomain:taskCount
+do
+    local htn = lurek.ai.newHTNDomain()
+    htn:addPrimitive("a", {}, {}, {})
+    htn:addPrimitive("b", {}, {}, {})
+    print("task count = " .. htn:taskCount())
+end
+
+--@api-stub: LHTNDomain:type
+do
+    local htn = lurek.ai.newHTNDomain()
+    print("type = " .. htn:type())
+end
+
+--@api-stub: LHTNDomain:typeOf
+do
+    local htn = lurek.ai.newHTNDomain()
+    print("is LHTNDomain = " .. tostring(htn:typeOf("LHTNDomain")))
+end
+
+--@api-stub: LMCTSEngine:search
+do
+    local mcts = lurek.ai.newMCTSEngine(100, 1.4, 10, 42)
+    local action = mcts:search( 1, function(state) return { 1, 2, 3 } end, function(state, act) return state + act end, function(state) return -math.abs(state - 5) end ) print("best action = " .. tostring(action))
+end
+
+--@api-stub: LMCTSEngine:type
+do
+    local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
+    print("type = " .. mcts:type())
+end
+
+--@api-stub: LMCTSEngine:typeOf
+do
+    local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
+    print("is LMCTSEngine = " .. tostring(mcts:typeOf("LMCTSEngine")))
+end
+
+--@api-stub: LEmotionModel:add
+do
 ```
 
 ### LHTNDomain:taskCount
@@ -6759,14 +6683,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-    im:addLayer("threat")
-    im:addLayer("reward")
-    im:addLayer("combined")
-    im:setInfluence("threat", 4, 4, 1.0)
-    im:setInfluence("reward", 4, 4, 0.8)
-    im:blend("threat", 0.5, "reward", 0.5, "combined")
-    local val = im:getInfluence("combined", 4, 4)
+    local im = lurek.ai.newInfluenceMap(8, 8, 1.0) ; im:addLayer("threat")
+    im:addLayer("reward") ; im:addLayer("combined")
+    im:setInfluence("threat", 4, 4, 1.0) ; im:setInfluence("reward", 4, 4, 0.8)
+    im:blend("threat", 0.5, "reward", 0.5, "combined") ; local val = im:getInfluence("combined", 4, 4)
     print("blended (4,4) = " .. val)
 end
 ```
@@ -6790,10 +6710,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-    im:addLayer("a")
-    im:addLayer("b")
-    im:setInfluence("a", 1, 1, 1.0)
+    local im = lurek.ai.newInfluenceMap(8, 8, 1.0) ; im:addLayer("a")
+    im:addLayer("b") ; im:setInfluence("a", 1, 1, 1.0)
     im:setInfluence("b", 2, 2, 0.5)
     im:clearAll()
     print("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
@@ -6824,8 +6742,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-    im:addLayer("marks")
+    local im = lurek.ai.newInfluenceMap(8, 8, 1.0) ; im:addLayer("marks")
     im:setInfluence("marks", 2, 2, 1.0)
     im:clearLayer("marks")
     local val = im:getInfluence("marks", 2, 2)
@@ -6859,8 +6776,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
-    im:addLayer("heat")
+    local im = lurek.ai.newInfluenceMap(8, 8, 1.0) ; im:addLayer("heat")
     im:setInfluence("heat", 4, 4, 1.0)
     im:decay("heat", 0.5)
     local val = im:getInfluence("heat", 4, 4)
@@ -6989,8 +6905,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-    im:addLayer("gold")
+    local im = lurek.ai.newInfluenceMap(10, 10, 1.0) ; im:addLayer("gold")
     im:setInfluence("gold", 7, 3, 0.9)
     im:setInfluence("gold", 2, 8, 0.4)
     local mx, my = im:getMaxPosition("gold")
@@ -7026,8 +6941,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-    im:addLayer("cold")
+    local im = lurek.ai.newInfluenceMap(10, 10, 1.0) ; im:addLayer("cold")
     im:setInfluence("cold", 1, 1, -0.5)
     im:setInfluence("cold", 5, 5, 0.3)
     local mx, my = im:getMinPosition("cold")
@@ -7122,8 +7036,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-    im:addLayer("scent")
+    local im = lurek.ai.newInfluenceMap(10, 10, 1.0) ; im:addLayer("scent")
     im:setInfluence("scent", 5, 5, 1.0)
     im:propagate("scent", 0.8)
     local neighbor = im:getInfluence("scent", 4, 5)
@@ -7166,8 +7079,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
-    im:addLayer("energy")
+    local im = lurek.ai.newInfluenceMap(10, 10, 1.0) ; im:addLayer("energy")
     im:setInfluence("energy", 2, 2, 0.5)
     im:setInfluence("energy", 3, 3, 0.5)
     local total = im:queryRect("energy", 1, 1, 4, 4)
@@ -7348,13 +7260,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 ```lua
 do
     local mcts = lurek.ai.newMCTSEngine(100, 1.4, 10, 42)
-    local action = mcts:search(
-        1,
-        function(state) return { 1, 2, 3 } end,
-        function(state, act) return state + act end,
-        function(state) return -math.abs(state - 5) end
-    )
-    print("best action = " .. tostring(action))
+    local action = mcts:search( 1, function(state) return { 1, 2, 3 } end, function(state, act) return state + act end, function(state) return -math.abs(state - 5) end ) print("best action = " .. tostring(action))
 end
 ```
 
@@ -7829,10 +7735,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local nn = lurek.ai.newNeuralNet()
-    nn:addLayer(2, 2, "relu")
-    local count = nn:paramCount()
-    local weights = {}
+    local nn = lurek.ai.newNeuralNet() ; nn:addLayer(2, 2, "relu")
+    local count = nn:paramCount() ; local weights = {}
     for i = 1, count do weights[i] = 0.1 * i end
     nn:setWeights(weights)
     print("weights set, count = " .. count)
@@ -7920,10 +7824,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local ne = lurek.ai.newNeuroevolution(
-        { { inputs = 2, outputs = 1 } }, 4, 0
-    )
-    ne:setFitness(0, 3.0)
+    local ne = lurek.ai.newNeuroevolution( { { inputs = 2, outputs = 1 } }, 4, 0 ) ne:setFitness(0, 3.0)
     ne:setFitness(1, 7.0)
     ne:setFitness(2, 5.0)
     ne:setFitness(3, 1.0)
@@ -7953,10 +7854,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local ne = lurek.ai.newNeuroevolution(
-        { { inputs = 2, outputs = 1 } }, 6, 0
-    )
-    for i = 0, 5 do ne:setFitness(i, i * 1.5) end
+    local ne = lurek.ai.newNeuroevolution( { { inputs = 2, outputs = 1 } }, 6, 0 ) for i = 0, 5 do ne:setFitness(i, i * 1.5) end
     ne:evolve()
     local best = ne:bestNetwork()
     print("best network obtained = " .. tostring(best ~= nil))
@@ -7990,13 +7888,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local ne = lurek.ai.newNeuroevolution(
-        { { inputs = 3, outputs = 2, activation = "relu" } }, 4, 7
-    )
-    local net = ne:chromosomeToNet(0)
-    if net then
-        print("network created from chromosome 0")
-    end
+    local ne = lurek.ai.newNeuroevolution( { { inputs = 3, outputs = 2, activation = "relu" } }, 4, 7 ) local net = ne:chromosomeToNet(0)
+    if net then print("network created from chromosome 0") end
 end
 ```
 
@@ -8019,13 +7912,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local ne = lurek.ai.newNeuroevolution(
-        { { inputs = 2, outputs = 3, activation = "relu" }, { inputs = 3, outputs = 1, activation = "sigmoid" } },
-        10, 42
-    )
-    for i = 0, 9 do
-        ne:setFitness(i, math.random())
-    end
+    local ne = lurek.ai.newNeuroevolution( { { inputs = 2, outputs = 3, activation = "relu" }, { inputs = 3, outputs = 1, activation = "sigmoid" } }, 10, 42 ) for i = 0, 9 do ne:setFitness(i, math.random()) end
     ne:evolve()
     print("evolved to gen " .. ne:generation())
 end
@@ -8115,10 +8002,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local ne = lurek.ai.newNeuroevolution(
-        { { inputs = 2, outputs = 2 } }, 5, 0
-    )
-    ne:setFitness(0, 10.0)
+    local ne = lurek.ai.newNeuroevolution( { { inputs = 2, outputs = 2 } }, 5, 0 ) ne:setFitness(0, 10.0)
     ne:setFitness(4, 5.0)
     print("fitness assigned to chromosomes 0 and 4")
 end
@@ -8279,10 +8163,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local orca = lurek.ai.newORCASolver(1.5)
-    orca:addAgent(0, 0, 0.5, 3.0)
-    orca:addAgent(5, 0, 0.5, 3.0)
-    orca:setPreferredVelocity(0, 1.0, 0.0)
+    local orca = lurek.ai.newORCASolver(1.5) ; orca:addAgent(0, 0, 0.5, 3.0)
+    orca:addAgent(5, 0, 0.5, 3.0) ; orca:setPreferredVelocity(0, 1.0, 0.0)
     orca:setPreferredVelocity(1, -1.0, 0.0)
     orca:compute(0.016)
     print("collision avoidance computed")
@@ -8317,8 +8199,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local orca = lurek.ai.newORCASolver(1.5)
-    orca:addAgent(0, 0, 0.5, 3.0)
+    local orca = lurek.ai.newORCASolver(1.5) ; orca:addAgent(0, 0, 0.5, 3.0)
     orca:setPreferredVelocity(0, 2.0, 0.0)
     orca:compute(0.016)
     local vx, vy = orca:getSafeVelocity(0)
@@ -8482,13 +8363,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- bestAction ignores exploration; it always returns the greedy choice.
-  local ql = lurek.ai.newQLearner(4, 3)
-  ql:setQValue(2, 0, 0.3)
+  local ql = lurek.ai.newQLearner(4, 3) ; ql:setQValue(2, 0, 0.3)
   ql:setQValue(2, 1, 0.8)
   ql:setQValue(2, 2, 0.5)
   local best = ql:bestAction(2)
-  -- Use bestAction for evaluation; use chooseAction for training.
   print("LQLearner:bestAction: " .. tostring(best))
 end
 ```
@@ -8520,13 +8398,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- chooseAction(state) returns an action index. With high exploration rate,
-  -- the action may be random; with low rate, it picks the highest Q-value.
   local ql = lurek.ai.newQLearner(5, 3)
   ql:setExplorationRate(0.0)
   ql:setQValue(0, 1, 0.9)
   local action = ql:chooseAction(0)
-  -- With 0 exploration, chooseAction always returns the best known action.
   print("LQLearner:chooseAction: action=" .. tostring(action))
 end
 ```
@@ -8555,10 +8430,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local ql = lurek.ai.newQLearner(3, 2)
-    ql:learn(1, 2, 10.0, 3)
-    local saved = ql:serialize()
-    local ql2 = lurek.ai.newQLearner(3, 2)
+    local ql = lurek.ai.newQLearner(3, 2) ; ql:learn(1, 2, 10.0, 3)
+    local saved = ql:serialize() ; local ql2 = lurek.ai.newQLearner(3, 2)
     ql2:deserialize(saved)
     local q = ql2:getQValue(1, 2)
     print("restored Q(1,2) = " .. q)
@@ -8584,14 +8457,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- endEpisode multiplies exploration rate by the decay factor.
-  -- Call it after a game round ends (win, lose, or timeout).
-  local ql = lurek.ai.newQLearner(3, 2)
-  ql:setExplorationRate(1.0)
+  local ql = lurek.ai.newQLearner(3, 2) ; ql:setExplorationRate(1.0)
   ql:setExplorationDecay(0.95)
   ql:endEpisode()
   local rate = ql:getExplorationRate()
-  -- Over many episodes, exploration decreases toward zero.
   print("LQLearner:endEpisode: rate=" .. tostring(rate))
 end
 ```
@@ -8676,12 +8545,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local ql = lurek.ai.newQLearner(3, 2)
-  ql:endEpisode()
+  local ql = lurek.ai.newQLearner(3, 2) ; ql:endEpisode()
   ql:endEpisode()
   ql:endEpisode()
   local episodes = ql:getEpisodeCount()
-  -- Use episode count for logging or stopping training after N episodes.
   print("LQLearner:getEpisodeCount: " .. tostring(episodes))
 end
 ```
@@ -8802,12 +8669,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Q-values start at 0 and change through learn() or setQValue().
   local ql = lurek.ai.newQLearner(3, 2)
   ql:setQValue(1, 0, 0.75)
   local val = ql:getQValue(1, 0)
   local zero = ql:getQValue(1, 1)
-  -- Read Q-values for debug visualization or policy export.
   print("LQLearner:getQValue: (1,0)=" .. tostring(val) .. " (1,1)=" .. tostring(zero))
 end
 ```
@@ -8871,13 +8736,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- learn(state, action, reward, next_state) applies the Q-learning update rule.
-  local ql = lurek.ai.newQLearner(3, 2)
-  ql:setLearningRate(0.5)
+  local ql = lurek.ai.newQLearner(3, 2) ; ql:setLearningRate(0.5)
   ql:setDiscountFactor(0.9)
   ql:learn(0, 0, 1.0, 1)
   local qval = ql:getQValue(0, 0)
-  -- Q-value increases toward rewards over repeated learn calls.
   print("LQLearner:learn: Q(0,0)=" .. tostring(qval))
 end
 ```
@@ -8936,11 +8798,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Discount factor (gamma) between 0 and 1. Higher = more forward-looking.
   local ql = lurek.ai.newQLearner(3, 2)
   ql:setDiscountFactor(0.99)
   local gamma = ql:getDiscountFactor()
-  -- 0.99 plans far ahead; 0.5 focuses on immediate rewards.
   print("LQLearner:setDiscountFactor: " .. tostring(gamma))
 end
 ```
@@ -8969,13 +8829,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Decay factor between 0 and 1. Each endEpisode: rate = rate * decay.
-  local ql = lurek.ai.newQLearner(3, 2)
-  ql:setExplorationRate(1.0)
+  local ql = lurek.ai.newQLearner(3, 2) ; ql:setExplorationRate(1.0)
   ql:setExplorationDecay(0.9)
   ql:endEpisode()
   local rate = ql:getExplorationRate()
-  -- After 1 episode with 0.9 decay: rate = 1.0 * 0.9 = 0.9.
   print("LQLearner:setExplorationDecay: rate=" .. tostring(rate))
 end
 ```
@@ -9004,11 +8861,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Exploration rate (epsilon) between 0 and 1. 1.0 = pure random, 0.0 = pure greedy.
   local ql = lurek.ai.newQLearner(3, 2)
   ql:setExplorationRate(0.5)
   local rate = ql:getExplorationRate()
-  -- Start high and decay over episodes for explore-then-exploit.
   print("LQLearner:setExplorationRate: " .. tostring(rate))
 end
 ```
@@ -9037,11 +8892,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Learning rate (alpha) between 0 and 1. Higher = faster learning, less stable.
   local ql = lurek.ai.newQLearner(3, 2)
   ql:setLearningRate(0.2)
   local rate = ql:getLearningRate()
-  -- Typical values: 0.1 for stability, 0.5 for fast adaptation.
   print("LQLearner:setLearningRate: " .. tostring(rate))
 end
 ```
@@ -9074,12 +8927,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- setQValue is useful for loading pre-trained policies from save files.
   local ql = lurek.ai.newQLearner(4, 2)
   ql:setQValue(0, 0, 0.5)
   ql:setQValue(0, 1, 0.9)
   local best = ql:bestAction(0)
-  -- After setting, bestAction and chooseAction see the new values.
   print("LQLearner:setQValue: best=" .. tostring(best))
 end
 ```
@@ -9267,10 +9118,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local sq = lurek.ai.newSquad("patrol")
-    sq:addMember("lead")
-    sq:addMember("flank_l")
-    sq:addMember("flank_r")
+    local sq = lurek.ai.newSquad("patrol") ; sq:addMember("lead")
+    sq:addMember("flank_l") ; sq:addMember("flank_r")
     sq:setFormation("wedge", 2.0)
     local x, y = sq:getFormationPosition(2, 100.0, 50.0)
     print("member 2 pos = " .. x .. ", " .. y)
@@ -9481,8 +9330,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local sq = lurek.ai.newSquad("hotel")
-    sq:addMember("point")
+    local sq = lurek.ai.newSquad("hotel") ; sq:addMember("point")
     sq:addMember("left")
     sq:addMember("right")
     sq:setFormation("wedge", 2.0)
@@ -9609,10 +9457,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 do
   local fsm = lurek.ai.newStateMachine()
   local entered = ""
-  fsm:addState("patrol", {
-    onEnter = function() entered = "patrol" end,
-  })
-  fsm:setInitialState("patrol")
+  fsm:addState("patrol", { onEnter = function() entered = "patrol" end, }) fsm:setInitialState("patrol")
   print("LStateMachine:addState: entered=" .. entered)
 end
 ```
@@ -9679,10 +9524,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("alive", {})
-  fsm:addState("dead", {})
-  fsm:setInitialState("alive")
+  local fsm = lurek.ai.newStateMachine() ; fsm:addState("alive", {})
+  fsm:addState("dead", {}) ; fsm:setInitialState("alive")
   fsm:forceState("dead")
   local current = fsm:getCurrentState() or "none"
   print("LStateMachine:forceState: " .. current)
@@ -9711,8 +9554,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("wander", {})
+  local fsm = lurek.ai.newStateMachine() ; fsm:addState("wander", {})
   local before = fsm:getCurrentState()
   fsm:setInitialState("wander")
   local after = fsm:getCurrentState()
@@ -9774,8 +9616,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  local fsm = lurek.ai.newStateMachine()
-  local log = ""
+  local fsm = lurek.ai.newStateMachine() ; local log = ""
   fsm:addState("sleep", { onEnter = function() log = "entered_sleep" end })
   fsm:setInitialState("sleep")
   local current = fsm:getCurrentState() or "none"
@@ -9877,12 +9718,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Arrive works like seek but slows down within the deceleration radius.
-  -- The 3rd argument is the deceleration distance; 4th is weight.
   local steer = lurek.ai.newSteeringManager()
   steer:addArrive(300, 300, 50, 1.0)
   local fx, fy = steer:calculate(280, 290, 30, 10, 100, 200, 1 / 60)
-  -- Use arrive for movement that stops gracefully at a destination.
   print("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
@@ -9913,15 +9751,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Custom behaviors let you implement game-specific steering logic.
-  -- The callback receives (agent, dt) and must return fx, fy force values.
   local steer = lurek.ai.newSteeringManager()
-  steer:addCustomBehavior(function(agent, dt)
-    -- Simple constant push to the right
-    return 50, 0
-  end, 0.8)
+  steer:addCustomBehavior(function(agent, dt) return 50, 0 end, 0.8)
   local count = steer:getBehaviorCount()
-  -- Custom behaviors integrate with all other behaviors via combine mode.
   print("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
 end
 ```
@@ -9952,12 +9784,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Evade steers away from a named agent registered in the AI world.
-  -- Pass the agent name string and an optional weight.
   local steer = lurek.ai.newSteeringManager()
   steer:addEvade("enemy_agent", 1.0)
   local count = steer:getBehaviorCount()
-  -- Evade is better than flee for escaping moving pursuers.
   print("LSteeringManager:addEvade: behaviors=" .. tostring(count))
 end
 ```
@@ -9992,11 +9821,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Flee produces a force pointing directly away from (tx, ty).
   local steer = lurek.ai.newSteeringManager()
   steer:addFlee(200, 200, 1.0)
   local fx, fy = steer:calculate(210, 195, 0, 0, 100, 200, 1 / 60)
-  -- Flee is the opposite of seek; useful for panic or danger avoidance.
   print("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
@@ -10033,12 +9860,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Flock uses a neighbor radius to find nearby agents and combines three forces.
-  -- Args: neighbor_radius, separation_weight, alignment_weight, cohesion_weight, behavior_weight.
   local steer = lurek.ai.newSteeringManager()
   steer:addFlock(80, 1.5, 1.0, 1.0, 1.0)
   local count = steer:getBehaviorCount()
-  -- Flocking creates emergent group patterns like bird murmurations.
   print("LSteeringManager:addFlock: behaviors=" .. tostring(count))
 end
 ```
@@ -10069,12 +9893,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Pursue steers toward a named agent registered in the AI world.
-  -- Pass the agent name string and an optional weight.
   local steer = lurek.ai.newSteeringManager()
   steer:addPursue("target_agent", 1.0)
   local count = steer:getBehaviorCount()
-  -- Pursue is better than seek for chasing moving enemies.
   print("LSteeringManager:addPursue: behaviors=" .. tostring(count))
 end
 ```
@@ -10107,12 +9928,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Seek produces a force pointing directly at (tx, ty) with the given weight.
-  -- Weight controls how much this behavior contributes to the combined output.
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(400, 300, 1.0)
   local fx, fy = steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
-  -- Seek never slows down near the target; use arrive for deceleration.
   print("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
@@ -10147,12 +9965,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Wander projects a circle ahead and picks a random point on it each tick.
-  -- Args: circle_radius, circle_distance, jitter_amount, weight.
   local steer = lurek.ai.newSteeringManager()
   steer:addWander(25, 50, 8, 0.5)
   local fx, fy = steer:calculate(100, 100, 10, 0, 80, 150, 1 / 60)
-  -- Wander produces natural-looking exploration without explicit waypoints.
   print("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
@@ -10187,17 +10002,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- applyCustomSteering(agent, dt) invokes all custom callbacks registered
-  -- with addCustomBehavior and returns the weighted combined force.
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("pusher")
-  npc:setPosition(100, 100)
-  local steer = lurek.ai.newSteeringManager()
-  steer:addCustomBehavior(function(agent, dt)
-    return 25, -10
-  end, 1.0)
+  local world = lurek.ai.newWorld() ; local npc = world:addAgent("pusher")
+  npc:setPosition(100, 100) ; local steer = lurek.ai.newSteeringManager()
+  steer:addCustomBehavior(function(agent, dt) return 25, -10 end, 1.0)
   local fx, fy = steer:applyCustomSteering(npc, 1 / 60)
-  -- Use for scripted nudges: knockback, wind gusts, or magnetic fields.
   print("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
@@ -10242,13 +10050,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Args: pos_x, pos_y, vel_x, vel_y, max_speed, max_force, dt.
-  -- Returns two numbers: force_x, force_y.
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(500, 300, 1.0)
   steer:addWander(15, 30, 4, 0.3)
   local fx, fy = steer:calculate(100, 100, 20, 5, 150, 250, 1 / 60)
-  -- Apply the force to velocity: vel = vel + force * dt, clamped to max_speed.
   print("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
@@ -10272,12 +10077,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- clearPath stops path-following without removing other behaviors.
   local steer = lurek.ai.newSteeringManager()
   steer:setPath({ { x = 10, y = 10 }, { x = 100, y = 100 } }, 8.0, 1.0)
   steer:clearPath()
   local has = steer:hasPath()
-  -- After clear, calculate no longer includes path-following force.
   print("LSteeringManager:clearPath: hasPath=" .. tostring(has))
 end
 ```
@@ -10306,12 +10109,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- When disabled, flocking uses brute-force neighbor checks.
-  -- Enable it when you have many agents (> 20) sharing a manager.
   local steer = lurek.ai.newSteeringManager()
   steer:enableSpatialHash(true)
   steer:setSpatialHashCellSize(48)
-  -- Spatial hash only helps with flock-type behaviors.
   print("LSteeringManager:enableSpatialHash: done")
 end
 ```
@@ -10338,12 +10138,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Each add call increments the count. clearPath does not affect behavior count.
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(100, 100, 1.0)
   steer:addWander(10, 20, 3, 0.5)
   local count = steer:getBehaviorCount()
-  -- Use behavior count for debug or to limit how many behaviors stack.
   print("LSteeringManager:getBehaviorCount: " .. tostring(count))
 end
 ```
@@ -10401,12 +10199,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- getLastSteering returns 0,0 before the first calculate call.
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(200, 200, 1.0)
   steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
   local lx, ly = steer:getLastSteering()
-  -- Use getLastSteering for debug visualization without recalculating.
   print("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
 end
 ```
@@ -10434,15 +10230,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Returns two integers: current_index (1-based), total_count.
   local steer = lurek.ai.newSteeringManager()
-  steer:setPath({
-    { x = 0, y = 0 },
-    { x = 100, y = 50 },
-    { x = 200, y = 100 },
-  }, 10.0, 1.0)
-  local idx, total = steer:getPathProgress()
-  -- Use progress for UI (e.g. "Waypoint 2/5") or completion checks.
+  steer:setPath({ { x = 0, y = 0 }, { x = 100, y = 50 }, { x = 200, y = 100 }, }, 10.0, 1.0) local idx, total = steer:getPathProgress()
   print("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
 end
 ```
@@ -10469,12 +10258,10 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- hasPath returns false before setPath or after clearPath.
   local steer = lurek.ai.newSteeringManager()
   local before = steer:hasPath()
   steer:setPath({ { x = 0, y = 0 }, { x = 50, y = 50 } }, 5.0, 1.0)
   local after = steer:hasPath()
-  -- Check hasPath before calling getPathProgress.
   print("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
@@ -10503,12 +10290,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Modes: "weighted" (sum all * weight), "priority" (first non-zero wins),
-  -- "truncated" (sum until max force reached).
   local steer = lurek.ai.newSteeringManager()
   steer:setCombineMode("priority")
   local mode = steer:getCombineMode()
-  -- "weighted" is the default and works for most cases.
   print("LSteeringManager:setCombineMode: " .. mode)
 end
 ```
@@ -10541,18 +10325,9 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Path is an array of {x=n, y=n} tables. The agent follows waypoints in order.
-  -- reach_radius controls how close the agent must be to advance to the next point.
   local steer = lurek.ai.newSteeringManager()
-  local waypoints = {
-    { x = 50, y = 50 },
-    { x = 200, y = 80 },
-    { x = 350, y = 200 },
-    { x = 400, y = 400 },
-  }
-  steer:setPath(waypoints, 16.0, 1.0)
+  local waypoints = { { x = 50, y = 50 }, { x = 200, y = 80 }, { x = 350, y = 200 }, { x = 400, y = 400 }, } steer:setPath(waypoints, 16.0, 1.0)
   local has = steer:hasPath()
-  -- Path following uses the internal pathfinding force during calculate.
   print("LSteeringManager:setPath: hasPath=" .. tostring(has))
 end
 ```
@@ -10581,11 +10356,8 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-  -- Spatial hash accelerates neighbor lookups for flocking.
-  -- Smaller cells = more precise but more memory; bigger cells = faster but less accurate.
   local steer = lurek.ai.newSteeringManager()
   steer:setSpatialHashCellSize(32)
-  -- Set cell size before adding flock behaviors for best performance.
   print("LSteeringManager:setSpatialHashCellSize: done")
 end
 ```
@@ -11035,10 +10807,7 @@ do
     local strat = lurek.ai.newStrategyAI(10.0)
     strat:addGoal("build")
     strat:addGoal("scout")
-    strat:forceEvaluate(function(goal)
-        if goal == "scout" then return 5.0 end
-        return 1.0
-    end)
+    strat:forceEvaluate(function(goal) if goal == "scout" then return 5.0 end return 1.0 end)
     print("forced active = " .. tostring(strat:activeGoal()))
 end
 ```
@@ -11190,10 +10959,7 @@ do
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("attack")
     strat:addGoal("retreat")
-    strat:update(1.5, function(goal)
-        if goal == "attack" then return 0.8 end
-        return 0.2
-    end)
+    strat:update(1.5, function(goal) if goal == "attack" then return 0.8 end return 0.2 end)
     print("active = " .. tostring(strat:activeGoal()))
 end
 ```
@@ -11257,8 +11023,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local tp = lurek.ai.newTraitProfile()
-    tp:set("aggression", 0.9)
+    local tp = lurek.ai.newTraitProfile() ; tp:set("aggression", 0.9)
     tp:set("caution", 0.1)
     tp:set("curiosity", 0.4)
     local arch = tp:archetype() or "unknown"
@@ -11393,8 +11158,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local tp = lurek.ai.newTraitProfile()
-    tp:set("luck", 0.4)
+    local tp = lurek.ai.newTraitProfile() ; tp:set("luck", 0.4)
     tp:addModifier("luck", 0.2, 10.0, "charm")
     tp:addModifier("luck", 0.1, 5.0, "charm")
     tp:removeModifiers("charm")
@@ -11719,8 +11483,7 @@ Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
 
 ```lua
 do
-    local uai = lurek.ai.newUtilityAI()
-    uai:addAction("gather", function() return 0.6 end)
+    local uai = lurek.ai.newUtilityAI() ; uai:addAction("gather", function() return 0.6 end)
     uai:addAction("build", function() return 0.2 end)
     uai:evaluate()
     local last = uai:getLastAction()

@@ -169,7 +169,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    lurek.devtools.watch("a.lua")
+    lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
     lurek.devtools.clearWatches()
     print("watches cleared, count = " .. #lurek.devtools.getWatchedPaths())
 end
@@ -522,7 +522,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    lurek.devtools.watch("assets/sprites")
+    lurek.devtools.watch("content/examples/assets/images")
     local paths = lurek.devtools.getWatchedPaths()
     print("watched = " .. #paths)
 end
@@ -681,7 +681,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    local watcher = lurek.devtools.newFileWatcher("scripts/")
+    local watcher = lurek.devtools.newFileWatcher("content/")
     print("watcher path = " .. watcher:getPath())
 end
 ```
@@ -1118,8 +1118,8 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    lurek.devtools.watch("scripts/main.lua")
-    local removed = lurek.devtools.unwatch("scripts/main.lua")
+    lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
+    local removed = lurek.devtools.unwatch("content/examples/assets/layouts/sample_menu.html")
     print("removed = " .. tostring(removed))
 end
 ```
@@ -1163,7 +1163,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    local added = lurek.devtools.watch("scripts/main.lua")
+    local added = lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
     print("watch added = " .. tostring(added))
 end
 ```
@@ -1191,7 +1191,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    local watcher = lurek.devtools.newFileWatcher("scripts/")
+    local watcher = lurek.devtools.newFileWatcher("content/")
     print("watcher path = " .. watcher:getPath())
 end
 ```
@@ -1243,7 +1243,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    local watcher = lurek.devtools.newFileWatcher("temp/")
+    local watcher = lurek.devtools.newFileWatcher("save/")
     watcher:cancel()
     print("watcher cancelled")
 end
@@ -1271,7 +1271,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    local watcher = lurek.devtools.newFileWatcher("scripts/")
+    local watcher = lurek.devtools.newFileWatcher("content/")
     local changed = watcher:check()
     print("change detected = " .. tostring(changed))
 end
@@ -1358,7 +1358,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    local watcher = lurek.devtools.newFileWatcher("x/")
+    local watcher = lurek.devtools.newFileWatcher("assets/")
     print("type = " .. watcher:type())
 end
 ```
@@ -1390,7 +1390,7 @@ Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
 
 ```lua
 do
-    local watcher = lurek.devtools.newFileWatcher("y/")
+    local watcher = lurek.devtools.newFileWatcher("assets/textures/")
     print("is LFileWatcher = " .. tostring(watcher:typeOf("LFileWatcher")))
 end
 ```

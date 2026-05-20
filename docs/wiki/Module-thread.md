@@ -131,14 +131,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LPromise
-    local promise = lurek.thread.async([[
-        local sum = 0
-        for i = 1, 10000 do sum = sum + i end
-        return sum
-    ]])
+    local promise = lurek.thread.async("return 42")
     print("type = " .. promise:type())
-    print("is LPromise = " .. tostring(promise:typeOf("LPromise")))
     print("done immediately = " .. tostring(promise:isDone()))
 end
 ```
@@ -161,13 +155,10 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.getChannel("events")
     ch:push("player_died")
-    ---@type LChannel
     local same = lurek.thread.getChannel("events")
-    local msg = same:pop()
-    print("shared channel msg = " .. tostring(msg))
+    print("shared channel msg = " .. tostring(same:pop()))
     print("same instance = " .. tostring(ch == same))
 end
 ```
@@ -188,9 +179,6 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 do
     local caps = lurek.thread.getWorkerCapabilities()
     print("capabilities = " .. #caps)
-    for _, cap in ipairs(caps) do
-        print("  " .. cap)
-    end
 end
 ```
 
@@ -234,10 +222,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newChannel()
     print("type = " .. ch:type())
-    print("is LChannel = " .. tostring(ch:typeOf("LChannel")))
     print("count = " .. ch:getCount())
     print("bounded = " .. tostring(ch:isBounded()))
 end
@@ -262,18 +248,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LThreadPool
-    local pool = lurek.thread.newPool(4, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        while true do
-            local task = input:demand(0.1)
-            if not task then break end
-            output:push(task * task)
-        end
-    ]])
+    local pool = lurek.thread.newPool(2, "local i=lurek.thread.getChannel('__pool_input');local o=lurek.thread.getChannel('__pool_output');local v=i:demand(0.1);if v then o:push(v*2) end")
     print("type = " .. pool:type())
-    print("is LThreadPool = " .. tostring(pool:typeOf("LThreadPool")))
     print("pool size = " .. pool:size())
 end
 ```
@@ -296,45 +272,11 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local results = lurek.thread.getChannel("results")
     results:clear()
-    ---@type LThread
-    local t = lurek.thread.newThread([[
-        local ch = lurek.thread.getChannel("results")
-        local sum = 0
-        for i = 1, 1000 do
-            sum = sum + i
-        end
-        ch:push(sum)
-    ]])
-    print("type = " .. t:type())
-    print("is LThread = " .. tostring(t:typeOf("LThread")))
-    t:start()
-    print("running = " .. tostring(t:isRunning()))
-    t:wait()
-    print("after wait running = " .. tostring(t:isRunning()))
+    local thread = lurek.thread.newThread([[ local ch = lurek.thread.getChannel("results"); ch:push(21 * 2) ]])
+    thread:start(); thread:wait()
     print("result = " .. tostring(results:pop()))
-    print("error = " .. tostring(t:getError()))
-
-    -- Passing initial data to a thread. Focus: newThread.
-    ---@type LChannel
-    local out = lurek.thread.getChannel("output")
-    out:clear()
-    ---@type LThread
-    local t = lurek.thread.newThread([[
-        local count, prefix = ...
-        local ch = lurek.thread.getChannel("output")
-        for i = 1, count do
-            ch:push(prefix .. "_" .. i)
-        end
-    ]])
-    t:start(5, "item")
-    t:wait()
-    for i = 1, 5 do
-        local val = out:pop()
-        print("received: " .. tostring(val))
-    end
 end
 ```
 
@@ -361,13 +303,10 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.getChannel("events")
     ch:push("player_died")
-    ---@type LChannel
     local same = lurek.thread.getChannel("events")
-    local msg = same:pop()
-    print("shared channel msg = " .. tostring(msg))
+    print("shared channel msg = " .. tostring(same:pop()))
     print("same instance = " .. tostring(ch == same))
 end
 ```
@@ -390,14 +329,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LPromise
-    local promise = lurek.thread.async([[
-        local sum = 0
-        for i = 1, 10000 do sum = sum + i end
-        return sum
-    ]])
+    local promise = lurek.thread.async("return 42")
     print("type = " .. promise:type())
-    print("is LPromise = " .. tostring(promise:typeOf("LPromise")))
     print("done immediately = " .. tostring(promise:isDone()))
 end
 ```
@@ -420,45 +353,11 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local results = lurek.thread.getChannel("results")
     results:clear()
-    ---@type LThread
-    local t = lurek.thread.newThread([[
-        local ch = lurek.thread.getChannel("results")
-        local sum = 0
-        for i = 1, 1000 do
-            sum = sum + i
-        end
-        ch:push(sum)
-    ]])
-    print("type = " .. t:type())
-    print("is LThread = " .. tostring(t:typeOf("LThread")))
-    t:start()
-    print("running = " .. tostring(t:isRunning()))
-    t:wait()
-    print("after wait running = " .. tostring(t:isRunning()))
+    local thread = lurek.thread.newThread([[ local ch = lurek.thread.getChannel("results"); ch:push(21 * 2) ]])
+    thread:start(); thread:wait()
     print("result = " .. tostring(results:pop()))
-    print("error = " .. tostring(t:getError()))
-
-    -- Passing initial data to a thread. Focus: newThread.
-    ---@type LChannel
-    local out = lurek.thread.getChannel("output")
-    out:clear()
-    ---@type LThread
-    local t = lurek.thread.newThread([[
-        local count, prefix = ...
-        local ch = lurek.thread.getChannel("output")
-        for i = 1, count do
-            ch:push(prefix .. "_" .. i)
-        end
-    ]])
-    t:start(5, "item")
-    t:wait()
-    for i = 1, 5 do
-        local val = out:pop()
-        print("received: " .. tostring(val))
-    end
 end
 ```
 
@@ -480,18 +379,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LThreadPool
-    local pool = lurek.thread.newPool(4, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        while true do
-            local task = input:demand(0.1)
-            if not task then break end
-            output:push(task * task)
-        end
-    ]])
+    local pool = lurek.thread.newPool(2, "local i=lurek.thread.getChannel('__pool_input');local o=lurek.thread.getChannel('__pool_output');local v=i:demand(0.1);if v then o:push(v*2) end")
     print("type = " .. pool:type())
-    print("is LThreadPool = " .. tostring(pool:typeOf("LThreadPool")))
     print("pool size = " .. pool:size())
 end
 ```
@@ -520,11 +409,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newChannel()
     ch:push("x")
-    ch:push("y")
-    ch:push("z")
     print("before clear = " .. ch:getCount())
     ch:clear()
     print("after clear = " .. ch:getCount())
@@ -559,13 +445,10 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newChannel()
     ch:push("ready")
-    local val = ch:demand(1.0)
-    print("demand got = " .. tostring(val))
-    local empty = ch:demand(0.01)
-    print("demand timeout = " .. tostring(empty))
+    print("demand got = " .. tostring(ch:demand(1.0)))
+    print("demand timeout = " .. tostring(ch:demand(0.01)))
 end
 ```
 
@@ -618,14 +501,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newChannel()
     ch:push("x")
-    ch:push("y")
-    ch:push("z")
-    print("before clear = " .. ch:getCount())
-    ch:clear()
-    print("after clear = " .. ch:getCount())
+    print("count = " .. ch:getCount())
 end
 ```
 
@@ -679,16 +557,10 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newChannel()
     ch:push("first")
-    ch:push("second")
-    local peeked = ch:peek()
-    print("peek = " .. tostring(peeked))
+    print("peek = " .. tostring(ch:peek()))
     print("count after peek = " .. ch:getCount())
-    ch:pop()
-    peeked = ch:peek()
-    print("peek after pop = " .. tostring(peeked))
 end
 ```
 
@@ -745,12 +617,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newChannel()
-    local data = string.rep("\x00\xFF", 100)
-    ch:pushBytes(data)
-    local retrieved = ch:popBytes()
-    print("popBytes length = " .. #retrieved)
+    ch:pushBytes(string.rep("\x00\xFF", 100))
+    print("popBytes length = " .. #ch:popBytes())
 end
 ```
 
@@ -776,10 +645,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newChannel()
-    local payload = { name = "player", hp = 100, items = { "sword", "shield" } }
-    ch:pushTable(payload)
+    ch:pushTable({ name = "player" })
     local result = ch:popTable()
     print("popTable name = " .. result.name)
 end
@@ -917,12 +784,10 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LChannel
     local ch = lurek.thread.newBoundedChannel(2)
     ch:tryPush("a")
     ch:tryPush("b")
-    local supplied = ch:supply("d")
-    print("supply when full = " .. tostring(supplied))
+    print("supply when full = " .. tostring(ch:supply("d")))
 end
 ```
 
@@ -1048,40 +913,11 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LPromise
-    local p1 = lurek.thread.async([[
-        return 10
-    ]])
-    local p2 = nil
-    for _ = 1, 1000 do
-        if p1:isDone() then
-            p2 = p1:chain([[
-                local prev = ...
-                return prev * 3
-            ]])
-            break
-        end
-    end
-
-    local p3 = nil
-    if p2 then
-        for _ = 1, 1000 do
-            if p2:isDone() then
-                p3 = p2:chain([[
-                    local prev = ...
-                    return prev + 5
-                ]])
-                break
-            end
-        end
-    end
-
-    print("p1 done = " .. tostring(p1:isDone()))
-    print("p2 created = " .. tostring(p2 ~= nil))
-    print("p3 created = " .. tostring(p3 ~= nil))
-    if p3 then
-        print("chain created, p3 type = " .. p3:type())
-    end
+    local first = lurek.thread.async([[ return 10 ]])
+    while not first:isDone() do end
+    local second = first:chain([[ local prev = ...; return prev * 3 ]])
+    while not second:isDone() do end
+    print("chain result = " .. tostring(second:result()))
 end
 ```
 
@@ -1107,17 +943,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LPromise
-    local promise = lurek.thread.async([[
-        return 42
-    ]])
-    local done = false
-    for _ = 1, 1000 do
-        if promise:isDone() then
-            done = true
-            break
-        end
-    end
+    local promise = lurek.thread.async("return 42")
+    promise:result()
     print("error = " .. tostring(promise:getError()))
 end
 ```
@@ -1144,18 +971,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LPromise
-    local promise = lurek.thread.async([[
-        return 42
-    ]])
-    local done = false
-    for _ = 1, 1000 do
-        if promise:isDone() then
-            done = true
-            break
-        end
-    end
-    print("done = " .. tostring(done))
+    local promise = lurek.thread.async("return 42")
+    promise:result()
+    print("done = " .. tostring(promise:isDone()))
 end
 ```
 
@@ -1182,19 +1000,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LPromise
-    local promise = lurek.thread.async([[
-        return 42
-    ]])
-    local done = false
-    for _ = 1, 1000 do
-        if promise:isDone() then
-            done = true
-            break
-        end
-    end
-    local val = promise:result()
-    print("result = " .. tostring(val))
+    local promise = lurek.thread.async("return 42")
+    print("result = " .. tostring(promise:result()))
 end
 ```
 
@@ -1281,17 +1088,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    local status = lurek.thread.getChannel("thread_status")
-    status:clear()
-    local code = [[
-        local ch = lurek.thread.getChannel("thread_status")
-        ch:push("done")
-    ]]
-    local t = lurek.thread.newThread(code)
-    t:start()
-    t:wait()
-    local err = t:getError()
-    print("error=" .. tostring(err))
+    local t = lurek.thread.newThread("lurek.thread.getChannel('thread_status'):push('done')")
+    t:start(); t:wait()
+    print("error=" .. tostring(t:getError()))
 end
 ```
 
@@ -1317,16 +1116,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    local status = lurek.thread.getChannel("thread_status")
-    status:clear()
-    local code = [[
-        local ch = lurek.thread.getChannel("thread_status")
-        ch:push("done")
-    ]]
-    local t = lurek.thread.newThread(code)
+    local t = lurek.thread.newThread("return 1")
     t:start()
-    local running = t:isRunning()
-    print("running=" .. tostring(running))
+    print("running=" .. tostring(t:isRunning()))
 end
 ```
 
@@ -1354,13 +1146,7 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    local status = lurek.thread.getChannel("thread_status")
-    status:clear()
-    local code = [[
-        local ch = lurek.thread.getChannel("thread_status")
-        ch:push("done")
-    ]]
-    local t = lurek.thread.newThread(code)
+    local t = lurek.thread.newThread("return 1")
     t:start()
     print("start ok")
 end
@@ -1388,13 +1174,7 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    local status = lurek.thread.getChannel("thread_status")
-    status:clear()
-    local code = [[
-        local ch = lurek.thread.getChannel("thread_status")
-        ch:push("done")
-    ]]
-    local t = lurek.thread.newThread(code)
+    local t = lurek.thread.newThread("return 1")
     print("type=" .. t:type())
 end
 ```
@@ -1426,13 +1206,7 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    local status = lurek.thread.getChannel("thread_status")
-    status:clear()
-    local code = [[
-        local ch = lurek.thread.getChannel("thread_status")
-        ch:push("done")
-    ]]
-    local t = lurek.thread.newThread(code)
+    local t = lurek.thread.newThread("return 1")
     print("typeOf=" .. tostring(t:typeOf("LThread")))
 end
 ```
@@ -1486,28 +1260,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LThreadPool
-    local pool = lurek.thread.newPool(2, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        while true do
-            local val = input:demand(0.5)
-            if not val then break end
-            output:push(val * 2)
-        end
-    ]])
+    local pool = lurek.thread.newPool(2, "local i=lurek.thread.getChannel('__pool_input');local o=lurek.thread.getChannel('__pool_output');local v=i:demand(0.1);if v then o:push(v*2) end")
     pool:submit(10)
-    pool:submit(20)
-    pool:submit(30)
-    print("submitted 3 tasks")
-    local results = nil
-    for _ = 1, 1000 do
-        results = pool:collect()
-        if results ~= nil then
-            break
-        end
-    end
-    print("collected = " .. tostring(results))
+    print("collected = " .. tostring(pool:collect()))
 end
 ```
 
@@ -1533,21 +1288,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LThreadPool
-    local pool = lurek.thread.newPool(2, [[
-        local inp = lurek.thread.getChannel("__pool_input")
-        local out = lurek.thread.getChannel("__pool_output")
-        local val = inp:demand(0.5)
-        if val then out:push(val .. "_done") end
-    ]])
-    ---@type LChannel
+    local pool = lurek.thread.newPool(2, "local i=lurek.thread.getChannel('__pool_input');local o=lurek.thread.getChannel('__pool_output');local v=i:demand(0.1);if v then o:push(v*2) end")
     local inCh = pool:getInputChannel()
-    ---@type LChannel
-    local outCh = pool:getOutputChannel()
     print("input channel type = " .. inCh:type())
-    print("output channel type = " .. outCh:type())
-    inCh:push("job")
-    print("output message = " .. tostring(outCh:demand(1.0)))
 end
 ```
 
@@ -1573,20 +1316,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LThreadPool
-    local pool = lurek.thread.newPool(2, [[
-        local inp = lurek.thread.getChannel("__pool_input")
-        local out = lurek.thread.getChannel("__pool_output")
-        local val = inp:demand(0.5)
-        if val then out:push(val .. "_done") end
-    ]])
-    ---@type LChannel
-    local inCh = pool:getInputChannel()
-    ---@type LChannel
+    local pool = lurek.thread.newPool(2, "local i=lurek.thread.getChannel('__pool_input');local o=lurek.thread.getChannel('__pool_output');local v=i:demand(0.1);if v then o:push(v*2) end")
     local outCh = pool:getOutputChannel()
     print("output channel type = " .. outCh:type())
-    inCh:push("job")
-    print("output message = " .. tostring(outCh:demand(1.0)))
 end
 ```
 
@@ -1617,12 +1349,8 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LThreadPool
-    local pool = lurek.thread.newPool(2, [[
-        -- quick exit worker
-    ]])
-    local finished = pool:join(2.0)
-    print("join result = " .. tostring(finished))
+    local pool = lurek.thread.newPool(2, "return nil")
+    print("join result = " .. tostring(pool:join(2.0)))
 end
 ```
 
@@ -1678,28 +1406,9 @@ Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
 
 ```lua
 do
-    ---@type LThreadPool
-    local pool = lurek.thread.newPool(2, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        while true do
-            local val = input:demand(0.5)
-            if not val then break end
-            output:push(val * 2)
-        end
-    ]])
+    local pool = lurek.thread.newPool(2, "local i=lurek.thread.getChannel('__pool_input');local o=lurek.thread.getChannel('__pool_output');local v=i:demand(0.1);if v then o:push(v*2) end")
     pool:submit(10)
-    pool:submit(20)
-    pool:submit(30)
-    print("submitted 3 tasks")
-    local results = nil
-    for _ = 1, 1000 do
-        results = pool:collect()
-        if results ~= nil then
-            break
-        end
-    end
-    print("collected = " .. tostring(results))
+    print("submitted one task")
 end
 ```
 

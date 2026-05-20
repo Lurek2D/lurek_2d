@@ -369,19 +369,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSelector("root_sel")
-    local seq_attack = bt:addSequence("attack_seq")
-    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?")
-    local leaf_attack = bt:addLeaf("do_attack", "attack!")
-    bt:addChild(root, seq_attack)
-    bt:addChild(seq_attack, leaf_check)
-    bt:addChild(seq_attack, leaf_attack)
-    local leaf_idle = bt:addLeaf("idle", "idle")
-    bt:addChild(root, leaf_idle)
-    bt:setRoot(root)
-    print("nodes = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSelector("root_sel"); local seq_attack = bt:addSequence("attack_seq")
+    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?"); local leaf_attack = bt:addLeaf("do_attack", "attack!"); bt:addChild(root, seq_attack)
+    bt:addChild(seq_attack, leaf_check); bt:addChild(seq_attack, leaf_attack)
+    local leaf_idle = bt:addLeaf("idle", "idle"); bt:addChild(root, leaf_idle)
+    bt:setRoot(root); print("nodes = " .. bt:nodeCount())
 end
 ```
 
@@ -403,17 +395,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBlackboard
-    local bb = lurek.patterns.newBlackboard("game_state")
-    bb:set("health", 100)
-    bb:set("weapon", "sword")
-    bb:set("alive", true)
-    print("health = " .. tostring(bb:get("health")))
-    print("weapon = " .. tostring(bb:get("weapon")))
-    print("has alive = " .. tostring(bb:has("alive")))
-    print("has mana = " .. tostring(bb:has("mana")))
-    local all_keys = bb:keys()
-    print("keys = " .. #all_keys)
+    local bb = lurek.patterns.newBlackboard("game_state"); bb:set("health", 100)
+    bb:set("weapon", "sword"); bb:set("alive", true)
+    print("health = " .. tostring(bb:get("health"))); print("weapon = " .. tostring(bb:get("weapon")))
+    print("has alive = " .. tostring(bb:has("alive"))); print("has mana = " .. tostring(bb:has("mana")))
+    local all_keys = bb:keys(); print("keys = " .. #all_keys)
 end
 ```
 
@@ -435,19 +421,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack(50)
-    local value = 0
-    cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
-    print("after add: " .. value)
-    cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end)
-    print("after mul: " .. value)
-    cmds:undo()
-    print("after undo: " .. value)
-    cmds:undo()
-    print("after undo2: " .. value)
-    cmds:redo()
-    print("after redo: " .. value)
+    local cmds = lurek.patterns.newCommandStack(50); local value = 0; cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
+    print("after add: " .. value); cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end); print("after mul: " .. value)
+    cmds:undo(); print("after undo: " .. value)
+    cmds:undo(); print("after undo2: " .. value)
+    cmds:redo(); print("after redo: " .. value)
 end
 ```
 
@@ -567,13 +545,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LFunnel
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
-    funnel:onFlush(function(entries)
-        print("  flushed " .. #entries .. " entries")
-        for _, e in ipairs(entries) do
-            print("    " .. e.tag .. " = " .. e.value)
-        end
+    funnel:onFlush(function(entries) print("  flushed " .. #entries .. " entries") for _, e in ipairs(entries) do print("    " .. e.tag .. " = " .. e.value) end
     end)
     funnel:push("fire", 10)
     funnel:push("ice", 5)
@@ -602,11 +575,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(false)
-    local a = g:addNode("A", {cost = 10})
-    local b = g:addNode("B", {cost = 5})
-    local c = g:addNode("C")
+    local g = lurek.patterns.newGraph(false); local a = g:addNode("A", {cost = 10})
+    local b = g:addNode("B", {cost = 5}); local c = g:addNode("C")
     local e1 = g:addEdge(a, b, 1.0, "road")
     local e2 = g:addEdge(b, c, 2.5)
     print("nodes = " .. g:nodeCount() .. " edges = " .. g:edgeCount())
@@ -627,15 +597,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:add("alpha")
-    list:add("beta")
-    list:add("gamma")
-    print("len = " .. list:len())
-    print("get(2) = " .. list:get(2))
-    print("indexOf beta = " .. list:indexOf("beta"))
-    list:remove(2)
+    local list = lurek.patterns.newList(); list:add("alpha")
+    list:add("beta"); list:add("gamma")
+    print("len = " .. list:len()); print("get(2) = " .. list:get(2))
+    print("indexOf beta = " .. list:indexOf("beta")); list:remove(2)
     print("after remove: len = " .. list:len())
 end
 ```
@@ -654,17 +619,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -767,20 +726,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -802,17 +752,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -830,11 +774,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:setValue(1, 2, 50)
-    rm:setValue(1, 3, -20)
-    print("1→2 = " .. rm:getValue(1, 2))
+    local rm = lurek.patterns.newRelationshipManager(); rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20); print("1→2 = " .. rm:getValue(1, 2))
     print("1→3 = " .. rm:getValue(1, 3))
     rm:adjustValue(1, 2, 10)
     print("adjusted 1→2 = " .. rm:getValue(1, 2))
@@ -860,25 +801,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -916,17 +843,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local s = lurek.patterns.newSet()
-    print("added = " .. tostring(s:add("fire")))
-    print("dup = " .. tostring(s:add("fire")))
-    s:add("ice")
-    s:add("wind")
-    print("has fire = " .. tostring(s:has("fire")))
-    print("len = " .. s:len())
-    s:remove("ice")
-    local arr = s:toArray()
-    print("array = " .. #arr)
+    local s = lurek.patterns.newSet(); print("added = " .. tostring(s:add("fire")))
+    print("dup = " .. tostring(s:add("fire"))); s:add("ice")
+    s:add("wind"); print("has fire = " .. tostring(s:has("fire")))
+    print("len = " .. s:len()); s:remove("ice")
+    local arr = s:toArray(); print("array = " .. #arr)
 end
 ```
 
@@ -944,26 +865,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("idle", {
-        enter = function() print("  enter idle") end,
-        exit = function() print("  exit idle") end,
-        update = function(dt) end
-    })
-    fsm:addState("walk", {
-        enter = function() print("  enter walk") end,
-        exit = function() print("  exit walk") end,
-        update = function(dt) print("  walking dt=" .. dt) end
-    })
-    fsm:addState("attack", {
-        enter = function() print("  enter attack") end,
-        update = function(dt) print("  attacking") end
-    })
-    fsm:transitionTo("idle")
-    print("current = " .. fsm:getCurrent())
-    fsm:transitionTo("walk")
-    print("current = " .. fsm:getCurrent())
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("idle", { enter = function() print("  enter idle") end, exit = function() print("  exit idle") end, update = function(dt) end })
+    fsm:addState("walk", { enter = function() print("  enter walk") end, exit = function() print("  exit walk") end, update = function(dt) print("  walking dt=" .. dt) end }); fsm:addState("attack", { enter = function() print("  enter attack") end, update = function(dt) print("  attacking") end })
+    fsm:transitionTo("idle"); print("current = " .. fsm:getCurrent())
+    fsm:transitionTo("walk"); print("current = " .. fsm:getCurrent())
     fsm:update(0.016)
 end
 ```
@@ -986,15 +891,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(100)
-    st:push("first")
-    st:push("second")
-    st:push("third")
-    print("peek = " .. st:peek())
-    print("len = " .. st:len())
-    local v = st:pop()
-    print("popped = " .. v)
+    local st = lurek.patterns.newStack(100); st:push("first")
+    st:push("second"); st:push("third")
+    print("peek = " .. st:peek()); print("len = " .. st:len())
+    local v = st:pop(); print("popped = " .. v)
     print("empty = " .. tostring(st:isEmpty()))
 end
 ```
@@ -1079,17 +979,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id1 = wr:add(10, "common", "common_loot")
-    local id2 = wr:add(3, "rare", "rare_loot")
-    local id3 = wr:add(1, "legendary", "legendary_loot")
-    print("items = " .. wr:len())
-    print("total weight = " .. wr:totalWeight())
-    local picked = wr:pick(0.5)
-    print("picked = " .. tostring(picked))
-    local multi = wr:pickN(2, {0.1, 0.9})
-    print("multi picks = " .. #multi)
+    local wr = lurek.patterns.newWeightedRandom(); local id1 = wr:add(10, "common", "common_loot")
+    local id2 = wr:add(3, "rare", "rare_loot"); local id3 = wr:add(1, "legendary", "legendary_loot")
+    print("items = " .. wr:len()); print("total weight = " .. wr:totalWeight())
+    local picked = wr:pick(0.5); print("picked = " .. tostring(picked))
+    local multi = wr:pickN(2, {0.1, 0.9}); print("multi picks = " .. #multi)
 end
 ```
 
@@ -1116,19 +1010,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSelector("root_sel")
-    local seq_attack = bt:addSequence("attack_seq")
-    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?")
-    local leaf_attack = bt:addLeaf("do_attack", "attack!")
-    bt:addChild(root, seq_attack)
-    bt:addChild(seq_attack, leaf_check)
-    bt:addChild(seq_attack, leaf_attack)
-    local leaf_idle = bt:addLeaf("idle", "idle")
-    bt:addChild(root, leaf_idle)
-    bt:setRoot(root)
-    print("nodes = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSelector("root_sel"); local seq_attack = bt:addSequence("attack_seq")
+    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?"); local leaf_attack = bt:addLeaf("do_attack", "attack!"); bt:addChild(root, seq_attack)
+    bt:addChild(seq_attack, leaf_check); bt:addChild(seq_attack, leaf_attack)
+    local leaf_idle = bt:addLeaf("idle", "idle"); bt:addChild(root, leaf_idle)
+    bt:setRoot(root); print("nodes = " .. bt:nodeCount())
 end
 ```
 
@@ -1150,17 +1036,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBlackboard
-    local bb = lurek.patterns.newBlackboard("game_state")
-    bb:set("health", 100)
-    bb:set("weapon", "sword")
-    bb:set("alive", true)
-    print("health = " .. tostring(bb:get("health")))
-    print("weapon = " .. tostring(bb:get("weapon")))
-    print("has alive = " .. tostring(bb:has("alive")))
-    print("has mana = " .. tostring(bb:has("mana")))
-    local all_keys = bb:keys()
-    print("keys = " .. #all_keys)
+    local bb = lurek.patterns.newBlackboard("game_state"); bb:set("health", 100)
+    bb:set("weapon", "sword"); bb:set("alive", true)
+    print("health = " .. tostring(bb:get("health"))); print("weapon = " .. tostring(bb:get("weapon")))
+    print("has alive = " .. tostring(bb:has("alive"))); print("has mana = " .. tostring(bb:has("mana")))
+    local all_keys = bb:keys(); print("keys = " .. #all_keys)
 end
 ```
 
@@ -1182,19 +1062,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack(50)
-    local value = 0
-    cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
-    print("after add: " .. value)
-    cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end)
-    print("after mul: " .. value)
-    cmds:undo()
-    print("after undo: " .. value)
-    cmds:undo()
-    print("after undo2: " .. value)
-    cmds:redo()
-    print("after redo: " .. value)
+    local cmds = lurek.patterns.newCommandStack(50); local value = 0; cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
+    print("after add: " .. value); cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end); print("after mul: " .. value)
+    cmds:undo(); print("after undo: " .. value)
+    cmds:undo(); print("after undo2: " .. value)
+    cmds:redo(); print("after redo: " .. value)
 end
 ```
 
@@ -1316,13 +1188,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LFunnel
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
-    funnel:onFlush(function(entries)
-        print("  flushed " .. #entries .. " entries")
-        for _, e in ipairs(entries) do
-            print("    " .. e.tag .. " = " .. e.value)
-        end
+    funnel:onFlush(function(entries) print("  flushed " .. #entries .. " entries") for _, e in ipairs(entries) do print("    " .. e.tag .. " = " .. e.value) end
     end)
     funnel:push("fire", 10)
     funnel:push("ice", 5)
@@ -1351,15 +1218,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:add("alpha")
-    list:add("beta")
-    list:add("gamma")
-    print("len = " .. list:len())
-    print("get(2) = " .. list:get(2))
-    print("indexOf beta = " .. list:indexOf("beta"))
-    list:remove(2)
+    local list = lurek.patterns.newList(); list:add("alpha")
+    list:add("beta"); list:add("gamma")
+    print("len = " .. list:len()); print("get(2) = " .. list:get(2))
+    print("indexOf beta = " .. list:indexOf("beta")); list:remove(2)
     print("after remove: len = " .. list:len())
 end
 ```
@@ -1382,17 +1244,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -1503,11 +1359,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(false)
-    local a = g:addNode("A", {cost = 10})
-    local b = g:addNode("B", {cost = 5})
-    local c = g:addNode("C")
+    local g = lurek.patterns.newGraph(false); local a = g:addNode("A", {cost = 10})
+    local b = g:addNode("B", {cost = 5}); local c = g:addNode("C")
     local e1 = g:addEdge(a, b, 1.0, "road")
     local e2 = g:addEdge(b, c, 2.5)
     print("nodes = " .. g:nodeCount() .. " edges = " .. g:edgeCount())
@@ -1532,20 +1385,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -1567,17 +1411,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -1599,11 +1437,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:setValue(1, 2, 50)
-    rm:setValue(1, 3, -20)
-    print("1→2 = " .. rm:getValue(1, 2))
+    local rm = lurek.patterns.newRelationshipManager(); rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20); print("1→2 = " .. rm:getValue(1, 2))
     print("1→3 = " .. rm:getValue(1, 3))
     rm:adjustValue(1, 2, 10)
     print("adjusted 1→2 = " .. rm:getValue(1, 2))
@@ -1628,25 +1463,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -1692,17 +1513,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local s = lurek.patterns.newSet()
-    print("added = " .. tostring(s:add("fire")))
-    print("dup = " .. tostring(s:add("fire")))
-    s:add("ice")
-    s:add("wind")
-    print("has fire = " .. tostring(s:has("fire")))
-    print("len = " .. s:len())
-    s:remove("ice")
-    local arr = s:toArray()
-    print("array = " .. #arr)
+    local s = lurek.patterns.newSet(); print("added = " .. tostring(s:add("fire")))
+    print("dup = " .. tostring(s:add("fire"))); s:add("ice")
+    s:add("wind"); print("has fire = " .. tostring(s:has("fire")))
+    print("len = " .. s:len()); s:remove("ice")
+    local arr = s:toArray(); print("array = " .. #arr)
 end
 ```
 
@@ -1724,26 +1539,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("idle", {
-        enter = function() print("  enter idle") end,
-        exit = function() print("  exit idle") end,
-        update = function(dt) end
-    })
-    fsm:addState("walk", {
-        enter = function() print("  enter walk") end,
-        exit = function() print("  exit walk") end,
-        update = function(dt) print("  walking dt=" .. dt) end
-    })
-    fsm:addState("attack", {
-        enter = function() print("  enter attack") end,
-        update = function(dt) print("  attacking") end
-    })
-    fsm:transitionTo("idle")
-    print("current = " .. fsm:getCurrent())
-    fsm:transitionTo("walk")
-    print("current = " .. fsm:getCurrent())
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("idle", { enter = function() print("  enter idle") end, exit = function() print("  exit idle") end, update = function(dt) end })
+    fsm:addState("walk", { enter = function() print("  enter walk") end, exit = function() print("  exit walk") end, update = function(dt) print("  walking dt=" .. dt) end }); fsm:addState("attack", { enter = function() print("  enter attack") end, update = function(dt) print("  attacking") end })
+    fsm:transitionTo("idle"); print("current = " .. fsm:getCurrent())
+    fsm:transitionTo("walk"); print("current = " .. fsm:getCurrent())
     fsm:update(0.016)
 end
 ```
@@ -1766,15 +1565,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(100)
-    st:push("first")
-    st:push("second")
-    st:push("third")
-    print("peek = " .. st:peek())
-    print("len = " .. st:len())
-    local v = st:pop()
-    print("popped = " .. v)
+    local st = lurek.patterns.newStack(100); st:push("first")
+    st:push("second"); st:push("third")
+    print("peek = " .. st:peek()); print("len = " .. st:len())
+    local v = st:pop(); print("popped = " .. v)
     print("empty = " .. tostring(st:isEmpty()))
 end
 ```
@@ -1867,17 +1661,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id1 = wr:add(10, "common", "common_loot")
-    local id2 = wr:add(3, "rare", "rare_loot")
-    local id3 = wr:add(1, "legendary", "legendary_loot")
-    print("items = " .. wr:len())
-    print("total weight = " .. wr:totalWeight())
-    local picked = wr:pick(0.5)
-    print("picked = " .. tostring(picked))
-    local multi = wr:pickN(2, {0.1, 0.9})
-    print("multi picks = " .. #multi)
+    local wr = lurek.patterns.newWeightedRandom(); local id1 = wr:add(10, "common", "common_loot")
+    local id2 = wr:add(3, "rare", "rare_loot"); local id3 = wr:add(1, "legendary", "legendary_loot")
+    print("items = " .. wr:len()); print("total weight = " .. wr:totalWeight())
+    local picked = wr:pick(0.5); print("picked = " .. tostring(picked))
+    local multi = wr:pickN(2, {0.1, 0.9}); print("multi picks = " .. #multi)
 end
 ```
 
@@ -1915,12 +1703,9 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local bt = lurek.patterns.newBehaviorTree()
-    local seq = bt:addSequence("root_seq")
-    local leaf1 = bt:addLeaf("check", "check_label")
-    local leaf2 = bt:addLeaf("act", "act_label")
-    bt:addChild(seq, leaf1)
-    bt:addChild(seq, leaf2)
+    local bt = lurek.patterns.newBehaviorTree(); local seq = bt:addSequence("root_seq")
+    local leaf1 = bt:addLeaf("check", "check_label"); local leaf2 = bt:addLeaf("act", "act_label")
+    bt:addChild(seq, leaf1); bt:addChild(seq, leaf2)
     bt:setRoot(seq)
     print("node_count=" .. bt:nodeCount())
 end
@@ -1953,20 +1738,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local par = bt:addParallel(2, "par_node")
-    local inv = bt:addInverter("inverter")
-    local rep = bt:addRepeat(3, "repeat_3")
-    local leaf = bt:addLeaf("action", "do_thing")
-    bt:addChild(par, inv)
-    bt:addChild(inv, leaf)
-    bt:addChild(par, rep)
-    local leaf2 = bt:addLeaf("other", "other")
-    bt:addChild(rep, leaf2)
-    print("parallel node created, count = " .. bt:nodeCount())
-    bt:clearAll()
-    print("after clear = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local par = bt:addParallel(2, "par_node"); local inv = bt:addInverter("inverter")
+    local rep = bt:addRepeat(3, "repeat_3"); local leaf = bt:addLeaf("action", "do_thing"); bt:addChild(par, inv)
+    bt:addChild(inv, leaf); bt:addChild(par, rep); local leaf2 = bt:addLeaf("other", "other")
+    bt:addChild(rep, leaf2); print("parallel node created, count = " .. bt:nodeCount())
+    bt:clearAll(); print("after clear = " .. bt:nodeCount())
 end
 ```
 
@@ -1999,19 +1775,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSelector("root_sel")
-    local seq_attack = bt:addSequence("attack_seq")
-    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?")
-    local leaf_attack = bt:addLeaf("do_attack", "attack!")
-    bt:addChild(root, seq_attack)
-    bt:addChild(seq_attack, leaf_check)
-    bt:addChild(seq_attack, leaf_attack)
-    local leaf_idle = bt:addLeaf("idle", "idle")
-    bt:addChild(root, leaf_idle)
-    bt:setRoot(root)
-    print("nodes = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSelector("root_sel"); local seq_attack = bt:addSequence("attack_seq")
+    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?"); local leaf_attack = bt:addLeaf("do_attack", "attack!"); bt:addChild(root, seq_attack)
+    bt:addChild(seq_attack, leaf_check); bt:addChild(seq_attack, leaf_attack)
+    local leaf_idle = bt:addLeaf("idle", "idle"); bt:addChild(root, leaf_idle)
+    bt:setRoot(root); print("nodes = " .. bt:nodeCount())
 end
 ```
 
@@ -2044,20 +1812,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local par = bt:addParallel(2, "par_node")
-    local inv = bt:addInverter("inverter")
-    local rep = bt:addRepeat(3, "repeat_3")
-    local leaf = bt:addLeaf("action", "do_thing")
-    bt:addChild(par, inv)
-    bt:addChild(inv, leaf)
-    bt:addChild(par, rep)
-    local leaf2 = bt:addLeaf("other", "other")
-    bt:addChild(rep, leaf2)
-    print("parallel node created, count = " .. bt:nodeCount())
-    bt:clearAll()
-    print("after clear = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local par = bt:addParallel(2, "par_node"); local inv = bt:addInverter("inverter")
+    local rep = bt:addRepeat(3, "repeat_3"); local leaf = bt:addLeaf("action", "do_thing"); bt:addChild(par, inv)
+    bt:addChild(inv, leaf); bt:addChild(par, rep); local leaf2 = bt:addLeaf("other", "other")
+    bt:addChild(rep, leaf2); print("parallel node created, count = " .. bt:nodeCount())
+    bt:clearAll(); print("after clear = " .. bt:nodeCount())
 end
 ```
 
@@ -2090,20 +1849,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local par = bt:addParallel(2, "par_node")
-    local inv = bt:addInverter("inverter")
-    local rep = bt:addRepeat(3, "repeat_3")
-    local leaf = bt:addLeaf("action", "do_thing")
-    bt:addChild(par, inv)
-    bt:addChild(inv, leaf)
-    bt:addChild(par, rep)
-    local leaf2 = bt:addLeaf("other", "other")
-    bt:addChild(rep, leaf2)
-    print("parallel node created, count = " .. bt:nodeCount())
-    bt:clearAll()
-    print("after clear = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local par = bt:addParallel(2, "par_node"); local inv = bt:addInverter("inverter")
+    local rep = bt:addRepeat(3, "repeat_3"); local leaf = bt:addLeaf("action", "do_thing"); bt:addChild(par, inv)
+    bt:addChild(inv, leaf); bt:addChild(par, rep); local leaf2 = bt:addLeaf("other", "other")
+    bt:addChild(rep, leaf2); print("parallel node created, count = " .. bt:nodeCount())
+    bt:clearAll(); print("after clear = " .. bt:nodeCount())
 end
 ```
 
@@ -2134,19 +1884,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSelector("root_sel")
-    local seq_attack = bt:addSequence("attack_seq")
-    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?")
-    local leaf_attack = bt:addLeaf("do_attack", "attack!")
-    bt:addChild(root, seq_attack)
-    bt:addChild(seq_attack, leaf_check)
-    bt:addChild(seq_attack, leaf_attack)
-    local leaf_idle = bt:addLeaf("idle", "idle")
-    bt:addChild(root, leaf_idle)
-    bt:setRoot(root)
-    print("nodes = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSelector("root_sel"); local seq_attack = bt:addSequence("attack_seq")
+    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?"); local leaf_attack = bt:addLeaf("do_attack", "attack!"); bt:addChild(root, seq_attack)
+    bt:addChild(seq_attack, leaf_check); bt:addChild(seq_attack, leaf_attack)
+    local leaf_idle = bt:addLeaf("idle", "idle"); bt:addChild(root, leaf_idle)
+    bt:setRoot(root); print("nodes = " .. bt:nodeCount())
 end
 ```
 
@@ -2177,19 +1919,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSelector("root_sel")
-    local seq_attack = bt:addSequence("attack_seq")
-    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?")
-    local leaf_attack = bt:addLeaf("do_attack", "attack!")
-    bt:addChild(root, seq_attack)
-    bt:addChild(seq_attack, leaf_check)
-    bt:addChild(seq_attack, leaf_attack)
-    local leaf_idle = bt:addLeaf("idle", "idle")
-    bt:addChild(root, leaf_idle)
-    bt:setRoot(root)
-    print("nodes = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSelector("root_sel"); local seq_attack = bt:addSequence("attack_seq")
+    local leaf_check = bt:addLeaf("check_enemy", "has_enemy?"); local leaf_attack = bt:addLeaf("do_attack", "attack!"); bt:addChild(root, seq_attack)
+    bt:addChild(seq_attack, leaf_check); bt:addChild(seq_attack, leaf_attack)
+    local leaf_idle = bt:addLeaf("idle", "idle"); bt:addChild(root, leaf_idle)
+    bt:setRoot(root); print("nodes = " .. bt:nodeCount())
 end
 ```
 
@@ -2212,20 +1946,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local par = bt:addParallel(2, "par_node")
-    local inv = bt:addInverter("inverter")
-    local rep = bt:addRepeat(3, "repeat_3")
-    local leaf = bt:addLeaf("action", "do_thing")
-    bt:addChild(par, inv)
-    bt:addChild(inv, leaf)
-    bt:addChild(par, rep)
-    local leaf2 = bt:addLeaf("other", "other")
-    bt:addChild(rep, leaf2)
-    print("parallel node created, count = " .. bt:nodeCount())
-    bt:clearAll()
-    print("after clear = " .. bt:nodeCount())
+    local bt = lurek.patterns.newBehaviorTree(); local par = bt:addParallel(2, "par_node"); local inv = bt:addInverter("inverter")
+    local rep = bt:addRepeat(3, "repeat_3"); local leaf = bt:addLeaf("action", "do_thing"); bt:addChild(par, inv)
+    bt:addChild(inv, leaf); bt:addChild(par, rep); local leaf2 = bt:addLeaf("other", "other")
+    bt:addChild(rep, leaf2); print("parallel node created, count = " .. bt:nodeCount())
+    bt:clearAll(); print("after clear = " .. bt:nodeCount())
 end
 ```
 
@@ -2251,12 +1976,9 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local bt = lurek.patterns.newBehaviorTree()
-    local seq = bt:addSequence("root_seq")
-    local leaf1 = bt:addLeaf("check", "check_label")
-    local leaf2 = bt:addLeaf("act", "act_label")
-    bt:addChild(seq, leaf1)
-    bt:addChild(seq, leaf2)
+    local bt = lurek.patterns.newBehaviorTree(); local seq = bt:addSequence("root_seq")
+    local leaf1 = bt:addLeaf("check", "check_label"); local leaf2 = bt:addLeaf("act", "act_label")
+    bt:addChild(seq, leaf1); bt:addChild(seq, leaf2)
     bt:setRoot(seq)
     print("node_count=" .. bt:nodeCount())
 end
@@ -2281,17 +2003,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSequence("root")
-    local check = bt:addLeaf("check", "check")
-    local act = bt:addLeaf("act", "act")
-    bt:addChild(root, check)
-    bt:addChild(root, act)
-    bt:setRoot(root)
-    local enemy_visible = true
-    bt:setLeaf("check", function()
-        if enemy_visible then return "success" else return "failure" end
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSequence("root")
+    local check = bt:addLeaf("check", "check"); local act = bt:addLeaf("act", "act")
+    bt:addChild(root, check); bt:addChild(root, act)
+    bt:setRoot(root); local enemy_visible = true
+    bt:setLeaf("check", function() if enemy_visible then return "success" else return "failure" end
     end)
     bt:setLeaf("act", function()
         print("  attacking enemy!")
@@ -2333,17 +2049,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSequence("root")
-    local check = bt:addLeaf("check", "check")
-    local act = bt:addLeaf("act", "act")
-    bt:addChild(root, check)
-    bt:addChild(root, act)
-    bt:setRoot(root)
-    local enemy_visible = true
-    bt:setLeaf("check", function()
-        if enemy_visible then return "success" else return "failure" end
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSequence("root")
+    local check = bt:addLeaf("check", "check"); local act = bt:addLeaf("act", "act")
+    bt:addChild(root, check); bt:addChild(root, act)
+    bt:setRoot(root); local enemy_visible = true
+    bt:setLeaf("check", function() if enemy_visible then return "success" else return "failure" end
     end)
     bt:setLeaf("act", function()
         print("  attacking enemy!")
@@ -2386,12 +2096,9 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local bt = lurek.patterns.newBehaviorTree()
-    local seq = bt:addSequence("root_seq")
-    local leaf1 = bt:addLeaf("check", "check_label")
-    local leaf2 = bt:addLeaf("act", "act_label")
-    bt:addChild(seq, leaf1)
-    bt:addChild(seq, leaf2)
+    local bt = lurek.patterns.newBehaviorTree(); local seq = bt:addSequence("root_seq")
+    local leaf1 = bt:addLeaf("check", "check_label"); local leaf2 = bt:addLeaf("act", "act_label")
+    bt:addChild(seq, leaf1); bt:addChild(seq, leaf2)
     bt:setRoot(seq)
     print("node_count=" .. bt:nodeCount())
 end
@@ -2419,17 +2126,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBehaviorTree
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSequence("root")
-    local check = bt:addLeaf("check", "check")
-    local act = bt:addLeaf("act", "act")
-    bt:addChild(root, check)
-    bt:addChild(root, act)
-    bt:setRoot(root)
-    local enemy_visible = true
-    bt:setLeaf("check", function()
-        if enemy_visible then return "success" else return "failure" end
+    local bt = lurek.patterns.newBehaviorTree(); local root = bt:addSequence("root")
+    local check = bt:addLeaf("check", "check"); local act = bt:addLeaf("act", "act")
+    bt:addChild(root, check); bt:addChild(root, act)
+    bt:setRoot(root); local enemy_visible = true
+    bt:setLeaf("check", function() if enemy_visible then return "success" else return "failure" end
     end)
     bt:setLeaf("act", function()
         print("  attacking enemy!")
@@ -2555,17 +2256,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBlackboard
-    local bb = lurek.patterns.newBlackboard("game_state")
-    bb:set("health", 100)
-    bb:set("weapon", "sword")
-    bb:set("alive", true)
-    print("health = " .. tostring(bb:get("health")))
-    print("weapon = " .. tostring(bb:get("weapon")))
-    print("has alive = " .. tostring(bb:has("alive")))
-    print("has mana = " .. tostring(bb:has("mana")))
-    local all_keys = bb:keys()
-    print("keys = " .. #all_keys)
+    local bb = lurek.patterns.newBlackboard("game_state"); bb:set("health", 100)
+    bb:set("weapon", "sword"); bb:set("alive", true)
+    print("health = " .. tostring(bb:get("health"))); print("weapon = " .. tostring(bb:get("weapon")))
+    print("has alive = " .. tostring(bb:has("alive"))); print("has mana = " .. tostring(bb:has("mana")))
+    local all_keys = bb:keys(); print("keys = " .. #all_keys)
 end
 ```
 
@@ -2638,17 +2333,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBlackboard
-    local bb = lurek.patterns.newBlackboard("game_state")
-    bb:set("health", 100)
-    bb:set("weapon", "sword")
-    bb:set("alive", true)
-    print("health = " .. tostring(bb:get("health")))
-    print("weapon = " .. tostring(bb:get("weapon")))
-    print("has alive = " .. tostring(bb:has("alive")))
-    print("has mana = " .. tostring(bb:has("mana")))
-    local all_keys = bb:keys()
-    print("keys = " .. #all_keys)
+    local bb = lurek.patterns.newBlackboard("game_state"); bb:set("health", 100)
+    bb:set("weapon", "sword"); bb:set("alive", true)
+    print("health = " .. tostring(bb:get("health"))); print("weapon = " .. tostring(bb:get("weapon")))
+    print("has alive = " .. tostring(bb:has("alive"))); print("has mana = " .. tostring(bb:has("mana")))
+    local all_keys = bb:keys(); print("keys = " .. #all_keys)
 end
 ```
 
@@ -2674,17 +2363,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBlackboard
-    local bb = lurek.patterns.newBlackboard("game_state")
-    bb:set("health", 100)
-    bb:set("weapon", "sword")
-    bb:set("alive", true)
-    print("health = " .. tostring(bb:get("health")))
-    print("weapon = " .. tostring(bb:get("weapon")))
-    print("has alive = " .. tostring(bb:has("alive")))
-    print("has mana = " .. tostring(bb:has("mana")))
-    local all_keys = bb:keys()
-    print("keys = " .. #all_keys)
+    local bb = lurek.patterns.newBlackboard("game_state"); bb:set("health", 100)
+    bb:set("weapon", "sword"); bb:set("alive", true)
+    print("health = " .. tostring(bb:get("health"))); print("weapon = " .. tostring(bb:get("weapon")))
+    print("has alive = " .. tostring(bb:has("alive"))); print("has mana = " .. tostring(bb:has("mana")))
+    local all_keys = bb:keys(); print("keys = " .. #all_keys)
 end
 ```
 
@@ -2714,28 +2397,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LBlackboard
-    local bb = lurek.patterns.newBlackboard("game_state")
-    bb:set("health", 100)
-    bb:set("weapon", "sword")
-    bb:set("alive", true)
-    print("health = " .. tostring(bb:get("health")))
-    print("weapon = " .. tostring(bb:get("weapon")))
-    print("has alive = " .. tostring(bb:has("alive")))
-    print("has mana = " .. tostring(bb:has("mana")))
-    local all_keys = bb:keys()
-    print("keys = " .. #all_keys)
-
-    -- Combined patterns: FSM transitions emit events, blackboard stores shared state.
-    ---@type LBlackboard
-    local bb = lurek.patterns.newBlackboard("game")
-    bb:set("health", 100)
-    bb:set("score", 0)
-
-    ---@type LEventBus
-    local bus = lurek.patterns.newEventBus("game_bus")
-    bus:on("state_change", function(from, to)
-        print("  state: " .. from .. " → " .. to)
+    local bb = lurek.patterns.newBlackboard("game_state"); bb:set("health", 100); bb:set("weapon", "sword")
+    bb:set("alive", true); print("health = " .. tostring(bb:get("health"))); print("weapon = " .. tostring(bb:get("weapon")))
+    print("has alive = " .. tostring(bb:has("alive"))); print("has mana = " .. tostring(bb:has("mana"))); local all_keys = bb:keys()
+    print("keys = " .. #all_keys); local bb = lurek.patterns.newBlackboard("game"); bb:set("health", 100)
+    bb:set("score", 0); local bus = lurek.patterns.newEventBus("game_bus"); bus:on("state_change", function(from, to) print("  state: " .. from .. " → " .. to)
     end)
 
     ---@type LSimpleState
@@ -2761,6 +2427,23 @@ do
     fsm:transitionTo("idle")
     fsm:transitionTo("combat")
     fsm:update(1.0)
+    print("health after combat = " .. tostring(bb:get("health")))
+    print("current state = " .. fsm:getCurrent())
+
+    -- BT reads blackboard, strategy provides the algorithm.
+    ---@type LBlackboard
+    local bb = lurek.patterns.newBlackboard("ai")
+    bb:set("enemy_distance", 50)
+    bb:set("hp_percent", 0.3)
+
+    ---@type LStrategy
+    local strat = lurek.patterns.newStrategy()
+    strat:register("melee", function()
+        return "swing sword"
+    end)
+    strat:register("ranged", function()
+        return "shoot arrow"
+    end)
 ```
 
 ### LBlackboard:snapshot
@@ -2920,15 +2603,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack()
-    cmds:execute("step1", function() end, function() end)
-    cmds:execute("step2", function() end, function() end)
-    print("can undo = " .. tostring(cmds:canUndo()))
-    print("can redo = " .. tostring(cmds:canRedo()))
-    print("current = " .. cmds:getCurrentName())
-    print("history = " .. cmds:getHistorySize())
-    cmds:clearAll()
+    local cmds = lurek.patterns.newCommandStack(); cmds:execute("step1", function() end, function() end)
+    cmds:execute("step2", function() end, function() end); print("can undo = " .. tostring(cmds:canUndo()))
+    print("can redo = " .. tostring(cmds:canRedo())); print("current = " .. cmds:getCurrentName())
+    print("history = " .. cmds:getHistorySize()); cmds:clearAll()
     print("after clear = " .. cmds:getHistorySize())
 end
 ```
@@ -2955,15 +2633,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack()
-    cmds:execute("step1", function() end, function() end)
-    cmds:execute("step2", function() end, function() end)
-    print("can undo = " .. tostring(cmds:canUndo()))
-    print("can redo = " .. tostring(cmds:canRedo()))
-    print("current = " .. cmds:getCurrentName())
-    print("history = " .. cmds:getHistorySize())
-    cmds:clearAll()
+    local cmds = lurek.patterns.newCommandStack(); cmds:execute("step1", function() end, function() end)
+    cmds:execute("step2", function() end, function() end); print("can undo = " .. tostring(cmds:canUndo()))
+    print("can redo = " .. tostring(cmds:canRedo())); print("current = " .. cmds:getCurrentName())
+    print("history = " .. cmds:getHistorySize()); cmds:clearAll()
     print("after clear = " .. cmds:getHistorySize())
 end
 ```
@@ -2987,15 +2660,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack()
-    cmds:execute("step1", function() end, function() end)
-    cmds:execute("step2", function() end, function() end)
-    print("can undo = " .. tostring(cmds:canUndo()))
-    print("can redo = " .. tostring(cmds:canRedo()))
-    print("current = " .. cmds:getCurrentName())
-    print("history = " .. cmds:getHistorySize())
-    cmds:clearAll()
+    local cmds = lurek.patterns.newCommandStack(); cmds:execute("step1", function() end, function() end)
+    cmds:execute("step2", function() end, function() end); print("can undo = " .. tostring(cmds:canUndo()))
+    print("can redo = " .. tostring(cmds:canRedo())); print("current = " .. cmds:getCurrentName())
+    print("history = " .. cmds:getHistorySize()); cmds:clearAll()
     print("after clear = " .. cmds:getHistorySize())
 end
 ```
@@ -3028,19 +2696,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack(50)
-    local value = 0
-    cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
-    print("after add: " .. value)
-    cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end)
-    print("after mul: " .. value)
-    cmds:undo()
-    print("after undo: " .. value)
-    cmds:undo()
-    print("after undo2: " .. value)
-    cmds:redo()
-    print("after redo: " .. value)
+    local cmds = lurek.patterns.newCommandStack(50); local value = 0; cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
+    print("after add: " .. value); cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end); print("after mul: " .. value)
+    cmds:undo(); print("after undo: " .. value)
+    cmds:undo(); print("after undo2: " .. value)
+    cmds:redo(); print("after redo: " .. value)
 end
 ```
 
@@ -3066,15 +2726,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack()
-    cmds:execute("step1", function() end, function() end)
-    cmds:execute("step2", function() end, function() end)
-    print("can undo = " .. tostring(cmds:canUndo()))
-    print("can redo = " .. tostring(cmds:canRedo()))
-    print("current = " .. cmds:getCurrentName())
-    print("history = " .. cmds:getHistorySize())
-    cmds:clearAll()
+    local cmds = lurek.patterns.newCommandStack(); cmds:execute("step1", function() end, function() end)
+    cmds:execute("step2", function() end, function() end); print("can undo = " .. tostring(cmds:canUndo()))
+    print("can redo = " .. tostring(cmds:canRedo())); print("current = " .. cmds:getCurrentName())
+    print("history = " .. cmds:getHistorySize()); cmds:clearAll()
     print("after clear = " .. cmds:getHistorySize())
 end
 ```
@@ -3101,15 +2756,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack()
-    cmds:execute("step1", function() end, function() end)
-    cmds:execute("step2", function() end, function() end)
-    print("can undo = " .. tostring(cmds:canUndo()))
-    print("can redo = " .. tostring(cmds:canRedo()))
-    print("current = " .. cmds:getCurrentName())
-    print("history = " .. cmds:getHistorySize())
-    cmds:clearAll()
+    local cmds = lurek.patterns.newCommandStack(); cmds:execute("step1", function() end, function() end)
+    cmds:execute("step2", function() end, function() end); print("can undo = " .. tostring(cmds:canUndo()))
+    print("can redo = " .. tostring(cmds:canRedo())); print("current = " .. cmds:getCurrentName())
+    print("history = " .. cmds:getHistorySize()); cmds:clearAll()
     print("after clear = " .. cmds:getHistorySize())
 end
 ```
@@ -3136,19 +2786,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack(50)
-    local value = 0
-    cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
-    print("after add: " .. value)
-    cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end)
-    print("after mul: " .. value)
-    cmds:undo()
-    print("after undo: " .. value)
-    cmds:undo()
-    print("after undo2: " .. value)
-    cmds:redo()
-    print("after redo: " .. value)
+    local cmds = lurek.patterns.newCommandStack(50); local value = 0; cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
+    print("after add: " .. value); cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end); print("after mul: " .. value)
+    cmds:undo(); print("after undo: " .. value)
+    cmds:undo(); print("after undo2: " .. value)
+    cmds:redo(); print("after redo: " .. value)
 end
 ```
 
@@ -3174,19 +2816,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack(50)
-    local value = 0
-    cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
-    print("after add: " .. value)
-    cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end)
-    print("after mul: " .. value)
-    cmds:undo()
-    print("after undo: " .. value)
-    cmds:undo()
-    print("after undo2: " .. value)
-    cmds:redo()
-    print("after redo: " .. value)
+    local cmds = lurek.patterns.newCommandStack(50); local value = 0; cmds:execute("add 10", function() value = value + 10 end, function() value = value - 10 end)
+    print("after add: " .. value); cmds:execute("mul 2", function() value = value * 2 end, function() value = value / 2 end); print("after mul: " .. value)
+    cmds:undo(); print("after undo: " .. value)
+    cmds:undo(); print("after undo2: " .. value)
+    cmds:redo(); print("after redo: " .. value)
 end
 ```
 
@@ -3209,13 +2843,9 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LDebounce
-    local db = lurek.patterns.newDebounce(1.0)
-    db:onFire(function() print("  should not fire") end)
-    db:trigger()
-    print("pending = " .. tostring(db:isPending()))
-    db:cancel()
-    print("after cancel: pending = " .. tostring(db:isPending()))
+    local db = lurek.patterns.newDebounce(1.0); db:onFire(function() print("  should not fire") end)
+    db:trigger(); print("pending = " .. tostring(db:isPending()))
+    db:cancel(); print("after cancel: pending = " .. tostring(db:isPending()))
     db:update(2.0)
     print("fire count = " .. db:getFireCount())
 end
@@ -3243,13 +2873,9 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LDebounce
-    local db = lurek.patterns.newDebounce(1.0)
-    db:onFire(function() print("  should not fire") end)
-    db:trigger()
-    print("pending = " .. tostring(db:isPending()))
-    db:cancel()
-    print("after cancel: pending = " .. tostring(db:isPending()))
+    local db = lurek.patterns.newDebounce(1.0); db:onFire(function() print("  should not fire") end)
+    db:trigger(); print("pending = " .. tostring(db:isPending()))
+    db:cancel(); print("after cancel: pending = " .. tostring(db:isPending()))
     db:update(2.0)
     print("fire count = " .. db:getFireCount())
 end
@@ -3277,13 +2903,9 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LDebounce
-    local db = lurek.patterns.newDebounce(1.0)
-    db:onFire(function() print("  should not fire") end)
-    db:trigger()
-    print("pending = " .. tostring(db:isPending()))
-    db:cancel()
-    print("after cancel: pending = " .. tostring(db:isPending()))
+    local db = lurek.patterns.newDebounce(1.0); db:onFire(function() print("  should not fire") end)
+    db:trigger(); print("pending = " .. tostring(db:isPending()))
+    db:cancel(); print("after cancel: pending = " .. tostring(db:isPending()))
     db:update(2.0)
     print("fire count = " .. db:getFireCount())
 end
@@ -3428,17 +3050,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LEventBus
-    local bus = lurek.patterns.newEventBus()
-    bus:on("spawn", function() end)
-    bus:on("spawn", function() end)
-    bus:on("death", function() end)
-    print("spawn listeners = " .. bus:getListenerCount("spawn"))
-    print("events = " .. #bus:getEvents())
-    bus:clear("spawn")
-    print("after clear spawn: " .. bus:getListenerCount("spawn"))
-    bus:clearAll()
-    print("after clearAll: events = " .. #bus:getEvents())
+    local bus = lurek.patterns.newEventBus(); bus:on("spawn", function() end)
+    bus:on("spawn", function() end); bus:on("death", function() end)
+    print("spawn listeners = " .. bus:getListenerCount("spawn")); print("events = " .. #bus:getEvents())
+    bus:clear("spawn"); print("after clear spawn: " .. bus:getListenerCount("spawn"))
+    bus:clearAll(); print("after clearAll: events = " .. #bus:getEvents())
 end
 ```
 
@@ -3461,17 +3077,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LEventBus
-    local bus = lurek.patterns.newEventBus()
-    bus:on("spawn", function() end)
-    bus:on("spawn", function() end)
-    bus:on("death", function() end)
-    print("spawn listeners = " .. bus:getListenerCount("spawn"))
-    print("events = " .. #bus:getEvents())
-    bus:clear("spawn")
-    print("after clear spawn: " .. bus:getListenerCount("spawn"))
-    bus:clearAll()
-    print("after clearAll: events = " .. #bus:getEvents())
+    local bus = lurek.patterns.newEventBus(); bus:on("spawn", function() end)
+    bus:on("spawn", function() end); bus:on("death", function() end)
+    print("spawn listeners = " .. bus:getListenerCount("spawn")); print("events = " .. #bus:getEvents())
+    bus:clear("spawn"); print("after clear spawn: " .. bus:getListenerCount("spawn"))
+    bus:clearAll(); print("after clearAll: events = " .. #bus:getEvents())
 end
 ```
 
@@ -3537,17 +3147,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LEventBus
-    local bus = lurek.patterns.newEventBus()
-    bus:on("spawn", function() end)
-    bus:on("spawn", function() end)
-    bus:on("death", function() end)
-    print("spawn listeners = " .. bus:getListenerCount("spawn"))
-    print("events = " .. #bus:getEvents())
-    bus:clear("spawn")
-    print("after clear spawn: " .. bus:getListenerCount("spawn"))
-    bus:clearAll()
-    print("after clearAll: events = " .. #bus:getEvents())
+    local bus = lurek.patterns.newEventBus(); bus:on("spawn", function() end)
+    bus:on("spawn", function() end); bus:on("death", function() end)
+    print("spawn listeners = " .. bus:getListenerCount("spawn")); print("events = " .. #bus:getEvents())
+    bus:clear("spawn"); print("after clear spawn: " .. bus:getListenerCount("spawn"))
+    bus:clearAll(); print("after clearAll: events = " .. #bus:getEvents())
 end
 ```
 
@@ -3578,17 +3182,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LEventBus
-    local bus = lurek.patterns.newEventBus()
-    bus:on("spawn", function() end)
-    bus:on("spawn", function() end)
-    bus:on("death", function() end)
-    print("spawn listeners = " .. bus:getListenerCount("spawn"))
-    print("events = " .. #bus:getEvents())
-    bus:clear("spawn")
-    print("after clear spawn: " .. bus:getListenerCount("spawn"))
-    bus:clearAll()
-    print("after clearAll: events = " .. #bus:getEvents())
+    local bus = lurek.patterns.newEventBus(); bus:on("spawn", function() end)
+    bus:on("spawn", function() end); bus:on("death", function() end)
+    print("spawn listeners = " .. bus:getListenerCount("spawn")); print("events = " .. #bus:getEvents())
+    bus:clear("spawn"); print("after clear spawn: " .. bus:getListenerCount("spawn"))
+    bus:clearAll(); print("after clearAll: events = " .. #bus:getEvents())
 end
 ```
 
@@ -3806,7 +3404,6 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LFactory
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function(hp, speed)
         return {type = "enemy", hp = hp or 100, speed = speed or 50}
@@ -3814,8 +3411,6 @@ do
     factory:register("bullet", function(dmg)
         return {type = "bullet", damage = dmg or 10}
     end)
-    print("has enemy = " .. tostring(factory:has("enemy")))
-    print("types = " .. #factory:getTypes())
     local e = factory:create("enemy", 200, 75)
     print("enemy hp = " .. e.hp .. " speed = " .. e.speed)
     local b = factory:create("bullet", 25)
@@ -3889,20 +3484,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LFactory
     local factory = lurek.patterns.newFactory()
-    factory:register("enemy", function(hp, speed)
-        return {type = "enemy", hp = hp or 100, speed = speed or 50}
-    end)
-    factory:register("bullet", function(dmg)
-        return {type = "bullet", damage = dmg or 10}
+    factory:register("enemy", function()
+        return {type = "enemy"}
     end)
     print("has enemy = " .. tostring(factory:has("enemy")))
-    print("types = " .. #factory:getTypes())
-    local e = factory:create("enemy", 200, 75)
-    print("enemy hp = " .. e.hp .. " speed = " .. e.speed)
-    local b = factory:create("bullet", 25)
-    print("bullet dmg = " .. b.damage)
 end
 ```
 
@@ -4117,13 +3703,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LFunnel
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
-    funnel:onFlush(function(entries)
-        print("  flushed " .. #entries .. " entries")
-        for _, e in ipairs(entries) do
-            print("    " .. e.tag .. " = " .. e.value)
-        end
+    funnel:onFlush(function(entries) print("  flushed " .. #entries .. " entries") for _, e in ipairs(entries) do print("    " .. e.tag .. " = " .. e.value) end
     end)
     funnel:push("fire", 10)
     funnel:push("ice", 5)
@@ -4164,6 +3745,8 @@ do
     db:trigger()
     db:update(0.4)
     print("total damage = " .. total_damage)
+    print("funnel pending = " .. funnel:pendingCount())
+end
 ```
 
 ### LFunnel:pendingCount
@@ -4229,13 +3812,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LFunnel
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
-    funnel:onFlush(function(entries)
-        print("  flushed " .. #entries .. " entries")
-        for _, e in ipairs(entries) do
-            print("    " .. e.tag .. " = " .. e.value)
-        end
+    funnel:onFlush(function(entries) print("  flushed " .. #entries .. " entries") for _, e in ipairs(entries) do print("    " .. e.tag .. " = " .. e.value) end
     end)
     funnel:push("fire", 10)
     funnel:push("ice", 5)
@@ -4273,13 +3851,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LFunnel
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
-    funnel:onFlush(function(entries)
-        print("  flushed " .. #entries .. " entries")
-        for _, e in ipairs(entries) do
-            print("    " .. e.tag .. " = " .. e.value)
-        end
+    funnel:onFlush(function(entries) print("  flushed " .. #entries .. " entries") for _, e in ipairs(entries) do print("    " .. e.tag .. " = " .. e.value) end
     end)
     funnel:push("fire", 10)
     funnel:push("ice", 5)
@@ -4314,15 +3887,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:add("alpha")
-    list:add("beta")
-    list:add("gamma")
-    print("len = " .. list:len())
-    print("get(2) = " .. list:get(2))
-    print("indexOf beta = " .. list:indexOf("beta"))
-    list:remove(2)
+    local list = lurek.patterns.newList(); list:add("alpha")
+    list:add("beta"); list:add("gamma")
+    print("len = " .. list:len()); print("get(2) = " .. list:get(2))
+    print("indexOf beta = " .. list:indexOf("beta")); list:remove(2)
     print("after remove: len = " .. list:len())
 end
 ```
@@ -4346,10 +3914,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local list = lurek.patterns.newList()
-    list:add(1)
-    list:add(2)
-    list:add(3)
+    local list = lurek.patterns.newList(); list:add(1)
+    list:add(2); list:add(3)
     print("before_clear=" .. list:len())
     list:clear()
     print("after_clear=" .. list:len())
@@ -4383,24 +3949,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4432,15 +3985,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:add("alpha")
-    list:add("beta")
-    list:add("gamma")
-    print("len = " .. list:len())
-    print("get(2) = " .. list:get(2))
-    print("indexOf beta = " .. list:indexOf("beta"))
-    list:remove(2)
+    local list = lurek.patterns.newList(); list:add("alpha")
+    list:add("beta"); list:add("gamma")
+    print("len = " .. list:len()); print("get(2) = " .. list:get(2))
+    print("indexOf beta = " .. list:indexOf("beta")); list:remove(2)
     print("after remove: len = " .. list:len())
 end
 ```
@@ -4472,15 +4020,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:add("alpha")
-    list:add("beta")
-    list:add("gamma")
-    print("len = " .. list:len())
-    print("get(2) = " .. list:get(2))
-    print("indexOf beta = " .. list:indexOf("beta"))
-    list:remove(2)
+    local list = lurek.patterns.newList(); list:add("alpha")
+    list:add("beta"); list:add("gamma")
+    print("len = " .. list:len()); print("get(2) = " .. list:get(2))
+    print("indexOf beta = " .. list:indexOf("beta")); list:remove(2)
     print("after remove: len = " .. list:len())
 end
 ```
@@ -4511,24 +4054,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4554,24 +4084,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4597,15 +4114,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:add("alpha")
-    list:add("beta")
-    list:add("gamma")
-    print("len = " .. list:len())
-    print("get(2) = " .. list:get(2))
-    print("indexOf beta = " .. list:indexOf("beta"))
-    list:remove(2)
+    local list = lurek.patterns.newList(); list:add("alpha")
+    list:add("beta"); list:add("gamma")
+    print("len = " .. list:len()); print("get(2) = " .. list:get(2))
+    print("indexOf beta = " .. list:indexOf("beta")); list:remove(2)
     print("after remove: len = " .. list:len())
 end
 ```
@@ -4633,24 +4145,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4678,24 +4177,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4727,15 +4213,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:add("alpha")
-    list:add("beta")
-    list:add("gamma")
-    print("len = " .. list:len())
-    print("get(2) = " .. list:get(2))
-    print("indexOf beta = " .. list:indexOf("beta"))
-    list:remove(2)
+    local list = lurek.patterns.newList(); list:add("alpha")
+    list:add("beta"); list:add("gamma")
+    print("len = " .. list:len()); print("get(2) = " .. list:get(2))
+    print("indexOf beta = " .. list:indexOf("beta")); list:remove(2)
     print("after remove: len = " .. list:len())
 end
 ```
@@ -4759,24 +4240,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4806,24 +4274,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4850,24 +4305,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4893,24 +4335,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4938,24 +4367,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LList
-    local list = lurek.patterns.newList()
-    list:push("a")
-    list:push("b")
-    list:push("c")
-    list:insert(2, "x")
-    list:set(1, "A")
-    print("contains x = " .. tostring(list:contains("x")))
-    list:unshift("first")
-    local shifted = list:shift()
-    print("shifted = " .. shifted)
-    local popped = list:pop()
-    print("popped = " .. popped)
-    list:reverse()
-    local arr = list:toArray()
-    print("array len = " .. #arr)
-    list:clear()
-    print("empty = " .. tostring(list:isEmpty()))
+    local list = lurek.patterns.newList(); list:push("a"); list:push("b"); list:push("c")
+    list:insert(2, "x"); list:set(1, "A"); print("contains x = " .. tostring(list:contains("x"))); list:unshift("first")
+    local shifted = list:shift(); print("shifted = " .. shifted); local popped = list:pop()
+    print("popped = " .. popped); list:reverse(); local arr = list:toArray()
+    print("array len = " .. #arr); list:clear(); print("empty = " .. tostring(list:isEmpty()))
 end
 ```
 
@@ -4978,21 +4394,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local m1 = lurek.patterns.newMap()
-    m1:set("a", 1)
-    m1:set("b", 2)
-    ---@type LMap
-    local m2 = lurek.patterns.newMap()
-    m2:set("b", 99)
-    m2:set("c", 3)
-    m1:merge(m2)
-    print("after merge: b = " .. m1:get("b"))
-    local entries = m1:entries()
-    print("entries = " .. #entries)
-    print("empty = " .. tostring(m1:isEmpty()))
-    m1:clear()
-    print("after clear: empty = " .. tostring(m1:isEmpty()))
+    local m1 = lurek.patterns.newMap(); m1:set("a", 1); m1:set("b", 2)
+    local m2 = lurek.patterns.newMap(); m2:set("b", 99); m2:set("c", 3)
+    m1:merge(m2); print("after merge: b = " .. m1:get("b")); local entries = m1:entries()
+    print("entries = " .. #entries); print("empty = " .. tostring(m1:isEmpty()))
+    m1:clear(); print("after clear: empty = " .. tostring(m1:isEmpty()))
 end
 ```
 
@@ -5018,21 +4424,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local m1 = lurek.patterns.newMap()
-    m1:set("a", 1)
-    m1:set("b", 2)
-    ---@type LMap
-    local m2 = lurek.patterns.newMap()
-    m2:set("b", 99)
-    m2:set("c", 3)
-    m1:merge(m2)
-    print("after merge: b = " .. m1:get("b"))
-    local entries = m1:entries()
-    print("entries = " .. #entries)
-    print("empty = " .. tostring(m1:isEmpty()))
-    m1:clear()
-    print("after clear: empty = " .. tostring(m1:isEmpty()))
+    local m1 = lurek.patterns.newMap(); m1:set("a", 1); m1:set("b", 2)
+    local m2 = lurek.patterns.newMap(); m2:set("b", 99); m2:set("c", 3)
+    m1:merge(m2); print("after merge: b = " .. m1:get("b")); local entries = m1:entries()
+    print("entries = " .. #entries); print("empty = " .. tostring(m1:isEmpty()))
+    m1:clear(); print("after clear: empty = " .. tostring(m1:isEmpty()))
 end
 ```
 
@@ -5064,17 +4460,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -5105,17 +4495,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -5141,21 +4525,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local m1 = lurek.patterns.newMap()
-    m1:set("a", 1)
-    m1:set("b", 2)
-    ---@type LMap
-    local m2 = lurek.patterns.newMap()
-    m2:set("b", 99)
-    m2:set("c", 3)
-    m1:merge(m2)
-    print("after merge: b = " .. m1:get("b"))
-    local entries = m1:entries()
-    print("entries = " .. #entries)
-    print("empty = " .. tostring(m1:isEmpty()))
-    m1:clear()
-    print("after clear: empty = " .. tostring(m1:isEmpty()))
+    local m1 = lurek.patterns.newMap(); m1:set("a", 1); m1:set("b", 2)
+    local m2 = lurek.patterns.newMap(); m2:set("b", 99); m2:set("c", 3)
+    m1:merge(m2); print("after merge: b = " .. m1:get("b")); local entries = m1:entries()
+    print("entries = " .. #entries); print("empty = " .. tostring(m1:isEmpty()))
+    m1:clear(); print("after clear: empty = " .. tostring(m1:isEmpty()))
 end
 ```
 
@@ -5181,17 +4555,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -5217,17 +4585,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -5255,21 +4617,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local m1 = lurek.patterns.newMap()
-    m1:set("a", 1)
-    m1:set("b", 2)
-    ---@type LMap
-    local m2 = lurek.patterns.newMap()
-    m2:set("b", 99)
-    m2:set("c", 3)
-    m1:merge(m2)
-    print("after merge: b = " .. m1:get("b"))
-    local entries = m1:entries()
-    print("entries = " .. #entries)
-    print("empty = " .. tostring(m1:isEmpty()))
-    m1:clear()
-    print("after clear: empty = " .. tostring(m1:isEmpty()))
+    local m1 = lurek.patterns.newMap(); m1:set("a", 1); m1:set("b", 2)
+    local m2 = lurek.patterns.newMap(); m2:set("b", 99); m2:set("c", 3)
+    m1:merge(m2); print("after merge: b = " .. m1:get("b")); local entries = m1:entries()
+    print("entries = " .. #entries); print("empty = " .. tostring(m1:isEmpty()))
+    m1:clear(); print("after clear: empty = " .. tostring(m1:isEmpty()))
 end
 ```
 
@@ -5300,17 +4652,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -5340,33 +4686,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
-
-    -- Undo/redo with change notification and state tracking in map.
-    ---@type LMap
-    local state = lurek.patterns.newMap()
-    state:set("x", 100)
-    state:set("y", 200)
-
-    ---@type LObserver
-    local obs = lurek.patterns.newObserver("position")
-
-    ---@type LCommandStack
-    local cmds = lurek.patterns.newCommandStack(20)
-
-    local move_step = 0
-    obs:subscribe("moved", function(_, step)
-        print("  move step: " .. tostring(step))
+    local map = lurek.patterns.newMap(); map:set("name", "hero"); map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level"))); print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values()); local state = lurek.patterns.newMap()
+    state:set("x", 100); state:set("y", 200); local obs = lurek.patterns.newObserver("position")
+    local cmds = lurek.patterns.newCommandStack(20); local move_step = 0; obs:subscribe("moved", function(_, step) print("  move step: " .. tostring(step))
     end)
 
     cmds:execute("move_right",
@@ -5387,6 +4711,22 @@ do
         function()
             local y = state:get("y")
             state:set("y", y + 30)
+            move_step = move_step + 1
+            obs:set("moved", move_step)
+        end,
+        function()
+            local y = state:get("y")
+            state:set("y", y - 30)
+            move_step = move_step + 1
+            obs:set("moved", move_step)
+        end
+    )
+    print("pos = " .. state:get("x") .. "," .. state:get("y"))
+    cmds:undo()
+    print("after undo = " .. state:get("x") .. "," .. state:get("y"))
+    cmds:redo()
+    print("after redo = " .. state:get("x") .. "," .. state:get("y"))
+end
 ```
 
 ### LMap:values
@@ -5411,17 +4751,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMap
-    local map = lurek.patterns.newMap()
-    map:set("name", "hero")
-    map:set("level", 5)
-    map:set("class", "warrior")
-    print("name = " .. map:get("name"))
-    print("has level = " .. tostring(map:has("level")))
-    print("len = " .. map:len())
-    map:remove("class")
-    print("keys = " .. #map:keys())
-    print("values = " .. #map:values())
+    local map = lurek.patterns.newMap(); map:set("name", "hero")
+    map:set("level", 5); map:set("class", "warrior")
+    print("name = " .. map:get("name")); print("has level = " .. tostring(map:has("level")))
+    print("len = " .. map:len()); map:remove("class")
+    print("keys = " .. #map:keys()); print("values = " .. #map:values())
 end
 ```
 
@@ -5449,18 +4783,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMediator
-    local med = lurek.patterns.newMediator()
-    med:on("audio", function(...) end)
-    med:on("video", function(...) end)
-    med:on("input", function(...) end)
-    med:broadcast("system_pause")
-    print("channels = " .. #med:channels())
-    print("audio handlers = " .. med:handlerCount("audio"))
-    med:removeChannel("audio")
-    print("after remove: channels = " .. #med:channels())
-    med:clear()
-    print("after clear: channels = " .. #med:channels())
+    local med = lurek.patterns.newMediator(); med:on("audio", function(...) end); med:on("video", function(...) end)
+    med:on("input", function(...) end); med:broadcast("system_pause")
+    print("channels = " .. #med:channels()); print("audio handlers = " .. med:handlerCount("audio"))
+    med:removeChannel("audio"); print("after remove: channels = " .. #med:channels())
+    med:clear(); print("after clear: channels = " .. #med:channels())
 end
 ```
 
@@ -5486,18 +4813,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMediator
-    local med = lurek.patterns.newMediator()
-    med:on("audio", function(...) end)
-    med:on("video", function(...) end)
-    med:on("input", function(...) end)
-    med:broadcast("system_pause")
-    print("channels = " .. #med:channels())
-    print("audio handlers = " .. med:handlerCount("audio"))
-    med:removeChannel("audio")
-    print("after remove: channels = " .. #med:channels())
-    med:clear()
-    print("after clear: channels = " .. #med:channels())
+    local med = lurek.patterns.newMediator(); med:on("audio", function(...) end); med:on("video", function(...) end)
+    med:on("input", function(...) end); med:broadcast("system_pause")
+    print("channels = " .. #med:channels()); print("audio handlers = " .. med:handlerCount("audio"))
+    med:removeChannel("audio"); print("after remove: channels = " .. #med:channels())
+    med:clear(); print("after clear: channels = " .. #med:channels())
 end
 ```
 
@@ -5520,18 +4840,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMediator
-    local med = lurek.patterns.newMediator()
-    med:on("audio", function(...) end)
-    med:on("video", function(...) end)
-    med:on("input", function(...) end)
-    med:broadcast("system_pause")
-    print("channels = " .. #med:channels())
-    print("audio handlers = " .. med:handlerCount("audio"))
-    med:removeChannel("audio")
-    print("after remove: channels = " .. #med:channels())
-    med:clear()
-    print("after clear: channels = " .. #med:channels())
+    local med = lurek.patterns.newMediator(); med:on("audio", function(...) end); med:on("video", function(...) end)
+    med:on("input", function(...) end); med:broadcast("system_pause")
+    print("channels = " .. #med:channels()); print("audio handlers = " .. med:handlerCount("audio"))
+    med:removeChannel("audio"); print("after remove: channels = " .. #med:channels())
+    med:clear(); print("after clear: channels = " .. #med:channels())
 end
 ```
 
@@ -5562,18 +4875,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMediator
-    local med = lurek.patterns.newMediator()
-    med:on("audio", function(...) end)
-    med:on("video", function(...) end)
-    med:on("input", function(...) end)
-    med:broadcast("system_pause")
-    print("channels = " .. #med:channels())
-    print("audio handlers = " .. med:handlerCount("audio"))
-    med:removeChannel("audio")
-    print("after remove: channels = " .. #med:channels())
-    med:clear()
-    print("after clear: channels = " .. #med:channels())
+    local med = lurek.patterns.newMediator(); med:on("audio", function(...) end); med:on("video", function(...) end)
+    med:on("input", function(...) end); med:broadcast("system_pause")
+    print("channels = " .. #med:channels()); print("audio handlers = " .. med:handlerCount("audio"))
+    med:removeChannel("audio"); print("after remove: channels = " .. #med:channels())
+    med:clear(); print("after clear: channels = " .. #med:channels())
 end
 ```
 
@@ -5686,18 +4992,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LMediator
-    local med = lurek.patterns.newMediator()
-    med:on("audio", function(...) end)
-    med:on("video", function(...) end)
-    med:on("input", function(...) end)
-    med:broadcast("system_pause")
-    print("channels = " .. #med:channels())
-    print("audio handlers = " .. med:handlerCount("audio"))
-    med:removeChannel("audio")
-    print("after remove: channels = " .. #med:channels())
-    med:clear()
-    print("after clear: channels = " .. #med:channels())
+    local med = lurek.patterns.newMediator(); med:on("audio", function(...) end); med:on("video", function(...) end)
+    med:on("input", function(...) end); med:broadcast("system_pause")
+    print("channels = " .. #med:channels()); print("audio handlers = " .. med:handlerCount("audio"))
+    med:removeChannel("audio"); print("after remove: channels = " .. #med:channels())
+    med:clear(); print("after clear: channels = " .. #med:channels())
 end
 ```
 
@@ -5765,23 +5064,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LObjectPool
-    local pool = lurek.patterns.newObjectPool()
-    for i = 1, 10 do
-        pool:add({id = i, active = false, x = 0, y = 0})
-    end
-    print("total = " .. pool:getTotalCount())
-    print("available = " .. pool:getAvailableCount())
+    local pool = lurek.patterns.newObjectPool(); for i = 1, 10 do pool:add({id = i, active = false, x = 0, y = 0}) end
+    print("total = " .. pool:getTotalCount()); print("available = " .. pool:getAvailableCount())
     print("active = " .. pool:getActiveCount())
     local obj = pool:acquire()
-    if obj then
-        obj.active = true
-        obj.x = 100
-        print("acquired id = " .. obj.id)
-        print("active count = " .. pool:getActiveCount())
-        pool:release(obj)
-        print("after release: available = " .. pool:getAvailableCount())
-    end
+    if obj then obj.active = true obj.x = 100 print("acquired id = " .. obj.id) print("active count = " .. pool:getActiveCount()) pool:release(obj) print("after release: available = " .. pool:getAvailableCount()) end
 end
 ```
 
@@ -5809,23 +5096,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LObjectPool
-    local pool = lurek.patterns.newObjectPool()
-    for i = 1, 10 do
-        pool:add({id = i, active = false, x = 0, y = 0})
-    end
-    print("total = " .. pool:getTotalCount())
-    print("available = " .. pool:getAvailableCount())
+    local pool = lurek.patterns.newObjectPool(); for i = 1, 10 do pool:add({id = i, active = false, x = 0, y = 0}) end
+    print("total = " .. pool:getTotalCount()); print("available = " .. pool:getAvailableCount())
     print("active = " .. pool:getActiveCount())
     local obj = pool:acquire()
-    if obj then
-        obj.active = true
-        obj.x = 100
-        print("acquired id = " .. obj.id)
-        print("active count = " .. pool:getActiveCount())
-        pool:release(obj)
-        print("after release: available = " .. pool:getAvailableCount())
-    end
+    if obj then obj.active = true obj.x = 100 print("acquired id = " .. obj.id) print("active count = " .. pool:getActiveCount()) pool:release(obj) print("after release: available = " .. pool:getAvailableCount()) end
 end
 ```
 
@@ -5848,11 +5123,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LObjectPool
-    local pool = lurek.patterns.newObjectPool()
-    pool:add({type = "bullet"})
-    pool:add({type = "bullet"})
-    pool:acquire()
+    local pool = lurek.patterns.newObjectPool(); pool:add({type = "bullet"})
+    pool:add({type = "bullet"}); pool:acquire()
     print("before clear: total = " .. pool:getTotalCount())
     pool:clearAll()
     print("after clear: total = " .. pool:getTotalCount())
@@ -5881,14 +5153,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local pool = lurek.patterns.newObjectPool()
-    pool:add({})
-    pool:add({})
-    pool:add({})
-    print("total=" .. pool:getTotalCount())
-    print("available=" .. pool:getAvailableCount())
-    local obj = pool:acquire()
-    print("active=" .. pool:getActiveCount())
+    local pool = lurek.patterns.newObjectPool(); pool:add({})
+    pool:add({}); pool:add({})
+    print("total=" .. pool:getTotalCount()); print("available=" .. pool:getAvailableCount())
+    local obj = pool:acquire(); print("active=" .. pool:getActiveCount())
     pool:release(obj)
 end
 ```
@@ -5915,14 +5183,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local pool = lurek.patterns.newObjectPool()
-    pool:add({})
-    pool:add({})
-    pool:add({})
-    print("total=" .. pool:getTotalCount())
-    print("available=" .. pool:getAvailableCount())
-    local obj = pool:acquire()
-    print("active=" .. pool:getActiveCount())
+    local pool = lurek.patterns.newObjectPool(); pool:add({})
+    pool:add({}); pool:add({})
+    print("total=" .. pool:getTotalCount()); print("available=" .. pool:getAvailableCount())
+    local obj = pool:acquire(); print("active=" .. pool:getActiveCount())
     pool:release(obj)
 end
 ```
@@ -5949,14 +5213,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local pool = lurek.patterns.newObjectPool()
-    pool:add({})
-    pool:add({})
-    pool:add({})
-    print("total=" .. pool:getTotalCount())
-    print("available=" .. pool:getAvailableCount())
-    local obj = pool:acquire()
-    print("active=" .. pool:getActiveCount())
+    local pool = lurek.patterns.newObjectPool(); pool:add({})
+    pool:add({}); pool:add({})
+    print("total=" .. pool:getTotalCount()); print("available=" .. pool:getAvailableCount())
+    local obj = pool:acquire(); print("active=" .. pool:getActiveCount())
     pool:release(obj)
 end
 ```
@@ -5985,23 +5245,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LObjectPool
-    local pool = lurek.patterns.newObjectPool()
-    for i = 1, 10 do
-        pool:add({id = i, active = false, x = 0, y = 0})
-    end
-    print("total = " .. pool:getTotalCount())
-    print("available = " .. pool:getAvailableCount())
+    local pool = lurek.patterns.newObjectPool(); for i = 1, 10 do pool:add({id = i, active = false, x = 0, y = 0}) end
+    print("total = " .. pool:getTotalCount()); print("available = " .. pool:getAvailableCount())
     print("active = " .. pool:getActiveCount())
     local obj = pool:acquire()
-    if obj then
-        obj.active = true
-        obj.x = 100
-        print("acquired id = " .. obj.id)
-        print("active count = " .. pool:getActiveCount())
-        pool:release(obj)
-        print("after release: available = " .. pool:getAvailableCount())
-    end
+    if obj then obj.active = true obj.x = 100 print("acquired id = " .. obj.id) print("active count = " .. pool:getActiveCount()) pool:release(obj) print("after release: available = " .. pool:getAvailableCount()) end
 end
 ```
 
@@ -6236,11 +5484,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(false)
-    local a = g:addNode("A", {cost = 10})
-    local b = g:addNode("B", {cost = 5})
-    local c = g:addNode("C")
+    local g = lurek.patterns.newGraph(false); local a = g:addNode("A", {cost = 10})
+    local b = g:addNode("B", {cost = 5}); local c = g:addNode("C")
     local e1 = g:addEdge(a, b, 1.0, "road")
     local e2 = g:addEdge(b, c, 2.5)
     print("nodes = " .. g:nodeCount() .. " edges = " .. g:edgeCount())
@@ -6276,11 +5521,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(false)
-    local a = g:addNode("A", {cost = 10})
-    local b = g:addNode("B", {cost = 5})
-    local c = g:addNode("C")
+    local g = lurek.patterns.newGraph(false); local a = g:addNode("A", {cost = 10})
+    local b = g:addNode("B", {cost = 5}); local c = g:addNode("C")
     local e1 = g:addEdge(a, b, 1.0, "road")
     local e2 = g:addEdge(b, c, 2.5)
     print("nodes = " .. g:nodeCount() .. " edges = " .. g:edgeCount())
@@ -6314,11 +5556,7 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(true)
-    local n1 = g:addNode("start")
-    local n2 = g:addNode("mid")
-    local n3 = g:addNode("end")
+    local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
 ### LPatternGraph:clearAll
@@ -6340,19 +5578,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph()
-    local a = g:addNode("room", {size = 10})
-    local b = g:addNode("hall")
-    local e = g:addEdge(a, b, 1.0)
-    local val = g:getNodeValue(a)
-    if val then print("room size = " .. val.size) end
-    g:removeEdge(e)
-    print("after edge remove: edges = " .. g:edgeCount())
-    g:removeNode(b)
-    print("after node remove: nodes = " .. g:nodeCount())
-    g:clearAll()
-    print("after clear: nodes = " .. g:nodeCount())
+    local g = lurek.patterns.newGraph(); local a = g:addNode("room", {size = 10}); local b = g:addNode("hall")
+    local e = g:addEdge(a, b, 1.0); local val = g:getNodeValue(a); if val then print("room size = " .. val.size) end
+    g:removeEdge(e); print("after edge remove: edges = " .. g:edgeCount())
+    g:removeNode(b); print("after node remove: nodes = " .. g:nodeCount())
+    g:clearAll(); print("after clear: nodes = " .. g:nodeCount())
 end
 ```
 
@@ -6383,11 +5613,7 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(true)
-    local n1 = g:addNode("start")
-    local n2 = g:addNode("mid")
-    local n3 = g:addNode("end")
+    local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
 ### LPatternGraph:edgeCount
@@ -6412,11 +5638,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(false)
-    local a = g:addNode("A", {cost = 10})
-    local b = g:addNode("B", {cost = 5})
-    local c = g:addNode("C")
+    local g = lurek.patterns.newGraph(false); local a = g:addNode("A", {cost = 10})
+    local b = g:addNode("B", {cost = 5}); local c = g:addNode("C")
     local e1 = g:addEdge(a, b, 1.0, "road")
     local e2 = g:addEdge(b, c, 2.5)
     print("nodes = " .. g:nodeCount() .. " edges = " .. g:edgeCount())
@@ -6451,19 +5674,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph()
-    local a = g:addNode("room", {size = 10})
-    local b = g:addNode("hall")
-    local e = g:addEdge(a, b, 1.0)
-    local val = g:getNodeValue(a)
-    if val then print("room size = " .. val.size) end
-    g:removeEdge(e)
-    print("after edge remove: edges = " .. g:edgeCount())
-    g:removeNode(b)
-    print("after node remove: nodes = " .. g:nodeCount())
-    g:clearAll()
-    print("after clear: nodes = " .. g:nodeCount())
+    local g = lurek.patterns.newGraph(); local a = g:addNode("room", {size = 10}); local b = g:addNode("hall")
+    local e = g:addEdge(a, b, 1.0); local val = g:getNodeValue(a); if val then print("room size = " .. val.size) end
+    g:removeEdge(e); print("after edge remove: edges = " .. g:edgeCount())
+    g:removeNode(b); print("after node remove: nodes = " .. g:nodeCount())
+    g:clearAll(); print("after clear: nodes = " .. g:nodeCount())
 end
 ```
 
@@ -6494,11 +5709,7 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(true)
-    local n1 = g:addNode("start")
-    local n2 = g:addNode("mid")
-    local n3 = g:addNode("end")
+    local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
 ### LPatternGraph:isConnected
@@ -6530,11 +5741,7 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(true)
-    local n1 = g:addNode("start")
-    local n2 = g:addNode("mid")
-    local n3 = g:addNode("end")
+    local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
 ### LPatternGraph:neighbors
@@ -6564,11 +5771,7 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(true)
-    local n1 = g:addNode("start")
-    local n2 = g:addNode("mid")
-    local n3 = g:addNode("end")
+    local g = lurek.patterns.newGraph(true); local n1 = g:addNode("start"); local n2 = g:addNode("mid"); local n3 = g:addNode("end")
 ```
 
 ### LPatternGraph:nodeCount
@@ -6593,11 +5796,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph(false)
-    local a = g:addNode("A", {cost = 10})
-    local b = g:addNode("B", {cost = 5})
-    local c = g:addNode("C")
+    local g = lurek.patterns.newGraph(false); local a = g:addNode("A", {cost = 10})
+    local b = g:addNode("B", {cost = 5}); local c = g:addNode("C")
     local e1 = g:addEdge(a, b, 1.0, "road")
     local e2 = g:addEdge(b, c, 2.5)
     print("nodes = " .. g:nodeCount() .. " edges = " .. g:edgeCount())
@@ -6631,19 +5831,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph()
-    local a = g:addNode("room", {size = 10})
-    local b = g:addNode("hall")
-    local e = g:addEdge(a, b, 1.0)
-    local val = g:getNodeValue(a)
-    if val then print("room size = " .. val.size) end
-    g:removeEdge(e)
-    print("after edge remove: edges = " .. g:edgeCount())
-    g:removeNode(b)
-    print("after node remove: nodes = " .. g:nodeCount())
-    g:clearAll()
-    print("after clear: nodes = " .. g:nodeCount())
+    local g = lurek.patterns.newGraph(); local a = g:addNode("room", {size = 10}); local b = g:addNode("hall")
+    local e = g:addEdge(a, b, 1.0); local val = g:getNodeValue(a); if val then print("room size = " .. val.size) end
+    g:removeEdge(e); print("after edge remove: edges = " .. g:edgeCount())
+    g:removeNode(b); print("after node remove: nodes = " .. g:nodeCount())
+    g:clearAll(); print("after clear: nodes = " .. g:nodeCount())
 end
 ```
 
@@ -6674,19 +5866,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPatternGraph
-    local g = lurek.patterns.newGraph()
-    local a = g:addNode("room", {size = 10})
-    local b = g:addNode("hall")
-    local e = g:addEdge(a, b, 1.0)
-    local val = g:getNodeValue(a)
-    if val then print("room size = " .. val.size) end
-    g:removeEdge(e)
-    print("after edge remove: edges = " .. g:edgeCount())
-    g:removeNode(b)
-    print("after node remove: nodes = " .. g:nodeCount())
-    g:clearAll()
-    print("after clear: nodes = " .. g:nodeCount())
+    local g = lurek.patterns.newGraph(); local a = g:addNode("room", {size = 10}); local b = g:addNode("hall")
+    local e = g:addEdge(a, b, 1.0); local val = g:getNodeValue(a); if val then print("room size = " .. val.size) end
+    g:removeEdge(e); print("after edge remove: edges = " .. g:edgeCount())
+    g:removeNode(b); print("after node remove: nodes = " .. g:nodeCount())
+    g:clearAll(); print("after clear: nodes = " .. g:nodeCount())
 end
 ```
 
@@ -6709,20 +5893,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -6748,20 +5923,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -6787,20 +5953,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -6827,20 +5984,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -6867,20 +6015,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -6915,20 +6054,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LPriorityQueue
-    local pq = lurek.patterns.newPriorityQueue("tasks")
-    pq:push(1, "low_task", "low")
-    pq:push(10, "high_task", "high")
-    pq:push(5, "mid_task", "mid")
-    print("len = " .. pq:len())
-    local top = pq:peek()
-    if top then print("peek = " .. tostring(top)) end
-    local item = pq:pop()
-    if item then print("popped = " .. tostring(item)) end
-    print("after pop: len = " .. pq:len())
-    print("empty = " .. tostring(pq:isEmpty()))
-    pq:clearAll()
-    print("after clear: empty = " .. tostring(pq:isEmpty()))
+    local pq = lurek.patterns.newPriorityQueue("tasks"); pq:push(1, "low_task", "low"); pq:push(10, "high_task", "high")
+    pq:push(5, "mid_task", "mid"); print("len = " .. pq:len()); local top = pq:peek()
+    if top then print("peek = " .. tostring(top)) end; local item = pq:pop(); if item then print("popped = " .. tostring(item)) end
+    print("after pop: len = " .. pq:len()); print("empty = " .. tostring(pq:isEmpty()))
+    pq:clearAll(); print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 ```
 
@@ -6955,17 +6085,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -6988,24 +6112,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7032,17 +6143,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7069,24 +6174,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7117,17 +6209,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7158,24 +6244,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7202,17 +6275,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7245,24 +6312,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7288,17 +6342,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7324,24 +6372,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7367,17 +6402,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(10)
-    q:enqueue("msg1")
-    q:enqueue("msg2")
-    q:enqueue("msg3")
-    print("front = " .. q:front())
-    print("back = " .. q:back())
-    print("len = " .. q:len())
-    local v = q:dequeue()
-    print("dequeued = " .. v)
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(10); q:enqueue("msg1")
+    q:enqueue("msg2"); q:enqueue("msg3")
+    print("front = " .. q:front()); print("back = " .. q:back())
+    print("len = " .. q:len()); local v = q:dequeue()
+    print("dequeued = " .. v); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7409,24 +6438,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7458,24 +6474,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7501,24 +6504,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LQueue
-    local q = lurek.patterns.newQueue(5)
-    q:enqueue("a")
-    q:enqueue("b")
-    q:enqueue("c")
-    q:enqueueFront("priority")
-    print("front = " .. q:front())
-    local back = q:dequeueBack()
-    print("dequeued back = " .. back)
-    q:insertAt(2, "inserted")
-    print("at 2 = " .. q:peekAt(2))
-    local rem = q:removeAt(2)
-    print("removed = " .. rem)
-    print("full = " .. tostring(q:isFull()))
-    local arr = q:toArray()
-    print("array = " .. #arr)
-    q:clear()
-    print("empty = " .. tostring(q:isEmpty()))
+    local q = lurek.patterns.newQueue(5); q:enqueue("a"); q:enqueue("b"); q:enqueue("c")
+    q:enqueueFront("priority"); print("front = " .. q:front()); local back = q:dequeueBack(); print("dequeued back = " .. back)
+    q:insertAt(2, "inserted"); print("at 2 = " .. q:peekAt(2)); local rem = q:removeAt(2)
+    print("removed = " .. rem); print("full = " .. tostring(q:isFull())); local arr = q:toArray()
+    print("array = " .. #arr); q:clear(); print("empty = " .. tostring(q:isEmpty()))
 end
 ```
 
@@ -7550,11 +6540,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:setValue(1, 2, 50)
-    rm:setValue(1, 3, -20)
-    print("1→2 = " .. rm:getValue(1, 2))
+    local rm = lurek.patterns.newRelationshipManager(); rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20); print("1→2 = " .. rm:getValue(1, 2))
     print("1→3 = " .. rm:getValue(1, 3))
     rm:adjustValue(1, 2, 10)
     print("adjusted 1→2 = " .. rm:getValue(1, 2))
@@ -7589,19 +6576,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral")
-    rm:setLevel(1, 2, "friendship", "friendly")
-    rm:setLevel(1, 3, "friendship", "hostile")
-    print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship"))
-    print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
-    print("types = " .. #rm:typeNames())
-    print("pairs = " .. rm:pairCount())
-    rm:removePair(1, 3)
-    print("after remove: pairs = " .. rm:pairCount())
-    rm:removeType("friendship")
-    print("after removeType: types = " .. #rm:typeNames())
+    local rm = lurek.patterns.newRelationshipManager(); rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral"); rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile"); print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship")); print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
+    print("types = " .. #rm:typeNames()); print("pairs = " .. rm:pairCount())
+    rm:removePair(1, 3); print("after remove: pairs = " .. rm:pairCount())
+    rm:removeType("friendship"); print("after removeType: types = " .. #rm:typeNames())
 end
 ```
 
@@ -7636,19 +6615,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral")
-    rm:setLevel(1, 2, "friendship", "friendly")
-    rm:setLevel(1, 3, "friendship", "hostile")
-    print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship"))
-    print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
-    print("types = " .. #rm:typeNames())
-    print("pairs = " .. rm:pairCount())
-    rm:removePair(1, 3)
-    print("after remove: pairs = " .. rm:pairCount())
-    rm:removeType("friendship")
-    print("after removeType: types = " .. #rm:typeNames())
+    local rm = lurek.patterns.newRelationshipManager(); rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral"); rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile"); print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship")); print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
+    print("types = " .. #rm:typeNames()); print("pairs = " .. rm:pairCount())
+    rm:removePair(1, 3); print("after remove: pairs = " .. rm:pairCount())
+    rm:removeType("friendship"); print("after removeType: types = " .. #rm:typeNames())
 end
 ```
 
@@ -7681,11 +6652,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:setValue(1, 2, 50)
-    rm:setValue(1, 3, -20)
-    print("1→2 = " .. rm:getValue(1, 2))
+    local rm = lurek.patterns.newRelationshipManager(); rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20); print("1→2 = " .. rm:getValue(1, 2))
     print("1→3 = " .. rm:getValue(1, 3))
     rm:adjustValue(1, 2, 10)
     print("adjusted 1→2 = " .. rm:getValue(1, 2))
@@ -7714,19 +6682,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral")
-    rm:setLevel(1, 2, "friendship", "friendly")
-    rm:setLevel(1, 3, "friendship", "hostile")
-    print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship"))
-    print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
-    print("types = " .. #rm:typeNames())
-    print("pairs = " .. rm:pairCount())
-    rm:removePair(1, 3)
-    print("after remove: pairs = " .. rm:pairCount())
-    rm:removeType("friendship")
-    print("after removeType: types = " .. #rm:typeNames())
+    local rm = lurek.patterns.newRelationshipManager(); rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral"); rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile"); print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship")); print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
+    print("types = " .. #rm:typeNames()); print("pairs = " .. rm:pairCount())
+    rm:removePair(1, 3); print("after remove: pairs = " .. rm:pairCount())
+    rm:removeType("friendship"); print("after removeType: types = " .. #rm:typeNames())
 end
 ```
 
@@ -7756,19 +6716,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral")
-    rm:setLevel(1, 2, "friendship", "friendly")
-    rm:setLevel(1, 3, "friendship", "hostile")
-    print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship"))
-    print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
-    print("types = " .. #rm:typeNames())
-    print("pairs = " .. rm:pairCount())
-    rm:removePair(1, 3)
-    print("after remove: pairs = " .. rm:pairCount())
-    rm:removeType("friendship")
-    print("after removeType: types = " .. #rm:typeNames())
+    local rm = lurek.patterns.newRelationshipManager(); rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral"); rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile"); print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship")); print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
+    print("types = " .. #rm:typeNames()); print("pairs = " .. rm:pairCount())
+    rm:removePair(1, 3); print("after remove: pairs = " .. rm:pairCount())
+    rm:removeType("friendship"); print("after removeType: types = " .. #rm:typeNames())
 end
 ```
 
@@ -7796,19 +6748,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral")
-    rm:setLevel(1, 2, "friendship", "friendly")
-    rm:setLevel(1, 3, "friendship", "hostile")
-    print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship"))
-    print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
-    print("types = " .. #rm:typeNames())
-    print("pairs = " .. rm:pairCount())
-    rm:removePair(1, 3)
-    print("after remove: pairs = " .. rm:pairCount())
-    rm:removeType("friendship")
-    print("after removeType: types = " .. #rm:typeNames())
+    local rm = lurek.patterns.newRelationshipManager(); rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral"); rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile"); print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship")); print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
+    print("types = " .. #rm:typeNames()); print("pairs = " .. rm:pairCount())
+    rm:removePair(1, 3); print("after remove: pairs = " .. rm:pairCount())
+    rm:removeType("friendship"); print("after removeType: types = " .. #rm:typeNames())
 end
 ```
 
@@ -7845,19 +6789,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral")
-    rm:setLevel(1, 2, "friendship", "friendly")
-    rm:setLevel(1, 3, "friendship", "hostile")
-    print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship"))
-    print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
-    print("types = " .. #rm:typeNames())
-    print("pairs = " .. rm:pairCount())
-    rm:removePair(1, 3)
-    print("after remove: pairs = " .. rm:pairCount())
-    rm:removeType("friendship")
-    print("after removeType: types = " .. #rm:typeNames())
+    local rm = lurek.patterns.newRelationshipManager(); rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral"); rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile"); print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship")); print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
+    print("types = " .. #rm:typeNames()); print("pairs = " .. rm:pairCount())
+    rm:removePair(1, 3); print("after remove: pairs = " .. rm:pairCount())
+    rm:removeType("friendship"); print("after removeType: types = " .. #rm:typeNames())
 end
 ```
 
@@ -7889,11 +6825,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:setValue(1, 2, 50)
-    rm:setValue(1, 3, -20)
-    print("1→2 = " .. rm:getValue(1, 2))
+    local rm = lurek.patterns.newRelationshipManager(); rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20); print("1→2 = " .. rm:getValue(1, 2))
     print("1→3 = " .. rm:getValue(1, 3))
     rm:adjustValue(1, 2, 10)
     print("adjusted 1→2 = " .. rm:getValue(1, 2))
@@ -7922,19 +6855,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRelationshipManager
-    local rm = lurek.patterns.newRelationshipManager()
-    rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral")
-    rm:setLevel(1, 2, "friendship", "friendly")
-    rm:setLevel(1, 3, "friendship", "hostile")
-    print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship"))
-    print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
-    print("types = " .. #rm:typeNames())
-    print("pairs = " .. rm:pairCount())
-    rm:removePair(1, 3)
-    print("after remove: pairs = " .. rm:pairCount())
-    rm:removeType("friendship")
-    print("after removeType: types = " .. #rm:typeNames())
+    local rm = lurek.patterns.newRelationshipManager(); rm:defineType("friendship", {"hostile", "unfriendly", "neutral", "friendly", "allied"}, "neutral"); rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile"); print("1→2 friendship = " .. rm:getLevel(1, 2, "friendship")); print("1→3 friendship = " .. rm:getLevel(1, 3, "friendship"))
+    print("types = " .. #rm:typeNames()); print("pairs = " .. rm:pairCount())
+    rm:removePair(1, 3); print("after remove: pairs = " .. rm:pairCount())
+    rm:removeType("friendship"); print("after removeType: types = " .. #rm:typeNames())
 end
 ```
 
@@ -7960,25 +6885,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8001,25 +6912,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8045,25 +6942,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8089,25 +6972,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8133,25 +7002,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8184,25 +7039,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8228,25 +7069,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8272,25 +7099,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LRing
-    local ring = lurek.patterns.newRing(5, "fps_samples")
-    ring:push(60)
-    ring:push(58)
-    ring:push(62)
-    ring:push(59)
-    ring:push(61)
-    print("len = " .. ring:len())
-    print("full = " .. tostring(ring:isFull()))
-    local entry = ring:latest()
-    if entry then print("latest value = " .. entry.value) end
-    print("sum = " .. ring:sum())
-    print("average = " .. ring:average())
-    ring:push(55)
-    print("overwrote oldest, len = " .. ring:len())
-    local arr = ring:toArray()
-    print("array entries = " .. #arr)
-    ring:clear()
-    print("after clear: len = " .. ring:len())
+    local ring = lurek.patterns.newRing(5, "fps_samples"); ring:push(60); ring:push(58); ring:push(62)
+    ring:push(59); ring:push(61); print("len = " .. ring:len()); print("full = " .. tostring(ring:isFull()))
+    local entry = ring:latest(); if entry then print("latest value = " .. entry.value) end; print("sum = " .. ring:sum()); print("average = " .. ring:average())
+    ring:push(55); print("overwrote oldest, len = " .. ring:len()); local arr = ring:toArray()
+    print("array entries = " .. #arr); ring:clear(); print("after clear: len = " .. ring:len())
 end
 ```
 
@@ -8343,7 +7156,6 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
     services:provide("input", {keyboard = true})
@@ -8415,13 +7227,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8, muted = false})
     local audio = services:locate("audio")
-    if audio then
-        print("audio volume = " .. audio.volume)
-    end
+    if audio then print("audio volume = " .. audio.volume) end
 end
 ```
 
@@ -8517,17 +7326,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local s = lurek.patterns.newSet()
-    print("added = " .. tostring(s:add("fire")))
-    print("dup = " .. tostring(s:add("fire")))
-    s:add("ice")
-    s:add("wind")
-    print("has fire = " .. tostring(s:has("fire")))
-    print("len = " .. s:len())
-    s:remove("ice")
-    local arr = s:toArray()
-    print("array = " .. #arr)
+    local s = lurek.patterns.newSet(); print("added = " .. tostring(s:add("fire")))
+    print("dup = " .. tostring(s:add("fire"))); s:add("ice")
+    s:add("wind"); print("has fire = " .. tostring(s:has("fire")))
+    print("len = " .. s:len()); s:remove("ice")
+    local arr = s:toArray(); print("array = " .. #arr)
 end
 ```
 
@@ -8550,22 +7353,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local a = lurek.patterns.newSet()
-    a:add("x")
-    a:add("y")
-    a:add("z")
-    ---@type LSet
-    local b = lurek.patterns.newSet()
-    b:add("y")
-    b:add("z")
-    b:add("w")
-    local u = a:union(b)
-    print("union = " .. u:len())
-    local i = a:intersection(b)
-    print("intersection = " .. i:len())
-    a:clear()
-    print("empty = " .. tostring(a:isEmpty()))
+    local a = lurek.patterns.newSet(); a:add("x"); a:add("y")
+    a:add("z"); local b = lurek.patterns.newSet(); b:add("y")
+    b:add("z"); b:add("w"); local u = a:union(b)
+    print("union = " .. u:len()); local i = a:intersection(b); print("intersection = " .. i:len())
+    a:clear(); print("empty = " .. tostring(a:isEmpty()))
 end
 ```
 
@@ -8596,17 +7388,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local s = lurek.patterns.newSet()
-    print("added = " .. tostring(s:add("fire")))
-    print("dup = " .. tostring(s:add("fire")))
-    s:add("ice")
-    s:add("wind")
-    print("has fire = " .. tostring(s:has("fire")))
-    print("len = " .. s:len())
-    s:remove("ice")
-    local arr = s:toArray()
-    print("array = " .. #arr)
+    local s = lurek.patterns.newSet(); print("added = " .. tostring(s:add("fire")))
+    print("dup = " .. tostring(s:add("fire"))); s:add("ice")
+    s:add("wind"); print("has fire = " .. tostring(s:has("fire")))
+    print("len = " .. s:len()); s:remove("ice")
+    local arr = s:toArray(); print("array = " .. #arr)
 end
 ```
 
@@ -8637,22 +7423,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local a = lurek.patterns.newSet()
-    a:add("x")
-    a:add("y")
-    a:add("z")
-    ---@type LSet
-    local b = lurek.patterns.newSet()
-    b:add("y")
-    b:add("z")
-    b:add("w")
-    local u = a:union(b)
-    print("union = " .. u:len())
-    local i = a:intersection(b)
-    print("intersection = " .. i:len())
-    a:clear()
-    print("empty = " .. tostring(a:isEmpty()))
+    local a = lurek.patterns.newSet(); a:add("x"); a:add("y")
+    a:add("z"); local b = lurek.patterns.newSet(); b:add("y")
+    b:add("z"); b:add("w"); local u = a:union(b)
+    print("union = " .. u:len()); local i = a:intersection(b); print("intersection = " .. i:len())
+    a:clear(); print("empty = " .. tostring(a:isEmpty()))
 end
 ```
 
@@ -8678,22 +7453,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local a = lurek.patterns.newSet()
-    a:add("x")
-    a:add("y")
-    a:add("z")
-    ---@type LSet
-    local b = lurek.patterns.newSet()
-    b:add("y")
-    b:add("z")
-    b:add("w")
-    local u = a:union(b)
-    print("union = " .. u:len())
-    local i = a:intersection(b)
-    print("intersection = " .. i:len())
-    a:clear()
-    print("empty = " .. tostring(a:isEmpty()))
+    local a = lurek.patterns.newSet(); a:add("x"); a:add("y")
+    a:add("z"); local b = lurek.patterns.newSet(); b:add("y")
+    b:add("z"); b:add("w"); local u = a:union(b)
+    print("union = " .. u:len()); local i = a:intersection(b); print("intersection = " .. i:len())
+    a:clear(); print("empty = " .. tostring(a:isEmpty()))
 end
 ```
 
@@ -8719,17 +7483,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local s = lurek.patterns.newSet()
-    print("added = " .. tostring(s:add("fire")))
-    print("dup = " .. tostring(s:add("fire")))
-    s:add("ice")
-    s:add("wind")
-    print("has fire = " .. tostring(s:has("fire")))
-    print("len = " .. s:len())
-    s:remove("ice")
-    local arr = s:toArray()
-    print("array = " .. #arr)
+    local s = lurek.patterns.newSet(); print("added = " .. tostring(s:add("fire")))
+    print("dup = " .. tostring(s:add("fire"))); s:add("ice")
+    s:add("wind"); print("has fire = " .. tostring(s:has("fire")))
+    print("len = " .. s:len()); s:remove("ice")
+    local arr = s:toArray(); print("array = " .. #arr)
 end
 ```
 
@@ -8760,17 +7518,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local s = lurek.patterns.newSet()
-    print("added = " .. tostring(s:add("fire")))
-    print("dup = " .. tostring(s:add("fire")))
-    s:add("ice")
-    s:add("wind")
-    print("has fire = " .. tostring(s:has("fire")))
-    print("len = " .. s:len())
-    s:remove("ice")
-    local arr = s:toArray()
-    print("array = " .. #arr)
+    local s = lurek.patterns.newSet(); print("added = " .. tostring(s:add("fire")))
+    print("dup = " .. tostring(s:add("fire"))); s:add("ice")
+    s:add("wind"); print("has fire = " .. tostring(s:has("fire")))
+    print("len = " .. s:len()); s:remove("ice")
+    local arr = s:toArray(); print("array = " .. #arr)
 end
 ```
 
@@ -8796,17 +7548,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local s = lurek.patterns.newSet()
-    print("added = " .. tostring(s:add("fire")))
-    print("dup = " .. tostring(s:add("fire")))
-    s:add("ice")
-    s:add("wind")
-    print("has fire = " .. tostring(s:has("fire")))
-    print("len = " .. s:len())
-    s:remove("ice")
-    local arr = s:toArray()
-    print("array = " .. #arr)
+    local s = lurek.patterns.newSet(); print("added = " .. tostring(s:add("fire")))
+    print("dup = " .. tostring(s:add("fire"))); s:add("ice")
+    s:add("wind"); print("has fire = " .. tostring(s:has("fire")))
+    print("len = " .. s:len()); s:remove("ice")
+    local arr = s:toArray(); print("array = " .. #arr)
 end
 ```
 
@@ -8837,22 +7583,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSet
-    local a = lurek.patterns.newSet()
-    a:add("x")
-    a:add("y")
-    a:add("z")
-    ---@type LSet
-    local b = lurek.patterns.newSet()
-    b:add("y")
-    b:add("z")
-    b:add("w")
-    local u = a:union(b)
-    print("union = " .. u:len())
-    local i = a:intersection(b)
-    print("intersection = " .. i:len())
-    a:clear()
-    print("empty = " .. tostring(a:isEmpty()))
+    local a = lurek.patterns.newSet(); a:add("x"); a:add("y")
+    a:add("z"); local b = lurek.patterns.newSet(); b:add("y")
+    b:add("z"); b:add("w"); local u = a:union(b)
+    print("union = " .. u:len()); local i = a:intersection(b); print("intersection = " .. i:len())
+    a:clear(); print("empty = " .. tostring(a:isEmpty()))
 end
 ```
 
@@ -8882,26 +7617,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("idle", {
-        enter = function() print("  enter idle") end,
-        exit = function() print("  exit idle") end,
-        update = function(dt) end
-    })
-    fsm:addState("walk", {
-        enter = function() print("  enter walk") end,
-        exit = function() print("  exit walk") end,
-        update = function(dt) print("  walking dt=" .. dt) end
-    })
-    fsm:addState("attack", {
-        enter = function() print("  enter attack") end,
-        update = function(dt) print("  attacking") end
-    })
-    fsm:transitionTo("idle")
-    print("current = " .. fsm:getCurrent())
-    fsm:transitionTo("walk")
-    print("current = " .. fsm:getCurrent())
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("idle", { enter = function() print("  enter idle") end, exit = function() print("  exit idle") end, update = function(dt) end })
+    fsm:addState("walk", { enter = function() print("  enter walk") end, exit = function() print("  exit walk") end, update = function(dt) print("  walking dt=" .. dt) end }); fsm:addState("attack", { enter = function() print("  enter attack") end, update = function(dt) print("  attacking") end })
+    fsm:transitionTo("idle"); print("current = " .. fsm:getCurrent())
+    fsm:transitionTo("walk"); print("current = " .. fsm:getCurrent())
     fsm:update(0.016)
 end
 ```
@@ -8925,15 +7644,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("menu")
-    fsm:addState("game")
-    fsm:addState("pause")
-    print("has menu = " .. tostring(fsm:hasState("menu")))
-    print("has quit = " .. tostring(fsm:hasState("quit")))
-    print("states = " .. #fsm:getStates())
-    fsm:clearAll()
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("menu")
+    fsm:addState("game"); fsm:addState("pause")
+    print("has menu = " .. tostring(fsm:hasState("menu"))); print("has quit = " .. tostring(fsm:hasState("quit")))
+    print("states = " .. #fsm:getStates()); fsm:clearAll()
     print("after clear = " .. #fsm:getStates())
 end
 ```
@@ -8960,26 +7674,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("idle", {
-        enter = function() print("  enter idle") end,
-        exit = function() print("  exit idle") end,
-        update = function(dt) end
-    })
-    fsm:addState("walk", {
-        enter = function() print("  enter walk") end,
-        exit = function() print("  exit walk") end,
-        update = function(dt) print("  walking dt=" .. dt) end
-    })
-    fsm:addState("attack", {
-        enter = function() print("  enter attack") end,
-        update = function(dt) print("  attacking") end
-    })
-    fsm:transitionTo("idle")
-    print("current = " .. fsm:getCurrent())
-    fsm:transitionTo("walk")
-    print("current = " .. fsm:getCurrent())
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("idle", { enter = function() print("  enter idle") end, exit = function() print("  exit idle") end, update = function(dt) end })
+    fsm:addState("walk", { enter = function() print("  enter walk") end, exit = function() print("  exit walk") end, update = function(dt) print("  walking dt=" .. dt) end }); fsm:addState("attack", { enter = function() print("  enter attack") end, update = function(dt) print("  attacking") end })
+    fsm:transitionTo("idle"); print("current = " .. fsm:getCurrent())
+    fsm:transitionTo("walk"); print("current = " .. fsm:getCurrent())
     fsm:update(0.016)
 end
 ```
@@ -9006,15 +7704,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("menu")
-    fsm:addState("game")
-    fsm:addState("pause")
-    print("has menu = " .. tostring(fsm:hasState("menu")))
-    print("has quit = " .. tostring(fsm:hasState("quit")))
-    print("states = " .. #fsm:getStates())
-    fsm:clearAll()
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("menu")
+    fsm:addState("game"); fsm:addState("pause")
+    print("has menu = " .. tostring(fsm:hasState("menu"))); print("has quit = " .. tostring(fsm:hasState("quit")))
+    print("states = " .. #fsm:getStates()); fsm:clearAll()
     print("after clear = " .. #fsm:getStates())
 end
 ```
@@ -9046,15 +7739,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("menu")
-    fsm:addState("game")
-    fsm:addState("pause")
-    print("has menu = " .. tostring(fsm:hasState("menu")))
-    print("has quit = " .. tostring(fsm:hasState("quit")))
-    print("states = " .. #fsm:getStates())
-    fsm:clearAll()
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("menu")
+    fsm:addState("game"); fsm:addState("pause")
+    print("has menu = " .. tostring(fsm:hasState("menu"))); print("has quit = " .. tostring(fsm:hasState("quit")))
+    print("states = " .. #fsm:getStates()); fsm:clearAll()
     print("after clear = " .. #fsm:getStates())
 end
 ```
@@ -9086,26 +7774,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LSimpleState
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("idle", {
-        enter = function() print("  enter idle") end,
-        exit = function() print("  exit idle") end,
-        update = function(dt) end
-    })
-    fsm:addState("walk", {
-        enter = function() print("  enter walk") end,
-        exit = function() print("  exit walk") end,
-        update = function(dt) print("  walking dt=" .. dt) end
-    })
-    fsm:addState("attack", {
-        enter = function() print("  enter attack") end,
-        update = function(dt) print("  attacking") end
-    })
-    fsm:transitionTo("idle")
-    print("current = " .. fsm:getCurrent())
-    fsm:transitionTo("walk")
-    print("current = " .. fsm:getCurrent())
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("idle", { enter = function() print("  enter idle") end, exit = function() print("  exit idle") end, update = function(dt) end })
+    fsm:addState("walk", { enter = function() print("  enter walk") end, exit = function() print("  exit walk") end, update = function(dt) print("  walking dt=" .. dt) end }); fsm:addState("attack", { enter = function() print("  enter attack") end, update = function(dt) print("  attacking") end })
+    fsm:transitionTo("idle"); print("current = " .. fsm:getCurrent())
+    fsm:transitionTo("walk"); print("current = " .. fsm:getCurrent())
     fsm:update(0.016)
 end
 ```
@@ -9134,16 +7806,8 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local fsm = lurek.patterns.newSimpleState()
-    fsm:addState("idle", {
-        enter = function() print("enter idle") end,
-        update = function(dt) print("tick idle dt=" .. dt) end,
-        exit = function() print("exit idle") end,
-    })
-    fsm:addState("run", {
-        enter = function() print("enter run") end,
-        update = function(dt) print("tick run dt=" .. dt) end,
-    })
+    local fsm = lurek.patterns.newSimpleState(); fsm:addState("idle", { enter = function() print("enter idle") end, update = function(dt) print("tick idle dt=" .. dt) end, exit = function() print("exit idle") end, })
+    fsm:addState("run", { enter = function() print("enter run") end, update = function(dt) print("tick run dt=" .. dt) end, })
     fsm:transitionTo("idle")
     fsm:update(0.016)
     print("current=" .. fsm:getCurrent())
@@ -9169,27 +7833,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9222,27 +7870,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9268,15 +7900,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(100)
-    st:push("first")
-    st:push("second")
-    st:push("third")
-    print("peek = " .. st:peek())
-    print("len = " .. st:len())
-    local v = st:pop()
-    print("popped = " .. v)
+    local st = lurek.patterns.newStack(100); st:push("first")
+    st:push("second"); st:push("third")
+    print("peek = " .. st:peek()); print("len = " .. st:len())
+    local v = st:pop(); print("popped = " .. v)
     print("empty = " .. tostring(st:isEmpty()))
 end
 ```
@@ -9303,27 +7930,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9349,15 +7960,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(100)
-    st:push("first")
-    st:push("second")
-    st:push("third")
-    print("peek = " .. st:peek())
-    print("len = " .. st:len())
-    local v = st:pop()
-    print("popped = " .. v)
+    local st = lurek.patterns.newStack(100); st:push("first")
+    st:push("second"); st:push("third")
+    print("peek = " .. st:peek()); print("len = " .. st:len())
+    local v = st:pop(); print("popped = " .. v)
     print("empty = " .. tostring(st:isEmpty()))
 end
 ```
@@ -9391,27 +7997,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9438,15 +8028,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(100)
-    st:push("first")
-    st:push("second")
-    st:push("third")
-    print("peek = " .. st:peek())
-    print("len = " .. st:len())
-    local v = st:pop()
-    print("popped = " .. v)
+    local st = lurek.patterns.newStack(100); st:push("first")
+    st:push("second"); st:push("third")
+    print("peek = " .. st:peek()); print("len = " .. st:len())
+    local v = st:pop(); print("popped = " .. v)
     print("empty = " .. tostring(st:isEmpty()))
 end
 ```
@@ -9479,27 +8064,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9526,27 +8095,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9573,15 +8126,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(100)
-    st:push("first")
-    st:push("second")
-    st:push("third")
-    print("peek = " .. st:peek())
-    print("len = " .. st:len())
-    local v = st:pop()
-    print("popped = " .. v)
+    local st = lurek.patterns.newStack(100); st:push("first")
+    st:push("second"); st:push("third")
+    print("peek = " .. st:peek()); print("len = " .. st:len())
+    local v = st:pop(); print("popped = " .. v)
     print("empty = " .. tostring(st:isEmpty()))
 end
 ```
@@ -9609,27 +8157,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9660,27 +8192,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9711,15 +8227,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(100)
-    st:push("first")
-    st:push("second")
-    st:push("third")
-    print("peek = " .. st:peek())
-    print("len = " .. st:len())
-    local v = st:pop()
-    print("popped = " .. v)
+    local st = lurek.patterns.newStack(100); st:push("first")
+    st:push("second"); st:push("third")
+    print("peek = " .. st:peek()); print("len = " .. st:len())
+    local v = st:pop(); print("popped = " .. v)
     print("empty = " .. tostring(st:isEmpty()))
 end
 ```
@@ -9751,27 +8262,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9803,27 +8298,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9849,27 +8328,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStack
-    local st = lurek.patterns.newStack(5)
-    st:push("a")
-    st:push("b")
-    st:push("c")
-    st:pushBottom("z")
-    print("bottom = " .. st:peekBottom())
-    print("at 2 = " .. st:peekAt(2))
-    st:insertAt(2, "x")
-    local removed = st:removeAt(2)
-    print("removed = " .. removed)
-    local many = st:popMany(2)
-    print("popped many = " .. #many)
-    st:push("p")
-    st:push("q")
-    st:moveWithin(1, 2)
-    print("full = " .. tostring(st:isFull()))
-    local arr = st:toArray()
-    print("array = " .. #arr)
-    st:clear()
-    print("empty = " .. tostring(st:isEmpty()))
+    local st = lurek.patterns.newStack(5); st:push("a"); st:push("b"); st:push("c")
+    st:pushBottom("z"); print("bottom = " .. st:peekBottom()); print("at 2 = " .. st:peekAt(2)); st:insertAt(2, "x")
+    local removed = st:removeAt(2); print("removed = " .. removed); local many = st:popMany(2); print("popped many = " .. #many)
+    st:push("p"); st:push("q"); st:moveWithin(1, 2); print("full = " .. tostring(st:isFull()))
+    local arr = st:toArray(); print("array = " .. #arr); st:clear(); print("empty = " .. tostring(st:isEmpty()))
 end
 ```
 
@@ -9892,17 +8355,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStrategy
-    local strat = lurek.patterns.newStrategy()
-    strat:register("fast", function() return {speed = 200} end)
-    strat:register("slow", function() return {speed = 50} end)
-    print("has fast = " .. tostring(strat:has("fast")))
-    local all = strat:names()
-    print("strategies = " .. #all)
-    local removed = strat:remove("slow")
-    print("removed slow = " .. tostring(removed))
-    strat:clear()
-    print("after clear: current = " .. tostring(strat:getCurrent()))
+    local strat = lurek.patterns.newStrategy(); strat:register("fast", function() return {speed = 200} end)
+    strat:register("slow", function() return {speed = 50} end); print("has fast = " .. tostring(strat:has("fast")))
+    local all = strat:names(); print("strategies = " .. #all)
+    local removed = strat:remove("slow"); print("removed slow = " .. tostring(removed))
+    strat:clear(); print("after clear: current = " .. tostring(strat:getCurrent()))
 end
 ```
 
@@ -9976,8 +8433,7 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    local strat = lurek.patterns.newStrategy()
-    strat:register("attack", function() return "attacking" end)
+    local strat = lurek.patterns.newStrategy(); strat:register("attack", function() return "attacking" end)
     strat:register("flee", function() return "fleeing" end)
     strat:set("attack")
     print("current=" .. tostring(strat:getCurrent()))
@@ -10012,17 +8468,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStrategy
-    local strat = lurek.patterns.newStrategy()
-    strat:register("fast", function() return {speed = 200} end)
-    strat:register("slow", function() return {speed = 50} end)
-    print("has fast = " .. tostring(strat:has("fast")))
-    local all = strat:names()
-    print("strategies = " .. #all)
-    local removed = strat:remove("slow")
-    print("removed slow = " .. tostring(removed))
-    strat:clear()
-    print("after clear: current = " .. tostring(strat:getCurrent()))
+    local strat = lurek.patterns.newStrategy(); strat:register("fast", function() return {speed = 200} end)
+    strat:register("slow", function() return {speed = 50} end); print("has fast = " .. tostring(strat:has("fast")))
+    local all = strat:names(); print("strategies = " .. #all)
+    local removed = strat:remove("slow"); print("removed slow = " .. tostring(removed))
+    strat:clear(); print("after clear: current = " .. tostring(strat:getCurrent()))
 end
 ```
 
@@ -10048,17 +8498,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStrategy
-    local strat = lurek.patterns.newStrategy()
-    strat:register("fast", function() return {speed = 200} end)
-    strat:register("slow", function() return {speed = 50} end)
-    print("has fast = " .. tostring(strat:has("fast")))
-    local all = strat:names()
-    print("strategies = " .. #all)
-    local removed = strat:remove("slow")
-    print("removed slow = " .. tostring(removed))
-    strat:clear()
-    print("after clear: current = " .. tostring(strat:getCurrent()))
+    local strat = lurek.patterns.newStrategy(); strat:register("fast", function() return {speed = 200} end)
+    strat:register("slow", function() return {speed = 50} end); print("has fast = " .. tostring(strat:has("fast")))
+    local all = strat:names(); print("strategies = " .. #all)
+    local removed = strat:remove("slow"); print("removed slow = " .. tostring(removed))
+    strat:clear(); print("after clear: current = " .. tostring(strat:getCurrent()))
 end
 ```
 
@@ -10135,17 +8579,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LStrategy
-    local strat = lurek.patterns.newStrategy()
-    strat:register("fast", function() return {speed = 200} end)
-    strat:register("slow", function() return {speed = 50} end)
-    print("has fast = " .. tostring(strat:has("fast")))
-    local all = strat:names()
-    print("strategies = " .. #all)
-    local removed = strat:remove("slow")
-    print("removed slow = " .. tostring(removed))
-    strat:clear()
-    print("after clear: current = " .. tostring(strat:getCurrent()))
+    local strat = lurek.patterns.newStrategy(); strat:register("fast", function() return {speed = 200} end)
+    strat:register("slow", function() return {speed = 50} end); print("has fast = " .. tostring(strat:has("fast")))
+    local all = strat:names(); print("strategies = " .. #all)
+    local removed = strat:remove("slow"); print("removed slow = " .. tostring(removed))
+    strat:clear(); print("after clear: current = " .. tostring(strat:getCurrent()))
 end
 ```
 
@@ -10254,15 +8692,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LThrottle
-    local th = lurek.patterns.newThrottle(1.0)
-    th:onFire(function() end)
-    th:update(0.5)
-    print("progress = " .. th:getProgress())
-    th:reset()
-    print("after reset progress = " .. th:getProgress())
-    th:setEnabled(false)
-    th:update(5.0)
+    local th = lurek.patterns.newThrottle(1.0); th:onFire(function() end)
+    th:update(0.5); print("progress = " .. th:getProgress())
+    th:reset(); print("after reset progress = " .. th:getProgress())
+    th:setEnabled(false); th:update(5.0)
     print("disabled progress = " .. th:getProgress())
 end
 ```
@@ -10324,15 +8757,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LThrottle
-    local th = lurek.patterns.newThrottle(1.0)
-    th:onFire(function() end)
-    th:update(0.5)
-    print("progress = " .. th:getProgress())
-    th:reset()
-    print("after reset progress = " .. th:getProgress())
-    th:setEnabled(false)
-    th:update(5.0)
+    local th = lurek.patterns.newThrottle(1.0); th:onFire(function() end)
+    th:update(0.5); print("progress = " .. th:getProgress())
+    th:reset(); print("after reset progress = " .. th:getProgress())
+    th:setEnabled(false); th:update(5.0)
     print("disabled progress = " .. th:getProgress())
 end
 ```
@@ -10361,15 +8789,10 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LThrottle
-    local th = lurek.patterns.newThrottle(1.0)
-    th:onFire(function() end)
-    th:update(0.5)
-    print("progress = " .. th:getProgress())
-    th:reset()
-    print("after reset progress = " .. th:getProgress())
-    th:setEnabled(false)
-    th:update(5.0)
+    local th = lurek.patterns.newThrottle(1.0); th:onFire(function() end)
+    th:update(0.5); print("progress = " .. th:getProgress())
+    th:reset(); print("after reset progress = " .. th:getProgress())
+    th:setEnabled(false); th:update(5.0)
     print("disabled progress = " .. th:getProgress())
 end
 ```
@@ -10446,17 +8869,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id1 = wr:add(10, "common", "common_loot")
-    local id2 = wr:add(3, "rare", "rare_loot")
-    local id3 = wr:add(1, "legendary", "legendary_loot")
-    print("items = " .. wr:len())
-    print("total weight = " .. wr:totalWeight())
-    local picked = wr:pick(0.5)
-    print("picked = " .. tostring(picked))
-    local multi = wr:pickN(2, {0.1, 0.9})
-    print("multi picks = " .. #multi)
+    local wr = lurek.patterns.newWeightedRandom(); local id1 = wr:add(10, "common", "common_loot")
+    local id2 = wr:add(3, "rare", "rare_loot"); local id3 = wr:add(1, "legendary", "legendary_loot")
+    print("items = " .. wr:len()); print("total weight = " .. wr:totalWeight())
+    local picked = wr:pick(0.5); print("picked = " .. tostring(picked))
+    local multi = wr:pickN(2, {0.1, 0.9}); print("multi picks = " .. #multi)
 end
 ```
 
@@ -10479,17 +8896,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, "item_a")
-    wr:add(5, "item_b")
-    wr:setWeight(id, 20)
-    print("revision = " .. wr:getRevision())
-    wr:remove(id)
-    print("after remove: len = " .. wr:len())
-    print("empty = " .. tostring(wr:isEmpty()))
-    wr:clearAll()
-    print("after clear: empty = " .. tostring(wr:isEmpty()))
+    local wr = lurek.patterns.newWeightedRandom(); local id = wr:add(5, "item_a")
+    wr:add(5, "item_b"); wr:setWeight(id, 20)
+    print("revision = " .. wr:getRevision()); wr:remove(id)
+    print("after remove: len = " .. wr:len()); print("empty = " .. tostring(wr:isEmpty()))
+    wr:clearAll(); print("after clear: empty = " .. tostring(wr:isEmpty()))
 end
 ```
 
@@ -10515,17 +8926,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, "item_a")
-    wr:add(5, "item_b")
-    wr:setWeight(id, 20)
-    print("revision = " .. wr:getRevision())
-    wr:remove(id)
-    print("after remove: len = " .. wr:len())
-    print("empty = " .. tostring(wr:isEmpty()))
-    wr:clearAll()
-    print("after clear: empty = " .. tostring(wr:isEmpty()))
+    local wr = lurek.patterns.newWeightedRandom(); local id = wr:add(5, "item_a")
+    wr:add(5, "item_b"); wr:setWeight(id, 20)
+    print("revision = " .. wr:getRevision()); wr:remove(id)
+    print("after remove: len = " .. wr:len()); print("empty = " .. tostring(wr:isEmpty()))
+    wr:clearAll(); print("after clear: empty = " .. tostring(wr:isEmpty()))
 end
 ```
 
@@ -10551,17 +8956,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, "item_a")
-    wr:add(5, "item_b")
-    wr:setWeight(id, 20)
-    print("revision = " .. wr:getRevision())
-    wr:remove(id)
-    print("after remove: len = " .. wr:len())
-    print("empty = " .. tostring(wr:isEmpty()))
-    wr:clearAll()
-    print("after clear: empty = " .. tostring(wr:isEmpty()))
+    local wr = lurek.patterns.newWeightedRandom(); local id = wr:add(5, "item_a")
+    wr:add(5, "item_b"); wr:setWeight(id, 20)
+    print("revision = " .. wr:getRevision()); wr:remove(id)
+    print("after remove: len = " .. wr:len()); print("empty = " .. tostring(wr:isEmpty()))
+    wr:clearAll(); print("after clear: empty = " .. tostring(wr:isEmpty()))
 end
 ```
 
@@ -10587,17 +8986,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id1 = wr:add(10, "common", "common_loot")
-    local id2 = wr:add(3, "rare", "rare_loot")
-    local id3 = wr:add(1, "legendary", "legendary_loot")
-    print("items = " .. wr:len())
-    print("total weight = " .. wr:totalWeight())
-    local picked = wr:pick(0.5)
-    print("picked = " .. tostring(picked))
-    local multi = wr:pickN(2, {0.1, 0.9})
-    print("multi picks = " .. #multi)
+    local wr = lurek.patterns.newWeightedRandom(); local id1 = wr:add(10, "common", "common_loot")
+    local id2 = wr:add(3, "rare", "rare_loot"); local id3 = wr:add(1, "legendary", "legendary_loot")
+    print("items = " .. wr:len()); print("total weight = " .. wr:totalWeight())
+    local picked = wr:pick(0.5); print("picked = " .. tostring(picked))
+    local multi = wr:pickN(2, {0.1, 0.9}); print("multi picks = " .. #multi)
 end
 ```
 
@@ -10629,17 +9022,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id1 = wr:add(10, "common", "common_loot")
-    local id2 = wr:add(3, "rare", "rare_loot")
-    local id3 = wr:add(1, "legendary", "legendary_loot")
-    print("items = " .. wr:len())
-    print("total weight = " .. wr:totalWeight())
-    local picked = wr:pick(0.5)
-    print("picked = " .. tostring(picked))
-    local multi = wr:pickN(2, {0.1, 0.9})
-    print("multi picks = " .. #multi)
+    local wr = lurek.patterns.newWeightedRandom(); local id1 = wr:add(10, "common", "common_loot")
+    local id2 = wr:add(3, "rare", "rare_loot"); local id3 = wr:add(1, "legendary", "legendary_loot")
+    print("items = " .. wr:len()); print("total weight = " .. wr:totalWeight())
+    local picked = wr:pick(0.5); print("picked = " .. tostring(picked))
+    local multi = wr:pickN(2, {0.1, 0.9}); print("multi picks = " .. #multi)
 end
 ```
 
@@ -10672,17 +9059,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id1 = wr:add(10, "common", "common_loot")
-    local id2 = wr:add(3, "rare", "rare_loot")
-    local id3 = wr:add(1, "legendary", "legendary_loot")
-    print("items = " .. wr:len())
-    print("total weight = " .. wr:totalWeight())
-    local picked = wr:pick(0.5)
-    print("picked = " .. tostring(picked))
-    local multi = wr:pickN(2, {0.1, 0.9})
-    print("multi picks = " .. #multi)
+    local wr = lurek.patterns.newWeightedRandom(); local id1 = wr:add(10, "common", "common_loot")
+    local id2 = wr:add(3, "rare", "rare_loot"); local id3 = wr:add(1, "legendary", "legendary_loot")
+    print("items = " .. wr:len()); print("total weight = " .. wr:totalWeight())
+    local picked = wr:pick(0.5); print("picked = " .. tostring(picked))
+    local multi = wr:pickN(2, {0.1, 0.9}); print("multi picks = " .. #multi)
 end
 ```
 
@@ -10713,17 +9094,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, "item_a")
-    wr:add(5, "item_b")
-    wr:setWeight(id, 20)
-    print("revision = " .. wr:getRevision())
-    wr:remove(id)
-    print("after remove: len = " .. wr:len())
-    print("empty = " .. tostring(wr:isEmpty()))
-    wr:clearAll()
-    print("after clear: empty = " .. tostring(wr:isEmpty()))
+    local wr = lurek.patterns.newWeightedRandom(); local id = wr:add(5, "item_a")
+    wr:add(5, "item_b"); wr:setWeight(id, 20)
+    print("revision = " .. wr:getRevision()); wr:remove(id)
+    print("after remove: len = " .. wr:len()); print("empty = " .. tostring(wr:isEmpty()))
+    wr:clearAll(); print("after clear: empty = " .. tostring(wr:isEmpty()))
 end
 ```
 
@@ -10756,17 +9131,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, "item_a")
-    wr:add(5, "item_b")
-    wr:setWeight(id, 20)
-    print("revision = " .. wr:getRevision())
-    wr:remove(id)
-    print("after remove: len = " .. wr:len())
-    print("empty = " .. tostring(wr:isEmpty()))
-    wr:clearAll()
-    print("after clear: empty = " .. tostring(wr:isEmpty()))
+    local wr = lurek.patterns.newWeightedRandom(); local id = wr:add(5, "item_a")
+    wr:add(5, "item_b"); wr:setWeight(id, 20)
+    print("revision = " .. wr:getRevision()); wr:remove(id)
+    print("after remove: len = " .. wr:len()); print("empty = " .. tostring(wr:isEmpty()))
+    wr:clearAll(); print("after clear: empty = " .. tostring(wr:isEmpty()))
 end
 ```
 
@@ -10792,17 +9161,11 @@ Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
 
 ```lua
 do
-    ---@type LWeightedRandom
-    local wr = lurek.patterns.newWeightedRandom()
-    local id1 = wr:add(10, "common", "common_loot")
-    local id2 = wr:add(3, "rare", "rare_loot")
-    local id3 = wr:add(1, "legendary", "legendary_loot")
-    print("items = " .. wr:len())
-    print("total weight = " .. wr:totalWeight())
-    local picked = wr:pick(0.5)
-    print("picked = " .. tostring(picked))
-    local multi = wr:pickN(2, {0.1, 0.9})
-    print("multi picks = " .. #multi)
+    local wr = lurek.patterns.newWeightedRandom(); local id1 = wr:add(10, "common", "common_loot")
+    local id2 = wr:add(3, "rare", "rare_loot"); local id3 = wr:add(1, "legendary", "legendary_loot")
+    print("items = " .. wr:len()); print("total weight = " .. wr:totalWeight())
+    local picked = wr:pick(0.5); print("picked = " .. tostring(picked))
+    local multi = wr:pickN(2, {0.1, 0.9}); print("multi picks = " .. #multi)
 end
 ```
 

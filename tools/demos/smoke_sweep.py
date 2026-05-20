@@ -54,6 +54,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 DEFAULT_FRAMES = 120  # ~2s at 60fps, matches user's mandate in phase 8.
 DEFAULT_TIMEOUT = 30.0
+EXAMPLE_QUIT_FRAMES = 5
 DEFAULT_BINARY = REPO_ROOT / "build" / "debug" / (
     "lurek2d.exe" if os.name == "nt" else "lurek2d"
 )
@@ -98,6 +99,20 @@ _ERROR_BUCKETS: list[tuple[str, re.Pattern[str]]] = [
     ("WGPU", re.compile(r"(wgpu|surface|validation error)", re.I)),
 ]
 
+_EXAMPLE_FATAL_BUCKETS: list[tuple[str, re.Pattern[str]]] = [
+    ("LUA_API_DRIFT", re.compile(r"attempt to call a (nil|table) value", re.I)),
+    ("LUA_API_MISSING", re.compile(r"attempt to index.*\bnil\b", re.I)),
+    ("LUA_API_DRIFT", re.compile(r"bad argument #\d+", re.I)),
+    ("LUA_SYNTAX", re.compile(r"syntax error", re.I)),
+    ("ASSET_MISSING", re.compile(r"(failed to load|no such file|cannot find|cannot resolve)", re.I)),
+    ("PANIC", re.compile(r"thread '.*' panicked", re.I)),
+    ("ENGINE_ERROR", re.compile(r"\bERROR\s+\[Lua\]\s+main\.lua:", re.I)),
+    ("ENGINE_ERROR", re.compile(r"\bLua error:\b", re.I)),
+    ("ENGINE_ERROR", re.compile(r"\bmain\.lua:.*runtime error\b", re.I)),
+    ("ENGINE_ERROR", re.compile(r"\bConfiguration Error\b", re.I)),
+    ("ENGINE_ERROR", re.compile(r"\bL0(07|10|11|16|17|60|74|75|76)\b", re.I)),
+]
+
 
 def _bucket_from_stderr(lines: list[str]) -> tuple[str, str]:
     """Return (category, head_line) for the first interesting stderr line."""
@@ -113,6 +128,18 @@ def _bucket_from_stderr(lines: list[str]) -> tuple[str, str]:
         if ln.strip():
             return "UNKNOWN", ln.strip()
     return "UNKNOWN", ""
+
+
+def _bucket_example_output(lines: list[str]) -> tuple[str, str]:
+    """Return a fatal bucket for example output, ignoring benign INFO/WARN startup logs."""
+    for ln in lines:
+        stripped = ln.strip()
+        if not stripped:
+            continue
+        for name, rx in _EXAMPLE_FATAL_BUCKETS:
+            if rx.search(stripped):
+                return name, stripped
+    return "PASS", ""
 
 
 def discover(games_root: Path, examples_root: Path) -> list[Target]:
@@ -149,16 +176,22 @@ def discover(games_root: Path, examples_root: Path) -> list[Target]:
 def run_target(binary: Path, target: Target, frames: int, timeout: float) -> Result:
     temp_example_dir: tempfile.TemporaryDirectory[str] | None = None
     run_path = target.path
+    cmd = [str(binary)]
     if target.kind == "example":
         temp_example_dir = prepare_example_run_dir(target.path)
         run_path = Path(temp_example_dir.name)
-
-    cmd = [
-        str(binary),
-        str(run_path),
-        f"--screenshot={target.screenshot}",
-        f"--screenshot-frames={frames}",
-    ]
+        cmd.extend([
+            f"--quit-after-frames={EXAMPLE_QUIT_FRAMES}",
+            "--window-x=-32000",
+            "--window-y=-32000",
+            str(run_path),
+        ])
+    else:
+        cmd.extend([
+            str(run_path),
+            f"--screenshot={target.screenshot}",
+            f"--screenshot-frames={frames}",
+        ])
     start = time.monotonic()
     # Clear any stale screenshot so we don't misread an old file as PASS.
     if target.screenshot.exists():
@@ -192,7 +225,9 @@ def run_target(binary: Path, target: Target, frames: int, timeout: float) -> Res
 
     elapsed = time.monotonic() - start
     stderr_lines = stderr.splitlines()
-    tail = stderr_lines[-15:] if stderr_lines else stdout.splitlines()[-15:]
+    stdout_lines = stdout.splitlines()
+    combined_lines = stderr_lines + stdout_lines
+    tail = combined_lines[-15:] if combined_lines else []
 
     produced_image = target.screenshot.exists() and target.screenshot.stat().st_size > 0
 
@@ -200,18 +235,13 @@ def run_target(binary: Path, target: Target, frames: int, timeout: float) -> Res
         bucket = "TIMEOUT"
         head = f"timeout after {timeout:.1f}s"
     elif exit_code not in (0, None):
-        bucket, head = _bucket_from_stderr(stderr_lines or stdout.splitlines())
+        bucket, head = _bucket_from_stderr(combined_lines)
         if bucket == "UNKNOWN":
             bucket = "CRASH"
         head = head or f"exit {exit_code}"
     elif target.kind == "example":
-        # Examples are stub scripts: print + exit, no game loop, no PNG expected.
-        # An example PASSES whenever it ran to completion without an engine-side
-        # Lua error. The engine catches Lua errors and shows an error screen but
-        # still exits 0, so we have to look at stderr for [L011]/[L0xx] tags or
-        # any "attempt to ..." line to decide.
-        offending = _bucket_from_stderr(stderr_lines)
-        if offending[0] != "UNKNOWN":
+        offending = _bucket_example_output(combined_lines)
+        if offending[0] != "PASS":
             bucket, head = offending
         else:
             bucket = "PASS"

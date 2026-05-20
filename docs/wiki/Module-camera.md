@@ -463,9 +463,7 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 2000, 1500)
     local ok, bx, by, bw, bh = cam:getBounds()
-    if ok then
-        print("bounds = " .. bx .. "," .. by .. "," .. bw .. "," .. bh)
-    end
+    print("bounds = " .. tostring(ok) .. "," .. tostring(bx) .. "," .. tostring(by) .. "," .. tostring(bw) .. "," .. tostring(bh))
 end
 ```
 
@@ -496,9 +494,7 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(40, 20)
     local ok, w, h = cam:getDeadZone()
-    if ok then
-        print("dead zone = " .. w .. "x" .. h)
-    end
+    print("dead zone = " .. tostring(ok) .. "," .. tostring(w) .. "x" .. tostring(h))
 end
 ```
 
@@ -796,8 +792,8 @@ Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
-    local mn, mx = cam:getRotationConstraints()
-    print("rotation range = " .. mn .. " to " .. mx)
+    local hasMin, mn, hasMax, mx = cam:getRotationConstraints()
+    print("rotation range = " .. tostring(hasMin) .. ":" .. mn .. " to " .. tostring(hasMax) .. ":" .. mx)
 end
 ```
 
@@ -888,9 +884,7 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(250, 125)
     local ok, tx, ty = cam:getTarget()
-    if ok then
-        print("target = " .. tx .. ", " .. ty)
-    end
+    print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
 end
 ```
 
@@ -1014,8 +1008,8 @@ Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
-    local mn, mx = cam:getZoomConstraints()
-    print("zoom range = " .. mn .. " to " .. mx)
+    local hasMin, mn, hasMax, mx = cam:getZoomConstraints()
+    print("zoom range = " .. tostring(hasMin) .. ":" .. mn .. " to " .. tostring(hasMax) .. ":" .. mx)
 end
 ```
 
@@ -1292,10 +1286,9 @@ Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
 ```lua
 do
     local cam = lurek.camera.new(800, 600)
-    local points = { { x = 0, y = 0 }, { x = 100, y = 100 } }
+    local points = {{ x = 0, y = 0 }, { x = 100, y = 100 }}
     cam:followPath(points, 1.0)
-    cam:updatePath(0.5)
-    local p = cam:pathProgress()
+    cam:updatePath(0.5); local p = cam:pathProgress()
     print("progress = " .. p)
 end
 ```
@@ -1797,9 +1790,7 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(500, 300)
     local ok, tx, ty = cam:getTarget()
-    if ok then
-        print("target = " .. tx .. ", " .. ty)
-    end
+    print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
 end
 ```
 

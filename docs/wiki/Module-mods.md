@@ -142,8 +142,7 @@ do
     local m = lurek.mods.newMod({id = "compat", name = "C", version = "1.0", author = "A", description = "d"})
     m:setApiVersion("1.0.0")
     local ok, err = lurek.mods.checkApiVersion(m, "1.5.0")
-    print("compatible = " .. tostring(ok))
-    if err then print("error = " .. err) end
+    print("compatible = " .. tostring(ok) .. " error = " .. tostring(err))
 end
 ```
 
@@ -166,14 +165,7 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 ```lua
 do
     ---@type LMod
-    local m = lurek.mods.newMod({
-        id = "my_mod",
-        name = "My Mod",
-        version = "1.0.0",
-        author = "Dev",
-        description = "A test mod",
-        priority = 10,
-    })
+    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0.0", author = "Dev", description = "A test mod", priority = 10 })
     print("id=" .. m:getId() .. " name=" .. m:getName())
 end
 ```
@@ -266,14 +258,7 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 ```lua
 do
     ---@type LMod
-    local m = lurek.mods.newMod({
-        id = "my_mod",
-        name = "My Mod",
-        version = "1.0.0",
-        author = "Dev",
-        description = "A test mod",
-        priority = 10,
-    })
+    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0.0", author = "Dev", description = "A test mod", priority = 10 })
     print("id=" .. m:getId() .. " name=" .. m:getName())
 end
 ```
@@ -337,17 +322,11 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LContentRegistry
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:register("item", "sword", {name = "Sword", damage = 10})
-    reg:register("item", "shield", {name = "Shield", armor = 5})
     local sword = reg:get("item", "sword")
-    if sword then
-        print("got: " .. (sword --[[@as table]]).name)
-    end
-    local all = reg:getAll("item")
-    print("all items = " .. #all)
+    print("got = " .. tostring(sword ~= nil))
 end
 ```
 
@@ -378,17 +357,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LContentRegistry
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
-    reg:register("item", "sword", {name = "Sword", damage = 10})
     reg:register("item", "shield", {name = "Shield", armor = 5})
-    local sword = reg:get("item", "sword")
-    if sword then
-        print("got: " .. (sword --[[@as table]]).name)
-    end
-    local all = reg:getAll("item")
-    print("all items = " .. #all)
+    print("all items = " .. #reg:getAll("item"))
 end
 ```
 
@@ -416,17 +388,7 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 do
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
-    reg:registerType("npc")
-    local types = reg:getTypes()
-    for _, t in ipairs(types) do print("type=" .. t) end
-    reg:register("item", "sword", { damage = 10 })
-    reg:register("item", "bow", { range = 5 })
-    local sword = reg:get("item", "sword")
-    print("sword = " .. tostring(sword))
-    local all = reg:getAll("item")
-    print("all items = " .. #all)
-    print(reg:type())
-    print(reg:typeOf("LContentRegistry"))
+    print("types = " .. #reg:getTypes())
 end
 ```
 
@@ -458,17 +420,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LContentRegistry
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:register("item", "sword", {name = "Sword", damage = 10})
-    reg:register("item", "shield", {name = "Shield", armor = 5})
-    local sword = reg:get("item", "sword")
-    if sword then
-        print("got: " .. (sword --[[@as table]]).name)
-    end
-    local all = reg:getAll("item")
-    print("all items = " .. #all)
+    print("got = " .. tostring(reg:get("item", "sword") ~= nil))
 end
 ```
 
@@ -499,16 +454,7 @@ do
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
     reg:registerType("npc")
-    local types = reg:getTypes()
-    for _, t in ipairs(types) do print("type=" .. t) end
-    reg:register("item", "sword", { damage = 10 })
-    reg:register("item", "bow", { range = 5 })
-    local sword = reg:get("item", "sword")
-    print("sword = " .. tostring(sword))
-    local all = reg:getAll("item")
-    print("all items = " .. #all)
-    print(reg:type())
-    print(reg:typeOf("LContentRegistry"))
+    print("types = " .. #reg:getTypes())
 end
 ```
 
@@ -535,18 +481,7 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 ```lua
 do
     local reg = lurek.mods.newRegistry()
-    reg:registerType("item")
-    reg:registerType("npc")
-    local types = reg:getTypes()
-    for _, t in ipairs(types) do print("type=" .. t) end
-    reg:register("item", "sword", { damage = 10 })
-    reg:register("item", "bow", { range = 5 })
-    local sword = reg:get("item", "sword")
-    print("sword = " .. tostring(sword))
-    local all = reg:getAll("item")
-    print("all items = " .. #all)
     print(reg:type())
-    print(reg:typeOf("LContentRegistry"))
 end
 ```
 
@@ -578,17 +513,6 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 ```lua
 do
     local reg = lurek.mods.newRegistry()
-    reg:registerType("item")
-    reg:registerType("npc")
-    local types = reg:getTypes()
-    for _, t in ipairs(types) do print("type=" .. t) end
-    reg:register("item", "sword", { damage = 10 })
-    reg:register("item", "bow", { range = 5 })
-    local sword = reg:get("item", "sword")
-    print("sword = " .. tostring(sword))
-    local all = reg:getAll("item")
-    print("all items = " .. #all)
-    print(reg:type())
     print(reg:typeOf("LContentRegistry"))
 end
 ```
@@ -644,38 +568,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("author = " .. mod:getAuthor())
 end
 ```
 
@@ -735,9 +629,7 @@ do
     local m = lurek.mods.newMod({id = "cfg", name = "Cfg", version = "1.0", author = "A", description = "d"})
     m:setConfig({difficulty = "hard", volume = 0.8})
     local cfg = m:getConfig()
-    if cfg then
-        print("config exists = true")
-    end
+    print("config exists = " .. tostring(cfg ~= nil))
 end
 ```
 
@@ -765,10 +657,7 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 do
     ---@type LMod
     local m = lurek.mods.newMod({id = "schema", name = "Schema", version = "1.0", author = "A", description = "d"})
-    m:setConfigSchema({
-        {key = "volume", type = "number", default = "0.5"},
-        {key = "language", type = "string", default = "en"},
-    })
+    m:setConfigSchema({ {key = "volume", type = "number", default = "0.5"}, {key = "language", type = "string", default = "en"} })
     local schema = m:getConfigSchema()
     print("schema entries = " .. #schema)
 end
@@ -825,38 +714,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("description = " .. mod:getDescription())
 end
 ```
 
@@ -917,10 +776,9 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LMod
     local m = lurek.mods.newMod({id = "hooks", name = "Hooks", version = "1.0", author = "A", description = "d"})
-    m:setHook("onLoad", function() print("loaded!") end)
-    m:setHook("onUnload", function() print("unloaded!") end)
+    m:setHook("onLoad", function() end)
+    m:setHook("onUnload", function() end)
     local names = m:getHookNames()
     print("hooks = " .. table.concat(names, ", "))
 end
@@ -948,38 +806,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("id = " .. mod:getId())
 end
 ```
 
@@ -1005,38 +833,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("name = " .. mod:getName())
 end
 ```
 
@@ -1062,38 +860,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("priority = " .. mod:getPriority())
 end
 ```
 
@@ -1119,38 +887,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("version = " .. mod:getVersion())
 end
 ```
 
@@ -1266,8 +1004,7 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 do
     ---@type LMod
     local m = lurek.mods.newMod({id = "release", name = "R", version = "1.0", author = "A", description = "d"})
-    m:setHook("test", function() end)
-    m:setConfig({x = 1})
+    m:setHook("test", function() end); m:setConfig({x = 1})
     m:releaseRefs()
     print("refs released")
 end
@@ -1392,10 +1129,7 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 do
     ---@type LMod
     local m = lurek.mods.newMod({id = "schema", name = "Schema", version = "1.0", author = "A", description = "d"})
-    m:setConfigSchema({
-        {key = "volume", type = "number", default = "0.5"},
-        {key = "language", type = "string", default = "en"},
-    })
+    m:setConfigSchema({ {key = "volume", type = "number", default = "0.5"}, {key = "language", type = "string", default = "en"} })
     print("schema set")
 end
 ```
@@ -1486,38 +1220,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("type = " .. mod:type())
 end
 ```
 
@@ -1548,38 +1252,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local m = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod" })
-    m:setApiVersion("1.0")
-    print(m:getApiVersion())
-    m:setCapabilities({ "maps", "items" })
-    local caps = m:getCapabilities()
-    print("caps=" .. #caps)
-    m:setConfig({ volume = 0.8 })
-    local cfg = m:getConfig()
-    print("config=" .. tostring(cfg))
-    m:setConfigSchema({ volume = "number" })
-    local schema = m:getConfigSchema()
-    print("schema=" .. tostring(schema))
-    local deps = m:getDependencies()
-    print("deps=" .. #deps)
-    print(m:getDescription())
-    print(m:getId())
-    print(m:getName())
-    print(m:getPriority())
-    print(m:getVersion())
-    print(m:getAuthor())
-    m:setHook("onLoad", function() print("loaded") end)
-    local names = m:getHookNames()
-    print("hooks=" .. #names)
-    print(m:hasHook("onLoad"))
-    local fn = m:getHook("onLoad")
-    print("hook=" .. tostring(fn))
-    print(m:isEnabled())
-    print(m:isLoaded())
-    m:setEnabled(true)
-    m:releaseRefs()
-    print(m:type())
-    print(m:typeOf("LMod"))
+    local mod = lurek.mods.newMod({id = "my_mod", name = "My Mod", version = "1.0", author = "Dev", description = "Test mod"})
+    print("is LMod = " .. tostring(mod:typeOf("LMod")))
 end
 ```
 
@@ -1602,22 +1276,11 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m1 = lurek.mods.newMod({id = "a", name = "A", version = "1.0", author = "X", description = "d", priority = 0})
-    ---@type LMod
-    local m2 = lurek.mods.newMod({id = "b", name = "B", version = "1.0", author = "X", description = "d", priority = 10})
-    m1:setEnabled(true)
-    m2:setEnabled(true)
-    mgr:registerMod(m1)
-    mgr:registerMod(m2)
-    mgr:setLoadOrder({"b", "a"})
-    local order = mgr:getLoadOrder()
-    for i, info in ipairs(order) do
-        print(i .. ": " .. info.id)
-    end
-    mgr:clearLoadOrder()
+    local mod_a = lurek.mods.newMod({id = "a", name = "A", version = "1.0", author = "X", description = "d", priority = 0}); local mod_b = lurek.mods.newMod({id = "b", name = "B", version = "1.0", author = "X", description = "d", priority = 10})
+    mod_a:setEnabled(true); mod_b:setEnabled(true); mgr:registerMod(mod_a); mgr:registerMod(mod_b)
+    mgr:setLoadOrder({"b", "a"}); mgr:clearLoadOrder()
+    print("order cleared")
 end
 ```
 
@@ -1640,18 +1303,11 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
-    mgr:markForReload("hot")
-    local queue = mgr:getReloadQueue()
-    print("queued = " .. #queue)
-    local processed = mgr:processReloadQueue()
-    print("processed = " .. #processed)
+    local mod = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
+    mod:setEnabled(true); mgr:registerMod(mod); mgr:markForReload("hot")
     mgr:clearReloadQueue()
+    print("queued = " .. #mgr:getReloadQueue())
 end
 ```
 
@@ -1677,16 +1333,11 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m = lurek.mods.newMod({id = "list", name = "List", version = "2.0", author = "X", description = "d", priority = 5})
+    local m = lurek.mods.newMod({id = "list", name = "List", version = "2.0", author = "X", description = "d"})
     m:setEnabled(true)
     mgr:registerMod(m)
-    local all = mgr:getAllMods()
-    for _, info in ipairs(all) do
-        print(info.id .. " v" .. info.version .. " pri=" .. info.priority)
-    end
+    print("mods = " .. #mgr:getAllMods())
 end
 ```
 
@@ -1712,22 +1363,11 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m1 = lurek.mods.newMod({id = "a", name = "A", version = "1.0", author = "X", description = "d", priority = 0})
-    ---@type LMod
-    local m2 = lurek.mods.newMod({id = "b", name = "B", version = "1.0", author = "X", description = "d", priority = 10})
-    m1:setEnabled(true)
-    m2:setEnabled(true)
-    mgr:registerMod(m1)
-    mgr:registerMod(m2)
+    local mod_a = lurek.mods.newMod({id = "a", name = "A", version = "1.0", author = "X", description = "d", priority = 0}); local mod_b = lurek.mods.newMod({id = "b", name = "B", version = "1.0", author = "X", description = "d", priority = 10})
+    mod_a:setEnabled(true); mod_b:setEnabled(true); mgr:registerMod(mod_a); mgr:registerMod(mod_b)
     mgr:setLoadOrder({"b", "a"})
-    local order = mgr:getLoadOrder()
-    for i, info in ipairs(order) do
-        print(i .. ": " .. info.id)
-    end
-    mgr:clearLoadOrder()
+    print("first = " .. mgr:getLoadOrder()[1].id)
 end
 ```
 
@@ -1753,19 +1393,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m1 = lurek.mods.newMod({id = "core", name = "Core", version = "1.0", author = "A", description = "Core mod", priority = 0})
-    ---@type LMod
-    local m2 = lurek.mods.newMod({id = "extra", name = "Extra", version = "1.0", author = "B", description = "Extra mod", priority = 10})
-    m1:setEnabled(true)
-    m2:setEnabled(true)
-    mgr:registerMod(m1)
-    mgr:registerMod(m2)
+    local mod = lurek.mods.newMod({id = "core", name = "Core", version = "1.0", author = "A", description = "Core mod", priority = 0})
+    mod:setEnabled(true); mgr:registerMod(mod)
     print("count = " .. mgr:getModCount())
-    print("has core = " .. tostring(mgr:hasMod("core")))
-    print("has missing = " .. tostring(mgr:hasMod("missing")))
 end
 ```
 
@@ -1796,12 +1427,9 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
     local m = lurek.mods.newMod({id = "pathed", name = "P", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
+    m:setEnabled(true); mgr:registerMod(m)
     local path = mgr:getModPath("pathed")
     print("path = " .. tostring(path))
 end
@@ -1834,13 +1462,9 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
     local m = lurek.mods.newMod({id = "render_mod", name = "R", version = "1.0", author = "A", description = "d"})
-    m:setCapabilities({"renderer"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
+    m:setCapabilities({"renderer"}); m:setEnabled(true); mgr:registerMod(m)
     local renderers = mgr:getModsByCapability("renderer")
     print("renderer mods = " .. #renderers)
 end
@@ -1868,18 +1492,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
-    mgr:markForReload("hot")
-    local queue = mgr:getReloadQueue()
-    print("queued = " .. #queue)
-    local processed = mgr:processReloadQueue()
-    print("processed = " .. #processed)
-    mgr:clearReloadQueue()
+    local mod = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
+    mod:setEnabled(true); mgr:registerMod(mod); mgr:markForReload("hot")
+    print("queued = " .. #mgr:getReloadQueue())
 end
 ```
 
@@ -1905,15 +1521,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
     local m = lurek.mods.newMod({id = "safe", name = "Safe", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
+    m:setEnabled(true); mgr:registerMod(m)
     print("circular = " .. tostring(mgr:hasCircularDependencies()))
-    local msgs = mgr:validateDependencies()
-    print("validation messages = " .. #msgs)
 end
 ```
 
@@ -1944,19 +1555,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m1 = lurek.mods.newMod({id = "core", name = "Core", version = "1.0", author = "A", description = "Core mod", priority = 0})
-    ---@type LMod
-    local m2 = lurek.mods.newMod({id = "extra", name = "Extra", version = "1.0", author = "B", description = "Extra mod", priority = 10})
-    m1:setEnabled(true)
-    m2:setEnabled(true)
-    mgr:registerMod(m1)
-    mgr:registerMod(m2)
-    print("count = " .. mgr:getModCount())
+    local mod = lurek.mods.newMod({id = "core", name = "Core", version = "1.0", author = "A", description = "Core mod", priority = 0})
+    mod:setEnabled(true); mgr:registerMod(mod)
     print("has core = " .. tostring(mgr:hasMod("core")))
-    print("has missing = " .. tostring(mgr:hasMod("missing")))
 end
 ```
 
@@ -1987,18 +1589,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
-    mgr:markForReload("hot")
-    local queue = mgr:getReloadQueue()
-    print("queued = " .. #queue)
-    local processed = mgr:processReloadQueue()
-    print("processed = " .. #processed)
-    mgr:clearReloadQueue()
+    local mod = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
+    mod:setEnabled(true); mgr:registerMod(mod); mgr:markForReload("hot")
+    print("queued = " .. #mgr:getReloadQueue())
 end
 ```
 
@@ -2024,18 +1618,11 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
-    mgr:markForReload("hot")
-    local queue = mgr:getReloadQueue()
-    print("queued = " .. #queue)
+    local mod = lurek.mods.newMod({id = "hot", name = "Hot", version = "1.0", author = "A", description = "d"})
+    mod:setEnabled(true); mgr:registerMod(mod); mgr:markForReload("hot")
     local processed = mgr:processReloadQueue()
     print("processed = " .. #processed)
-    mgr:clearReloadQueue()
 end
 ```
 
@@ -2063,19 +1650,10 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m1 = lurek.mods.newMod({id = "core", name = "Core", version = "1.0", author = "A", description = "Core mod", priority = 0})
-    ---@type LMod
-    local m2 = lurek.mods.newMod({id = "extra", name = "Extra", version = "1.0", author = "B", description = "Extra mod", priority = 10})
-    m1:setEnabled(true)
-    m2:setEnabled(true)
-    mgr:registerMod(m1)
-    mgr:registerMod(m2)
+    local mod = lurek.mods.newMod({id = "core", name = "Core", version = "1.0", author = "A", description = "Core mod", priority = 0})
+    mod:setEnabled(true); mgr:registerMod(mod)
     print("count = " .. mgr:getModCount())
-    print("has core = " .. tostring(mgr:hasMod("core")))
-    print("has missing = " .. tostring(mgr:hasMod("missing")))
 end
 ```
 
@@ -2106,13 +1684,9 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
     local found = mgr:scanFolder("content/plugins")
     print("scanned mods = " .. #found)
-    for _, info in ipairs(found) do
-        print("  " .. info.id .. " - " .. info.name)
-    end
 end
 ```
 
@@ -2140,22 +1714,11 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
-    local m1 = lurek.mods.newMod({id = "a", name = "A", version = "1.0", author = "X", description = "d", priority = 0})
-    ---@type LMod
-    local m2 = lurek.mods.newMod({id = "b", name = "B", version = "1.0", author = "X", description = "d", priority = 10})
-    m1:setEnabled(true)
-    m2:setEnabled(true)
-    mgr:registerMod(m1)
-    mgr:registerMod(m2)
+    local mod_a = lurek.mods.newMod({id = "a", name = "A", version = "1.0", author = "X", description = "d", priority = 0}); local mod_b = lurek.mods.newMod({id = "b", name = "B", version = "1.0", author = "X", description = "d", priority = 10})
+    mod_a:setEnabled(true); mod_b:setEnabled(true); mgr:registerMod(mod_a); mgr:registerMod(mod_b)
     mgr:setLoadOrder({"b", "a"})
-    local order = mgr:getLoadOrder()
-    for i, info in ipairs(order) do
-        print(i .. ": " .. info.id)
-    end
-    mgr:clearLoadOrder()
+    print("load order set")
 end
 ```
 
@@ -2181,33 +1744,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local mm = lurek.mods.newModManager()
-    local m = lurek.mods.newMod({ id = "mgr_mod", name = "Mgr Mod", version = "1.0", author = "Dev", description = "For manager test" })
-    print(mm:getModCount())
-    print(mm:hasMod(m:getId()))
-    local all = mm:getAllMods()
-    print("mods=" .. #all)
-    local order = mm:getLoadOrder()
-    print("order=" .. #order)
-    mm:setLoadOrder({ m:getId() })
-    mm:clearLoadOrder()
-    local caps = mm:getModsByCapability("maps")
-    print("capable=" .. #caps)
-    local path = mm:getModPath(m:getId())
-    print("path=" .. tostring(path))
-    mm:markForReload(m:getId())
-    local queue = mm:getReloadQueue()
-    print("queue=" .. #queue)
-    mm:clearReloadQueue()
-    mm:processReloadQueue()
-    local hasCycles = mm:hasCircularDependencies()
-    print("cycles=" .. tostring(hasCycles))
-    local errors = mm:validateDependencies()
-    print("errors=" .. #errors)
-    mm:scanFolder("content/")
-    mm:unregisterMod(m:getId())
-    print(mm:type())
-    print(mm:typeOf("LModManager"))
+    local mgr = lurek.mods.newModManager()
+    print(mgr:type())
 end
 ```
 
@@ -2238,33 +1776,8 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    local mm = lurek.mods.newModManager()
-    local m = lurek.mods.newMod({ id = "mgr_mod", name = "Mgr Mod", version = "1.0", author = "Dev", description = "For manager test" })
-    print(mm:getModCount())
-    print(mm:hasMod(m:getId()))
-    local all = mm:getAllMods()
-    print("mods=" .. #all)
-    local order = mm:getLoadOrder()
-    print("order=" .. #order)
-    mm:setLoadOrder({ m:getId() })
-    mm:clearLoadOrder()
-    local caps = mm:getModsByCapability("maps")
-    print("capable=" .. #caps)
-    local path = mm:getModPath(m:getId())
-    print("path=" .. tostring(path))
-    mm:markForReload(m:getId())
-    local queue = mm:getReloadQueue()
-    print("queue=" .. #queue)
-    mm:clearReloadQueue()
-    mm:processReloadQueue()
-    local hasCycles = mm:hasCircularDependencies()
-    print("cycles=" .. tostring(hasCycles))
-    local errors = mm:validateDependencies()
-    print("errors=" .. #errors)
-    mm:scanFolder("content/")
-    mm:unregisterMod(m:getId())
-    print(mm:type())
-    print(mm:typeOf("LModManager"))
+    local mgr = lurek.mods.newModManager()
+    print(mgr:typeOf("LModManager"))
 end
 ```
 
@@ -2295,13 +1808,9 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
     local m = lurek.mods.newMod({id = "temp", name = "Temp", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
-    print("before = " .. mgr:getModCount())
+    m:setEnabled(true); mgr:registerMod(m)
     local removed = mgr:unregisterMod("temp")
     print("removed = " .. tostring(removed) .. " after = " .. mgr:getModCount())
 end
@@ -2329,13 +1838,9 @@ Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
 
 ```lua
 do
-    ---@type LModManager
     local mgr = lurek.mods.newModManager()
-    ---@type LMod
     local m = lurek.mods.newMod({id = "safe", name = "Safe", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    mgr:registerMod(m)
-    print("circular = " .. tostring(mgr:hasCircularDependencies()))
+    m:setEnabled(true); mgr:registerMod(m)
     local msgs = mgr:validateDependencies()
     print("validation messages = " .. #msgs)
 end

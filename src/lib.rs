@@ -150,6 +150,9 @@ pub fn lurek_run() -> std::process::ExitCode {
     let mut screenshot_path: Option<std::path::PathBuf> = None;
     let mut screenshot_frames: u32 = 3;
     let mut screenshot_time: Option<f32> = None;
+    let mut auto_quit_frames: Option<u32> = None;
+    let mut auto_quit_time: Option<f32> = None;
+    let mut hidden_window = false;
     let mut window_x: Option<i32> = None;
     let mut window_y: Option<i32> = None;
     let mut window_width: Option<u32> = None;
@@ -171,6 +174,34 @@ pub fn lurek_run() -> std::process::ExitCode {
             if let Ok(s) = val.parse::<f32>() {
                 screenshot_time = Some(s);
             }
+        } else if let Some(val) = arg.strip_prefix("--quit-after-frames=") {
+            match val.parse::<u32>() {
+                Ok(n) => auto_quit_frames = Some(n),
+                Err(_) => parse_error = Some(format!("invalid --quit-after-frames value '{}'", val)),
+            }
+        } else if arg == "--quit-after-frames" {
+            match args.next() {
+                Some(value) => match value.parse::<u32>() {
+                    Ok(n) => auto_quit_frames = Some(n),
+                    Err(_) => parse_error = Some(format!("invalid --quit-after-frames value '{}'", value)),
+                },
+                None => parse_error = Some("--quit-after-frames requires an integer value".to_string()),
+            }
+        } else if let Some(val) = arg.strip_prefix("--quit-after-time=") {
+            match val.parse::<f32>() {
+                Ok(s) => auto_quit_time = Some(s),
+                Err(_) => parse_error = Some(format!("invalid --quit-after-time value '{}'", val)),
+            }
+        } else if arg == "--quit-after-time" {
+            match args.next() {
+                Some(value) => match value.parse::<f32>() {
+                    Ok(s) => auto_quit_time = Some(s),
+                    Err(_) => parse_error = Some(format!("invalid --quit-after-time value '{}'", value)),
+                },
+                None => parse_error = Some("--quit-after-time requires a numeric value".to_string()),
+            }
+        } else if arg == "--hidden-window" {
+            hidden_window = true;
         } else if let Some(val) = arg.strip_prefix("--window-x=") {
             if let Ok(n) = val.parse::<i32>() {
                 window_x = Some(n);
@@ -292,6 +323,9 @@ pub fn lurek_run() -> std::process::ExitCode {
                 screenshot_path,
                 screenshot_frames,
                 screenshot_time,
+                auto_quit_frames,
+                auto_quit_time,
+                hidden_window,
                 window_x.zip(window_y),
             );
             ExitCode::SUCCESS
@@ -340,6 +374,9 @@ pub fn lurek_run() -> std::process::ExitCode {
                 screenshot_path,
                 screenshot_frames,
                 screenshot_time,
+                auto_quit_frames,
+                auto_quit_time,
+                hidden_window,
                 window_x.zip(window_y),
             );
             ExitCode::SUCCESS
@@ -375,6 +412,9 @@ pub fn lurek_run() -> std::process::ExitCode {
                 screenshot_path,
                 screenshot_frames,
                 screenshot_time,
+                auto_quit_frames,
+                auto_quit_time,
+                hidden_window,
                 window_x.zip(window_y),
             );
             ExitCode::SUCCESS

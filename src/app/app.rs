@@ -213,6 +213,18 @@ pub struct LurekApp {
     auto_screenshot_frame_count: u32,
     /// Instant when auto-screenshot timing began.
     auto_screenshot_start: Option<Instant>,
+    /// Optional frame count after which the runtime should exit automatically.
+    auto_quit_frames: Option<u32>,
+    /// Optional time in seconds after which the runtime should exit automatically.
+    auto_quit_time: Option<f32>,
+    /// Whether the auto-quit condition has already been reached.
+    auto_quit_done: bool,
+    /// Frames rendered since auto-quit timing began.
+    auto_quit_frame_count: u32,
+    /// Instant when auto-quit timing began.
+    auto_quit_start: Option<Instant>,
+    /// Keep the OS window hidden for non-interactive automated runs.
+    hidden_window: bool,
     /// CLI-supplied initial window position override.
     window_pos: Option<(i32, i32)>,
     /// Temp directory keeping extracted .lurek archive contents alive.
@@ -241,6 +253,9 @@ impl LurekApp {
         auto_screenshot_path: Option<PathBuf>,
         auto_screenshot_frames: u32,
         auto_screenshot_time: Option<f32>,
+        auto_quit_frames: Option<u32>,
+        auto_quit_time: Option<f32>,
+        hidden_window: bool,
         window_pos: Option<(i32, i32)>,
     ) -> Self {
         let window_vsync_mode = if config.window.vsync { 1 } else { 0 };
@@ -302,6 +317,12 @@ impl LurekApp {
             auto_screenshot_done: false,
             auto_screenshot_frame_count: 0,
             auto_screenshot_start: None,
+            auto_quit_frames,
+            auto_quit_time,
+            auto_quit_done: false,
+            auto_quit_frame_count: 0,
+            auto_quit_start: None,
+            hidden_window,
             window_pos,
             lurek_temp_dir: None,
             perf_report_started: Instant::now(),
@@ -839,6 +860,12 @@ impl LurekApp {
                 self.auto_screenshot_start = Some(Instant::now());
             }
             self.auto_screenshot_frame_count += 1;
+        }
+        if (self.auto_quit_frames.is_some() || self.auto_quit_time.is_some()) && !self.auto_quit_done {
+            if self.auto_quit_frame_count == 0 {
+                self.auto_quit_start = Some(Instant::now());
+            }
+            self.auto_quit_frame_count += 1;
         }
         if !self.ready_fired {
             self.ready_fired = true;
@@ -2492,12 +2519,17 @@ impl ApplicationHandler for LurekApp {
             WindowEvent::RedrawRequested => {
                 if !self.lua_initialized {
                     if let Some(win) = &self.window {
+                        if !self.hidden_window {
                         win.set_visible(true);
+                        }
                     }
                     self.init_lua();
                     self.lua_initialized = true;
                     if self.auto_screenshot_path.is_some() {
                         self.auto_screenshot_start = Some(Instant::now());
+                    }
+                    if self.auto_quit_frames.is_some() || self.auto_quit_time.is_some() {
+                        self.auto_quit_start = Some(Instant::now());
                     }
                     if let (Some(window), Some(state)) = (&self.window, &self.state) {
                         let mut st = state.borrow_mut();
@@ -2748,6 +2780,26 @@ impl ApplicationHandler for LurekApp {
                 }
             }
         }
+        if !self.auto_quit_done {
+            let auto_quit_ready = match self.auto_quit_time {
+                Some(secs) => self
+                    .auto_quit_start
+                    .map(|start| start.elapsed() >= Duration::from_secs_f32(secs.max(0.0)))
+                    .unwrap_or(false),
+                None => self
+                    .auto_quit_frames
+                    .map(|frames| self.auto_quit_frame_count >= frames)
+                    .unwrap_or(false),
+            };
+            if auto_quit_ready {
+                self.auto_quit_done = true;
+                if let Some(state) = &self.state {
+                    state.borrow_mut().quit_requested = true;
+                } else {
+                    event_loop.exit();
+                }
+            }
+        }
         let target = Duration::from_secs_f64(1.0 / self.config.performance.target_fps as f64);
         let elapsed = self.last_frame.elapsed();
         if elapsed >= target {
@@ -2793,6 +2845,9 @@ impl App {
         screenshot_path: Option<PathBuf>,
         screenshot_frames: u32,
         screenshot_time: Option<f32>,
+        auto_quit_frames: Option<u32>,
+        auto_quit_time: Option<f32>,
+        hidden_window: bool,
         window_pos: Option<(i32, i32)>,
     ) {
         init_logging(
@@ -2819,6 +2874,9 @@ impl App {
             screenshot_path,
             screenshot_frames,
             screenshot_time,
+            auto_quit_frames,
+            auto_quit_time,
+            hidden_window,
             window_pos,
         );
         event_loop.run_app(&mut app).expect("Event loop error");

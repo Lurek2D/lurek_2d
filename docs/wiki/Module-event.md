@@ -419,12 +419,8 @@ Exact example from [event.lua](../blob/main/content/examples/event.lua):
 ```lua
 do
     lurek.event.push("wake_up", "now")
-    local ok, name, args = lurek.event.wait(0.1)
-    if ok then
-        print("received: " .. name)
-    else
-        print("timed out")
-    end
+    local ok, name = lurek.event.wait(0.1)
+    print(ok and ("received: " .. name) or "timed out")
 end
 ```
 
@@ -767,11 +763,7 @@ Exact example from [event.lua](../blob/main/content/examples/event.lua):
 ```lua
 do
     local sig = lurek.event.newSignal()
-    local handle = sig:registerWithFilter("hit", function(dmg)
-        print("critical hit: " .. tostring(dmg))
-    end, function(dmg)
-        return dmg > 50
-    end)
+    local handle = sig:registerWithFilter("hit", function(dmg) print("critical hit: " .. tostring(dmg)) end, function(dmg) return dmg > 50 end)
     print("registered with filter, handle = " .. handle)
 end
 ```

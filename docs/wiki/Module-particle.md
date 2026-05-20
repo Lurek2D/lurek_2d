@@ -353,15 +353,10 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 512, emissionRate = 100})
-    ps:setPosition(400, 300)
-    ps:setSpeed(50, 150)
-    ps:setSpread(math.pi * 2)
-    ps:addAttractor(400, 300, 200, 100)
-    ps:addAttractor(200, 200, -50, 60)
-    print("attractors = " .. ps:getAttractorCount())
-    ps:clearAttractors()
+    local ps = lurek.particle.newSystem({bufferSize = 512, emissionRate = 100}) ; ps:setPosition(400, 300)
+    ps:setSpeed(50, 150) ; ps:setSpread(math.pi * 2)
+    ps:addAttractor(400, 300, 200, 100) ; ps:addAttractor(200, 200, -50, 60)
+    print("attractors = " .. ps:getAttractorCount()) ; ps:clearAttractors()
     print("after clear = " .. ps:getAttractorCount())
 end
 ```
@@ -454,15 +449,10 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 512, emissionRate = 100})
-    ps:setPosition(400, 300)
-    ps:setSpeed(50, 150)
-    ps:setSpread(math.pi * 2)
-    ps:addAttractor(400, 300, 200, 100)
-    ps:addAttractor(200, 200, -50, 60)
-    print("attractors = " .. ps:getAttractorCount())
-    ps:clearAttractors()
+    local ps = lurek.particle.newSystem({bufferSize = 512, emissionRate = 100}) ; ps:setPosition(400, 300)
+    ps:setSpeed(50, 150) ; ps:setSpread(math.pi * 2)
+    ps:addAttractor(400, 300, 200, 100) ; ps:addAttractor(200, 200, -50, 60)
+    print("attractors = " .. ps:getAttractorCount()) ; ps:clearAttractors()
     print("after clear = " .. ps:getAttractorCount())
 end
 ```
@@ -486,7 +476,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setBounds(0, 800, 0, 600, 0.5)
     print("bounds set with restitution 0.5")
@@ -514,8 +503,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    local ps = lurek.particle.newSystem({ max = 200 })
-    local world = lurek.physics.newWorld(0, 0)
+    local ps = lurek.particle.newSystem({ max = 200 }) ; local world = lurek.physics.newWorld(0, 0)
     ps:setCollidesWithPhysics(world, 4.0, 0.3)
     print("has_collides=" .. tostring(ps:hasCollidesWithPhysics()))
     ps:clearCollidesWithPhysics()
@@ -545,9 +533,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 256, emissionRate = 75})
-    ps:setSpeed(80, 160)
+    local ps = lurek.particle.newSystem({bufferSize = 256, emissionRate = 75}) ; ps:setSpeed(80, 160)
     ps:setGravity(0, 100)
     local copy = ps:clone()
     print("clone buffer = " .. copy:getBufferSize())
@@ -577,9 +563,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 10})
-    print("empty = " .. tostring(ps:isEmpty()))
+    local ps = lurek.particle.newSystem({bufferSize = 10}) ; print("empty = " .. tostring(ps:isEmpty()))
     ps:emit(10)
     print("full = " .. tostring(ps:isFull()))
     print("count = " .. ps:count())
@@ -616,13 +600,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newPreset("sparks")
-    ps:setPosition(64, 64)
-    ps:emit(20)
-    ps:update(0.1)
-    local img1 = ps:drawToImage(128, 128)
-    local img2 = ps:toImage(128, 128)
+    local ps = lurek.particle.newPreset("sparks") ; ps:setPosition(64, 64)
+    ps:emit(20) ; ps:update(0.1)
+    local img1 = ps:drawToImage(128, 128) ; local img2 = ps:toImage(128, 128)
     print("drawToImage type = " .. img1:type())
     print("toImage type = " .. img2:type())
 end
@@ -652,9 +632,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 512})
-    ps:setPosition(400, 300)
+    local ps = lurek.particle.newSystem({bufferSize = 512}) ; ps:setPosition(400, 300)
     ps:setSpeed(50, 150)
     ps:setSpread(math.pi * 2)
     ps:emit(100)
@@ -684,15 +662,10 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 512, emissionRate = 100})
-    ps:setPosition(400, 300)
-    ps:setSpeed(50, 150)
-    ps:setSpread(math.pi * 2)
-    ps:addAttractor(400, 300, 200, 100)
-    ps:addAttractor(200, 200, -50, 60)
-    print("attractors = " .. ps:getAttractorCount())
-    ps:clearAttractors()
+    local ps = lurek.particle.newSystem({bufferSize = 512, emissionRate = 100}) ; ps:setPosition(400, 300)
+    ps:setSpeed(50, 150) ; ps:setSpread(math.pi * 2)
+    ps:addAttractor(400, 300, 200, 100) ; ps:addAttractor(200, 200, -50, 60)
+    print("attractors = " .. ps:getAttractorCount()) ; ps:clearAttractors()
     print("after clear = " .. ps:getAttractorCount())
 end
 ```
@@ -748,13 +721,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
-    ps:setColors(
-        {r = 1, g = 0.5, b = 0, a = 1},
-        {r = 1, g = 0, b = 0, a = 0}
-    )
-    local colors = ps:getColors()
+    ps:setColors( {r = 1, g = 0.5, b = 0, a = 1}, {r = 1, g = 0, b = 0, a = 0} ) local colors = ps:getColors()
     print("color keyframes = " .. #colors)
 end
 ```
@@ -781,9 +749,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 10})
-    print("empty = " .. tostring(ps:isEmpty()))
+    local ps = lurek.particle.newSystem({bufferSize = 10}) ; print("empty = " .. tostring(ps:isEmpty()))
     ps:emit(10)
     print("full = " .. tostring(ps:isFull()))
     print("count = " .. ps:count())
@@ -844,9 +810,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setEmissionArea("uniform", 100, 50)
+    local ps = lurek.particle.newSystem() ; ps:setEmissionArea("uniform", 100, 50)
     local dist, w, h = ps:getEmissionArea()
     print("area = " .. dist .. " " .. w .. "x" .. h)
     ps:setEmissionArea("normal", 80, 80, math.pi / 4, true)
@@ -997,7 +961,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setInsertMode("top")
     print("mode = " .. ps:getInsertMode())
@@ -1217,11 +1180,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setRotation(0, math.pi * 2)
-    local rmin, rmax = ps:getRotation()
-    print("rotation = " .. rmin .. ".." .. rmax)
+    local ps = lurek.particle.newSystem() ; ps:setRotation(0, math.pi * 2)
+    local rmin, rmax = ps:getRotation() ; print("rotation = " .. rmin .. ".." .. rmax)
     ps:setSpin(-3, 3)
     local smin, smax = ps:getSpin()
     print("spin = " .. smin .. ".." .. smax)
@@ -1279,9 +1239,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setSizes(4, 2, 1)
+    local ps = lurek.particle.newSystem() ; ps:setSizes(4, 2, 1)
     local sizes = ps:getSizes()
     print("sizes = " .. #sizes)
     ps:setSizeVariation(0.3)
@@ -1311,9 +1269,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setSizes(4, 2, 1)
+    local ps = lurek.particle.newSystem() ; ps:setSizes(4, 2, 1)
     local sizes = ps:getSizes()
     print("sizes = " .. #sizes)
     ps:setSizeVariation(0.3)
@@ -1375,11 +1331,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setRotation(0, math.pi * 2)
-    local rmin, rmax = ps:getRotation()
-    print("rotation = " .. rmin .. ".." .. rmax)
+    local ps = lurek.particle.newSystem() ; ps:setRotation(0, math.pi * 2)
+    local rmin, rmax = ps:getRotation() ; print("rotation = " .. rmin .. ".." .. rmax)
     ps:setSpin(-3, 3)
     local smin, smax = ps:getSpin()
     print("spin = " .. smin .. ".." .. smax)
@@ -1408,7 +1361,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setSpinVariation(0.5)
     print("spin var = " .. ps:getSpinVariation())
@@ -1499,8 +1451,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    local ps = lurek.particle.newSystem({ max = 200 })
-    local world = lurek.physics.newWorld(0, 0)
+    local ps = lurek.particle.newSystem({ max = 200 }) ; local world = lurek.physics.newWorld(0, 0)
     ps:setCollidesWithPhysics(world, 4.0, 0.3)
     print("has_collides=" .. tostring(ps:hasCollidesWithPhysics()))
     ps:clearCollidesWithPhysics()
@@ -1530,7 +1481,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setSpinVariation(0.5)
     print("spin var = " .. ps:getSpinVariation())
@@ -1561,9 +1511,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}})
-    ps:start()
+    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}}) ; ps:start()
     print("active = " .. tostring(ps:isActive()))
     print("stopped = " .. tostring(ps:isStopped()))
     ps:stop()
@@ -1593,9 +1541,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 10})
-    print("empty = " .. tostring(ps:isEmpty()))
+    local ps = lurek.particle.newSystem({bufferSize = 10}) ; print("empty = " .. tostring(ps:isEmpty()))
     ps:emit(10)
     print("full = " .. tostring(ps:isFull()))
     print("count = " .. ps:count())
@@ -1625,9 +1571,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 10})
-    print("empty = " .. tostring(ps:isEmpty()))
+    local ps = lurek.particle.newSystem({bufferSize = 10}) ; print("empty = " .. tostring(ps:isEmpty()))
     ps:emit(10)
     print("full = " .. tostring(ps:isFull()))
     print("count = " .. ps:count())
@@ -1657,11 +1601,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setEmissionRate(50)
-    ps:start()
-    ps:pause()
+    local ps = lurek.particle.newSystem() ; ps:setEmissionRate(50)
+    ps:start() ; ps:pause()
     print("paused = " .. tostring(ps:isPaused()))
     ps:resume()
     print("paused after resume = " .. tostring(ps:isPaused()))
@@ -1690,9 +1631,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}})
-    ps:start()
+    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}}) ; ps:start()
     print("active = " .. tostring(ps:isActive()))
     print("stopped = " .. tostring(ps:isStopped()))
     ps:stop()
@@ -1753,11 +1692,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setEmissionRate(50)
-    ps:start()
-    ps:pause()
+    local ps = lurek.particle.newSystem() ; ps:setEmissionRate(50)
+    ps:start() ; ps:pause()
     print("paused = " .. tostring(ps:isPaused()))
     ps:resume()
     print("paused after resume = " .. tostring(ps:isPaused()))
@@ -1820,20 +1756,11 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({emissionRate = 200, bufferSize = 1024})
-    ps:setPosition(320, 240)
-    ps:setSpeed(100, 300)
-    ps:setDirection(-math.pi / 2)
-    ps:setSpread(math.pi / 8)
-    ps:setGravity(0, 400)
-    ps:start()
-    for _ = 1, 10 do
-        ps:update(0.016)
-    end
-    ps:render()
-    ps:render(10, 5)
-    print("count after 10 frames = " .. ps:count())
+    local ps = lurek.particle.newSystem({emissionRate = 200, bufferSize = 1024}) ; ps:setPosition(320, 240) ; ps:setSpeed(100, 300)
+    ps:setDirection(-math.pi / 2) ; ps:setSpread(math.pi / 8)
+    ps:setGravity(0, 400) ; ps:start()
+    for _ = 1, 10 do ps:update(0.016) end ; ps:render()
+    ps:render(10, 5) ; print("count after 10 frames = " .. ps:count())
 end
 ```
 
@@ -1856,11 +1783,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setEmissionRate(100)
-    ps:start()
-    ps:update(1.0)
+    local ps = lurek.particle.newSystem() ; ps:setEmissionRate(100)
+    ps:start() ; ps:update(1.0)
     print("before reset: " .. ps:count())
     ps:reset()
     print("after reset: " .. ps:count())
@@ -1886,11 +1810,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setEmissionRate(50)
-    ps:start()
-    ps:pause()
+    local ps = lurek.particle.newSystem() ; ps:setEmissionRate(50)
+    ps:start() ; ps:pause()
     print("paused = " .. tostring(ps:isPaused()))
     ps:resume()
     print("paused after resume = " .. tostring(ps:isPaused()))
@@ -1929,7 +1850,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setBounds(0, 800, 0, 600, 0.5)
     print("bounds set with restitution 0.5")
@@ -1997,8 +1917,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    local ps = lurek.particle.newSystem({ max = 200 })
-    local world = lurek.physics.newWorld(0, 0)
+    local ps = lurek.particle.newSystem({ max = 200 }) ; local world = lurek.physics.newWorld(0, 0)
     ps:setCollidesWithPhysics(world, 4.0, 0.3)
     print("has_collides=" .. tostring(ps:hasCollidesWithPhysics()))
     ps:clearCollidesWithPhysics()
@@ -2030,13 +1949,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
-    ps:setColors(
-        {r = 1, g = 0.5, b = 0, a = 1},
-        {r = 1, g = 0, b = 0, a = 0}
-    )
-    local colors = ps:getColors()
+    ps:setColors( {r = 1, g = 0.5, b = 0, a = 1}, {r = 1, g = 0, b = 0, a = 0} ) local colors = ps:getColors()
     print("color keyframes = " .. #colors)
 end
 ```
@@ -2065,13 +1979,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
-    ps:setCustomEmissionShape(function()
-        local angle = math.random() * math.pi * 2
-        local r = 50
-        return math.cos(angle) * r + 400, math.sin(angle) * r + 300
-    end)
+    ps:setCustomEmissionShape(function() local angle = math.random() * math.pi * 2 local r = 50 return math.cos(angle) * r + 400, math.sin(angle) * r + 300 end)
     ps:emit(10)
     print("custom shape emitted")
 end
@@ -2140,9 +2049,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setEmissionArea("uniform", 100, 50)
+    local ps = lurek.particle.newSystem() ; ps:setEmissionArea("uniform", 100, 50)
     local dist, w, h = ps:getEmissionArea()
     print("area = " .. dist .. " " .. w .. "x" .. h)
     ps:setEmissionArea("normal", 80, 80, math.pi / 4, true)
@@ -2306,7 +2213,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setInsertMode("top")
     print("mode = " .. ps:getInsertMode())
@@ -2445,13 +2351,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({bufferSize = 64, emissionRate = 30})
-    ps:setParticleLifetime(0.1, 0.2)
-    local death_count = 0
-    ps:setOnDeathBatch(function(batch)
-        death_count = death_count + #batch
-    end)
+    local ps = lurek.particle.newSystem({bufferSize = 64, emissionRate = 30}) ; ps:setParticleLifetime(0.1, 0.2)
+    local death_count = 0 ; ps:setOnDeathBatch(function(batch) death_count = death_count + #batch end)
     ps:start()
     ps:update(0.5)
     print("deaths = " .. death_count)
@@ -2583,7 +2484,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setSpinVariation(0.5)
     print("spin var = " .. ps:getSpinVariation())
@@ -2618,11 +2518,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setRotation(0, math.pi * 2)
-    local rmin, rmax = ps:getRotation()
-    print("rotation = " .. rmin .. ".." .. rmax)
+    local ps = lurek.particle.newSystem() ; ps:setRotation(0, math.pi * 2)
+    local rmin, rmax = ps:getRotation() ; print("rotation = " .. rmin .. ".." .. rmax)
     ps:setSpin(-3, 3)
     local smin, smax = ps:getSpin()
     print("spin = " .. smin .. ".." .. smax)
@@ -2684,9 +2581,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setSizes(4, 2, 1)
+    local ps = lurek.particle.newSystem() ; ps:setSizes(4, 2, 1)
     local sizes = ps:getSizes()
     print("sizes = " .. #sizes)
     ps:setSizeVariation(0.3)
@@ -2718,9 +2613,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setSizes(4, 2, 1)
+    local ps = lurek.particle.newSystem() ; ps:setSizes(4, 2, 1)
     local sizes = ps:getSizes()
     print("sizes = " .. #sizes)
     ps:setSizeVariation(0.3)
@@ -2788,11 +2681,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem()
-    ps:setRotation(0, math.pi * 2)
-    local rmin, rmax = ps:getRotation()
-    print("rotation = " .. rmin .. ".." .. rmax)
+    local ps = lurek.particle.newSystem() ; ps:setRotation(0, math.pi * 2)
+    local rmin, rmax = ps:getRotation() ; print("rotation = " .. rmin .. ".." .. rmax)
     ps:setSpin(-3, 3)
     local smin, smax = ps:getSpin()
     print("spin = " .. smin .. ".." .. smax)
@@ -2823,7 +2713,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setSpinVariation(0.5)
     print("spin var = " .. ps:getSpinVariation())
@@ -2916,9 +2805,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}})
-    ps:start()
+    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}}) ; ps:start()
     print("active = " .. tostring(ps:isActive()))
     print("stopped = " .. tostring(ps:isStopped()))
     ps:stop()
@@ -2945,9 +2832,7 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}})
-    ps:start()
+    local ps = lurek.particle.newSystem({emissionRate = 100, particleLifetime = {1, 2}}) ; ps:start()
     print("active = " .. tostring(ps:isActive()))
     print("stopped = " .. tostring(ps:isStopped()))
     ps:stop()
@@ -3014,13 +2899,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newPreset("sparks")
-    ps:setPosition(64, 64)
-    ps:emit(20)
-    ps:update(0.1)
-    local img1 = ps:drawToImage(128, 128)
-    local img2 = ps:toImage(128, 128)
+    local ps = lurek.particle.newPreset("sparks") ; ps:setPosition(64, 64)
+    ps:emit(20) ; ps:update(0.1)
+    local img1 = ps:drawToImage(128, 128) ; local img2 = ps:toImage(128, 128)
     print("drawToImage type = " .. img1:type())
     print("toImage type = " .. img2:type())
 end
@@ -3048,7 +2929,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     print("type = " .. ps:type())
     print("is PS = " .. tostring(ps:typeOf("LParticleSystem")))
@@ -3084,7 +2964,6 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     print("type = " .. ps:type())
     print("is PS = " .. tostring(ps:typeOf("LParticleSystem")))
@@ -3117,20 +2996,11 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({emissionRate = 200, bufferSize = 1024})
-    ps:setPosition(320, 240)
-    ps:setSpeed(100, 300)
-    ps:setDirection(-math.pi / 2)
-    ps:setSpread(math.pi / 8)
-    ps:setGravity(0, 400)
-    ps:start()
-    for _ = 1, 10 do
-        ps:update(0.016)
-    end
-    ps:render()
-    ps:render(10, 5)
-    print("count after 10 frames = " .. ps:count())
+    local ps = lurek.particle.newSystem({emissionRate = 200, bufferSize = 1024}) ; ps:setPosition(320, 240) ; ps:setSpeed(100, 300)
+    ps:setDirection(-math.pi / 2) ; ps:setSpread(math.pi / 8)
+    ps:setGravity(0, 400) ; ps:start()
+    for _ = 1, 10 do ps:update(0.016) end ; ps:render()
+    ps:render(10, 5) ; print("count after 10 frames = " .. ps:count())
 end
 ```
 
@@ -3185,17 +3055,11 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(3.0, 5)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(10, 5)
-    trail:pushPoint(20, 10)
-    trail:pushPoint(30, 8)
-    print("points = " .. trail:getPointCount())
-    trail:update(0.5)
-    print("after update = " .. trail:getPointCount())
-    trail:clear()
-    print("after clear = " .. trail:getPointCount())
+    local trail = lurek.particle.newTrail(3.0, 5) ; trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5) ; trail:pushPoint(20, 10)
+    trail:pushPoint(30, 8) ; print("points = " .. trail:getPointCount())
+    trail:update(0.5) ; print("after update = " .. trail:getPointCount())
+    trail:clear() ; print("after clear = " .. trail:getPointCount())
 end
 ```
 
@@ -3228,11 +3092,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(1.0, 4)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(50, 25)
-    local img = trail:drawToImage(64, 64)
+    local trail = lurek.particle.newTrail(1.0, 4) ; trail:pushPoint(0, 0)
+    trail:pushPoint(50, 25) ; local img = trail:drawToImage(64, 64)
     print("trail image type = " .. img:type())
     print("is LTrail = " .. tostring(trail:typeOf("LTrail")))
     print("is Object = " .. tostring(trail:typeOf("Object")))
@@ -3261,11 +3122,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(1.0, 4)
-    trail:setWidth(10, 2)
+    local trail = lurek.particle.newTrail(1.0, 4) ; trail:setWidth(10, 2)
     local sw, ew = trail:getWidth()
-    print("width = " .. sw .. " → " .. ew)
+    print("width = " .. sw .. " â†’ " .. ew)
     trail:setLifetime(5.0)
     print("lifetime = " .. trail:getLifetime())
 end
@@ -3293,17 +3152,11 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(3.0, 5)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(10, 5)
-    trail:pushPoint(20, 10)
-    trail:pushPoint(30, 8)
-    print("points = " .. trail:getPointCount())
-    trail:update(0.5)
-    print("after update = " .. trail:getPointCount())
-    trail:clear()
-    print("after clear = " .. trail:getPointCount())
+    local trail = lurek.particle.newTrail(3.0, 5) ; trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5) ; trail:pushPoint(20, 10)
+    trail:pushPoint(30, 8) ; print("points = " .. trail:getPointCount())
+    trail:update(0.5) ; print("after update = " .. trail:getPointCount())
+    trail:clear() ; print("after clear = " .. trail:getPointCount())
 end
 ```
 
@@ -3330,11 +3183,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(1.0, 4)
-    trail:setWidth(10, 2)
+    local trail = lurek.particle.newTrail(1.0, 4) ; trail:setWidth(10, 2)
     local sw, ew = trail:getWidth()
-    print("width = " .. sw .. " → " .. ew)
+    print("width = " .. sw .. " â†’ " .. ew)
     trail:setLifetime(5.0)
     print("lifetime = " .. trail:getLifetime())
 end
@@ -3366,17 +3217,11 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(3.0, 5)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(10, 5)
-    trail:pushPoint(20, 10)
-    trail:pushPoint(30, 8)
-    print("points = " .. trail:getPointCount())
-    trail:update(0.5)
-    print("after update = " .. trail:getPointCount())
-    trail:clear()
-    print("after clear = " .. trail:getPointCount())
+    local trail = lurek.particle.newTrail(3.0, 5) ; trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5) ; trail:pushPoint(20, 10)
+    trail:pushPoint(30, 8) ; print("points = " .. trail:getPointCount())
+    trail:update(0.5) ; print("after update = " .. trail:getPointCount())
+    trail:clear() ; print("after clear = " .. trail:getPointCount())
 end
 ```
 
@@ -3410,13 +3255,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(2.0, 6)
-    trail:setHeadColor(1, 1, 0, 1)
-    trail:setTailColor(1, 0, 0, 0)
-    trail:setMinDistance(3)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(5, 0)
+    local trail = lurek.particle.newTrail(2.0, 6) ; trail:setHeadColor(1, 1, 0, 1)
+    trail:setTailColor(1, 0, 0, 0) ; trail:setMinDistance(3)
+    trail:pushPoint(0, 0) ; trail:pushPoint(5, 0)
     trail:pushPoint(10, 0)
     print("trail configured, points = " .. trail:getPointCount())
 end
@@ -3446,11 +3287,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(1.0, 4)
-    trail:setWidth(10, 2)
+    local trail = lurek.particle.newTrail(1.0, 4) ; trail:setWidth(10, 2)
     local sw, ew = trail:getWidth()
-    print("width = " .. sw .. " → " .. ew)
+    print("width = " .. sw .. " â†’ " .. ew)
     trail:setLifetime(5.0)
     print("lifetime = " .. trail:getLifetime())
 end
@@ -3480,13 +3319,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(2.0, 6)
-    trail:setHeadColor(1, 1, 0, 1)
-    trail:setTailColor(1, 0, 0, 0)
-    trail:setMinDistance(3)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(5, 0)
+    local trail = lurek.particle.newTrail(2.0, 6) ; trail:setHeadColor(1, 1, 0, 1)
+    trail:setTailColor(1, 0, 0, 0) ; trail:setMinDistance(3)
+    trail:pushPoint(0, 0) ; trail:pushPoint(5, 0)
     trail:pushPoint(10, 0)
     print("trail configured, points = " .. trail:getPointCount())
 end
@@ -3522,13 +3357,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(2.0, 6)
-    trail:setHeadColor(1, 1, 0, 1)
-    trail:setTailColor(1, 0, 0, 0)
-    trail:setMinDistance(3)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(5, 0)
+    local trail = lurek.particle.newTrail(2.0, 6) ; trail:setHeadColor(1, 1, 0, 1)
+    trail:setTailColor(1, 0, 0, 0) ; trail:setMinDistance(3)
+    trail:pushPoint(0, 0) ; trail:pushPoint(5, 0)
     trail:pushPoint(10, 0)
     print("trail configured, points = " .. trail:getPointCount())
 end
@@ -3560,11 +3391,9 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(1.0, 4)
-    trail:setWidth(10, 2)
+    local trail = lurek.particle.newTrail(1.0, 4) ; trail:setWidth(10, 2)
     local sw, ew = trail:getWidth()
-    print("width = " .. sw .. " → " .. ew)
+    print("width = " .. sw .. " â†’ " .. ew)
     trail:setLifetime(5.0)
     print("lifetime = " .. trail:getLifetime())
 end
@@ -3624,11 +3453,8 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(1.0, 4)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(50, 25)
-    local img = trail:drawToImage(64, 64)
+    local trail = lurek.particle.newTrail(1.0, 4) ; trail:pushPoint(0, 0)
+    trail:pushPoint(50, 25) ; local img = trail:drawToImage(64, 64)
     print("trail image type = " .. img:type())
     print("is LTrail = " .. tostring(trail:typeOf("LTrail")))
     print("is Object = " .. tostring(trail:typeOf("Object")))
@@ -3659,17 +3485,11 @@ Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
 
 ```lua
 do
-    ---@type LTrail
-    local trail = lurek.particle.newTrail(3.0, 5)
-    trail:pushPoint(0, 0)
-    trail:pushPoint(10, 5)
-    trail:pushPoint(20, 10)
-    trail:pushPoint(30, 8)
-    print("points = " .. trail:getPointCount())
-    trail:update(0.5)
-    print("after update = " .. trail:getPointCount())
-    trail:clear()
-    print("after clear = " .. trail:getPointCount())
+    local trail = lurek.particle.newTrail(3.0, 5) ; trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5) ; trail:pushPoint(20, 10)
+    trail:pushPoint(30, 8) ; print("points = " .. trail:getPointCount())
+    trail:update(0.5) ; print("after update = " .. trail:getPointCount())
+    trail:clear() ; print("after clear = " .. trail:getPointCount())
 end
 ```
 

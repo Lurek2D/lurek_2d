@@ -319,7 +319,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local path = "save/options.json"
+    local path = "content/examples/assets/data/sample_config.toml"
     local info = lurek.filesystem.getInfo(path)
     if info then
         print("type=" .. info.type .. " size=" .. info.size)
@@ -493,9 +493,7 @@ do
     local path = "save/test_write.txt"
     lurek.filesystem.write(path, "line1\nline2\nline3")
     local count = 0
-    for line in lurek.filesystem.lines(path) do
-        count = count + 1
-    end
+    for _ in lurek.filesystem.lines(path) do count = count + 1 end
     print("lines: " .. count)
 end
 ```
@@ -586,7 +584,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local ok = lurek.filesystem.mount("assets", "game_assets")
+    local ok = lurek.filesystem.mount("content/examples/assets", "game_assets")
     print("mount ok = " .. tostring(ok))
 end
 ```
@@ -610,7 +608,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("zip prefix = " .. zip:prefix())
 end
 ```
@@ -773,7 +771,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local path = "save/options.json"
+    local path = "content/examples/assets/data/sample_config.toml"
     local contents = lurek.filesystem.read(path)
     print("read " .. #contents .. " bytes")
 end
@@ -843,7 +841,8 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local path = "save/options.json"
+    local path = "save/test_json.json"
+    lurek.filesystem.writeJson(path, '{"name":"test","value":42}')
     local data = lurek.filesystem.readJson(path)
     print("readJson type = " .. type(data))
 end
@@ -955,7 +954,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local path = "save/options.json"
+    local path = "content/examples/assets/data/sample_config.toml"
     local st = lurek.filesystem.stat(path)
     if st then
         print("stat size=" .. st.size .. " isFile=" .. tostring(st.isFile))
@@ -981,7 +980,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local abs = lurek.filesystem.toAbsolutePath("data/config.toml")
+    local abs = lurek.filesystem.toAbsolutePath("content/examples/assets/data/sample_config.toml")
     print("absolute = " .. abs)
 end
 ```
@@ -1212,7 +1211,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("zip prefix = " .. zip:prefix())
 end
 ```
@@ -1747,8 +1746,8 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
-    print("has hello = " .. tostring(zip:contains("data/hello.txt")))
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
+    print("has hello = " .. tostring(zip:contains("hello.txt")))
 end
 ```
 
@@ -1774,7 +1773,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     local files = zip:listFiles()
     print("zip files: " .. #files)
 end
@@ -1802,7 +1801,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("prefix = " .. zip:prefix())
 end
 ```
@@ -1834,8 +1833,8 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
-    local txt = zip:readFile("data/hello.txt")
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
+    local txt = zip:readFile("hello.txt")
     print("zip read bytes: " .. #txt)
 end
 ```
@@ -1862,7 +1861,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("type = " .. zip:type())
 end
 ```
@@ -1894,7 +1893,7 @@ Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
+    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("is ZipMount = " .. tostring(zip:typeOf("ZipMount")))
 end
 ```

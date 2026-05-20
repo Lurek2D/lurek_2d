@@ -163,13 +163,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
 do
-    local seeds = {
-        {0, 0},
-        {30, 45},
-        {-20, 90},
-        {60, -30},
-    }
-    local g = lurek.globe.generateVoronoi("voronoi_globe", seeds, {})
+    local g = lurek.globe.generateVoronoi("voronoi_globe", { { 0, 0 }, { 30, 45 }, { -20, 90 }, { 60, -30 } }, {})
     print("voronoi provinces = " .. g:provinceCount())
 end
 ```
@@ -325,12 +319,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
 do
-    local toml = [=[
-[[province]]
-id = 1
-centroid = [10.0, 20.0]
-vertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]
-]=]
+    local toml = '[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]'
     local g = lurek.globe.loadFromTOML("toml_globe", toml)
     print("toml globe provinces = " .. g:provinceCount())
 end
@@ -383,13 +372,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
 do
-    local seeds = {
-        {0, 0},
-        {30, 45},
-        {-20, 90},
-        {60, -30},
-    }
-    local g = lurek.globe.generateVoronoi("voronoi_globe", seeds, {})
+    local g = lurek.globe.generateVoronoi("voronoi_globe", { { 0, 0 }, { 30, 45 }, { -20, 90 }, { 60, -30 } }, {})
     print("voronoi provinces = " .. g:provinceCount())
 end
 ```
@@ -411,39 +394,36 @@ LGlobeRegistry = {}
 Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
 
 ```lua
+--- Globe Module Part 1: factories, registry, constants, utilities
+
+
 --@api-stub: lurek.globe.MAX_PROVINCES
--- Maximum number of provinces the globe supports.
 do
     print("max provinces = " .. lurek.globe.MAX_PROVINCES)
 end
 
 --@api-stub: lurek.globe.LOD_FAR
--- LOD tier constant for zoomed-out view.
 do
     print("LOD_FAR = " .. lurek.globe.LOD_FAR)
 end
 
 --@api-stub: lurek.globe.LOD_MID
--- LOD tier constant for medium zoom.
 do
     print("LOD_MID = " .. lurek.globe.LOD_MID)
 end
 
 --@api-stub: lurek.globe.LOD_NEAR
--- LOD tier constant for close zoom.
 do
     print("LOD_NEAR = " .. lurek.globe.LOD_NEAR)
 end
 
 --@api-stub: lurek.globe.new
--- Creates a named globe in the module registry.
 do
     local g = lurek.globe.new("test_globe")
     print("globe type = " .. g:type())
 end
 
 --@api-stub: lurek.globe.get
--- Returns a globe from the registry by name.
 do
     lurek.globe.new("my_globe")
     local g = lurek.globe.get("my_globe")
@@ -453,10 +433,14 @@ do
 end
 
 --@api-stub: lurek.globe.generateVoronoi
--- Creates a globe from latitude-longitude seed points.
 do
-    local seeds = {
-        {0, 0},
+    local g = lurek.globe.generateVoronoi("voronoi_globe", { { 0, 0 }, { 30, 45 }, { -20, 90 }, { 60, -30 } }, {})
+    print("voronoi provinces = " .. g:provinceCount())
+end
+
+--@api-stub: lurek.globe.loadFromTOML
+do
+    local toml = '[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]'
 ```
 
 
@@ -644,11 +628,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 ```lua
 do
     local g = lurek.globe.new("prov_globe")
-    local ok = g:addProvince({
-        id = 1,
-        centroid = {10.0, 20.0},
-        vertices = {{9, 19}, {11, 19}, {11, 21}, {9, 21}},
-    })
+    local ok = g:addProvince({ id = 1, centroid = { 10.0, 20.0 }, vertices = { { 9, 19 }, { 11, 19 }, { 11, 21 }, { 9, 21 } } })
     print("added = " .. tostring(ok))
 end
 ```
@@ -853,10 +833,7 @@ do
     local g = lurek.globe.new("path_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
     g:addProvince({id = 2, centroid = {5, 0}, vertices = {{4, -1}, {6, -1}, {6, 1}, {4, 1}}, neighbors = {1}})
-    local path = g:findPath(1, 2)
-    if path then
-        print("path length = " .. #path)
-    end
+    print("path length = " .. #(g:findPath(1, 2) or {}))
 end
 ```
 
@@ -2667,16 +2644,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 do
     ---@type LGlobeRegistry?
     local reg = nil
-    if reg then
-        local globe = reg:get("earth")
-        local all_names = reg:names()
-        for _, n in ipairs(all_names) do print(n) end
-        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
-        reg:remove("mars")
-        print(reg:type())
-        print(reg:typeOf("LGlobeRegistry"))
-        print(reg:typeOf("Object"))
-    end
+    print("registry get = " .. tostring(reg and reg:get("earth")))
 end
 ```
 
@@ -2704,16 +2672,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 do
     ---@type LGlobeRegistry?
     local reg = nil
-    if reg then
-        local globe = reg:get("earth")
-        local all_names = reg:names()
-        for _, n in ipairs(all_names) do print(n) end
-        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
-        reg:remove("mars")
-        print(reg:type())
-        print(reg:typeOf("LGlobeRegistry"))
-        print(reg:typeOf("Object"))
-    end
+    print("registry names = " .. tostring(reg and reg:names()))
 end
 ```
 
@@ -2748,16 +2707,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 do
     ---@type LGlobeRegistry?
     local reg = nil
-    if reg then
-        local globe = reg:get("earth")
-        local all_names = reg:names()
-        for _, n in ipairs(all_names) do print(n) end
-        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
-        reg:remove("mars")
-        print(reg:type())
-        print(reg:typeOf("LGlobeRegistry"))
-        print(reg:typeOf("Object"))
-    end
+    print("registry new = " .. tostring(reg and reg:new("mars", { radius = 1.0, subdivisions = 3 })))
 end
 ```
 
@@ -2790,16 +2740,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 do
     ---@type LGlobeRegistry?
     local reg = nil
-    if reg then
-        local globe = reg:get("earth")
-        local all_names = reg:names()
-        for _, n in ipairs(all_names) do print(n) end
-        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
-        reg:remove("mars")
-        print(reg:type())
-        print(reg:typeOf("LGlobeRegistry"))
-        print(reg:typeOf("Object"))
-    end
+    print("registry remove = " .. tostring(reg and reg:remove("mars")))
 end
 ```
 
@@ -2827,16 +2768,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 do
     ---@type LGlobeRegistry?
     local reg = nil
-    if reg then
-        local globe = reg:get("earth")
-        local all_names = reg:names()
-        for _, n in ipairs(all_names) do print(n) end
-        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
-        reg:remove("mars")
-        print(reg:type())
-        print(reg:typeOf("LGlobeRegistry"))
-        print(reg:typeOf("Object"))
-    end
+    print("registry type = " .. tostring(reg and reg:type()))
 end
 ```
 
@@ -2869,16 +2801,7 @@ Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
 do
     ---@type LGlobeRegistry?
     local reg = nil
-    if reg then
-        local globe = reg:get("earth")
-        local all_names = reg:names()
-        for _, n in ipairs(all_names) do print(n) end
-        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
-        reg:remove("mars")
-        print(reg:type())
-        print(reg:typeOf("LGlobeRegistry"))
-        print(reg:typeOf("Object"))
-    end
+    print("registry typeOf = " .. tostring(reg and reg:typeOf("LGlobeRegistry")))
 end
 ```
 

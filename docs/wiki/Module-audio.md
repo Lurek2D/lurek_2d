@@ -441,7 +441,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/voice.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setLowpass(src, 1000)
     lurek.audio.clearFilter(src)
@@ -482,7 +482,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/click.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setRandomPitch(src, 0.8, 1.2)
     lurek.audio.clearRandomPitch(src)
@@ -508,7 +508,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/hit.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVolume(src, 0.6)
     local copy = lurek.audio.clone(src)
@@ -556,11 +556,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local p1 = "sounds/track_a.ogg"
-    local p2 = "sounds/track_b.ogg"
-    local from = lurek.audio.newSource(p1, "stream")
-    local to = lurek.audio.newSource(p2, "stream")
-    lurek.audio.play(from)
+    local p1 = "content/examples/assets/audio/sample_loop.wav"
+    local p2 = "content/examples/assets/audio/sample_tone.wav"
+    local from = lurek.audio.newSource(p1, "stream"); local to = lurek.audio.newSource(p2, "stream"); lurek.audio.play(from)
     lurek.audio.crossfade(from, to, 3.0)
     print("crossfading over 3s")
 end
@@ -583,7 +581,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/intro.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.fadeIn(src, 2.0)
     print("fade in = " .. lurek.audio.getFadeIn(src) .. "s")
@@ -715,7 +713,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/song.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     local dur = lurek.audio.getDuration(src) or 0
     print("duration = " .. dur .. "s")
@@ -740,7 +738,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/start.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.fadeIn(src, 1.5)
     local fi = lurek.audio.getFadeIn(src)
@@ -790,7 +788,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/treble.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setHighpass(src, 3000)
     local hp = lurek.audio.getHighpass(src)
@@ -856,7 +854,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/bass.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setLowpass(src, 500)
     local lp = lurek.audio.getLowpass(src)
@@ -941,7 +939,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/speaker.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
     local fx, fy, fz, ux, uy, uz = lurek.audio.getOrientation(src)
@@ -967,7 +965,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ring.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPan(src, 0.7)
     local pan = lurek.audio.getPan(src)
@@ -993,7 +991,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/tone.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPitch(src, 0.8)
     local p = lurek.audio.getPitch(src)
@@ -1057,7 +1055,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/car.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPosition(src, 100, 0, 30)
     local x, y, z = lurek.audio.getPosition(src)
@@ -1083,12 +1081,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/coin.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local bus = lurek.audio.newBus("ui")
     lurek.audio.setSourceBus(src, bus)
-    local b = lurek.audio.getSourceBus(src)
-    print("source bus = " .. b:getName())
+    print("source bus = " .. lurek.audio.getSourceBus(src):getName())
 end
 ```
 
@@ -1129,7 +1126,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/fx.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local stype = lurek.audio.getSourceType(src)
     print("source type = " .. stype)
@@ -1154,7 +1151,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ambient.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setStereoWidth(src, 0.8)
     local w = lurek.audio.getStereoWidth(src)
@@ -1180,7 +1177,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/plane.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVelocity(src, 5, 3, 0)
     local vx, vy, vz = lurek.audio.getVelocity(src)
@@ -1206,7 +1203,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/step.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVolume(src, 0.8)
     local vol = lurek.audio.getVolume(src)
@@ -1251,7 +1248,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/bgm.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setLooping(src, true)
     print("isLooping = " .. tostring(lurek.audio.isLooping(src)))
@@ -1276,7 +1273,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/tick.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.play(src)
     lurek.audio.pause(src)
@@ -1302,7 +1299,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/beep.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.play(src)
     print("after play = " .. tostring(lurek.audio.isPlaying(src)))
@@ -1327,7 +1324,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/pop.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("initially stopped = " .. tostring(lurek.audio.isStopped(src)))
 end
@@ -1399,7 +1396,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
     print("decoder = " .. tostring(dec ~= nil))
 end
@@ -1447,7 +1444,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/shot.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 8)
     print("pool voices = " .. pool:getVoiceCount())
 end
@@ -1575,7 +1572,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/click.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("source created = " .. tostring(src ~= nil))
 end
@@ -1677,7 +1674,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path_in = "sounds/quiet.wav"
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "output/normalized.wav"
     lurek.audio.normalizeFile(path_in, path_out, 0.9)
     print("normalized to 0.9 peak")
@@ -1700,7 +1697,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/music.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     lurek.audio.pause(src)
@@ -1744,7 +1741,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/bgm.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     print("playing = " .. tostring(lurek.audio.isPlaying(src)))
@@ -1767,7 +1764,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/wind.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.playLooping(src)
     print("playing+looping = " .. tostring(lurek.audio.isPlaying(src) and lurek.audio.isLooping(src)))
@@ -1816,11 +1813,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local effects = {
-        { type = "lowpass", p1 = 1000 },
-        { type = "gain", p1 = 0.8 },
-    }
-    local path_in = "sounds/raw.wav"
+    local effects = {{ type = "lowpass", p1 = 1000 }, { type = "highpass", p1 = 80 }}
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "output/processed.wav"
     lurek.audio.processOffline(path_in, path_out, effects)
     print("offline processing done")
@@ -1869,7 +1863,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/temp.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.release(src)
     print("source released")
@@ -1918,10 +1912,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/music.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
-    lurek.audio.play(src)
-    lurek.audio.pause(src)
+    lurek.audio.play(src); lurek.audio.pause(src)
     lurek.audio.resume(src)
     print("playing after resume = " .. tostring(lurek.audio.isPlaying(src)))
 end
@@ -1984,7 +1977,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/long.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     lurek.audio.seek(src, 5.0)
@@ -2102,7 +2095,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/radio.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setHighpass(src, 2000)
     print("highpass = " .. lurek.audio.getHighpass(src) .. " Hz")
@@ -2173,7 +2166,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ambient.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setLooping(src, true)
     print("looping = " .. tostring(lurek.audio.isLooping(src)))
@@ -2197,7 +2190,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/engine.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setLowpass(src, 800)
     print("lowpass = " .. lurek.audio.getLowpass(src) .. " Hz")
@@ -2262,7 +2255,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "audio/gm.sf2"
+    local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok = pcall(function()
         lurek.audio.setMidiSoundFont(path)
     end)
@@ -2292,7 +2285,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/speaker.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
     print("orientation set: forward(0,0,-1) up(0,1,0)")
@@ -2316,7 +2309,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ping.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPan(src, -0.5)
     print("pan = " .. lurek.audio.getPan(src))
@@ -2340,7 +2333,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ding.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPitch(src, 1.5)
     print("pitch = " .. lurek.audio.getPitch(src))
@@ -2364,10 +2357,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 ```lua
 do
     local devices = lurek.audio.getPlaybackDevices()
-    if #devices > 0 then
-        lurek.audio.setPlaybackDevice(devices[1])
-        print("set device = " .. devices[1])
-    end
+    local name = devices[1] or lurek.audio.getPlaybackDevice()
+    lurek.audio.setPlaybackDevice(name)
+    print("set device = " .. name)
 end
 ```
 
@@ -2390,7 +2382,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/bird.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setPosition(src, 50, 20, 0)
     local x, y, z = lurek.audio.getPosition(src)
@@ -2416,7 +2408,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/step.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setRandomPitch(src, 0.9, 1.1)
     print("random pitch range = 0.9 to 1.1")
@@ -2440,12 +2432,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/sword.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local bus = lurek.audio.newBus("effects")
     lurek.audio.setSourceBus(src, bus)
-    local b = lurek.audio.getSourceBus(src)
-    print("bus = " .. b:getName())
+    print("bus = " .. lurek.audio.getSourceBus(src):getName())
 end
 ```
 
@@ -2466,7 +2457,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/music.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.setStereoWidth(src, 0.5)
     print("stereo width = " .. lurek.audio.getStereoWidth(src))
@@ -2492,7 +2483,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/siren.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVelocity(src, 10, 0, 0)
     local vx, vy, vz = lurek.audio.getVelocity(src)
@@ -2517,7 +2508,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/alert.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVolume(src, 0.5)
     print("volume = " .. lurek.audio.getVolume(src))
@@ -2543,7 +2534,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path_in = "tests/fixtures/sine_mono_44100.wav"
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "output/spectrogram.png"
     lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
     print("spectrogram image saved")
@@ -2566,7 +2557,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/shot.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.play(src)
     lurek.audio.stop(src)
@@ -2631,7 +2622,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/track.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     lurek.audio.play(src)
     local pos = lurek.audio.tell(src)
@@ -2658,7 +2649,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path_in = "tests/fixtures/sine_mono_44100.wav"
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "output/waveform.png"
     lurek.audio.waveformToPng(path_in, path_out, 800, 200)
     print("waveform image saved")
@@ -2688,12 +2679,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/coin.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     local bus = lurek.audio.newBus("ui")
     lurek.audio.setSourceBus(src, bus)
-    local b = lurek.audio.getSourceBus(src)
-    print("source bus = " .. b:getName())
+    print("source bus = " .. lurek.audio.getSourceBus(src):getName())
 end
 ```
 
@@ -2715,7 +2705,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
     print("decoder = " .. tostring(dec ~= nil))
 end
@@ -2785,7 +2775,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/shot.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 8)
     print("pool voices = " .. pool:getVoiceCount())
 end
@@ -2809,7 +2799,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/hit.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     lurek.audio.setVolume(src, 0.6)
     local copy = lurek.audio.clone(src)
@@ -3214,7 +3204,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/song.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
     local chunk = dec:decode()
     print("decoded chunk = " .. tostring(chunk ~= nil))
@@ -3243,7 +3233,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local bits = dec:getBitDepth()
     print("bit depth = " .. bits)
@@ -3272,7 +3262,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local ch = dec:getChannelCount()
     print("channels = " .. ch)
@@ -3301,7 +3291,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local dur = dec:getDuration()
     print("duration = " .. dur .. "s")
@@ -3330,7 +3320,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     local rate = dec:getSampleRate()
     print("sample rate = " .. rate)
@@ -3359,7 +3349,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     print("seekable = " .. tostring(dec:isSeekable()))
 end
@@ -3384,7 +3374,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:release()
     print("decoder released")
@@ -3410,7 +3400,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(5.0)
     dec:rewind()
@@ -3442,7 +3432,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(2.5)
     print("seeked to " .. dec:tell())
@@ -3471,7 +3461,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(3.0)
     local pos = dec:tell()
@@ -3501,7 +3491,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     print("type = " .. dec:type())
 end
@@ -3534,7 +3524,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "tests/fixtures/sine_mono_44100.wav"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     print("is LDecoder = " .. tostring(dec:typeOf("LDecoder")))
 end
@@ -3592,7 +3582,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local count = player:getChannelCount()
     print("channels = " .. count)
@@ -3717,7 +3707,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local dur = player:getDuration()
     print("duration = " .. dur .. "s")
@@ -3746,9 +3736,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
-    print("file = " .. player:getFilePath())
+    print("file = " .. tostring(player:getFilePath()))
 end
 ```
 
@@ -3774,7 +3764,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local notes = player:getNoteCount()
     print("notes = " .. notes)
@@ -3803,7 +3793,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local orig = player:getOriginalTempo()
     print("original tempo = " .. orig)
@@ -3861,10 +3851,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 ```lua
 do
     local player = lurek.audio.newMidiPlayer()
-    local sf_path = "audio/gm.sf2"
-    local ok = pcall(function()
-        player:setSoundFont(sf_path)
-    end)
+    local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
+    local ok = pcall(function() player:setSoundFont(sf_path) end)
     local p = ok and player:getSoundFontPath() or nil
     print("soundfont = " .. tostring(p))
 end
@@ -3950,7 +3938,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local tpb = player:getTicksPerBeat()
     print("ticks/beat = " .. tpb)
@@ -3979,7 +3967,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local count = player:getTrackCount()
     print("tracks = " .. count)
@@ -4013,10 +4001,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local name = player:getTrackName(1)
-    print("track 1 = " .. name)
+    print("track 1 = " .. tostring(name))
 end
 ```
 
@@ -4131,7 +4119,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:setLooping(true)
     print("isLooping = " .. tostring(player:isLooping()))
@@ -4160,7 +4148,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:play()
     player:pause()
@@ -4190,7 +4178,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:play()
     print("playing = " .. tostring(player:isPlaying()))
@@ -4224,7 +4212,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:setTrackMuted(2, true)
     print("track 2 muted = " .. tostring(player:isTrackMuted(2)))
@@ -4259,7 +4247,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 ```lua
 do
     local player = lurek.audio.newMidiPlayer()
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local ok = player:load(path)
     print("loaded = " .. tostring(ok))
 end
@@ -4293,7 +4281,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 ```lua
 do
     local player = lurek.audio.newMidiPlayer()
-    local data = "MThd..." -- raw MIDI bytes
+    local data = string.char(77,84,104,100,0,0,0,6,0,0,0,1,0,96,77,84,114,107,0,0,0,4,0,255,47,0)
     local ok = player:loadData(data)
     print("loaded data = " .. tostring(ok))
 end
@@ -4318,7 +4306,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:play()
     player:pause()
@@ -4345,7 +4333,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:play()
     print("midi playing = " .. tostring(player:isPlaying()))
@@ -4376,7 +4364,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:play()
     player:seek(5.0)
@@ -4565,7 +4553,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:setLooping(true)
     print("looping = " .. tostring(player:isLooping()))
@@ -4723,10 +4711,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 ```lua
 do
     local player = lurek.audio.newMidiPlayer()
-    local sf_path = "audio/gm.sf2"
-    local ok = pcall(function()
-        player:setSoundFont(sf_path)
-    end)
+    local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
+    local ok = pcall(function() player:setSoundFont(sf_path) end)
     print("sf = " .. tostring(ok and player:getSoundFontPath()))
 end
 ```
@@ -4817,7 +4803,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:setTrackMuted(1, true)
     print("track 1 muted = " .. tostring(player:isTrackMuted(1)))
@@ -4903,7 +4889,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:play()
     player:stop()
@@ -4933,7 +4919,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "music/theme.mid"
+    local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     player:play()
     local pos = player:tell()
@@ -5385,7 +5371,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/beep.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 8)
     print("voices = " .. pool:getVoiceCount())
 end
@@ -5413,7 +5399,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/shot.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     local id = pool:play()
     print("playing voice id = " .. id)
@@ -5439,7 +5425,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/pop.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     pool:release()
     print("pool released")
@@ -5470,7 +5456,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/coin.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     lurek.audio.newBus("pool_bus")
     pool:setBus("pool_bus")
@@ -5502,7 +5488,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/click.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     pool:setVolume(0.5)
     print("pool volume = 0.5")
@@ -5528,7 +5514,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/step.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
     pool:play()
     pool:stopAll()
@@ -5558,7 +5544,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ding.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 2)
     print("type = " .. pool:type())
 end
@@ -5591,7 +5577,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ring.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 2)
     print("is LSoundPool = " .. tostring(pool:typeOf("LSoundPool")))
 end
@@ -5616,7 +5602,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/voice.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setLowpass(800)
     src:clearFilter()
@@ -5646,7 +5632,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/hit.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setVolume(0.3)
     local copy = src:clone()
@@ -5678,7 +5664,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/intro.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:fadeIn(2.5)
     print("fade in = " .. src:getFadeIn() .. "s")
@@ -5707,10 +5693,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/track.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     local dur = src:getDuration()
-    print("duration = " .. dur .. "s")
+    print("duration = " .. tostring(dur) .. "s")
 end
 ```
 
@@ -5736,7 +5722,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/start.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:fadeIn(1.0)
     local fi = src:getFadeIn()
@@ -5766,7 +5752,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/treble.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setHighpass(4000)
     local hp = src:getHighpass()
@@ -5796,7 +5782,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/bass.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setLowpass(400)
     local lp = src:getLowpass()
@@ -5826,7 +5812,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ping.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPan(0.5)
     local pan = src:getPan()
@@ -5856,7 +5842,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/beep.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPitch(0.7)
     local p = src:getPitch()
@@ -5886,7 +5872,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/song.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     print("type = " .. src:getType())
 end
@@ -5914,7 +5900,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ding.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setVolume(0.9)
     local v = src:getVolume()
@@ -5944,7 +5930,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/bgm.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:setLooping(true)
     print("isLooping = " .. tostring(src:isLooping()))
@@ -5973,7 +5959,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/step.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
     src:pause()
@@ -6003,7 +5989,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/click.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
     print("playing = " .. tostring(src:isPlaying()))
@@ -6032,7 +6018,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/pop.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("stopped = " .. tostring(src:isStopped()))
 end
@@ -6057,7 +6043,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/music.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:play()
     src:pause()
@@ -6084,7 +6070,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/coin.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
     print("playing via method = " .. tostring(src:isPlaying()))
@@ -6110,10 +6096,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/music.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
-    src:play()
-    src:pause()
+    src:play(); src:pause()
     src:resume()
     print("resumed = " .. tostring(src:isPlaying()))
 end
@@ -6143,7 +6128,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/long.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:play()
     src:seek(10.0)
@@ -6175,7 +6160,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/radio.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setHighpass(1500)
     print("highpass = " .. src:getHighpass())
@@ -6206,7 +6191,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ambient.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:setLooping(true)
     print("looping = " .. tostring(src:isLooping()))
@@ -6237,7 +6222,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/engine.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:setLowpass(600)
     print("lowpass = " .. src:getLowpass())
@@ -6268,7 +6253,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ring.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPan(-0.8)
     print("pan = " .. src:getPan())
@@ -6299,7 +6284,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/tone.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setPitch(1.5)
     print("pitch = " .. src:getPitch())
@@ -6330,7 +6315,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/ping.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:setVolume(0.4)
     print("volume = " .. src:getVolume())
@@ -6356,7 +6341,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/shot.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     src:play()
     src:stop()
@@ -6386,7 +6371,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/long.ogg"
+    local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     src:play()
     local pos = src:tell()
@@ -6416,7 +6401,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/click.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("type = " .. src:type())
 end
@@ -6449,7 +6434,7 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-    local path = "sounds/click.wav"
+    local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("is LSource = " .. tostring(src:typeOf("LSource")))
 end
@@ -6461,6 +6446,7 @@ end
 ## 💡 Examples
 
 - [audio.lua](../blob/main/content/examples/audio.lua) - API example
+- [z_asset_diag.lua](../blob/main/content/examples/z_asset_diag.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

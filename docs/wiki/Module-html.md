@@ -142,7 +142,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:setHtml
--- Sets the document body HTML.
 do
     local doc = lurek.html.newDocument()
     doc:setHtml("<h1>Title</h1><p>Body text</p>")
@@ -150,7 +149,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:getHtml
--- Returns the current document HTML.
 do
     local doc = lurek.html.newDocument("<span>test</span>")
     local html = doc:getHtml()
@@ -158,7 +156,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:setCss
--- Replaces the document stylesheet.
 do
     local doc = lurek.html.newDocument("<div class='box'>X</div>")
     doc:setCss(".box { width: 100px; height: 100px; }")
@@ -166,7 +163,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:addCss
--- Appends CSS rules.
 do
     local doc = lurek.html.newDocument("<p>styled</p>")
     doc:addCss("p { font-size: 16px; }")
@@ -175,7 +171,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:clearCss
--- Removes all CSS rules.
 do
     local doc = lurek.html.newDocument("<p>unstyled</p>")
     doc:setCss("p { color: red; }")
@@ -184,7 +179,11 @@ do
 end
 
 --@api-stub: LHtmlDocument:setViewport
--- Sets the layout viewport size.
+do
+    local doc = lurek.html.newDocument()
+    doc:setViewport(1024, 768)
+    print("viewport set to 1024x768")
+end
 ```
 
 ### lurek.html.loadDocument
@@ -206,7 +205,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-    local doc = lurek.html.loadDocument("content/layouts/menu.html")
+    local doc = lurek.html.loadDocument("content/examples/assets/layouts/sample_menu.html")
     print("loaded doc type = " .. doc:type())
 end
 ```
@@ -251,19 +250,16 @@ do
 end
 
 --@api-stub: lurek.html.stopPropagation
--- Stops event propagation.
 do
     print("stopPropagation available = " .. tostring(type(lurek.html.stopPropagation) == "function"))
 end
 
 --@api-stub: lurek.html.isDefaultPrevented
--- Returns whether default was prevented.
 do
     print("isDefaultPrevented available = " .. tostring(type(lurek.html.isDefaultPrevented) == "function"))
 end
 
 --@api-stub: LHtmlDocument:setHtml
--- Sets the document body HTML.
 do
     local doc = lurek.html.newDocument()
     doc:setHtml("<h1>Title</h1><p>Body text</p>")
@@ -271,7 +267,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:getHtml
--- Returns the current document HTML.
 do
     local doc = lurek.html.newDocument("<span>test</span>")
     local html = doc:getHtml()
@@ -279,7 +274,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:setCss
--- Replaces the document stylesheet.
 do
     local doc = lurek.html.newDocument("<div class='box'>X</div>")
     doc:setCss(".box { width: 100px; height: 100px; }")
@@ -287,13 +281,18 @@ do
 end
 
 --@api-stub: LHtmlDocument:addCss
--- Appends CSS rules.
 do
     local doc = lurek.html.newDocument("<p>styled</p>")
     doc:addCss("p { font-size: 16px; }")
     doc:addCss("p { margin: 10px; }")
     print("css appended")
 end
+
+--@api-stub: LHtmlDocument:clearCss
+do
+    local doc = lurek.html.newDocument("<p>unstyled</p>")
+    doc:setCss("p { color: red; }")
+    doc:clearCss()
 ```
 
 ### lurek.html.stopPropagation
@@ -312,13 +311,11 @@ do
 end
 
 --@api-stub: lurek.html.isDefaultPrevented
--- Returns whether default was prevented.
 do
     print("isDefaultPrevented available = " .. tostring(type(lurek.html.isDefaultPrevented) == "function"))
 end
 
 --@api-stub: LHtmlDocument:setHtml
--- Sets the document body HTML.
 do
     local doc = lurek.html.newDocument()
     doc:setHtml("<h1>Title</h1><p>Body text</p>")
@@ -326,7 +323,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:getHtml
--- Returns the current document HTML.
 do
     local doc = lurek.html.newDocument("<span>test</span>")
     local html = doc:getHtml()
@@ -334,7 +330,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:setCss
--- Replaces the document stylesheet.
 do
     local doc = lurek.html.newDocument("<div class='box'>X</div>")
     doc:setCss(".box { width: 100px; height: 100px; }")
@@ -342,7 +337,6 @@ do
 end
 
 --@api-stub: LHtmlDocument:addCss
--- Appends CSS rules.
 do
     local doc = lurek.html.newDocument("<p>styled</p>")
     doc:addCss("p { font-size: 16px; }")
@@ -351,10 +345,15 @@ do
 end
 
 --@api-stub: LHtmlDocument:clearCss
--- Removes all CSS rules.
 do
     local doc = lurek.html.newDocument("<p>unstyled</p>")
     doc:setCss("p { color: red; }")
+    doc:clearCss()
+    print("css cleared")
+end
+
+--@api-stub: LHtmlDocument:setViewport
+do
 ```
 
 ### lurek.html.supports
@@ -403,7 +402,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-    local doc = lurek.html.loadDocument("content/layouts/menu.html")
+    local doc = lurek.html.loadDocument("content/examples/assets/layouts/sample_menu.html")
     print("loaded doc type = " .. doc:type())
 end
 ```
@@ -1285,10 +1284,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div>box</div>")
     local el = doc:query("div")
-    if el then
-        el:addClass("highlight")
-        print("class added")
-    end
+    if el then el:addClass("highlight") end
+    print("class added")
 end
 ```
 
@@ -1318,10 +1315,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<ul><li>first</li></ul>")
     local el = doc:query("ul")
-    if el then
-        el:appendHtml("<li>second</li>")
-        print("html appended")
-    end
+    if el then el:appendHtml("<li>second</li>") end
+    print("html appended")
 end
 ```
 
@@ -1346,11 +1341,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<input id='field2'/>")
     local el = doc:getElementById("field2")
-    if el then
-        el:focus()
-        el:blur()
-        print("blurred")
-    end
+    if el then el:focus(); el:blur() end
+    print("blurred")
 end
 ```
 
@@ -1375,10 +1367,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<input id='field'/>")
     local el = doc:getElementById("field")
-    if el then
-        el:focus()
-        print("focused")
-    end
+    if el then el:focus() end
+    print("focused")
 end
 ```
 
@@ -1411,10 +1401,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<a href='#top'>link</a>")
     local el = doc:query("a")
-    if el then
-        local href = el:getAttribute("href")
-        print("href = " .. tostring(href))
-    end
+    print("href = " .. tostring(el and el:getAttribute("href")))
 end
 ```
 
@@ -1442,10 +1429,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<p>owned</p>")
     local el = doc:query("p")
-    if el then
-        local owner = el:getDocument()
-        print("owner type = " .. owner:type())
-    end
+    if el then print("owner type = " .. el:getDocument():type()) end
 end
 ```
 
@@ -1535,13 +1519,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 ```lua
 do
     local doc = lurek.html.newDocument("<div style='width:100px;height:50px'>box</div>")
-    doc:setViewport(800, 600)
-    doc:relayout()
+    doc:setViewport(800, 600); doc:relayout()
     local el = doc:query("div")
-    if el then
-        local x, y, w, h = el:getRect()
-        print("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
-    end
+    if el then local x, y, w, h = el:getRect(); print("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h) end
 end
 ```
 
@@ -1574,10 +1554,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div style='color:red'>R</div>")
     local el = doc:query("div")
-    if el then
-        local c = el:getStyle("color")
-        print("color = " .. tostring(c))
-    end
+    print("color = " .. tostring(el and el:getStyle("color")))
 end
 ```
 
@@ -1700,11 +1677,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div id='d'>X</div>")
     local el = doc:getElementById("d")
-    if el then
-        local h = el:on("hover", function() end)
-        el:off(h)
-        print("handler removed")
-    end
+    if el then local h = el:on("hover", function() end); el:off(h) end
+    print("handler removed")
 end
 ```
 
@@ -1739,12 +1713,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<button id='btn'>Go</button>")
     local el = doc:getElementById("btn")
-    if el then
-        local h = el:on("click", function()
-            print("button clicked")
-        end)
-        print("element handle = " .. h)
-    end
+    if el then print("element handle = " .. el:on("click", function() print("button clicked") end)) end
 end
 ```
 
@@ -1777,12 +1746,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div><span class='x'>found</span></div>")
     local div = doc:query("div")
-    if div then
-        local span = div:query(".x")
-        if span then
-            print("child query = " .. span:getText())
-        end
-    end
+    local span = div and div:query(".x")
+    print("child query = " .. tostring(span and span:getText()))
 end
 ```
 
@@ -1815,10 +1780,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<ul><li>A</li><li>B</li></ul>")
     local ul = doc:query("ul")
-    if ul then
-        local items = ul:queryAll("li")
-        print("child items = " .. #items)
-    end
+    print("child items = " .. #(ul and ul:queryAll("li") or {}))
 end
 ```
 
@@ -1843,10 +1805,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div><p id='del'>gone</p></div>")
     local el = doc:getElementById("del")
-    if el then
-        el:remove()
-        print("element removed")
-    end
+    if el then el:remove() end
+    print("element removed")
 end
 ```
 
@@ -1876,10 +1836,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div data-x='1'>X</div>")
     local el = doc:query("div")
-    if el then
-        el:removeAttribute("data-x")
-        print("data-x removed")
-    end
+    if el then el:removeAttribute("data-x") end
+    print("data-x removed")
 end
 ```
 
@@ -1909,10 +1867,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div class='active old'>X</div>")
     local el = doc:query("div")
-    if el then
-        el:removeClass("old")
-        print("class removed")
-    end
+    if el then el:removeClass("old") end
+    print("class removed")
 end
 ```
 
@@ -1944,10 +1900,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<img/>")
     local el = doc:query("img")
-    if el then
-        el:setAttribute("src", "icon.png")
-        print("src set")
-    end
+    if el then el:setAttribute("src", "content/examples/assets/images/sample_icon.png") end
+    print("src set")
 end
 ```
 
@@ -1977,10 +1931,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div>old</div>")
     local el = doc:query("div")
-    if el then
-        el:setHtml("<b>new</b>")
-        print("html updated")
-    end
+    if el then el:setHtml("<b>new</b>") end
+    print("html updated")
 end
 ```
 
@@ -2043,10 +1995,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<p>text</p>")
     local el = doc:query("p")
-    if el then
-        el:setStyle("font-size", "20px")
-        print("style set")
-    end
+    if el then el:setStyle("font-size", "20px") end
+    print("style set")
 end
 ```
 
@@ -2076,10 +2026,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<span>old</span>")
     local el = doc:query("span")
-    if el then
-        el:setText("new text")
-        print("text set")
-    end
+    if el then el:setText("new text") end
+    print("text set")
 end
 ```
 
@@ -2114,10 +2062,7 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 do
     local doc = lurek.html.newDocument("<div class='on'>Z</div>")
     local el = doc:query("div")
-    if el then
-        local result = el:toggleClass("on")
-        print("toggle result = " .. tostring(result))
-    end
+    print("toggle result = " .. tostring(el and el:toggleClass("on")))
 end
 ```
 

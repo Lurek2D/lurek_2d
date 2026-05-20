@@ -193,13 +193,10 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    if rec then
-        lurek.input.loadRecording(rec:toJson())
-        lurek.input.startPlayback()
-        local events = lurek.input.advancePlayback()
-        print("events = " .. #events)
-        lurek.input.stopPlayback()
-    end
+    if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
+    local events = lurek.input.advancePlayback()
+    print("events = " .. #events)
+    lurek.input.stopPlayback()
 end
 ```
 
@@ -812,48 +809,48 @@ do
 end
 
 --@api-stub: lurek.input.keyboard.setKeyRepeat
--- Enables or disables key repeat.
 do
     lurek.input.keyboard.setKeyRepeat(true)
     print("key repeat enabled")
 end
 
 --@api-stub: lurek.input.keyboard.hasTextInput
--- Returns whether text input mode is active.
 do
     print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
 end
 
 --@api-stub: lurek.input.keyboard.setTextInput
--- Enables or disables text input mode.
 do
     lurek.input.keyboard.setTextInput(true)
     print("text input enabled")
 end
 
 --@api-stub: lurek.input.mouse.getPosition
--- Returns mouse x,y position.
 do
     local x, y = lurek.input.mouse.getPosition()
     print("mouse at " .. x .. "," .. y)
 end
 
 --@api-stub: lurek.input.mouse.getX
--- Returns individual mouse coordinates. Focus: getX.
 do
     local x = lurek.input.mouse.getX()
     print("mouse x=" .. x)
 end
 
 --@api-stub: lurek.input.mouse.getY
--- Returns individual mouse coordinates. Focus: getY.
 do
     local y = lurek.input.mouse.getY()
     print("mouse y=" .. y)
 end
 
 --@api-stub: lurek.input.mouse.isDown
--- Checks if a mouse button is held.
+do
+    local left = lurek.input.mouse.isDown(1)
+    local right = lurek.input.mouse.isDown(2)
+    print("left=" .. tostring(left) .. " right=" .. tostring(right))
+end
+
+--@api-stub: lurek.input.mouse.getWheelDelta
 do
 ```
 
@@ -982,19 +979,16 @@ do
 end
 
 --@api-stub: lurek.input.wasPressed
--- Checks if any bound key was pressed this frame.
 do
     print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
 end
 
 --@api-stub: lurek.input.wasReleased
--- Checks if any bound key was released this frame.
 do
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
 end
 
 --@api-stub: lurek.input.newMapping
--- Creates an action mapping with query closures.
 do
     local mapping = lurek.input.newMapping("attack", {"z", "button1"})
     local held = mapping.isDown()
@@ -1004,7 +998,6 @@ do
 end
 
 --@api-stub: lurek.input.newCombo
--- Creates a combo detector.
 do
     local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
     print("combo steps = " .. combo:totalSteps())
@@ -1013,7 +1006,6 @@ do
 end
 
 --@api-stub: LCombo:feed
--- Feeds a key press to the combo.
 do
     local combo = lurek.input.newCombo({"a", "b", "c"})
     local result = combo:feed("a")
@@ -1021,10 +1013,15 @@ do
 end
 
 --@api-stub: LCombo:tick
--- Advances combo timer by delta time.
 do
     local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
     local result = combo:tick(0.016)
+    print("tick → " .. result)
+end
+
+--@api-stub: LCombo:getStep
+do
+    local combo = lurek.input.newCombo({"a", "b"})
 ```
 
 ### lurek.input.keyboard.isDown
@@ -1155,10 +1152,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
+    if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
     print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
-    lurek.input.startPlayback()
     lurek.input.stopPlayback()
-    print("stopped")
 end
 ```
 
@@ -1287,11 +1283,8 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    if rec then
-        local json = rec:toJson()
-        lurek.input.loadRecording(json)
-        print("recording loaded")
-    end
+    if rec then lurek.input.loadRecording(rec:toJson()) end
+    print("recording loaded = " .. tostring(rec ~= nil))
 end
 ```
 
@@ -1510,41 +1503,35 @@ do
 end
 
 --@api-stub: lurek.input.keyboard.hasTextInput
--- Returns whether text input mode is active.
 do
     print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
 end
 
 --@api-stub: lurek.input.keyboard.setTextInput
--- Enables or disables text input mode.
 do
     lurek.input.keyboard.setTextInput(true)
     print("text input enabled")
 end
 
 --@api-stub: lurek.input.mouse.getPosition
--- Returns mouse x,y position.
 do
     local x, y = lurek.input.mouse.getPosition()
     print("mouse at " .. x .. "," .. y)
 end
 
 --@api-stub: lurek.input.mouse.getX
--- Returns individual mouse coordinates. Focus: getX.
 do
     local x = lurek.input.mouse.getX()
     print("mouse x=" .. x)
 end
 
 --@api-stub: lurek.input.mouse.getY
--- Returns individual mouse coordinates. Focus: getY.
 do
     local y = lurek.input.mouse.getY()
     print("mouse y=" .. y)
 end
 
 --@api-stub: lurek.input.mouse.isDown
--- Checks if a mouse button is held.
 do
     local left = lurek.input.mouse.isDown(1)
     local right = lurek.input.mouse.isDown(2)
@@ -1552,6 +1539,12 @@ do
 end
 
 --@api-stub: lurek.input.mouse.getWheelDelta
+do
+    local delta = lurek.input.mouse.getWheelDelta()
+    print("wheel delta = " .. delta)
+end
+
+--@api-stub: lurek.input.mouse.setPosition
 ```
 
 ### lurek.input.mouse.setPosition
@@ -1679,13 +1672,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    if rec then
-        lurek.input.loadRecording(rec:toJson())
-        lurek.input.startPlayback()
-        print("playing = " .. tostring(lurek.input.isPlayingBack()))
-        lurek.input.stopPlayback()
-        print("stopped = " .. tostring(not lurek.input.isPlayingBack()))
-    end
+    if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
+    print("playing = " .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.stopPlayback()
 end
 ```
 
@@ -1703,10 +1692,7 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local recording = lurek.input.stopRecording()
-    if recording then
-        print("frames = " .. recording:frameCount())
-        print("total = " .. recording:totalFrames())
-    end
+    print("captured = " .. tostring(recording ~= nil))
 end
 ```
 
@@ -1724,10 +1710,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
-    lurek.input.startPlayback()
+    if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
     lurek.input.stopPlayback()
-    print("stopped")
+    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
 end
 ```
 
@@ -1747,10 +1732,7 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
-    lurek.input.startPlayback()
-    lurek.input.stopPlayback()
-    print("stopped")
+    print("frames=" .. tostring(rec and rec:frameCount() or 0))
 end
 ```
 
@@ -2015,13 +1997,11 @@ do
 end
 
 --@api-stub: lurek.input.wasReleased
--- Checks if any bound key was released this frame.
 do
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
 end
 
 --@api-stub: lurek.input.newMapping
--- Creates an action mapping with query closures.
 do
     local mapping = lurek.input.newMapping("attack", {"z", "button1"})
     local held = mapping.isDown()
@@ -2031,7 +2011,6 @@ do
 end
 
 --@api-stub: lurek.input.newCombo
--- Creates a combo detector.
 do
     local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
     print("combo steps = " .. combo:totalSteps())
@@ -2040,7 +2019,6 @@ do
 end
 
 --@api-stub: LCombo:feed
--- Feeds a key press to the combo.
 do
     local combo = lurek.input.newCombo({"a", "b", "c"})
     local result = combo:feed("a")
@@ -2048,7 +2026,6 @@ do
 end
 
 --@api-stub: LCombo:tick
--- Advances combo timer by delta time.
 do
     local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
     local result = combo:tick(0.016)
@@ -2056,8 +2033,13 @@ do
 end
 
 --@api-stub: LCombo:getStep
--- Returns step info at an index.
 do
+    local combo = lurek.input.newCombo({"a", "b"})
+    local step = combo:getStep(1)
+    print("step 1 key = " .. step.key .. " gap = " .. step.gap_ms)
+end
+
+--@api-stub: LCombo:reset
 ```
 
 ### lurek.input.gamepad.wasReleased
@@ -2126,7 +2108,6 @@ do
 end
 
 --@api-stub: lurek.input.newMapping
--- Creates an action mapping with query closures.
 do
     local mapping = lurek.input.newMapping("attack", {"z", "button1"})
     local held = mapping.isDown()
@@ -2136,7 +2117,6 @@ do
 end
 
 --@api-stub: lurek.input.newCombo
--- Creates a combo detector.
 do
     local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
     print("combo steps = " .. combo:totalSteps())
@@ -2145,7 +2125,6 @@ do
 end
 
 --@api-stub: LCombo:feed
--- Feeds a key press to the combo.
 do
     local combo = lurek.input.newCombo({"a", "b", "c"})
     local result = combo:feed("a")
@@ -2153,7 +2132,6 @@ do
 end
 
 --@api-stub: LCombo:tick
--- Advances combo timer by delta time.
 do
     local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
     local result = combo:tick(0.016)
@@ -2161,7 +2139,6 @@ do
 end
 
 --@api-stub: LCombo:getStep
--- Returns step info at an index.
 do
     local combo = lurek.input.newCombo({"a", "b"})
     local step = combo:getStep(1)
@@ -2169,6 +2146,11 @@ do
 end
 
 --@api-stub: LCombo:reset
+do
+    local combo = lurek.input.newCombo({"q", "w", "e"})
+    combo:feed("q")
+    combo:reset()
+    print("progress after reset = " .. combo:progress())
 ```
 
 
@@ -2244,10 +2226,7 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
-    lurek.input.startPlayback()
-    lurek.input.stopPlayback()
-    print("stopped")
+    print("frames=" .. tostring(rec and rec:frameCount() or 0))
 end
 ```
 
@@ -2348,9 +2327,6 @@ do
     combo:feed("a")
     combo:tick(0.016)
     print("in_progress=" .. tostring(combo:isInProgress()))
-    print("progress=" .. combo:progress())
-    print("total=" .. combo:totalSteps())
-    combo:reset()
 end
 ```
 
@@ -2381,8 +2357,6 @@ do
     combo:tick(0.016)
     print("in_progress=" .. tostring(combo:isInProgress()))
     print("progress=" .. combo:progress())
-    print("total=" .. combo:totalSteps())
-    combo:reset()
 end
 ```
 
@@ -2470,10 +2444,7 @@ do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
     combo:tick(0.016)
-    print("in_progress=" .. tostring(combo:isInProgress()))
-    print("progress=" .. combo:progress())
     print("total=" .. combo:totalSteps())
-    combo:reset()
 end
 ```
 
@@ -2684,10 +2655,7 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("frames=" .. rec:frameCount())
-    print("total=" .. rec:totalFrames())
-    print("type=" .. rec:type())
-    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
+    print("frames=" .. tostring(rec and rec:frameCount() or 0))
 end
 ```
 
@@ -2715,10 +2683,8 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    if rec then
-        local json = rec:toJson()
-        print("json length = " .. #json)
-    end
+    local json = rec and rec:toJson() or ""
+    print("json length = " .. #json)
 end
 ```
 
@@ -2746,10 +2712,7 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("frames=" .. rec:frameCount())
-    print("total=" .. rec:totalFrames())
-    print("type=" .. rec:type())
-    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
+    print("total=" .. tostring(rec and rec:totalFrames() or 0))
 end
 ```
 
@@ -2777,10 +2740,7 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("frames=" .. rec:frameCount())
-    print("total=" .. rec:totalFrames())
-    print("type=" .. rec:type())
-    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
+    print("type=" .. tostring(rec and rec:type() or nil))
 end
 ```
 
@@ -2813,10 +2773,7 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("frames=" .. rec:frameCount())
-    print("total=" .. rec:totalFrames())
-    print("type=" .. rec:type())
-    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
+    print("typeOf=" .. tostring(rec and rec:typeOf("LInputRecording") or false))
 end
 ```
 

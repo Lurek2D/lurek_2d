@@ -631,7 +631,6 @@ do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     db:addTable("t1", df)
-    db:addTable("t2", df)
     db:clear()
     print("after clear = " .. db:tableCount())
 end
@@ -732,8 +731,7 @@ do
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     db:addTable("alpha", df)
     db:addTable("beta", df)
-    local names = db:listTables()
-    print("tables = " .. #names)
+    print("tables = " .. #db:listTables())
 end
 ```
 
@@ -761,11 +759,9 @@ Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
 
 ```lua
 do
-    local db1 = lurek.dataframe.newDatabase()
-    local db2 = lurek.dataframe.newDatabase()
-    local df = lurek.dataframe.fromRows({"v"}, {{1}})
-    db1:addTable("a", df)
-    db2:addTable("b", df)
+    local db1, db2 = lurek.dataframe.newDatabase(), lurek.dataframe.newDatabase()
+    db1:addTable("a", lurek.dataframe.fromRows({"v"}, {{1}}))
+    db2:addTable("b", lurek.dataframe.fromRows({"v"}, {{1}}))
     db1:merge(db2)
     print("merged count = " .. db1:tableCount())
 end
@@ -1321,9 +1317,7 @@ do
     df:addColumn("x")
     df:addRow({x = 1})
     df:addRow({})
-    df:addRow({x = 3})
-    local clean = df:dropNil("x")
-    print("after dropNil rows = " .. clean:nrows())
+    print("after dropNil rows = " .. df:dropNil("x"):nrows())
 end
 ```
 
@@ -1387,10 +1381,9 @@ Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
 do
     local df = lurek.dataframe.newDataFrame()
     df:addColumn("x")
-    df:addRow({x = 1})
     df:addRow({})
     df:fillNil("x", 0)
-    print("filled = " .. df:getValue(2, "x"))
+    print("filled = " .. df:getValue(1, "x"))
 end
 ```
 
@@ -1631,11 +1624,7 @@ Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
 
 ```lua
 do
-    local df = lurek.dataframe.fromTable({
-        {team = "A", pts = 10},
-        {team = "B", pts = 20},
-    })
-    local groups = df:groupBy("team")
+    local groups = lurek.dataframe.fromTable({ { team = "A", pts = 10 }, { team = "B", pts = 20 } }):groupBy("team")
     print("group A rows = " .. groups["A"]:nrows())
 end
 ```
@@ -2123,12 +2112,7 @@ Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
 
 ```lua
 do
-    local df = lurek.dataframe.fromTable({
-        {row = "r1", col = "c1", val = 10},
-        {row = "r1", col = "c2", val = 20},
-        {row = "r2", col = "c1", val = 30},
-    })
-    local pv = df:pivot("row", "col", "val")
+    local pv = lurek.dataframe.fromTable({ { row = "r1", col = "c1", val = 10 }, { row = "r1", col = "c2", val = 20 }, { row = "r2", col = "c1", val = 30 } }):pivot("row", "col", "val")
     print("pivot cols = " .. pv:ncols())
 end
 ```
@@ -2166,12 +2150,7 @@ Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
 
 ```lua
 do
-    local df = lurek.dataframe.fromTable({
-        {region = "N", product = "X", sales = 10},
-        {region = "N", product = "Y", sales = 20},
-        {region = "S", product = "X", sales = 30},
-    })
-    local pt = df:pivotTable("region", "product", "sales", "sum")
+    local pt = lurek.dataframe.fromTable({ { region = "N", product = "X", sales = 10 }, { region = "N", product = "Y", sales = 20 }, { region = "S", product = "X", sales = 30 } }):pivotTable("region", "product", "sales", "sum")
     print("pivotTable rows = " .. pt:nrows())
 end
 ```
@@ -3337,16 +3316,8 @@ Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
 
 ```lua
 do
-    local df = lurek.dataframe.fromTable({
-        {team = "A", score = 10},
-        {team = "A", score = 20},
-    })
-    local gf = df:groupByObj("team")
-    local agg = gf:aggregate("score", function(vals)
-        local s = 0
-        for _, v in ipairs(vals) do s = s + v end
-        return s
-    end)
+    local gf = lurek.dataframe.fromTable({ { team = "A", score = 10 }, { team = "A", score = 20 } }):groupByObj("team")
+    local agg = gf:aggregate("score", function(vals) return vals[1] + vals[2] end)
     print("agg rows = " .. agg:nrows())
 end
 ```
@@ -3471,9 +3442,7 @@ do
     df:addColumn("x")
     df:addRow({x = 1})
     df:addRow({})
-    df:addRow({x = 3})
-    local result = df:lazy():dropNil("x"):collect()
-    print("lazy dropNil rows = " .. result:nrows())
+    print("lazy dropNil rows = " .. df:lazy():dropNil("x"):collect():nrows())
 end
 ```
 
@@ -3903,8 +3872,8 @@ Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     local vf = lurek.dataframe.toVec(df)
-    vf:colCast("v", "f64")
-    print("cast to f64 done")
+    vf:colCast("v", "float64")
+    print("cast to float64 done")
 end
 ```
 

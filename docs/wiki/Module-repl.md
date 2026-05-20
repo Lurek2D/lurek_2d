@@ -144,16 +144,10 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-    ---@type LReplSession
     local repl = lurek.repl.new()
     repl:eval("return 1")
-    repl:eval("return 2")
-    repl:eval("return 3")
-    print("before clear = " .. repl:len())
     repl:clear()
-    print("after clear = " .. repl:len())
-    local hist = repl:history()
-    print("history after clear = " .. #hist)
+    print("after clear = " .. repl:len() .. " history=" .. #repl:history())
 end
 ```
 
@@ -248,11 +242,8 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-    ---@type LReplSession
     local repl = lurek.repl.new()
     repl:eval("return 1")
-    repl:eval("return 2")
-    repl:eval("return 3")
     local hist = repl:history()
     print("history entries = " .. #hist)
 end
@@ -280,14 +271,9 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-    ---@type LReplSession
     local repl = lurek.repl.new()
-    print("empty = " .. repl:len())
     repl:eval("return 'a'")
-    print("after 1 eval = " .. repl:len())
-    repl:eval("return 'b'")
-    repl:eval("return 'c'")
-    print("after 3 evals = " .. repl:len())
+    print("len = " .. repl:len())
     repl:clear()
     print("after clear = " .. repl:len())
 end

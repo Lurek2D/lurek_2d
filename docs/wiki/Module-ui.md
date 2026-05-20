@@ -534,17 +534,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.addToast({
-        message = "File saved successfully",
-        duration = 3.0,
-        type = "info"
-    })
+    lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     print("toast added")
-
-    local layout = lurek.ui.loadLayout({
-        type = "panel",
-        children = {}
-    })
+    local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
     print("layout=" .. tostring(layout ~= nil))
 end
 ```
@@ -567,11 +559,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- drag and drop a widget onto a target
-    ---@type LPanel
-    local source = lurek.ui.newPanel()
-    ---@type LPanel
-    local target = lurek.ui.newPanel()
+    local source = lurek.ui.newPanel(); local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
     print("active drag:", lurek.ui.getActiveDrag())
     lurek.ui.dropOn(target)
@@ -591,19 +579,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- manage keyboard focus between widgets
-    ---@type LButton
-    local btn1 = lurek.ui.newButton("First")
-    ---@type LButton
-    local btn2 = lurek.ui.newButton("Second")
-    lurek.ui.setFocus(btn1)
-    print("focused widget:", lurek.ui.getFocus())
-    lurek.ui.focusNext()
-    print("after focusNext:", lurek.ui.getFocus())
-    lurek.ui.focusPrev()
-    print("after focusPrev:", lurek.ui.getFocus())
-    lurek.ui.clearFocus()
-    print("after clear:", lurek.ui.getFocus())
+    local btn1 = lurek.ui.newButton("First"); local btn2 = lurek.ui.newButton("Second")
+    lurek.ui.setFocus(btn1); print("focused widget:", lurek.ui.getFocus())
+    lurek.ui.focusNext(); print("after focusNext:", lurek.ui.getFocus())
+    lurek.ui.focusPrev(); print("after focusPrev:", lurek.ui.getFocus())
+    lurek.ui.clearFocus(); print("after clear:", lurek.ui.getFocus())
 end
 ```
 
@@ -619,8 +599,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    lurek.ui.beginDrag(w)
+    local w = lurek.ui.newCustomWidget({width=80, height=40}); lurek.ui.beginDrag(w)
     lurek.ui.endDrag()
     lurek.ui.clearFocus()
     lurek.ui.draw()
@@ -647,8 +626,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local img = lurek.ui.drawToImage(320, 240)
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    local img = lurek.ui.drawToImage(320, 240); local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
     lurek.ui.dropOn(w)
     lurek.ui.endDrag()
@@ -674,11 +652,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- drag and drop a widget onto a target
-    ---@type LPanel
-    local source = lurek.ui.newPanel()
-    ---@type LPanel
-    local target = lurek.ui.newPanel()
+    local source = lurek.ui.newPanel(); local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
     print("active drag:", lurek.ui.getActiveDrag())
     lurek.ui.dropOn(target)
@@ -700,8 +674,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local img = lurek.ui.drawToImage(320, 240)
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    local img = lurek.ui.drawToImage(320, 240); local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
     lurek.ui.dropOn(w)
     lurek.ui.endDrag()
@@ -723,8 +696,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.flushCache()
-    lurek.ui.focusPrev()
+    lurek.ui.flushCache(); lurek.ui.focusPrev()
     local drag = lurek.ui.getActiveDrag()
     local focus = lurek.ui.getFocus()
     lurek.ui.clearFocus()
@@ -744,15 +716,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LTextInput
-    local a = lurek.ui.newTextInput()
-    ---@type LTextInput
-    local b = lurek.ui.newTextInput()
-    ---@type LTextInput
-    local c = lurek.ui.newTextInput()
-    lurek.ui.setFocus(a)
-    lurek.ui.focusNext()
-    print("moved focus forward")
+    local a = lurek.ui.newTextInput(); local b = lurek.ui.newTextInput()
+    local c = lurek.ui.newTextInput(); lurek.ui.setFocus(a)
+    lurek.ui.focusNext(); print("moved focus forward")
     lurek.ui.focusPrev()
     print("moved focus back")
 end
@@ -770,19 +736,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- manage keyboard focus between widgets
-    ---@type LButton
-    local btn1 = lurek.ui.newButton("First")
-    ---@type LButton
-    local btn2 = lurek.ui.newButton("Second")
-    lurek.ui.setFocus(btn1)
-    print("focused widget:", lurek.ui.getFocus())
-    lurek.ui.focusNext()
-    print("after focusNext:", lurek.ui.getFocus())
-    lurek.ui.focusPrev()
-    print("after focusPrev:", lurek.ui.getFocus())
-    lurek.ui.clearFocus()
-    print("after clear:", lurek.ui.getFocus())
+    local btn1 = lurek.ui.newButton("First"); local btn2 = lurek.ui.newButton("Second")
+    lurek.ui.setFocus(btn1); print("focused widget:", lurek.ui.getFocus())
+    lurek.ui.focusNext(); print("after focusNext:", lurek.ui.getFocus())
+    lurek.ui.focusPrev(); print("after focusPrev:", lurek.ui.getFocus())
+    lurek.ui.clearFocus(); print("after clear:", lurek.ui.getFocus())
 end
 ```
 
@@ -800,11 +758,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- drag and drop a widget onto a target
-    ---@type LPanel
-    local source = lurek.ui.newPanel()
-    ---@type LPanel
-    local target = lurek.ui.newPanel()
+    local source = lurek.ui.newPanel(); local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
     print("active drag:", lurek.ui.getActiveDrag())
     lurek.ui.dropOn(target)
@@ -826,19 +780,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- manage keyboard focus between widgets
-    ---@type LButton
-    local btn1 = lurek.ui.newButton("First")
-    ---@type LButton
-    local btn2 = lurek.ui.newButton("Second")
-    lurek.ui.setFocus(btn1)
-    print("focused widget:", lurek.ui.getFocus())
-    lurek.ui.focusNext()
-    print("after focusNext:", lurek.ui.getFocus())
-    lurek.ui.focusPrev()
-    print("after focusPrev:", lurek.ui.getFocus())
-    lurek.ui.clearFocus()
-    print("after clear:", lurek.ui.getFocus())
+    local btn1 = lurek.ui.newButton("First"); local btn2 = lurek.ui.newButton("Second")
+    lurek.ui.setFocus(btn1); print("focused widget:", lurek.ui.getFocus())
+    lurek.ui.focusNext(); print("after focusNext:", lurek.ui.getFocus())
+    lurek.ui.focusPrev(); print("after focusPrev:", lurek.ui.getFocus())
+    lurek.ui.clearFocus(); print("after clear:", lurek.ui.getFocus())
 end
 ```
 
@@ -876,16 +822,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create and apply a custom theme
-    ---@type LTheme
-    local theme = lurek.ui.newTheme()
-    theme:setStyle("button", "normal", {
-        bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0,
-        fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0,
-    })
-    theme:setStyle("button", "hovered", {
-        bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0,
-    })
+    local theme = lurek.ui.newTheme(); theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
+    theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
     lurek.ui.setTheme(theme)
     print("theme active:", lurek.ui.getTheme())
     print("theme type:", theme:type())
@@ -906,8 +844,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.clearFocus()
-    local foc = lurek.ui.getFocus()
+    lurek.ui.clearFocus(); local foc = lurek.ui.getFocus()
     local theme = lurek.ui.getTheme()
     local toasts = lurek.ui.getToastCount()
     local widgets = lurek.ui.getWidgetCount()
@@ -931,7 +868,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
-    local layout = lurek.ui.loadLayoutFile("content/layouts/main_menu.toml")
+    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
     print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
 end
@@ -957,7 +894,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
-    local layout = lurek.ui.loadLayoutFile("content/layouts/main_menu.toml")
+    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
     print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
 end
@@ -981,17 +918,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.addToast({
-        message = "File saved successfully",
-        duration = 3.0,
-        type = "info"
-    })
+    lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     print("toast added")
-
-    local layout = lurek.ui.loadLayout({
-        type = "panel",
-        children = {}
-    })
+    local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
     print("layout=" .. tostring(layout ~= nil))
 end
 ```
@@ -1016,7 +945,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
-    local layout = lurek.ui.loadLayoutFile("content/layouts/main_menu.toml")
+    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
     print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
 end
@@ -1041,8 +970,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.mousemoved(100, 150)
-    lurek.ui.mousepressed(100, 150, 1)
+    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
     lurek.ui.mousereleased(100, 150, 1)
     lurek.ui.wheelmoved(0, -1)
     local cnt = lurek.ui.getWidgetCount()
@@ -1070,8 +998,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.mousemoved(100, 150)
-    lurek.ui.mousepressed(100, 150, 1)
+    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
     lurek.ui.mousereleased(100, 150, 1)
     lurek.ui.wheelmoved(0, -1)
     local cnt = lurek.ui.getWidgetCount()
@@ -1099,8 +1026,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.mousemoved(100, 150)
-    lurek.ui.mousepressed(100, 150, 1)
+    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
     lurek.ui.mousereleased(100, 150, 1)
     lurek.ui.wheelmoved(0, -1)
     local cnt = lurek.ui.getWidgetCount()
@@ -1147,10 +1073,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create an area chart with stacked layers
-    ---@type LAreaChart
-    local chart = lurek.ui.newAreaChart({ width = 400, height = 200, title = "CPU Usage" })
-    chart:addLayer("user", { 10, 25, 30, 45, 50, 40, 35 }, 0.2, 0.6, 1.0)
+    local chart = lurek.ui.newAreaChart({ width = 400, height = 200, title = "CPU Usage" }); chart:addLayer("user", { 10, 25, 30, 45, 50, 40, 35 }, 0.2, 0.6, 1.0)
     chart:addLayer("system", { 5, 10, 15, 20, 15, 10, 8 }, 1.0, 0.4, 0.2)
     chart:setYMax(100)
     print("area chart type:", chart:type())
@@ -1176,8 +1099,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a notification badge with count
-    ---@type LBadge
     local badge = lurek.ui.newBadge(5)
     print("count:", badge:getCount())
     print("display:", badge:getDisplayText())
@@ -1204,12 +1125,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a bar chart with categories and series
-    ---@type LBarChart
-    local chart = lurek.ui.newBarChart({ width = 300, height = 200, title = "Sales" })
-    chart:addSeries("Q1", 0.2, 0.8, 0.4)
-    chart:addSeries("Q2", 0.8, 0.2, 0.4)
-    chart:addCategory("Widgets", { 150, 200 })
+    local chart = lurek.ui.newBarChart({ width = 300, height = 200, title = "Sales" }); chart:addSeries("Q1", 0.2, 0.8, 0.4)
+    chart:addSeries("Q2", 0.8, 0.2, 0.4); chart:addCategory("Widgets", { 150, 200 })
     chart:addCategory("Gadgets", { 90, 120 })
     chart:addCategory("Tools", { 60, 80 })
     print("bar chart type:", chart:type())
@@ -1281,26 +1198,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a color picker and select a color
-    ---@type LColorPicker
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(0.8, 0.2, 0.5, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(0.8, 0.2, 0.5, 1.0)
     local r, g, b, a = cp:getColor()
     print("color:", r, g, b, a)
     cp:setColorMode("hsv")
     print("mode:", cp:getColorMode())
-    cp:setShowAlpha(true)
-    print("show alpha:", cp:getShowAlpha())
-
-    -- Example usage for newColorPicker.
-    -- register a change callback on color picker
-    ---@type LColorPicker
-    local cp = lurek.ui.newColorPicker()
-    cp:setOnChange(function(idx)
-        print("color changed on widget:", idx)
-    end)
-    cp:setColor(0.0, 1.0, 0.0)
-    print("green set, mode:", cp:getColorMode())
 end
 ```
 
@@ -1368,14 +1270,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a modal dialog with title, buttons, and close callback
-    ---@type LDialog
     local dlg = lurek.ui.newDialog("Confirm Action")
     dlg:setModal(true)
     dlg:addButton("OK")
     dlg:addButton("Cancel")
-    dlg:setOnClose(function(idx)
-        print("dialog closed, widget index:", idx)
+    dlg:setOnClose(function(idx) print("dialog closed, widget index:", idx)
     end)
     dlg:open()
     print("dialog title:", dlg:getTitle())
@@ -1412,23 +1311,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LDockPanel
-    local dock = lurek.ui.newDockPanel()
-    print("type = " .. dock:type())
-    ---@type LPanel
-    local header = lurek.ui.newPanel()
-    header:setSize(0, 60)
-    dock:addChild(header)
-    dock:dock(header._idx, "top")
-    ---@type LPanel
-    local sidebar = lurek.ui.newPanel()
-    sidebar:setSize(200, 0)
-    dock:addChild(sidebar)
-    dock:dock(sidebar._idx, "left")
-    dock:setSplitSize("left", 200)
-    dock:setSplitSize("top", 60)
-    print("docked count = " .. dock:getDockedCount())
-    print("left size = " .. dock:getSplitSize("left"))
+    local dock = lurek.ui.newDockPanel(); print("type = " .. dock:type()); local header = lurek.ui.newPanel()
+    header:setSize(0, 60); dock:addChild(header); dock:dock(header._idx, "top")
+    local sidebar = lurek.ui.newPanel(); sidebar:setSize(200, 0); dock:addChild(sidebar)
+    dock:dock(sidebar._idx, "left"); dock:setSplitSize("left", 200); dock:setSplitSize("top", 60)
+    print("docked count = " .. dock:getDockedCount()); print("left size = " .. dock:getSplitSize("left"))
 end
 ```
 
@@ -1446,26 +1333,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create an image widget and configure scale mode and tint
-    ---@type LImageWidget
-    local img = lurek.ui.newImageWidget()
-    img:setScaleMode("fit")
+    local img = lurek.ui.newImageWidget(); img:setScaleMode("fit")
     print("scale mode:", img:getScaleMode())
     img:setTint(1.0, 0.8, 0.6, 0.9)
     local r, g, b, a = img:getTint()
     print("tint:", r, g, b, a)
-
-    -- Example usage for newImageWidget.
-    -- test different scale modes on image widget
-    ---@type LImageWidget
-    local img = lurek.ui.newImageWidget()
-    img:setScaleMode("fill")
-    print("fill mode:", img:getScaleMode())
-    img:setScaleMode("stretch")
-    print("stretch mode:", img:getScaleMode())
-    img:setTint(0.5, 0.5, 1.0)
-    local r, g, b, a = img:getTint()
-    print("blue tint:", r, g, b, a)
 end
 ```
 
@@ -1487,7 +1359,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LLabel
     local lbl = lurek.ui.newLabel("Hello, World!")
     print("type = " .. lbl:type())
     print("text = " .. lbl:getText())
@@ -1514,16 +1385,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LLayout
-    local row = lurek.ui.newLayout("horizontal")
-    print("type = " .. row:type())
-    print("direction = " .. row:getDirection())
-    print("spacing = " .. row:getSpacing())
-
-    -- Creating a vertical layout.
-    ---@type LLayout
-    local col = lurek.ui.newLayout("vertical")
-    col:setSpacing(10)
+    local row = lurek.ui.newLayout("horizontal"); print("type = " .. row:type())
+    print("direction = " .. row:getDirection()); print("spacing = " .. row:getSpacing())
+    local col = lurek.ui.newLayout("vertical"); col:setSpacing(10)
     print("direction = " .. col:getDirection())
     print("spacing = " .. col:getSpacing())
 end
@@ -1547,15 +1411,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a line chart with data series
-    ---@type LLineChart
-    local chart = lurek.ui.newLineChart({ width = 400, height = 250, title = "Temperature" })
-    chart:addSeries("indoor", {
-        { x = 0, y = 20 }, { x = 6, y = 19 }, { x = 12, y = 22 }, { x = 18, y = 21 }, { x = 24, y = 20 }
-    }, 1.0, 0.3, 0.3)
-    chart:addSeries("outdoor", {
-        { x = 0, y = 5 }, { x = 6, y = 3 }, { x = 12, y = 15 }, { x = 18, y = 10 }, { x = 24, y = 6 }
-    }, 0.3, 0.3, 1.0)
+    local chart = lurek.ui.newLineChart({ width = 400, height = 250, title = "Temperature" }); chart:addSeries("indoor", { { x = 0, y = 20 }, { x = 6, y = 19 }, { x = 12, y = 22 }, { x = 18, y = 21 }, { x = 24, y = 20 } }, 1.0, 0.3, 0.3)
+    chart:addSeries("outdoor", { { x = 0, y = 5 }, { x = 6, y = 3 }, { x = 12, y = 15 }, { x = 18, y = 10 }, { x = 24, y = 6 } }, 0.3, 0.3, 1.0)
     chart:setXMax(24)
     chart:setYMax(30)
     print("line chart type:", chart:type())
@@ -1622,7 +1479,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LMenuItem
     local item = lurek.ui.newMenuItem("File")
     print("type = " .. item:type())
     print("text = " .. item:getText())
@@ -1645,26 +1501,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a nine-patch widget with border insets
-    ---@type LNinePatch
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(128, 128)
     np:setInsets(16, 16, 16, 16)
     local w, h = np:getImageDimensions()
     print("image size:", w, h)
-    local l, t, r, b = np:getInsets()
-    print("insets:", l, t, r, b)
-
-    -- Example usage for newNinePatch.
-    -- retrieve computed slices from nine-patch
-    ---@type LNinePatch
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(64, 64)
-    np:setInsets(8, 8, 8, 8)
-    np:setSize(200, 100)
-    ---@type LNinePatchGetSlicesResult
-    local slices = np:getSlices()
-    print("slices retrieved:", slices ~= nil)
 end
 ```
 
@@ -1708,12 +1549,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a pie chart with labeled segments
-    ---@type LPieChart
-    local chart = lurek.ui.newPieChart({ width = 200, height = 200, title = "Market Share" })
-    chart:addSegment("Product A", 45, 0.2, 0.6, 1.0)
-    chart:addSegment("Product B", 30, 1.0, 0.4, 0.2)
-    chart:addSegment("Product C", 15, 0.3, 0.9, 0.3)
+    local chart = lurek.ui.newPieChart({ width = 200, height = 200, title = "Market Share" }); chart:addSegment("Product A", 45, 0.2, 0.6, 1.0)
+    chart:addSegment("Product B", 30, 1.0, 0.4, 0.2); chart:addSegment("Product C", 15, 0.3, 0.9, 0.3)
     chart:addSegment("Other", 10, 0.7, 0.7, 0.7)
     print("pie chart type:", chart:type())
     print("is pie chart:", chart:typeOf("LPieChart"))
@@ -1739,25 +1576,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a progress bar and track fill value
-    ---@type LProgressBar
     local bar = lurek.ui.newProgressBar(0, 100)
     bar:setValue(35)
     print("value:", bar:getValue())
-    print("min:", bar:getMin())
-    print("max:", bar:getMax())
     print("progress (normalized):", bar:getProgress())
-
-    -- Example usage for newProgressBar.
-    -- change the progress bar range dynamically
-    ---@type LProgressBar
-    local bar = lurek.ui.newProgressBar(0, 50)
-    bar:setValue(25)
-    print("progress at 25/50:", bar:getProgress())
-    bar:setRange(0, 200)
-    bar:setValue(150)
-    print("progress at 150/200:", bar:getProgress())
-    print("new max:", bar:getMax())
 end
 ```
 
@@ -1780,16 +1602,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create mutually exclusive radio buttons in a group
-    ---@type LRadioButton
-    local rb1 = lurek.ui.newRadioButton("Small", "size_group")
-    ---@type LRadioButton
-    local rb2 = lurek.ui.newRadioButton("Medium", "size_group")
-    ---@type LRadioButton
-    local rb3 = lurek.ui.newRadioButton("Large", "size_group")
-    rb2:setSelected(true)
-    print("rb1 selected:", rb1:isSelected())
-    print("rb2 selected:", rb2:isSelected())
+    local rb1 = lurek.ui.newRadioButton("Small", "size_group"); local rb2 = lurek.ui.newRadioButton("Medium", "size_group")
+    local rb3 = lurek.ui.newRadioButton("Large", "size_group"); rb2:setSelected(true)
+    print("rb1 selected:", rb1:isSelected()); print("rb2 selected:", rb2:isSelected())
     print("rb2 group:", rb2:getGroup())
     print("rb2 text:", rb2:getText())
 end
@@ -1813,15 +1628,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a scatter plot with data points
-    ---@type LScatterPlot
-    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300, title = "Height vs Weight" })
-    chart:addSeries("male", {
-        { x = 170, y = 70 }, { x = 180, y = 80 }, { x = 175, y = 75 }, { x = 185, y = 90 }
-    }, 0.2, 0.5, 1.0)
-    chart:addSeries("female", {
-        { x = 160, y = 55 }, { x = 165, y = 60 }, { x = 170, y = 65 }, { x = 155, y = 50 }
-    }, 1.0, 0.3, 0.6)
+    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300, title = "Height vs Weight" }); chart:addSeries("male", { { x = 170, y = 70 }, { x = 180, y = 80 }, { x = 175, y = 75 }, { x = 185, y = 90 } }, 0.2, 0.5, 1.0)
+    chart:addSeries("female", { { x = 160, y = 55 }, { x = 165, y = 60 }, { x = 170, y = 65 }, { x = 155, y = 50 } }, 1.0, 0.3, 0.6)
     chart:setXRange(150, 200)
     chart:setYRange(40, 100)
     print("scatter plot type:", chart:type())
@@ -1867,17 +1675,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LScrollPanel
-    local scroll = lurek.ui.newScrollPanel()
-    print("type = " .. scroll:type())
-    scroll:setContentSize(1200, 2000)
-    local cw, ch = scroll:getContentSize()
-    print("content size = " .. cw .. "x" .. ch)
-    scroll:setScrollPosition(0, 100)
-    local sx, sy = scroll:getScrollPosition()
-    print("scroll pos = " .. sx .. ", " .. sy)
-    local mx, my = scroll:getMaxScroll()
-    print("max scroll = " .. mx .. ", " .. my)
+    local scroll = lurek.ui.newScrollPanel(); print("type = " .. scroll:type())
+    scroll:setContentSize(1200, 2000); local cw, ch = scroll:getContentSize()
+    print("content size = " .. cw .. "x" .. ch); scroll:setScrollPosition(0, 100)
+    local sx, sy = scroll:getScrollPosition(); print("scroll pos = " .. sx .. ", " .. sy)
+    local mx, my = scroll:getMaxScroll(); print("max scroll = " .. mx .. ", " .. my)
 end
 ```
 
@@ -1899,23 +1701,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create horizontal and vertical separators
-    ---@type LSeparator
     local sep = lurek.ui.newSeparator(false)
     print("is vertical:", sep:isVertical())
-    print("thickness:", sep:getThickness())
     sep:setThickness(2)
     print("new thickness:", sep:getThickness())
-
-    -- Example usage for newSeparator.
-    -- create a vertical separator and toggle orientation
-    ---@type LSeparator
-    local sep = lurek.ui.newSeparator(true)
-    print("vertical:", sep:isVertical())
-    sep:setVertical(false)
-    print("after toggle:", sep:isVertical())
-    sep:setThickness(3)
-    print("thickness:", sep:getThickness())
 end
 ```
 
@@ -1938,7 +1727,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LSlider
     local slider = lurek.ui.newSlider(0, 100)
     print("type = " .. slider:type())
     print("min = " .. slider:getMin())
@@ -1966,8 +1754,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a spacer widget for layout padding
-    ---@type LSpacer
     local sp = lurek.ui.newSpacer(20, 10)
     sp:setSize(40, 20)
     local w, h = sp:getSize()
@@ -1994,7 +1780,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LSpinBox
     local spin = lurek.ui.newSpinBox(1, 99)
     print("type = " .. spin:type())
     print("value = " .. spin:getValue())
@@ -2021,20 +1806,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LSplitPanel
-    local split = lurek.ui.newSplitPanel("horizontal")
-    print("type = " .. split:type())
-    print("orientation = " .. split:getOrientation())
-    ---@type LPanel
-    local left = lurek.ui.newPanel()
-    ---@type LPanel
-    local right = lurek.ui.newPanel()
-    split:setFirstChild(left._idx)
-    split:setSecondChild(right._idx)
-    split:setSplitPosition(0.3)
-    print("split at " .. split:getSplitPosition())
-    split:setMinPanelSize(100)
-    print("min panel = " .. split:getMinPanelSize())
+    local split = lurek.ui.newSplitPanel("horizontal"); print("type = " .. split:type()); print("orientation = " .. split:getOrientation())
+    local left = lurek.ui.newPanel(); local right = lurek.ui.newPanel()
+    split:setFirstChild(left._idx); split:setSecondChild(right._idx)
+    split:setSplitPosition(0.3); print("split at " .. split:getSplitPosition())
+    split:setMinPanelSize(100); print("min panel = " .. split:getMinPanelSize())
 end
 ```
 
@@ -2052,29 +1828,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a status bar with multiple sections
-    ---@type LStatusBar
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 150)
-    sb:addSection("Line: 1, Col: 1", 120)
-    sb:addSection("UTF-8", 80)
     print("section count:", sb:getSectionCount())
     print("section 1:", sb:getSectionText(1))
-    print("section 2:", sb:getSectionText(2))
-
-    -- Example usage for newStatusBar.
-    -- update status bar sections dynamically
-    ---@type LStatusBar
-    local sb = lurek.ui.newStatusBar()
-    sb:addSection("Idle")
-    sb:addSection("0 errors")
-    sb:setSectionText(1, "Building...")
-    sb:setSectionText(2, "3 warnings")
-    print("updated section 1:", sb:getSectionText(1))
-    print("updated section 2:", sb:getSectionText(2))
-    sb:setSectionCount(3)
-    sb:setSectionText(3, "Branch: main")
-    print("section count after expand:", sb:getSectionCount())
 end
 ```
 
@@ -2138,19 +1895,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    print("type=" .. tbl:type())
-    tbl:addColumn("Name")
-    tbl:addColumn("Score")
-    print("cols=" .. tbl:getColumnCount())
-    tbl:addRow({ "Alice", "100" })
-    tbl:addRow({ "Bob", "80" })
-    print("rows=" .. tbl:getRowCount())
-    local cell = tbl:getCell(0, 0)
-    print("cell00=" .. tostring(cell))
-    tbl:setCell(0, 1, "999")
-    tbl:setSelectedRow(1)
-    print("selected=" .. tbl:getSelectedRow())
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -2168,7 +1917,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LTextInput
     local input = lurek.ui.newTextInput()
     print("type = " .. input:type())
     print("text = '" .. input:getText() .. "'")
@@ -2191,16 +1939,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create and apply a custom theme
-    ---@type LTheme
-    local theme = lurek.ui.newTheme()
-    theme:setStyle("button", "normal", {
-        bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0,
-        fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0,
-    })
-    theme:setStyle("button", "hovered", {
-        bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0,
-    })
+    local theme = lurek.ui.newTheme(); theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
+    theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
     lurek.ui.setTheme(theme)
     print("theme active:", lurek.ui.getTheme())
     print("theme type:", theme:type())
@@ -2226,12 +1966,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a toast notification
-    ---@type LToast
-    local toast = lurek.ui.newToast("File saved!", 2.5)
-    print("message:", toast:getMessage())
-    print("duration:", toast:getDuration())
-    toast:setMessage("Upload complete")
+    local toast = lurek.ui.newToast("File saved!", 2.5); print("message:", toast:getMessage())
+    print("duration:", toast:getDuration()); toast:setMessage("Upload complete")
     toast:setDuration(4.0)
     print("updated message:", toast:getMessage())
     print("expired:", toast:isExpired())
@@ -2256,30 +1992,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a horizontal toolbar with buttons and separators
-    ---@type LToolbar
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
-    tb:addButton("load", "Load file")
-    tb:addSeparator()
-    tb:addButton("undo", "Undo last action")
-    tb:addSpacer()
-    tb:addButton("settings", "Open settings")
     print("orientation:", tb:getOrientation())
-
-    -- Example usage for newToolbar.
-    -- toggle toolbar buttons and check state
-    ---@type LToolbar
-    local tb = lurek.ui.newToolbar("vertical")
-    tb:setOrientation("vertical")
-    tb:addButton("bold", "Bold text")
-    tb:addButton("italic", "Italic text")
-    tb:setButtonToggled("bold", true)
-    print("bold toggled:", tb:isButtonToggled("bold"))
-    tb:setButtonEnabled("italic", false)
-    ---@type LToolbarGetButtonResult
-    local info = tb:getButton("bold")
-    print("bold info - enabled:", info.enabled, "toggled:", info.toggled)
 end
 ```
 
@@ -2301,17 +2016,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a tooltip panel attached to a button
-    ---@type LButton
-    local btn = lurek.ui.newButton("Hover me")
-    ---@type LTooltipPanel
-    local tip = lurek.ui.newTooltipPanel("Click to submit form")
-    tip:setDelay(0.5)
-    tip:setTarget(1)
-    print("tooltip text:", tip:getText())
-    print("delay:", tip:getDelay())
-    print("target:", tip:getTarget())
-    tip:setText("Updated tooltip text")
+    local btn = lurek.ui.newButton("Hover me"); local tip = lurek.ui.newTooltipPanel("Click to submit form")
+    tip:setDelay(0.5); tip:setTarget(1)
+    print("tooltip text:", tip:getText()); print("delay:", tip:getDelay())
+    print("target:", tip:getTarget()); tip:setText("Updated tooltip text")
     print("new text:", tip:getText())
 end
 ```
@@ -2330,33 +2038,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a tree view with nested nodes
-    ---@type LTreeView
     local tree = lurek.ui.newTreeView()
     local root = tree:addNode("Project")
-    local src = tree:addNode("src", root)
-    tree:addNode("main.lua", src)
-    tree:addNode("utils.lua", src)
-    local assets = tree:addNode("assets", root)
-    tree:addNode("sprites.png", assets)
+    tree:addNode("main.lua", root)
     print("total nodes:", tree:getNodeCount())
     print("root text:", tree:getNodeText(root))
-    print("src depth:", tree:getNodeDepth(src))
-
-    -- Example usage for newTreeView.
-    -- expand and collapse tree nodes
-    ---@type LTreeView
-    local tree = lurek.ui.newTreeView()
-    local folder = tree:addNode("Documents")
-    tree:addNode("readme.txt", folder)
-    tree:addNode("notes.md", folder)
-    tree:expandNode(folder)
-    print("expanded:", tree:isExpanded(folder))
-    tree:collapseNode(folder)
-    print("after collapse:", tree:isExpanded(folder))
-    tree:expandAll()
-    tree:setSelectedNode(folder)
-    print("selected:", tree:getSelectedNode())
 end
 ```
 
@@ -2378,14 +2064,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a draggable, resizable GUI window
-    ---@type LGuiWindow
     local win = lurek.ui.newWindow("Editor")
     win:setDraggable(true)
     win:setResizable(true)
     win:setCloseable(true)
-    win:setOnClose(function(idx)
-        print("window closed, widget index:", idx)
+    win:setOnClose(function(idx) print("window closed, widget index:", idx)
     end)
     print("window title:", win:getTitle())
     print("is draggable:", win:isDraggable())
@@ -2469,8 +2152,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local th = lurek.ui.newTheme()
-    lurek.ui.setTheme(th)
+    local th = lurek.ui.newTheme(); lurek.ui.setTheme(th)
     lurek.ui.setDefaultTheme()
     lurek.ui.setViewport(1280, 720)
     local cnt = lurek.ui.getWidgetCount()
@@ -2494,11 +2176,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LTextInput
-    local input = lurek.ui.newTextInput()
-    lurek.ui.setFocus(input)
-    local focused = lurek.ui.getFocus()
-    print("focus set, has focus = " .. tostring(focused ~= nil))
+    local input = lurek.ui.newTextInput(); lurek.ui.setFocus(input)
+    local focused = lurek.ui.getFocus(); print("focus set, has focus = " .. tostring(focused ~= nil))
     lurek.ui.clearFocus()
     focused = lurek.ui.getFocus()
     print("after clear = " .. tostring(focused))
@@ -2521,16 +2200,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create and apply a custom theme
-    ---@type LTheme
-    local theme = lurek.ui.newTheme()
-    theme:setStyle("button", "normal", {
-        bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0,
-        fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0,
-    })
-    theme:setStyle("button", "hovered", {
-        bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0,
-    })
+    local theme = lurek.ui.newTheme(); theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
+    theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
     lurek.ui.setTheme(theme)
     print("theme active:", lurek.ui.getTheme())
     print("theme type:", theme:type())
@@ -2554,8 +2225,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local th = lurek.ui.newTheme()
-    lurek.ui.setTheme(th)
+    local th = lurek.ui.newTheme(); lurek.ui.setTheme(th)
     lurek.ui.setDefaultTheme()
     lurek.ui.setViewport(1280, 720)
     local cnt = lurek.ui.getWidgetCount()
@@ -2581,8 +2251,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.textinput("hello")
-    lurek.ui.textinput(" world")
+    lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
     lurek.ui.wheelmoved(0, 1)
     lurek.ui.wheelmoved(1, 0)
@@ -2628,8 +2297,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.textinput("hello")
-    lurek.ui.textinput(" world")
+    lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
     lurek.ui.wheelmoved(0, 1)
     lurek.ui.wheelmoved(1, 0)
@@ -2656,8 +2324,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    lurek.ui.textinput("hello")
-    lurek.ui.textinput(" world")
+    lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
     lurek.ui.wheelmoved(0, 1)
     lurek.ui.wheelmoved(1, 0)
@@ -2713,10 +2380,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create an area chart with stacked layers
-    ---@type LAreaChart
-    local chart = lurek.ui.newAreaChart({ width = 400, height = 200, title = "CPU Usage" })
-    chart:addLayer("user", { 10, 25, 30, 45, 50, 40, 35 }, 0.2, 0.6, 1.0)
+    local chart = lurek.ui.newAreaChart({ width = 400, height = 200, title = "CPU Usage" }); chart:addLayer("user", { 10, 25, 30, 45, 50, 40, 35 }, 0.2, 0.6, 1.0)
     chart:addLayer("system", { 5, 10, 15, 20, 15, 10, 8 }, 1.0, 0.4, 0.2)
     chart:setYMax(100)
     print("area chart type:", chart:type())
@@ -2742,8 +2406,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a notification badge with count
-    ---@type LBadge
     local badge = lurek.ui.newBadge(5)
     print("count:", badge:getCount())
     print("display:", badge:getDisplayText())
@@ -2770,12 +2432,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a bar chart with categories and series
-    ---@type LBarChart
-    local chart = lurek.ui.newBarChart({ width = 300, height = 200, title = "Sales" })
-    chart:addSeries("Q1", 0.2, 0.8, 0.4)
-    chart:addSeries("Q2", 0.8, 0.2, 0.4)
-    chart:addCategory("Widgets", { 150, 200 })
+    local chart = lurek.ui.newBarChart({ width = 300, height = 200, title = "Sales" }); chart:addSeries("Q1", 0.2, 0.8, 0.4)
+    chart:addSeries("Q2", 0.8, 0.2, 0.4); chart:addCategory("Widgets", { 150, 200 })
     chart:addCategory("Gadgets", { 90, 120 })
     chart:addCategory("Tools", { 60, 80 })
     print("bar chart type:", chart:type())
@@ -2851,26 +2509,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a color picker and select a color
-    ---@type LColorPicker
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(0.8, 0.2, 0.5, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(0.8, 0.2, 0.5, 1.0)
     local r, g, b, a = cp:getColor()
     print("color:", r, g, b, a)
     cp:setColorMode("hsv")
     print("mode:", cp:getColorMode())
-    cp:setShowAlpha(true)
-    print("show alpha:", cp:getShowAlpha())
-
-    -- Example usage for newColorPicker.
-    -- register a change callback on color picker
-    ---@type LColorPicker
-    local cp = lurek.ui.newColorPicker()
-    cp:setOnChange(function(idx)
-        print("color changed on widget:", idx)
-    end)
-    cp:setColor(0.0, 1.0, 0.0)
-    print("green set, mode:", cp:getColorMode())
 end
 ```
 
@@ -2917,14 +2560,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a modal dialog with title, buttons, and close callback
-    ---@type LDialog
     local dlg = lurek.ui.newDialog("Confirm Action")
     dlg:setModal(true)
     dlg:addButton("OK")
     dlg:addButton("Cancel")
-    dlg:setOnClose(function(idx)
-        print("dialog closed, widget index:", idx)
+    dlg:setOnClose(function(idx) print("dialog closed, widget index:", idx)
     end)
     dlg:open()
     print("dialog title:", dlg:getTitle())
@@ -2965,23 +2605,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LDockPanel
-    local dock = lurek.ui.newDockPanel()
-    print("type = " .. dock:type())
-    ---@type LPanel
-    local header = lurek.ui.newPanel()
-    header:setSize(0, 60)
-    dock:addChild(header)
-    dock:dock(header._idx, "top")
-    ---@type LPanel
-    local sidebar = lurek.ui.newPanel()
-    sidebar:setSize(200, 0)
-    dock:addChild(sidebar)
-    dock:dock(sidebar._idx, "left")
-    dock:setSplitSize("left", 200)
-    dock:setSplitSize("top", 60)
-    print("docked count = " .. dock:getDockedCount())
-    print("left size = " .. dock:getSplitSize("left"))
+    local dock = lurek.ui.newDockPanel(); print("type = " .. dock:type()); local header = lurek.ui.newPanel()
+    header:setSize(0, 60); dock:addChild(header); dock:dock(header._idx, "top")
+    local sidebar = lurek.ui.newPanel(); sidebar:setSize(200, 0); dock:addChild(sidebar)
+    dock:dock(sidebar._idx, "left"); dock:setSplitSize("left", 200); dock:setSplitSize("top", 60)
+    print("docked count = " .. dock:getDockedCount()); print("left size = " .. dock:getSplitSize("left"))
 end
 ```
 
@@ -3003,19 +2631,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    print("type=" .. tbl:type())
-    tbl:addColumn("Name")
-    tbl:addColumn("Score")
-    print("cols=" .. tbl:getColumnCount())
-    tbl:addRow({ "Alice", "100" })
-    tbl:addRow({ "Bob", "80" })
-    print("rows=" .. tbl:getRowCount())
-    local cell = tbl:getCell(0, 0)
-    print("cell00=" .. tostring(cell))
-    tbl:setCell(0, 1, "999")
-    tbl:setSelectedRow(1)
-    print("selected=" .. tbl:getSelectedRow())
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -3037,14 +2657,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a draggable, resizable GUI window
-    ---@type LGuiWindow
     local win = lurek.ui.newWindow("Editor")
     win:setDraggable(true)
     win:setResizable(true)
     win:setCloseable(true)
-    win:setOnClose(function(idx)
-        print("window closed, widget index:", idx)
+    win:setOnClose(function(idx) print("window closed, widget index:", idx)
     end)
     print("window title:", win:getTitle())
     print("is draggable:", win:isDraggable())
@@ -3084,26 +2701,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create an image widget and configure scale mode and tint
-    ---@type LImageWidget
-    local img = lurek.ui.newImageWidget()
-    img:setScaleMode("fit")
+    local img = lurek.ui.newImageWidget(); img:setScaleMode("fit")
     print("scale mode:", img:getScaleMode())
     img:setTint(1.0, 0.8, 0.6, 0.9)
     local r, g, b, a = img:getTint()
     print("tint:", r, g, b, a)
-
-    -- Example usage for newImageWidget.
-    -- test different scale modes on image widget
-    ---@type LImageWidget
-    local img = lurek.ui.newImageWidget()
-    img:setScaleMode("fill")
-    print("fill mode:", img:getScaleMode())
-    img:setScaleMode("stretch")
-    print("stretch mode:", img:getScaleMode())
-    img:setTint(0.5, 0.5, 1.0)
-    local r, g, b, a = img:getTint()
-    print("blue tint:", r, g, b, a)
 end
 ```
 
@@ -3125,7 +2727,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LLabel
     local lbl = lurek.ui.newLabel("Hello, World!")
     print("type = " .. lbl:type())
     print("text = " .. lbl:getText())
@@ -3152,16 +2753,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LLayout
-    local row = lurek.ui.newLayout("horizontal")
-    print("type = " .. row:type())
-    print("direction = " .. row:getDirection())
-    print("spacing = " .. row:getSpacing())
-
-    -- Creating a vertical layout.
-    ---@type LLayout
-    local col = lurek.ui.newLayout("vertical")
-    col:setSpacing(10)
+    local row = lurek.ui.newLayout("horizontal"); print("type = " .. row:type())
+    print("direction = " .. row:getDirection()); print("spacing = " .. row:getSpacing())
+    local col = lurek.ui.newLayout("vertical"); col:setSpacing(10)
     print("direction = " .. col:getDirection())
     print("spacing = " .. col:getSpacing())
 end
@@ -3185,15 +2779,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a line chart with data series
-    ---@type LLineChart
-    local chart = lurek.ui.newLineChart({ width = 400, height = 250, title = "Temperature" })
-    chart:addSeries("indoor", {
-        { x = 0, y = 20 }, { x = 6, y = 19 }, { x = 12, y = 22 }, { x = 18, y = 21 }, { x = 24, y = 20 }
-    }, 1.0, 0.3, 0.3)
-    chart:addSeries("outdoor", {
-        { x = 0, y = 5 }, { x = 6, y = 3 }, { x = 12, y = 15 }, { x = 18, y = 10 }, { x = 24, y = 6 }
-    }, 0.3, 0.3, 1.0)
+    local chart = lurek.ui.newLineChart({ width = 400, height = 250, title = "Temperature" }); chart:addSeries("indoor", { { x = 0, y = 20 }, { x = 6, y = 19 }, { x = 12, y = 22 }, { x = 18, y = 21 }, { x = 24, y = 20 } }, 1.0, 0.3, 0.3)
+    chart:addSeries("outdoor", { { x = 0, y = 5 }, { x = 6, y = 3 }, { x = 12, y = 15 }, { x = 18, y = 10 }, { x = 24, y = 6 } }, 0.3, 0.3, 1.0)
     chart:setXMax(24)
     chart:setYMax(30)
     print("line chart type:", chart:type())
@@ -3268,7 +2855,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LMenuItem
     local item = lurek.ui.newMenuItem("File")
     print("type = " .. item:type())
     print("text = " .. item:getText())
@@ -3295,26 +2881,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a nine-patch widget with border insets
-    ---@type LNinePatch
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(128, 128)
     np:setInsets(16, 16, 16, 16)
     local w, h = np:getImageDimensions()
     print("image size:", w, h)
-    local l, t, r, b = np:getInsets()
-    print("insets:", l, t, r, b)
-
-    -- Example usage for newNinePatch.
-    -- retrieve computed slices from nine-patch
-    ---@type LNinePatch
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(64, 64)
-    np:setInsets(8, 8, 8, 8)
-    np:setSize(200, 100)
-    ---@type LNinePatchGetSlicesResult
-    local slices = np:getSlices()
-    print("slices retrieved:", slices ~= nil)
 end
 ```
 
@@ -3360,12 +2931,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a pie chart with labeled segments
-    ---@type LPieChart
-    local chart = lurek.ui.newPieChart({ width = 200, height = 200, title = "Market Share" })
-    chart:addSegment("Product A", 45, 0.2, 0.6, 1.0)
-    chart:addSegment("Product B", 30, 1.0, 0.4, 0.2)
-    chart:addSegment("Product C", 15, 0.3, 0.9, 0.3)
+    local chart = lurek.ui.newPieChart({ width = 200, height = 200, title = "Market Share" }); chart:addSegment("Product A", 45, 0.2, 0.6, 1.0)
+    chart:addSegment("Product B", 30, 1.0, 0.4, 0.2); chart:addSegment("Product C", 15, 0.3, 0.9, 0.3)
     chart:addSegment("Other", 10, 0.7, 0.7, 0.7)
     print("pie chart type:", chart:type())
     print("is pie chart:", chart:typeOf("LPieChart"))
@@ -3390,25 +2957,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a progress bar and track fill value
-    ---@type LProgressBar
     local bar = lurek.ui.newProgressBar(0, 100)
     bar:setValue(35)
     print("value:", bar:getValue())
-    print("min:", bar:getMin())
-    print("max:", bar:getMax())
     print("progress (normalized):", bar:getProgress())
-
-    -- Example usage for newProgressBar.
-    -- change the progress bar range dynamically
-    ---@type LProgressBar
-    local bar = lurek.ui.newProgressBar(0, 50)
-    bar:setValue(25)
-    print("progress at 25/50:", bar:getProgress())
-    bar:setRange(0, 200)
-    bar:setValue(150)
-    print("progress at 150/200:", bar:getProgress())
-    print("new max:", bar:getMax())
 end
 ```
 
@@ -3430,16 +2982,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create mutually exclusive radio buttons in a group
-    ---@type LRadioButton
-    local rb1 = lurek.ui.newRadioButton("Small", "size_group")
-    ---@type LRadioButton
-    local rb2 = lurek.ui.newRadioButton("Medium", "size_group")
-    ---@type LRadioButton
-    local rb3 = lurek.ui.newRadioButton("Large", "size_group")
-    rb2:setSelected(true)
-    print("rb1 selected:", rb1:isSelected())
-    print("rb2 selected:", rb2:isSelected())
+    local rb1 = lurek.ui.newRadioButton("Small", "size_group"); local rb2 = lurek.ui.newRadioButton("Medium", "size_group")
+    local rb3 = lurek.ui.newRadioButton("Large", "size_group"); rb2:setSelected(true)
+    print("rb1 selected:", rb1:isSelected()); print("rb2 selected:", rb2:isSelected())
     print("rb2 group:", rb2:getGroup())
     print("rb2 text:", rb2:getText())
 end
@@ -3463,15 +3008,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a scatter plot with data points
-    ---@type LScatterPlot
-    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300, title = "Height vs Weight" })
-    chart:addSeries("male", {
-        { x = 170, y = 70 }, { x = 180, y = 80 }, { x = 175, y = 75 }, { x = 185, y = 90 }
-    }, 0.2, 0.5, 1.0)
-    chart:addSeries("female", {
-        { x = 160, y = 55 }, { x = 165, y = 60 }, { x = 170, y = 65 }, { x = 155, y = 50 }
-    }, 1.0, 0.3, 0.6)
+    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300, title = "Height vs Weight" }); chart:addSeries("male", { { x = 170, y = 70 }, { x = 180, y = 80 }, { x = 175, y = 75 }, { x = 185, y = 90 } }, 0.2, 0.5, 1.0)
+    chart:addSeries("female", { { x = 160, y = 55 }, { x = 165, y = 60 }, { x = 170, y = 65 }, { x = 155, y = 50 } }, 1.0, 0.3, 0.6)
     chart:setXRange(150, 200)
     chart:setYRange(40, 100)
     print("scatter plot type:", chart:type())
@@ -3521,17 +3059,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LScrollPanel
-    local scroll = lurek.ui.newScrollPanel()
-    print("type = " .. scroll:type())
-    scroll:setContentSize(1200, 2000)
-    local cw, ch = scroll:getContentSize()
-    print("content size = " .. cw .. "x" .. ch)
-    scroll:setScrollPosition(0, 100)
-    local sx, sy = scroll:getScrollPosition()
-    print("scroll pos = " .. sx .. ", " .. sy)
-    local mx, my = scroll:getMaxScroll()
-    print("max scroll = " .. mx .. ", " .. my)
+    local scroll = lurek.ui.newScrollPanel(); print("type = " .. scroll:type())
+    scroll:setContentSize(1200, 2000); local cw, ch = scroll:getContentSize()
+    print("content size = " .. cw .. "x" .. ch); scroll:setScrollPosition(0, 100)
+    local sx, sy = scroll:getScrollPosition(); print("scroll pos = " .. sx .. ", " .. sy)
+    local mx, my = scroll:getMaxScroll(); print("max scroll = " .. mx .. ", " .. my)
 end
 ```
 
@@ -3553,23 +3085,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create horizontal and vertical separators
-    ---@type LSeparator
     local sep = lurek.ui.newSeparator(false)
     print("is vertical:", sep:isVertical())
-    print("thickness:", sep:getThickness())
     sep:setThickness(2)
     print("new thickness:", sep:getThickness())
-
-    -- Example usage for newSeparator.
-    -- create a vertical separator and toggle orientation
-    ---@type LSeparator
-    local sep = lurek.ui.newSeparator(true)
-    print("vertical:", sep:isVertical())
-    sep:setVertical(false)
-    print("after toggle:", sep:isVertical())
-    sep:setThickness(3)
-    print("thickness:", sep:getThickness())
 end
 ```
 
@@ -3591,7 +3110,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LSlider
     local slider = lurek.ui.newSlider(0, 100)
     print("type = " .. slider:type())
     print("min = " .. slider:getMin())
@@ -3618,7 +3136,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LSpinBox
     local spin = lurek.ui.newSpinBox(1, 99)
     print("type = " .. spin:type())
     print("value = " .. spin:getValue())
@@ -3645,20 +3162,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LSplitPanel
-    local split = lurek.ui.newSplitPanel("horizontal")
-    print("type = " .. split:type())
-    print("orientation = " .. split:getOrientation())
-    ---@type LPanel
-    local left = lurek.ui.newPanel()
-    ---@type LPanel
-    local right = lurek.ui.newPanel()
-    split:setFirstChild(left._idx)
-    split:setSecondChild(right._idx)
-    split:setSplitPosition(0.3)
-    print("split at " .. split:getSplitPosition())
-    split:setMinPanelSize(100)
-    print("min panel = " .. split:getMinPanelSize())
+    local split = lurek.ui.newSplitPanel("horizontal"); print("type = " .. split:type()); print("orientation = " .. split:getOrientation())
+    local left = lurek.ui.newPanel(); local right = lurek.ui.newPanel()
+    split:setFirstChild(left._idx); split:setSecondChild(right._idx)
+    split:setSplitPosition(0.3); print("split at " .. split:getSplitPosition())
+    split:setMinPanelSize(100); print("min panel = " .. split:getMinPanelSize())
 end
 ```
 
@@ -3680,29 +3188,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a status bar with multiple sections
-    ---@type LStatusBar
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 150)
-    sb:addSection("Line: 1, Col: 1", 120)
-    sb:addSection("UTF-8", 80)
     print("section count:", sb:getSectionCount())
     print("section 1:", sb:getSectionText(1))
-    print("section 2:", sb:getSectionText(2))
-
-    -- Example usage for newStatusBar.
-    -- update status bar sections dynamically
-    ---@type LStatusBar
-    local sb = lurek.ui.newStatusBar()
-    sb:addSection("Idle")
-    sb:addSection("0 errors")
-    sb:setSectionText(1, "Building...")
-    sb:setSectionText(2, "3 warnings")
-    print("updated section 1:", sb:getSectionText(1))
-    print("updated section 2:", sb:getSectionText(2))
-    sb:setSectionCount(3)
-    sb:setSectionText(3, "Branch: main")
-    print("section count after expand:", sb:getSectionCount())
 end
 ```
 
@@ -3774,7 +3263,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    ---@type LTextInput
     local input = lurek.ui.newTextInput()
     print("type = " .. input:type())
     print("text = '" .. input:getText() .. "'")
@@ -3801,16 +3289,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create and apply a custom theme
-    ---@type LTheme
-    local theme = lurek.ui.newTheme()
-    theme:setStyle("button", "normal", {
-        bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0,
-        fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0,
-    })
-    theme:setStyle("button", "hovered", {
-        bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0,
-    })
+    local theme = lurek.ui.newTheme(); theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
+    theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
     lurek.ui.setTheme(theme)
     print("theme active:", lurek.ui.getTheme())
     print("theme type:", theme:type())
@@ -3835,12 +3315,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a toast notification
-    ---@type LToast
-    local toast = lurek.ui.newToast("File saved!", 2.5)
-    print("message:", toast:getMessage())
-    print("duration:", toast:getDuration())
-    toast:setMessage("Upload complete")
+    local toast = lurek.ui.newToast("File saved!", 2.5); print("message:", toast:getMessage())
+    print("duration:", toast:getDuration()); toast:setMessage("Upload complete")
     toast:setDuration(4.0)
     print("updated message:", toast:getMessage())
     print("expired:", toast:isExpired())
@@ -3865,30 +3341,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a horizontal toolbar with buttons and separators
-    ---@type LToolbar
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
-    tb:addButton("load", "Load file")
-    tb:addSeparator()
-    tb:addButton("undo", "Undo last action")
-    tb:addSpacer()
-    tb:addButton("settings", "Open settings")
     print("orientation:", tb:getOrientation())
-
-    -- Example usage for newToolbar.
-    -- toggle toolbar buttons and check state
-    ---@type LToolbar
-    local tb = lurek.ui.newToolbar("vertical")
-    tb:setOrientation("vertical")
-    tb:addButton("bold", "Bold text")
-    tb:addButton("italic", "Italic text")
-    tb:setButtonToggled("bold", true)
-    print("bold toggled:", tb:isButtonToggled("bold"))
-    tb:setButtonEnabled("italic", false)
-    ---@type LToolbarGetButtonResult
-    local info = tb:getButton("bold")
-    print("bold info - enabled:", info.enabled, "toggled:", info.toggled)
 end
 ```
 
@@ -3910,17 +3365,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a tooltip panel attached to a button
-    ---@type LButton
-    local btn = lurek.ui.newButton("Hover me")
-    ---@type LTooltipPanel
-    local tip = lurek.ui.newTooltipPanel("Click to submit form")
-    tip:setDelay(0.5)
-    tip:setTarget(1)
-    print("tooltip text:", tip:getText())
-    print("delay:", tip:getDelay())
-    print("target:", tip:getTarget())
-    tip:setText("Updated tooltip text")
+    local btn = lurek.ui.newButton("Hover me"); local tip = lurek.ui.newTooltipPanel("Click to submit form")
+    tip:setDelay(0.5); tip:setTarget(1)
+    print("tooltip text:", tip:getText()); print("delay:", tip:getDelay())
+    print("target:", tip:getTarget()); tip:setText("Updated tooltip text")
     print("new text:", tip:getText())
 end
 ```
@@ -3943,33 +3391,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    -- create a tree view with nested nodes
-    ---@type LTreeView
     local tree = lurek.ui.newTreeView()
     local root = tree:addNode("Project")
-    local src = tree:addNode("src", root)
-    tree:addNode("main.lua", src)
-    tree:addNode("utils.lua", src)
-    local assets = tree:addNode("assets", root)
-    tree:addNode("sprites.png", assets)
+    tree:addNode("main.lua", root)
     print("total nodes:", tree:getNodeCount())
     print("root text:", tree:getNodeText(root))
-    print("src depth:", tree:getNodeDepth(src))
-
-    -- Example usage for newTreeView.
-    -- expand and collapse tree nodes
-    ---@type LTreeView
-    local tree = lurek.ui.newTreeView()
-    local folder = tree:addNode("Documents")
-    tree:addNode("readme.txt", folder)
-    tree:addNode("notes.md", folder)
-    tree:expandNode(folder)
-    print("expanded:", tree:isExpanded(folder))
-    tree:collapseNode(folder)
-    print("after collapse:", tree:isExpanded(folder))
-    tree:expandAll()
-    tree:setSelectedNode(folder)
-    print("selected:", tree:getSelectedNode())
 end
 ```
 
@@ -4029,8 +3455,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("Chapter 1")
+    local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
     local cnt = acc:getSectionCount()
     local title = acc:getSectionTitle(1)
@@ -4064,8 +3489,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("Chapter 1")
+    local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
     local cnt = acc:getSectionCount()
     local title = acc:getSectionTitle(1)
@@ -4101,8 +3525,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("Chapter 1")
+    local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
     local cnt = acc:getSectionCount()
     local title = acc:getSectionTitle(1)
@@ -4136,8 +3559,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("A")
+    local acc = lurek.ui.newAccordion(); acc:addSection("A")
     acc:setExclusive(true)
     local ex = acc:isExclusive()
     local expanded = acc:isSectionExpanded(1)
@@ -4173,8 +3595,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("A")
+    local acc = lurek.ui.newAccordion(); acc:addSection("A")
     acc:setExclusive(true)
     local ex = acc:isExclusive()
     local expanded = acc:isSectionExpanded(1)
@@ -4207,8 +3628,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("A")
+    local acc = lurek.ui.newAccordion(); acc:addSection("A")
     acc:setExclusive(true)
     local ex = acc:isExclusive()
     local expanded = acc:isSectionExpanded(1)
@@ -4244,10 +3664,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("Toggle me")
-    local newState = acc:toggleSection(1)
-    local badge = lurek.ui.newBadge(5)
+    local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
+    local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
     local count = badge:getCount()
     local disp = badge:getDisplayText()
     print("toggled:", newState, "badge count:", count, "display:", disp)
@@ -4286,8 +3704,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newCheckbox("old")
-    cb:setText("new label")
+    local cb = lurek.ui.newCheckbox("old"); cb:setText("new label")
     local chart = lurek.ui.newAreaChart({width = 200, height = 100})
     chart:setYMax(100)
     chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
@@ -4319,12 +3736,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local chart = lurek.ui.newAreaChart({width = 64, height = 64})
-    chart:setYMax(50)
-    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2)
-    local img = lurek.image.newImageData(64, 64)
-    chart:drawToImage(img)
-    local t = chart:type()
+    local chart = lurek.ui.newAreaChart({width = 64, height = 64}); chart:setYMax(50)
+    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2); local img = lurek.image.newImageData(64, 64)
+    chart:drawToImage(img); local t = chart:type()
     local ok = chart:typeOf("LAreaChart")
     print("drawToImage ok, type:", t, "typeOf:", ok)
 end
@@ -4354,8 +3768,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newCheckbox("old")
-    cb:setText("new label")
+    local cb = lurek.ui.newCheckbox("old"); cb:setText("new label")
     local chart = lurek.ui.newAreaChart({width = 200, height = 100})
     chart:setYMax(100)
     chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
@@ -4385,12 +3798,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local chart = lurek.ui.newAreaChart({width = 64, height = 64})
-    chart:setYMax(50)
-    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2)
-    local img = lurek.image.newImageData(64, 64)
-    chart:drawToImage(img)
-    local t = chart:type()
+    local chart = lurek.ui.newAreaChart({width = 64, height = 64}); chart:setYMax(50)
+    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2); local img = lurek.image.newImageData(64, 64)
+    chart:drawToImage(img); local t = chart:type()
     local ok = chart:typeOf("LAreaChart")
     print("drawToImage ok, type:", t, "typeOf:", ok)
 end
@@ -4423,12 +3833,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local chart = lurek.ui.newAreaChart({width = 64, height = 64})
-    chart:setYMax(50)
-    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2)
-    local img = lurek.image.newImageData(64, 64)
-    chart:drawToImage(img)
-    local t = chart:type()
+    local chart = lurek.ui.newAreaChart({width = 64, height = 64}); chart:setYMax(50)
+    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2); local img = lurek.image.newImageData(64, 64)
+    chart:drawToImage(img); local t = chart:type()
     local ok = chart:typeOf("LAreaChart")
     print("drawToImage ok, type:", t, "typeOf:", ok)
 end
@@ -4460,10 +3867,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("Toggle me")
-    local newState = acc:toggleSection(1)
-    local badge = lurek.ui.newBadge(5)
+    local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
+    local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
     local count = badge:getCount()
     local disp = badge:getDisplayText()
     print("toggled:", newState, "badge count:", count, "display:", disp)
@@ -4496,10 +3901,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion()
-    acc:addSection("Toggle me")
-    local newState = acc:toggleSection(1)
-    local badge = lurek.ui.newBadge(5)
+    local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
+    local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
     local count = badge:getCount()
     local disp = badge:getDisplayText()
     print("toggled:", newState, "badge count:", count, "display:", disp)
@@ -4531,8 +3934,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local badge = lurek.ui.newBadge(0)
-    badge:setCount(42)
+    local badge = lurek.ui.newBadge(0); badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
     local t = btn:getText()
     btn:setText("OK")
@@ -4566,12 +3968,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Q1", 0.2, 0.6, 1.0)
-    chart:addSeries("Q2", 1.0, 0.5, 0.1)
-    chart:addCategory("Jan", {30, 45})
-    chart:addCategory("Feb", {40, 35})
-    local img = lurek.image.newImageData(200, 100)
+    local chart = lurek.ui.newBarChart({width = 200, height = 100}); chart:addSeries("Q1", 0.2, 0.6, 1.0)
+    chart:addSeries("Q2", 1.0, 0.5, 0.1); chart:addCategory("Jan", {30, 45})
+    chart:addCategory("Feb", {40, 35}); local img = lurek.image.newImageData(200, 100)
     chart:drawToImage(img)
     print("barChart addSeries/addCategory/drawToImage ok")
 end
@@ -4607,12 +4006,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Q1", 0.2, 0.6, 1.0)
-    chart:addSeries("Q2", 1.0, 0.5, 0.1)
-    chart:addCategory("Jan", {30, 45})
-    chart:addCategory("Feb", {40, 35})
-    local img = lurek.image.newImageData(200, 100)
+    local chart = lurek.ui.newBarChart({width = 200, height = 100}); chart:addSeries("Q1", 0.2, 0.6, 1.0)
+    chart:addSeries("Q2", 1.0, 0.5, 0.1); chart:addCategory("Jan", {30, 45})
+    chart:addCategory("Feb", {40, 35}); local img = lurek.image.newImageData(200, 100)
     chart:drawToImage(img)
     print("barChart addSeries/addCategory/drawToImage ok")
 end
@@ -4642,12 +4038,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Q1", 0.2, 0.6, 1.0)
-    chart:addSeries("Q2", 1.0, 0.5, 0.1)
-    chart:addCategory("Jan", {30, 45})
-    chart:addCategory("Feb", {40, 35})
-    local img = lurek.image.newImageData(200, 100)
+    local chart = lurek.ui.newBarChart({width = 200, height = 100}); chart:addSeries("Q1", 0.2, 0.6, 1.0)
+    chart:addSeries("Q2", 1.0, 0.5, 0.1); chart:addCategory("Jan", {30, 45})
+    chart:addCategory("Feb", {40, 35}); local img = lurek.image.newImageData(200, 100)
     chart:drawToImage(img)
     print("barChart addSeries/addCategory/drawToImage ok")
 end
@@ -4744,8 +4137,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local badge = lurek.ui.newBadge(0)
-    badge:setCount(42)
+    local badge = lurek.ui.newBadge(0); badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
     local t = btn:getText()
     btn:setText("OK")
@@ -4778,8 +4170,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local badge = lurek.ui.newBadge(0)
-    badge:setCount(42)
+    local badge = lurek.ui.newBadge(0); badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
     local t = btn:getText()
     btn:setText("OK")
@@ -4913,8 +4304,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newCheckbox("old")
-    cb:setText("new label")
+    local cb = lurek.ui.newCheckbox("old"); cb:setText("new label")
     local chart = lurek.ui.newAreaChart({width = 200, height = 100})
     chart:setYMax(100)
     chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
@@ -4951,8 +4341,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(1.0, 0.5, 0.25, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
     local mode = cp:getColorMode()
     local showAlpha = cp:getShowAlpha()
@@ -4986,8 +4375,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(1.0, 0.5, 0.25, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
     local mode = cp:getColorMode()
     local showAlpha = cp:getShowAlpha()
@@ -5021,8 +4409,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(1.0, 0.5, 0.25, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
     local mode = cp:getColorMode()
     local showAlpha = cp:getShowAlpha()
@@ -5061,8 +4448,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(0.2, 0.8, 0.4, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
     cp:setOnChange(function(idx) print("color changed", idx) end)
     cp:setShowAlpha(true)
@@ -5095,8 +4481,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(0.2, 0.8, 0.4, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
     cp:setOnChange(function(idx) print("color changed", idx) end)
     cp:setShowAlpha(true)
@@ -5129,8 +4514,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setColor(0.2, 0.8, 0.4, 1.0)
+    local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
     cp:setOnChange(function(idx) print("color changed", idx) end)
     cp:setShowAlpha(true)
@@ -5163,12 +4547,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setShowAlpha(false)
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("Option A")
-    cb:addItem("Option B")
-    cb:addItem("Option C")
+    local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
+    local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
+    cb:addItem("Option B"); cb:addItem("Option C")
     cb:clearItems()
     print("setShowAlpha ok; combo items cleared")
 end
@@ -5199,12 +4580,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setShowAlpha(false)
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("Option A")
-    cb:addItem("Option B")
-    cb:addItem("Option C")
+    local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
+    local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
+    cb:addItem("Option B"); cb:addItem("Option C")
     cb:clearItems()
     print("setShowAlpha ok; combo items cleared")
 end
@@ -5233,12 +4611,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker()
-    cp:setShowAlpha(false)
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("Option A")
-    cb:addItem("Option B")
-    cb:addItem("Option C")
+    local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
+    local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
+    cb:addItem("Option B"); cb:addItem("Option C")
     cb:clearItems()
     print("setShowAlpha ok; combo items cleared")
 end
@@ -5272,14 +4647,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("First")
-    cb:addItem("Second")
-    cb:addItem("Third")
-    local cnt = cb:getItemCount()
-    local item = cb:getItem(2)
-    cb:setSelectedIndex(1)
-    local sel = cb:getSelectedIndex()
+    local cb = lurek.ui.newComboBox(); cb:addItem("First")
+    cb:addItem("Second"); cb:addItem("Third")
+    local cnt = cb:getItemCount(); local item = cb:getItem(2)
+    cb:setSelectedIndex(1); local sel = cb:getSelectedIndex()
     print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
 end
 ```
@@ -5310,14 +4681,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("First")
-    cb:addItem("Second")
-    cb:addItem("Third")
-    local cnt = cb:getItemCount()
-    local item = cb:getItem(2)
-    cb:setSelectedIndex(1)
-    local sel = cb:getSelectedIndex()
+    local cb = lurek.ui.newComboBox(); cb:addItem("First")
+    cb:addItem("Second"); cb:addItem("Third")
+    local cnt = cb:getItemCount(); local item = cb:getItem(2)
+    cb:setSelectedIndex(1); local sel = cb:getSelectedIndex()
     print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
 end
 ```
@@ -5348,14 +4715,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("First")
-    cb:addItem("Second")
-    cb:addItem("Third")
-    local cnt = cb:getItemCount()
-    local item = cb:getItem(2)
-    cb:setSelectedIndex(1)
-    local sel = cb:getSelectedIndex()
+    local cb = lurek.ui.newComboBox(); cb:addItem("First")
+    cb:addItem("Second"); cb:addItem("Third")
+    local cnt = cb:getItemCount(); local item = cb:getItem(2)
+    cb:setSelectedIndex(1); local sel = cb:getSelectedIndex()
     print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
 end
 ```
@@ -5386,10 +4749,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("Alpha")
-    cb:addItem("Beta")
-    cb:setSelectedIndex(2)
+    local cb = lurek.ui.newComboBox(); cb:addItem("Alpha")
+    cb:addItem("Beta"); cb:setSelectedIndex(2)
     local selItem = cb:getSelectedItem()
     cb:removeItem(1)
     print("getSelectedItem:", selItem, "removeItem ok")
@@ -5424,10 +4785,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("Alpha")
-    cb:addItem("Beta")
-    cb:setSelectedIndex(2)
+    local cb = lurek.ui.newComboBox(); cb:addItem("Alpha")
+    cb:addItem("Beta"); cb:setSelectedIndex(2)
     local selItem = cb:getSelectedItem()
     cb:removeItem(1)
     print("getSelectedItem:", selItem, "removeItem ok")
@@ -5459,10 +4818,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox()
-    cb:addItem("Alpha")
-    cb:addItem("Beta")
-    cb:setSelectedIndex(2)
+    local cb = lurek.ui.newComboBox(); cb:addItem("Alpha")
+    cb:addItem("Beta"); cb:setSelectedIndex(2)
     local selItem = cb:getSelectedItem()
     cb:removeItem(1)
     print("getSelectedItem:", selItem, "removeItem ok")
@@ -5499,8 +4856,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Info")
-    local btnIdx = dlg:addButton("OK")
+    local dlg = lurek.ui.newDialog("Info"); local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
     dlg:open()
     dlg:close()
@@ -5531,8 +4887,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Info")
-    local btnIdx = dlg:addButton("OK")
+    local dlg = lurek.ui.newDialog("Info"); local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
     dlg:open()
     dlg:close()
@@ -5566,8 +4921,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Info")
-    local btnIdx = dlg:addButton("OK")
+    local dlg = lurek.ui.newDialog("Info"); local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
     dlg:open()
     dlg:close()
@@ -5601,8 +4955,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("My Dialog")
-    local title = dlg:getTitle()
+    local dlg = lurek.ui.newDialog("My Dialog"); local title = dlg:getTitle()
     dlg:setModal(true)
     local modal = dlg:isModal()
     local open = dlg:isOpen()
@@ -5636,8 +4989,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("My Dialog")
-    local title = dlg:getTitle()
+    local dlg = lurek.ui.newDialog("My Dialog"); local title = dlg:getTitle()
     dlg:setModal(true)
     local modal = dlg:isModal()
     local open = dlg:isOpen()
@@ -5671,8 +5023,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("My Dialog")
-    local title = dlg:getTitle()
+    local dlg = lurek.ui.newDialog("My Dialog"); local title = dlg:getTitle()
     dlg:setModal(true)
     local modal = dlg:isModal()
     local open = dlg:isOpen()
@@ -5703,8 +5054,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Setup")
-    dlg:setModal(false)
+    local dlg = lurek.ui.newDialog("Setup"); dlg:setModal(false)
     dlg:setContent(nil)
     dlg:open()
     dlg:close()
@@ -5737,8 +5087,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Setup")
-    dlg:setModal(false)
+    local dlg = lurek.ui.newDialog("Setup"); dlg:setModal(false)
     dlg:setContent(nil)
     dlg:open()
     dlg:close()
@@ -5771,8 +5120,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Setup")
-    dlg:setModal(false)
+    local dlg = lurek.ui.newDialog("Setup"); dlg:setModal(false)
     dlg:setContent(nil)
     dlg:open()
     dlg:close()
@@ -5805,12 +5153,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Old")
-    dlg:setTitle("New Title")
+    local dlg = lurek.ui.newDialog("Old"); dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
     local dp = lurek.ui.newDockPanel()
     local btn = lurek.ui.newButton("Side")
-    -- Note: dock takes a widget index; using 1 as placeholder since it may vary
     print("setTitle/setOnClose ok; DockPanel created")
 end
 ```
@@ -5840,12 +5186,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Old")
-    dlg:setTitle("New Title")
+    local dlg = lurek.ui.newDialog("Old"); dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
     local dp = lurek.ui.newDockPanel()
     local btn = lurek.ui.newButton("Side")
-    -- Note: dock takes a widget index; using 1 as placeholder since it may vary
     print("setTitle/setOnClose ok; DockPanel created")
 end
 ```
@@ -5877,12 +5221,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Old")
-    dlg:setTitle("New Title")
+    local dlg = lurek.ui.newDialog("Old"); dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
     local dp = lurek.ui.newDockPanel()
     local btn = lurek.ui.newButton("Side")
-    -- Note: dock takes a widget index; using 1 as placeholder since it may vary
     print("setTitle/setOnClose ok; DockPanel created")
 end
 ```
@@ -6019,7 +5361,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
-    -- undock when empty just verifies the method exists
     dp:undock(0)
     local tbl = lurek.ui.newTable()
     print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
@@ -6055,7 +5396,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
-    -- undock when empty just verifies the method exists
     dp:undock(0)
     local tbl = lurek.ui.newTable()
     print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
@@ -6089,7 +5429,6 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
-    -- undock when empty just verifies the method exists
     dp:undock(0)
     local tbl = lurek.ui.newTable()
     print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
@@ -6126,10 +5465,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("Name", 100)
-    tbl:addColumn("Value", 80)
-    tbl:addRow({"Alice", "42"})
+    local tbl = lurek.ui.newTable(); tbl:addColumn("Name", 100)
+    tbl:addColumn("Value", 80); tbl:addRow({"Alice", "42"})
     tbl:addRow({"Bob", "99"})
     local cell = tbl:getCell(1, 1)
     print("addColumn/addRow/getCell ok, cell:", cell)
@@ -6162,14 +5499,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("Col1")
-    tbl:addColumn("Col2")
-    tbl:addRow({"A", "1"})
-    tbl:addRow({"B", "2"})
-    local cols = tbl:getColumnCount()
-    local rows = tbl:getRowCount()
-    local sel = tbl:getSelectedRow()
+    local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
+    tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
+    tbl:addRow({"B", "2"}); local cols = tbl:getColumnCount()
+    local rows = tbl:getRowCount(); local sel = tbl:getSelectedRow()
     print("cols:", cols, "rows:", rows, "selectedRow:", sel)
 end
 ```
@@ -6200,14 +5533,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("Col1")
-    tbl:addColumn("Col2")
-    tbl:addRow({"A", "1"})
-    tbl:addRow({"B", "2"})
-    local cols = tbl:getColumnCount()
-    local rows = tbl:getRowCount()
-    local sel = tbl:getSelectedRow()
+    local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
+    tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
+    tbl:addRow({"B", "2"}); local cols = tbl:getColumnCount()
+    local rows = tbl:getRowCount(); local sel = tbl:getSelectedRow()
     print("cols:", cols, "rows:", rows, "selectedRow:", sel)
 end
 ```
@@ -6238,14 +5567,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("Col1")
-    tbl:addColumn("Col2")
-    tbl:addRow({"A", "1"})
-    tbl:addRow({"B", "2"})
-    local cols = tbl:getColumnCount()
-    local rows = tbl:getRowCount()
-    local sel = tbl:getSelectedRow()
+    local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
+    tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
+    tbl:addRow({"B", "2"}); local cols = tbl:getColumnCount()
+    local rows = tbl:getRowCount(); local sel = tbl:getSelectedRow()
     print("cols:", cols, "rows:", rows, "selectedRow:", sel)
 end
 ```
@@ -6276,10 +5601,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("ID")
-    tbl:addRow({"1"})
-    tbl:setSortable(true)
+    local tbl = lurek.ui.newTable(); tbl:addColumn("ID")
+    tbl:addRow({"1"}); tbl:setSortable(true)
     tbl:setCell(1, 1, "changed")
     tbl:setOnSelect(function(idx) print("row selected", idx) end)
     print("isSortable/setCell/setOnSelect ok")
@@ -6315,10 +5638,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("ID")
-    tbl:addRow({"1"})
-    tbl:setSortable(true)
+    local tbl = lurek.ui.newTable(); tbl:addColumn("ID")
+    tbl:addRow({"1"}); tbl:setSortable(true)
     tbl:setCell(1, 1, "changed")
     tbl:setOnSelect(function(idx) print("row selected", idx) end)
     print("isSortable/setCell/setOnSelect ok")
@@ -6350,10 +5671,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("ID")
-    tbl:addRow({"1"})
-    tbl:setSortable(true)
+    local tbl = lurek.ui.newTable(); tbl:addColumn("ID")
+    tbl:addRow({"1"}); tbl:setSortable(true)
     tbl:setCell(1, 1, "changed")
     tbl:setOnSelect(function(idx) print("row selected", idx) end)
     print("isSortable/setCell/setOnSelect ok")
@@ -6385,14 +5704,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("X")
-    tbl:addRow({"row1"})
-    tbl:setSelectedRow(1)
-    local sel = tbl:getSelectedRow()
-    tbl:setSortable(false)
-    local win = lurek.ui.newWindow("My Window")
-    local title = win:getTitle()
+    local tbl = lurek.ui.newTable(); tbl:addColumn("X")
+    tbl:addRow({"row1"}); tbl:setSelectedRow(1)
+    local sel = tbl:getSelectedRow(); tbl:setSortable(false)
+    local win = lurek.ui.newWindow("My Window"); local title = win:getTitle()
     print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 ```
@@ -6422,14 +5737,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("X")
-    tbl:addRow({"row1"})
-    tbl:setSelectedRow(1)
-    local sel = tbl:getSelectedRow()
-    tbl:setSortable(false)
-    local win = lurek.ui.newWindow("My Window")
-    local title = win:getTitle()
+    local tbl = lurek.ui.newTable(); tbl:addColumn("X")
+    tbl:addRow({"row1"}); tbl:setSelectedRow(1)
+    local sel = tbl:getSelectedRow(); tbl:setSortable(false)
+    local win = lurek.ui.newWindow("My Window"); local title = win:getTitle()
     print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 ```
@@ -6460,14 +5771,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tbl = lurek.ui.newTable()
-    tbl:addColumn("X")
-    tbl:addRow({"row1"})
-    tbl:setSelectedRow(1)
-    local sel = tbl:getSelectedRow()
-    tbl:setSortable(false)
-    local win = lurek.ui.newWindow("My Window")
-    local title = win:getTitle()
+    local tbl = lurek.ui.newTable(); tbl:addColumn("X")
+    tbl:addRow({"row1"}); tbl:setSelectedRow(1)
+    local sel = tbl:getSelectedRow(); tbl:setSortable(false)
+    local win = lurek.ui.newWindow("My Window"); local title = win:getTitle()
     print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 ```
@@ -6698,8 +6005,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local win = lurek.ui.newWindow("Old")
-    win:setResizable(false)
+    local win = lurek.ui.newWindow("Old"); win:setResizable(false)
     win:setTitle("New Title")
     local iw = lurek.ui.newImageWidget()
     local mode = iw:getScaleMode()
@@ -6732,8 +6038,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local win = lurek.ui.newWindow("Old")
-    win:setResizable(false)
+    local win = lurek.ui.newWindow("Old"); win:setResizable(false)
     win:setTitle("New Title")
     local iw = lurek.ui.newImageWidget()
     local mode = iw:getScaleMode()
@@ -6767,8 +6072,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local win = lurek.ui.newWindow("Old")
-    win:setResizable(false)
+    local win = lurek.ui.newWindow("Old"); win:setResizable(false)
     win:setTitle("New Title")
     local iw = lurek.ui.newImageWidget()
     local mode = iw:getScaleMode()
@@ -7312,10 +6616,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("horizontal")
-    layout:setWrap(true)
-    local lc = lurek.ui.newLineChart({width = 200, height = 100})
-    lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
+    local layout = lurek.ui.newLayout("horizontal"); layout:setWrap(true)
+    local lc = lurek.ui.newLineChart({width = 200, height = 100}); lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
     local img = lurek.image.newImageData(200, 100)
     lc:drawToImage(img)
     print("setWrap ok; addSeries/drawToImage ok")
@@ -7354,10 +6656,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("horizontal")
-    layout:setWrap(true)
-    local lc = lurek.ui.newLineChart({width = 200, height = 100})
-    lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
+    local layout = lurek.ui.newLayout("horizontal"); layout:setWrap(true)
+    local lc = lurek.ui.newLineChart({width = 200, height = 100}); lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
     local img = lurek.image.newImageData(200, 100)
     lc:drawToImage(img)
     print("setWrap ok; addSeries/drawToImage ok")
@@ -7388,10 +6688,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("horizontal")
-    layout:setWrap(true)
-    local lc = lurek.ui.newLineChart({width = 200, height = 100})
-    lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
+    local layout = lurek.ui.newLayout("horizontal"); layout:setWrap(true)
+    local lc = lurek.ui.newLineChart({width = 200, height = 100}); lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
     local img = lurek.image.newImageData(200, 100)
     lc:drawToImage(img)
     print("setWrap ok; addSeries/drawToImage ok")
@@ -7422,8 +6720,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lc = lurek.ui.newLineChart({width = 150, height = 80})
-    lc:setXMax(100)
+    local lc = lurek.ui.newLineChart({width = 150, height = 80}); lc:setXMax(100)
     lc:setYMax(50)
     lc:addSeries("data", {{0,0},{100,50}}, 1.0, 0.2, 0.2)
     local t = lc:type()
@@ -7455,8 +6752,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lc = lurek.ui.newLineChart({width = 150, height = 80})
-    lc:setXMax(100)
+    local lc = lurek.ui.newLineChart({width = 150, height = 80}); lc:setXMax(100)
     lc:setYMax(50)
     lc:addSeries("data", {{0,0},{100,50}}, 1.0, 0.2, 0.2)
     local t = lc:type()
@@ -7486,8 +6782,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lc = lurek.ui.newLineChart({width = 150, height = 80})
-    lc:setXMax(100)
+    local lc = lurek.ui.newLineChart({width = 150, height = 80}); lc:setXMax(100)
     lc:setYMax(50)
     lc:addSeries("data", {{0,0},{100,50}}, 1.0, 0.2, 0.2)
     local t = lc:type()
@@ -7554,10 +6849,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:addItem("Apple")
-    lb:addItem("Banana")
-    lb:addItem("Cherry")
+    local lb = lurek.ui.newList(); lb:addItem("Apple")
+    lb:addItem("Banana"); lb:addItem("Cherry")
     local item = lb:getItem(2)
     lb:clearItems()
     print("addItem/clearItems/getItem ok, item:", item)
@@ -7587,10 +6880,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:addItem("Apple")
-    lb:addItem("Banana")
-    lb:addItem("Cherry")
+    local lb = lurek.ui.newList(); lb:addItem("Apple")
+    lb:addItem("Banana"); lb:addItem("Cherry")
     local item = lb:getItem(2)
     lb:clearItems()
     print("addItem/clearItems/getItem ok, item:", item)
@@ -7625,10 +6916,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:addItem("Apple")
-    lb:addItem("Banana")
-    lb:addItem("Cherry")
+    local lb = lurek.ui.newList(); lb:addItem("Apple")
+    lb:addItem("Banana"); lb:addItem("Cherry")
     local item = lb:getItem(2)
     lb:clearItems()
     print("addItem/clearItems/getItem ok, item:", item)
@@ -7661,14 +6950,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:addItem("X")
-    lb:addItem("Y")
-    lb:addItem("Z")
-    local cnt = lb:getItemCount()
-    lb:setSelectedIndex(2)
-    local sel = lb:getSelectedIndex()
-    lb:removeItem(1)
+    local lb = lurek.ui.newList(); lb:addItem("X")
+    lb:addItem("Y"); lb:addItem("Z")
+    local cnt = lb:getItemCount(); lb:setSelectedIndex(2)
+    local sel = lb:getSelectedIndex(); lb:removeItem(1)
     print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
 end
 ```
@@ -7699,14 +6984,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:addItem("X")
-    lb:addItem("Y")
-    lb:addItem("Z")
-    local cnt = lb:getItemCount()
-    lb:setSelectedIndex(2)
-    local sel = lb:getSelectedIndex()
-    lb:removeItem(1)
+    local lb = lurek.ui.newList(); lb:addItem("X")
+    lb:addItem("Y"); lb:addItem("Z")
+    local cnt = lb:getItemCount(); lb:setSelectedIndex(2)
+    local sel = lb:getSelectedIndex(); lb:removeItem(1)
     print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
 end
 ```
@@ -7736,14 +7017,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:addItem("X")
-    lb:addItem("Y")
-    lb:addItem("Z")
-    local cnt = lb:getItemCount()
-    lb:setSelectedIndex(2)
-    local sel = lb:getSelectedIndex()
-    lb:removeItem(1)
+    local lb = lurek.ui.newList(); lb:addItem("X")
+    lb:addItem("Y"); lb:addItem("Z")
+    local cnt = lb:getItemCount(); lb:setSelectedIndex(2)
+    local sel = lb:getSelectedIndex(); lb:removeItem(1)
     print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
 end
 ```
@@ -7773,12 +7050,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:setItemHeight(20)
-    lb:addItem("Item")
-    lb:setSelectedIndex(1)
-    local mb = lurek.ui.newMenuBar()
-    local mi = lurek.ui.newMenuItem("File")
+    local lb = lurek.ui.newList(); lb:setItemHeight(20)
+    lb:addItem("Item"); lb:setSelectedIndex(1)
+    local mb = lurek.ui.newMenuBar(); local mi = lurek.ui.newMenuItem("File")
     local idx = mb:addMenu(mi._idx)
     print("setItemHeight ok; addMenu idx:", idx)
 end
@@ -7809,12 +7083,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:setItemHeight(20)
-    lb:addItem("Item")
-    lb:setSelectedIndex(1)
-    local mb = lurek.ui.newMenuBar()
-    local mi = lurek.ui.newMenuItem("File")
+    local lb = lurek.ui.newList(); lb:setItemHeight(20)
+    lb:addItem("Item"); lb:setSelectedIndex(1)
+    local mb = lurek.ui.newMenuBar(); local mi = lurek.ui.newMenuItem("File")
     local idx = mb:addMenu(mi._idx)
     print("setItemHeight ok; addMenu idx:", idx)
 end
@@ -7845,12 +7116,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local lb = lurek.ui.newList()
-    lb:setItemHeight(20)
-    lb:addItem("Item")
-    lb:setSelectedIndex(1)
-    local mb = lurek.ui.newMenuBar()
-    local mi = lurek.ui.newMenuItem("File")
+    local lb = lurek.ui.newList(); lb:setItemHeight(20)
+    lb:addItem("Item"); lb:setSelectedIndex(1)
+    local mb = lurek.ui.newMenuBar(); local mi = lurek.ui.newMenuItem("File")
     local idx = mb:addMenu(mi._idx)
     print("setItemHeight ok; addMenu idx:", idx)
 end
@@ -7882,14 +7150,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mb = lurek.ui.newMenuBar()
-    local mi1 = lurek.ui.newMenuItem("Edit")
-    local mi2 = lurek.ui.newMenuItem("View")
-    mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx)
-    local cnt = mb:getMenuCount()
-    local menus = mb:getMenus()
-    mb:removeMenu(1)
+    local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
+    local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
+    mb:addMenu(mi2._idx); local cnt = mb:getMenuCount()
+    local menus = mb:getMenus(); mb:removeMenu(1)
     print("menuCount:", cnt, "getMenus ok; removeMenu ok")
 end
 ```
@@ -7920,14 +7184,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mb = lurek.ui.newMenuBar()
-    local mi1 = lurek.ui.newMenuItem("Edit")
-    local mi2 = lurek.ui.newMenuItem("View")
-    mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx)
-    local cnt = mb:getMenuCount()
-    local menus = mb:getMenus()
-    mb:removeMenu(1)
+    local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
+    local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
+    mb:addMenu(mi2._idx); local cnt = mb:getMenuCount()
+    local menus = mb:getMenus(); mb:removeMenu(1)
     print("menuCount:", cnt, "getMenus ok; removeMenu ok")
 end
 ```
@@ -7960,14 +7220,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mb = lurek.ui.newMenuBar()
-    local mi1 = lurek.ui.newMenuItem("Edit")
-    local mi2 = lurek.ui.newMenuItem("View")
-    mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx)
-    local cnt = mb:getMenuCount()
-    local menus = mb:getMenus()
-    mb:removeMenu(1)
+    local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
+    local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
+    mb:addMenu(mi2._idx); local cnt = mb:getMenuCount()
+    local menus = mb:getMenus(); mb:removeMenu(1)
     print("menuCount:", cnt, "getMenus ok; removeMenu ok")
 end
 ```
@@ -7997,10 +7253,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Tools")
-    local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx)
-    local subs = mi:getSubItems()
+    local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
+    mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
     print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
@@ -8033,10 +7287,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Tools")
-    local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx)
-    local subs = mi:getSubItems()
+    local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
+    mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
     print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
@@ -8069,10 +7321,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Tools")
-    local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx)
-    local subs = mi:getSubItems()
+    local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
+    mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
     print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
@@ -8105,8 +7355,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Enable")
-    local t = mi:getText()
+    local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
     mi:setChecked(true)
     local checked = mi:isChecked()
     mi:setChecked(false)
@@ -8140,8 +7389,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Enable")
-    local t = mi:getText()
+    local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
     mi:setChecked(true)
     local checked = mi:isChecked()
     mi:setChecked(false)
@@ -8174,8 +7422,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Enable")
-    local t = mi:getText()
+    local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
     mi:setChecked(true)
     local checked = mi:isChecked()
     mi:setChecked(false)
@@ -8309,10 +7556,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(64, 64)
-    local w, h = np:getImageDimensions()
-    np:setInsets(8, 8, 8, 8)
+    local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
+    local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
     local slices = np:getSlices()
     print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
@@ -8348,10 +7593,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(64, 64)
-    local w, h = np:getImageDimensions()
-    np:setInsets(8, 8, 8, 8)
+    local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
+    local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
     local slices = np:getSlices()
     print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
@@ -8384,10 +7627,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(64, 64)
-    local w, h = np:getImageDimensions()
-    np:setInsets(8, 8, 8, 8)
+    local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
+    local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
     local l, t, r, b = np:getInsets()
     local slices = np:getSlices()
     print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
@@ -8421,12 +7662,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(32, 32)
-    np:setInsets(4, 4, 4, 4)
-    local l, t, r, b = np:getInsets()
-    local panel = lurek.ui.newPanel()
-    panel:setTitle("My Panel")
+    local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
+    np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
+    local panel = lurek.ui.newPanel(); panel:setTitle("My Panel")
     local title = panel:getTitle()
     print("setInsets ok; panel title:", title)
 end
@@ -8463,12 +7701,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(32, 32)
-    np:setInsets(4, 4, 4, 4)
-    local l, t, r, b = np:getInsets()
-    local panel = lurek.ui.newPanel()
-    panel:setTitle("My Panel")
+    local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
+    np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
+    local panel = lurek.ui.newPanel(); panel:setTitle("My Panel")
     local title = panel:getTitle()
     print("setInsets ok; panel title:", title)
 end
@@ -8500,12 +7735,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch()
-    np:setImageDimensions(32, 32)
-    np:setInsets(4, 4, 4, 4)
-    local l, t, r, b = np:getInsets()
-    local panel = lurek.ui.newPanel()
-    panel:setTitle("My Panel")
+    local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
+    np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
+    local panel = lurek.ui.newPanel(); panel:setTitle("My Panel")
     local title = panel:getTitle()
     print("setInsets ok; panel title:", title)
 end
@@ -8536,12 +7768,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local panel = lurek.ui.newPanel()
-    panel:setScrollable(true)
-    panel:setTitle("Data")
-    local pc = lurek.ui.newPieChart({width = 128, height = 128})
-    pc:addSegment("A", 30, 0.9, 0.2, 0.2)
-    pc:addSegment("B", 50, 0.2, 0.9, 0.2)
+    local panel = lurek.ui.newPanel(); panel:setScrollable(true)
+    panel:setTitle("Data"); local pc = lurek.ui.newPieChart({width = 128, height = 128})
+    pc:addSegment("A", 30, 0.9, 0.2, 0.2); pc:addSegment("B", 50, 0.2, 0.9, 0.2)
     pc:addSegment("C", 20, 0.2, 0.2, 0.9)
     print("panel scrollable ok; pie segments added")
 end
@@ -8572,12 +7801,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local panel = lurek.ui.newPanel()
-    panel:setScrollable(true)
-    panel:setTitle("Data")
-    local pc = lurek.ui.newPieChart({width = 128, height = 128})
-    pc:addSegment("A", 30, 0.9, 0.2, 0.2)
-    pc:addSegment("B", 50, 0.2, 0.9, 0.2)
+    local panel = lurek.ui.newPanel(); panel:setScrollable(true)
+    panel:setTitle("Data"); local pc = lurek.ui.newPieChart({width = 128, height = 128})
+    pc:addSegment("A", 30, 0.9, 0.2, 0.2); pc:addSegment("B", 50, 0.2, 0.9, 0.2)
     pc:addSegment("C", 20, 0.2, 0.2, 0.9)
     print("panel scrollable ok; pie segments added")
 end
@@ -8615,12 +7841,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local panel = lurek.ui.newPanel()
-    panel:setScrollable(true)
-    panel:setTitle("Data")
-    local pc = lurek.ui.newPieChart({width = 128, height = 128})
-    pc:addSegment("A", 30, 0.9, 0.2, 0.2)
-    pc:addSegment("B", 50, 0.2, 0.9, 0.2)
+    local panel = lurek.ui.newPanel(); panel:setScrollable(true)
+    panel:setTitle("Data"); local pc = lurek.ui.newPieChart({width = 128, height = 128})
+    pc:addSegment("A", 30, 0.9, 0.2, 0.2); pc:addSegment("B", 50, 0.2, 0.9, 0.2)
     pc:addSegment("C", 20, 0.2, 0.2, 0.9)
     print("panel scrollable ok; pie segments added")
 end
@@ -8650,12 +7873,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pc = lurek.ui.newPieChart({width = 64, height = 64})
-    pc:addSegment("X", 60, 1.0, 0.5, 0.1)
-    pc:addSegment("Y", 40, 0.1, 0.5, 1.0)
-    local img = lurek.image.newImageData(64, 64)
-    pc:drawToImage(img)
-    local t = pc:type()
+    local pc = lurek.ui.newPieChart({width = 64, height = 64}); pc:addSegment("X", 60, 1.0, 0.5, 0.1)
+    pc:addSegment("Y", 40, 0.1, 0.5, 1.0); local img = lurek.image.newImageData(64, 64)
+    pc:drawToImage(img); local t = pc:type()
     local ok = pc:typeOf("LPieChart")
     print("drawToImage ok, type:", t, "typeOf:", ok)
 end
@@ -8683,12 +7903,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pc = lurek.ui.newPieChart({width = 64, height = 64})
-    pc:addSegment("X", 60, 1.0, 0.5, 0.1)
-    pc:addSegment("Y", 40, 0.1, 0.5, 1.0)
-    local img = lurek.image.newImageData(64, 64)
-    pc:drawToImage(img)
-    local t = pc:type()
+    local pc = lurek.ui.newPieChart({width = 64, height = 64}); pc:addSegment("X", 60, 1.0, 0.5, 0.1)
+    pc:addSegment("Y", 40, 0.1, 0.5, 1.0); local img = lurek.image.newImageData(64, 64)
+    pc:drawToImage(img); local t = pc:type()
     local ok = pc:typeOf("LPieChart")
     print("drawToImage ok, type:", t, "typeOf:", ok)
 end
@@ -8721,12 +7938,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pc = lurek.ui.newPieChart({width = 64, height = 64})
-    pc:addSegment("X", 60, 1.0, 0.5, 0.1)
-    pc:addSegment("Y", 40, 0.1, 0.5, 1.0)
-    local img = lurek.image.newImageData(64, 64)
-    pc:drawToImage(img)
-    local t = pc:type()
+    local pc = lurek.ui.newPieChart({width = 64, height = 64}); pc:addSegment("X", 60, 1.0, 0.5, 0.1)
+    pc:addSegment("Y", 40, 0.1, 0.5, 1.0); local img = lurek.image.newImageData(64, 64)
+    pc:drawToImage(img); local t = pc:type()
     local ok = pc:typeOf("LPieChart")
     print("drawToImage ok, type:", t, "typeOf:", ok)
 end
@@ -8758,8 +7972,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 100)
-    local mn = pb:getMin()
+    local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
     local mx = pb:getMax()
     pb:setValue(75)
     local prog = pb:getProgress()
@@ -8793,8 +8006,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 100)
-    local mn = pb:getMin()
+    local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
     local mx = pb:getMax()
     pb:setValue(75)
     local prog = pb:getProgress()
@@ -8828,8 +8040,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 100)
-    local mn = pb:getMin()
+    local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
     local mx = pb:getMax()
     pb:setValue(75)
     local prog = pb:getProgress()
@@ -8863,8 +8074,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 200)
-    pb:setValue(100)
+    local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
     local v = pb:getValue()
     pb:setRange(10, 90)
     pb:setValue(50)
@@ -8899,8 +8109,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 200)
-    pb:setValue(100)
+    local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
     local v = pb:getValue()
     pb:setRange(10, 90)
     pb:setValue(50)
@@ -8933,8 +8142,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 200)
-    pb:setValue(100)
+    local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
     local v = pb:getValue()
     pb:setRange(10, 90)
     pb:setValue(50)
@@ -9069,8 +8277,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local rb = lurek.ui.newRadioButton("B", "g1")
-    rb:setGroup("g2")
+    local rb = lurek.ui.newRadioButton("B", "g1"); rb:setGroup("g2")
     rb:setSelected(true)
     rb:setOnChange(function(idx) print("radio changed", idx) end)
     rb:setText("New B")
@@ -9103,8 +8310,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local rb = lurek.ui.newRadioButton("B", "g1")
-    rb:setGroup("g2")
+    local rb = lurek.ui.newRadioButton("B", "g1"); rb:setGroup("g2")
     rb:setSelected(true)
     rb:setOnChange(function(idx) print("radio changed", idx) end)
     rb:setText("New B")
@@ -9137,8 +8343,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local rb = lurek.ui.newRadioButton("B", "g1")
-    rb:setGroup("g2")
+    local rb = lurek.ui.newRadioButton("B", "g1"); rb:setGroup("g2")
     rb:setSelected(true)
     rb:setOnChange(function(idx) print("radio changed", idx) end)
     rb:setText("New B")
@@ -9209,10 +8414,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScatterPlot({width = 200, height = 150})
-    sp:setXRange(0, 100)
-    sp:setYRange(0, 100)
-    sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
+    local sp = lurek.ui.newScatterPlot({width = 200, height = 150}); sp:setXRange(0, 100)
+    sp:setYRange(0, 100); sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
     local img = lurek.image.newImageData(200, 150)
     sp:drawToImage(img)
     print("ScatterPlot addSeries/setXRange/drawToImage ok")
@@ -9243,10 +8446,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScatterPlot({width = 200, height = 150})
-    sp:setXRange(0, 100)
-    sp:setYRange(0, 100)
-    sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
+    local sp = lurek.ui.newScatterPlot({width = 200, height = 150}); sp:setXRange(0, 100)
+    sp:setYRange(0, 100); sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
     local img = lurek.image.newImageData(200, 150)
     sp:drawToImage(img)
     print("ScatterPlot addSeries/setXRange/drawToImage ok")
@@ -9279,10 +8480,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScatterPlot({width = 200, height = 150})
-    sp:setXRange(0, 100)
-    sp:setYRange(0, 100)
-    sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
+    local sp = lurek.ui.newScatterPlot({width = 200, height = 150}); sp:setXRange(0, 100)
+    sp:setYRange(0, 100); sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
     local img = lurek.image.newImageData(200, 150)
     sp:drawToImage(img)
     print("ScatterPlot addSeries/setXRange/drawToImage ok")
@@ -9315,8 +8514,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScatterPlot({width = 100, height = 80})
-    sp:setXRange(0, 50)
+    local sp = lurek.ui.newScatterPlot({width = 100, height = 80}); sp:setXRange(0, 50)
     sp:setYRange(0, 50)
     local t = sp:type()
     local ok = sp:typeOf("LScatterPlot")
@@ -9346,8 +8544,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScatterPlot({width = 100, height = 80})
-    sp:setXRange(0, 50)
+    local sp = lurek.ui.newScatterPlot({width = 100, height = 80}); sp:setXRange(0, 50)
     sp:setYRange(0, 50)
     local t = sp:type()
     local ok = sp:typeOf("LScatterPlot")
@@ -9382,8 +8579,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScatterPlot({width = 100, height = 80})
-    sp:setXRange(0, 50)
+    local sp = lurek.ui.newScatterPlot({width = 100, height = 80}); sp:setXRange(0, 50)
     sp:setYRange(0, 50)
     local t = sp:type()
     local ok = sp:typeOf("LScatterPlot")
@@ -9519,8 +8715,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newScrollBar(false)
-    local vert = sb:isVertical()
+    local sb = lurek.ui.newScrollBar(false); local vert = sb:isVertical()
     sb:setContentSize(500)
     sb:setOnChange(function(val) print("scroll:", val) end)
     local cs = sb:getContentSize()
@@ -9553,8 +8748,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newScrollBar(false)
-    local vert = sb:isVertical()
+    local sb = lurek.ui.newScrollBar(false); local vert = sb:isVertical()
     sb:setContentSize(500)
     sb:setOnChange(function(val) print("scroll:", val) end)
     local cs = sb:getContentSize()
@@ -9587,8 +8781,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newScrollBar(false)
-    local vert = sb:isVertical()
+    local sb = lurek.ui.newScrollBar(false); local vert = sb:isVertical()
     sb:setContentSize(500)
     sb:setOnChange(function(val) print("scroll:", val) end)
     local cs = sb:getContentSize()
@@ -9621,12 +8814,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newScrollBar(true)
-    sb:setContentSize(800)
-    sb:setViewSize(200)
-    sb:setScrollPosition(100)
-    local pos = sb:getScrollPosition()
-    local sp = lurek.ui.newScrollPanel()
+    local sb = lurek.ui.newScrollBar(true); sb:setContentSize(800)
+    sb:setViewSize(200); sb:setScrollPosition(100)
+    local pos = sb:getScrollPosition(); local sp = lurek.ui.newScrollPanel()
     local cw, ch = sp:getContentSize()
     print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
@@ -9657,12 +8847,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newScrollBar(true)
-    sb:setContentSize(800)
-    sb:setViewSize(200)
-    sb:setScrollPosition(100)
-    local pos = sb:getScrollPosition()
-    local sp = lurek.ui.newScrollPanel()
+    local sb = lurek.ui.newScrollBar(true); sb:setContentSize(800)
+    sb:setViewSize(200); sb:setScrollPosition(100)
+    local pos = sb:getScrollPosition(); local sp = lurek.ui.newScrollPanel()
     local cw, ch = sp:getContentSize()
     print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
@@ -9695,12 +8882,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newScrollBar(true)
-    sb:setContentSize(800)
-    sb:setViewSize(200)
-    sb:setScrollPosition(100)
-    local pos = sb:getScrollPosition()
-    local sp = lurek.ui.newScrollPanel()
+    local sb = lurek.ui.newScrollBar(true); sb:setContentSize(800)
+    sb:setViewSize(200); sb:setScrollPosition(100)
+    local pos = sb:getScrollPosition(); local sp = lurek.ui.newScrollPanel()
     local cw, ch = sp:getContentSize()
     print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
@@ -9837,12 +9021,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScrollPanel()
-    sp:setContentSize(800, 600)
-    local cw, ch = sp:getContentSize()
-    sp:setScrollPosition(50, 100)
-    local px, py = sp:getScrollPosition()
-    sp:setScrollSpeed(3.0)
+    local sp = lurek.ui.newScrollPanel(); sp:setContentSize(800, 600)
+    local cw, ch = sp:getContentSize(); sp:setScrollPosition(50, 100)
+    local px, py = sp:getScrollPosition(); sp:setScrollSpeed(3.0)
     local speed = sp:getScrollSpeed()
     print("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
 end
@@ -9875,12 +9056,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScrollPanel()
-    sp:setContentSize(800, 600)
-    local cw, ch = sp:getContentSize()
-    sp:setScrollPosition(50, 100)
-    local px, py = sp:getScrollPosition()
-    sp:setScrollSpeed(3.0)
+    local sp = lurek.ui.newScrollPanel(); sp:setContentSize(800, 600)
+    local cw, ch = sp:getContentSize(); sp:setScrollPosition(50, 100)
+    local px, py = sp:getScrollPosition(); sp:setScrollSpeed(3.0)
     local speed = sp:getScrollSpeed()
     print("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
 end
@@ -9911,12 +9089,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newScrollPanel()
-    sp:setContentSize(800, 600)
-    local cw, ch = sp:getContentSize()
-    sp:setScrollPosition(50, 100)
-    local px, py = sp:getScrollPosition()
-    sp:setScrollSpeed(3.0)
+    local sp = lurek.ui.newScrollPanel(); sp:setContentSize(800, 600)
+    local cw, ch = sp:getContentSize(); sp:setScrollPosition(50, 100)
+    local px, py = sp:getScrollPosition(); sp:setScrollSpeed(3.0)
     local speed = sp:getScrollSpeed()
     print("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
 end
@@ -9948,12 +9123,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sep = lurek.ui.newSeparator(true)
-    local vert = sep:isVertical()
+    local sep = lurek.ui.newSeparator(true); local vert = sep:isVertical()
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    print("isVertical:", vert, "thickness:", thick, "→", t2)
+    print("isVertical:", vert, "thickness:", thick, "â†’", t2)
 end
 ```
 
@@ -9983,12 +9157,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sep = lurek.ui.newSeparator(true)
-    local vert = sep:isVertical()
+    local sep = lurek.ui.newSeparator(true); local vert = sep:isVertical()
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    print("isVertical:", vert, "thickness:", thick, "→", t2)
+    print("isVertical:", vert, "thickness:", thick, "â†’", t2)
 end
 ```
 
@@ -10017,12 +9190,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sep = lurek.ui.newSeparator(true)
-    local vert = sep:isVertical()
+    local sep = lurek.ui.newSeparator(true); local vert = sep:isVertical()
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    print("isVertical:", vert, "thickness:", thick, "→", t2)
+    print("isVertical:", vert, "thickness:", thick, "â†’", t2)
 end
 ```
 
@@ -10051,8 +9223,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sep = lurek.ui.newSeparator(false)
-    sep:setVertical(true)
+    local sep = lurek.ui.newSeparator(false); sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
     local mn = sl:getMin()
     local mx = sl:getMax()
@@ -10086,8 +9257,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sep = lurek.ui.newSeparator(false)
-    sep:setVertical(true)
+    local sep = lurek.ui.newSeparator(false); sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
     local mn = sl:getMin()
     local mx = sl:getMax()
@@ -10121,8 +9291,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sep = lurek.ui.newSeparator(false)
-    sep:setVertical(true)
+    local sep = lurek.ui.newSeparator(false); sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
     local mn = sl:getMin()
     local mx = sl:getMax()
@@ -10156,10 +9325,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 50)
-    sl:setRange(0, 100)
-    local mx = sl:getMax()
-    sl:setStep(5)
+    local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
+    local mx = sl:getMax(); sl:setStep(5)
     sl:setValue(75)
     local v = sl:getValue()
     print("setRange max:", mx, "getValue:", v)
@@ -10193,10 +9360,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 50)
-    sl:setRange(0, 100)
-    local mx = sl:getMax()
-    sl:setStep(5)
+    local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
+    local mx = sl:getMax(); sl:setStep(5)
     sl:setValue(75)
     local v = sl:getValue()
     print("setRange max:", mx, "getValue:", v)
@@ -10228,10 +9393,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 50)
-    sl:setRange(0, 100)
-    local mx = sl:getMax()
-    sl:setStep(5)
+    local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
+    local mx = sl:getMax(); sl:setStep(5)
     sl:setValue(75)
     local v = sl:getValue()
     print("setRange max:", mx, "getValue:", v)
@@ -10263,12 +9426,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 10)
-    sl:setValue(7)
-    local v = sl:getValue()
-    local sb = lurek.ui.newSpinBox(0, 10)
-    sb:setValue(5)
-    sb:decrement()
+    local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
+    local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
+    sb:setValue(5); sb:decrement()
     local sv = sb:getValue()
     print("slider value:", v, "spinbox after decrement:", sv)
 end
@@ -10297,12 +9457,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 10)
-    sl:setValue(7)
-    local v = sl:getValue()
-    local sb = lurek.ui.newSpinBox(0, 10)
-    sb:setValue(5)
-    sb:decrement()
+    local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
+    local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
+    sb:setValue(5); sb:decrement()
     local sv = sb:getValue()
     print("slider value:", v, "spinbox after decrement:", sv)
 end
@@ -10334,12 +9491,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 10)
-    sl:setValue(7)
-    local v = sl:getValue()
-    local sb = lurek.ui.newSpinBox(0, 10)
-    sb:setValue(5)
-    sb:decrement()
+    local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
+    local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
+    sb:setValue(5); sb:decrement()
     local sv = sb:getValue()
     print("slider value:", v, "spinbox after decrement:", sv)
 end
@@ -10368,12 +9522,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(0, 100)
-    sb:setValue(10)
-    sb:increment()
-    local v = sb:getValue()
-    sb:setRange(5, 50)
-    sb:setStep(2)
+    local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
+    sb:increment(); local v = sb:getValue()
+    sb:setRange(5, 50); sb:setStep(2)
     local v2 = sb:getValue()
     print("after increment:", v, "after setRange/setStep:", v2)
 end
@@ -10406,12 +9557,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(0, 100)
-    sb:setValue(10)
-    sb:increment()
-    local v = sb:getValue()
-    sb:setRange(5, 50)
-    sb:setStep(2)
+    local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
+    sb:increment(); local v = sb:getValue()
+    sb:setRange(5, 50); sb:setStep(2)
     local v2 = sb:getValue()
     print("after increment:", v, "after setRange/setStep:", v2)
 end
@@ -10442,12 +9590,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(0, 100)
-    sb:setValue(10)
-    sb:increment()
-    local v = sb:getValue()
-    sb:setRange(5, 50)
-    sb:setStep(2)
+    local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
+    sb:increment(); local v = sb:getValue()
+    sb:setRange(5, 50); sb:setStep(2)
     local v2 = sb:getValue()
     print("after increment:", v, "after setRange/setStep:", v2)
 end
@@ -10478,14 +9623,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(1, 100)
-    sb:setValue(42)
-    local v = sb:getValue()
-    sb:setValue(1)
-    local v2 = sb:getValue()
-    sb:setValue(100)
+    local sb = lurek.ui.newSpinBox(1, 100); sb:setValue(42)
+    local v = sb:getValue(); sb:setValue(1)
+    local v2 = sb:getValue(); sb:setValue(100)
     local v3 = sb:getValue()
-    print("setValue: 42→", v, "1→", v2, "100→", v3)
+    print("setValue: 42â†’", v, "1â†’", v2, "100â†’", v3)
 end
 ```
 
@@ -10515,8 +9657,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    local fc = sp:getFirstChild()
+    local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
     local ori = sp:getOrientation()
     local mps = sp:getMinPanelSize()
@@ -10550,8 +9691,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    local fc = sp:getFirstChild()
+    local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
     local ori = sp:getOrientation()
     local mps = sp:getMinPanelSize()
@@ -10585,8 +9725,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    local fc = sp:getFirstChild()
+    local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
     local ori = sp:getOrientation()
     local mps = sp:getMinPanelSize()
@@ -10620,12 +9759,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("vertical")
-    local lbl = lurek.ui.newLabel("left")
-    local btn = lurek.ui.newButton("right")
-    sp:setFirstChild(lbl:getId() and 1 or 1)
-    local fc = sp:getFirstChild()
-    sp:setSecondChild(btn:getId() and 2 or 2)
+    local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
+    local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
+    local fc = sp:getFirstChild(); sp:setSecondChild(btn:getId() and 2 or 2)
     local pos = sp:getSplitPosition()
     print("firstChild after set:", fc, "splitPos:", pos)
 end
@@ -10657,12 +9793,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("vertical")
-    local lbl = lurek.ui.newLabel("left")
-    local btn = lurek.ui.newButton("right")
-    sp:setFirstChild(lbl:getId() and 1 or 1)
-    local fc = sp:getFirstChild()
-    sp:setSecondChild(btn:getId() and 2 or 2)
+    local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
+    local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
+    local fc = sp:getFirstChild(); sp:setSecondChild(btn:getId() and 2 or 2)
     local pos = sp:getSplitPosition()
     print("firstChild after set:", fc, "splitPos:", pos)
 end
@@ -10693,12 +9826,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("vertical")
-    local lbl = lurek.ui.newLabel("left")
-    local btn = lurek.ui.newButton("right")
-    sp:setFirstChild(lbl:getId() and 1 or 1)
-    local fc = sp:getFirstChild()
-    sp:setSecondChild(btn:getId() and 2 or 2)
+    local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
+    local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
+    local fc = sp:getFirstChild(); sp:setSecondChild(btn:getId() and 2 or 2)
     local pos = sp:getSplitPosition()
     print("firstChild after set:", fc, "splitPos:", pos)
 end
@@ -10729,12 +9859,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    sp:setOrientation("vertical")
-    local ori = sp:getOrientation()
-    sp:setMinPanelSize(80)
-    local mps = sp:getMinPanelSize()
-    local lbl = lurek.ui.newLabel("panel")
+    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
+    local ori = sp:getOrientation(); sp:setMinPanelSize(80)
+    local mps = sp:getMinPanelSize(); local lbl = lurek.ui.newLabel("panel")
     sp:setSecondChild(lbl:getId() and 1 or 1)
     print("orientation:", ori, "minPanel:", mps)
 end
@@ -10765,12 +9892,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    sp:setOrientation("vertical")
-    local ori = sp:getOrientation()
-    sp:setMinPanelSize(80)
-    local mps = sp:getMinPanelSize()
-    local lbl = lurek.ui.newLabel("panel")
+    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
+    local ori = sp:getOrientation(); sp:setMinPanelSize(80)
+    local mps = sp:getMinPanelSize(); local lbl = lurek.ui.newLabel("panel")
     sp:setSecondChild(lbl:getId() and 1 or 1)
     print("orientation:", ori, "minPanel:", mps)
 end
@@ -10801,12 +9925,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    sp:setOrientation("vertical")
-    local ori = sp:getOrientation()
-    sp:setMinPanelSize(80)
-    local mps = sp:getMinPanelSize()
-    local lbl = lurek.ui.newLabel("panel")
+    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
+    local ori = sp:getOrientation(); sp:setMinPanelSize(80)
+    local mps = sp:getMinPanelSize(); local lbl = lurek.ui.newLabel("panel")
     sp:setSecondChild(lbl:getId() and 1 or 1)
     print("orientation:", ori, "minPanel:", mps)
 end
@@ -10837,10 +9958,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    sp:setSplitPosition(200)
-    local pos = sp:getSplitPosition()
-    local sb = lurek.ui.newStatusBar()
+    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
+    local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 100)
     local cnt = sb:getSectionCount()
     print("splitPos:", pos, "statusBar sectionCount:", cnt)
@@ -10874,10 +9993,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    sp:setSplitPosition(200)
-    local pos = sp:getSplitPosition()
-    local sb = lurek.ui.newStatusBar()
+    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
+    local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 100)
     local cnt = sb:getSectionCount()
     print("splitPos:", pos, "statusBar sectionCount:", cnt)
@@ -10910,10 +10027,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal")
-    sp:setSplitPosition(200)
-    local pos = sp:getSplitPosition()
-    local sb = lurek.ui.newStatusBar()
+    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
+    local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 100)
     local cnt = sb:getSectionCount()
     print("splitPos:", pos, "statusBar sectionCount:", cnt)
@@ -10948,10 +10063,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar()
-    sb:setSectionCount(3)
-    local cnt = sb:getSectionCount()
-    sb:setSectionText(1, "Line 1")
+    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
+    local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
     local txt = sb:getSectionText(1)
     sb:setSectionText(2, "Col 5")
     print("sectionCount:", cnt, "section1:", txt)
@@ -10983,10 +10096,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar()
-    sb:setSectionCount(3)
-    local cnt = sb:getSectionCount()
-    sb:setSectionText(1, "Line 1")
+    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
+    local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
     local txt = sb:getSectionText(1)
     sb:setSectionText(2, "Col 5")
     print("sectionCount:", cnt, "section1:", txt)
@@ -11020,10 +10131,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar()
-    sb:setSectionCount(3)
-    local cnt = sb:getSectionCount()
-    sb:setSectionText(1, "Line 1")
+    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
+    local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
     local txt = sb:getSectionText(1)
     sb:setSectionText(2, "Col 5")
     print("sectionCount:", cnt, "section1:", txt)
@@ -11057,12 +10166,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar()
-    sb:setSectionCount(2)
-    local lbl = lurek.ui.newLabel("status")
-    sb:setSectionWidget(1, lbl)
-    local sw = lurek.ui.newSwitch(false)
-    local on = sw:isOn()
+    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
+    local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
+    local sw = lurek.ui.newSwitch(false); local on = sw:isOn()
     sw:setOn(true)
     print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
@@ -11094,12 +10200,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar()
-    sb:setSectionCount(2)
-    local lbl = lurek.ui.newLabel("status")
-    sb:setSectionWidget(1, lbl)
-    local sw = lurek.ui.newSwitch(false)
-    local on = sw:isOn()
+    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
+    local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
+    local sw = lurek.ui.newSwitch(false); local on = sw:isOn()
     sw:setOn(true)
     print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
@@ -11130,12 +10233,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar()
-    sb:setSectionCount(2)
-    local lbl = lurek.ui.newLabel("status")
-    sb:setSectionWidget(1, lbl)
-    local sw = lurek.ui.newSwitch(false)
-    local on = sw:isOn()
+    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
+    local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
+    local sw = lurek.ui.newSwitch(false); local on = sw:isOn()
     sw:setOn(true)
     print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
@@ -11164,12 +10264,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sw = lurek.ui.newSwitch(false)
-    sw:toggle()
-    local on = sw:isOn()
-    local tb = lurek.ui.newTabBar()
-    tb:addTab("Tab 1")
-    tb:addTab("Tab 2")
+    local sw = lurek.ui.newSwitch(false); sw:toggle()
+    local on = sw:isOn(); local tb = lurek.ui.newTabBar()
+    tb:addTab("Tab 1"); tb:addTab("Tab 2")
     local active = tb:getActiveTab()
     print("switch after toggle:", on, "activeTab:", active)
 end
@@ -11200,12 +10297,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sw = lurek.ui.newSwitch(false)
-    sw:toggle()
-    local on = sw:isOn()
-    local tb = lurek.ui.newTabBar()
-    tb:addTab("Tab 1")
-    tb:addTab("Tab 2")
+    local sw = lurek.ui.newSwitch(false); sw:toggle()
+    local on = sw:isOn(); local tb = lurek.ui.newTabBar()
+    tb:addTab("Tab 1"); tb:addTab("Tab 2")
     local active = tb:getActiveTab()
     print("switch after toggle:", on, "activeTab:", active)
 end
@@ -11237,12 +10331,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local sw = lurek.ui.newSwitch(false)
-    sw:toggle()
-    local on = sw:isOn()
-    local tb = lurek.ui.newTabBar()
-    tb:addTab("Tab 1")
-    tb:addTab("Tab 2")
+    local sw = lurek.ui.newSwitch(false); sw:toggle()
+    local on = sw:isOn(); local tb = lurek.ui.newTabBar()
+    tb:addTab("Tab 1"); tb:addTab("Tab 2")
     local active = tb:getActiveTab()
     print("switch after toggle:", on, "activeTab:", active)
 end
@@ -11276,14 +10367,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar()
-    tb:addTab("Alpha")
-    tb:addTab("Beta")
-    tb:addTab("Gamma")
-    local cnt = tb:getTabCount()
-    local label = tb:getTab(1)
-    tb:removeTab(3)
-    local cnt2 = tb:getTabCount()
+    local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
+    tb:addTab("Beta"); tb:addTab("Gamma")
+    local cnt = tb:getTabCount(); local label = tb:getTab(1)
+    tb:removeTab(3); local cnt2 = tb:getTabCount()
     print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
 end
 ```
@@ -11314,14 +10401,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar()
-    tb:addTab("Alpha")
-    tb:addTab("Beta")
-    tb:addTab("Gamma")
-    local cnt = tb:getTabCount()
-    local label = tb:getTab(1)
-    tb:removeTab(3)
-    local cnt2 = tb:getTabCount()
+    local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
+    tb:addTab("Beta"); tb:addTab("Gamma")
+    local cnt = tb:getTabCount(); local label = tb:getTab(1)
+    tb:removeTab(3); local cnt2 = tb:getTabCount()
     print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
 end
 ```
@@ -11354,14 +10437,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar()
-    tb:addTab("Alpha")
-    tb:addTab("Beta")
-    tb:addTab("Gamma")
-    local cnt = tb:getTabCount()
-    local label = tb:getTab(1)
-    tb:removeTab(3)
-    local cnt2 = tb:getTabCount()
+    local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
+    tb:addTab("Beta"); tb:addTab("Gamma")
+    local cnt = tb:getTabCount(); local label = tb:getTab(1)
+    tb:removeTab(3); local cnt2 = tb:getTabCount()
     print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
 end
 ```
@@ -11391,53 +10470,53 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar()
-    tb:addTab("First")
-    tb:addTab("Second")
-    tb:setActiveTab(2)
-    local active = tb:getActiveTab()
-    tb:setActiveTab(1)
+    local tb = lurek.ui.newTabBar(); tb:addTab("First")
+    tb:addTab("Second"); tb:setActiveTab(2)
+    local active = tb:getActiveTab(); tb:setActiveTab(1)
     local a2 = tb:getActiveTab()
     print("setActiveTab to 2:", active, "then to 1:", a2)
 end
 
 --@api-stub: LTextInput.getCursorPosition
--- LTextInput text queries. Focus: getCursorPosition.
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("hello")
-    local txt = ti:getText()
-    ti:setPlaceholder("type here")
+    local ti = lurek.ui.newTextInput(); ti:setText("hello")
+    local txt = ti:getText(); ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
 end
 
 --@api-stub: LTextInput.getPlaceholder
--- LTextInput text queries. Focus: getPlaceholder.
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("hello")
-    local txt = ti:getText()
-    ti:setPlaceholder("type here")
+    local ti = lurek.ui.newTextInput(); ti:setText("hello")
+    local txt = ti:getText(); ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
 end
 
 --@api-stub: LTextInput.getText
--- LTextInput text queries. Focus: getText.
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("hello")
-    local txt = ti:getText()
-    ti:setPlaceholder("type here")
+    local ti = lurek.ui.newTextInput(); ti:setText("hello")
+    local txt = ti:getText(); ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
 end
 
 --@api-stub: LTextInput.isFocused
+do
+    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
+    local ph = ti:getPlaceholder()
+    ti:setMaxLength(50)
+    local focused = ti:isFocused()
+    print("placeholder:", ph, "isFocused:", focused)
+end
+
+--@api-stub: LTextInput.setMaxLength
+do
+    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
+    local ph = ti:getPlaceholder()
 ```
 
 ### LTextInput:getCursorPosition
@@ -11466,10 +10545,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("hello")
-    local txt = ti:getText()
-    ti:setPlaceholder("type here")
+    local ti = lurek.ui.newTextInput(); ti:setText("hello")
+    local txt = ti:getText(); ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
@@ -11502,10 +10579,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("hello")
-    local txt = ti:getText()
-    ti:setPlaceholder("type here")
+    local ti = lurek.ui.newTextInput(); ti:setText("hello")
+    local txt = ti:getText(); ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
@@ -11538,10 +10613,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("hello")
-    local txt = ti:getText()
-    ti:setPlaceholder("type here")
+    local ti = lurek.ui.newTextInput(); ti:setText("hello")
+    local txt = ti:getText(); ti:setPlaceholder("type here")
     local ph = ti:getPlaceholder()
     local cur = ti:getCursorPosition()
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
@@ -11574,8 +10647,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setPlaceholder("Search...")
+    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
     ti:setMaxLength(50)
     local focused = ti:isFocused()
@@ -11608,8 +10680,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setPlaceholder("Search...")
+    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
     ti:setMaxLength(50)
     local focused = ti:isFocused()
@@ -11642,8 +10713,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setPlaceholder("Search...")
+    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
     ti:setMaxLength(50)
     local focused = ti:isFocused()
@@ -11676,10 +10746,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("sample input")
-    local txt = ti:getText()
-    local th = lurek.ui.newTheme()
+    local ti = lurek.ui.newTextInput(); ti:setText("sample input")
+    local txt = ti:getText(); local th = lurek.ui.newTheme()
     th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
     print("text:", txt, "theme type:", t)
@@ -11714,10 +10782,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("sample input")
-    local txt = ti:getText()
-    local th = lurek.ui.newTheme()
+    local ti = lurek.ui.newTextInput(); ti:setText("sample input")
+    local txt = ti:getText(); local th = lurek.ui.newTheme()
     th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
     print("text:", txt, "theme type:", t)
@@ -11746,10 +10812,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput()
-    ti:setText("sample input")
-    local txt = ti:getText()
-    local th = lurek.ui.newTheme()
+    local ti = lurek.ui.newTextInput(); ti:setText("sample input")
+    local txt = ti:getText(); local th = lurek.ui.newTheme()
     th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
     print("text:", txt, "theme type:", t)
@@ -11783,8 +10847,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local th = lurek.ui.newTheme()
-    local ok = th:typeOf("LTheme")
+    local th = lurek.ui.newTheme(); local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
     local dur = toast:getDuration()
     local msg = toast:getMessage()
@@ -11818,8 +10881,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local th = lurek.ui.newTheme()
-    local ok = th:typeOf("LTheme")
+    local th = lurek.ui.newTheme(); local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
     local dur = toast:getDuration()
     local msg = toast:getMessage()
@@ -11853,8 +10915,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local th = lurek.ui.newTheme()
-    local ok = th:typeOf("LTheme")
+    local th = lurek.ui.newTheme(); local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
     local dur = toast:getDuration()
     local msg = toast:getMessage()
@@ -11888,8 +10949,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local toast = lurek.ui.newToast("Achievement unlocked", 2.0)
-    local prog = toast:getProgress()
+    local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
     local exp = toast:isExpired()
     toast:setDuration(5.0)
     local dur = toast:getDuration()
@@ -11923,8 +10983,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local toast = lurek.ui.newToast("Achievement unlocked", 2.0)
-    local prog = toast:getProgress()
+    local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
     local exp = toast:isExpired()
     toast:setDuration(5.0)
     local dur = toast:getDuration()
@@ -11957,8 +11016,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local toast = lurek.ui.newToast("Achievement unlocked", 2.0)
-    local prog = toast:getProgress()
+    local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
     local exp = toast:isExpired()
     toast:setDuration(5.0)
     local dur = toast:getDuration()
@@ -11991,12 +11049,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local toast = lurek.ui.newToast("old message", 2.0)
-    toast:setMessage("new message")
-    local msg = toast:getMessage()
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("save", "Save file")
-    tb:addSeparator()
+    local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
+    local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
+    tb:addButton("save", "Save file"); tb:addSeparator()
     tb:addButton("open", "Open file")
     print("toast:", msg, "toolbar buttons added ok")
 end
@@ -12032,12 +11087,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local toast = lurek.ui.newToast("old message", 2.0)
-    toast:setMessage("new message")
-    local msg = toast:getMessage()
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("save", "Save file")
-    tb:addSeparator()
+    local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
+    local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
+    tb:addButton("save", "Save file"); tb:addSeparator()
     tb:addButton("open", "Open file")
     print("toast:", msg, "toolbar buttons added ok")
 end
@@ -12066,12 +11118,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local toast = lurek.ui.newToast("old message", 2.0)
-    toast:setMessage("new message")
-    local msg = toast:getMessage()
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("save", "Save file")
-    tb:addSeparator()
+    local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
+    local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
+    tb:addButton("save", "Save file"); tb:addSeparator()
     tb:addButton("open", "Open file")
     print("toast:", msg, "toolbar buttons added ok")
 end
@@ -12102,10 +11151,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("cut", "Cut")
-    tb:addSpacer(10)
-    tb:addButton("paste", "Paste")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
+    tb:addSpacer(10); tb:addButton("paste", "Paste")
     local ori = tb:getOrientation()
     local btn = tb:getButton("cut")
     print("orientation:", ori, "button:", btn)
@@ -12140,10 +11187,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("cut", "Cut")
-    tb:addSpacer(10)
-    tb:addButton("paste", "Paste")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
+    tb:addSpacer(10); tb:addButton("paste", "Paste")
     local ori = tb:getOrientation()
     local btn = tb:getButton("cut")
     print("orientation:", ori, "button:", btn)
@@ -12176,10 +11221,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("cut", "Cut")
-    tb:addSpacer(10)
-    tb:addButton("paste", "Paste")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
+    tb:addSpacer(10); tb:addButton("paste", "Paste")
     local ori = tb:getOrientation()
     local btn = tb:getButton("cut")
     print("orientation:", ori, "button:", btn)
@@ -12214,8 +11257,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("bold", "Bold")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
     local tog = tb:isButtonToggled("bold")
     tb:setButtonEnabled("bold", false)
@@ -12253,8 +11295,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("bold", "Bold")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
     local tog = tb:isButtonToggled("bold")
     tb:setButtonEnabled("bold", false)
@@ -12292,8 +11333,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("bold", "Bold")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
     local tog = tb:isButtonToggled("bold")
     tb:setButtonEnabled("bold", false)
@@ -12326,10 +11366,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:setOrientation("vertical")
-    local ori = tb:getOrientation()
-    local tp = lurek.ui.newTooltipPanel("Hover help")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
+    local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
     local delay = tp:getDelay()
     local target = tp:getTarget()
     print("orientation:", ori, "delay:", delay, "target:", target)
@@ -12362,10 +11400,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:setOrientation("vertical")
-    local ori = tb:getOrientation()
-    local tp = lurek.ui.newTooltipPanel("Hover help")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
+    local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
     local delay = tp:getDelay()
     local target = tp:getTarget()
     print("orientation:", ori, "delay:", delay, "target:", target)
@@ -12398,10 +11434,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal")
-    tb:setOrientation("vertical")
-    local ori = tb:getOrientation()
-    local tp = lurek.ui.newTooltipPanel("Hover help")
+    local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
+    local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
     local delay = tp:getDelay()
     local target = tp:getTarget()
     print("orientation:", ori, "delay:", delay, "target:", target)
@@ -12434,10 +11468,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tp = lurek.ui.newTooltipPanel("initial tip")
-    local txt = tp:getText()
-    tp:setDelay(0.5)
-    local d = tp:getDelay()
+    local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
+    tp:setDelay(0.5); local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
     tp:setTarget(btn:getId() and 1 or 1)
     print("text:", txt, "delay:", d)
@@ -12469,10 +11501,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tp = lurek.ui.newTooltipPanel("initial tip")
-    local txt = tp:getText()
-    tp:setDelay(0.5)
-    local d = tp:getDelay()
+    local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
+    tp:setDelay(0.5); local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
     tp:setTarget(btn:getId() and 1 or 1)
     print("text:", txt, "delay:", d)
@@ -12504,10 +11534,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tp = lurek.ui.newTooltipPanel("initial tip")
-    local txt = tp:getText()
-    tp:setDelay(0.5)
-    local d = tp:getDelay()
+    local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
+    tp:setDelay(0.5); local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
     tp:setTarget(btn:getId() and 1 or 1)
     print("text:", txt, "delay:", d)
@@ -12539,13 +11567,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tp = lurek.ui.newTooltipPanel("old tip")
-    tp:setText("new tooltip text")
-    local txt = tp:getText()
-    tp:setText("another tip")
+    local tp = lurek.ui.newTooltipPanel("old tip"); tp:setText("new tooltip text")
+    local txt = tp:getText(); tp:setText("another tip")
     local txt2 = tp:getText()
     tp:setDelay(1.0)
-    print("setText:", txt, "→", txt2)
+    print("setText:", txt, "â†’", txt2)
 end
 ```
 
@@ -12579,10 +11605,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local n1 = tv:addNode("Root", nil)
-    local n2 = tv:addNode("Child", n1)
-    tv:collapseAll()
+    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
+    local n2 = tv:addNode("Child", n1); tv:collapseAll()
     tv:clearNodes()
     local cnt = tv:getNodeCount()
     print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
@@ -12612,10 +11636,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local n1 = tv:addNode("Root", nil)
-    local n2 = tv:addNode("Child", n1)
-    tv:collapseAll()
+    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
+    local n2 = tv:addNode("Child", n1); tv:collapseAll()
     tv:clearNodes()
     local cnt = tv:getNodeCount()
     print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
@@ -12645,10 +11667,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local n1 = tv:addNode("Root", nil)
-    local n2 = tv:addNode("Child", n1)
-    tv:collapseAll()
+    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
+    local n2 = tv:addNode("Child", n1); tv:collapseAll()
     tv:clearNodes()
     local cnt = tv:getNodeCount()
     print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
@@ -12683,14 +11703,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local n1 = tv:addNode("Animals", nil)
-    local n2 = tv:addNode("Mammals", n1)
-    tv:addNode("Dog", n2)
-    tv:expandAll()
-    tv:collapseNode(n1)
-    tv:expandNode(n1)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
+    local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
+    tv:expandAll(); tv:collapseNode(n1)
+    tv:expandNode(n1); local cnt = tv:getNodeCount()
     print("expandAll/collapseNode/expandNode ok; count:", cnt)
 end
 ```
@@ -12718,14 +11734,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local n1 = tv:addNode("Animals", nil)
-    local n2 = tv:addNode("Mammals", n1)
-    tv:addNode("Dog", n2)
-    tv:expandAll()
-    tv:collapseNode(n1)
-    tv:expandNode(n1)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
+    local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
+    tv:expandAll(); tv:collapseNode(n1)
+    tv:expandNode(n1); local cnt = tv:getNodeCount()
     print("expandAll/collapseNode/expandNode ok; count:", cnt)
 end
 ```
@@ -12758,14 +11770,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local n1 = tv:addNode("Animals", nil)
-    local n2 = tv:addNode("Mammals", n1)
-    tv:addNode("Dog", n2)
-    tv:expandAll()
-    tv:collapseNode(n1)
-    tv:expandNode(n1)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
+    local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
+    tv:expandAll(); tv:collapseNode(n1)
+    tv:expandNode(n1); local cnt = tv:getNodeCount()
     print("expandAll/collapseNode/expandNode ok; count:", cnt)
 end
 ```
@@ -12798,12 +11806,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c1 = tv:addNode("Child1", r)
-    tv:addNode("Child2", r)
-    local children = tv:getChildNodes(r)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
+    local children = tv:getChildNodes(r); local cnt = tv:getNodeCount()
     local depth = tv:getNodeDepth(c1)
     print("children:", children, "count:", cnt, "depth:", depth)
 end
@@ -12835,12 +11840,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c1 = tv:addNode("Child1", r)
-    tv:addNode("Child2", r)
-    local children = tv:getChildNodes(r)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
+    local children = tv:getChildNodes(r); local cnt = tv:getNodeCount()
     local depth = tv:getNodeDepth(c1)
     print("children:", children, "count:", cnt, "depth:", depth)
 end
@@ -12874,12 +11876,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c1 = tv:addNode("Child1", r)
-    tv:addNode("Child2", r)
-    local children = tv:getChildNodes(r)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
+    local children = tv:getChildNodes(r); local cnt = tv:getNodeCount()
     local depth = tv:getNodeDepth(c1)
     print("children:", children, "count:", cnt, "depth:", depth)
 end
@@ -12913,10 +11912,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r)
-    local txt = tv:getNodeText(c)
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
     local parent = tv:getParentNode(c)
     local sel = tv:getSelectedNode()
     print("text:", txt, "parent:", parent, "selected:", sel)
@@ -12951,10 +11948,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r)
-    local txt = tv:getNodeText(c)
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
     local parent = tv:getParentNode(c)
     local sel = tv:getSelectedNode()
     print("text:", txt, "parent:", parent, "selected:", sel)
@@ -12987,10 +11982,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r)
-    local txt = tv:getNodeText(c)
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
     local parent = tv:getParentNode(c)
     local sel = tv:getSelectedNode()
     print("text:", txt, "parent:", parent, "selected:", sel)
@@ -13025,14 +12018,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r)
-    tv:expandNode(r)
-    local exp = tv:isExpanded(r)
-    local ne = tv:isNodeExpanded(r)
-    tv:removeNode(c)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c = tv:addNode("Child", r); tv:expandNode(r)
+    local exp = tv:isExpanded(r); local ne = tv:isNodeExpanded(r)
+    tv:removeNode(c); local cnt = tv:getNodeCount()
     print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
 end
 ```
@@ -13065,14 +12054,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r)
-    tv:expandNode(r)
-    local exp = tv:isExpanded(r)
-    local ne = tv:isNodeExpanded(r)
-    tv:removeNode(c)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c = tv:addNode("Child", r); tv:expandNode(r)
+    local exp = tv:isExpanded(r); local ne = tv:isNodeExpanded(r)
+    tv:removeNode(c); local cnt = tv:getNodeCount()
     print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
 end
 ```
@@ -13105,14 +12090,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r)
-    tv:expandNode(r)
-    local exp = tv:isExpanded(r)
-    local ne = tv:isNodeExpanded(r)
-    tv:removeNode(c)
-    local cnt = tv:getNodeCount()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    local c = tv:addNode("Child", r); tv:expandNode(r)
+    local exp = tv:isExpanded(r); local ne = tv:isNodeExpanded(r)
+    tv:removeNode(c); local cnt = tv:getNodeCount()
     print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
 end
 ```
@@ -13147,12 +12128,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("old text", nil)
-    tv:setNodeText(r, "new text")
-    local txt = tv:getNodeText(r)
-    tv:setSelectedNode(r)
-    local sel = tv:getSelectedNode()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
+    tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
+    tv:setSelectedNode(r); local sel = tv:getSelectedNode()
     tv:setNodeIcon(r, "folder")
     print("setText:", txt, "selected:", sel)
 end
@@ -13188,12 +12166,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("old text", nil)
-    tv:setNodeText(r, "new text")
-    local txt = tv:getNodeText(r)
-    tv:setSelectedNode(r)
-    local sel = tv:getSelectedNode()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
+    tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
+    tv:setSelectedNode(r); local sel = tv:getSelectedNode()
     tv:setNodeIcon(r, "folder")
     print("setText:", txt, "selected:", sel)
 end
@@ -13227,12 +12202,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("old text", nil)
-    tv:setNodeText(r, "new text")
-    local txt = tv:getNodeText(r)
-    tv:setSelectedNode(r)
-    local sel = tv:getSelectedNode()
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
+    tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
+    tv:setSelectedNode(r); local sel = tv:getSelectedNode()
     tv:setNodeIcon(r, "folder")
     print("setText:", txt, "selected:", sel)
 end
@@ -13266,16 +12238,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView()
-    local r = tv:addNode("Root", nil)
-    tv:addNode("Child", r)
-    tv:expandNode(r)
-    local was = tv:isExpanded(r)
-    tv:toggleNode(r)
-    local now = tv:isExpanded(r)
-    tv:toggleNode(r)
-    local back = tv:isExpanded(r)
-    print("expanded:", was, "after toggle:", now, "after toggle back:", back)
+    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
+    tv:addNode("Child", r); tv:expandNode(r)
+    local was = tv:isExpanded(r); tv:toggleNode(r)
+    local now = tv:isExpanded(r); tv:toggleNode(r)
+    local back = tv:isExpanded(r); print("expanded:", was, "after toggle:", now, "after toggle back:", back)
 end
 ```
 
@@ -13304,10 +12271,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local child = lurek.ui.newLabel("label")
-    w:addChild(child)
-    w:animateAlpha(0.5, 0.3, false)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
+    w:addChild(child); w:animateAlpha(0.5, 0.3, false)
     w:animatePosition(10, 20, 0.5)
     local cnt = w:getChildCount()
     print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
@@ -13346,10 +12311,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local child = lurek.ui.newLabel("label")
-    w:addChild(child)
-    w:animateAlpha(0.5, 0.3, false)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
+    w:addChild(child); w:animateAlpha(0.5, 0.3, false)
     w:animatePosition(10, 20, 0.5)
     local cnt = w:getChildCount()
     print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
@@ -13388,10 +12351,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local child = lurek.ui.newLabel("label")
-    w:addChild(child)
-    w:animateAlpha(0.5, 0.3, false)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
+    w:addChild(child); w:animateAlpha(0.5, 0.3, false)
     w:animatePosition(10, 20, 0.5)
     local cnt = w:getChildCount()
     print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
@@ -13423,12 +12384,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
-    w:animateAlpha(0.0, 1.0, false)
-    local animating = w:isAnimating()
-    w:cancelAnimations()
-    w:bind("click")
+    local w = lurek.ui.newCustomWidget({width=80, height=40}); w:attachToEntity(1)
+    w:animateAlpha(0.0, 1.0, false); local animating = w:isAnimating()
+    w:cancelAnimations(); w:bind("click")
     w:detachFromEntity()
     print("attachToEntity/bind/cancelAnimations ok")
 end
@@ -13459,12 +12417,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
-    w:animateAlpha(0.0, 1.0, false)
-    local animating = w:isAnimating()
-    w:cancelAnimations()
-    w:bind("click")
+    local w = lurek.ui.newCustomWidget({width=80, height=40}); w:attachToEntity(1)
+    w:animateAlpha(0.0, 1.0, false); local animating = w:isAnimating()
+    w:cancelAnimations(); w:bind("click")
     w:detachFromEntity()
     print("attachToEntity/bind/cancelAnimations ok")
 end
@@ -13496,12 +12451,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
-    w:animateAlpha(0.0, 1.0, false)
-    local animating = w:isAnimating()
-    w:cancelAnimations()
-    w:bind("click")
+    local w = lurek.ui.newCustomWidget({width=80, height=40}); w:attachToEntity(1)
+    w:animateAlpha(0.0, 1.0, false); local animating = w:isAnimating()
+    w:cancelAnimations(); w:bind("click")
     w:detachFromEntity()
     print("attachToEntity/bind/cancelAnimations ok")
 end
@@ -13530,12 +12482,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor()
-    w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15)
-    w:attachToEntity(2)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
+    w:clearAnchor(); w:setPosition(10, 10)
+    local hit = w:containsPoint(15, 15); w:attachToEntity(2)
     w:detachFromEntity()
     print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
 end
@@ -13571,12 +12520,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor()
-    w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15)
-    w:attachToEntity(2)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
+    w:clearAnchor(); w:setPosition(10, 10)
+    local hit = w:containsPoint(15, 15); w:attachToEntity(2)
     w:detachFromEntity()
     print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
 end
@@ -13605,12 +12551,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor()
-    w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15)
-    w:attachToEntity(2)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
+    w:clearAnchor(); w:setPosition(10, 10)
+    local hit = w:containsPoint(15, 15); w:attachToEntity(2)
     w:detachFromEntity()
     print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
 end
@@ -13639,14 +12582,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setId("my-panel")
-    w:fadeOut()
-    w:fadeIn()
-    local child = lurek.ui.newLabel("inner")
-    child:setId("inner-lbl")
-    w:addChild(child)
-    local found = w:findById("inner-lbl")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
+    w:fadeOut(); w:fadeIn()
+    local child = lurek.ui.newLabel("inner"); child:setId("inner-lbl")
+    w:addChild(child); local found = w:findById("inner-lbl")
     print("fadeIn/fadeOut ok; findById:", found)
 end
 ```
@@ -13674,14 +12613,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setId("my-panel")
-    w:fadeOut()
-    w:fadeIn()
-    local child = lurek.ui.newLabel("inner")
-    child:setId("inner-lbl")
-    w:addChild(child)
-    local found = w:findById("inner-lbl")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
+    w:fadeOut(); w:fadeIn()
+    local child = lurek.ui.newLabel("inner"); child:setId("inner-lbl")
+    w:addChild(child); local found = w:findById("inner-lbl")
     print("fadeIn/fadeOut ok; findById:", found)
 end
 ```
@@ -13714,14 +12649,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setId("my-panel")
-    w:fadeOut()
-    w:fadeIn()
-    local child = lurek.ui.newLabel("inner")
-    child:setId("inner-lbl")
-    w:addChild(child)
-    local found = w:findById("inner-lbl")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
+    w:fadeOut(); w:fadeIn()
+    local child = lurek.ui.newLabel("inner"); child:setId("inner-lbl")
+    w:addChild(child); local found = w:findById("inner-lbl")
     print("fadeIn/fadeOut ok; findById:", found)
 end
 ```
@@ -13752,12 +12683,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAlpha(0.75)
-    local alpha = w:getAlpha()
-    w:addChild(lurek.ui.newLabel("c1"))
-    w:addChild(lurek.ui.newLabel("c2"))
-    local cnt = w:getChildCount()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
+    local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
+    w:addChild(lurek.ui.newLabel("c2")); local cnt = w:getChildCount()
     local children = w:getChildren()
     print("alpha:", alpha, "childCount:", cnt, "children:", children)
 end
@@ -13789,12 +12717,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAlpha(0.75)
-    local alpha = w:getAlpha()
-    w:addChild(lurek.ui.newLabel("c1"))
-    w:addChild(lurek.ui.newLabel("c2"))
-    local cnt = w:getChildCount()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
+    local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
+    w:addChild(lurek.ui.newLabel("c2")); local cnt = w:getChildCount()
     local children = w:getChildren()
     print("alpha:", alpha, "childCount:", cnt, "children:", children)
 end
@@ -13826,12 +12751,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAlpha(0.75)
-    local alpha = w:getAlpha()
-    w:addChild(lurek.ui.newLabel("c1"))
-    w:addChild(lurek.ui.newLabel("c2"))
-    local cnt = w:getChildCount()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
+    local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
+    w:addChild(lurek.ui.newLabel("c2")); local cnt = w:getChildCount()
     local children = w:getChildren()
     print("alpha:", alpha, "childCount:", cnt, "children:", children)
 end
@@ -13863,12 +12785,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setFlexGrow(2)
-    local grow = w:getFlexGrow()
-    w:setFlexShrink(1)
-    local shrink = w:getFlexShrink()
-    w:setId("widget-abc")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
+    local grow = w:getFlexGrow(); w:setFlexShrink(1)
+    local shrink = w:getFlexShrink(); w:setId("widget-abc")
     local id = w:getId()
     print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
 end
@@ -13900,12 +12819,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setFlexGrow(2)
-    local grow = w:getFlexGrow()
-    w:setFlexShrink(1)
-    local shrink = w:getFlexShrink()
-    w:setId("widget-abc")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
+    local grow = w:getFlexGrow(); w:setFlexShrink(1)
+    local shrink = w:getFlexShrink(); w:setId("widget-abc")
     local id = w:getId()
     print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
 end
@@ -13937,12 +12853,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setFlexGrow(2)
-    local grow = w:getFlexGrow()
-    w:setFlexShrink(1)
-    local shrink = w:getFlexShrink()
-    w:setId("widget-abc")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
+    local grow = w:getFlexGrow(); w:setFlexShrink(1)
+    local shrink = w:getFlexShrink(); w:setId("widget-abc")
     local id = w:getId()
     print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
 end
@@ -13977,12 +12890,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setMargin(4, 8, 4, 8)
-    local mt, mr, mb, ml = w:getMargin()
-    w:setMaxSize(400, 300)
-    local mxw, mxh = w:getMaxSize()
-    w:setMinSize(50, 25)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
+    local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
+    local mxw, mxh = w:getMaxSize(); w:setMinSize(50, 25)
     local mnw, mnh = w:getMinSize()
     print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
 end
@@ -14015,12 +12925,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setMargin(4, 8, 4, 8)
-    local mt, mr, mb, ml = w:getMargin()
-    w:setMaxSize(400, 300)
-    local mxw, mxh = w:getMaxSize()
-    w:setMinSize(50, 25)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
+    local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
+    local mxw, mxh = w:getMaxSize(); w:setMinSize(50, 25)
     local mnw, mnh = w:getMinSize()
     print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
 end
@@ -14053,12 +12960,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setMargin(4, 8, 4, 8)
-    local mt, mr, mb, ml = w:getMargin()
-    w:setMaxSize(400, 300)
-    local mxw, mxh = w:getMaxSize()
-    w:setMinSize(50, 25)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
+    local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
+    local mxw, mxh = w:getMaxSize(); w:setMinSize(50, 25)
     local mnw, mnh = w:getMinSize()
     print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
 end
@@ -14093,10 +12997,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setPadding(5, 5, 5, 5)
-    local pt, pr, pb, pl = w:getPadding()
-    w:setPosition(30, 40)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
+    local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
     local px, py = w:getPosition()
     local rx, ry, rw, rh = w:getRect()
     print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
@@ -14130,10 +13032,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setPadding(5, 5, 5, 5)
-    local pt, pr, pb, pl = w:getPadding()
-    w:setPosition(30, 40)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
+    local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
     local px, py = w:getPosition()
     local rx, ry, rw, rh = w:getRect()
     print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
@@ -14169,10 +13069,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setPadding(5, 5, 5, 5)
-    local pt, pr, pb, pl = w:getPadding()
-    w:setPosition(30, 40)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
+    local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
     local px, py = w:getPosition()
     local rx, ry, rw, rh = w:getRect()
     print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
@@ -14206,10 +13104,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=120, height=60})
-    w:setSize(150, 80)
-    local sw, sh = w:getSize()
-    local state = w:getState()
+    local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
+    local sw, sh = w:getSize(); local state = w:getState()
     w:setTooltip("hover tip")
     local tip = w:getTooltip()
     print("size:", sw, sh, "state:", state, "tooltip:", tip)
@@ -14242,10 +13138,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=120, height=60})
-    w:setSize(150, 80)
-    local sw, sh = w:getSize()
-    local state = w:getState()
+    local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
+    local sw, sh = w:getSize(); local state = w:getState()
     w:setTooltip("hover tip")
     local tip = w:getTooltip()
     print("size:", sw, sh, "state:", state, "tooltip:", tip)
@@ -14278,10 +13172,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=120, height=60})
-    w:setSize(150, 80)
-    local sw, sh = w:getSize()
-    local state = w:getState()
+    local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
+    local sw, sh = w:getSize(); local state = w:getState()
     w:setTooltip("hover tip")
     local tip = w:getTooltip()
     print("size:", sw, sh, "state:", state, "tooltip:", tip)
@@ -14314,10 +13206,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setZOrder(5)
-    local z = w:getZOrder()
-    local animating = w:isAnimating()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
+    local z = w:getZOrder(); local animating = w:isAnimating()
     local enabled = w:isEnabled()
     w:setEnabled(false)
     print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
@@ -14350,10 +13240,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setZOrder(5)
-    local z = w:getZOrder()
-    local animating = w:isAnimating()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
+    local z = w:getZOrder(); local animating = w:isAnimating()
     local enabled = w:isEnabled()
     w:setEnabled(false)
     print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
@@ -14386,10 +13274,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setZOrder(5)
-    local z = w:getZOrder()
-    local animating = w:isAnimating()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
+    local z = w:getZOrder(); local animating = w:isAnimating()
     local enabled = w:isEnabled()
     w:setEnabled(false)
     print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
@@ -14422,14 +13308,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local vis = w:isVisible()
-    w:setVisible(false)
-    local child = lurek.ui.newLabel("removable")
-    w:addChild(child)
-    w:removeChild(child)
-    w:setAlpha(0.9)
-    local alpha = w:getAlpha()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
+    w:setVisible(false); local child = lurek.ui.newLabel("removable")
+    w:addChild(child); w:removeChild(child)
+    w:setAlpha(0.9); local alpha = w:getAlpha()
     print("isVisible:", vis, "removeChild ok, alpha:", alpha)
 end
 ```
@@ -14459,14 +13341,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local vis = w:isVisible()
-    w:setVisible(false)
-    local child = lurek.ui.newLabel("removable")
-    w:addChild(child)
-    w:removeChild(child)
-    w:setAlpha(0.9)
-    local alpha = w:getAlpha()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
+    w:setVisible(false); local child = lurek.ui.newLabel("removable")
+    w:addChild(child); w:removeChild(child)
+    w:setAlpha(0.9); local alpha = w:getAlpha()
     print("isVisible:", vis, "removeChild ok, alpha:", alpha)
 end
 ```
@@ -14496,14 +13374,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local vis = w:isVisible()
-    w:setVisible(false)
-    local child = lurek.ui.newLabel("removable")
-    w:addChild(child)
-    w:removeChild(child)
-    w:setAlpha(0.9)
-    local alpha = w:getAlpha()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
+    w:setVisible(false); local child = lurek.ui.newLabel("removable")
+    w:addChild(child); w:removeChild(child)
+    w:setAlpha(0.9); local alpha = w:getAlpha()
     print("isVisible:", vis, "removeChild ok, alpha:", alpha)
 end
 ```
@@ -14539,12 +13413,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 1)
-    w:clearAnchor()
-    w:setAnchorCenter(0.5, 0.5)
-    w:setEnabled(true)
-    local enabled = w:isEnabled()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
+    w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
+    w:setEnabled(true); local enabled = w:isEnabled()
     w:setEnabled(false)
     print("setAnchor/setAnchorCenter/setEnabled ok")
 end
@@ -14577,12 +13448,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 1)
-    w:clearAnchor()
-    w:setAnchorCenter(0.5, 0.5)
-    w:setEnabled(true)
-    local enabled = w:isEnabled()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
+    w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
+    w:setEnabled(true); local enabled = w:isEnabled()
     w:setEnabled(false)
     print("setAnchor/setAnchorCenter/setEnabled ok")
 end
@@ -14613,12 +13481,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 1)
-    w:clearAnchor()
-    w:setAnchorCenter(0.5, 0.5)
-    w:setEnabled(true)
-    local enabled = w:isEnabled()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
+    w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
+    w:setEnabled(true); local enabled = w:isEnabled()
     w:setEnabled(false)
     print("setAnchor/setAnchorCenter/setEnabled ok")
 end
@@ -14649,12 +13514,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setFlexGrow(3)
-    local fg = w:getFlexGrow()
-    w:setFlexShrink(0)
-    local fs = w:getFlexShrink()
-    w:setId("flex-widget")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
+    local fg = w:getFlexGrow(); w:setFlexShrink(0)
+    local fs = w:getFlexShrink(); w:setId("flex-widget")
     local id = w:getId()
     print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
 end
@@ -14685,12 +13547,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setFlexGrow(3)
-    local fg = w:getFlexGrow()
-    w:setFlexShrink(0)
-    local fs = w:getFlexShrink()
-    w:setId("flex-widget")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
+    local fg = w:getFlexGrow(); w:setFlexShrink(0)
+    local fs = w:getFlexShrink(); w:setId("flex-widget")
     local id = w:getId()
     print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
 end
@@ -14721,12 +13580,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setFlexGrow(3)
-    local fg = w:getFlexGrow()
-    w:setFlexShrink(0)
-    local fs = w:getFlexShrink()
-    w:setId("flex-widget")
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
+    local fg = w:getFlexGrow(); w:setFlexShrink(0)
+    local fs = w:getFlexShrink(); w:setId("flex-widget")
     local id = w:getId()
     print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
 end
@@ -14763,12 +13619,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setMargin(2, 4, 2, 4)
-    local mt = w:getMargin()
-    w:setMaxSize(500, 400)
-    local mxw = w:getMaxSize()
-    w:setMinSize(60, 30)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
+    local mt = w:getMargin(); w:setMaxSize(500, 400)
+    local mxw = w:getMaxSize(); w:setMinSize(60, 30)
     local mnw = w:getMinSize()
     print("margin set ok; maxSize:", mxw, "minSize:", mnw)
 end
@@ -14801,12 +13654,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setMargin(2, 4, 2, 4)
-    local mt = w:getMargin()
-    w:setMaxSize(500, 400)
-    local mxw = w:getMaxSize()
-    w:setMinSize(60, 30)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
+    local mt = w:getMargin(); w:setMaxSize(500, 400)
+    local mxw = w:getMaxSize(); w:setMinSize(60, 30)
     local mnw = w:getMinSize()
     print("margin set ok; maxSize:", mxw, "minSize:", mnw)
 end
@@ -14839,12 +13689,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setMargin(2, 4, 2, 4)
-    local mt = w:getMargin()
-    w:setMaxSize(500, 400)
-    local mxw = w:getMaxSize()
-    w:setMinSize(60, 30)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
+    local mt = w:getMargin(); w:setMaxSize(500, 400)
+    local mxw = w:getMaxSize(); w:setMinSize(60, 30)
     local mnw = w:getMinSize()
     print("margin set ok; maxSize:", mxw, "minSize:", mnw)
 end
@@ -14875,10 +13722,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setOnChange(function() print("changed") end)
-    w:setOnClick(function() print("clicked") end)
-    w:setOnDraw(function() print("drawing") end)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setOnChange(function() print("changed") end)
+    w:setOnClick(function() print("clicked") end); w:setOnDraw(function() print("drawing") end)
     local id = w:getId()
     local vis = w:isVisible()
     print("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
@@ -14910,10 +13755,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setOnChange(function() print("changed") end)
-    w:setOnClick(function() print("clicked") end)
-    w:setOnDraw(function() print("drawing") end)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setOnChange(function() print("changed") end)
+    w:setOnClick(function() print("clicked") end); w:setOnDraw(function() print("drawing") end)
     local id = w:getId()
     local vis = w:isVisible()
     print("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
@@ -14945,10 +13788,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setOnChange(function() print("changed") end)
-    w:setOnClick(function() print("clicked") end)
-    w:setOnDraw(function() print("drawing") end)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setOnChange(function() print("changed") end)
+    w:setOnClick(function() print("clicked") end); w:setOnDraw(function() print("drawing") end)
     local id = w:getId()
     local vis = w:isVisible()
     print("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
@@ -14986,12 +13827,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setPadding(6, 6, 6, 6)
-    local pt = w:getPadding()
-    w:setPosition(50, 100)
-    local px, py = w:getPosition()
-    w:setSize(200, 100)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
+    local pt = w:getPadding(); w:setPosition(50, 100)
+    local px, py = w:getPosition(); w:setSize(200, 100)
     local sw, sh = w:getSize()
     print("padding:", pt, "position:", px, py, "size:", sw, sh)
 end
@@ -15024,12 +13862,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setPadding(6, 6, 6, 6)
-    local pt = w:getPadding()
-    w:setPosition(50, 100)
-    local px, py = w:getPosition()
-    w:setSize(200, 100)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
+    local pt = w:getPadding(); w:setPosition(50, 100)
+    local px, py = w:getPosition(); w:setSize(200, 100)
     local sw, sh = w:getSize()
     print("padding:", pt, "position:", px, py, "size:", sw, sh)
 end
@@ -15062,12 +13897,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setPadding(6, 6, 6, 6)
-    local pt = w:getPadding()
-    w:setPosition(50, 100)
-    local px, py = w:getPosition()
-    w:setSize(200, 100)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
+    local pt = w:getPadding(); w:setPosition(50, 100)
+    local px, py = w:getPosition(); w:setSize(200, 100)
     local sw, sh = w:getSize()
     print("padding:", pt, "position:", px, py, "size:", sw, sh)
 end
@@ -15098,12 +13930,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setTooltip("my tooltip")
-    local tip = w:getTooltip()
-    w:setVisible(false)
-    w:setVisible(true)
-    w:setZOrder(10)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
+    local tip = w:getTooltip(); w:setVisible(false)
+    w:setVisible(true); w:setZOrder(10)
     local z = w:getZOrder()
     print("tooltip:", tip, "zOrder:", z)
 end
@@ -15134,12 +13963,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setTooltip("my tooltip")
-    local tip = w:getTooltip()
-    w:setVisible(false)
-    w:setVisible(true)
-    w:setZOrder(10)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
+    local tip = w:getTooltip(); w:setVisible(false)
+    w:setVisible(true); w:setZOrder(10)
     local z = w:getZOrder()
     print("tooltip:", tip, "zOrder:", z)
 end
@@ -15170,12 +13996,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setTooltip("my tooltip")
-    local tip = w:getTooltip()
-    w:setVisible(false)
-    w:setVisible(true)
-    w:setZOrder(10)
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
+    local tip = w:getTooltip(); w:setVisible(false)
+    w:setVisible(true); w:setZOrder(10)
     local z = w:getZOrder()
     print("tooltip:", tip, "zOrder:", z)
 end
@@ -15208,10 +14031,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:slideIn(0, -50)
-    w:slideOut(0, 50)
-    local t = w:type()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
+    w:slideOut(0, 50); local t = w:type()
     local ok = w:typeOf("LUiWidget")
     w:unbind()
     print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
@@ -15245,10 +14066,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:slideIn(0, -50)
-    w:slideOut(0, 50)
-    local t = w:type()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
+    w:slideOut(0, 50); local t = w:type()
     local ok = w:typeOf("LUiWidget")
     w:unbind()
     print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
@@ -15281,10 +14100,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:slideIn(0, -50)
-    w:slideOut(0, 50)
-    local t = w:type()
+    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
+    w:slideOut(0, 50); local t = w:type()
     local ok = w:typeOf("LUiWidget")
     w:unbind()
     print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
@@ -15319,10 +14136,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:bind("click")
-    w:unbind()
-    local ok1 = w:typeOf("LUiWidget")
+    local w = lurek.ui.newCustomWidget({width=80, height=40}); w:bind("click")
+    w:unbind(); local ok1 = w:typeOf("LUiWidget")
     local ok2 = w:typeOf("LButton")
     local t = w:type()
     print("typeOf LUiWidget:", ok1, "typeOf LButton:", ok2, "type:", t)
@@ -15352,10 +14167,8 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:bind("click")
-    w:unbind()
-    local ok1 = w:typeOf("LUiWidget")
+    local w = lurek.ui.newCustomWidget({width=80, height=40}); w:bind("click")
+    w:unbind(); local ok1 = w:typeOf("LUiWidget")
     local ok2 = w:typeOf("LButton")
     local t = w:type()
     print("typeOf LUiWidget:", ok1, "typeOf LButton:", ok2, "type:", t)

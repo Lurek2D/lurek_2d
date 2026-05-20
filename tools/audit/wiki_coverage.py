@@ -25,18 +25,28 @@ ROOT = Path(".").resolve()
 WIKI_DIR = ROOT / "docs" / "wiki"
 SRC_DIR = ROOT / "src"
 LIBRARY_DIR = ROOT / "library"
+API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 
-# Modules that are internal and don't need wiki pages
+# Modules that are internal and don't need dedicated coverage checks
 INTERNAL_MODULES = {
     "lua_api", "bin", "docs", "pipeline", "app",
 }
 
-# Wiki pages that don't map to a single src/ module
+# Generated wiki pages that do not map to a single src/ module
 META_PAGES = {
-    "Home", "Getting-Started", "API-Reference", "FAQ",
-    "Architecture", "Contributing", "Troubleshooting",
-    "Installation", "Configuration", "Changelog",
+    "Home", "Getting-Started", "First-Game", "Project-Structure",
+    "Callbacks", "Runtime-Model", "Modules", "API", "API-Reference",
+    "Examples", "Reference-Games", "Lureksome", "Glossary",
+    "_Sidebar", "_Footer",
 }
+
+
+def normalize_page_name(value: str) -> str:
+    return value.lower().replace("-", "_")
+
+
+def module_page_name(module: str) -> str:
+    return f"Module-{module}"
 
 
 def discover_modules() -> set[str]:
@@ -48,6 +58,26 @@ def discover_modules() -> set[str]:
         if d.is_dir() and not d.name.startswith("_") and d.name not in INTERNAL_MODULES:
             modules.add(d.name)
     return modules
+
+
+def discover_all_source_modules() -> set[str]:
+    """Return all top-level src/ module names, including internal ones."""
+    modules = set()
+    if not SRC_DIR.exists():
+        return modules
+    for d in SRC_DIR.iterdir():
+        if d.is_dir() and not d.name.startswith("_"):
+            modules.add(d.name)
+    return modules
+
+
+def discover_api_modules() -> set[str]:
+    """Return module keys from generated Lua API data."""
+    if not API_JSON.exists():
+        return set()
+
+    data = json.loads(API_JSON.read_text(encoding="utf-8"))
+    return set(data.get("lua_api", {}).get("modules", {}).keys())
 
 
 def discover_libraries() -> set[str]:
@@ -81,25 +111,37 @@ def main() -> int:
     args = parser.parse_args()
 
     modules = discover_modules()
+    all_source_modules = discover_all_source_modules()
+    api_modules = discover_api_modules()
     libraries = discover_libraries()
     wiki_pages = discover_wiki_pages()
 
     findings: list[dict] = []
-    page_stems_lower = {k.lower().replace("-", "_"): k for k in wiki_pages}
+    page_stems_normalized = {normalize_page_name(k) for k in wiki_pages}
 
     # Check modules have wiki pages
-    for mod in sorted(modules):
-        if mod not in page_stems_lower and mod.replace("_", "-") not in page_stems_lower:
+    expected_modules = modules | api_modules
+    for mod in sorted(expected_modules):
+        expected_pages = {
+            normalize_page_name(mod),
+            normalize_page_name(mod.replace("_", "-")),
+            normalize_page_name(module_page_name(mod)),
+            normalize_page_name(module_page_name(mod.replace("_", "-"))),
+        }
+        if expected_pages.isdisjoint(page_stems_normalized):
             findings.append({
                 "level": "ERROR" if args.strict else "WARN",
                 "category": "module",
                 "name": mod,
-                "message": f"Module '{mod}' has no wiki page in wiki/",
+                "message": f"Module '{mod}' has no wiki page in docs/wiki/",
             })
 
     # Check libraries are mentioned
     for lib in sorted(libraries):
-        if lib not in page_stems_lower and lib.replace("_", "-") not in page_stems_lower:
+        if {
+            normalize_page_name(lib),
+            normalize_page_name(lib.replace("_", "-")),
+        }.isdisjoint(page_stems_normalized):
             # Check if mentioned in any wiki page
             mentioned = False
             for page_path in wiki_pages.values():
@@ -116,16 +158,19 @@ def main() -> int:
                 })
 
     # Check for orphaned wiki pages
+    known_modules = all_source_modules | api_modules
     all_known = (
-        {m.lower() for m in modules}
-        | {m.replace("_", "-").lower() for m in modules}
-        | {lb.lower() for lb in libraries}
-        | {p.lower().replace("-", "_") for p in META_PAGES}
-        | {p.lower() for p in META_PAGES}
+        {normalize_page_name(m) for m in known_modules}
+        | {normalize_page_name(m.replace("_", "-")) for m in known_modules}
+        | {normalize_page_name(module_page_name(m)) for m in known_modules}
+        | {normalize_page_name(module_page_name(m.replace("_", "-"))) for m in known_modules}
+        | {normalize_page_name(lb) for lb in libraries}
+        | {normalize_page_name(lb.replace("_", "-")) for lb in libraries}
+        | {normalize_page_name(p) for p in META_PAGES}
     )
     for stem in wiki_pages:
-        stem_norm = stem.lower().replace("-", "_")
-        if stem_norm not in all_known and stem.lower() not in {p.lower() for p in META_PAGES}:
+        stem_norm = normalize_page_name(stem)
+        if stem_norm not in all_known:
             findings.append({
                 "level": "WARN",
                 "category": "orphan",

@@ -454,13 +454,10 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local path = g:astar(a, b)
-    if path then
-        print("astar path = " .. #path .. " nodes")
-    end
+    print("astar path = " .. tostring(path ~= nil))
 end
 ```
 
@@ -487,8 +484,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local colors = g:colorGraph()
     print("coloring type = " .. type(colors))
@@ -560,16 +556,10 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
-    local c = g:addNode()
-    g:addEdge(a, b)
-    g:addEdge(b, c)
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b); g:addEdge(b, c)
     local result = g:findPath(a, c)
-    if result then
-        print("path cost = " .. result.cost)
-        print("path nodes = " .. #result.nodes)
-    end
+    print("path found = " .. tostring(result ~= nil))
 end
 ```
 
@@ -605,14 +595,10 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
-    g:addEdge(a, b)
-    local item = g:createItem("cargo")
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b); local item = g:createItem("cargo")
     local result = g:findPathForItem(item, a, b)
-    if result then
-        print("item path cost = " .. result.cost)
-    end
+    print("item path found = " .. tostring(result ~= nil))
 end
 ```
 
@@ -676,8 +662,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local d = g:getDistance(a, b)
     print("distance = " .. tostring(d))
@@ -714,13 +699,10 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b, "pipe")
     local e = g:getEdgeBetween(a, b)
-    if e then
-        print("edge between a-b exists")
-    end
+    print("edge between a-b exists = " .. tostring(e ~= nil))
 end
 ```
 
@@ -777,8 +759,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local edges = g:getEdges()
     print("edge list = " .. #edges)
@@ -871,11 +852,8 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
-    local c = g:addNode()
-    g:addEdge(a, b)
-    g:addEdge(a, c)
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b); g:addEdge(a, c)
     local neighbors = g:getNeighbors(a)
     print("neighbors of a = " .. #neighbors)
 end
@@ -970,8 +948,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local reachable = g:getReachable(a, 5.0)
     print("reachable = " .. #reachable)
@@ -1031,10 +1008,8 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
-    g:addEdge(a, b)
-    g:addEdge(b, a)
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b); g:addEdge(b, a)
     print("has cycle = " .. tostring(g:hasCycle()))
 end
 ```
@@ -1193,12 +1168,8 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
-    local c = g:addNode()
-    g:addEdge(a, b)
-    g:addEdge(b, c)
-    g:addEdge(a, c)
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b); g:addEdge(b, c); g:addEdge(a, c)
     local tree = g:mst()
     print("MST edges = " .. #tree)
 end
@@ -1291,8 +1262,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     local ok = g:removeEdge(e)
     print("removed edge = " .. tostring(ok))
@@ -1394,13 +1364,9 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
-    local e = g:addEdge(a, b)
-    e:setTravelTime(2.0)
-    local item = g:createItem("package")
-    g:addItem(item, a)
-    g:sendItem(item, e)
+    local a, b = g:addNode(), g:addNode()
+    local e, item = g:addEdge(a, b), g:createItem("package")
+    g:addItem(item, a); g:sendItem(item, e)
     print("item sent along edge")
 end
 ```
@@ -1458,8 +1424,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addNode()
     local sub = g:subgraph({a, b})
     print("subgraph nodes = " .. sub:getNodeCount())
@@ -1519,15 +1484,10 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
-    local c = g:addNode()
-    g:addEdge(a, b)
-    g:addEdge(b, c)
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b); g:addEdge(b, c)
     local sorted = g:topologicalSort()
-    if sorted then
-        print("topo sort = " .. #sorted .. " nodes")
-    end
+    print("topo sort = " .. tostring(sorted ~= nil))
 end
 ```
 
@@ -1645,8 +1605,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:addAllowedType("iron")
     print("iron allowed")
@@ -1672,9 +1631,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 
 ```lua
 do
-    local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local g = lurek.graph.newGraph(); local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:addAllowedType("x")
     e:clearAllowedTypes()
@@ -1765,8 +1722,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode("src")
-    local b = g:addNode("dst")
+    local a, b = g:addNode("src"), g:addNode("dst")
     local e = g:addEdge(a, b)
     local from = e:getFrom()
     print("from type = " .. from:getType())
@@ -1796,8 +1752,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     local items = e:getItemsInTransit()
     print("in transit = " .. #items)
@@ -1887,8 +1842,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode("target")
+    local a, b = g:addNode(), g:addNode("target")
     local e = g:addEdge(a, b)
     local to = e:getTo()
     print("to type = " .. to:getType())
@@ -2073,8 +2027,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:addAllowedType("gold")
     print("gold allowed = " .. tostring(e:isItemTypeAllowed("gold")))
@@ -2138,9 +2091,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 
 ```lua
 do
-    local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local g = lurek.graph.newGraph(); local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:addAllowedType("coal")
     local ok = e:removeAllowedType("coal")
@@ -2173,8 +2124,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setActive(false)
     print("active = " .. tostring(e:isActive()))
@@ -2206,8 +2156,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setBidirectional(true)
     print("bidi = " .. tostring(e:isBidirectional()))
@@ -2239,8 +2188,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setCapacity(10)
     print("capacity = " .. e:getCapacity())
@@ -2272,8 +2220,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setCooldown(1.0)
     print("cooldown = " .. e:getCooldown())
@@ -2305,8 +2252,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setSpeedModifier(2.0)
     print("speed mod = " .. e:getSpeedModifier())
@@ -2338,8 +2284,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setThroughput(100)
     print("throughput = " .. e:getThroughput())
@@ -2371,8 +2316,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setTravelTime(5.0)
     print("travel time = " .. e:getTravelTime())
@@ -2404,8 +2348,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setType("rail")
     print("edge type = " .. e:getType())
@@ -2437,8 +2380,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setWeight(3.5)
     print("weight = " .. e:getWeight())
@@ -2562,14 +2504,9 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 
 ```lua
 do
-    local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    local item = g:createItem("box")
-    g:addItem(item, n)
-    local node, edge, progress = item:getPosition()
-    if node then
-        print("item is on a node")
-    end
+    local g = lurek.graph.newGraph(); local n = g:addNode()
+    local item = g:createItem("box"); g:addItem(item, n)
+    print("item is on a node = " .. tostring(item:getPosition() ~= nil))
 end
 ```
 
@@ -2985,8 +2922,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    n:setConversion("a", "b")
-    n:setConversion("c", "d")
+    n:setConversion("a", "b"); n:setConversion("c", "d")
     n:clearAllConversions()
     print("all conversions cleared")
 end
@@ -3075,8 +3011,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    n:addSupply("a", 1)
-    n:addSupply("b", 2)
+    n:addSupply("a", 1); n:addSupply("b", 2)
     n:clearSupplies()
     print("supplies cleared")
 end
@@ -3103,8 +3038,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    n:addTag("x")
-    n:addTag("y")
+    n:addTag("x"); n:addTag("y")
     n:clearTags()
     print("tags cleared")
 end
@@ -3132,17 +3066,11 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 
 ```lua
 do
-    local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    n:setQueueEnabled(true)
-    n:setQueueCapacity(5)
-    local item = g:createItem("box")
-    g:addItem(item, n)
-    n:enqueue(item)
-    local out = n:dequeue()
-    if out then
-        print("dequeued item type = " .. out:getType())
-    end
+    local g = lurek.graph.newGraph(); local n = g:addNode()
+    n:setQueueEnabled(true); n:setQueueCapacity(5)
+    local item = g:createItem("box"); g:addItem(item, n)
+    n:enqueue(item); local out = n:dequeue()
+    print("dequeued = " .. tostring(out ~= nil))
 end
 ```
 
@@ -3173,14 +3101,10 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 
 ```lua
 do
-    local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    n:setQueueEnabled(true)
-    n:setQueueCapacity(5)
-    local item = g:createItem("parcel")
-    g:addItem(item, n)
-    local ok = n:enqueue(item)
-    print("enqueued = " .. tostring(ok))
+    local g = lurek.graph.newGraph(); local n = g:addNode()
+    n:setQueueEnabled(true); n:setQueueCapacity(5)
+    local item = g:createItem("parcel"); g:addItem(item, n)
+    print("enqueued = " .. tostring(n:enqueue(item)))
 end
 ```
 
@@ -3240,8 +3164,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 ```lua
 do
     local g = lurek.graph.newGraph()
-    local a = g:addNode()
-    local b = g:addNode()
+    local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local edges = a:getEdges("both")
     print("edges = " .. #edges)
@@ -3328,8 +3251,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    local item = g:createItem("ore")
-    g:addItem(item, n)
+    g:addItem(g:createItem("ore"), n)
     local items = n:getItems()
     print("node items = " .. #items)
 end
@@ -3585,8 +3507,7 @@ Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    n:addTag("a")
-    n:addTag("b")
+    n:addTag("a"); n:addTag("b")
     local tags = n:getTags()
     print("tags = " .. #tags)
 end
