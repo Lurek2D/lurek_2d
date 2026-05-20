@@ -239,9 +239,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
 ---@class LSkeleton
-LSkeleton = {}
 ```
 
 #### Description
@@ -267,9 +265,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
 ---@class LSkeletonAnimation
-LSkeletonAnimation = {}
 ```
 
 #### Description

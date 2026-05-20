@@ -1063,9 +1063,7 @@ end
 #### Definition
 
 ```lua
---- Provides Lua methods for querying, merging, filtering, and exporting catalog data.
 ---@class LApiCatalog
-LApiCatalog = {}
 ```
 
 #### Description
@@ -1088,9 +1086,7 @@ end
 #### Definition
 
 ```lua
---- Provides Lua accessors for documentation entry metadata.
 ---@class LDocEntry
-LDocEntry = {}
 ```
 
 #### Description
@@ -1156,9 +1152,7 @@ do
 #### Definition
 
 ```lua
---- Provides Lua accessors for documentation quality scoring results.
 ---@class LQualityReport
-LQualityReport = {}
 ```
 
 #### Description
@@ -1182,9 +1176,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side schema validator built from docs field rules.
 ---@class LSchema
-LSchema = {}
 ```
 
 #### Description
@@ -1207,9 +1199,7 @@ end
 #### Definition
 
 ```lua
---- Provides Lua accessors for documentation validation results.
 ---@class LValidationReport
-LValidationReport = {}
 ```
 
 #### Description

@@ -556,9 +556,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for an image effect chain detached from live post-effect capture.
 ---@class LImageEffect
-LImageEffect = {}
 ```
 
 #### Description
@@ -581,9 +579,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for screen overlay, ambient, weather, and transition visual state.
 ---@class LOverlay
-LOverlay = {}
 ```
 
 #### Description
@@ -606,9 +602,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a single post-processing effect instance.
 ---@class LPostFxEffect
-LPostFxEffect = {}
 ```
 
 #### Description
@@ -631,9 +625,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for an ordered post-processing stack.
 ---@class LPostFxStack
-LPostFxStack = {}
 ```
 
 #### Description
@@ -656,9 +648,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a timed screen transition effect.
 ---@class LScreenTransition
-LScreenTransition = {}
 ```
 
 #### Description

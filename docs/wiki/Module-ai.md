@@ -1476,9 +1476,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a named agent stored inside an AI world.
 ---@class LAgent
-LAgent = {}
 ```
 
 #### Description
@@ -1502,9 +1500,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a typed AI blackboard storing local key-value facts.
 ---@class LAIBlackboard
-LAIBlackboard = {}
 ```
 
 #### Description
@@ -1528,9 +1524,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for an AI director that tracks encounter tension and pacing factors.
 ---@class LAIDirector
-LAIDirector = {}
 ```
 
 #### Description
@@ -1553,9 +1547,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for distance-based AI level-of-detail tier selection.
 ---@class LAILod
-LAILod = {}
 ```
 
 #### Description
@@ -1578,9 +1570,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
 ---@class LAIWorld
-LAIWorld = {}
 ```
 
 #### Description
@@ -1603,9 +1593,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for multi-armed bandit action selection.
 ---@class LBandit
-LBandit = {}
 ```
 
 #### Description
@@ -1628,9 +1616,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
 ---@class LBehaviorTree
-LBehaviorTree = {}
 ```
 
 #### Description
@@ -1653,9 +1639,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a behavior tree node that can be assembled into composites and decorators.
 ---@class LBTNode
-LBTNode = {}
 ```
 
 #### Description
@@ -1678,9 +1662,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a command queue that stores ordered callback-backed commands.
 ---@class LCommandQueue
-LCommandQueue = {}
 ```
 
 #### Description
@@ -1703,9 +1685,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for slot-based context steering direction selection.
 ---@class LContextSteering
-LContextSteering = {}
 ```
 
 #### Description
@@ -1728,9 +1708,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for topic and branch selection driven by dialogue AI state.
 ---@class LDialogueAI
-LDialogueAI = {}
 ```
 
 #### Description
@@ -1753,9 +1731,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for decaying named emotion intensities.
 ---@class LEmotionModel
-LEmotionModel = {}
 ```
 
 #### Description
@@ -1778,9 +1754,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a floating-point genetic algorithm population.
 ---@class LGeneticAlgorithm
-LGeneticAlgorithm = {}
 ```
 
 #### Description
@@ -1803,9 +1777,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
 ---@class LGOAPPlanner
-LGOAPPlanner = {}
 ```
 
 #### Description
@@ -1828,9 +1800,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a hierarchical task network domain.
 ---@class LHTNDomain
-LHTNDomain = {}
 ```
 
 #### Description
@@ -1853,9 +1823,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a grid-based influence map with named layers.
 ---@class LInfluenceMap
-LInfluenceMap = {}
 ```
 
 #### Description
@@ -1878,9 +1846,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for Monte Carlo tree search over Lua-defined game states and actions.
 ---@class LMCTSEngine
-LMCTSEngine = {}
 ```
 
 #### Description
@@ -1906,9 +1872,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for decaying needs and urgency selection.
 ---@class LNeedSystem
-LNeedSystem = {}
 ```
 
 #### Description
@@ -1931,9 +1895,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a feed-forward neural network.
 ---@class LNeuralNet
-LNeuralNet = {}
 ```
 
 #### Description
@@ -1956,9 +1918,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for evolving neural network chromosomes.
 ---@class LNeuroevolution
-LNeuroevolution = {}
 ```
 
 #### Description
@@ -1981,9 +1941,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for reciprocal velocity obstacle avoidance agents.
 ---@class LORCASolver
-LORCASolver = {}
 ```
 
 #### Description
@@ -2006,9 +1964,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a Q-learning table with configurable exploration and learning parameters.
 ---@class LQLearner
-LQLearner = {}
 ```
 
 #### Description
@@ -2031,9 +1987,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a named squad with members, leader, formation, and shared blackboard.
 ---@class LSquad
-LSquad = {}
 ```
 
 #### Description
@@ -2056,9 +2010,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a finite state machine with Lua-backed state callbacks and transition guards.
 ---@class LStateMachine
-LStateMachine = {}
 ```
 
 #### Description
@@ -2081,9 +2033,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for a steering behavior stack that combines movement forces for an agent.
 ---@class LSteeringManager
-LSteeringManager = {}
 ```
 
 #### Description
@@ -2106,9 +2056,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for sensory stimuli tracked in world space.
 ---@class LStimulusWorld
-LStimulusWorld = {}
 ```
 
 #### Description
@@ -2131,9 +2079,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for interval-based strategic goal selection.
 ---@class LStrategyAI
-LStrategyAI = {}
 ```
 
 #### Description
@@ -2156,9 +2102,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for trait values with temporary modifiers and archetype lookup.
 ---@class LTraitProfile
-LTraitProfile = {}
 ```
 
 #### Description
@@ -2181,9 +2125,7 @@ end
 #### Definition
 
 ```lua
---- Lua handle for utility AI action scoring and consideration curves.
 ---@class LUtilityAI
-LUtilityAI = {}
 ```
 
 #### Description

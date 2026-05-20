@@ -1157,9 +1157,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
 ---@class LTerminal
-LTerminal = {}
 ```
 
 #### Description
@@ -1185,9 +1183,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).
 ---@class LWidget
-LWidget = {}
 ```
 
 #### Description

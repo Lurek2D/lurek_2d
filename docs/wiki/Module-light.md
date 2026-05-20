@@ -748,9 +748,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a light stored in the shared light world.
 ---@class LLight
-LLight = {}
 ```
 
 #### Description
@@ -773,9 +771,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for an occluder stored in the shared light world.
 ---@class LOccluder
-LOccluder = {}
 ```
 
 #### Description

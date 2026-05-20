@@ -1581,9 +1581,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side file watcher with an optional change callback.
 ---@class LFileWatcher
-LFileWatcher = {}
 ```
 
 #### Description
@@ -1606,9 +1604,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side REPL console handle with bounded history.
 ---@class LReplConsole
-LReplConsole = {}
 ```
 
 #### Description

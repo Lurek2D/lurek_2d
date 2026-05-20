@@ -1305,9 +1305,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 ---@class LAutoTileSheet
-LAutoTileSheet = {}
 ```
 
 #### Description
@@ -1333,9 +1331,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
 ---@class LChunkMap
-LChunkMap = {}
 ```
 
 #### Description
@@ -1360,9 +1356,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
 ---@class LIsoMap
-LIsoMap = {}
 ```
 
 #### Description
@@ -1388,9 +1382,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
 ---@class LLargeMapRenderer
-LLargeMapRenderer = {}
 ```
 
 #### Description
@@ -1415,9 +1407,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
 ---@class LMapBlock
-LMapBlock = {}
 ```
 
 #### Description
@@ -1443,9 +1433,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
 ---@class LMapGen
-LMapGen = {}
 ```
 
 #### Description
@@ -1471,9 +1459,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
 ---@class LMapGroup
-LMapGroup = {}
 ```
 
 #### Description
@@ -1499,9 +1485,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
 ---@class LMapScript
-LMapScript = {}
 ```
 
 #### Description
@@ -1527,9 +1511,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
 ---@class LTileMap
-LTileMap = {}
 ```
 
 #### Description
@@ -1555,9 +1537,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
 ---@class LTileSet
-LTileSet = {}
 ```
 
 #### Description

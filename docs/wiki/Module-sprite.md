@@ -311,9 +311,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 ---@class LSpriteAtlas
-LSpriteAtlas = {}
 ```
 
 #### Description
@@ -339,9 +337,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 ---@class LSpriteSheet
-LSpriteSheet = {}
 ```
 
 #### Description

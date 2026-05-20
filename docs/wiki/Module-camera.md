@@ -241,9 +241,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
 ---@class LCamera
-LCamera = {}
 ```
 
 #### Description
@@ -266,9 +264,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side camera rig that manages named cameras and viewport layouts.
 ---@class LCameraRig
-LCameraRig = {}
 ```
 
 #### Description

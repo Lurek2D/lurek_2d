@@ -1047,9 +1047,7 @@ end
 #### Definition
 
 ```lua
---- A handle to a single physics body in the world, providing per-body manipulation methods.
 ---@class LBody
-LBody = {}
 ```
 
 #### Description
@@ -1073,9 +1071,7 @@ end
 #### Definition
 
 ```lua
---- A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle-like physics effects.
 ---@class LCellular
-LCellular = {}
 ```
 
 #### Description
@@ -1101,9 +1097,7 @@ end
 #### Definition
 
 ```lua
---- A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
 ---@class LPhysicsShape
-LPhysicsShape = {}
 ```
 
 #### Description
@@ -1128,9 +1122,7 @@ end
 #### Definition
 
 ```lua
---- A destructible terrain map backed by a grid of solid/empty cells. Generates physics colliders on flush.
 ---@class LTerrain
-LTerrain = {}
 ```
 
 #### Description
@@ -1156,9 +1148,7 @@ end
 #### Definition
 
 ```lua
---- A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.
 ---@class LWorld
-LWorld = {}
 ```
 
 #### Description
@@ -1184,9 +1174,7 @@ end
 #### Definition
 
 ```lua
---- A physics zone that applies area-based effects (gravity overrides, damping) to bodies within its bounds.
 ---@class LZone
-LZone = {}
 ```
 
 #### Description

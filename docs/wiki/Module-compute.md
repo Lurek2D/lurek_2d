@@ -579,9 +579,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side multidimensional numeric array handle.
 ---@class LArray
-LArray = {}
 ```
 
 #### Description

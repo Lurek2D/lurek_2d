@@ -228,9 +228,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side content registry for storing typed Lua values by id.
 ---@class LContentRegistry
-LContentRegistry = {}
 ```
 
 #### Description
@@ -254,9 +252,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for mod metadata, hooks, and config references.
 ---@class LMod
-LMod = {}
 ```
 
 #### Description
@@ -280,9 +276,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for the mod manager.
 ---@class LModManager
-LModManager = {}
 ```
 
 #### Description

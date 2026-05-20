@@ -1135,9 +1135,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
 ---@class LBehaviorTree
-LBehaviorTree = {}
 ```
 
 #### Description
@@ -1163,9 +1161,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
 ---@class LBlackboard
-LBlackboard = {}
 ```
 
 #### Description
@@ -1191,9 +1187,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
 ---@class LCommandStack
-LCommandStack = {}
 ```
 
 #### Description
@@ -1219,9 +1213,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing debounce that delays firing until input stops for a specified wait period.
 ---@class LDebounce
-LDebounce = {}
 ```
 
 #### Description
@@ -1254,9 +1246,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 ---@class LEventBus
-LEventBus = {}
 ```
 
 #### Description
@@ -1288,9 +1278,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing factory pattern for creating typed game objects from registered constructor functions.
 ---@class LFactory
-LFactory = {}
 ```
 
 #### Description
@@ -1325,9 +1313,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing batching funnel that collects events over a time window and flushes them together.
 ---@class LFunnel
-LFunnel = {}
 ```
 
 #### Description
@@ -1357,9 +1343,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing dynamic array list with indexed access, insertion, removal, and search.
 ---@class LList
-LList = {}
 ```
 
 #### Description
@@ -1385,9 +1369,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.
 ---@class LMap
-LMap = {}
 ```
 
 #### Description
@@ -1413,9 +1395,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing mediator for channel-based message passing between decoupled game systems.
 ---@class LMediator
-LMediator = {}
 ```
 
 #### Description
@@ -1448,9 +1428,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing object pool for reusing pre-allocated game objects (bullets, particles, enemies) to avoid per-frame allocations.
 ---@class LObjectPool
-LObjectPool = {}
 ```
 
 #### Description
@@ -1474,9 +1452,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing reactive observer that stores values and notifies subscribers when values change.
 ---@class LObserver
-LObserver = {}
 ```
 
 #### Description
@@ -1508,9 +1484,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and connectivity queries.
 ---@class LPatternGraph
-LPatternGraph = {}
 ```
 
 #### Description
@@ -1536,9 +1510,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing priority queue that orders elements by numeric priority (highest first).
 ---@class LPriorityQueue
-LPriorityQueue = {}
 ```
 
 #### Description
@@ -1564,9 +1536,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.
 ---@class LQueue
-LQueue = {}
 ```
 
 #### Description
@@ -1592,9 +1562,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing relationship manager for tracking numeric values and named levels between entity pairs.
 ---@class LRelationshipManager
-LRelationshipManager = {}
 ```
 
 #### Description
@@ -1620,9 +1588,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
 ---@class LRing
-LRing = {}
 ```
 
 #### Description
@@ -1648,9 +1614,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing service locator for registering and retrieving shared services by name at runtime.
 ---@class LServiceLocator
-LServiceLocator = {}
 ```
 
 #### Description
@@ -1674,9 +1638,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing string set with add/remove/has operations and set algebra (union, intersection).
 ---@class LSet
-LSet = {}
 ```
 
 #### Description
@@ -1702,9 +1664,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing finite state machine with enter/exit/update callbacks per state.
 ---@class LSimpleState
-LSimpleState = {}
 ```
 
 #### Description
@@ -1730,9 +1690,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.
 ---@class LStack
-LStack = {}
 ```
 
 #### Description
@@ -1758,9 +1716,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing strategy pattern allowing hot-swappable algorithm implementations by name.
 ---@class LStrategy
-LStrategy = {}
 ```
 
 #### Description
@@ -1798,9 +1754,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing throttle that limits how often an action can fire, enforcing a minimum interval between executions.
 ---@class LThrottle
-LThrottle = {}
 ```
 
 #### Description
@@ -1832,9 +1786,7 @@ end
 #### Definition
 
 ```lua
---- Lua-facing weighted random selection pool. Add items with weights and pick random selections.
 ---@class LWeightedRandom
-LWeightedRandom = {}
 ```
 
 #### Description

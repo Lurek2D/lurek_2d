@@ -727,9 +727,7 @@ end
 #### Definition
 
 ```lua
---- A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.
 ---@class LScheduler
-LScheduler = {}
 ```
 
 #### Description

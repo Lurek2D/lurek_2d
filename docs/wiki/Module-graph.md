@@ -208,9 +208,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side graph handle storing graph state and registered event callbacks.
 ---@class LGraph
-LGraph = {}
 ```
 
 #### Description
@@ -233,9 +231,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side edge handle referencing one edge id inside a graph.
 ---@class LGraphEdge
-LGraphEdge = {}
 ```
 
 #### Description
@@ -261,9 +257,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side item handle referencing one item id inside a graph.
 ---@class LGraphItem
-LGraphItem = {}
 ```
 
 #### Description
@@ -287,9 +281,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side node handle referencing one node id inside a graph.
 ---@class LGraphNode
-LGraphNode = {}
 ```
 
 #### Description

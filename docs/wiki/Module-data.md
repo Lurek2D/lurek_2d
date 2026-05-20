@@ -921,9 +921,7 @@ end
 #### Definition
 
 ```lua
---- Exposes byte-buffer inspection and bit editing methods to Lua.
 ---@class LByteData
-LByteData = {}
 ```
 
 #### Description
@@ -946,9 +944,7 @@ end
 #### Definition
 
 ```lua
---- Creates a DataView over a binary string slice.
 ---@class LDataView
-LDataView = {}
 ```
 
 #### Description
@@ -972,9 +968,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side binary writer for sequential byte construction.
 ---@class LDataWriter
-LDataWriter = {}
 ```
 
 #### Description
@@ -997,9 +991,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side fixed-capacity FIFO buffer that stores registry-protected Lua values.
 ---@class LRingBuffer
-LRingBuffer = {}
 ```
 
 #### Description

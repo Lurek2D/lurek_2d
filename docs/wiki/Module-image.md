@@ -734,9 +734,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for compressed DDS image metadata and mipmap data.
 ---@class LCompressedImageData
-LCompressedImageData = {}
 ```
 
 #### Description
@@ -761,9 +759,7 @@ end
 #### Definition
 
 ```lua
---- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
 ---@class LImageData
-LImageData = {}
 ```
 
 #### Description
@@ -787,9 +783,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for multiple image layers with visibility, opacity, and ordering.
 ---@class LLayeredImage
-LLayeredImage = {}
 ```
 
 #### Description
@@ -856,9 +850,7 @@ do
 #### Definition
 
 ```lua
---- Lua-side handle for palette color remapping.
 ---@class LPaletteLUT
-LPaletteLUT = {}
 ```
 
 #### Description
@@ -881,9 +873,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a province id grid decoded from an image.
 ---@class LProvinceGrid
-LProvinceGrid = {}
 ```
 
 #### Description

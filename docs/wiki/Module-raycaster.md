@@ -531,9 +531,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible door manager that controls sliding doors within a raycaster map.
 ---@class LDoorManager
-LDoorManager = {}
 ```
 
 #### Description
@@ -559,9 +557,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
 ---@class LHeightMap
-LHeightMap = {}
 ```
 
 #### Description
@@ -586,9 +582,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.
 ---@class LPointLight
-LPointLight = {}
 ```
 
 #### Description
@@ -613,9 +607,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
 ---@class LRaycaster
-LRaycaster = {}
 ```
 
 #### Description
@@ -639,9 +631,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
 ---@class LSpriteManager
-LSpriteManager = {}
 ```
 
 #### Description

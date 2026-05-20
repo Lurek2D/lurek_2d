@@ -162,9 +162,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a minimap instance and access to render command state.
 ---@class LMinimap
-LMinimap = {}
 ```
 
 #### Description

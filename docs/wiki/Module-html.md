@@ -448,9 +448,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side HTML document handle with DOM state, callbacks, and render command access.
 ---@class LHtmlDocument
-LHtmlDocument = {}
 ```
 
 #### Description
@@ -473,9 +471,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side DOM element handle with stale-generation detection.
 ---@class LHtmlElement
-LHtmlElement = {}
 ```
 
 #### Description

@@ -606,6 +606,13 @@ def parse_stub_index(stub_text: str) -> tuple[dict[str, str], dict[str, str]]:
     return callable_stubs, class_stubs
 
 
+def type_definition_block(class_name: str, class_stub: str) -> str:
+    lines = [line for line in class_stub.splitlines() if line.startswith("---@class") or line.startswith("---@field")]
+    if lines:
+        return "\n".join(lines)
+    return f"---@class {class_name}"
+
+
 def build_context(output: Path) -> Context:
     api_data = json.loads(read(API_DATA))
     api_modules = api_data.get("lua_api", {}).get("modules", {})
@@ -1019,7 +1026,7 @@ def module_page(context: Context, module: str) -> Page:
             desc = clean_text(str(class_data.get("description", "") or ""))
             class_stub = context.class_stubs.get(example_key(class_name), "")
             if class_stub:
-                body += ["#### Definition", "", "```lua", class_stub, "```", ""]
+                body += ["#### Definition", "", "```lua", type_definition_block(class_name, class_stub), "```", ""]
             body += ["#### Description", ""]
             if desc:
                 body += [desc, ""]

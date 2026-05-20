@@ -1523,9 +1523,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for immutable file bytes and their source path.
 ---@class LFileData
-LFileData = {}
 ```
 
 #### Description
@@ -1548,9 +1546,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a mutable file stream opened through GameFS.
 ---@class LFileHandle
-LFileHandle = {}
 ```
 
 #### Description
@@ -1575,9 +1571,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a mounted ZIP archive view.
 ---@class LZipMount
-LZipMount = {}
 ```
 
 #### Description

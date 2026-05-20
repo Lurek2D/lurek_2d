@@ -149,9 +149,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side REPL session handle with bounded history.
 ---@class LReplSession
-LReplSession = {}
 ```
 
 #### Description

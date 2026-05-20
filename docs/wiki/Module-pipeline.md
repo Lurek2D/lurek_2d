@@ -217,9 +217,7 @@ end
 #### Definition
 
 ```lua
---- A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
 ---@class LPipeline
-LPipeline = {}
 ```
 
 #### Description
@@ -243,9 +241,7 @@ end
 #### Definition
 
 ```lua
---- A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
 ---@class LPipelineStep
-LPipelineStep = {}
 ```
 
 #### Description

@@ -121,9 +121,7 @@ end
 #### Definition
 
 ```lua
---- Manages persistent game state: registering data collectors/restorers, serializing to named.
 ---@class LSaveManager
-LSaveManager = {}
 ```
 
 #### Description

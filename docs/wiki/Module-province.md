@@ -460,9 +460,7 @@ end
 #### Definition
 
 ```lua
---- Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 ---@class LProvinceRegistry
-LProvinceRegistry = {}
 ```
 
 #### Description

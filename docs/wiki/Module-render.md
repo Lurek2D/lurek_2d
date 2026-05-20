@@ -3965,9 +3965,7 @@ end
 #### Definition
 
 ```lua
---- Off-screen render target that can be drawn to and then composited onto the screen.
 ---@class LCanvas
-LCanvas = {}
 ```
 
 #### Description
@@ -3993,9 +3991,7 @@ end
 #### Definition
 
 ```lua
---- Z-ordered draw callback layer for sorting draw calls by depth before flushing.
 ---@class LDrawLayer
-LDrawLayer = {}
 ```
 
 #### Description
@@ -4034,9 +4030,7 @@ end
 #### Definition
 
 ```lua
---- Bitmap font handle for measuring and rendering text.
 ---@class LFont
-LFont = {}
 ```
 
 #### Description
@@ -4062,9 +4056,7 @@ end
 #### Definition
 
 ```lua
---- GPU-backed texture handle used for drawing images to screen.
 ---@class LImage
-LImage = {}
 ```
 
 #### Description
@@ -4090,9 +4082,7 @@ end
 #### Definition
 
 ```lua
---- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
 ---@class LImageData
-LImageData = {}
 ```
 
 #### Description
@@ -4118,9 +4108,7 @@ end
 #### Definition
 
 ```lua
---- Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.
 ---@class LMesh
-LMesh = {}
 ```
 
 #### Description
@@ -4146,9 +4134,7 @@ end
 #### Definition
 
 ```lua
---- Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
 ---@class LNineSlice
-LNineSlice = {}
 ```
 
 #### Description
@@ -4174,9 +4160,7 @@ end
 #### Definition
 
 ```lua
---- Loaded OBJ 3D model handle for CPU-side projection to 2D meshes and sprite rendering.
 ---@class LObjModel
-LObjModel = {}
 ```
 
 #### Description
@@ -4202,9 +4186,7 @@ end
 #### Definition
 
 ```lua
---- Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
 ---@class LQuad
-LQuad = {}
 ```
 
 #### Description
@@ -4230,9 +4212,7 @@ end
 #### Definition
 
 ```lua
---- GPU shader program for custom rendering effects (post-processing, distortion, etc.).
 ---@class LShader
-LShader = {}
 ```
 
 #### Description
@@ -4258,9 +4238,7 @@ end
 #### Definition
 
 ```lua
---- Retained compound shape that accumulates drawing commands and can be rendered in one call.
 ---@class LShape
-LShape = {}
 ```
 
 #### Description
@@ -4286,9 +4264,7 @@ end
 #### Definition
 
 ```lua
---- Batched sprite renderer for efficiently drawing many copies of the same texture.
 ---@class LSpriteBatch
-LSpriteBatch = {}
 ```
 
 #### Description

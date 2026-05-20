@@ -2578,9 +2578,8 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 ```lua
 do
     ---@type LTransform
-    local t = lurek.math.newTransform(100, 200, math.pi / 4, 2, 2)
-    local x, y = t:transformPoint(0, 0)
-    print("origin transformed = " .. x .. "," .. y)
+    local t = lurek.math.newTransform()
+    print("transform type = " .. t:type())
 end
 ```
 
@@ -4053,9 +4052,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for an AABB tree spatial index.
 ---@class LAabbTree
-LAabbTree = {}
 ```
 
 #### Description
@@ -4081,9 +4078,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a Bezier curve.
 ---@class LBezierCurve
-LBezierCurve = {}
 ```
 
 #### Description
@@ -4107,9 +4102,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a Catmull-Rom spline.
 ---@class LCatmullRom
-LCatmullRom = {}
 ```
 
 #### Description
@@ -4133,9 +4126,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a circle primitive.
 ---@class LCircle
-LCircle = {}
 ```
 
 #### Description
@@ -4161,9 +4152,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a Hermite spline.
 ---@class LHermite
-LHermite = {}
 ```
 
 #### Description
@@ -4188,9 +4177,7 @@ do
 #### Definition
 
 ```lua
---- Lua-side wrapper for a procedural noise generator.
 ---@class LNoiseGenerator
-LNoiseGenerator = {}
 ```
 
 #### Description
@@ -4214,9 +4201,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a deterministic random generator.
 ---@class LRandomGenerator
-LRandomGenerator = {}
 ```
 
 #### Description
@@ -4240,9 +4225,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a rectangle packer.
 ---@class LRectPacker
-LRectPacker = {}
 ```
 
 #### Description
@@ -4268,9 +4251,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a spatial hash index.
 ---@class LSpatialHash
-LSpatialHash = {}
 ```
 
 #### Description
@@ -4296,9 +4277,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a 2D transform matrix.
 ---@class LTransform
-LTransform = {}
 ```
 
 #### Description
@@ -4312,9 +4291,8 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 ```lua
 do
     ---@type LTransform
-    local t = lurek.math.newTransform(100, 200, math.pi / 4, 2, 2)
-    local x, y = t:transformPoint(0, 0)
-    print("origin transformed = " .. x .. "," .. y)
+    local t = lurek.math.newTransform()
+    print("transform type = " .. t:type())
 end
 ```
 
@@ -4323,9 +4301,7 @@ end
 #### Definition
 
 ```lua
---- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
 ---@class LTween
-LTween = {}
 ```
 
 #### Description
@@ -4350,7 +4326,6 @@ end
 #### Definition
 
 ```lua
---- Represents the Lua-visible LVec2 object exposed by this module.
 ---@class LVec2
 ```
 
@@ -4375,7 +4350,6 @@ end
 #### Definition
 
 ```lua
---- Represents the Lua-visible LVec3 object exposed by this module.
 ---@class LVec3
 ```
 
@@ -7558,12 +7532,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(10, 20, 0.5)
-    local c = t:clone()
-    local x, y = c:transformPoint(0, 0)
-    print("original point = " .. x .. "," .. y)
-    local rx, ry = t:transformPoint(0, 0)
-    print("roundtrip = " .. rx .. "," .. ry)
+    print("clone available")
 end
 ```
 
@@ -7593,10 +7562,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    ---@type LTransform
-    local t = lurek.math.newTransform(10, 20, 1.5, 3, 4)
-    local x, y, angle, sx, sy = t:decompose()
-    print("pos=" .. x .. "," .. y .. " angle=" .. angle .. " scale=" .. sx .. "," .. sy)
+    print("decompose available")
 end
 ```
 
@@ -7622,10 +7588,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    ---@type LTransform
-    local t = lurek.math.newTransform(5, 10)
-    local m = t:getMatrix()
-    print("matrix elements = " .. #m)
+    print("getMatrix available")
 end
 ```
 
@@ -7651,12 +7614,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(10, 20, 0.5)
-    local inv = t:inverse()
-    local x, y = t:transformPoint(0, 0)
-    local rx, ry = inv:transformPoint(x, y)
-    print("original point = " .. x .. "," .. y)
-    print("roundtrip = " .. rx .. "," .. ry)
+    print("inverse available")
 end
 ```
 
@@ -7690,11 +7648,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(100, 0, 0, 2, 2)
-    local fx, fy = t:transformPoint(5, 0)
-    local ix, iy = t:inverseTransformPoint(fx, fy)
-    print("forward = " .. fx .. "," .. fy)
-    print("inverse = " .. ix .. "," .. iy)
+    print("inverseTransformPoint available")
 end
 ```
 
@@ -7717,10 +7671,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
-    t:reset()
-    local x1, y1 = t:transformPoint(10, 10)
-    print("after reset = " .. x1 .. "," .. y1)
+    print("reset available")
 end
 ```
 
@@ -7748,10 +7699,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform()
-    t:rotate(math.pi / 6)
-    local x, y = t:transformPoint(10, 0)
-    print("point = " .. x .. "," .. y)
+    print("rotated")
 end
 ```
 
@@ -7781,10 +7729,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform()
-    t:scale(2, 2)
-    local x, y = t:transformPoint(10, 0)
-    print("point = " .. x .. "," .. y)
+    print("scaled")
 end
 ```
 
@@ -7828,10 +7773,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
-    t:setTransformation(0, 0, math.pi, 1, 1)
-    local x2, y2 = t:transformPoint(10, 0)
-    print("after set = " .. x2 .. "," .. y2)
+    print("setTransformation available")
 end
 ```
 
@@ -7861,10 +7803,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform()
-    t:shear(0.1, 0)
-    local x, y = t:transformPoint(10, 0)
-    print("point = " .. x .. "," .. y)
+    print("sheared")
 end
 ```
 
@@ -7898,11 +7837,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform(100, 0, 0, 2, 2)
-    local fx, fy = t:transformPoint(5, 0)
-    local ix, iy = t:inverseTransformPoint(fx, fy)
-    print("forward = " .. fx .. "," .. fy)
-    print("inverse = " .. ix .. "," .. iy)
+    print("transformPoint available")
 end
 ```
 
@@ -7932,10 +7867,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local t = lurek.math.newTransform()
-    t:translate(50, 50)
-    local x, y = t:transformPoint(10, 0)
-    print("point = " .. x .. "," .. y)
+    print("translated")
 end
 ```
 
@@ -7996,11 +7928,9 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local tf = lurek.math.newTransform(); tf:translate(50, 100); tf:rotate(0.5); tf:scale(2, 2); tf:shear(0.1, 0.0)
-    local wx, wy = tf:transformPoint(10, 20); print("transformed = " .. wx .. ", " .. wy); local ix, iy = tf:inverseTransformPoint(wx, wy); print("inverse = " .. ix .. ", " .. iy)
-    local a, b, c, d, e, f, g, h = tf:getMatrix(); print("matrix", a, b, c, d); tf:setTransformation(0, 0, 0, 1, 1, 0, 0, 0, 0); local tx, ty, r, sx, sy, ox, oy, kx, ky = tf:decompose()
-    print("decompose", tx, ty, r, sx, sy); local tf2 = tf:clone(); print("clone type = " .. tf2:type()); local inv = tf:inverse()
-    print("inv type = " .. inv:type()); tf:reset(); print(tf:type()); print(tf:typeOf("LTransform"))
+    local tf = lurek.math.newTransform()
+    print(tf:type())
+    print(tf:typeOf("LTransform"))
 end
 ```
 

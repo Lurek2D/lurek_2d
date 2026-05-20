@@ -540,9 +540,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side in-memory database containing named dataframes.
 ---@class LDatabase
-LDatabase = {}
 ```
 
 #### Description
@@ -565,9 +563,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side dataframe handle for tabular data with named columns and typed cells.
 ---@class LDataFrame
-LDataFrame = {}
 ```
 
 #### Description
@@ -592,9 +588,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side grouped dataframe object containing group keys and subframes.
 ---@class LGroupedFrame
-LGroupedFrame = {}
 ```
 
 #### Description
@@ -620,9 +614,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side lazy dataframe query pipeline.
 ---@class LLazyQuery
-LLazyQuery = {}
 ```
 
 #### Description
@@ -646,9 +638,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side vectorized dataframe handle for numeric column operations.
 ---@class LVecFrame
-LVecFrame = {}
 ```
 
 #### Description

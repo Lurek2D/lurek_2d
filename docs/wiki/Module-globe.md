@@ -511,9 +511,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a named globe stored inside a shared registry.
 ---@class LGlobe
-LGlobe = {}
 ```
 
 #### Description
@@ -536,9 +534,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for creating and locating named globes in one registry.
 ---@class LGlobeRegistry
-LGlobeRegistry = {}
 ```
 
 #### Description

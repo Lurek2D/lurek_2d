@@ -605,9 +605,7 @@ end
 #### Definition
 
 ```lua
---- Lua-exposed spring physics simulation that smoothly animates table fields toward target values with configurable stiffness and damping.
 ---@class LSpring
-LSpring = {}
 ```
 
 #### Description
@@ -633,9 +631,7 @@ end
 #### Definition
 
 ```lua
---- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
 ---@class LTween
-LTween = {}
 ```
 
 #### Description
@@ -660,9 +656,7 @@ end
 #### Definition
 
 ```lua
---- Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
 ---@class LTweenParallel
-LTweenParallel = {}
 ```
 
 #### Description
@@ -688,9 +682,7 @@ end
 #### Definition
 
 ```lua
---- Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
 ---@class LTweenSequence
-LTweenSequence = {}
 ```
 
 #### Description
@@ -715,7 +707,6 @@ end
 #### Definition
 
 ```lua
---- Lua-exposed standalone tween state for manual interpolation without automatic property updates.
 ---@class LTweenState
 ```
 

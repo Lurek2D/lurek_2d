@@ -2819,9 +2819,7 @@ do
 #### Definition
 
 ```lua
---- Lua-side combo detector handle tracking ordered key sequences.
 ---@class LCombo
-LCombo = {}
 ```
 
 #### Description
@@ -2846,9 +2844,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side cursor handle for system and custom cursor requests.
 ---@class LCursor
-LCursor = {}
 ```
 
 #### Description
@@ -2871,9 +2867,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for serialized input recording data.
 ---@class LInputRecording
-LInputRecording = {}
 ```
 
 #### Description

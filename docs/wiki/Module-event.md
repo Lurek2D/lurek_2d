@@ -554,9 +554,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side signal object storing subscriptions and Lua callback registry keys.
 ---@class LSignal
-LSignal = {}
 ```
 
 #### Description

@@ -396,9 +396,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
 ---@class LAnimation
-LAnimation = {}
 ```
 
 #### Description
@@ -421,9 +419,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side animation curve with keyframes and optional custom easing callback.
 ---@class LAnimCurve
-LAnimCurve = {}
 ```
 
 #### Description
@@ -446,9 +442,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side animation state machine that switches clips from named states and parameters.
 ---@class LAnimStateMachine
-LAnimStateMachine = {}
 ```
 
 #### Description
@@ -474,9 +468,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side animation synchronization group for coordinating multiple animation handles.
 ---@class LAnimSyncGroup
-LAnimSyncGroup = {}
 ```
 
 #### Description
@@ -499,9 +491,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side blend layer set used to combine animation clips with weights and bone masks.
 ---@class LBlendLayerSet
-LBlendLayerSet = {}
 ```
 
 #### Description

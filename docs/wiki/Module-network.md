@@ -823,9 +823,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a network host.
 ---@class LNetworkHost
-LNetworkHost = {}
 ```
 
 #### Description
@@ -850,9 +848,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for the background network runtime.
 ---@class LNetworkRuntime
-LNetworkRuntime = {}
 ```
 
 #### Description

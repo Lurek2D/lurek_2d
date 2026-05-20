@@ -312,9 +312,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for a particle system stored in shared runtime state.
 ---@class LParticleSystem
-LParticleSystem = {}
 ```
 
 #### Description
@@ -338,9 +336,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a trail effect.
 ---@class LTrail
-LTrail = {}
 ```
 
 #### Description

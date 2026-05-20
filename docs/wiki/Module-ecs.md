@@ -164,9 +164,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side handle for one ECS universe.
 ---@class LUniverse
-LUniverse = {}
 ```
 
 #### Description

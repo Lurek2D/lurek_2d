@@ -356,9 +356,7 @@ end
 #### Definition
 
 ```lua
---- Creates a new unbounded channel for sending typed values between threads.
 ---@class LChannel
-LChannel = {}
 ```
 
 #### Description
@@ -384,9 +382,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible handle representing an asynchronous computation that will produce a single result value.
 ---@class LPromise
-LPromise = {}
 ```
 
 #### Description
@@ -410,9 +406,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
 ---@class LThread
-LThread = {}
 ```
 
 #### Description
@@ -438,9 +432,7 @@ end
 #### Definition
 
 ```lua
---- Lua-visible handle for a fixed-size pool of worker threads that process items from a shared input channel.
 ---@class LThreadPool
-LThreadPool = {}
 ```
 
 #### Description

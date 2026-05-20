@@ -227,9 +227,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for a parallax layer and shared render state.
 ---@class LParallaxLayer
-LParallaxLayer = {}
 ```
 
 #### Description
@@ -252,9 +250,7 @@ end
 #### Definition
 
 ```lua
---- Lua-side wrapper for an ordered parallax layer set.
 ---@class LParallaxSet
-LParallaxSet = {}
 ```
 
 #### Description
