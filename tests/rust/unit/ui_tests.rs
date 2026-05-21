@@ -170,6 +170,28 @@ mod render_tests {
         assert_eq!(img.width(), 64);
         assert_eq!(img.height(), 48);
     }
+
+    #[test]
+    fn draw_to_image_renders_button_text_pixels() {
+        let mut ctx = GuiContext::new();
+        let idx = ctx.add_button("OK/_");
+        ctx.widgets[idx].base_mut().x = 4.0;
+        ctx.widgets[idx].base_mut().y = 4.0;
+        ctx.widgets[idx].base_mut().width = 72.0;
+        ctx.widgets[idx].base_mut().height = 24.0;
+        ctx.add_child(0, idx);
+
+        let img = ctx.draw_to_image(96, 40);
+        let bright_pixels = img
+            .as_bytes()
+            .chunks_exact(4)
+            .filter(|px| px[0] > 220 && px[1] > 220 && px[2] > 220 && px[3] == 255)
+            .count();
+        assert!(
+            bright_pixels > 24,
+            "button label should be visible in draw_to_image output"
+        );
+    }
 }
 
 // ── layout_loader ─────────────────────────────────────────────────────────────
@@ -706,6 +728,42 @@ mod chart_tests {
     use lurek2d::math::Color;
     use lurek2d::ui::chart::*;
 
+    fn dashboard_config() -> ChartConfig {
+        ChartConfig {
+            width: 220,
+            height: 130,
+            title: Some("Mini".to_string()),
+            ..ChartConfig::default()
+        }
+    }
+
+    fn count_matching_pixels(
+        img: &ImageData,
+        left: u32,
+        top: u32,
+        right: u32,
+        bottom: u32,
+        mut matches: impl FnMut((u8, u8, u8, u8)) -> bool,
+    ) -> usize {
+        let mut count = 0usize;
+        for row in top..bottom.min(img.height()) {
+            for column in left..right.min(img.width()) {
+                if let Some(pixel) = img.get_pixel(column, row) {
+                    if matches(pixel) {
+                        count += 1;
+                    }
+                }
+            }
+        }
+        count
+    }
+
+    fn count_non_background_pixels(img: &ImageData, bg_color: (u8, u8, u8)) -> usize {
+        count_matching_pixels(img, 0, 0, img.width(), img.height(), |pixel| {
+            pixel != (bg_color.0, bg_color.1, bg_color.2, 255)
+        })
+    }
+
     #[test]
     fn chart_config_default_has_sane_dimensions() {
         let cfg = ChartConfig::default();
@@ -794,5 +852,100 @@ mod chart_tests {
         let mut img = ImageData::new(360, 240);
         bar.draw_to_image(&mut img);
         assert_eq!(img.height(), 240);
+    }
+
+    #[test]
+    fn dashboard_sized_charts_render_nonblank() {
+        let mut line_chart = LineChart::new(dashboard_config());
+        line_chart.x_max = 6.0;
+        line_chart.y_max = 100.0;
+        line_chart.add_series(
+            "A",
+            &[(0.0, 20.0), (2.0, 80.0), (4.0, 40.0), (6.0, 90.0)],
+            Color::new(1.0, 0.0, 0.0, 1.0),
+        );
+        let mut line_image = ImageData::new(220, 130);
+        line_chart.draw_to_image(&mut line_image);
+        assert!(count_non_background_pixels(&line_image, line_chart.config.bg_color) > 100);
+
+        let mut bar_chart = BarChart::new(dashboard_config());
+        bar_chart.add_series("A", Color::new(0.2, 0.6, 0.9, 1.0));
+        bar_chart.add_series("B", Color::new(0.9, 0.4, 0.2, 1.0));
+        bar_chart.add_category("Q1", &[65.0, 80.0]);
+        bar_chart.add_category("Q2", &[40.0, 60.0]);
+        let mut bar_image = ImageData::new(220, 130);
+        bar_chart.draw_to_image(&mut bar_image);
+        assert!(count_non_background_pixels(&bar_image, bar_chart.config.bg_color) > 100);
+
+        let mut scatter_plot = ScatterPlot::new(dashboard_config());
+        scatter_plot.x_range = (0.0, 10.0);
+        scatter_plot.y_range = (0.0, 10.0);
+        scatter_plot.add_series(
+            "A",
+            &[(1.0, 2.0), (3.0, 8.0), (6.0, 4.0), (9.0, 7.0)],
+            Color::new(0.3, 0.7, 0.3, 1.0),
+        );
+        let mut scatter_image = ImageData::new(220, 130);
+        scatter_plot.draw_to_image(&mut scatter_image);
+        assert!(count_non_background_pixels(&scatter_image, scatter_plot.config.bg_color) > 100);
+
+        let mut pie_chart = PieChart::new(dashboard_config());
+        pie_chart.add_segment("Rent", 40.0, Color::new(0.8, 0.2, 0.2, 1.0));
+        pie_chart.add_segment("Food", 25.0, Color::new(0.2, 0.7, 0.3, 1.0));
+        pie_chart.add_segment("Other", 35.0, Color::new(0.2, 0.4, 0.9, 1.0));
+        let mut pie_image = ImageData::new(220, 130);
+        pie_chart.draw_to_image(&mut pie_image);
+        assert!(count_non_background_pixels(&pie_image, pie_chart.config.bg_color) > 100);
+
+        let mut area_chart = AreaChart::new(dashboard_config());
+        area_chart.y_max = 120.0;
+        area_chart.add_layer(
+            "A",
+            &[20.0, 30.0, 45.0, 35.0],
+            Color::new(0.2, 0.6, 0.9, 1.0),
+        );
+        area_chart.add_layer(
+            "B",
+            &[10.0, 15.0, 25.0, 20.0],
+            Color::new(0.9, 0.5, 0.2, 1.0),
+        );
+        let mut area_image = ImageData::new(220, 130);
+        area_chart.draw_to_image(&mut area_image);
+        assert!(count_non_background_pixels(&area_image, area_chart.config.bg_color) > 100);
+    }
+
+    #[test]
+    fn cartesian_legend_does_not_receive_plot_line_pixels() {
+        let mut chart = LineChart::new(dashboard_config());
+        chart.x_max = 6.0;
+        chart.y_max = 100.0;
+        chart.add_series(
+            "A",
+            &[(0.0, 100.0), (6.0, 0.0)],
+            Color::new(1.0, 0.0, 0.0, 1.0),
+        );
+
+        let mut img = ImageData::new(220, 130);
+        chart.draw_to_image(&mut img);
+        let red_plot_pixels_in_legend =
+            count_matching_pixels(&img, 172, 38, 210, 90, |pixel| pixel == (255, 0, 0, 255));
+
+        assert_eq!(red_plot_pixels_in_legend, 0);
+    }
+
+    #[test]
+    fn pie_chart_dashboard_legend_stays_out_of_pie_region() {
+        let mut chart = PieChart::new(dashboard_config());
+        chart.add_segment("Rent", 40.0, Color::new(0.8, 0.2, 0.2, 1.0));
+        chart.add_segment("Food", 25.0, Color::new(0.2, 0.7, 0.3, 1.0));
+        chart.add_segment("Transport", 20.0, Color::new(0.2, 0.4, 0.9, 1.0));
+        chart.add_segment("Other", 15.0, Color::new(0.8, 0.6, 0.1, 1.0));
+
+        let mut img = ImageData::new(220, 130);
+        chart.draw_to_image(&mut img);
+        let legend_panel_pixels_in_pie_region =
+            count_matching_pixels(&img, 70, 45, 96, 96, |pixel| pixel == (250, 250, 252, 230));
+
+        assert_eq!(legend_panel_pixels_in_pie_region, 0);
     }
 }

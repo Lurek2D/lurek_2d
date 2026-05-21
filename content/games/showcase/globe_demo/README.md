@@ -13,13 +13,18 @@ cargo run -- content/games/showcase/globe_demo
 
 ## Controls
 
-| Input            | Action                                  |
-| ---------------- | --------------------------------------- |
-| Left-drag        | Pan the camera (lat/lon)                |
-| Mouse wheel      | Zoom in / out                           |
-| Hover            | Highlight province under cursor         |
-| Left click       | Select province; show popup label       |
-| Escape           | Quit                                    |
+| Input                  | Action                                  |
+| ---------------------- | --------------------------------------- |
+| Left-drag              | Pan the camera (lat/lon)                |
+| Mouse wheel            | Zoom in / out                           |
+| Hover                  | Highlight province under cursor         |
+| Left click             | Select province; show popup label       |
+| WASD / Arrow keys      | Pan the camera                          |
+| PageUp / PageDown      | Zoom in / out                           |
+| Gamepad D-pad          | Pan the camera                          |
+| Gamepad A              | Select focused province                 |
+| Gamepad shoulder/X/Y   | Zoom in / out                           |
+| Escape                 | Quit                                    |
 
 ## What the demo shows
 
@@ -37,7 +42,7 @@ cargo run -- content/games/showcase/globe_demo
 | Simulation           | `g:update`, `g:setTimeOfDay`, `g:getTimeOfDay`, `g:setRotation` |
 | Borders              | `g:setBorders`                                                  |
 | Constants            | `globe.MAX_PROVINCES`, `globe.LOD_FAR/MID/NEAR`                 |
-| Rendering            | `g:emitFrame`                                                   |
+| Rendering            | Lua-side orthographic globe preview synchronized with `g:setCamera`, `g:getCamera`, and `g:getTimeOfDay` |
 
 ## Province generation
 
@@ -45,3 +50,9 @@ Provinces are generated entirely in Lua — no external data files.
 Seven continental regions are divided into lat/lon grids totalling ~200
 provinces.  Each cell becomes a convex quadrilateral province with
 grid-adjacent neighbors assigned automatically.
+
+## Note
+
+This build currently uses a Lua-side fallback renderer for the visible globe.
+The underlying `lurek.globe` data model, camera, picking state, markers, and
+time-of-day simulation still run through the globe API.

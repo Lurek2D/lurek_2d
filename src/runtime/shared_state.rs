@@ -296,8 +296,12 @@ pub struct SharedState {
     pub active_font: Option<FontKey>,
     /// Stores default_font state.
     pub default_font: Option<FontKey>,
-    /// Stores default_fonts state.
-    pub default_fonts: [Option<FontKey>; 6],
+    /// Stores default_fonts state (regular Courier New, slot 0..6 = 8/10/12/16/20/24/30 pt).
+    pub default_fonts: [Option<FontKey>; 7],
+    /// Stores default_bold_fonts state (bold Courier New, same size slots).
+    pub default_bold_fonts: [Option<FontKey>; 7],
+    /// True when the active font selection should use the bold variant.
+    pub active_bold: bool,
     /// Stores sprite_batches state.
     pub sprite_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>,
     /// Stores canvases state.
@@ -442,7 +446,9 @@ impl SharedState {
             fonts: SlotMap::with_key(),
             active_font: None,
             default_font: None,
-            default_fonts: [None; 6],
+            default_fonts: [None; 7],
+            default_bold_fonts: [None; 7],
+            active_bold: false,
             sprite_batches: SlotMap::with_key(),
             canvases: SlotMap::with_key(),
             particle_systems: SlotMap::with_key(),
@@ -625,14 +631,22 @@ impl SharedState {
         if self.default_font.is_some() {
             return;
         }
-        let sizes = crate::render::Font::load_all_sizes();
-        for (i, (font, _cw, _ch)) in sizes.into_iter().enumerate() {
+        // Regular Courier New.
+        let regular = crate::render::Font::load_all_sizes();
+        for (i, (font, _cw, _ch)) in regular.into_iter().enumerate() {
             let key = self.fonts.insert(font);
             self.default_fonts[i] = Some(key);
-            if i == 3 {
+            if i == 2 {
+                // Index 2 = 12 pt — good medium default.
                 self.default_font = Some(key);
                 self.active_font = Some(key);
             }
+        }
+        // Bold Courier New.
+        let bold = crate::render::Font::load_all_bold();
+        for (i, (font, _cw, _ch)) in bold.into_iter().enumerate() {
+            let key = self.fonts.insert(font);
+            self.default_bold_fonts[i] = Some(key);
         }
     }
     /// Check the status of a pending asynchronous read operation.

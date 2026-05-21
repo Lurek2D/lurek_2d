@@ -216,7 +216,7 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 ## 📖 API Overview
 
 - Source spec: [docs/specs/render.md](../blob/main/docs/specs/render.md)
-- Module-level functions: 108
+- Module-level functions: 110
 - Lua-visible types: 12
 - Total type methods: 88
 
@@ -1322,8 +1322,9 @@ end
 ```lua
 --- Returns a built-in default font at the nearest available pixel height.
 ---@param pixelHeight? number Desired pixel height (default 14).
+---@param bold? boolean When true, returns the bold variant (default false).
 ---@return LFont The built-in font handle.
-lurek.render.getDefaultFont = function(pixelHeight) end
+lurek.render.getDefaultFont = function(pixelHeight, bold) end
 ```
 
 #### Description
@@ -1333,6 +1334,7 @@ Returns a built-in default font at the nearest available pixel height.
 Parameters:
 
 - `pixelHeight` (`integer`, optional): Desired pixel height (default 14).
+- `bold` (`boolean`, optional): When true, returns the bold variant (default false).
 
 Returns: `LFont` - The built-in font handle.
 
@@ -2027,6 +2029,76 @@ do
     lurek.render.setScissor()
     print("intersectScissor ok")
 end
+```
+
+#### lurek.render.isBold
+
+#### Definition
+
+```lua
+--- Returns true if the current default font selection uses the bold variant.
+---@return boolean True when bold is active.
+lurek.render.isBold = function() end
+```
+
+#### Description
+
+Returns true if the current default font selection uses the bold variant.
+
+Returns: `boolean` - True when bold is active.
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+--- Render Module Part 1: basic drawing â€” print, rectangle, circle, line, polygon, points, arc, ellipse, triangle
+
+
+--@api-stub: lurek.render.print
+do
+    lurek.render.print("Hello, Lurek2D!", 10, 10)
+       -- Removed scaled and small text prints
+       lurek.render.print("", 0, 0)
+end
+
+--@api-stub: lurek.render.printf
+do
+       lurek.render.printf("Centered text within a 300px box.", 10, 140, 300, "center")
+end
+
+--@api-stub: lurek.render.printRotated
+do
+    lurek.render.printRotated("Rotated!", 200, 200, math.pi / 4)
+end
+
+--@api-stub: lurek.render.printRich
+do
+    local spans = { { text = "Red ",   r = 1, g = 0, b = 0, a = 1, scale = 1 }, { text = "Green ", r = 0, g = 1, b = 0, a = 1, scale = 1 }, { text = "Blue",   r = 0, g = 0, b = 1, a = 1, scale = 1.5 }, }
+    lurek.render.printRich(spans, 10, 260)
+end
+
+--@api-stub: lurek.render.rectangle
+do
+    lurek.render.setColor(1, 0, 0, 1)
+    lurek.render.rectangle("fill", 50, 300, 100, 60)
+    lurek.render.setColor(1, 1, 1, 1)
+end
+
+--@api-stub: lurek.render.circle
+do
+    lurek.render.setColor(1, 0.5, 0, 1); lurek.render.circle("fill", 500, 340, 40)
+    lurek.render.setColor(0, 1, 1, 1); lurek.render.circle("line", 500, 340, 40)
+    lurek.render.setColor(0.5, 0.5, 0.5, 1)
+    lurek.render.circle("fill", 600, 340, 20)
+    lurek.render.setColor(1, 1, 1, 1)
+end
+
+--@api-stub: lurek.render.ellipse
+do
+    lurek.render.setColor(0.2, 0.6, 0.9, 1); lurek.render.ellipse("fill", 150, 450, 60, 30)
+    lurek.render.setColor(1, 1, 1, 1); lurek.render.ellipse("line", 150, 450, 60, 30)
+    lurek.render.setColor(0.9, 0.3, 0.1, 1)
 ```
 
 #### lurek.render.isLayerVisible
@@ -3233,6 +3305,78 @@ do
     lurek.render.setColor(1, 0.5, 0.5, 1); lurek.render.rectangle("fill", 300, 400, 80, 80)
     lurek.render.setBlendMode("alpha"); lurek.render.setColor(1, 1, 1, 1)
 end
+```
+
+#### lurek.render.setBold
+
+#### Definition
+
+```lua
+--- Sets whether subsequent font size lookups use the bold Courier New variant.
+---@param bold boolean True to enable bold, false for regular.
+lurek.render.setBold = function(bold) end
+```
+
+#### Description
+
+Sets whether subsequent font size lookups use the bold Courier New variant.
+
+Parameters:
+
+- `bold` (`boolean`, required): True to enable bold, false for regular.
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+--- Render Module Part 1: basic drawing â€” print, rectangle, circle, line, polygon, points, arc, ellipse, triangle
+
+
+--@api-stub: lurek.render.print
+do
+    lurek.render.print("Hello, Lurek2D!", 10, 10)
+       -- Removed scaled and small text prints
+       lurek.render.print("", 0, 0)
+end
+
+--@api-stub: lurek.render.printf
+do
+       lurek.render.printf("Centered text within a 300px box.", 10, 140, 300, "center")
+end
+
+--@api-stub: lurek.render.printRotated
+do
+    lurek.render.printRotated("Rotated!", 200, 200, math.pi / 4)
+end
+
+--@api-stub: lurek.render.printRich
+do
+    local spans = { { text = "Red ",   r = 1, g = 0, b = 0, a = 1, scale = 1 }, { text = "Green ", r = 0, g = 1, b = 0, a = 1, scale = 1 }, { text = "Blue",   r = 0, g = 0, b = 1, a = 1, scale = 1.5 }, }
+    lurek.render.printRich(spans, 10, 260)
+end
+
+--@api-stub: lurek.render.rectangle
+do
+    lurek.render.setColor(1, 0, 0, 1)
+    lurek.render.rectangle("fill", 50, 300, 100, 60)
+    lurek.render.setColor(1, 1, 1, 1)
+end
+
+--@api-stub: lurek.render.circle
+do
+    lurek.render.setColor(1, 0.5, 0, 1); lurek.render.circle("fill", 500, 340, 40)
+    lurek.render.setColor(0, 1, 1, 1); lurek.render.circle("line", 500, 340, 40)
+    lurek.render.setColor(0.5, 0.5, 0.5, 1)
+    lurek.render.circle("fill", 600, 340, 20)
+    lurek.render.setColor(1, 1, 1, 1)
+end
+
+--@api-stub: lurek.render.ellipse
+do
+    lurek.render.setColor(0.2, 0.6, 0.9, 1); lurek.render.ellipse("fill", 150, 450, 60, 30)
+    lurek.render.setColor(1, 1, 1, 1); lurek.render.ellipse("line", 150, 450, 60, 30)
+    lurek.render.setColor(0.9, 0.3, 0.1, 1)
 ```
 
 #### lurek.render.setCanvas
@@ -7155,11 +7299,11 @@ end
 - [soulslike](../tree/main/content/games/action/soulslike) (action)
 - [stealth](../tree/main/content/games/action/stealth) (action)
 - [vertical_climber](../tree/main/content/games/action/vertical_climber) (action)
+- [household_finance_lab](../tree/main/content/games/apps/household_finance_lab) (apps)
 - [asteroids](../tree/main/content/games/arcade/asteroids) (arcade)
 - [centipede](../tree/main/content/games/arcade/centipede) (arcade)
 - [donkey_kong](../tree/main/content/games/arcade/donkey_kong) (arcade)
 - [frogger](../tree/main/content/games/arcade/frogger) (arcade)
-- [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 
 [⬆ back to top](#table-of-contents)
 

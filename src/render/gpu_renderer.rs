@@ -1337,19 +1337,54 @@ impl GpuRenderer {
                     multiview: None,
                     cache: None,
                 });
-        let composite_pipeline = create_render_pipeline(
-            &self.device,
-            self.surface_format,
-            &self.default_texture_layout,
-            &self.default_texture_shader,
-            GeometryKind::Texture,
-            PipelineKey {
-                blend_mode: BlendMode::Multiply,
-                color_mask_bits: color_write_mask_bits((true, true, true, true)),
-                stencil_mode: StencilMode::Disabled,
-            },
-            "fs_main",
-        );
+        // The composite quad is stored in the same LightVertex buffer (52-byte stride).
+        // Using create_render_pipeline(GeometryKind::Texture) would declare TexVertex stride
+        // (48 bytes), misaligning every composite vertex read.  Build the pipeline manually
+        // so the buffer layout matches the actual data.
+        let composite_pipeline = {
+            let device = &self.device;
+            let layout = &self.default_texture_layout;
+            let shader = &self.default_texture_shader;
+            let fmt = self.surface_format;
+            device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+                label: Some("light_composite_pipeline"),
+                layout: Some(layout),
+                vertex: wgpu::VertexState {
+                    module: shader,
+                    entry_point: "vs_main",
+                    compilation_options: Default::default(),
+                    buffers: &[wgpu::VertexBufferLayout {
+                        array_stride: std::mem::size_of::<LightVertex>() as wgpu::BufferAddress,
+                        step_mode: wgpu::VertexStepMode::Vertex,
+                        attributes: &wgpu::vertex_attr_array![
+                            0 => Float32x2, // position
+                            1 => Float32x2, // uv
+                            2 => Float32x4, // color
+                            3 => Float32,   // shadow_v → read as w_depth by TEXTURE_SHADER
+                            4 => Float32x4, // shadow_params (unused by TEXTURE_SHADER)
+                        ],
+                    }],
+                },
+                fragment: Some(wgpu::FragmentState {
+                    module: shader,
+                    entry_point: "fs_main",
+                    compilation_options: Default::default(),
+                    targets: &[Some(wgpu::ColorTargetState {
+                        format: fmt,
+                        blend: Some(blend_state_for(BlendMode::Multiply)),
+                        write_mask: wgpu::ColorWrites::ALL,
+                    })],
+                }),
+                primitive: wgpu::PrimitiveState {
+                    topology: wgpu::PrimitiveTopology::TriangleList,
+                    ..Default::default()
+                },
+                depth_stencil: Some(depth_stencil_state(StencilMode::Disabled)),
+                multisample: wgpu::MultisampleState::default(),
+                multiview: None,
+                cache: None,
+            })
+        };
         let max_verts = (MAX_LIGHT_QUADS + 1) * 4;
         let max_idxs = (MAX_LIGHT_QUADS + 1) * 6;
         let vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {

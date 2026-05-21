@@ -1,4 +1,4 @@
-﻿## Lurek2D tools registry
+## Lurek2D tools registry
 
 This file is the canonical inventory of reusable scripts under `tools/`.
 
@@ -146,6 +146,7 @@ These scripts modify files in place. Prefer `--dry-run` when the tool supports i
 ## tools/github
 
 - `tools/github/ideas_to_github_issues.py` - import `ideas/` entries into GitHub issues.
+- `tools/github/sync_agent_rules.py` - synchronize workspace rules file (.antigravityrules) with .github/copilot-instructions.md.
 
 ## tools/mods
 
@@ -172,7 +173,7 @@ This parser-friendly index is kept so `tools/audit/tool_registry_audit.py` can v
 - `tools/dist`: `pack.py`, `package_games.py`
 - `tools/demos`: `gen_demo_screenshots.py`, `gen_game_readmes.py`, `organize_demos.py`, `smoke_sweep.py`
 - `tools/ui`: `fix_layouts.py`, `render_layout.py`, `snap_to_grid.py`
-- `tools/github`: `ideas_to_github_issues.py`
+- `tools/github`: `ideas_to_github_issues.py`, `sync_agent_rules.py`
 - `tools/mods`: `mod_init.py`
 python tools/audit/audit_module.py --all --docs-quality  # all module reports
 python tools/audit/lua_api_test_coverage.py --report  # Lua test coverage

@@ -16,7 +16,7 @@ local NUM_SCREENS = 8
 -- ============================================================
 -- States
 -- ============================================================
-local STATE_TITLE    = "PLAYING"
+local STATE_TITLE    = "TITLE"
 local STATE_SCREEN_1 = "SCREEN_1"
 local STATE_SCREEN_2 = "SCREEN_2"
 local STATE_SCREEN_3 = "SCREEN_3"
@@ -31,7 +31,7 @@ local SCREEN_STATES = {
     STATE_SCREEN_5, STATE_SCREEN_6, STATE_SCREEN_7, STATE_SCREEN_8,
 }
 
-local state = STATE_SCREEN_1
+local state = STATE_TITLE
 local screen_index = 1
 local title_timer = 1
 

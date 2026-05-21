@@ -92,6 +92,7 @@ Supports synchronous and asynchronous read/write, directory listing, glob matchi
 - JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
 - Recursive and flat directory listing with merged overlay results.
 - File handle creation, copy, move, and remove operations within the save boundary.
+- DataFrame file persistence storage trait implementation that delegates to existing GameFS read/write methods.
 
 ### `watcher.rs`
 
@@ -372,7 +373,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
-    local path = "content/examples/assets/data/sample_config.toml"
+    local path = "save/options.json"
     local info = lurek.filesystem.getInfo(path)
     if info then
         print("type=" .. info.type .. " size=" .. info.size)
@@ -741,7 +742,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
-    local ok = lurek.filesystem.mount("content/examples/assets", "game_assets")
+    local ok = lurek.filesystem.mount("assets", "game_assets")
     print("mount ok = " .. tostring(ok))
 end
 ```
@@ -1001,7 +1002,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
-    local path = "content/examples/assets/data/sample_config.toml"
+    local path = "save/options.json"
     local contents = lurek.filesystem.read(path)
     print("read " .. #contents .. " bytes")
 end
@@ -1098,8 +1099,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
-    local path = "save/test_json.json"
-    lurek.filesystem.writeJson(path, '{"name":"test","value":42}')
+    local path = "save/options.json"
     local data = lurek.filesystem.readJson(path)
     print("readJson type = " .. type(data))
 end
@@ -1254,7 +1254,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
-    local path = "content/examples/assets/data/sample_config.toml"
+    local path = "save/options.json"
     local st = lurek.filesystem.stat(path)
     if st then
         print("stat size=" .. st.size .. " isFile=" .. tostring(st.isFile))
@@ -2108,7 +2108,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 ```lua
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("has hello = " .. tostring(zip:contains("data/hello.txt")))
+    print("has hello = " .. tostring(zip:contains("data/sample_hello.txt")))
 end
 ```
 
@@ -2195,7 +2195,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 ```lua
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    local txt = zip:readFile("data/hello.txt")
+    local txt = zip:readFile("data/sample_hello.txt")
     print("zip read bytes: " .. #txt)
 end
 ```
@@ -2270,7 +2270,7 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [household_finance_lab](../tree/main/content/games/apps/household_finance_lab) (apps)
 
 [⬆ back to top](#table-of-contents)
 

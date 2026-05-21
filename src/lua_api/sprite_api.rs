@@ -66,10 +66,10 @@ impl LuaUserData for LuaSpriteSheet {
         /// Returns the frame quads for a named animation group.
         /// @param | name | string | Name of the animation group (e.g. "walk", "idle").
         /// @return | table | Array of quad tables for the group, or nil if the group does not exist.
-    /// @field | x | number | X position in atlas.
-    /// @field | y | number | Y position in atlas.
-    /// @field | w | number | Width.
-    /// @field | h | number | Height.
+        /// @field | x | number | X position in atlas.
+        /// @field | y | number | Y position in atlas.
+        /// @field | w | number | Width.
+        /// @field | h | number | Height.
         methods.add_method("getGroupFrames", |lua, this, name: String| {
             match this.inner.get_group(&name) {
                 Some(frames) => {

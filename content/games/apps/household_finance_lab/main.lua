@@ -3,6 +3,8 @@ local app = {
     ctx = nil,
 }
 
+local REFRESH_DEBOUNCE_SEC = 0.12
+
 local function load_app_module(path)
     local chunk = lurek.filesystem.load(path)
     return chunk()
@@ -24,39 +26,66 @@ local function load_test_report(ctx)
     end
 end
 
-local function save_state(ctx)
-    local snap = ctx.UIState.snapshot(ctx.C, ctx.state)
-    local text = string.format(
-        "{\n  \"tab\": \"%s\",\n  \"start_year\": %d,\n  \"end_year\": %d,\n  \"member\": \"%s\",\n  \"category\": \"%s\",\n  \"use_cleaned\": %s,\n  \"anomaly_threshold\": %d\n}\n",
-        snap.tab,
-        snap.start_year,
-        snap.end_year,
-        snap.member,
-        snap.category,
-        snap.use_cleaned and "true" or "false",
-        snap.anomaly_threshold
-    )
-    lurek.filesystem.write(ctx.C.SAVE_DIR .. "/ui_state.json", text)
-    ctx.Pipeline.log(ctx, "info", "Saved UI state")
-    ctx.state.status = "Saved UI state"
+local function time_seconds()
+    return os.clock()
 end
 
 local function refresh(ctx)
-    ctx.Analytics.refresh(ctx)
-    ctx.Controls.layout(ctx)
-    ctx.state.status = string.format(
-        "%s | %d raw rows | %d clean rows | %d visible rows",
+    local started = time_seconds()
+    ctx.filters = ctx.Controls.read_filters(ctx)
+    ctx.Pipeline.refresh(ctx, ctx.filters)
+    local finished = time_seconds()
+    ctx.refresh_ms = math.max(0, (finished - started) * 1000)
+    ctx.status = string.format(
+        "%s | %d raw | %d clean | %d visible",
         ctx.source or "ready",
         ctx.row_count or 0,
         ctx.clean_count or 0,
         math.floor((ctx.view.metrics and ctx.view.metrics.count) or 0)
     )
+    ctx.Controls.update_widgets(ctx)
+    ctx.needs_refresh = false
+    ctx.pending_refresh = false
+end
+
+local function schedule_refresh(ctx)
+    ctx.pending_refresh = true
+    ctx.refresh_due = (ctx.clock or 0) + REFRESH_DEBOUNCE_SEC
+    ctx.needs_refresh = false
+    ctx.status = "Filters changed; SQL refresh queued"
 end
 
 local function screen_to_virtual(ctx, x, y)
     local scale = ctx.render_scale or 1
     if scale <= 0 then scale = 1 end
     return (x - (ctx.render_offset_x or 0)) / scale, (y - (ctx.render_offset_y or 0)) / scale
+end
+
+local function save_state(ctx)
+    if not ctx.save_manager then return end
+    ctx.save_manager:setSummary("Household Finance Lab widgets")
+    ctx.save_manager:markDirty()
+    ctx.save_manager:save(ctx.C.SAVE_SLOT)
+    ctx.Pipeline.log(ctx, "info", "Saved widget snapshot through lurek.save")
+    ctx.status = "Saved widget snapshot"
+end
+
+local function setup_save(ctx)
+    local manager = lurek.save.newSaveManager()
+    manager:setSchemaVersion(1)
+    manager:setCompress(true)
+    manager:register("widgets", function()
+        return ctx.Controls.snapshot(ctx)
+    end, function(data)
+        ctx.Controls.apply_snapshot(ctx, data or {})
+    end)
+    ctx.save_manager = manager
+    if manager:exists(ctx.C.SAVE_SLOT) then
+        local ok = pcall(function() return manager:load(ctx.C.SAVE_SLOT) end)
+        if ok then
+            ctx.Pipeline.log(ctx, "info", "Loaded widget snapshot through lurek.save")
+        end
+    end
 end
 
 local function wire_actions(ctx)
@@ -69,12 +98,12 @@ local function wire_actions(ctx)
         reload_cache = function()
             ctx.Pipeline.load(ctx, { prefer_cache = true })
             refresh(ctx)
-            ctx.Pipeline.log(ctx, "info", "Reloaded binary cache")
+            ctx.Pipeline.log(ctx, "info", "Reloaded dataframe database cache")
         end,
         screenshot = function()
             lurek.render.saveScreenshot(ctx.C.SCREENSHOT_PATH)
             ctx.Pipeline.log(ctx, "info", "Screenshot requested: " .. ctx.C.SCREENSHOT_PATH)
-            ctx.state.status = "Screenshot saved to " .. ctx.C.SCREENSHOT_PATH
+            ctx.status = "Screenshot saved to " .. ctx.C.SCREENSHOT_PATH
         end,
         save_state = function()
             save_state(ctx)
@@ -83,40 +112,33 @@ local function wire_actions(ctx)
 end
 
 local function make_context(mods)
+    local C = mods.Config.load("app/config.toml")
     local ctx = {
         root = "",
-        C = mods.C,
+        C = C,
         DataGeneration = mods.DataGeneration,
-        SQLRunner = mods.SQLRunner,
         Pipeline = mods.Pipeline,
-        Analytics = mods.Analytics,
-        UIState = mods.UIState,
         Controls = mods.Controls,
-        Charts = mods.Charts,
         UIRender = mods.UIRender,
         Tests = mods.Tests,
         logs = {},
         api_status = {},
-        hitboxes = {},
         view = { anomalies = {}, recent = {}, monthly = {}, categories = {}, members = {}, payment = {}, recurring = {} },
         fonts = {},
         clock = 0,
+        status = "Booting",
+        refresh_ms = 0,
     }
-    ctx.state = ctx.UIState.new(ctx.C)
     wire_actions(ctx)
     return ctx
 end
 
 local function load_modules()
     return {
-        C = load_app_module("app/constants.lua"),
+        Config = load_app_module("app/config.lua"),
         DataGeneration = load_app_module("app/data_generation.lua"),
-        SQLRunner = load_app_module("app/sql_runner.lua"),
         Pipeline = load_app_module("app/data_pipeline.lua"),
-        Analytics = load_app_module("app/analytics.lua"),
-        UIState = load_app_module("app/ui_state.lua"),
         Controls = load_app_module("app/ui_controls.lua"),
-        Charts = load_app_module("app/charts.lua"),
         UIRender = load_app_module("app/ui_render.lua"),
         Tests = load_app_module("app/tests.lua"),
     }
@@ -128,6 +150,8 @@ function lurek.init()
     app.ctx = ctx
 
     ctx.UIRender.setup(ctx)
+    ctx.Controls.setup(ctx)
+    setup_save(ctx)
     ctx.Pipeline.load(ctx, { prefer_cache = true })
     load_test_report(ctx)
     refresh(ctx)
@@ -141,8 +165,10 @@ function lurek.process(dt)
     if not ctx then return end
     ctx.clock = ctx.clock + (dt or 0)
     if ctx.UIRender.update_viewport then ctx.UIRender.update_viewport(ctx) end
-    if ctx.state.needs_refresh then refresh(ctx) end
-    ctx.Controls.layout(ctx)
+    lurek.ui.update(dt or 0)
+    if ctx.save_manager then ctx.save_manager:update(dt or 0) end
+    if ctx.Controls.poll(ctx) then schedule_refresh(ctx) end
+    if ctx.pending_refresh and (ctx.clock or 0) >= (ctx.refresh_due or 0) then refresh(ctx) end
 end
 
 function lurek.draw()
@@ -150,14 +176,37 @@ function lurek.draw()
     local ctx = app.ctx
     if not ctx then return end
     ctx.UIRender.draw(ctx)
+    if not ctx.screen_written and (ctx.clock or 0) > 0.5 then
+        lurek.render.saveScreenshot(ctx.C.SCREEN_PATH)
+        ctx.screen_written = true
+    end
 end
 
 function lurek.keypressed(key)
     if not app.ready then return false end
     local ctx = app.ctx
     if not ctx then return false end
-    local handled = ctx.Controls.keypressed(ctx, key)
-    if handled and ctx.state.needs_refresh then refresh(ctx) end
+    local handled = lurek.ui.keypressed(key)
+    local n = tonumber(key)
+    if n and n >= 1 and n <= #ctx.C.TABS then
+        ctx.widgets.tabs:setActiveTab(n)
+        ctx.needs_refresh = true
+        return true
+    end
+    if key == "left" then
+        ctx.widgets.start_year:setValue((ctx.widgets.start_year:getValue() or ctx.C.YEAR_MIN) - 1)
+        ctx.needs_refresh = true
+        return true
+    end
+    if key == "right" then
+        ctx.widgets.end_year:setValue((ctx.widgets.end_year:getValue() or ctx.C.YEAR_MAX) + 1)
+        ctx.needs_refresh = true
+        return true
+    end
+    if key == "c" then ctx.widgets.cleaned:toggle(); ctx.needs_refresh = true; return true end
+    if key == "r" then ctx.actions.regenerate(); return true end
+    if key == "p" then ctx.actions.screenshot(); return true end
+    if key == "s" then ctx.actions.save_state(); return true end
     return handled
 end
 
@@ -166,16 +215,15 @@ function lurek.mousepressed(x, y, button)
     local ctx = app.ctx
     if not ctx then return false end
     x, y = screen_to_virtual(ctx, x, y)
-    local handled = ctx.Controls.mousepressed(ctx, x, y, button)
-    if handled and ctx.state.needs_refresh then refresh(ctx) end
-    return handled
+    return lurek.ui.mousepressed(x, y, button)
 end
 
 function lurek.mousereleased(x, y, button)
     if not app.ready then return false end
     local ctx = app.ctx
     if not ctx then return false end
-    return ctx.Controls.mousereleased(ctx, x, y, button)
+    x, y = screen_to_virtual(ctx, x, y)
+    return lurek.ui.mousereleased(x, y, button)
 end
 
 function lurek.mousemoved(x, y)
@@ -183,14 +231,17 @@ function lurek.mousemoved(x, y)
     local ctx = app.ctx
     if not ctx then return false end
     x, y = screen_to_virtual(ctx, x, y)
-    return ctx.Controls.mousemoved(ctx, x, y)
+    return lurek.ui.mousemoved(x, y)
 end
 
 function lurek.wheelmoved(x, y)
     if not app.ready then return false end
-    local ctx = app.ctx
-    if not ctx then return false end
-    return ctx.Controls.wheelmoved(ctx, x, y)
+    return lurek.ui.wheelmoved(x, y)
+end
+
+function lurek.textinput(text)
+    if not app.ready then return false end
+    return lurek.ui.textinput(text)
 end
 
 function lurek.resize(width, height)
@@ -199,6 +250,5 @@ function lurek.resize(width, height)
         ctx.viewport_width = width
         ctx.viewport_height = height
         if ctx.UIRender.update_viewport then ctx.UIRender.update_viewport(ctx) end
-        ctx.Controls.layout(ctx)
     end
 end

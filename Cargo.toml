@@ -54,6 +54,8 @@ mlua = { version = "0.9", default-features = false }
 # Image loading — PNG only. JPEG and BMP decoders removed to reduce binary size.
 # To re-enable: add "jpeg" or "bmp" back to features array.
 image = { version = "0.24", default-features = false, features = ["png"] }
+# Runtime TTF/OTF rasterization into bitmap atlases for lurek.render.newFont(path, size).
+fontdue = "0.9"
 # DDS compressed texture format parsing
 ddsfile = "0.5"
 

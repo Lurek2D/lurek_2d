@@ -1037,7 +1037,26 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [brick_breaker](../tree/main/content/games/action/brick_breaker) (action)
+- [bullet_hell](../tree/main/content/games/action/bullet_hell) (action)
+- [cannon_fodder](../tree/main/content/games/action/cannon_fodder) (action)
+- [endless_runner](../tree/main/content/games/action/endless_runner) (action)
+- [fighting_game](../tree/main/content/games/action/fighting_game) (action)
+- [horde_survivor](../tree/main/content/games/action/horde_survivor) (action)
+- [infiltration](../tree/main/content/games/action/infiltration) (action)
+- [metroidvania](../tree/main/content/games/action/metroidvania) (action)
+- [platform_fighter](../tree/main/content/games/action/platform_fighter) (action)
+- [platformer](../tree/main/content/games/action/platformer) (action)
+- [roguelite](../tree/main/content/games/action/roguelite) (action)
+- [sniper](../tree/main/content/games/action/sniper) (action)
+- [soulslike](../tree/main/content/games/action/soulslike) (action)
+- [stealth](../tree/main/content/games/action/stealth) (action)
+- [vertical_climber](../tree/main/content/games/action/vertical_climber) (action)
+- [asteroids](../tree/main/content/games/arcade/asteroids) (arcade)
+- [centipede](../tree/main/content/games/arcade/centipede) (arcade)
+- [donkey_kong](../tree/main/content/games/arcade/donkey_kong) (arcade)
+- [frogger](../tree/main/content/games/arcade/frogger) (arcade)
+- [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 
 [⬆ back to top](#table-of-contents)
 

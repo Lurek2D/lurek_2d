@@ -1403,6 +1403,16 @@ describe("render strict: batch text and OBJ APIs", function()
         local verts = obj:projectToMesh({ x = 0, y = 4, z = 8, tx = 0, ty = 0, tz = 0, fov = 60 }, 320, 180)
         expect_type("table", verts)
     end)
+    -- @covers lurek.render.isBold
+    -- @covers lurek.render.setBold
+    it("isBold and setBold work correctly", function()
+        local prev = lurek.render.isBold()
+        expect_no_error(function()
+            lurek.render.setBold(true)
+        end)
+        expect_equal(lurek.render.isBold(), true)
+        lurek.render.setBold(prev)
+    end)
 end)
 
 test_summary()

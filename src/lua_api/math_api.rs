@@ -1499,11 +1499,11 @@ impl LuaUserData for LuaRectPacker {
         // -- getPacked --
         /// Returns packed rectangle records.
         /// @return | table | Array table with `x`, `y`, `w`, `h`, and optional `id` fields.
-    /// @field | x | number | X.
-    /// @field | y | number | Y.
-    /// @field | w | number | Width.
-    /// @field | h | number | Height.
-    /// @field | id | integer? | Optional identifier.
+        /// @field | x | number | X.
+        /// @field | y | number | Y.
+        /// @field | w | number | Width.
+        /// @field | h | number | Height.
+        /// @field | id | integer? | Optional identifier.
         methods.add_method("getPacked", |lua, this, ()| {
             let t = lua.create_table()?;
             for (i, r) in this.inner.packed_rects().iter().enumerate() {

@@ -23,6 +23,105 @@ local function pct(value)
     return string.format("%.1f%%", (tonumber(value) or 0) * 100)
 end
 
+local function ms(value)
+    return string.format("%.2f ms", tonumber(value) or 0)
+end
+
+local function frame_max(frame, key)
+    if not frame or not key then return 0 end
+    local ok, value = pcall(function() return frame:max(key) end)
+    if ok then return tonumber(value) or 0 end
+    return 0
+end
+
+local function chart_image(chart, width, height)
+    local target = lurek.image.newImageData(width, height)
+    chart:drawToImage(target)
+    return lurek.render.newImage(target)
+end
+
+local function build_charts(ctx)
+    if ctx.chart_version == ctx.view_version then return end
+    local C = ctx.C
+    local A = C.AGG
+    local view = ctx.view or {}
+    local monthly_frame = view.monthly_frame
+    local categories_frame = view.categories_frame
+    local members_frame = view.members_frame
+    local recurring_frame = view.recurring_frame
+    local payment_frame = view.payment_frame
+    local anomalies_frame = view.anomalies_frame
+    local charts = {}
+    local y_max = math.max(1, frame_max(monthly_frame, A.income), frame_max(monthly_frame, A.expense), frame_max(monthly_frame, A.savings))
+
+    local line = lurek.ui.newLineChart({ width = 486, height = 184, title = "Cashflow" })
+    if monthly_frame then
+        line:addSeriesFromDataFrame("income", monthly_frame, "month_index", A.income, C.COLORS.green[1], C.COLORS.green[2], C.COLORS.green[3])
+        line:addSeriesFromDataFrame("expense", monthly_frame, "month_index", A.expense, C.COLORS.red[1], C.COLORS.red[2], C.COLORS.red[3])
+        line:addSeriesFromDataFrame("savings", monthly_frame, "month_index", A.savings, C.COLORS.cyan[1], C.COLORS.cyan[2], C.COLORS.cyan[3])
+    end
+    line:setXMax(math.max(1, frame_max(monthly_frame, "month_index")))
+    line:setYMax(y_max)
+    charts.cashflow = chart_image(line, 486, 184)
+
+    local area = lurek.ui.newAreaChart({ width = 220, height = 96, title = "Monthly" })
+    if monthly_frame then
+        area:addLayerFromDataFrame("expense", monthly_frame, A.expense, C.COLORS.red[1], C.COLORS.red[2], C.COLORS.red[3])
+        area:addLayerFromDataFrame("income", monthly_frame, A.income, C.COLORS.green[1], C.COLORS.green[2], C.COLORS.green[3])
+    end
+    area:setYMax(y_max)
+    charts.monthly_area = chart_image(area, 220, 96)
+
+    local cat = lurek.ui.newBarChart({ width = 360, height = 278, title = "Categories" })
+    cat:addSeries("expense", C.COLORS.blue[1], C.COLORS.blue[2], C.COLORS.blue[3])
+    if categories_frame then cat:addCategoriesFromDataFrame(categories_frame, "category_clean", { A.expense }) end
+    charts.categories = chart_image(cat, 360, 278)
+
+    local members = lurek.ui.newBarChart({ width = 360, height = 210, title = "Members" })
+    members:addSeries("expense", C.COLORS.violet[1], C.COLORS.violet[2], C.COLORS.violet[3])
+    if members_frame then members:addCategoriesFromDataFrame(members_frame, "member_clean", { A.expense }) end
+    charts.members = chart_image(members, 360, 210)
+
+    local recurring = lurek.ui.newBarChart({ width = 360, height = 124, title = "Recurring" })
+    recurring:addSeries("expense", C.COLORS.amber[1], C.COLORS.amber[2], C.COLORS.amber[3])
+    if recurring_frame then recurring:addCategoriesFromDataFrame(recurring_frame, "merchant", { A.expense }) end
+    charts.recurring = chart_image(recurring, 360, 124)
+
+    local pie = lurek.ui.newPieChart({ width = 220, height = 130, title = "Payments" })
+    if payment_frame then pie:addSegmentsFromDataFrame(payment_frame, "payment_method", A.expense) end
+    charts.payments = chart_image(pie, 220, 130)
+
+    local scatter = lurek.ui.newScatterPlot({ width = 340, height = 210, title = "Anomalies" })
+    if anomalies_frame then
+        scatter:addSeriesFromDataFrame("anomaly", anomalies_frame, "month_index", "amount_abs", C.COLORS.red[1], C.COLORS.red[2], C.COLORS.red[3])
+    end
+    scatter:setXRange(1, math.max(60, frame_max(monthly_frame, "month_index")))
+    scatter:setYRange(0, math.max(1, frame_max(anomalies_frame, "amount_abs")))
+    charts.anomalies = chart_image(scatter, 340, 210)
+
+    ctx.charts = charts
+    ctx.chart_count = 7
+    ctx.chart_version = ctx.view_version
+end
+
+local function draw_chart(ctx, name, x, y, sx, sy)
+    local image = ctx.charts and ctx.charts[name]
+    if not image then return end
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.draw(image, x, y, 0, sx or 1, sy or sx or 1)
+end
+
+local function draw_ui_layer(ctx)
+    local ok, image_data = pcall(function()
+        return lurek.ui.drawToImage(ctx.C.WIDTH, ctx.C.HEIGHT)
+    end)
+    if not ok or not image_data then return end
+    local image = lurek.render.newImage(image_data)
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.draw(image, 0, 0)
+    lurek.render.setScissor()
+end
+
 local function panel(C, x, y, w, h, title)
     set(C.COLORS.panel)
     lurek.render.rectangle("fill", x, y, w, h, 5, 5)
@@ -34,40 +133,127 @@ local function panel(C, x, y, w, h, title)
     end
 end
 
-local function metric(C, x, y, w, label, value, detail, color)
-    set(C.COLORS.panel2)
-    lurek.render.rectangle("fill", x, y, w, 62, 4, 4)
-    set(color)
-    lurek.render.rectangle("fill", x, y, 4, 62, 2, 2)
-    set(C.COLORS.muted)
-    lurek.render.print(short(label, 18), x + 12, y + 8, 1)
-    set(C.COLORS.text)
-    lurek.render.print(short(value, 18), x + 12, y + 27, 1)
-    set(C.COLORS.muted)
-    lurek.render.print(short(detail, 20), x + 12, y + 45, 1)
+local function draw_control_text(_ctx)
 end
 
-local function draw_controls(ctx)
-    local C = ctx.C
-    for _, hb in ipairs(ctx.hitboxes) do
-        if hb.kind ~= "row" then
-            local active = (hb.kind == "tab" and hb.value == ctx.state.active_tab) or hb.id == ctx.state.hover_id
-            set(active and C.COLORS.blue or C.COLORS.panel2)
-            lurek.render.rectangle("fill", hb.x, hb.y, hb.w, hb.h, 4, 4)
-            set(active and C.COLORS.text or C.COLORS.muted)
-            lurek.render.print(short(hb.label, math.max(2, math.floor(hb.w / 7))), hb.x + 7, hb.y + 5, 1)
-        end
+local function sample_performance(ctx)
+    local clock = ctx.clock or 0
+    if ctx.next_perf_sample and clock < ctx.next_perf_sample then return end
+    ctx.next_perf_sample = clock + 0.25
+
+    local profile = {}
+    local ok_profile, profile_result = pcall(function() return lurek.engine.getFrameProfile() end)
+    if ok_profile and type(profile_result) == "table" then profile = profile_result end
+
+    local stats = {}
+    local ok_stats, stats_result = pcall(function() return lurek.render.getStats() end)
+    if ok_stats and type(stats_result) == "table" then stats = stats_result end
+
+    ctx.perf = {
+        frame_ms = tonumber(profile.app_frame_total_ms or profile.frame_total_ms or profile.callback_total_ms) or 0,
+        render_ms = tonumber(profile.app_render_ms or profile.draw_ms or stats.cpu_render_ms) or 0,
+        ui_ms = tonumber(profile.draw_ui_ms or 0) or 0,
+        draw_calls = tonumber(stats.gpu_draw_calls or stats.draw_calls or stats.batched_draws) or 0,
+    }
+end
+
+local function api_rows(ctx)
+    local filters = ctx.filters or {}
+    local report = (ctx.test_report_lines and ctx.test_report_lines[1]) or "no report"
+    local method_count = 0
+    for _, used in pairs(ctx.dataframe_methods or {}) do
+        if used then method_count = method_count + 1 end
     end
+    return {
+        { "tab", ctx.C.TABS[filters.active_tab or 1] or "", "LTabBar" },
+        { "member", filters.member or "All", "LComboBox" },
+        { "category", filters.category or "All", "LComboBox" },
+        { "years", tostring(filters.start_year or ctx.C.YEAR_MIN) .. "-" .. tostring(filters.end_year or ctx.C.YEAR_MAX), "LSlider" },
+        { "cleaned", tostring(filters.use_cleaned ~= false), "LSwitch" },
+        { "threshold", tostring(filters.anomaly_threshold or 30), "LSlider" },
+        { "db tables", tostring(ctx.db and ctx.db:tableCount() or 0), "LDatabase" },
+        { "sql files", tostring(#(ctx.C.SQL_FILES or {})), "queryParams" },
+        { "cache", ctx.C.CACHE_VERSION, "LDatabase:save" },
+        { "restore", "database", "loadDatabase" },
+        { "df methods", tostring(method_count), "LDataFrame" },
+        { "chart imgs", tostring(ctx.chart_count or 0), "DF charts" },
+        { "frame", ms(ctx.perf and ctx.perf.frame_ms), "getFrameProfile" },
+        { "render", ms(ctx.perf and ctx.perf.render_ms), "getStats" },
+        { "refresh", ms(ctx.refresh_ms), "SQL refresh" },
+        { "test", short(report, 24), "GameFS" },
+        { "save slot", ctx.C.SAVE_SLOT, "save" },
+    }
+end
+
+local function draw_api_table_text(ctx)
+    local C = ctx.C
+    set(C.COLORS.panel2)
+    lurek.render.rectangle("fill", 524, 112, 264, 444, 5, 5)
+    set(C.COLORS.amber)
+    lurek.render.rectangle("fill", 524, 112, 5, 444, 2, 2)
+    set(C.COLORS.line)
+    lurek.render.rectangle("line", 524, 112, 264, 444, 5, 5)
+    set(C.COLORS.text)
+    lurek.render.print("Widget/API state", 540, 120, 1)
+    set(C.COLORS.white)
+    lurek.render.print("Key", 540, 144, 1)
+    lurek.render.print("Value", 614, 144, 1)
+    lurek.render.print("API", 716, 144, 1)
+    local y = 166
+    for _, row in ipairs(api_rows(ctx)) do
+        set(C.COLORS.muted)
+        lurek.render.print(short(row[1], 10), 540, y, 1)
+        set(C.COLORS.text)
+        lurek.render.print(short(row[2], 14), 614, y, 1)
+        set(C.COLORS.cyan)
+        lurek.render.print(short(row[3], 10), 716, y, 1)
+        y = y + 22
+    end
+end
+
+local function draw_api_compact_text(ctx, x, y)
+    local C = ctx.C
+    local rows = api_rows(ctx)
+    set(C.COLORS.white)
+    lurek.render.print("API proof", x, y, 1)
+    y = y + 22
+    for index = 1, math.min(6, #rows) do
+        local row = rows[index]
+        set(C.COLORS.muted)
+        lurek.render.print(short(row[1], 9), x, y, 1)
+        set(C.COLORS.text)
+        lurek.render.print(short(row[2], 12), x + 66, y, 1)
+        set(C.COLORS.cyan)
+        lurek.render.print(short(row[3], 10), x + 146, y, 1)
+        y = y + 18
+    end
+end
+
+local function metric(C, x, y, w, label, value, detail, color)
+    local max_chars = math.max(8, math.floor((w - 18) / 6))
+    set(C.COLORS.panel2)
+    lurek.render.rectangle("fill", x, y, w, 54, 4, 4)
+    set(color)
+    lurek.render.rectangle("fill", x, y, 4, 54, 2, 2)
+    set(C.COLORS.muted)
+    lurek.render.print(short(label, max_chars), x + 10, y + 6, 1)
+    set(C.COLORS.text)
+    lurek.render.print(short(value, max_chars), x + 10, y + 22, 1)
+    set(C.COLORS.muted)
+    lurek.render.print(short(detail, max_chars), x + 10, y + 39, 1)
+end
+
+local function draw_controls(_ctx)
 end
 
 local function draw_header(ctx)
     local C = ctx.C
     if ctx.fonts.title then lurek.render.setFont(ctx.fonts.title) end
     set(C.COLORS.text)
-    lurek.render.print("Household Finance Lab", 16, 13, 1)
+    lurek.render.print("Household Finance Lab", 12, 10, 1)
     if ctx.fonts.small then lurek.render.setFont(ctx.fonts.small) end
     set(C.COLORS.muted)
-    lurek.render.print("SQL-backed family finance dashboard", 238, 20, 1)
+    lurek.render.print("Public API: TOML + DataFrame + SQL + UI widgets", 218, 13, 1)
     draw_controls(ctx)
 end
 
@@ -75,219 +261,195 @@ local function draw_widgets(ctx)
     local C = ctx.C
     local v = ctx.view
     local m = v.metrics or {}
-    metric(C, 24, 116, 144, "Income", money(m.income), "filtered", C.COLORS.green)
-    metric(C, 176, 116, 144, "Expenses", money(m.expense), "spend", C.COLORS.red)
-    metric(C, 328, 116, 144, "Savings", pct(m.savings_rate), "rate", C.COLORS.cyan)
-    metric(C, 480, 116, 144, "Debt", pct(m.debt_ratio), "ratio", C.COLORS.amber)
-    metric(C, 632, 116, 144, "Runway", string.format("%.1f mo", m.runway_months or 0), "buffer", C.COLORS.violet)
-    metric(C, 784, 116, 144, "Rows", tostring(math.floor(m.count or 0)), v.table_name or "", C.COLORS.blue)
-    metric(C, 936, 116, 144, "Anomalies", tostring(#(v.anomalies or {})), "threshold", C.COLORS.red)
-    metric(C, 1088, 116, 144, "Cache", ctx.source or "", tostring(ctx.clean_count or 0) .. " clean", C.COLORS.green)
+    metric(C, 12, 112, 118, "Income", money(m.income), "filtered", C.COLORS.green)
+    metric(C, 138, 112, 118, "Expenses", money(m.expense), "spend", C.COLORS.red)
+    metric(C, 264, 112, 118, "Savings", pct(m.savings_rate), "rate", C.COLORS.cyan)
+    metric(C, 390, 112, 118, "Debt", pct(m.debt_ratio), "ratio", C.COLORS.amber)
+    metric(C, 12, 174, 118, "Runway", string.format("%.1f mo", m.runway_months or 0), "buffer", C.COLORS.violet)
+    metric(C, 138, 174, 118, "Rows", tostring(math.floor(m.count or 0)), v.table_name or "", C.COLORS.blue)
+    metric(C, 264, 174, 118, "Anomalies", tostring(#(v.anomalies or {})), "threshold", C.COLORS.red)
+    metric(C, 390, 174, 118, "Cache", ctx.source or "", tostring(ctx.clean_count or 0) .. " clean", C.COLORS.green)
 
-    panel(C, 24, 200, 390, 188, "Monthly sparkline")
-    ctx.Charts.sparkline(v.monthly or {}, 42, 232, 352, 132, "expense", C.COLORS.red)
+    panel(C, 12, 236, 240, 150, "Monthly")
+    draw_chart(ctx, "monthly_area", 22, 272)
 
-    panel(C, 432, 200, 386, 188, "Payment mix")
-    ctx.Charts.payment_mix(v.payment or {}, 450, 232, 348, 132, C)
+    panel(C, 264, 236, 248, 150, "Payment mix")
+    draw_chart(ctx, "payments", 278, 260)
 
-    panel(C, 836, 200, 396, 188, "Pipeline status")
-    local y = 232
+    panel(C, 12, 398, 500, 158, "Pipeline status")
+    local y = 426
     local lines = {
         "CSV rows: " .. tostring(ctx.row_count or 0),
         "Clean rows: " .. tostring(ctx.clean_count or 0),
         "DB tables: " .. tostring(ctx.db and ctx.db:tableCount() or 0),
         "SQL files: " .. tostring(#C.SQL_FILES),
-        "Cache: " .. C.CACHE_MANIFEST,
+        "Cache: " .. C.DATABASE_JSON_PATH,
         "Source: " .. tostring(ctx.source or ""),
+        "Refresh: " .. ms(ctx.refresh_ms),
+        "Frame: " .. ms(ctx.perf and ctx.perf.frame_ms),
     }
     for _, line in ipairs(lines) do
         set(C.COLORS.muted)
-        lurek.render.print(short(line, 48), 854, y, 1)
-        y = y + 20
+        lurek.render.print(short(line, 34), 30, y, 1)
+        y = y + 18
     end
+    draw_api_compact_text(ctx, 282, 426)
 
-    panel(C, 24, 410, 1208, 236, "Spend heatmap")
-    ctx.Charts.heatmap(v.heatmap or {}, 42, 442, 1172, 180, C)
+    draw_api_table_text(ctx)
 end
 
 local function draw_cashflow(ctx)
     local C = ctx.C
-    panel(C, 24, 116, 782, 330, "Income, expense, savings")
-    ctx.Charts.line(ctx.view.monthly or {}, 44, 152, 742, 250, { "income", "expense", "savings" }, { C.COLORS.green, C.COLORS.red, C.COLORS.cyan })
-    panel(C, 826, 116, 406, 330, "Trend cards")
-    local y = 154
-    for _, card in ipairs(ctx.view.trend_cards or {}) do
-        metric(C, 848, y, 360, card.label, money(card.value), "delta " .. money(card.delta), card.delta >= 0 and C.COLORS.green or C.COLORS.red)
-        y = y + 72
-    end
-    panel(C, 24, 468, 1208, 158, "Recurring merchants")
-    ctx.Charts.bars(ctx.view.recurring or {}, 44, 500, 1168, 104, "label", "value", C, 6)
+    panel(C, 12, 112, 500, 250, "Income, expense, savings")
+    draw_chart(ctx, "cashflow", 20, 150)
+    panel(C, 524, 112, 264, 250, "Trend cards")
+    local m = ctx.view.metrics or {}
+    metric(C, 538, 144, 236, "Net", money(m.net), "income - expense - savings", m.net and m.net >= 0 and C.COLORS.green or C.COLORS.red)
+    metric(C, 538, 198, 236, "Essential", pct(m.essential_ratio), "expense share", C.COLORS.amber)
+    metric(C, 538, 252, 236, "Average expense", money(m.avg_expense), "monthly", C.COLORS.red)
+    metric(C, 538, 306, 236, "Runway", string.format("%.1f mo", m.runway_months or 0), "buffer", C.COLORS.cyan)
+    panel(C, 12, 374, 776, 182, "Recurring merchants")
+    draw_chart(ctx, "recurring", 220, 416)
 end
 
 local function draw_categories(ctx)
     local C = ctx.C
-    panel(C, 24, 116, 580, 510, "Category totals")
-    ctx.Charts.bars(ctx.view.categories or {}, 44, 150, 540, 450, "label", "value", C, 14)
-    panel(C, 626, 116, 606, 244, "Member totals")
-    ctx.Charts.bars(ctx.view.members or {}, 646, 150, 566, 184, "label", "value", C, 7)
-    panel(C, 626, 382, 606, 244, "Category heatmap")
-    ctx.Charts.heatmap(ctx.view.heatmap or {}, 646, 416, 566, 184, C)
+    panel(C, 12, 112, 386, 444, "Category totals")
+    draw_chart(ctx, "categories", 24, 150)
+    panel(C, 410, 112, 378, 250, "Member totals")
+    draw_chart(ctx, "members", 420, 146)
+    panel(C, 410, 374, 378, 182, "DataFrame methods")
+    local y = 408
+    for name, used in pairs(ctx.dataframe_methods or {}) do
+        set(used and C.COLORS.green or C.COLORS.red)
+        lurek.render.print(short(name, 28) .. " = " .. tostring(used), 430, y, 1)
+        y = y + 18
+    end
 end
 
 local function draw_members(ctx)
     local C = ctx.C
-    panel(C, 24, 116, 592, 510, "Household member load")
-    ctx.Charts.bars(ctx.view.members or {}, 44, 152, 552, 430, "label", "value", C, 8)
-    panel(C, 636, 116, 596, 510, "Recent selected member transactions")
-    local y = 154
+    panel(C, 12, 112, 374, 444, "Household member load")
+    draw_chart(ctx, "members", 20, 150)
+    panel(C, 398, 112, 390, 444, "Recent selected member transactions")
+    local y = 146
     for index, row in ipairs(ctx.view.recent or {}) do
-        if index > 20 then break end
+        if index > 16 then break end
         set(C.COLORS.text)
-        lurek.render.print(short(row.date, 10), 656, y, 1)
-        lurek.render.print(short(row.member_clean, 10), 742, y, 1)
-        lurek.render.print(short(row.category_clean, 14), 826, y, 1)
-        lurek.render.print(short(row.merchant, 24), 944, y, 1)
+        lurek.render.print(short(row.date, 10), 414, y, 1)
+        lurek.render.print(short(row.member_clean, 8), 482, y, 1)
+        lurek.render.print(short(row.category_clean, 10), 544, y, 1)
+        lurek.render.print(short(row.merchant, 18), 624, y, 1)
         set((tonumber(row.signed_amount) or 0) < 0 and C.COLORS.red or C.COLORS.green)
-        lurek.render.print(money(row.signed_amount), 1120, y, 1)
-        y = y + 22
+        lurek.render.print(money(row.signed_amount), 728, y, 1)
+        y = y + 24
     end
 end
 
 local function draw_payments(ctx)
     local C = ctx.C
-    panel(C, 24, 116, 520, 260, "Payment method mix")
-    ctx.Charts.payment_mix(ctx.view.payment or {}, 44, 154, 480, 190, C)
-    panel(C, 566, 116, 666, 260, "Recurring merchant chart")
-    ctx.Charts.bars(ctx.view.recurring or {}, 586, 154, 626, 190, "label", "value", C, 8)
-    panel(C, 24, 400, 1208, 226, "Cashflow line")
-    ctx.Charts.line(ctx.view.monthly or {}, 44, 434, 1168, 160, { "expense", "debt", "essential" }, { C.COLORS.red, C.COLORS.amber, C.COLORS.violet })
+    panel(C, 12, 112, 250, 220, "Payment method mix")
+    draw_chart(ctx, "payments", 26, 150)
+    panel(C, 274, 112, 514, 220, "Recurring merchant chart")
+    draw_chart(ctx, "recurring", 350, 160)
+    panel(C, 12, 344, 776, 212, "Cashflow line")
+    draw_chart(ctx, "cashflow", 156, 372)
 end
 
 local function draw_anomalies(ctx)
     local C = ctx.C
-    panel(C, 24, 116, 570, 510, "Anomaly scatter")
+    panel(C, 12, 112, 366, 444, "Anomaly scatter")
     local rows = ctx.view.anomalies or {}
-    local max_amount = 1
-    for _, row in ipairs(rows) do max_amount = math.max(max_amount, tonumber(row.amount_abs) or 0) end
-    set(C.COLORS.panel2)
-    lurek.render.rectangle("fill", 48, 152, 512, 220, 4, 4)
-    for _, row in ipairs(rows) do
-        local mx = tonumber(row.month) or 1
-        local yr = tonumber(row.year) or ctx.C.YEAR_MIN
-        local px = 58 + (((yr - ctx.C.YEAR_MIN) * 12 + mx - 1) / 59) * 492
-        local py = 358 - ((tonumber(row.amount_abs) or 0) / max_amount) * 188
-        set((row.anomaly_severity == "high") and C.COLORS.red or C.COLORS.amber)
-        lurek.render.circle("fill", px, py, 3)
-    end
-    local selected = rows[ctx.state.selected_anomaly] or rows[1]
+    draw_chart(ctx, "anomalies", 24, 150)
+    local selected = rows[1]
     set(C.COLORS.muted)
-    lurek.render.print("Selected", 48, 398, 1)
+    lurek.render.print("Selected", 24, 390, 1)
     if selected then
         set(C.COLORS.text)
-        lurek.render.print(short(selected.anomaly_issue, 28), 48, 420, 1)
-        lurek.render.print(short((selected.date or "") .. " " .. (selected.merchant or ""), 48), 48, 442, 1)
-        lurek.render.print(short((selected.member_clean or "") .. " / " .. (selected.category_clean or ""), 48), 48, 464, 1)
-        lurek.render.print("Score " .. tostring(selected.anomaly_score or 0) .. "  " .. money(selected.amount_abs), 48, 486, 1)
+        lurek.render.print(short(selected.anomaly_issue, 28), 24, 412, 1)
+        lurek.render.print(short((selected.date or "") .. " " .. (selected.merchant or ""), 44), 24, 434, 1)
+        lurek.render.print(short((selected.member_clean or "") .. " / " .. (selected.category_clean or ""), 44), 24, 456, 1)
+        lurek.render.print("Score " .. tostring(selected.anomaly_score or 0) .. "  " .. money(selected.amount_abs), 24, 478, 1)
     end
 
-    panel(C, 618, 116, 614, 510, "Anomaly list")
+    panel(C, 390, 112, 398, 444, "Anomaly list")
     local y = 146
-    for index = 1, math.min(18, #rows) do
+    for index = 1, math.min(16, #rows) do
         local row = rows[index]
-        if index == ctx.state.selected_anomaly then
+        if index == 1 then
             set(C.COLORS.panel2)
-            lurek.render.rectangle("fill", 630, y - 3, 580, 20, 3, 3)
+            lurek.render.rectangle("fill", 402, y - 3, 370, 20, 3, 3)
         end
         set(row.anomaly_severity == "high" and C.COLORS.red or C.COLORS.amber)
-        lurek.render.print(short(row.anomaly_issue, 20), 638, y, 1)
+        lurek.render.print(short(row.anomaly_issue, 16), 410, y, 1)
         set(C.COLORS.text)
-        lurek.render.print(short(row.date, 10), 800, y, 1)
-        lurek.render.print(short(row.merchant, 22), 888, y, 1)
+        lurek.render.print(short(row.date, 10), 526, y, 1)
+        lurek.render.print(short(row.merchant, 18), 596, y, 1)
         set(C.COLORS.muted)
-        lurek.render.print(money(row.amount_abs), 1076, y, 1)
+        lurek.render.print(money(row.amount_abs), 716, y, 1)
         y = y + 24
     end
 end
 
 local function draw_transactions(ctx)
     local C = ctx.C
-    panel(C, 24, 116, 1208, 510, "Transaction table")
-    local y = 142
-    set(C.COLORS.muted)
-    lurek.render.print("Date", 42, y, 1)
-    lurek.render.print("Member", 132, y, 1)
-    lurek.render.print("Category", 226, y, 1)
-    lurek.render.print("Merchant", 356, y, 1)
-    lurek.render.print("Method", 750, y, 1)
-    lurek.render.print("Amount", 1088, y, 1)
-    y = y + 24
-    for index = 1, math.min(24, #(ctx.view.recent or {})) do
-        local row = ctx.view.recent[index]
-        if index == ctx.state.selected_transaction then
-            set(C.COLORS.panel2)
-            lurek.render.rectangle("fill", 36, y - 3, 1176, 18, 3, 3)
-        end
-        set(C.COLORS.text)
-        lurek.render.print(short(row.date, 10), 42, y, 1)
-        lurek.render.print(short(row.member_clean, 11), 132, y, 1)
-        lurek.render.print(short(row.category_clean, 14), 226, y, 1)
-        lurek.render.print(short(row.merchant, 42), 356, y, 1)
-        lurek.render.print(short(row.payment_method, 14), 750, y, 1)
-        set((tonumber(row.signed_amount) or 0) < 0 and C.COLORS.red or C.COLORS.green)
-        lurek.render.print(money(row.signed_amount), 1088, y, 1)
-        y = y + 20
-    end
+    set(C.COLORS.line)
+    lurek.render.rectangle("line", 12, 112, 776, 444, 5, 5)
+    set(C.COLORS.text)
+    lurek.render.print("Transaction table from LGuiTable:setDataFrame", 22, 120, 1)
 end
 
 local function draw_logs(ctx)
     local C = ctx.C
-    panel(C, 24, 116, 588, 510, "Logs")
-    local y = 150
-    local start = math.max(1, #ctx.logs - 22 - ctx.state.log_scroll)
-    for index = start, math.min(#ctx.logs, start + 22) do
+    panel(C, 12, 112, 510, 444, "Logs")
+    local y = 146
+    local start = math.max(1, #ctx.logs - 20)
+    for index = start, math.min(#ctx.logs, start + 20) do
         local row = ctx.logs[index]
         set(row.level == "warn" and C.COLORS.amber or C.COLORS.muted)
-        lurek.render.print(short(row.level, 6), 44, y, 1)
+        lurek.render.print(short(row.level, 6), 30, y, 1)
         set(C.COLORS.text)
-        lurek.render.print(short(row.message, 66), 96, y, 1)
+        lurek.render.print(short(row.message, 58), 82, y, 1)
         y = y + 20
     end
 
-    panel(C, 634, 116, 598, 250, "SQL/API status")
-    y = 150
-    for index = math.max(1, #ctx.api_status - 9), #ctx.api_status do
+    panel(C, 534, 112, 254, 206, "SQL")
+    y = 146
+    for index = math.max(1, #ctx.api_status - 7), #ctx.api_status do
         local item = ctx.api_status[index]
         if item then
             set(item.ok and C.COLORS.green or C.COLORS.red)
-            lurek.render.print(item.ok and "OK" or "ERR", 654, y, 1)
+            lurek.render.print(item.ok and "OK" or "ERR", 552, y, 1)
             set(C.COLORS.text)
-            lurek.render.print(short(item.name, 34), 690, y, 1)
+            lurek.render.print(short(item.name, 20), 590, y, 1)
             set(C.COLORS.muted)
-            lurek.render.print(tostring(item.rows or 0) .. " rows", 1054, y, 1)
+            lurek.render.print(tostring(item.rows or 0), 730, y, 1)
             y = y + 20
         end
     end
 
-    panel(C, 634, 388, 598, 238, "Test status")
-    y = 422
+    panel(C, 534, 334, 254, 222, "Tests")
+    y = 368
     local lines = ctx.test_report_lines or { "No report loaded" }
     for index = 1, math.min(8, #lines) do
         set(C.COLORS.text)
-        lurek.render.print(short(lines[index], 72), 654, y, 1)
+        lurek.render.print(short(lines[index], 28), 552, y, 1)
         y = y + 22
     end
 end
 
 function UIRender.setup(ctx)
+    pcall(function() lurek.render.setDefaultFilter("nearest", "nearest", 1) end)
     ctx.fonts = {
-        small = lurek.render.getDefaultFont(10),
-        title = lurek.render.getDefaultFont(14),
+        small = lurek.render.getDefaultFont(ctx.C.FONT_SIZE or 8),
+        title = lurek.render.getDefaultFont(ctx.C.TITLE_FONT_SIZE or 10),
     }
     ctx.render_scale = 1
     ctx.render_offset_x = 0
     ctx.render_offset_y = 0
     ctx.viewport_width = ctx.C.WIDTH
     ctx.viewport_height = ctx.C.HEIGHT
+    lurek.ui.setViewport(ctx.C.WIDTH, ctx.C.HEIGHT)
     lurek.render.setBackgroundColor(ctx.C.COLORS.bg[1], ctx.C.COLORS.bg[2], ctx.C.COLORS.bg[3])
 end
 
@@ -301,45 +463,58 @@ function UIRender.update_viewport(ctx)
     if ok_h and runtime_h and runtime_h > 0 then height = runtime_h end
     local scale = math.min(width / C.WIDTH, height / C.HEIGHT)
     if scale <= 0 then scale = 1 end
+    if scale >= 1 then scale = math.max(1, math.floor(scale + 0.0001)) end
     ctx.viewport_width = width
     ctx.viewport_height = height
     ctx.render_scale = scale
     ctx.render_offset_x = math.floor((width - C.WIDTH * scale) * 0.5)
     ctx.render_offset_y = math.floor((height - C.HEIGHT * scale) * 0.5)
+    lurek.ui.setViewport(C.WIDTH, C.HEIGHT)
 end
 
 function UIRender.draw(ctx)
     local C = ctx.C
     UIRender.update_viewport(ctx)
+    sample_performance(ctx)
+    build_charts(ctx)
+    if ctx.Controls then ctx.Controls.update_widgets(ctx) end
     lurek.render.clear(C.COLORS.bg[1], C.COLORS.bg[2], C.COLORS.bg[3])
     lurek.render.push()
     lurek.render.translate(ctx.render_offset_x or 0, ctx.render_offset_y or 0)
     lurek.render.scale(ctx.render_scale or 1, ctx.render_scale or 1)
     if ctx.fonts.small then lurek.render.setFont(ctx.fonts.small) end
+    draw_ui_layer(ctx)
+    lurek.render.setScissor()
+    if ctx.fonts.small then lurek.render.setFont(ctx.fonts.small) end
     draw_header(ctx)
-    if ctx.state.active_tab == 1 then
+    local active_tab = (ctx.filters and ctx.filters.active_tab) or 1
+    if active_tab == 1 then
         draw_widgets(ctx)
-    elseif ctx.state.active_tab == 2 then
+    elseif active_tab == 2 then
         draw_cashflow(ctx)
-    elseif ctx.state.active_tab == 3 then
+    elseif active_tab == 3 then
         draw_categories(ctx)
-    elseif ctx.state.active_tab == 4 then
+    elseif active_tab == 4 then
         draw_members(ctx)
-    elseif ctx.state.active_tab == 5 then
+    elseif active_tab == 5 then
         draw_payments(ctx)
-    elseif ctx.state.active_tab == 6 then
+    elseif active_tab == 6 then
         draw_anomalies(ctx)
-    elseif ctx.state.active_tab == 7 then
+    elseif active_tab == 7 then
         draw_transactions(ctx)
     else
         draw_logs(ctx)
     end
+    lurek.render.setScissor()
+    if ctx.fonts.small then lurek.render.setFont(ctx.fonts.small) end
+    draw_control_text(ctx)
     set(C.COLORS.panel2)
-    lurek.render.rectangle("fill", 0, 684, C.WIDTH, 36)
+    lurek.render.rectangle("fill", 0, 568, C.WIDTH, 32)
+    set(C.COLORS.text)
+    lurek.render.print(short(ctx.status or "ready", 48), 12, 578, 1)
     set(C.COLORS.muted)
-    lurek.render.print(short(ctx.state.status or "Ready", 84), 16, 696, 1)
-    lurek.render.print(short(ctx.state.last_action or "", 38), 780, 696, 1)
-    lurek.render.print(short(ctx.C.SCREENSHOT_PATH, 42), 1000, 696, 1)
+    lurek.render.print(short(tostring(ctx.row_count or 0) .. " raw / " .. tostring(ctx.clean_count or 0) .. " clean", 24), 300, 578, 1)
+    lurek.render.print(short((ctx.source or "") .. " | " .. (ctx.C.TABS[active_tab] or ""), 42), 468, 578, 1)
     lurek.render.pop()
 end
 

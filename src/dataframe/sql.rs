@@ -2,6 +2,7 @@
 //! - Recursive-descent parser for SELECT statements
 //! - WHERE clause expression tree with AND, OR, NOT, LIKE, and IN
 //! - Aggregate function support: COUNT, SUM, AVG, MIN, MAX
+//! - SELECT arithmetic expressions with explicit `AS` aliases
 //! - GROUP BY with HAVING filter and ORDER BY with LIMIT/OFFSET
 //! - JOIN clause parsing and inner-join execution
 //! - SQL LIKE pattern matching with `%` and `_` wildcards
@@ -38,6 +39,7 @@ fn tokenize(sql: &str) -> Result<Vec<Token>, String> {
     let len = chars.len();
     let mut tokens = Vec::new();
     let mut i = 0;
+    let mut expect_value = true;
     while i < len {
         let c = chars[i];
         if c.is_ascii_whitespace() {
@@ -48,31 +50,48 @@ fn tokenize(sql: &str) -> Result<Vec<Token>, String> {
             '*' => {
                 tokens.push(Token::Star);
                 i += 1;
+                expect_value = true;
             }
             ',' => {
                 tokens.push(Token::Comma);
                 i += 1;
+                expect_value = true;
             }
             '.' => {
                 tokens.push(Token::Dot);
                 i += 1;
+                expect_value = true;
             }
             '(' => {
                 tokens.push(Token::LParen);
                 i += 1;
+                expect_value = true;
             }
             ')' => {
                 tokens.push(Token::RParen);
                 i += 1;
+                expect_value = false;
+            }
+            '+' | '/' => {
+                tokens.push(Token::Op(c.to_string()));
+                i += 1;
+                expect_value = true;
+            }
+            '-' if !(expect_value && i + 1 < len && chars[i + 1].is_ascii_digit()) => {
+                tokens.push(Token::Op("-".to_string()));
+                i += 1;
+                expect_value = true;
             }
             '=' => {
                 tokens.push(Token::Op("=".to_string()));
                 i += 1;
+                expect_value = true;
             }
             '!' => {
                 if i + 1 < len && chars[i + 1] == '=' {
                     tokens.push(Token::Op("!=".to_string()));
                     i += 2;
+                    expect_value = true;
                 } else {
                     return Err(format!("unexpected '!' at position {i}"));
                 }
@@ -81,21 +100,26 @@ fn tokenize(sql: &str) -> Result<Vec<Token>, String> {
                 if i + 1 < len && chars[i + 1] == '=' {
                     tokens.push(Token::Op("<=".to_string()));
                     i += 2;
+                    expect_value = true;
                 } else if i + 1 < len && chars[i + 1] == '>' {
                     tokens.push(Token::Op("!=".to_string()));
                     i += 2;
+                    expect_value = true;
                 } else {
                     tokens.push(Token::Op("<".to_string()));
                     i += 1;
+                    expect_value = true;
                 }
             }
             '>' => {
                 if i + 1 < len && chars[i + 1] == '=' {
                     tokens.push(Token::Op(">=".to_string()));
                     i += 2;
+                    expect_value = true;
                 } else {
                     tokens.push(Token::Op(">".to_string()));
                     i += 1;
+                    expect_value = true;
                 }
             }
             '\'' => {
@@ -119,6 +143,7 @@ fn tokenize(sql: &str) -> Result<Vec<Token>, String> {
                 }
                 i += 1;
                 tokens.push(Token::StringLit(s));
+                expect_value = false;
             }
             '"' => {
                 i += 1;
@@ -132,9 +157,10 @@ fn tokenize(sql: &str) -> Result<Vec<Token>, String> {
                 }
                 i += 1;
                 tokens.push(Token::Ident(s));
+                expect_value = false;
             }
             _ if c.is_ascii_digit()
-                || (c == '-' && i + 1 < len && chars[i + 1].is_ascii_digit()) =>
+                || (c == '-' && expect_value && i + 1 < len && chars[i + 1].is_ascii_digit()) =>
             {
                 let start = i;
                 if c == '-' {
@@ -157,6 +183,7 @@ fn tokenize(sql: &str) -> Result<Vec<Token>, String> {
                     .parse()
                     .map_err(|_| format!("invalid number: {num_str}"))?;
                 tokens.push(Token::NumberLit(n));
+                expect_value = false;
             }
             _ if c.is_ascii_alphabetic() || c == '_' => {
                 let start = i;
@@ -165,6 +192,7 @@ fn tokenize(sql: &str) -> Result<Vec<Token>, String> {
                 }
                 let word: String = chars[start..i].iter().collect();
                 tokens.push(Token::Ident(word));
+                expect_value = false;
             }
             _ => {
                 return Err(format!("unexpected character '{c}' in SQL at position {i}"));
@@ -201,10 +229,13 @@ struct SqlSelect {
 enum SelectExpr {
     /// Select all columns.
     Star,
-    /// Select one named column.
-    Column(String),
-    /// Select aggregate over argument.
-    Aggregate(AggFunc, AggArg),
+    /// Select one value expression with optional alias.
+    Value {
+        /// Store parsed value expression.
+        expr: SelectValueExpr,
+        /// Store explicit output column alias.
+        alias: Option<String>,
+    },
 }
 #[derive(Debug, Clone)]
 /// Select aggregate function kind.
@@ -227,6 +258,48 @@ enum AggArg {
     Star,
     /// Target one named column.
     Column(String),
+}
+#[derive(Debug)]
+/// Represent numeric-capable SELECT value expressions.
+enum SelectValueExpr {
+    /// Select one named column.
+    Column(String),
+    /// Select numeric literal.
+    Number(f64),
+    /// Select aggregate over argument.
+    Aggregate(AggFunc, AggArg),
+    /// Select arithmetic combination of two expressions.
+    Binary {
+        /// Store left-hand expression.
+        left: Box<SelectValueExpr>,
+        /// Store arithmetic operator.
+        op: ArithmeticOp,
+        /// Store right-hand expression.
+        right: Box<SelectValueExpr>,
+    },
+}
+#[derive(Debug, Clone, Copy)]
+/// Represent arithmetic operator used in SELECT expressions.
+enum ArithmeticOp {
+    /// Add operands.
+    Add,
+    /// Subtract right operand from left operand.
+    Sub,
+    /// Multiply operands.
+    Mul,
+    /// Divide left operand by right operand.
+    Div,
+}
+impl ArithmeticOp {
+    /// Return SQL display symbol for this operator.
+    fn symbol(self) -> &'static str {
+        match self {
+            ArithmeticOp::Add => "+",
+            ArithmeticOp::Sub => "-",
+            ArithmeticOp::Mul => "*",
+            ArithmeticOp::Div => "/",
+        }
+    }
 }
 #[derive(Debug)]
 /// Store parsed JOIN clause data.
@@ -407,17 +480,14 @@ impl Parser {
             if matches!(self.peek(), Token::Star) {
                 self.advance();
                 list.push(SelectExpr::Star);
-            } else if self.is_agg_func() {
-                list.push(self.parse_agg_expr()?);
             } else {
-                let name = self.expect_ident()?;
-                let col_name = if matches!(self.peek(), Token::Dot) {
-                    self.advance();
-                    self.expect_ident()?
+                let expr = self.parse_select_value_expr()?;
+                let alias = if self.consume_keyword("AS") {
+                    Some(self.expect_ident()?)
                 } else {
-                    name
+                    None
                 };
-                list.push(SelectExpr::Column(col_name));
+                list.push(SelectExpr::Value { expr, alias });
             }
             if matches!(self.peek(), Token::Comma) {
                 self.advance();
@@ -427,6 +497,91 @@ impl Parser {
         }
         Ok(list)
     }
+    /// Parse arithmetic SELECT value expression.
+    fn parse_select_value_expr(&mut self) -> Result<SelectValueExpr, String> {
+        self.parse_additive_value_expr()
+    }
+    /// Parse addition and subtraction precedence for SELECT values.
+    fn parse_additive_value_expr(&mut self) -> Result<SelectValueExpr, String> {
+        let mut left_expr = self.parse_multiplicative_value_expr()?;
+        loop {
+            let op = match self.peek() {
+                Token::Op(operator) if operator == "+" => ArithmeticOp::Add,
+                Token::Op(operator) if operator == "-" => ArithmeticOp::Sub,
+                _ => break,
+            };
+            self.advance();
+            let right_expr = self.parse_multiplicative_value_expr()?;
+            left_expr = SelectValueExpr::Binary {
+                left: Box::new(left_expr),
+                op,
+                right: Box::new(right_expr),
+            };
+        }
+        Ok(left_expr)
+    }
+    /// Parse multiplication and division precedence for SELECT values.
+    fn parse_multiplicative_value_expr(&mut self) -> Result<SelectValueExpr, String> {
+        let mut left_expr = self.parse_primary_value_expr()?;
+        loop {
+            let op = match self.peek() {
+                Token::Star => ArithmeticOp::Mul,
+                Token::Op(operator) if operator == "/" => ArithmeticOp::Div,
+                _ => break,
+            };
+            self.advance();
+            let right_expr = self.parse_primary_value_expr()?;
+            left_expr = SelectValueExpr::Binary {
+                left: Box::new(left_expr),
+                op,
+                right: Box::new(right_expr),
+            };
+        }
+        Ok(left_expr)
+    }
+    /// Parse primary SELECT value expression.
+    fn parse_primary_value_expr(&mut self) -> Result<SelectValueExpr, String> {
+        match self.peek().clone() {
+            Token::NumberLit(number) => {
+                self.advance();
+                Ok(SelectValueExpr::Number(number))
+            }
+            Token::Ident(_) if self.is_agg_func() => self.parse_agg_value_expr(),
+            Token::Ident(_) => Ok(SelectValueExpr::Column(self.parse_column_name()?)),
+            Token::LParen => {
+                self.advance();
+                let expr = self.parse_select_value_expr()?;
+                match self.advance() {
+                    Token::RParen => Ok(expr),
+                    other => Err(format!("expected ')' in SELECT expression, got {other:?}")),
+                }
+            }
+            Token::Op(operator) if operator == "-" => {
+                self.advance();
+                let expr = self.parse_primary_value_expr()?;
+                Ok(SelectValueExpr::Binary {
+                    left: Box::new(SelectValueExpr::Number(0.0)),
+                    op: ArithmeticOp::Sub,
+                    right: Box::new(expr),
+                })
+            }
+            Token::Op(operator) if operator == "+" => {
+                self.advance();
+                self.parse_primary_value_expr()
+            }
+            other => Err(format!("expected SELECT expression, got {other:?}")),
+        }
+    }
+    /// Parse possibly qualified column name.
+    fn parse_column_name(&mut self) -> Result<String, String> {
+        let first_name = self.expect_ident()?;
+        if matches!(self.peek(), Token::Dot) {
+            self.advance();
+            self.expect_ident()
+        } else {
+            Ok(first_name)
+        }
+    }
     /// Return true when current token starts aggregate call.
     fn is_agg_func(&self) -> bool {
         matches!(self.peek(), Token::Ident(s) if {
@@ -434,8 +589,8 @@ impl Parser {
             u == "COUNT" || u == "SUM" || u == "AVG" || u == "MIN" || u == "MAX"
         })
     }
-    /// Parse aggregate function call from SELECT list.
-    fn parse_agg_expr(&mut self) -> Result<SelectExpr, String> {
+    /// Parse aggregate function call from SELECT value expression.
+    fn parse_agg_value_expr(&mut self) -> Result<SelectValueExpr, String> {
         let func_name = self.expect_ident()?;
         let func = match func_name.to_uppercase().as_str() {
             "COUNT" => AggFunc::Count,
@@ -453,14 +608,14 @@ impl Parser {
             self.advance();
             AggArg::Star
         } else {
-            let col = self.expect_ident()?;
+            let col = self.parse_column_name()?;
             AggArg::Column(col)
         };
         match self.advance() {
             Token::RParen => {}
             other => return Err(format!("expected ')' after aggregate, got {other:?}")),
         }
-        Ok(SelectExpr::Aggregate(func, arg))
+        Ok(SelectValueExpr::Aggregate(func, arg))
     }
     /// Parse OR-precedence expression.
     fn parse_expr(&mut self) -> Result<Expr, String> {
@@ -626,6 +781,81 @@ pub fn query_sql_database(db: &Database, sql: &str) -> Result<DataFrame, String>
     }
     execute_select(&working, &stmt)
 }
+/// Execute SQL-like database query after binding positional parameters.
+pub fn query_sql_database_params(
+    db: &Database,
+    sql: &str,
+    params: &[CellValue],
+) -> Result<DataFrame, String> {
+    let bound_sql = bind_sql_params(sql, params)?;
+    query_sql_database(db, &bound_sql)
+}
+/// Replace `?` placeholders outside SQL strings with escaped SQL literals.
+fn bind_sql_params(sql: &str, params: &[CellValue]) -> Result<String, String> {
+    let mut result = String::with_capacity(sql.len());
+    let mut param_index = 0usize;
+    let mut chars = sql.chars().peekable();
+
+    while let Some(ch) = chars.next() {
+        match ch {
+            '\'' => copy_quoted_sql('\'', &mut chars, &mut result),
+            '"' => copy_quoted_sql('"', &mut chars, &mut result),
+            '?' => {
+                let Some(param) = params.get(param_index) else {
+                    return Err(format!(
+                        "queryParams: missing parameter for placeholder {}",
+                        param_index + 1
+                    ));
+                };
+                result.push_str(&cell_to_sql_literal(param)?);
+                param_index += 1;
+            }
+            _ => result.push(ch),
+        }
+    }
+
+    if param_index != params.len() {
+        return Err(format!(
+            "queryParams: {} parameter(s) were not used",
+            params.len() - param_index
+        ));
+    }
+
+    Ok(result)
+}
+/// Copy a SQL quoted section without replacing placeholders inside it.
+fn copy_quoted_sql(
+    quote: char,
+    chars: &mut std::iter::Peekable<std::str::Chars<'_>>,
+    result: &mut String,
+) {
+    result.push(quote);
+    while let Some(ch) = chars.next() {
+        result.push(ch);
+        if ch == quote {
+            if quote == '\'' && matches!(chars.peek(), Some('\'')) {
+                result.push(chars.next().unwrap_or('\''));
+            } else {
+                break;
+            }
+        }
+    }
+}
+/// Convert a cell value to a SQL literal accepted by the built-in parser.
+fn cell_to_sql_literal(value: &CellValue) -> Result<String, String> {
+    match value {
+        CellValue::Nil => Ok("NULL".to_string()),
+        CellValue::Bool(true) => Ok("TRUE".to_string()),
+        CellValue::Bool(false) => Ok("FALSE".to_string()),
+        CellValue::Number(n) => {
+            if !n.is_finite() {
+                return Err("queryParams: non-finite numbers are not supported".to_string());
+            }
+            Ok(n.to_string())
+        }
+        CellValue::Text(text) => Ok(format!("'{}'", text.replace('\'', "''"))),
+    }
+}
 /// Execute parsed SELECT statement against a dataframe.
 fn execute_select(df: &DataFrame, stmt: &SqlSelect) -> Result<DataFrame, String> {
     let filtered = if let Some(ref where_expr) = stmt.where_clause {
@@ -663,9 +893,24 @@ fn execute_select(df: &DataFrame, stmt: &SqlSelect) -> Result<DataFrame, String>
 }
 /// Return true when SELECT list contains at least one aggregate expression.
 fn has_aggregates(columns: &[SelectExpr]) -> bool {
-    columns
-        .iter()
-        .any(|c| matches!(c, SelectExpr::Aggregate(_, _)))
+    columns.iter().any(select_expr_has_aggregate)
+}
+/// Return true when SELECT expression contains any aggregate call.
+fn select_expr_has_aggregate(expr: &SelectExpr) -> bool {
+    match expr {
+        SelectExpr::Star => false,
+        SelectExpr::Value { expr, .. } => value_expr_has_aggregate(expr),
+    }
+}
+/// Return true when value expression contains any aggregate call.
+fn value_expr_has_aggregate(expr: &SelectValueExpr) -> bool {
+    match expr {
+        SelectValueExpr::Aggregate(_, _) => true,
+        SelectValueExpr::Binary { left, right, .. } => {
+            value_expr_has_aggregate(left) || value_expr_has_aggregate(right)
+        }
+        SelectValueExpr::Column(_) | SelectValueExpr::Number(_) => false,
+    }
 }
 /// Apply WHERE expression to dataframe and return filtered frame.
 fn apply_filter(df: &DataFrame, expr: &Expr) -> Result<DataFrame, String> {
@@ -769,23 +1014,28 @@ fn like_match_dp(s: &[char], p: &[char]) -> bool {
 }
 /// Execute projection-only select list without grouping or aggregates.
 fn execute_column_select(df: &DataFrame, columns: &[SelectExpr]) -> Result<DataFrame, String> {
-    let mut col_refs: Vec<ColRef> = Vec::new();
+    let row_count = df.nrows();
+    let mut result_col_names: Vec<String> = Vec::new();
+    let mut result_data: Vec<Vec<CellValue>> = Vec::new();
     for expr in columns {
         match expr {
             SelectExpr::Star => {
-                for name in df.columns() {
-                    col_refs.push(ColRef::Name(name.clone()));
+                for (column_name, column_data) in df.columns().iter().zip(df.raw_data().iter()) {
+                    result_col_names.push(column_name.clone());
+                    result_data.push(column_data.clone());
                 }
             }
-            SelectExpr::Column(name) => {
-                col_refs.push(ColRef::Name(name.clone()));
-            }
-            SelectExpr::Aggregate(_, _) => {
-                return Err("unexpected aggregate in non-grouped SELECT".to_string());
+            SelectExpr::Value { expr, alias } => {
+                result_col_names.push(select_value_output_name(expr, alias.as_deref()));
+                let mut column_values = Vec::with_capacity(row_count);
+                for row_index in 0..row_count {
+                    column_values.push(eval_value_expr_for_row(df, expr, row_index)?);
+                }
+                result_data.push(column_values);
             }
         }
     }
-    df.select_columns(&col_refs)
+    Ok(DataFrame::from_raw(result_col_names, result_data))
 }
 /// Execute grouped SELECT list and optional HAVING expression.
 fn execute_group_by(
@@ -798,13 +1048,11 @@ fn execute_group_by(
     let mut result_col_names: Vec<String> = Vec::new();
     for expr in select_exprs {
         match expr {
-            SelectExpr::Column(name) => result_col_names.push(name.clone()),
-            SelectExpr::Aggregate(func, arg) => {
-                let name = agg_col_name(func, arg);
-                result_col_names.push(name);
-            }
             SelectExpr::Star => {
                 result_col_names.push(group_col.to_string());
+            }
+            SelectExpr::Value { expr, alias } => {
+                result_col_names.push(select_value_output_name(expr, alias.as_deref()));
             }
         }
     }
@@ -814,22 +1062,11 @@ fn execute_group_by(
         let mut row_vals: Vec<CellValue> = Vec::with_capacity(ncols);
         for expr in select_exprs {
             match expr {
-                SelectExpr::Column(name) => {
-                    if name == group_col {
-                        row_vals.push(key.clone());
-                    } else {
-                        let val = sub_df
-                            .get_value(0, ColRef::Name(name.clone()))
-                            .unwrap_or(CellValue::Nil);
-                        row_vals.push(val);
-                    }
-                }
                 SelectExpr::Star => {
                     row_vals.push(key.clone());
                 }
-                SelectExpr::Aggregate(func, arg) => {
-                    let val = compute_aggregate(sub_df, func, arg)?;
-                    row_vals.push(val);
+                SelectExpr::Value { expr, .. } => {
+                    row_vals.push(eval_value_expr_for_summary(sub_df, expr)?);
                 }
             }
         }
@@ -857,22 +1094,12 @@ fn execute_aggregate_no_group(
     let mut values = Vec::new();
     for expr in select_exprs {
         match expr {
-            SelectExpr::Aggregate(func, arg) => {
-                col_names.push(agg_col_name(func, arg));
-                values.push(compute_aggregate(df, func, arg)?);
-            }
-            SelectExpr::Column(name) => {
-                col_names.push(name.clone());
-                let val = if df.nrows() > 0 {
-                    df.get_value(0, ColRef::Name(name.clone()))
-                        .unwrap_or(CellValue::Nil)
-                } else {
-                    CellValue::Nil
-                };
-                values.push(val);
-            }
             SelectExpr::Star => {
                 return Err("cannot use * with aggregate functions without GROUP BY".to_string());
+            }
+            SelectExpr::Value { expr, alias } => {
+                col_names.push(select_value_output_name(expr, alias.as_deref()));
+                values.push(eval_value_expr_for_summary(df, expr)?);
             }
         }
     }
@@ -880,6 +1107,98 @@ fn execute_aggregate_no_group(
         col_names,
         values.into_iter().map(|v| vec![v]).collect(),
     ))
+}
+/// Build output column name from explicit alias or expression label.
+fn select_value_output_name(expr: &SelectValueExpr, alias: Option<&str>) -> String {
+    alias
+        .map(ToString::to_string)
+        .unwrap_or_else(|| select_value_expr_name(expr))
+}
+/// Build default output column label for SELECT value expression.
+fn select_value_expr_name(expr: &SelectValueExpr) -> String {
+    match expr {
+        SelectValueExpr::Column(name) => name.clone(),
+        SelectValueExpr::Number(number) => number.to_string(),
+        SelectValueExpr::Aggregate(func, arg) => agg_col_name(func, arg),
+        SelectValueExpr::Binary { left, op, right } => format!(
+            "{} {} {}",
+            select_value_expr_name(left),
+            op.symbol(),
+            select_value_expr_name(right)
+        ),
+    }
+}
+/// Evaluate SELECT value expression for one source row.
+fn eval_value_expr_for_row(
+    df: &DataFrame,
+    expr: &SelectValueExpr,
+    row_index: usize,
+) -> Result<CellValue, String> {
+    match expr {
+        SelectValueExpr::Column(name) => df.get_value(row_index, ColRef::Name(name.clone())),
+        SelectValueExpr::Number(number) => Ok(CellValue::Number(*number)),
+        SelectValueExpr::Aggregate(_, _) => {
+            Err("unexpected aggregate in non-grouped SELECT".to_string())
+        }
+        SelectValueExpr::Binary { left, op, right } => {
+            let left_value = eval_value_expr_for_row(df, left, row_index)?;
+            let right_value = eval_value_expr_for_row(df, right, row_index)?;
+            Ok(eval_arithmetic_cells(&left_value, *op, &right_value))
+        }
+    }
+}
+/// Evaluate SELECT value expression over a grouped or aggregate dataframe slice.
+fn eval_value_expr_for_summary(
+    df: &DataFrame,
+    expr: &SelectValueExpr,
+) -> Result<CellValue, String> {
+    match expr {
+        SelectValueExpr::Column(name) => {
+            if df.nrows() == 0 {
+                Ok(CellValue::Nil)
+            } else {
+                Ok(df
+                    .get_value(0, ColRef::Name(name.clone()))
+                    .unwrap_or(CellValue::Nil))
+            }
+        }
+        SelectValueExpr::Number(number) => Ok(CellValue::Number(*number)),
+        SelectValueExpr::Aggregate(func, arg) => compute_aggregate(df, func, arg),
+        SelectValueExpr::Binary { left, op, right } => {
+            let left_value = eval_value_expr_for_summary(df, left)?;
+            let right_value = eval_value_expr_for_summary(df, right)?;
+            Ok(eval_arithmetic_cells(&left_value, *op, &right_value))
+        }
+    }
+}
+/// Evaluate arithmetic cells; non-numeric values and division by zero produce Nil.
+fn eval_arithmetic_cells(
+    left_value: &CellValue,
+    op: ArithmeticOp,
+    right_value: &CellValue,
+) -> CellValue {
+    let Some(left_number) = left_value.as_number() else {
+        return CellValue::Nil;
+    };
+    let Some(right_number) = right_value.as_number() else {
+        return CellValue::Nil;
+    };
+    let result = match op {
+        ArithmeticOp::Add => left_number + right_number,
+        ArithmeticOp::Sub => left_number - right_number,
+        ArithmeticOp::Mul => left_number * right_number,
+        ArithmeticOp::Div => {
+            if right_number == 0.0 {
+                return CellValue::Nil;
+            }
+            left_number / right_number
+        }
+    };
+    if result.is_finite() {
+        CellValue::Number(result)
+    } else {
+        CellValue::Nil
+    }
 }
 /// Compute one aggregate value for selected dataframe slice.
 fn compute_aggregate(df: &DataFrame, func: &AggFunc, arg: &AggArg) -> Result<CellValue, String> {

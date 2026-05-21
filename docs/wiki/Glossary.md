@@ -74,6 +74,7 @@ The glossary collects terms that appear across module and API pages.
 - `LCursor` ([lurek.input](Module-input)) - Lua-side cursor handle for system and custom cursor requests.
 - `LDatabase` ([lurek.dataframe](Module-dataframe)) - Lua-side in-memory database containing named dataframes.
 - `LDataFrame` ([lurek.dataframe](Module-dataframe)) - Lua-side dataframe handle for tabular data with named columns and typed cells.
+- `LDataFrameTask` ([lurek.dataframe](Module-dataframe)) - Lua-side handle for a threaded dataframe job.
 - `LDataView` ([lurek.data](Module-data)) - Creates a DataView over a binary string slice.
 - `LDataWriter` ([lurek.data](Module-data)) - Lua-side binary writer for sequential byte construction.
 - `LDebounce` ([lurek.patterns](Module-patterns)) - Lua-facing debounce that delays firing until input stops for a specified wait period.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LMinimap` ([lurek.minimap](Module-minimap)) - Lua-side wrapper for a minimap instance and access to render command state.
 - `LMod` ([lurek.mods](Module-mods)) - Lua-side wrapper for mod metadata, hooks, and config references.
 - `LModManager` ([lurek.mods](Module-mods)) - Lua-side wrapper for the mod manager.
-- `LNavGrid` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a navigation grid and optional abstract graph cache.

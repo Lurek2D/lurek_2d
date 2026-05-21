@@ -168,23 +168,23 @@ mod font_tests {
 
     #[test]
     fn nearest_size_exact_match() {
-        assert_eq!(Font::nearest_size(10), 2);
-        assert_eq!(Font::nearest_size(22), 5);
-        assert_eq!(Font::nearest_size(5), 0);
+        assert_eq!(Font::nearest_size(16), 0);
+        assert_eq!(Font::nearest_size(27), 3);
+        assert_eq!(Font::nearest_size(49), 6);
     }
 
     #[test]
     fn nearest_size_rounds_to_closest() {
-        assert_eq!(Font::nearest_size(8), 1);
-        assert_eq!(Font::nearest_size(12), 2);
-        assert_eq!(Font::nearest_size(16), 3);
+        assert_eq!(Font::nearest_size(18), 1);
+        assert_eq!(Font::nearest_size(25), 3);
+        assert_eq!(Font::nearest_size(36), 4);
     }
 
     #[test]
     fn nearest_size_extreme_values() {
         assert_eq!(Font::nearest_size(0), 0);
         assert_eq!(Font::nearest_size(1), 0);
-        assert_eq!(Font::nearest_size(100), 5);
+        assert_eq!(Font::nearest_size(100), 6);
     }
 
     #[test]
@@ -198,7 +198,7 @@ mod font_tests {
     #[test]
     fn load_all_sizes_returns_six_fonts() {
         let fonts = Font::load_all_sizes();
-        assert_eq!(fonts.len(), 6, "expected 6 built-in font sizes");
+        assert_eq!(fonts.len(), 7, "expected 7 built-in font sizes");
     }
 
     #[test]
@@ -224,7 +224,7 @@ mod font_tests {
         let fonts = Font::load_all_sizes();
         let (ref font, _, _) = fonts[0];
         let w = font.text_width("AB");
-        assert_eq!(w, 8.0);
+        assert_eq!(w, 16.0);
     }
 
     #[test]

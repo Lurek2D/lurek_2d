@@ -91,6 +91,48 @@ impl TextInput {
             false
         }
     }
+    /// Move the insertion cursor one character left; return `false` when already at the start.
+    pub fn move_cursor_left(&mut self) -> bool {
+        if self.cursor_pos == 0 {
+            return false;
+        }
+        let prev = self.text[..self.cursor_pos]
+            .char_indices()
+            .next_back()
+            .map(|(index, _)| index)
+            .unwrap_or(0);
+        self.cursor_pos = prev;
+        true
+    }
+    /// Move the insertion cursor one character right; return `false` when already at the end.
+    pub fn move_cursor_right(&mut self) -> bool {
+        if self.cursor_pos >= self.text.len() {
+            return false;
+        }
+        let next = self.text[self.cursor_pos..]
+            .char_indices()
+            .nth(1)
+            .map(|(offset, _)| self.cursor_pos + offset)
+            .unwrap_or(self.text.len());
+        self.cursor_pos = next;
+        true
+    }
+    /// Move the insertion cursor to the start; return `false` when already there.
+    pub fn move_cursor_home(&mut self) -> bool {
+        if self.cursor_pos == 0 {
+            return false;
+        }
+        self.cursor_pos = 0;
+        true
+    }
+    /// Move the insertion cursor to the end; return `false` when already there.
+    pub fn move_cursor_end(&mut self) -> bool {
+        if self.cursor_pos == self.text.len() {
+            return false;
+        }
+        self.cursor_pos = self.text.len();
+        true
+    }
 }
 /// Provide a default `TextInput` via `Self::new()`.
 impl Default for TextInput {
@@ -257,6 +299,8 @@ pub struct ListBox {
     pub selected_index: Option<usize>,
     /// Pixel height allocated for each row.
     pub item_height: f32,
+    /// Vertical scroll offset used by mouse-wheel routing.
+    pub scroll_y: f32,
 }
 impl ListBox {
     /// Create an empty list box with item_height=24.
@@ -266,6 +310,7 @@ impl ListBox {
             items: Vec::new(),
             selected_index: None,
             item_height: 24.0,
+            scroll_y: 0.0,
         }
     }
     /// Append a new item to the ListBox.

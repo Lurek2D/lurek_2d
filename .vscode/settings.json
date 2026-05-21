@@ -226,5 +226,7 @@
 	"chat.editMode.hidden": false,
 	"chat.tools.compressOutput.enabled": true,
 	"markdown.preview.doubleClickToSwitchToEditor": true,
-	"files.saveConflictResolution": "overwriteFileOnDisk"
+	"files.saveConflictResolution": "overwriteFileOnDisk",
+	"github.copilot.chat.claudeAgent.allowAutoPermissions": true,
+	"markdown.preview.frontMatter": "codeBlock"
 }

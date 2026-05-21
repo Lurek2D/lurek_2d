@@ -1,148 +1,369 @@
 local Controls = {}
 
-local function inside(hb, x, y)
-    return x >= hb.x and x <= hb.x + hb.w and y >= hb.y and y <= hb.y + hb.h
+local function clamp(value, min_value, max_value)
+    value = tonumber(value) or min_value
+    if value < min_value then return min_value end
+    if value > max_value then return max_value end
+    return value
 end
 
-local function add(ctx, id, kind, label, x, y, w, h, action, value)
-    local hb = { id = id, kind = kind, label = label, x = x, y = y, w = w, h = h, action = action, value = value }
-    ctx.hitboxes[#ctx.hitboxes + 1] = hb
-    return hb
+local function round(value)
+    return math.floor((tonumber(value) or 0) + 0.5)
 end
 
-function Controls.add_hitbox(ctx, id, kind, label, x, y, w, h, action, value)
-    return add(ctx, id, kind, label, x, y, w, h, action, value)
-end
-
-local function add_button(ctx, id, label, x, y, w, action, value)
-    return add(ctx, id, "button", label, x, y, w, 22, action, value)
-end
-
-function Controls.layout(ctx)
-    ctx.hitboxes = {}
-    local x = 16
-    for index, label in ipairs(ctx.C.TABS) do
-        local w = ({ 86, 86, 98, 82, 88, 98, 112, 64 })[index] or 90
-        add(ctx, "tab_" .. tostring(index), "tab", label, x, 46, w, 24, "tab", index)
-        x = x + w + 6
+local function index_of(values, target)
+    for index, value in ipairs(values or {}) do
+        if value == target then return index end
     end
+    return 1
+end
 
-    add_button(ctx, "member_prev", "<", 16, 78, 24, "member", -1)
-    add(ctx, "member_value", "value", ctx.UIState.member(ctx.C, ctx.state), 42, 78, 92, 22, "member", 1)
-    add_button(ctx, "member_next", ">", 136, 78, 24, "member", 1)
+local function short(text, max_len)
+    text = tostring(text or "")
+    if #text <= max_len then return text end
+    return string.sub(text, 1, math.max(1, max_len - 1)) .. "."
+end
 
-    add_button(ctx, "category_prev", "<", 172, 78, 24, "category", -1)
-    add(ctx, "category_value", "value", ctx.UIState.category(ctx.C, ctx.state), 198, 78, 128, 22, "category", 1)
-    add_button(ctx, "category_next", ">", 328, 78, 24, "category", 1)
+local function add_items(combo, values)
+    for _, value in ipairs(values or {}) do
+        combo:addItem(tostring(value))
+    end
+end
 
-    add_button(ctx, "start_down", "-", 366, 78, 24, "start_year", -1)
-    add(ctx, "years", "value", tostring(ctx.state.start_year) .. "-" .. tostring(ctx.state.end_year), 392, 78, 86, 22, "noop")
-    add_button(ctx, "start_up", "+", 480, 78, 24, "start_year", 1)
-    add_button(ctx, "end_down", "-", 510, 78, 24, "end_year", -1)
-    add_button(ctx, "end_up", "+", 536, 78, 24, "end_year", 1)
+local function place(widget, x, y, w, h)
+    widget:setPosition(x, y)
+    widget:setSize(w, h)
+    return widget
+end
 
-    add_button(ctx, "clean_toggle", ctx.state.use_cleaned and "Clean" or "Raw", 574, 78, 70, "toggle_cleaned")
-    add_button(ctx, "threshold_down", "-", 656, 78, 24, "threshold", -5)
-    add(ctx, "threshold", "value", "Anom " .. tostring(ctx.state.anomaly_threshold), 682, 78, 74, 22, "noop")
-    add_button(ctx, "threshold_up", "+", 758, 78, 24, "threshold", 5)
+local LABEL_Y = 60
+local CONTROL_Y = 72
+local SUMMARY_Y = 96
 
-    add_button(ctx, "regen", "Regenerate", 804, 78, 92, "regenerate")
-    add_button(ctx, "cache", "Reload", 902, 78, 70, "reload_cache")
-    add_button(ctx, "shot", "Shot", 978, 78, 58, "screenshot")
-    add_button(ctx, "save", "Save", 1042, 78, 58, "save_state")
+local function make_label(text, x, y, w)
+    return place(lurek.ui.newLabel(text), x, y, w, 12)
+end
 
-    if ctx.state.active_tab == 6 then
-        for index = 1, math.min(18, #(ctx.view.anomalies or {})) do
-            add(ctx, "anomaly_" .. tostring(index), "row", "", 620, 142 + index * 24, 590, 22, "select_anomaly", index)
+local function make_button(ctx, label, x, y, w, action_name)
+    local button = place(lurek.ui.newButton(label), x, y, w, 22)
+    button:setOnClick(function()
+        if ctx.actions and ctx.actions[action_name] then
+            ctx.actions[action_name]()
+        else
+            ctx.needs_refresh = true
         end
-    elseif ctx.state.active_tab == 7 then
-        for index = 1, math.min(24, #(ctx.view.recent or {})) do
-            add(ctx, "transaction_" .. tostring(index), "row", "", 24, 132 + index * 20, 1196, 18, "select_transaction", index)
-        end
+    end)
+    return button
+end
+
+local function ensure_status_sections(status)
+    if status:getSectionCount() == 0 then
+        status:addSection("ready", 240)
+        status:addSection("rows", 130)
+        status:addSection("cache", 230)
+        status:addSection("slot", 200)
     end
 end
 
-local function invoke(ctx, hb)
-    local s = ctx.state
-    local action = hb.action
-    if action == "tab" then
-        ctx.UIState.set_tab(ctx.C, s, hb.value)
-    elseif action == "member" then
-        ctx.UIState.bump_member(ctx.C, s, hb.value)
-    elseif action == "category" then
-        ctx.UIState.bump_category(ctx.C, s, hb.value)
-    elseif action == "start_year" then
-        ctx.UIState.bump_start_year(ctx.C, s, hb.value)
-    elseif action == "end_year" then
-        ctx.UIState.bump_end_year(ctx.C, s, hb.value)
-    elseif action == "toggle_cleaned" then
-        ctx.UIState.toggle_cleaned(s)
-    elseif action == "threshold" then
-        ctx.UIState.bump_threshold(s, hb.value)
-    elseif action == "select_anomaly" then
-        s.selected_anomaly = hb.value
-        s.last_action = "selected anomaly"
-    elseif action == "select_transaction" then
-        s.selected_transaction = hb.value
-        s.last_action = "selected transaction"
-    elseif ctx.actions and ctx.actions[action] then
-        ctx.actions[action]()
-    end
-end
-
-function Controls.mousepressed(ctx, x, y, button)
-    if button ~= nil and button ~= 1 then return false end
-    for index = #ctx.hitboxes, 1, -1 do
-        local hb = ctx.hitboxes[index]
-        if inside(hb, x, y) then
-            ctx.pressed_id = hb.id
-            invoke(ctx, hb)
-            return true
+local function ensure_table_rows(tbl, count, columns)
+    if tbl:getColumnCount() == 0 then
+        for _, column in ipairs(columns) do
+            tbl:addColumn(column[1], column[2])
         end
     end
-    return false
-end
-
-function Controls.mousereleased(ctx)
-    ctx.pressed_id = nil
-    return false
-end
-
-function Controls.mousemoved(ctx, x, y)
-    ctx.state.hover_id = nil
-    for _, hb in ipairs(ctx.hitboxes) do
-        if inside(hb, x, y) then
-            ctx.state.hover_id = hb.id
-            return true
-        end
+    while tbl:getRowCount() < count do
+        local row = {}
+        for _ = 1, #columns do row[#row + 1] = "" end
+        tbl:addRow(row)
     end
-    return false
 end
 
-function Controls.wheelmoved(ctx, _x, y)
-    if ctx.state.active_tab == 7 then
-        ctx.state.table_scroll = math.max(0, ctx.state.table_scroll - y)
-        return true
-    elseif ctx.state.active_tab == 8 then
-        ctx.state.log_scroll = math.max(0, ctx.state.log_scroll - y)
-        return true
+function Controls.setup(ctx)
+    lurek.ui.setDefaultTheme()
+    lurek.ui.setViewport(ctx.C.WIDTH, ctx.C.HEIGHT)
+
+    local root = lurek.ui.getRoot()
+    local widgets = {}
+    widgets.tabs = place(lurek.ui.newTabBar(), 12, 36, 776, 20)
+    for _, label in ipairs(ctx.C.TABS) do widgets.tabs:addTab(label) end
+    widgets.tabs:setActiveTab(1)
+    widgets.tabs:setOnChange(function()
+        ctx.needs_refresh = true
+    end)
+
+    widgets.labels = {
+        member = make_label("Member", 12, LABEL_Y, 88),
+        category = make_label("Category", 108, LABEL_Y, 104),
+        from = make_label("From", 220, LABEL_Y, 78),
+        to = make_label("To", 306, LABEL_Y, 78),
+        clean = make_label("Clean", 392, LABEL_Y, 54),
+        score = make_label("Score", 454, LABEL_Y, 88),
+    }
+
+    widgets.member = place(lurek.ui.newComboBox(), 12, CONTROL_Y, 88, 22)
+    add_items(widgets.member, ctx.C.MEMBERS)
+    widgets.member:setSelectedIndex(1)
+    widgets.member:setOnChange(function() ctx.needs_refresh = true end)
+
+    widgets.category = place(lurek.ui.newComboBox(), 108, CONTROL_Y, 104, 22)
+    add_items(widgets.category, ctx.C.CATEGORIES)
+    widgets.category:setSelectedIndex(1)
+    widgets.category:setOnChange(function() ctx.needs_refresh = true end)
+
+    widgets.start_year = place(lurek.ui.newSlider(ctx.C.YEAR_MIN, ctx.C.YEAR_MAX), 220, CONTROL_Y, 78, 22)
+    widgets.start_year:setStep(1)
+    widgets.start_year:setValue(ctx.C.YEAR_MIN)
+    widgets.start_year:setOnChange(function() ctx.needs_refresh = true end)
+
+    widgets.end_year = place(lurek.ui.newSlider(ctx.C.YEAR_MIN, ctx.C.YEAR_MAX), 306, CONTROL_Y, 78, 22)
+    widgets.end_year:setStep(1)
+    widgets.end_year:setValue(ctx.C.YEAR_MAX)
+    widgets.end_year:setOnChange(function() ctx.needs_refresh = true end)
+
+    widgets.cleaned = place(lurek.ui.newSwitch(true), 392, CONTROL_Y, 54, 22)
+    widgets.cleaned:setOnChange(function() ctx.needs_refresh = true end)
+
+    widgets.threshold = place(lurek.ui.newSlider(0, 100), 454, CONTROL_Y, 88, 22)
+    widgets.threshold:setStep(5)
+    widgets.threshold:setValue(30)
+    widgets.threshold:setOnChange(function() ctx.needs_refresh = true end)
+
+    widgets.regenerate = make_button(ctx, "Regen", 552, CONTROL_Y, 70, "regenerate")
+    widgets.reload = make_button(ctx, "Reload", 630, CONTROL_Y, 58, "reload_cache")
+    widgets.save = make_button(ctx, "Save", 696, CONTROL_Y, 44, "save_state")
+    widgets.screenshot = make_button(ctx, "Shot", 748, CONTROL_Y, 40, "screenshot")
+
+    widgets.filter_summary = make_label("Filters: All / All", 12, SUMMARY_Y, 776)
+
+    widgets.status = place(lurek.ui.newStatusBar(), 0, 568, ctx.C.WIDTH, 32)
+    ensure_status_sections(widgets.status)
+
+    widgets.transactions = place(lurek.ui.newTable(), 16, 142, 768, 404)
+    ensure_table_rows(widgets.transactions, 18, {
+        { "Date", 70 },
+        { "Member", 70 },
+        { "Category", 96 },
+        { "Merchant", 250 },
+        { "Method", 92 },
+        { "Amount", 84 },
+        { "Issue", 98 },
+    })
+
+    widgets.api = place(lurek.ui.newTable(), 526, 112, 262, 444)
+    ensure_table_rows(widgets.api, 14, {
+        { "Key", 76 },
+        { "Value", 104 },
+        { "API", 72 },
+    })
+
+    local attached = {
+        widgets.tabs,
+        widgets.member,
+        widgets.category,
+        widgets.start_year,
+        widgets.end_year,
+        widgets.cleaned,
+        widgets.threshold,
+        widgets.regenerate,
+        widgets.reload,
+        widgets.save,
+        widgets.screenshot,
+        widgets.labels.member,
+        widgets.labels.category,
+        widgets.labels.from,
+        widgets.labels.to,
+        widgets.labels.clean,
+        widgets.labels.score,
+        widgets.filter_summary,
+        widgets.status,
+        widgets.transactions,
+        widgets.api,
+    }
+    for _, widget in ipairs(attached) do
+        root:addChild(widget)
     end
-    return false
+
+    ctx.widgets = widgets
+    ctx.filters = Controls.read_filters(ctx)
+    Controls.update_visibility(ctx)
 end
 
-function Controls.keypressed(ctx, key)
-    local n = tonumber(key)
-    if n and n >= 1 and n <= #ctx.C.TABS then
-        ctx.UIState.set_tab(ctx.C, ctx.state, n)
-        return true
+function Controls.snapshot(ctx)
+    local filters = Controls.read_filters(ctx)
+    return {
+        active_tab = filters.active_tab,
+        member = filters.member,
+        category = filters.category,
+        start_year = filters.start_year,
+        end_year = filters.end_year,
+        use_cleaned = filters.use_cleaned,
+        anomaly_threshold = filters.anomaly_threshold,
+    }
+end
+
+function Controls.apply_snapshot(ctx, snapshot)
+    if not ctx.widgets or not snapshot then return end
+    local w = ctx.widgets
+    if snapshot.active_tab then w.tabs:setActiveTab(clamp(snapshot.active_tab, 1, #ctx.C.TABS)) end
+    if snapshot.member then w.member:setSelectedIndex(index_of(ctx.C.MEMBERS, snapshot.member)) end
+    if snapshot.category then w.category:setSelectedIndex(index_of(ctx.C.CATEGORIES, snapshot.category)) end
+    if snapshot.start_year then w.start_year:setValue(clamp(snapshot.start_year, ctx.C.YEAR_MIN, ctx.C.YEAR_MAX)) end
+    if snapshot.end_year then w.end_year:setValue(clamp(snapshot.end_year, ctx.C.YEAR_MIN, ctx.C.YEAR_MAX)) end
+    if snapshot.use_cleaned ~= nil then w.cleaned:setOn(snapshot.use_cleaned == true) end
+    if snapshot.anomaly_threshold then w.threshold:setValue(clamp(snapshot.anomaly_threshold, 0, 100)) end
+    ctx.filters = Controls.read_filters(ctx)
+    ctx.needs_refresh = true
+end
+
+function Controls.read_filters(ctx)
+    local w = ctx.widgets
+    if not w then
+        return {
+            active_tab = 1,
+            member = "All",
+            category = "All",
+            start_year = ctx.C.YEAR_MIN,
+            end_year = ctx.C.YEAR_MAX,
+            use_cleaned = true,
+            anomaly_threshold = 30,
+        }
     end
-    if key == "left" then ctx.UIState.bump_start_year(ctx.C, ctx.state, -1); return true end
-    if key == "right" then ctx.UIState.bump_end_year(ctx.C, ctx.state, 1); return true end
-    if key == "c" then ctx.UIState.toggle_cleaned(ctx.state); return true end
-    if key == "r" and ctx.actions.regenerate then ctx.actions.regenerate(); return true end
-    if key == "p" and ctx.actions.screenshot then ctx.actions.screenshot(); return true end
-    if key == "s" and ctx.actions.save_state then ctx.actions.save_state(); return true end
-    return false
+    local start_year = clamp(round(w.start_year:getValue()), ctx.C.YEAR_MIN, ctx.C.YEAR_MAX)
+    local end_year = clamp(round(w.end_year:getValue()), ctx.C.YEAR_MIN, ctx.C.YEAR_MAX)
+    if start_year > end_year then
+        end_year = start_year
+        w.end_year:setValue(end_year)
+    end
+    local member = w.member:getSelectedItem() or "All"
+    local category = w.category:getSelectedItem() or "All"
+    return {
+        active_tab = clamp(w.tabs:getActiveTab(), 1, #ctx.C.TABS),
+        member = member,
+        category = category,
+        start_year = start_year,
+        end_year = end_year,
+        use_cleaned = w.cleaned:isOn(),
+        anomaly_threshold = clamp(round(w.threshold:getValue()), 0, 100),
+    }
+end
+
+local function filter_key(filters)
+    return table.concat({
+        tostring(filters.active_tab),
+        filters.member,
+        filters.category,
+        tostring(filters.start_year),
+        tostring(filters.end_year),
+        tostring(filters.use_cleaned),
+        tostring(filters.anomaly_threshold),
+    }, "|")
+end
+
+function Controls.poll(ctx)
+    local filters = Controls.read_filters(ctx)
+    local key = filter_key(filters)
+    local changed = key ~= ctx.filter_key or ctx.needs_refresh == true
+    ctx.filters = filters
+    ctx.filter_key = key
+    Controls.update_visibility(ctx)
+    return changed
+end
+
+function Controls.update_visibility(ctx)
+    if not ctx.widgets or not ctx.filters then return end
+    local active = ctx.filters.active_tab or 1
+    ctx.widgets.transactions:setVisible(active == 7)
+    ctx.widgets.api:setVisible(false)
+end
+
+local function update_transactions(ctx)
+    local tbl = ctx.widgets and ctx.widgets.transactions
+    if not tbl then return end
+    local frame = ctx.view and ctx.view.recent_frame
+    if frame then
+        local version = tostring(ctx.view_version or 0)
+        if ctx.transactions_widget_version == version then return end
+        tbl:setDataFrame(frame)
+        ctx.transactions_widget_version = version
+    else
+        if ctx.transactions_widget_version == "empty" then return end
+        tbl:clearRows()
+        ctx.transactions_widget_version = "empty"
+    end
+end
+
+local function update_api_table(ctx)
+    local tbl = ctx.widgets and ctx.widgets.api
+    if not tbl then return end
+    local filters = ctx.filters or Controls.read_filters(ctx)
+    local report = (ctx.test_report_lines and ctx.test_report_lines[1]) or "no report"
+    local method_count = 0
+    for _, used in pairs(ctx.dataframe_methods or {}) do
+        if used then method_count = method_count + 1 end
+    end
+    local perf = ctx.perf or {}
+    local version = table.concat({
+        tostring(ctx.view_version or 0),
+        tostring(filters.active_tab or 0),
+        tostring(filters.member or ""),
+        tostring(filters.category or ""),
+        tostring(filters.start_year or ""),
+        tostring(filters.end_year or ""),
+        tostring(filters.use_cleaned),
+        tostring(filters.anomaly_threshold or ""),
+        tostring(ctx.chart_count or 0),
+        tostring(method_count),
+        string.format("%.1f", tonumber(ctx.refresh_ms) or 0),
+        string.format("%.1f", tonumber(perf.frame_ms) or 0),
+        string.format("%.1f", tonumber(perf.render_ms) or 0),
+    }, "|")
+    if ctx.api_widget_version == version then return end
+    ctx.api_widget_version = version
+    local rows = {
+        { "tab", ctx.C.TABS[filters.active_tab] or "", "LTabBar" },
+        { "member", filters.member, "LComboBox" },
+        { "category", filters.category, "LComboBox" },
+        { "years", tostring(filters.start_year) .. "-" .. tostring(filters.end_year), "LSlider" },
+        { "cleaned", tostring(filters.use_cleaned), "LSwitch" },
+        { "threshold", tostring(filters.anomaly_threshold), "LSlider" },
+        { "db tables", tostring(ctx.db and ctx.db:tableCount() or 0), "LDatabase" },
+        { "sql files", tostring(#(ctx.C.SQL_FILES or {})), "queryParams" },
+        { "cache", ctx.C.CACHE_VERSION, "LDatabase:save" },
+        { "restore", "database", "loadDatabase" },
+        { "dataframe methods", tostring(method_count), "LDataFrame" },
+        { "chart images", tostring(ctx.chart_count or 0), "DF charts" },
+        { "frame ms", string.format("%.2f", tonumber(perf.frame_ms) or 0), "getFrameProfile" },
+        { "render ms", string.format("%.2f", tonumber(perf.render_ms) or 0), "getStats" },
+        { "refresh ms", string.format("%.2f", tonumber(ctx.refresh_ms) or 0), "SQL refresh" },
+        { "test report", short(report, 36), "GameFS" },
+        { "save slot", ctx.C.SAVE_SLOT, "lurek.save" },
+    }
+    tbl:setRows(rows)
+end
+
+function Controls.update_widgets(ctx)
+    if not ctx.widgets then return end
+    local status = ctx.widgets.status
+    ensure_status_sections(status)
+    local filters = ctx.filters or Controls.read_filters(ctx)
+    if ctx.widgets.filter_summary then
+        ctx.widgets.filter_summary:setText(short(string.format(
+            "Filters: %s / %s | %d-%d | %s | anomaly >= %d | buttons: Regen Reload Save Shot",
+            short(filters.member or "All", 10),
+            short(filters.category or "All", 12),
+            filters.start_year or ctx.C.YEAR_MIN,
+            filters.end_year or ctx.C.YEAR_MAX,
+            (filters.use_cleaned == false) and "raw" or "clean",
+            filters.anomaly_threshold or 30
+        ), 118))
+    end
+    status:setSectionText(1, short(ctx.status or "ready", 34))
+    status:setSectionText(2, tostring(ctx.row_count or 0) .. "/" .. tostring(ctx.clean_count or 0) .. " rows")
+    status:setSectionText(3, short((ctx.source or "") .. " | " .. ctx.C.CACHE_MANIFEST, 30))
+    status:setSectionText(4, short(ctx.C.SAVE_SLOT .. " | " .. (ctx.C.TABS[filters.active_tab] or ""), 24))
+    update_transactions(ctx)
+    update_api_table(ctx)
+    Controls.update_visibility(ctx)
 end
 
 return Controls

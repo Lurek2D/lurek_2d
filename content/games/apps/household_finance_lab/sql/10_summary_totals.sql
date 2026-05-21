@@ -1,1 +1,9 @@
-SELECT COUNT(*), SUM(income_amount), SUM(expense_amount), SUM(savings_amount), SUM(debt_amount), SUM(essential_amount), SUM(asset_amount) FROM filtered_transactions
+SELECT
+    COUNT(*),
+    SUM(income_amount),
+    SUM(expense_amount),
+    SUM(savings_amount),
+    SUM(debt_amount),
+    SUM(essential_amount),
+    SUM(asset_amount)
+FROM filtered_transactions

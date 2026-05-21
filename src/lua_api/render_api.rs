@@ -2015,7 +2015,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             if let Some(LuaValue::Number(n)) = args.get(0) {
                 let height = *n as u32;
                 let idx = crate::render::Font::nearest_size(height);
-                if let Some(key) = st.default_fonts[idx] {
+                let arr = if st.active_bold {
+                    &st.default_bold_fonts
+                } else {
+                    &st.default_fonts
+                };
+                if let Some(key) = arr[idx] {
                     return Ok(LuaFont {
                         state: s.clone(),
                         key,
@@ -2028,7 +2033,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             if let Some(LuaValue::Integer(n)) = args.get(0) {
                 let height = *n as u32;
                 let idx = crate::render::Font::nearest_size(height);
-                if let Some(key) = st.default_fonts[idx] {
+                let arr = if st.active_bold {
+                    &st.default_bold_fonts
+                } else {
+                    &st.default_fonts
+                };
+                if let Some(key) = arr[idx] {
                     return Ok(LuaFont {
                         state: s.clone(),
                         key,
@@ -2061,7 +2071,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             };
             if path == "default" {
                 let idx = crate::render::Font::nearest_size(size as u32);
-                if let Some(key) = st.default_fonts[idx] {
+                let arr = if st.active_bold {
+                    &st.default_bold_fonts
+                } else {
+                    &st.default_fonts
+                };
+                if let Some(key) = arr[idx] {
                     return Ok(LuaFont {
                         state: s.clone(),
                         key,
@@ -2140,23 +2155,85 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- getDefaultFont --
     /// Returns a built-in default font at the nearest available pixel height.
     /// @param | pixelHeight | integer? | Desired pixel height (default 14).
+    /// @param | bold | boolean? | When true, returns the bold variant (default false).
     /// @return | LFont | The built-in font handle.
     graphics.set(
         "getDefaultFont",
-        lua.create_function(move |_, pixel_height: Option<u32>| {
-            let height = pixel_height.unwrap_or(14);
-            let idx = crate::render::Font::nearest_size(height);
-            let st = s.borrow();
-            if let Some(key) = st.default_fonts[idx] {
-                Ok(LuaFont {
-                    state: s.clone(),
-                    key,
-                })
-            } else {
-                Err(LuaError::RuntimeError(
-                    "lurek.graphic.getDefaultFont: built-in fonts not loaded".into(),
-                ))
+        lua.create_function(
+            move |_, (pixel_height, bold): (Option<u32>, Option<bool>)| {
+                let height = pixel_height.unwrap_or(14);
+                let idx = crate::render::Font::nearest_size(height);
+                let st = s.borrow();
+                let use_bold = bold.unwrap_or(st.active_bold);
+                let arr = if use_bold {
+                    &st.default_bold_fonts
+                } else {
+                    &st.default_fonts
+                };
+                if let Some(key) = arr[idx] {
+                    Ok(LuaFont {
+                        state: s.clone(),
+                        key,
+                    })
+                } else {
+                    Err(LuaError::RuntimeError(
+                        "lurek.graphic.getDefaultFont: built-in fonts not loaded".into(),
+                    ))
+                }
+            },
+        )?,
+    )?;
+    let s = state.clone();
+    // -- setBold --
+    /// Sets whether subsequent font size lookups use the bold Courier New variant.
+    /// @param | bold | boolean | True to enable bold, false for regular.
+    graphics.set(
+        "setBold",
+        lua.create_function(move |_, bold: bool| {
+            let mut st = s.borrow_mut();
+            st.active_bold = bold;
+            // Re-select active_font to match the new variant at the current size.
+            let current_key = st.active_font.or(st.default_font);
+            if let Some(ck) = current_key {
+                // Find which slot this key came from.
+                let arr = if bold {
+                    &st.default_fonts
+                } else {
+                    &st.default_bold_fonts
+                };
+                if let Some(slot) = arr.iter().position(|&k| k == Some(ck)) {
+                    let new_arr = if bold {
+                        &st.default_bold_fonts
+                    } else {
+                        &st.default_fonts
+                    };
+                    if let Some(new_key) = new_arr[slot] {
+                        st.active_font = Some(new_key);
+                        return Ok(());
+                    }
+                }
+                // Fallback: pick slot 2 (12 pt) from the new variant.
+                let new_arr = if bold {
+                    &st.default_bold_fonts
+                } else {
+                    &st.default_fonts
+                };
+                if let Some(k) = new_arr[2] {
+                    st.active_font = Some(k);
+                }
             }
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- isBold --
+    /// Returns true if the current default font selection uses the bold variant.
+    /// @return | boolean | True when bold is active.
+    graphics.set(
+        "isBold",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            Ok(st.active_bold)
         })?,
     )?;
     let s = state.clone();

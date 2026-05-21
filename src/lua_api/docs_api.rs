@@ -421,12 +421,12 @@ impl LuaUserData for ApiCatalog {
         // -- toTable --
         /// Converts this catalog into plain Lua tables for lightweight inspection.
         /// @return | table | Array of rows with name, qualifiedName, module, kind, description, and score fields.
-    /// @field | name | string | Symbol name.
-    /// @field | qualifiedName | string | Fully qualified name.
-    /// @field | module | string | Module name.
-    /// @field | kind | string | Symbol kind.
-    /// @field | description | string | Symbol description.
-    /// @field | score | number | Relevance score.
+        /// @field | name | string | Symbol name.
+        /// @field | qualifiedName | string | Fully qualified name.
+        /// @field | module | string | Module name.
+        /// @field | kind | string | Symbol kind.
+        /// @field | description | string | Symbol description.
+        /// @field | score | number | Relevance score.
         methods.add_method("toTable", |lua, this, ()| {
             let tbl = lua.create_table()?;
             for (i, e) in this.0.iter().enumerate() {
@@ -569,9 +569,9 @@ impl LuaUserData for ValidationReport {
         // -- toTable --
         /// Converts this validation report into a plain Lua table.
         /// @return | table | Table with missing, phantom, and incomplete array fields.
-    /// @field | missing | string[] | Missing symbols.
-    /// @field | phantom | string[] | Phantom symbols.
-    /// @field | incomplete | string[] | Incomplete symbols.
+        /// @field | missing | string[] | Missing symbols.
+        /// @field | phantom | string[] | Phantom symbols.
+        /// @field | incomplete | string[] | Incomplete symbols.
         methods.add_method("toTable", |lua, this, ()| {
             let tbl = lua.create_table()?;
             let missing = lua.create_table()?;

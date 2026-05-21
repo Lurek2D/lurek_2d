@@ -1,0 +1,217 @@
+[window]
+width = 800
+height = 600
+font_size = 8
+title_font_size = 10
+
+[paths]
+save_dir = "save/household_finance_lab"
+cache_dir = "save/household_finance_lab/cache"
+csv_path = "save/household_finance_lab/transactions_2021_2025.csv"
+log_path = "save/household_finance_lab/app.log"
+screenshot_path = "save/household_finance_lab/dashboard.png"
+screen_path = "save/household_finance_lab/screen.png"
+test_report_path = "save/household_finance_lab/test_report.json"
+cache_manifest = "save/household_finance_lab/cache/manifest.json"
+database_json_path = "save/household_finance_lab/cache/database.json"
+save_slot = "household_finance_lab_ui"
+cache_version = "household_finance_lab_cache_v3"
+
+[years]
+min = 2021
+max = 2025
+
+[tabs]
+names = [
+    "Widgets/API",
+    "Cashflow",
+    "Categories",
+    "Members",
+    "Payments",
+    "Anomalies",
+    "Transactions",
+    "Logs"
+]
+
+[members]
+names = ["All", "Anna", "Marek", "Ola", "Kuba", "Luna", "Household", "Unassigned"]
+
+[categories]
+names = [
+    "All",
+    "income",
+    "groceries",
+    "housing",
+    "utilities",
+    "transport",
+    "school",
+    "healthcare",
+    "dog",
+    "subscriptions",
+    "entertainment",
+    "repairs",
+    "clothing",
+    "holiday",
+    "savings",
+    "investment",
+    "debt",
+    "assets",
+    "refunds"
+]
+
+[columns]
+names = [
+    "txn_id",
+    "date",
+    "year",
+    "month",
+    "day",
+    "month_index",
+    "member",
+    "member_clean",
+    "role",
+    "merchant",
+    "category",
+    "category_clean",
+    "subcategory",
+    "account",
+    "payment_method",
+    "direction",
+    "amount",
+    "signed_amount",
+    "amount_abs",
+    "income_amount",
+    "expense_amount",
+    "savings_amount",
+    "debt_amount",
+    "essential_amount",
+    "asset_amount",
+    "currency",
+    "recurring",
+    "recurring_value",
+    "essential",
+    "essential_value",
+    "source",
+    "location",
+    "location_clean",
+    "note",
+    "anomaly_issue",
+    "anomaly_severity",
+    "anomaly_score",
+    "duplicate_key"
+]
+
+[category_aliases]
+grocereis = "groceries"
+transprot = "transport"
+utlities = "utilities"
+utilties = "utilities"
+subscrptions = "subscriptions"
+
+[colors]
+bg = [0.055, 0.060, 0.070, 1.0]
+panel = [0.105, 0.115, 0.130, 1.0]
+panel2 = [0.135, 0.148, 0.165, 1.0]
+line = [0.280, 0.310, 0.340, 1.0]
+text = [0.910, 0.930, 0.950, 1.0]
+muted = [0.610, 0.660, 0.710, 1.0]
+green = [0.180, 0.620, 0.400, 1.0]
+red = [0.850, 0.320, 0.280, 1.0]
+blue = [0.220, 0.470, 0.780, 1.0]
+cyan = [0.180, 0.630, 0.720, 1.0]
+amber = [0.900, 0.650, 0.250, 1.0]
+violet = [0.520, 0.420, 0.760, 1.0]
+white = [1.0, 1.0, 1.0, 1.0]
+
+[category_colors]
+income = [0.18, 0.62, 0.40, 1.0]
+groceries = [0.20, 0.50, 0.78, 1.0]
+housing = [0.52, 0.42, 0.76, 1.0]
+utilities = [0.90, 0.65, 0.25, 1.0]
+transport = [0.86, 0.38, 0.24, 1.0]
+school = [0.24, 0.62, 0.70, 1.0]
+healthcare = [0.78, 0.30, 0.42, 1.0]
+dog = [0.38, 0.58, 0.26, 1.0]
+subscriptions = [0.64, 0.44, 0.28, 1.0]
+entertainment = [0.80, 0.42, 0.68, 1.0]
+repairs = [0.42, 0.49, 0.56, 1.0]
+clothing = [0.30, 0.55, 0.45, 1.0]
+holiday = [0.25, 0.58, 0.88, 1.0]
+savings = [0.24, 0.64, 0.48, 1.0]
+investment = [0.36, 0.54, 0.82, 1.0]
+debt = [0.82, 0.30, 0.28, 1.0]
+assets = [0.34, 0.68, 0.58, 1.0]
+refunds = [0.62, 0.74, 0.32, 1.0]
+
+[sql]
+files = [
+    "00_filtered_transactions.sql",
+    "10_summary_totals.sql",
+    "11_monthly_cashflow.sql",
+    "12_category_totals.sql",
+    "13_member_totals.sql",
+    "14_payment_mix.sql",
+    "15_recurring_merchants.sql",
+    "20_anomaly_duplicates.sql",
+    "21_anomaly_missing_fields.sql",
+    "22_anomaly_outliers.sql",
+    "23_anomaly_all.sql",
+    "30_recent_transactions.sql",
+    "40_widget_summary.sql"
+]
+tables = [
+    "filtered_transactions",
+    "summary_totals",
+    "monthly_cashflow",
+    "category_totals",
+    "member_totals",
+    "payment_mix",
+    "recurring_merchants",
+    "anomaly_duplicates",
+    "anomaly_missing_fields",
+    "anomaly_outliers",
+    "anomaly_all",
+    "recent_transactions",
+    "widget_summary"
+]
+
+[agg]
+count = "COUNT(*)"
+income = "SUM(income_amount)"
+expense = "SUM(expense_amount)"
+savings = "SUM(savings_amount)"
+debt = "SUM(debt_amount)"
+essential = "SUM(essential_amount)"
+assets = "SUM(asset_amount)"
+signed = "SUM(signed_amount)"
+avg_expense = "AVG(expense_amount)"
+
+[data_profile]
+seed = 20260520
+start_year = 2021
+end_year = 2025
+base_income_anna = 8350.0
+base_freelance = 720.0
+mortgage_payment = 3920.0
+car_loan_payment = 840.0
+monthly_savings = 1200.0
+monthly_investment = 850.0
+inflation_yearly = 0.045
+inflation_monthly = 0.002
+
+[data_profile.merchants]
+groceries = ["Fresh Market", "Family Grocer", "Corner Bakery", "Local Butcher", "Green Farm"]
+transport = ["Metro Pass", "Fuel Station", "Rail Tickets", "Bike Service"]
+school = ["Primary School", "Bookshop", "Math Tutor", "Sports Club", "Art Class"]
+dog = ["Pet Food Store", "Vet Clinic", "Dog Groomer", "Pet Insurance"]
+entertainment = ["Cinema", "Museum", "Board Game Cafe", "Streaming Store", "Play Center"]
+locations = ["Warsaw", "Praga", "Mokotow", "Online", "Piaseczno"]
+repairs = ["Home Repair", "Car Service", "Appliance Parts", "Plumber"]
+holiday = ["Travel Agency", "Rail Holiday", "Mountain Stay", "Sea Apartment"]
+refunds = ["Tax Office", "Shop Refund", "Insurance Refund"]
+freelance = ["Design Client A", "Design Client B", "Consulting Client", "UX Workshop"]
+healthcare = ["Clinic", "Pharmacy", "Dentist", "Optician"]
+
+[data_profile.subscriptions]
+merchants = ["StreamBox", "Cloud Drive", "Music Plus", "Kids Learn", "Dog Tracker"]
+base_amounts = [42.0, 25.0, 29.0, 38.0, 18.0]

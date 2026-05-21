@@ -146,14 +146,7 @@ fn draw_compact_button(
     clear_render_rect(cells, cols, rows, x, y, width, 1, fg, bg);
     if width >= 2 {
         set_render_cell_with_bg(cells, (cols, rows), (x, y), '[', fg, bg);
-        set_render_cell_with_bg(
-            cells,
-            (cols, rows),
-            (x + width - 1, y),
-            ']',
-            fg,
-            bg,
-        );
+        set_render_cell_with_bg(cells, (cols, rows), (x + width - 1, y), ']', fg, bg);
     }
     let content_width = width.saturating_sub(2).max(1);
     let text_width = char_count(text).min(content_width);
@@ -195,14 +188,7 @@ fn draw_shaded_frame(
         } else {
             '─'
         };
-        set_render_cell_with_bg(
-            cells,
-            (cols, rows),
-            (x + offset, y),
-            top_ch,
-            DEFAULT_FG,
-            bg,
-        );
+        set_render_cell_with_bg(cells, (cols, rows), (x + offset, y), top_ch, DEFAULT_FG, bg);
         set_render_cell_with_bg(
             cells,
             (cols, rows),
@@ -214,14 +200,7 @@ fn draw_shaded_frame(
     }
     if height > 2 {
         for offset in 1..height - 1 {
-            set_render_cell_with_bg(
-                cells,
-                (cols, rows),
-                (x, y + offset),
-                '│',
-                DEFAULT_FG,
-                bg,
-            );
+            set_render_cell_with_bg(cells, (cols, rows), (x, y + offset), '│', DEFAULT_FG, bg);
             set_render_cell_with_bg(
                 cells,
                 (cols, rows),

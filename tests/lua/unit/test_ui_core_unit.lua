@@ -903,6 +903,29 @@ describe("lurek.ui chart constructors", function()
         local img = lurek.ui.drawToImage(64, 32)
         expect_not_nil(img)
     end)
+
+    -- @covers lurek.ui.drawToImage
+    -- @covers LImageData.getPixel
+    -- @covers lurek.ui.newButton
+    it("drawToImage renders readable button label pixels", function()
+        local root = lurek.ui.getRoot()
+        local btn = lurek.ui.newButton("OK/_")
+        btn:setPosition(4, 4)
+        btn:setSize(72, 24)
+        root:addChild(btn)
+
+        local img = lurek.ui.drawToImage(96, 40)
+        local bright = 0
+        for y = 4, 28 do
+            for x = 4, 76 do
+                local r, g, b, a = img:getPixel(x, y)
+                if r > 220 and g > 220 and b > 220 and a == 255 then
+                    bright = bright + 1
+                end
+            end
+        end
+        expect_true(bright > 24, "button text should be visible in drawToImage output")
+    end)
 end)
 
 -- @describe ui remaining api sweep
@@ -1468,6 +1491,110 @@ describe("ui remaining api sweep", function()
         try_call(function() c:type() end)
         try_call(function() c:typeOf("LAreaChart") end)
         expect_true(true)
+    end)
+end)
+
+-- @describe UI DataFrame bridge helpers
+describe("UI DataFrame bridge helpers", function()
+    -- @covers LGuiTable.setRows
+    -- @covers LGuiTable.clearRows
+    -- @covers LGuiTable.getCell
+    -- @covers LGuiTable.getRowCount
+    -- @covers LGuiTable.setSelectedRow
+    -- @covers LGuiTable.getSelectedRow
+    -- @covers lurek.ui.newTable
+    it("setRows replaces rows and clearRows resets selection", function()
+        local t = lurek.ui.newTable()
+        local count = t:setRows({ { "Alice", 100 }, { "Bob", 80 } })
+        expect_equal(2, count)
+        expect_equal(2, t:getRowCount())
+        expect_equal("Alice", t:getCell(1, 1))
+        expect_equal("100", t:getCell(1, 2))
+
+        t:setSelectedRow(1)
+        expect_equal(1, t:getSelectedRow())
+        t:clearRows()
+        expect_equal(0, t:getRowCount())
+        expect_nil(t:getSelectedRow())
+    end)
+
+    -- @covers LGuiTable.setDataFrame
+    -- @covers LGuiTable.getColumnCount
+    -- @covers LGuiTable.getCell
+    -- @covers LGuiTable.getRowCount
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.ui.newTable
+    it("setDataFrame replaces columns and stringifies selected rows", function()
+        local df = lurek.dataframe.fromRows(
+            { "name", "score", "active" },
+            { { "Alice", 90, true }, { "Bob", 85, false } }
+        )
+        local t = lurek.ui.newTable()
+        local count = t:setDataFrame(df, { maxRows = 1, columns = { "name", "score" } })
+        expect_equal(1, count)
+        expect_equal(2, t:getColumnCount())
+        expect_equal(1, t:getRowCount())
+        expect_equal("Alice", t:getCell(1, 1))
+        expect_equal("90", t:getCell(1, 2))
+    end)
+
+    -- @covers LLineChart.addSeriesFromDataFrame
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.ui.newLineChart
+    it("line chart adds numeric points from dataframe columns", function()
+        local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 10 }, { 2, "bad" }, { 3, "30" } })
+        local chart = lurek.ui.newLineChart({ width = 200, height = 100 })
+        local count = chart:addSeriesFromDataFrame("income", df, "x", "y", 0.2, 0.6, 0.9)
+        expect_equal(2, count)
+    end)
+
+    -- @covers LScatterPlot.addSeriesFromDataFrame
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.ui.newScatterPlot
+    it("scatter plot adds numeric points from dataframe columns", function()
+        local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 1.5 }, { "bad", 2 }, { "3", "4" } })
+        local chart = lurek.ui.newScatterPlot({ width = 200, height = 100 })
+        local count = chart:addSeriesFromDataFrame("points", df, "x", "y", 0.8, 0.3, 0.2)
+        expect_equal(2, count)
+    end)
+
+    -- @covers LBarChart.addCategoriesFromDataFrame
+    -- @covers LBarChart.addSeries
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.ui.newBarChart
+    it("bar chart adds categories from dataframe rows", function()
+        local df = lurek.dataframe.fromRows(
+            { "month", "income", "expense" },
+            { { "Jan", 100, 40 }, { "Feb", "120", "bad" } }
+        )
+        local chart = lurek.ui.newBarChart({ width = 200, height = 100 })
+        chart:addSeries("income", 0.2, 0.6, 0.9)
+        chart:addSeries("expense", 0.9, 0.4, 0.2)
+        local count = chart:addCategoriesFromDataFrame(df, "month", { "income", "expense" })
+        expect_equal(2, count)
+    end)
+
+    -- @covers LPieChart.addSegmentsFromDataFrame
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.ui.newPieChart
+    it("pie chart adds positive numeric segments from dataframe rows", function()
+        local df = lurek.dataframe.fromRows(
+            { "label", "value" },
+            { { "Food", 10 }, { "Rent", "20" }, { "Skip", "bad" }, { "Zero", 0 } }
+        )
+        local chart = lurek.ui.newPieChart({ width = 200, height = 100 })
+        local count = chart:addSegmentsFromDataFrame(df, "label", "value")
+        expect_equal(2, count)
+    end)
+
+    -- @covers LAreaChart.addLayerFromDataFrame
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.ui.newAreaChart
+    it("area chart adds a layer from dataframe rows", function()
+        local df = lurek.dataframe.fromRows({ "value" }, { { 5 }, { "bad" }, { "15" } })
+        local chart = lurek.ui.newAreaChart({ width = 200, height = 100 })
+        local count = chart:addLayerFromDataFrame("balance", df, "value", 0.2, 0.6, 0.9)
+        expect_equal(3, count)
     end)
 end)
 
@@ -3104,7 +3231,7 @@ describe("lurek.ui.newStatusBar", function()
         local sb = lurek.ui.newStatusBar()
         sb:addSection("A", 100)
         local btn = lurek.ui.newButton("X")
-        sb:setSectionWidget(1, btn["_idx"])
+        sb:setSectionWidget(1, btn)
     end)
 end)
 
@@ -3657,6 +3784,62 @@ describe("LUiWidget animation helpers", function()
 
         local canceled = w:cancelAnimations()
         expect_true(canceled)
+    end)
+end)
+
+-- =========================================================================
+-- New Widget & Layout APIs (Flexbox, Class, MouseFilter)
+-- =========================================================================
+
+-- @describe LUiWidget flexbox and style helpers
+describe("LUiWidget flexbox and style helpers", function()
+    -- @covers LUiWidget.setMouseFilter
+    -- @covers LUiWidget.getMouseFilter
+    it("setMouseFilter and getMouseFilter work", function()
+        local panel = lurek.ui.newPanel()
+        expect_equal(panel:getMouseFilter(), "stop")
+        
+        expect_true(panel:setMouseFilter("ignore"))
+        expect_equal(panel:getMouseFilter(), "ignore")
+        
+        expect_true(panel:setMouseFilter("pass"))
+        expect_equal(panel:getMouseFilter(), "pass")
+        
+        panel:setMouseFilter("invalid")
+        expect_equal(panel:getMouseFilter(), "stop")
+    end)
+
+    -- @covers LUiWidget.setStyleClass
+    -- @covers LUiWidget.getStyleClass
+    it("setStyleClass and getStyleClass work", function()
+        local btn = lurek.ui.newButton("btn")
+        expect_equal(btn:getStyleClass(), "")
+        
+        expect_true(btn:setStyleClass("primary"))
+        expect_equal(btn:getStyleClass(), "primary")
+        
+        expect_true(btn:setStyleClass("danger"))
+        expect_equal(btn:getStyleClass(), "danger")
+    end)
+
+    -- @covers LUiWidget.setAlign
+    -- @covers LUiWidget.getAlign
+    it("setAlign and getAlign work on layout", function()
+        local layout = lurek.ui.newLayout("horizontal")
+        expect_equal(layout:getAlign(), "stretch")
+        
+        expect_true(layout:setAlign("center"))
+        expect_equal(layout:getAlign(), "center")
+    end)
+
+    -- @covers LUiWidget.setJustify
+    -- @covers LUiWidget.getJustify
+    it("setJustify and getJustify work on layout", function()
+        local layout = lurek.ui.newLayout("horizontal")
+        expect_equal(layout:getJustify(), "start")
+        
+        expect_true(layout:setJustify("space-between"))
+        expect_equal(layout:getJustify(), "space-between")
     end)
 end)
 

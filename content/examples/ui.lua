@@ -1,4 +1,4 @@
-﻿-- content/examples/ui.lua
+-- content/examples/ui.lua
 -- Auto-generated from content/examples2/ui_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/ui.lua
 
@@ -2055,6 +2055,30 @@ do
     tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 
+--@api-stub: LGuiTable:clearRows
+do
+    local tbl = lurek.ui.newTable()
+    tbl:setRows({ { "Food", 420 }, { "Rent", 1200 } })
+    tbl:setSelectedRow(1)
+    tbl:clearRows()
+    print("rows=" .. tbl:getRowCount())
+end
+
+--@api-stub: LGuiTable:setRows
+do
+    local tbl = lurek.ui.newTable()
+    local count = tbl:setRows({ { "Income", 3200 }, { "Savings", 640 } })
+    print("setRows=" .. count .. ", first=" .. tostring(tbl:getCell(1, 1)))
+end
+
+--@api-stub: LGuiTable:setDataFrame
+do
+    local df = lurek.dataframe.fromRows({ "category", "amount" }, { { "Food", 420 }, { "Rent", 1200 } })
+    local tbl = lurek.ui.newTable()
+    local count = tbl:setDataFrame(df, { columns = { "category", "amount" }, maxRows = 2 })
+    print("setDataFrame=" .. count .. ", cols=" .. tbl:getColumnCount())
+end
+
 --@api-stub: LGuiTable:getCell
 do
     local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
@@ -2524,6 +2548,14 @@ do
     print("checkbox setText ok; addLayer, setYMax ok")
 end
 
+--@api-stub: LAreaChart:addLayerFromDataFrame
+do
+    local df = lurek.dataframe.fromRows({ "balance" }, { { 1200 }, { "1325" }, { "bad" } })
+    local chart = lurek.ui.newAreaChart({width = 200, height = 100})
+    local count = chart:addLayerFromDataFrame("Balance", df, "balance", 0.2, 0.6, 0.9)
+    print("area df values=" .. count)
+end
+
 --@api-stub: LAreaChart:setYMax
 do
     local cb = lurek.ui.newCheckbox("old"); cb:setText("new label")
@@ -2567,6 +2599,16 @@ do
     chart:addCategory("Feb", {40, 35}); local img = lurek.image.newImageData(200, 100)
     chart:drawToImage(img)
     print("barChart addSeries/addCategory/drawToImage ok")
+end
+
+--@api-stub: LBarChart:addCategoriesFromDataFrame
+do
+    local df = lurek.dataframe.fromRows({ "month", "income", "expense" }, { { "Jan", 100, 60 }, { "Feb", "120", "bad" } })
+    local chart = lurek.ui.newBarChart({width = 200, height = 100})
+    chart:addSeries("Income", 0.2, 0.6, 0.9)
+    chart:addSeries("Expense", 0.9, 0.4, 0.2)
+    local count = chart:addCategoriesFromDataFrame(df, "month", { "income", "expense" })
+    print("bar df categories=" .. count)
 end
 
 --@api-stub: LBarChart:addSeries
@@ -2976,11 +3018,11 @@ end
 
 --@api-stub: LGuiTable.setSortable
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("X")
-    tbl:addRow({"row1"}); tbl:setSelectedRow(1)
-    local sel = tbl:getSelectedRow(); tbl:setSortable(false)
-    local win = lurek.ui.newWindow("My Window"); local title = win:getTitle()
-    print("setSelectedRow:", sel, "setSortable ok, win title:", title)
+    local tbl = lurek.ui.newTable(); tbl:setPosition(20, 420); tbl:setSize(220, 90); tbl:setZOrder(2100)
+    tbl:addColumn("Name", 120); tbl:addColumn("Value", 80)
+    tbl:addRow({"B", "20"}); tbl:addRow({"A", "10"}); tbl:setSortable(true)
+    lurek.ui.mousepressed(25, 430, 1); lurek.ui.mousereleased(25, 430, 1); lurek.ui.update(0)
+    print("sorted first row:", tbl:getCell(1, 1))
 end
 
 --@api-stub: LGuiWindow.getTitle
@@ -3224,6 +3266,14 @@ do
     local img = lurek.image.newImageData(200, 100)
     lc:drawToImage(img)
     print("setWrap ok; addSeries/drawToImage ok")
+end
+
+--@api-stub: LLineChart:addSeriesFromDataFrame
+do
+    local df = lurek.dataframe.fromRows({ "month", "savings" }, { { 1, 240 }, { 2, "260" }, { 3, "bad" } })
+    local chart = lurek.ui.newLineChart({width = 200, height = 100})
+    local count = chart:addSeriesFromDataFrame("Savings", df, "month", "savings", 0.2, 0.8, 0.4)
+    print("line df points=" .. count)
 end
 
 --@api-stub: LLineChart:drawToImage
@@ -3538,6 +3588,14 @@ do
     pc:addSegment("A", 30, 0.9, 0.2, 0.2); pc:addSegment("B", 50, 0.2, 0.9, 0.2)
     pc:addSegment("C", 20, 0.2, 0.2, 0.9)
     print("panel scrollable ok; pie segments added")
+end
+
+--@api-stub: LPieChart:addSegmentsFromDataFrame
+do
+    local df = lurek.dataframe.fromRows({ "category", "amount" }, { { "Food", 420 }, { "Rent", "1200" }, { "Skip", "bad" } })
+    local chart = lurek.ui.newPieChart({width = 128, height = 128})
+    local count = chart:addSegmentsFromDataFrame(df, "category", "amount")
+    print("pie df segments=" .. count)
 end
 
 --@api-stub: LPieChart:drawToImage
@@ -5268,29 +5326,27 @@ end
 
 --@api-stub: lurek.ui.mousemoved
 do
-    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
-    lurek.ui.mousereleased(100, 150, 1)
-    lurek.ui.wheelmoved(0, -1)
-    local cnt = lurek.ui.getWidgetCount()
-    print("mousemoved/pressed/released/wheelmoved ok; widgets:", cnt)
+    local slider = lurek.ui.newSlider(0, 100); slider:setPosition(20, 520); slider:setSize(200, 20); slider:setZOrder(2200)
+    lurek.ui.mousepressed(40, 530, 1); lurek.ui.mousemoved(180, 530); lurek.ui.mousereleased(180, 530, 1)
+    lurek.ui.update(0)
+    print("slider value after drag:", slider:getValue())
 end
 
 --@api-stub: lurek.ui.mousepressed
 do
-    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
-    lurek.ui.mousereleased(100, 150, 1)
-    lurek.ui.wheelmoved(0, -1)
-    local cnt = lurek.ui.getWidgetCount()
-    print("mousemoved/pressed/released/wheelmoved ok; widgets:", cnt)
+    local tabs = lurek.ui.newTabBar(); tabs:setPosition(20, 560); tabs:setSize(240, 28); tabs:setZOrder(2300)
+    tabs:addTab("Home"); tabs:addTab("Reports"); tabs:addTab("Settings")
+    lurek.ui.mousepressed(120, 574, 1); lurek.ui.mousereleased(120, 574, 1); lurek.ui.update(0)
+    print("active tab after click:", tabs:getActiveTab())
 end
 
 --@api-stub: lurek.ui.mousereleased
 do
-    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
-    lurek.ui.mousereleased(100, 150, 1)
-    lurek.ui.wheelmoved(0, -1)
-    local cnt = lurek.ui.getWidgetCount()
-    print("mousemoved/pressed/released/wheelmoved ok; widgets:", cnt)
+    local combo = lurek.ui.newComboBox(); combo:setPosition(20, 600); combo:setSize(160, 28); combo:setZOrder(2400)
+    combo:addItem("All"); combo:addItem("Food"); combo:addItem("Rent")
+    lurek.ui.mousepressed(30, 614, 1); lurek.ui.mousereleased(30, 614, 1)
+    lurek.ui.mousepressed(30, 670, 1); lurek.ui.mousereleased(30, 670, 1); lurek.ui.update(0)
+    print("combo selected:", combo:getSelectedItem())
 end
 
 --@api-stub: lurek.ui.newCustomWidget
@@ -5363,6 +5419,185 @@ end
 
 --@api-stub: lurek.ui.wheelmoved
 do
+    local panel = lurek.ui.newScrollPanel(); panel:setPosition(300, 520); panel:setSize(120, 70); panel:setZOrder(2500)
+    panel:setContentSize(120, 300)
+    lurek.ui.mousemoved(310, 530); lurek.ui.wheelmoved(0, -3)
+    local _, sy = panel:getScrollPosition()
+    print("hover scroll y:", sy)
+end
+
+--@api-stub: LTextInput:isFocused
+do
+    local input = lurek.ui.newTextInput(); input:setPosition(20, 650); input:setSize(160, 28); input:setZOrder(2600)
+    lurek.ui.setFocus(input)
+    lurek.ui.textinput("42")
+    lurek.ui.keypressed("left")
+    lurek.ui.textinput(".")
+    lurek.ui.update(0)
+    print("focused text:", input:isFocused(), input:getText())
+end
+
+--@api-stub: LUiWidget:setOnChange
+do
+    local toolbar = lurek.ui.newToolbar("horizontal"); toolbar:setPosition(220, 650); toolbar:setSize(120, 32); toolbar:setZOrder(2610)
+    toolbar:addButton("save", "Save")
+    toolbar:setOnChange(function() print("toolbar changed") end)
+    lurek.ui.mousepressed(230, 666, 1); lurek.ui.mousereleased(230, 666, 1)
+    lurek.ui.update(0)
+    print("save toggled:", toolbar:isButtonToggled("save"))
+end
+
+--@api-stub: LRadioButton:setOnChange
+do
+    local cash = lurek.ui.newRadioButton("Cash", "payment_kind"); cash:setPosition(370, 650); cash:setSize(100, 24); cash:setZOrder(2620)
+    local card = lurek.ui.newRadioButton("Card", "payment_kind"); card:setPosition(370, 678); card:setSize(100, 24); card:setZOrder(2630)
+    card:setOnChange(function() print("card selected") end)
+    lurek.ui.mousepressed(380, 688, 1); lurek.ui.mousereleased(380, 688, 1)
+    lurek.ui.update(0)
+    print("cash/card:", cash:isSelected(), card:isSelected())
+end
+
+--@api-stub: LScrollBar:setOnChange
+do
+    local bar = lurek.ui.newScrollBar(true); bar:setPosition(500, 650); bar:setSize(20, 100); bar:setZOrder(2640)
+    bar:setContentSize(400); bar:setViewSize(100)
+    bar:setOnChange(function() print("scrollbar changed") end)
+    lurek.ui.mousepressed(510, 720, 1); lurek.ui.mousemoved(510, 740); lurek.ui.mousereleased(510, 740, 1)
+    lurek.ui.update(0)
+    print("scrollbar position:", bar:getScrollPosition())
+end
+
+--@api-stub: LGuiWindow:setOnClose
+do
+    local win = lurek.ui.newWindow("Inspector"); win:setPosition(550, 650); win:setSize(150, 90); win:setZOrder(2650)
+    win:setOnClose(function() print("window closed") end)
+    lurek.ui.mousepressed(690, 660, 1); lurek.ui.mousereleased(690, 660, 1)
+    lurek.ui.update(0)
+    print("window visible:", win:isVisible())
+end
+
+--@api-stub: LDialog:setOnClose
+do
+    local dialog = lurek.ui.newDialog("Confirm"); dialog:setPosition(720, 650); dialog:setSize(180, 100); dialog:setZOrder(2660)
+    dialog:addButton("Close")
+    dialog:setOnClose(function() print("dialog closed") end)
+    dialog:open()
+    lurek.ui.mousepressed(830, 724, 1); lurek.ui.mousereleased(830, 724, 1)
+end
+
+--@api-stub: lurek.ui.getToastCount
+do
+    lurek.ui.clearFocus(); local foc = lurek.ui.getFocus()
+    local theme = lurek.ui.getTheme()
+    local toasts = lurek.ui.getToastCount()
+    local widgets = lurek.ui.getWidgetCount()
+    print("focus:", foc, "theme:", theme, "toastCount:", toasts, "widgetCount:", widgets)
+end
+
+--@api-stub: lurek.ui.getWidgetCount
+do
+    local cnt = lurek.ui.getWidgetCount()
+    lurek.ui.keypressed("escape")
+    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
+    lurek.ui.textinput("a")
+    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+end
+
+--@api-stub: lurek.ui.keypressed
+do
+    local cnt = lurek.ui.getWidgetCount()
+    lurek.ui.keypressed("escape")
+    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
+    lurek.ui.textinput("a")
+    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+end
+
+--@api-stub: lurek.ui.loadLayoutFile
+do
+    local cnt = lurek.ui.getWidgetCount()
+    lurek.ui.keypressed("escape")
+    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
+    lurek.ui.textinput("a")
+    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+end
+
+--@api-stub: lurek.ui.mousemoved
+do
+    local slider = lurek.ui.newSlider(0, 100); slider:setPosition(20, 520); slider:setSize(200, 20); slider:setZOrder(2200)
+    lurek.ui.mousepressed(40, 530, 1); lurek.ui.mousemoved(180, 530); lurek.ui.mousereleased(180, 530, 1)
+    lurek.ui.update(0)
+    print("slider value after drag:", slider:getValue())
+end
+
+--@api-stub: lurek.ui.mousepressed
+do
+    local tabs = lurek.ui.newTabBar(); tabs:setPosition(20, 560); tabs:setSize(240, 28); tabs:setZOrder(2300)
+    tabs:addTab("Home"); tabs:addTab("Reports"); tabs:addTab("Settings")
+    lurek.ui.mousepressed(120, 574, 1); lurek.ui.mousereleased(120, 574, 1); lurek.ui.update(0)
+    print("active tab after click:", tabs:getActiveTab())
+end
+
+--@api-stub: lurek.ui.mousereleased
+do
+    local combo = lurek.ui.newComboBox(); combo:setPosition(20, 600); combo:setSize(160, 28); combo:setZOrder(2400)
+    combo:addItem("All"); combo:addItem("Food"); combo:addItem("Rent")
+    lurek.ui.mousepressed(30, 614, 1); lurek.ui.mousereleased(30, 614, 1)
+    lurek.ui.mousepressed(30, 670, 1); lurek.ui.mousereleased(30, 670, 1); lurek.ui.update(0)
+    print("combo selected:", combo:getSelectedItem())
+end
+
+--@api-stub: lurek.ui.newCustomWidget
+do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    local layout = lurek.ui.newLayout("row")
+    local sb = lurek.ui.newScrollBar(true)
+    print("newCustomWidget:", w, "newLayout:", layout, "newScrollBar:", sb)
+end
+
+--@api-stub: lurek.ui.newScrollBar
+do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    local layout = lurek.ui.newLayout("row")
+    local sb = lurek.ui.newScrollBar(true)
+    print("newCustomWidget:", w, "newLayout:", layout, "newScrollBar:", sb)
+end
+
+--@api-stub: lurek.ui.parseWidgetState
+do
+    local th = lurek.ui.newTheme()
+    local state = lurek.ui.parseWidgetState("normal")
+    local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
+    print("newTheme ok; parseWidgetState:", state, "renderToImage:", result)
+end
+
+--@api-stub: lurek.ui.renderToImage
+do
+    local th = lurek.ui.newTheme()
+    local state = lurek.ui.parseWidgetState("normal")
+    local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
+    print("newTheme ok; parseWidgetState:", state, "renderToImage:", result)
+end
+
+--@api-stub: lurek.ui.setDefaultTheme
+do
+    local th = lurek.ui.newTheme(); lurek.ui.setTheme(th)
+    lurek.ui.setDefaultTheme()
+    lurek.ui.setViewport(1280, 720)
+    local cnt = lurek.ui.getWidgetCount()
+    print("setTheme/setDefaultTheme/setViewport ok; widgets:", cnt)
+end
+
+--@api-stub: lurek.ui.setViewport
+do
+    local th = lurek.ui.newTheme(); lurek.ui.setTheme(th)
+    lurek.ui.setDefaultTheme()
+    lurek.ui.setViewport(1280, 720)
+    local cnt = lurek.ui.getWidgetCount()
+    print("setTheme/setDefaultTheme/setViewport ok; widgets:", cnt)
+end
+
+--@api-stub: lurek.ui.textinput
+do
     lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
     lurek.ui.wheelmoved(0, 1)
@@ -5370,5 +5605,194 @@ do
     print("textinput/update_bindings/wheelmoved ok")
 end
 
-print("content/examples/ui.lua")
+--@api-stub: lurek.ui.update_bindings
+do
+    lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
+    lurek.ui.update_bindings({dt=0.016})
+    lurek.ui.wheelmoved(0, 1)
+    lurek.ui.wheelmoved(1, 0)
+    print("textinput/update_bindings/wheelmoved ok")
+end
 
+--@api-stub: lurek.ui.wheelmoved
+do
+    local panel = lurek.ui.newScrollPanel(); panel:setPosition(300, 520); panel:setSize(120, 70); panel:setZOrder(2500)
+    panel:setContentSize(120, 300)
+    lurek.ui.mousemoved(310, 530); lurek.ui.wheelmoved(0, -3)
+    local _, sy = panel:getScrollPosition()
+    print("hover scroll y:", sy)
+end
+
+--@api-stub: LTextInput:isFocused
+do
+    local input = lurek.ui.newTextInput(); input:setPosition(20, 650); input:setSize(160, 28); input:setZOrder(2600)
+    lurek.ui.setFocus(input)
+    lurek.ui.textinput("42")
+    lurek.ui.keypressed("left")
+    lurek.ui.textinput(".")
+    lurek.ui.update(0)
+    print("focused text:", input:isFocused(), input:getText())
+end
+
+--@api-stub: LUiWidget:setOnChange
+do
+    local toolbar = lurek.ui.newToolbar("horizontal"); toolbar:setPosition(220, 650); toolbar:setSize(120, 32); toolbar:setZOrder(2610)
+    toolbar:addButton("save", "Save")
+    toolbar:setOnChange(function() print("toolbar changed") end)
+    lurek.ui.mousepressed(230, 666, 1); lurek.ui.mousereleased(230, 666, 1)
+    lurek.ui.update(0)
+    print("save toggled:", toolbar:isButtonToggled("save"))
+end
+
+--@api-stub: LRadioButton:setOnChange
+do
+    local cash = lurek.ui.newRadioButton("Cash", "payment_kind"); cash:setPosition(370, 650); cash:setSize(100, 24); cash:setZOrder(2620)
+    local card = lurek.ui.newRadioButton("Card", "payment_kind"); card:setPosition(370, 678); card:setSize(100, 24); card:setZOrder(2630)
+    card:setOnChange(function() print("card selected") end)
+    lurek.ui.mousepressed(380, 688, 1); lurek.ui.mousereleased(380, 688, 1)
+    lurek.ui.update(0)
+    print("cash/card:", cash:isSelected(), card:isSelected())
+end
+
+--@api-stub: LScrollBar:setOnChange
+do
+    local bar = lurek.ui.newScrollBar(true); bar:setPosition(500, 650); bar:setSize(20, 100); bar:setZOrder(2640)
+    bar:setContentSize(400); bar:setViewSize(100)
+    bar:setOnChange(function() print("scrollbar changed") end)
+    lurek.ui.mousepressed(510, 720, 1); lurek.ui.mousemoved(510, 740); lurek.ui.mousereleased(510, 740, 1)
+    lurek.ui.update(0)
+    print("scrollbar position:", bar:getScrollPosition())
+end
+
+--@api-stub: LGuiWindow:setOnClose
+do
+    local win = lurek.ui.newWindow("Inspector"); win:setPosition(550, 650); win:setSize(150, 90); win:setZOrder(2650)
+    win:setOnClose(function() print("window closed") end)
+    lurek.ui.mousepressed(690, 660, 1); lurek.ui.mousereleased(690, 660, 1)
+    lurek.ui.update(0)
+    print("window visible:", win:isVisible())
+end
+
+--@api-stub: LDialog:setOnClose
+do
+    local dialog = lurek.ui.newDialog("Confirm"); dialog:setPosition(720, 650); dialog:setSize(180, 100); dialog:setZOrder(2660)
+    dialog:addButton("Close")
+    dialog:setOnClose(function() print("dialog closed") end)
+    dialog:open()
+    lurek.ui.mousepressed(830, 724, 1); lurek.ui.mousereleased(830, 724, 1)
+    lurek.ui.update(0)
+    print("dialog open:", dialog:isOpen())
+end
+
+--@api-stub: LUiWidget.setMouseFilter
+do
+    -- Sets the mouse filter mode on a panel. "ignore" passes events to underlying widgets,
+    -- useful for decorative overlays or transparent layout containers.
+    local panel = lurek.ui.newPanel()
+    panel:setMouseFilter("ignore")
+    print("mouse filter set to ignore")
+end
+
+--@api-stub: LUiWidget.getMouseFilter
+do
+    -- Retrieves the current mouse filter behavior of a widget.
+    local panel = lurek.ui.newPanel()
+    panel:setMouseFilter("pass")
+    local filter = panel:getMouseFilter()
+    print("mouse filter: " .. filter)
+end
+
+--@api-stub: LUiWidget.setStyleClass
+do
+    -- Assigns a custom style class to a widget. If defined in the active theme,
+    -- the button will use "primary" colors and metrics instead of default ones.
+    local btn = lurek.ui.newButton("Submit")
+    btn:setStyleClass("primary")
+    print("style class set to primary")
+end
+
+--@api-stub: LUiWidget.getStyleClass
+do
+    -- Retrieves the currently assigned style class of a widget, or an empty string if none.
+    local btn = lurek.ui.newButton("Cancel")
+    btn:setStyleClass("danger")
+    local class = btn:getStyleClass()
+    print("style class: " .. class)
+end
+
+--@api-stub: LUiWidget:setAlign
+do
+    -- Configures the flexbox cross-axis alignment. "center" aligns children
+    -- vertically in a horizontal layout.
+    local layout = lurek.ui.newLayout("horizontal")
+    layout:setAlign("center")
+    print("align set to center")
+end
+
+--@api-stub: LUiWidget:getAlign
+do
+    -- Gets the current flexbox alignment property.
+    local layout = lurek.ui.newLayout("horizontal")
+    layout:setAlign("stretch")
+    local align = layout:getAlign()
+    print("align: " .. align)
+end
+
+--@api-stub: LUiWidget:setJustify
+do
+    -- Configures the flexbox main-axis justification. "space-between" spreads
+    -- children to edges.
+    local layout = lurek.ui.newLayout("horizontal")
+    layout:setJustify("space-between")
+    print("justify set to space-between")
+end
+
+--@api-stub: LUiWidget:getJustify
+do
+    -- Gets the current flexbox justification property.
+    local layout = lurek.ui.newLayout("horizontal")
+    layout:setJustify("end")
+    local justify = layout:getJustify()
+    print("justify: " .. justify)
+end
+
+--@api-stub: LScatterPlot:addSeriesFromDataFrame
+do
+    -- Adds a series of points to a scatter plot by pulling 'x' and 'y' columns
+    -- directly from a dataframe.
+    local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 2 }, { 3, 4 }, { 5, 6 } })
+    local chart = lurek.ui.newScatterPlot({width = 200, height = 100})
+    local count = chart:addSeriesFromDataFrame("Data", df, "x", "y", 0.5, 0.5, 0.5)
+    print("scatter df points=" .. count)
+end
+
+--@api-stub: LGuiTable.clearRows
+do
+    -- Removes all rows from a GUI table without deleting its column definitions.
+    local tbl = lurek.ui.newTable()
+    tbl:addColumn("Name")
+    tbl:addRow({"Alice"})
+    tbl:clearRows()
+    print("cleared rows")
+end
+
+--@api-stub: LGuiTable.setRows
+do
+    -- Bulk-replaces all current rows with the provided list of row data.
+    local tbl = lurek.ui.newTable()
+    tbl:addColumn("Score")
+    tbl:setRows({{"100"}, {"200"}})
+    print("set rows")
+end
+
+--@api-stub: LGuiTable.setDataFrame
+do
+    -- Binds a dataframe to the table, automatically setting columns and rows
+    -- to match the dataframe contents.
+    local df = lurek.dataframe.fromRows({ "Player", "Score" }, { { "Alice", 100 }, { "Bob", 200 } })
+    local tbl = lurek.ui.newTable()
+    tbl:setDataFrame(df)
+    print("set dataframe")
+end
+
+print("content/examples/ui.lua")

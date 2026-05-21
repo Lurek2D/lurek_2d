@@ -20,3 +20,6 @@ by `build.rs`. Replacing the file and rebuilding will update the embedded icon.
 
 The **runtime splash screen** is drawn via `make_splash_commands()` in
 `src/engine/app.rs`. Replace `assets/splash.png` and rebuild to update it.
+
+A small helper script is available for generating Courier New bitmap fonts:
+`tools/assets/gen_courier_new_bitmap_fonts.py`.

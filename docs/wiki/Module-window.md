@@ -1702,6 +1702,7 @@ end
 
 ## 💡 Examples
 
+- [ui_flexbox_styles.lua](../blob/main/content/examples/ui_flexbox_styles.lua) - API example
 - [window.lua](../blob/main/content/examples/window.lua) - API example
 
 [⬆ back to top](#table-of-contents)

@@ -130,12 +130,14 @@ impl Schema {
         let mut schema = Schema::new(name);
         schema.strict = strict;
 
-        if let Some(fields) = table.get("fields").and_then(toml::Value::as_table) {
-            for (field_name, field_value) in fields {
-                let rule_table = field_value.as_table().ok_or_else(|| {
-                    format!("fields.{field_name} must be a TOML table of rule values")
-                })?;
-                schema.add_rule(field_name, parse_rule(rule_table));
+        for section_name in ["fields", "rules"] {
+            if let Some(fields) = table.get(section_name).and_then(toml::Value::as_table) {
+                for (field_name, field_value) in fields {
+                    let rule_table = field_value.as_table().ok_or_else(|| {
+                        format!("{section_name}.{field_name} must be a TOML table of rule values")
+                    })?;
+                    schema.add_rule(field_name, parse_rule(rule_table));
+                }
             }
         }
 

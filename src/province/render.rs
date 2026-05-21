@@ -172,7 +172,11 @@ pub fn generate_render_commands(
             // At low zoom, skip LandLand borders (invisible at sub-2px scale).
             let skip_land_land = effective_scale < 2.0;
             let classes = if skip_land_land {
-                &[BorderClass::Coast, BorderClass::SeaSea, BorderClass::Special][..]
+                &[
+                    BorderClass::Coast,
+                    BorderClass::SeaSea,
+                    BorderClass::Special,
+                ][..]
             } else {
                 &[
                     BorderClass::LandLand,

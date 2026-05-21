@@ -16,6 +16,6 @@ pub mod frame_profile;
 pub mod lua_callbacks;
 /// Splash branding asset loading and splash render-command generation.
 pub mod splash_screen;
-pub use app::App;
+pub use app::{App, AppRunOptions};
 pub use debug_overlay::DebugOverlay;
 pub use error_screen::ErrorScreen;

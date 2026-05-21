@@ -39,7 +39,7 @@ Province grid detection segments pixel regions into numbered provinces via flood
 - Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
 - Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
 - Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
-- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
+- Primitive drawing: filled rectangles, circles, Bresenham lines, and compact 5x7 bitmap text labels for ASCII letters, digits, and common UI punctuation.
 - PNG encoding for serialization and export.
 
 ### `layers.rs`

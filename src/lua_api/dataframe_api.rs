@@ -1,13 +1,16 @@
 //! `lurek.dataframe` -- DataFrame bindings for tabular rows, columns, grouping, joins, SQL queries, lazy pipelines, databases, vectorized frames, serialization, and statistics.
 
 use super::SharedState;
+use crate::dataframe::file_io::{self, DataFrameFileError};
 use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame, Database};
 use crate::dataframe::lazy::LazyQuery;
 use crate::dataframe::serial;
 use crate::dataframe::sql;
+use crate::dataframe::task::DataFrameTask;
 use crate::dataframe::vectorized::{BinaryOp, CmpOp, ReduceOp, ScalarOp, VecFrame};
+use crate::runtime::error::EngineError;
 use mlua::prelude::*;
-use std::cell::{Cell, RefCell};
+use std::cell::{Cell, Ref, RefCell};
 use std::rc::Rc;
 /// Converts a Lua column name or one-based index into a column reference.
 fn lua_to_col_ref(v: LuaValue) -> LuaResult<ColRef> {
@@ -31,6 +34,26 @@ fn lua_to_cell(v: LuaValue) -> CellValue {
         _ => CellValue::Nil,
     }
 }
+/// Converts a Lua array table into positional dataframe cell values.
+fn lua_table_to_cells(tbl: LuaTable) -> LuaResult<Vec<CellValue>> {
+    let len = tbl.raw_len();
+    let mut values = Vec::with_capacity(len);
+    for i in 1..=len {
+        let value: LuaValue = tbl.raw_get(i)?;
+        values.push(lua_to_cell(value));
+    }
+    Ok(values)
+}
+/// Converts a Lua array table into positional column references.
+fn lua_table_to_col_refs(tbl: LuaTable) -> LuaResult<Vec<ColRef>> {
+    let len = tbl.raw_len();
+    let mut cols = Vec::with_capacity(len);
+    for i in 1..=len {
+        let value: LuaValue = tbl.raw_get(i)?;
+        cols.push(lua_to_col_ref(value)?);
+    }
+    Ok(cols)
+}
 /// Converts a dataframe cell value into a Lua value.
 fn cell_to_lua<'lua>(lua: &'lua Lua, cell: &CellValue) -> LuaResult<LuaValue<'lua>> {
     match cell {
@@ -47,15 +70,58 @@ fn validate_row(row: usize) -> LuaResult<usize> {
     }
     Ok(row - 1)
 }
+/// Validates dataframe persistence options accepted by file APIs with fixed formats.
+fn validate_dataframe_file_opts(
+    opts: Option<LuaTable>,
+    caller: &str,
+    supported_formats: &[&str],
+) -> LuaResult<()> {
+    if let Some(tbl) = opts {
+        if let Some(format) = tbl.get::<_, Option<String>>("format")? {
+            if !supported_formats
+                .iter()
+                .any(|supported| format.eq_ignore_ascii_case(supported))
+            {
+                return Err(LuaError::RuntimeError(format!(
+                    "{caller}: only {} dataframe file format is supported",
+                    supported_formats.join("/")
+                )));
+            }
+        }
+    }
+    Ok(())
+}
+/// Validates database persistence options accepted by the JSON-only file API.
+fn validate_database_file_opts(opts: Option<LuaTable>, caller: &str) -> LuaResult<()> {
+    if let Some(tbl) = opts {
+        if let Some(format) = tbl.get::<_, Option<String>>("format")? {
+            if !format.eq_ignore_ascii_case("json") {
+                return Err(LuaError::RuntimeError(format!(
+                    "{caller}: only JSON database file format is supported"
+                )));
+            }
+        }
+    }
+    Ok(())
+}
+/// Converts dataframe file persistence errors into Lua-visible error categories.
+fn dataframe_file_error_to_lua(error: DataFrameFileError<EngineError>) -> LuaError {
+    match error {
+        DataFrameFileError::Storage(error) => LuaError::external(error),
+        DataFrameFileError::Format(message) => LuaError::RuntimeError(message),
+    }
+}
 /// Lua-side grouped dataframe object containing group keys and subframes.
 pub struct LuaGroupedFrame {
     /// Group key and dataframe pairs created by `groupByObj`.
     groups: Vec<(CellValue, DataFrame)>,
+    /// Shared runtime state used when grouped operations create dataframe handles.
+    state: Rc<RefCell<SharedState>>,
 }
 impl LuaGroupedFrame {
     /// Creates a grouped frame wrapper from precomputed groups.
-    fn new(groups: Vec<(CellValue, DataFrame)>) -> Self {
-        Self { groups }
+    fn new(groups: Vec<(CellValue, DataFrame)>, state: Rc<RefCell<SharedState>>) -> Self {
+        Self { groups, state }
     }
 }
 impl LuaUserData for LuaGroupedFrame {
@@ -92,7 +158,7 @@ impl LuaUserData for LuaGroupedFrame {
                         (col_name.clone(), CellValue::Number(agg)),
                     ]);
                 }
-                Ok(LuaDataFrame::new(result))
+                Ok(LuaDataFrame::new(result, this.state.clone()))
             },
         );
         methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
@@ -111,17 +177,93 @@ impl LuaUserData for LuaGroupedFrame {
         });
     }
 }
+/// Lua-side handle for a threaded dataframe job.
+pub struct LuaDataFrameTask {
+    /// Shared task lifecycle state.
+    inner: Rc<RefCell<DataFrameTask>>,
+    /// Shared runtime state used when completed tasks create dataframe handles.
+    state: Rc<RefCell<SharedState>>,
+}
+impl LuaDataFrameTask {
+    /// Wraps a threaded dataframe task for Lua.
+    fn new(task: DataFrameTask, state: Rc<RefCell<SharedState>>) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(task)),
+            state,
+        }
+    }
+}
+impl LuaUserData for LuaDataFrameTask {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- isDone --
+        /// Returns whether this dataframe task has completed with success or failure.
+        /// @return | boolean | True once the worker has produced a result or error.
+        methods.add_method("isDone", |_, this, ()| {
+            Ok(this.inner.borrow_mut().is_done())
+        });
+        // -- wait --
+        /// Blocks until this dataframe task completes.
+        /// @return | boolean | True when the task completed successfully; false when it completed with an error.
+        methods.add_method("wait", |_, this, ()| Ok(this.inner.borrow_mut().wait()));
+        // -- result --
+        /// Returns the completed dataframe result.
+        /// @return | LDataFrame | Completed dataframe result.
+        methods.add_method("result", |_, this, ()| {
+            let dataframe = this
+                .inner
+                .borrow_mut()
+                .result()
+                .map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(dataframe, this.state.clone()))
+        });
+        // -- getError --
+        /// Returns the task error message after failure.
+        /// @return | string | Error message after failure.
+        /// @return | nil | If the task is pending or succeeded.
+        methods.add_method("getError", |_, this, ()| {
+            Ok(this.inner.borrow_mut().get_error())
+        });
+        // -- progress --
+        /// Returns a coarse task progress estimate.
+        /// @return | number | Progress from 0.0 to 1.0.
+        methods.add_method("progress", |_, this, ()| {
+            Ok(this.inner.borrow_mut().progress())
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this dataframe task handle.
+        /// @return | string | The string `LDataFrameTask`.
+        methods.add_method("type", |_, _, ()| Ok("LDataFrameTask"));
+        // -- typeOf --
+        /// Returns whether this dataframe task handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LDataFrameTask`, `DataFrameTask`, and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LDataFrameTask" || name == "DataFrameTask" || name == "Object")
+        });
+    }
+}
 /// Lua-side dataframe handle for tabular data with named columns and typed cells.
 pub struct LuaDataFrame {
     /// Shared dataframe storage exposed through this userdata handle.
     inner: Rc<RefCell<DataFrame>>,
+    /// Shared runtime state used for GameFS-backed file persistence.
+    state: Rc<RefCell<SharedState>>,
 }
 impl LuaDataFrame {
     /// Wraps a dataframe in shared Lua userdata state.
-    fn new(df: DataFrame) -> Self {
+    fn new(df: DataFrame, state: Rc<RefCell<SharedState>>) -> Self {
         Self {
             inner: Rc::new(RefCell::new(df)),
+            state,
         }
+    }
+    /// Wraps a derived dataframe with the same runtime state as this handle.
+    fn wrap(&self, df: DataFrame) -> Self {
+        Self::new(df, self.state.clone())
+    }
+    /// Borrows the inner dataframe for cross-binding helpers.
+    pub(crate) fn borrow_dataframe(&self) -> Ref<'_, DataFrame> {
+        self.inner.borrow()
     }
 }
 impl LuaUserData for LuaDataFrame {
@@ -282,7 +424,7 @@ impl LuaUserData for LuaDataFrame {
                 let cv = lua_to_cell(val);
                 let df = this.inner.borrow();
                 let result = df.filter(cr, &op, &cv).map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- sort --
@@ -298,7 +440,7 @@ impl LuaUserData for LuaDataFrame {
                 let result = df
                     .sort(cr, ascending.unwrap_or(true))
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- head --
@@ -307,7 +449,7 @@ impl LuaUserData for LuaDataFrame {
         /// @return | LDataFrame | New dataframe containing the first rows.
         methods.add_method("head", |_, this, n: Option<usize>| {
             let df = this.inner.borrow();
-            Ok(LuaDataFrame::new(df.head(n.unwrap_or(5))))
+            Ok(this.wrap(df.head(n.unwrap_or(5))))
         });
         // -- tail --
         /// Returns the last rows of this dataframe.
@@ -315,7 +457,7 @@ impl LuaUserData for LuaDataFrame {
         /// @return | LDataFrame | New dataframe containing the last rows.
         methods.add_method("tail", |_, this, n: Option<usize>| {
             let df = this.inner.borrow();
-            Ok(LuaDataFrame::new(df.tail(n.unwrap_or(5))))
+            Ok(this.wrap(df.tail(n.unwrap_or(5))))
         });
         // -- slice --
         /// Returns a one-based inclusive row slice.
@@ -330,7 +472,7 @@ impl LuaUserData for LuaDataFrame {
             let result = df
                 .slice(start - 1, end - 1)
                 .map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(result))
+            Ok(this.wrap(result))
         });
         // -- select --
         /// Returns a dataframe with selected columns.
@@ -345,7 +487,7 @@ impl LuaUserData for LuaDataFrame {
             let result = df
                 .select_columns(&col_refs)
                 .map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(result))
+            Ok(this.wrap(result))
         });
         // -- unique --
         /// Returns unique values from a column.
@@ -372,7 +514,7 @@ impl LuaUserData for LuaDataFrame {
             let tbl = lua.create_table()?;
             for (key, sub_df) in groups {
                 let lua_key = cell_to_lua(lua, &key)?;
-                tbl.set(lua_key, LuaDataFrame::new(sub_df))?;
+                tbl.set(lua_key, this.wrap(sub_df))?;
             }
             Ok(tbl)
         });
@@ -384,7 +526,7 @@ impl LuaUserData for LuaDataFrame {
             let cr = lua_to_col_ref(col)?;
             let df = this.inner.borrow();
             let groups = df.group_by(cr).map_err(LuaError::RuntimeError)?;
-            Ok(LuaGroupedFrame::new(groups))
+            Ok(LuaGroupedFrame::new(groups, this.state.clone()))
         });
         // -- join --
         /// Joins this dataframe with another dataframe by column references.
@@ -411,7 +553,7 @@ impl LuaUserData for LuaDataFrame {
                 let result = df
                     .join(&other_borrow, tc, oc, jtype.as_deref().unwrap_or("inner"))
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- merge --
@@ -431,8 +573,67 @@ impl LuaUserData for LuaDataFrame {
             let cr = lua_to_col_ref(col)?;
             let df = this.inner.borrow();
             let result = df.count_by(cr).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(result))
+            Ok(this.wrap(result))
         });
+        // -- valueCounts --
+        /// Counts occurrences of each value in a column with optional percentage output.
+        /// @param | col | any | Column name string or one-based column index.
+        /// @param | opts | table? | Optional options table; set `percent = true` to include percentage values from 0 to 100.
+        /// @return | LDataFrame | New dataframe containing `value`, `count`, and optional `percent` columns.
+        methods.add_method(
+            "valueCounts",
+            |_, this, (col, opts): (LuaValue, Option<LuaTable>)| {
+                let cr = lua_to_col_ref(col)?;
+                let include_percent = match opts {
+                    Some(tbl) => tbl.get::<_, Option<bool>>("percent")?.unwrap_or(false),
+                    None => false,
+                };
+                let df = this.inner.borrow();
+                let result = df
+                    .value_counts(cr, include_percent)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(this.wrap(result))
+            },
+        );
+        // -- missingReport --
+        /// Reports missing and non-missing cell counts for every column.
+        /// @param | opts | table? | Optional options table reserved for future report settings.
+        /// @return | LDataFrame | New dataframe containing `column`, `missing`, `non_missing`, and `missing_percent` columns.
+        methods.add_method("missingReport", |_, this, _opts: Option<LuaTable>| {
+            let df = this.inner.borrow();
+            Ok(this.wrap(df.missing_report()))
+        });
+        // -- duplicateRows --
+        /// Returns rows whose full-row key or selected-column key appears more than once.
+        /// @param | cols | table? | Optional array table of column name strings or one-based column indexes used as the duplicate key.
+        /// @return | LDataFrame | New dataframe containing duplicate rows in original order.
+        methods.add_method("duplicateRows", |_, this, cols: Option<LuaTable>| {
+            let selected_cols = match cols {
+                Some(tbl) => Some(lua_table_to_col_refs(tbl)?),
+                None => None,
+            };
+            let df = this.inner.borrow();
+            let result = df
+                .duplicate_rows(selected_cols.as_deref())
+                .map_err(LuaError::RuntimeError)?;
+            Ok(this.wrap(result))
+        });
+        // -- dateParts --
+        /// Returns a new dataframe with year, month, and day columns extracted from ISO `yyyy-mm-dd` text.
+        /// @param | date_col | any | Column name string or one-based column index containing ISO date text.
+        /// @param | prefix | string? | Optional output prefix; `prefix = "txn"` creates `txn_year`, `txn_month`, and `txn_day`.
+        /// @return | LDataFrame | New dataframe with extracted date-part columns; invalid or missing dates produce nil parts.
+        methods.add_method(
+            "dateParts",
+            |_, this, (date_col, prefix): (LuaValue, Option<String>)| {
+                let col_ref = lua_to_col_ref(date_col)?;
+                let df = this.inner.borrow();
+                let result = df
+                    .date_parts(col_ref, prefix.as_deref())
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(this.wrap(result))
+            },
+        );
         // -- dropNil --
         /// Returns rows where the chosen column is not nil.
         /// @param | col | string | Column name string or one-based column index.
@@ -441,7 +642,7 @@ impl LuaUserData for LuaDataFrame {
             let cr = lua_to_col_ref(col)?;
             let df = this.inner.borrow();
             let result = df.drop_nil(cr).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(result))
+            Ok(this.wrap(result))
         });
         // -- sample --
         /// Returns a sampled dataframe. This method is available to Lua scripts.
@@ -450,14 +651,14 @@ impl LuaUserData for LuaDataFrame {
         /// @return | LDataFrame | New sampled dataframe.
         methods.add_method("sample", |_, this, (n, seed): (usize, Option<u64>)| {
             let df = this.inner.borrow();
-            Ok(LuaDataFrame::new(df.sample(n, seed)))
+            Ok(this.wrap(df.sample(n, seed)))
         });
         // -- describe --
         /// Returns summary statistics for numeric columns.
         /// @return | LDataFrame | New dataframe containing descriptive statistics.
         methods.add_method("describe", |_, this, ()| {
             let df = this.inner.borrow();
-            Ok(LuaDataFrame::new(df.describe()))
+            Ok(this.wrap(df.describe()))
         });
         // -- sum --
         /// Returns the numeric sum of a column.
@@ -575,6 +776,54 @@ impl LuaUserData for LuaDataFrame {
             let bytes = this.inner.borrow().to_binary();
             lua.create_string(&bytes)
         });
+        // -- toCSVFile --
+        /// Serializes this dataframe to CSV text and writes it through GameFS.
+        /// @param | path | string | GameFS save path to write, usually under `save/`.
+        /// @param | opts | table? | Optional file options table; reserved for future CSV options.
+        /// @return | boolean | True when the file was written.
+        methods.add_method(
+            "toCSVFile",
+            |_, this, (path, opts): (String, Option<LuaTable>)| {
+                validate_dataframe_file_opts(opts, "LDataFrame:toCSVFile", &["csv"])?;
+                let state = this.state.borrow();
+                let dataframe = this.inner.borrow();
+                file_io::write_csv_dataframe(&state.fs, &path, &dataframe)
+                    .map_err(dataframe_file_error_to_lua)?;
+                Ok(true)
+            },
+        );
+        // -- toJSONFile --
+        /// Serializes this dataframe to JSON text and writes it through GameFS.
+        /// @param | path | string | GameFS save path to write, usually under `save/`.
+        /// @param | opts | table? | Optional file options table; reserved for future JSON options.
+        /// @return | boolean | True when the file was written.
+        methods.add_method(
+            "toJSONFile",
+            |_, this, (path, opts): (String, Option<LuaTable>)| {
+                validate_dataframe_file_opts(opts, "LDataFrame:toJSONFile", &["json"])?;
+                let state = this.state.borrow();
+                let dataframe = this.inner.borrow();
+                file_io::write_json_dataframe(&state.fs, &path, &dataframe)
+                    .map_err(dataframe_file_error_to_lua)?;
+                Ok(true)
+            },
+        );
+        // -- toBinaryFile --
+        /// Serializes this dataframe to LVDF binary data and writes it through GameFS.
+        /// @param | path | string | GameFS save path to write, usually under `save/`.
+        /// @param | opts | table? | Optional file options table; reserved for future binary options.
+        /// @return | boolean | True when the file was written.
+        methods.add_method(
+            "toBinaryFile",
+            |_, this, (path, opts): (String, Option<LuaTable>)| {
+                validate_dataframe_file_opts(opts, "LDataFrame:toBinaryFile", &["binary", "lvdf"])?;
+                let state = this.state.borrow();
+                let dataframe = this.inner.borrow();
+                file_io::write_binary_dataframe(&state.fs, &path, &dataframe)
+                    .map_err(dataframe_file_error_to_lua)?;
+                Ok(true)
+            },
+        );
         // -- toTable --
         /// Converts this dataframe to an array table of row tables.
         /// @return | table | Array of rows keyed by column name.
@@ -632,13 +881,24 @@ impl LuaUserData for LuaDataFrame {
         methods.add_method("query", |_, this, sql_str: String| {
             let df = this.inner.borrow();
             let result = sql::query_sql(&df, &sql_str).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(result))
+            Ok(this.wrap(result))
+        });
+        // -- queryAsync --
+        /// Runs a SQL-style query against this dataframe on a Rust worker thread.
+        /// @param | sql_str | string | SQL query text.
+        /// @return | LDataFrameTask | Task that resolves to the query result dataframe.
+        methods.add_method("queryAsync", |_, this, sql_str: String| {
+            let dataframe = this.inner.borrow().clone_df();
+            let task =
+                DataFrameTask::spawn_dataframe_query(dataframe, sql_str, "LDataFrame:queryAsync")
+                    .map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrameTask::new(task, this.state.clone()))
         });
         // -- clone --
         /// Returns a deep copy of this dataframe.
         /// @return | LDataFrame | New dataframe containing copied data.
         methods.add_method("clone", |_, this, ()| {
-            Ok(LuaDataFrame::new(this.inner.borrow().clone_df()))
+            Ok(this.wrap(this.inner.borrow().clone_df()))
         });
         // -- withRollingMean --
         /// Adds a rolling mean column in place.
@@ -757,7 +1017,7 @@ impl LuaUserData for LuaDataFrame {
                     .borrow()
                     .group_agg(gc, ac, agg_fn)
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- pivot --
@@ -777,7 +1037,7 @@ impl LuaUserData for LuaDataFrame {
                     .borrow()
                     .pivot(rc, cc, vc)
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- corr --
@@ -798,7 +1058,7 @@ impl LuaUserData for LuaDataFrame {
         /// @return | LDataFrame | Correlation matrix dataframe.
         methods.add_method("correlationMatrix", |_, this, ()| {
             let result = this.inner.borrow().correlation_matrix();
-            Ok(LuaDataFrame::new(result))
+            Ok(this.wrap(result))
         });
         // -- zscoreCol --
         /// Adds a z-score normalized column in place.
@@ -841,7 +1101,7 @@ impl LuaUserData for LuaDataFrame {
                     .borrow()
                     .outliers(col_ref, threshold.unwrap_or(2.0))
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- modeVal --
@@ -947,7 +1207,7 @@ impl LuaUserData for LuaDataFrame {
                     .borrow()
                     .with_eval(&col_name, &expr)
                     .map_err(LuaError::RuntimeError)?;
-                lua.create_userdata(LuaDataFrame::new(result))
+                lua.create_userdata(this.wrap(result))
             },
         );
         // -- pivotTable --
@@ -973,7 +1233,7 @@ impl LuaUserData for LuaDataFrame {
                 let result = df
                     .pivot_table(rk, ck, vk, agg_str)
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- rollingMean --
@@ -991,7 +1251,7 @@ impl LuaUserData for LuaDataFrame {
                 let result = df
                     .rolling_mean(cr, window, &out_name)
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- rollingSum --
@@ -1009,7 +1269,7 @@ impl LuaUserData for LuaDataFrame {
                 let result = df
                     .rolling_sum(cr, window, &out_name)
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- rank --
@@ -1028,7 +1288,7 @@ impl LuaUserData for LuaDataFrame {
                 let result = df
                     .rank_column(cr, ord, &out_name)
                     .map_err(LuaError::RuntimeError)?;
-                Ok(LuaDataFrame::new(result))
+                Ok(this.wrap(result))
             },
         );
         // -- lazy --
@@ -1036,7 +1296,10 @@ impl LuaUserData for LuaDataFrame {
         /// @return | LLazyQuery | New lazy query handle.
         methods.add_method("lazy", |_, this, ()| {
             let lq = this.inner.borrow().lazy();
-            Ok(LuaLazyQuery { inner: lq })
+            Ok(LuaLazyQuery {
+                inner: lq,
+                state: this.state.clone(),
+            })
         });
     }
 }
@@ -1044,6 +1307,8 @@ impl LuaUserData for LuaDataFrame {
 pub struct LuaLazyQuery {
     /// Owned lazy query plan that is consumed by chaining methods.
     inner: LazyQuery,
+    /// Shared runtime state propagated to collected dataframe handles.
+    state: Rc<RefCell<SharedState>>,
 }
 impl LuaUserData for LuaLazyQuery {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1060,6 +1325,7 @@ impl LuaUserData for LuaLazyQuery {
                 let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
                 Ok(LuaLazyQuery {
                     inner: old.filter(&col, &op, cell),
+                    state: this.state.clone(),
                 })
             },
         );
@@ -1075,6 +1341,7 @@ impl LuaUserData for LuaLazyQuery {
                 let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
                 Ok(LuaLazyQuery {
                     inner: old.sort(&col, asc),
+                    state: this.state.clone(),
                 })
             },
         );
@@ -1084,7 +1351,10 @@ impl LuaUserData for LuaLazyQuery {
         /// @return | LLazyQuery | New lazy query handle with the head step.
         methods.add_method_mut("head", |_, this, n: usize| {
             let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
-            Ok(LuaLazyQuery { inner: old.head(n) })
+            Ok(LuaLazyQuery {
+                inner: old.head(n),
+                state: this.state.clone(),
+            })
         });
         // -- tail --
         /// Adds a tail limit step to the lazy query.
@@ -1092,7 +1362,10 @@ impl LuaUserData for LuaLazyQuery {
         /// @return | LLazyQuery | New lazy query handle with the tail step.
         methods.add_method_mut("tail", |_, this, n: usize| {
             let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
-            Ok(LuaLazyQuery { inner: old.tail(n) })
+            Ok(LuaLazyQuery {
+                inner: old.tail(n),
+                state: this.state.clone(),
+            })
         });
         // -- limit --
         /// Adds a row limit step to the lazy query.
@@ -1102,6 +1375,7 @@ impl LuaUserData for LuaLazyQuery {
             let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
             Ok(LuaLazyQuery {
                 inner: old.limit(n),
+                state: this.state.clone(),
             })
         });
         // -- slice --
@@ -1115,6 +1389,7 @@ impl LuaUserData for LuaLazyQuery {
             let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
             Ok(LuaLazyQuery {
                 inner: old.slice(s, e),
+                state: this.state.clone(),
             })
         });
         // -- dropNil --
@@ -1125,6 +1400,7 @@ impl LuaUserData for LuaLazyQuery {
             let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
             Ok(LuaLazyQuery {
                 inner: old.drop_nil(&col),
+                state: this.state.clone(),
             })
         });
         // -- select --
@@ -1139,6 +1415,7 @@ impl LuaUserData for LuaLazyQuery {
             let old = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
             Ok(LuaLazyQuery {
                 inner: old.select(names),
+                state: this.state.clone(),
             })
         });
         // -- collect --
@@ -1147,7 +1424,7 @@ impl LuaUserData for LuaLazyQuery {
         methods.add_method_mut("collect", |_, this, ()| {
             let lq = std::mem::replace(&mut this.inner, LazyQuery::tombstone());
             let df = lq.collect().map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(df))
+            Ok(LuaDataFrame::new(df, this.state.clone()))
         });
         // -- type --
         /// Returns the Lua-visible type name for this lazy query handle.
@@ -1166,6 +1443,17 @@ impl LuaUserData for LuaLazyQuery {
 pub struct LuaDatabase {
     /// Shared database storage exposed through this userdata handle.
     inner: Rc<RefCell<Database>>,
+    /// Shared runtime state used for GameFS-backed file persistence.
+    state: Rc<RefCell<SharedState>>,
+}
+impl LuaDatabase {
+    /// Wraps a database in shared Lua userdata state.
+    fn new(database: Database, state: Rc<RefCell<SharedState>>) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(database)),
+            state,
+        }
+    }
 }
 impl LuaUserData for LuaDatabase {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1189,7 +1477,7 @@ impl LuaUserData for LuaDatabase {
         methods.add_method("getTable", |_, this, name: String| {
             let db = this.inner.borrow();
             match db.get_table(&name) {
-                Some(df) => Ok(Some(LuaDataFrame::new(df.clone_df()))),
+                Some(df) => Ok(Some(LuaDataFrame::new(df.clone_df(), this.state.clone()))),
                 None => Ok(None),
             }
         });
@@ -1246,6 +1534,22 @@ impl LuaUserData for LuaDatabase {
         /// Serializes the database to JSON text.
         /// @return | string | JSON text.
         methods.add_method("toJSON", |_, this, ()| Ok(this.inner.borrow().to_json()));
+        // -- save --
+        /// Serializes the database to the JSON database file format and writes it through GameFS.
+        /// @param | path | string | GameFS save path to write, usually under `save/`.
+        /// @param | opts | table? | Optional options table; `format = "json"` is the only supported format.
+        /// @return | boolean | True when the file was written.
+        methods.add_method(
+            "save",
+            |_, this, (path, opts): (String, Option<LuaTable>)| {
+                validate_database_file_opts(opts, "LDatabase:save")?;
+                let state = this.state.borrow();
+                let database = this.inner.borrow();
+                file_io::save_json_database(&state.fs, &path, &database)
+                    .map_err(dataframe_file_error_to_lua)?;
+                Ok(true)
+            },
+        );
         // -- query --
         /// Runs a SQL-style query against the database tables.
         /// @param | sql_str | string | SQL query text.
@@ -1253,8 +1557,54 @@ impl LuaUserData for LuaDatabase {
         methods.add_method("query", |_, this, sql_str: String| {
             let db = this.inner.borrow();
             let result = sql::query_sql_database(&db, &sql_str).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(result))
+            Ok(LuaDataFrame::new(result, this.state.clone()))
         });
+        // -- queryAsync --
+        /// Runs a SQL-style query against a snapshot of the database tables on a Rust worker thread.
+        /// @param | sql_str | string | SQL query text.
+        /// @return | LDataFrameTask | Task that resolves to the query result dataframe.
+        methods.add_method("queryAsync", |_, this, sql_str: String| {
+            let database = this.inner.borrow().clone_db();
+            let task =
+                DataFrameTask::spawn_database_query(database, sql_str, "LDatabase:queryAsync")
+                    .map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrameTask::new(task, this.state.clone()))
+        });
+        // -- queryParams --
+        /// Runs a SQL-style query against the database tables with positional parameters.
+        /// @param | sql_str | string | SQL query text using `?` placeholders outside string literals.
+        /// @param | params | table | Array table of positional parameter values; nil maps to SQL NULL, strings are escaped, and booleans/numbers are bound as literals.
+        /// @return | LDataFrame | Query result dataframe.
+        methods.add_method(
+            "queryParams",
+            |_, this, (sql_str, params_tbl): (String, LuaTable)| {
+                let params = lua_table_to_cells(params_tbl)?;
+                let db = this.inner.borrow();
+                let result = sql::query_sql_database_params(&db, &sql_str, &params)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrame::new(result, this.state.clone()))
+            },
+        );
+        // -- queryParamsAsync --
+        /// Runs a parameterized SQL query against a snapshot of the database tables on a Rust worker thread.
+        /// @param | sql_str | string | SQL query text using `?` placeholders outside string literals.
+        /// @param | params | table | Array table of positional parameter values; nil maps to SQL NULL, strings are escaped, and booleans/numbers are bound as literals.
+        /// @return | LDataFrameTask | Task that resolves to the query result dataframe.
+        methods.add_method(
+            "queryParamsAsync",
+            |_, this, (sql_str, params_tbl): (String, LuaTable)| {
+                let params = lua_table_to_cells(params_tbl)?;
+                let database = this.inner.borrow().clone_db();
+                let task = DataFrameTask::spawn_database_query_params(
+                    database,
+                    sql_str,
+                    params,
+                    "LDatabase:queryParamsAsync",
+                )
+                .map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrameTask::new(task, this.state.clone()))
+            },
+        );
         // -- type --
         /// Returns the Lua-visible type name for this database handle.
         /// @return | string | The string `LDatabase`.
@@ -1273,12 +1623,15 @@ impl LuaUserData for LuaDatabase {
 pub struct LuaVecFrame {
     /// Shared vectorized frame storage exposed through this userdata handle.
     inner: Rc<RefCell<VecFrame>>,
+    /// Shared runtime state propagated to dataframe handles.
+    state: Rc<RefCell<SharedState>>,
 }
 impl LuaVecFrame {
     /// Wraps a vectorized frame in shared Lua userdata state.
-    pub fn new(vf: VecFrame) -> Self {
+    pub fn new(vf: VecFrame, state: Rc<RefCell<SharedState>>) -> Self {
         Self {
             inner: Rc::new(RefCell::new(vf)),
+            state,
         }
     }
 }
@@ -1449,7 +1802,7 @@ impl LuaUserData for LuaVecFrame {
                 .borrow()
                 .apply_mask(&mask)
                 .map_err(LuaError::RuntimeError)?;
-            Ok(LuaVecFrame::new(vf))
+            Ok(LuaVecFrame::new(vf, this.state.clone()))
         });
         // -- colType --
         /// Returns the data type name for a vectorized column.
@@ -1541,7 +1894,10 @@ impl LuaUserData for LuaVecFrame {
         /// Converts this vectorized frame to a dataframe.
         /// @return | LDataFrame | New dataframe handle.
         methods.add_method("toDataFrame", |_, this, ()| {
-            Ok(LuaDataFrame::new(this.inner.borrow().to_dataframe()))
+            Ok(LuaDataFrame::new(
+                this.inner.borrow().to_dataframe(),
+                this.state.clone(),
+            ))
         });
         // -- type --
         /// Returns the Lua-visible type name for this vectorized frame handle.
@@ -1557,33 +1913,36 @@ impl LuaUserData for LuaVecFrame {
     }
 }
 /// Registers the `lurek.dataframe` API table with the Lua VM.
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     // -- newDataFrame --
     /// Creates an empty dataframe. This function is exposed to Lua scripts.
     /// @return | LDataFrame | New empty dataframe handle.
+    let dataframe_state = state.clone();
     tbl.set(
         "newDataFrame",
-        lua.create_function(|_, ()| Ok(LuaDataFrame::new(DataFrame::new())))?,
+        lua.create_function(move |_, ()| {
+            Ok(LuaDataFrame::new(DataFrame::new(), dataframe_state.clone()))
+        })?,
     )?;
     // -- newDatabase --
     /// Creates an empty dataframe database.
     /// @return | LDatabase | New database handle.
+    let database_state = state.clone();
     tbl.set(
         "newDatabase",
-        lua.create_function(|_, ()| {
-            Ok(LuaDatabase {
-                inner: Rc::new(RefCell::new(Database::new())),
-            })
+        lua.create_function(move |_, ()| {
+            Ok(LuaDatabase::new(Database::new(), database_state.clone()))
         })?,
     )?;
     // -- fromTable --
     /// Creates a dataframe from an array table of row tables.
     /// @param | rows | table | Array of row tables keyed by column name.
     /// @return | LDataFrame | New dataframe handle.
+    let from_table_state = state.clone();
     tbl.set(
         "fromTable",
-        lua.create_function(|_, rows: LuaTable| {
+        lua.create_function(move |_, rows: LuaTable| {
             let mut df = DataFrame::new();
             let len = rows.len()?;
             for i in 1..=len {
@@ -1602,7 +1961,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 }
                 df.add_row(&values);
             }
-            Ok(LuaDataFrame::new(df))
+            Ok(LuaDataFrame::new(df, from_table_state.clone()))
         })?,
     )?;
     // -- fromRows --
@@ -1610,9 +1969,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param | columns_tbl | table | Array table of column names.
     /// @param | rows_tbl | table | Array table of row arrays.
     /// @return | LDataFrame | New dataframe handle.
+    let from_rows_state = state.clone();
     tbl.set(
         "fromRows",
-        lua.create_function(|_, (columns_tbl, rows_tbl): (LuaTable, LuaTable)| {
+        lua.create_function(move |_, (columns_tbl, rows_tbl): (LuaTable, LuaTable)| {
             let mut columns: Vec<String> = Vec::new();
             for name in columns_tbl.sequence_values::<String>() {
                 columns.push(name?);
@@ -1627,40 +1987,134 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 rows.push(row_cells);
             }
             let df = DataFrame::from_rows(columns, rows).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(df))
+            Ok(LuaDataFrame::new(df, from_rows_state.clone()))
         })?,
     )?;
     // -- fromCSV --
     /// Parses a dataframe from CSV text. This function is exposed to Lua scripts.
     /// @param | s | string | CSV text.
     /// @return | LDataFrame | New dataframe handle.
+    let from_csv_state = state.clone();
     tbl.set(
         "fromCSV",
-        lua.create_function(|_, s: String| {
+        lua.create_function(move |_, s: String| {
             let df = serial::from_csv(&s).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(df))
+            Ok(LuaDataFrame::new(df, from_csv_state.clone()))
+        })?,
+    )?;
+    // -- fromCSVFile --
+    /// Reads CSV text from GameFS and parses it into a dataframe.
+    /// @param | path | string | GameFS path to read.
+    /// @param | opts | table? | Optional file options table; reserved for future CSV options.
+    /// @return | LDataFrame | New dataframe handle.
+    let from_csv_file_state = state.clone();
+    tbl.set(
+        "fromCSVFile",
+        lua.create_function(move |_, (path, opts): (String, Option<LuaTable>)| {
+            validate_dataframe_file_opts(opts, "lurek.dataframe.fromCSVFile", &["csv"])?;
+            let state = from_csv_file_state.borrow();
+            let df = file_io::read_csv_dataframe(&state.fs, &path)
+                .map_err(dataframe_file_error_to_lua)?;
+            Ok(LuaDataFrame::new(df, from_csv_file_state.clone()))
+        })?,
+    )?;
+    // -- fromCSVFileAsync --
+    /// Starts a Rust worker task that reads CSV text from GameFS and parses it into a dataframe.
+    /// @param | path | string | GameFS path to read.
+    /// @param | opts | table? | Optional file options table; reserved for future CSV options.
+    /// @return | LDataFrameTask | Task that resolves to a dataframe loaded from the CSV file.
+    let from_csv_file_async_state = state.clone();
+    tbl.set(
+        "fromCSVFileAsync",
+        lua.create_function(move |_, (path, opts): (String, Option<LuaTable>)| {
+            validate_dataframe_file_opts(opts, "lurek.dataframe.fromCSVFileAsync", &["csv"])?;
+            let filesystem = from_csv_file_async_state.borrow().fs.clone();
+            let task =
+                DataFrameTask::spawn_csv_file(filesystem, path, "lurek.dataframe.fromCSVFileAsync")
+                    .map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrameTask::new(
+                task,
+                from_csv_file_async_state.clone(),
+            ))
         })?,
     )?;
     // -- fromJSON --
     /// Parses a dataframe from JSON text. This function is exposed to Lua scripts.
     /// @param | s | string | JSON text.
     /// @return | LDataFrame | New dataframe handle.
+    let from_json_state = state.clone();
     tbl.set(
         "fromJSON",
-        lua.create_function(|_, s: String| {
+        lua.create_function(move |_, s: String| {
             let df = serial::from_json(&s).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(df))
+            Ok(LuaDataFrame::new(df, from_json_state.clone()))
+        })?,
+    )?;
+    // -- fromJSONFile --
+    /// Reads JSON text from GameFS and parses it into a dataframe.
+    /// @param | path | string | GameFS path to read.
+    /// @param | opts | table? | Optional file options table; reserved for future JSON options.
+    /// @return | LDataFrame | New dataframe handle.
+    let from_json_file_state = state.clone();
+    tbl.set(
+        "fromJSONFile",
+        lua.create_function(move |_, (path, opts): (String, Option<LuaTable>)| {
+            validate_dataframe_file_opts(opts, "lurek.dataframe.fromJSONFile", &["json"])?;
+            let state = from_json_file_state.borrow();
+            let df = file_io::read_json_dataframe(&state.fs, &path)
+                .map_err(dataframe_file_error_to_lua)?;
+            Ok(LuaDataFrame::new(df, from_json_file_state.clone()))
+        })?,
+    )?;
+    // -- fromJSONFileAsync --
+    /// Starts a Rust worker task that reads JSON text from GameFS and parses it into a dataframe.
+    /// @param | path | string | GameFS path to read.
+    /// @param | opts | table? | Optional file options table; reserved for future JSON options.
+    /// @return | LDataFrameTask | Task that resolves to a dataframe loaded from the JSON file.
+    let from_json_file_async_state = state.clone();
+    tbl.set(
+        "fromJSONFileAsync",
+        lua.create_function(move |_, (path, opts): (String, Option<LuaTable>)| {
+            validate_dataframe_file_opts(opts, "lurek.dataframe.fromJSONFileAsync", &["json"])?;
+            let filesystem = from_json_file_async_state.borrow().fs.clone();
+            let task = DataFrameTask::spawn_json_file(
+                filesystem,
+                path,
+                "lurek.dataframe.fromJSONFileAsync",
+            )
+            .map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrameTask::new(
+                task,
+                from_json_file_async_state.clone(),
+            ))
         })?,
     )?;
     // -- fromBinary --
     /// Parses a dataframe from binary data.
     /// @param | s | string | Binary dataframe payload.
     /// @return | LDataFrame | New dataframe handle.
+    let from_binary_state = state.clone();
     tbl.set(
         "fromBinary",
-        lua.create_function(|_, s: LuaString| {
+        lua.create_function(move |_, s: LuaString| {
             let df = serial::from_binary(s.as_bytes()).map_err(LuaError::RuntimeError)?;
-            Ok(LuaDataFrame::new(df))
+            Ok(LuaDataFrame::new(df, from_binary_state.clone()))
+        })?,
+    )?;
+    // -- loadDatabase --
+    /// Reads a JSON database file from GameFS and parses it into a database.
+    /// @param | path | string | GameFS path to read.
+    /// @param | opts | table? | Optional options table; `format = "json"` is the only supported format.
+    /// @return | LDatabase | New database handle.
+    let load_database_state = state.clone();
+    tbl.set(
+        "loadDatabase",
+        lua.create_function(move |_, (path, opts): (String, Option<LuaTable>)| {
+            validate_database_file_opts(opts, "lurek.dataframe.loadDatabase")?;
+            let state = load_database_state.borrow();
+            let database = file_io::load_json_database(&state.fs, &path)
+                .map_err(dataframe_file_error_to_lua)?;
+            Ok(LuaDatabase::new(database, load_database_state.clone()))
         })?,
     )?;
     // -- random --
@@ -1669,18 +2123,24 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param | n | integer | Number of rows to generate.
     /// @param | seed | integer? | Optional random seed.
     /// @return | LDataFrame | New random dataframe handle.
+    let random_state = state.clone();
     tbl.set(
         "random",
-        lua.create_function(|_, (defs_tbl, n, seed): (LuaTable, usize, Option<u64>)| {
-            let mut defs = Vec::new();
-            for i in 1..=defs_tbl.len()? {
-                let pair: LuaTable = defs_tbl.get(i)?;
-                let name: String = pair.get(1)?;
-                let hint: String = pair.get(2)?;
-                defs.push((name, hint));
-            }
-            Ok(LuaDataFrame::new(DataFrame::random(&defs, n, seed)))
-        })?,
+        lua.create_function(
+            move |_, (defs_tbl, n, seed): (LuaTable, usize, Option<u64>)| {
+                let mut defs = Vec::new();
+                for i in 1..=defs_tbl.len()? {
+                    let pair: LuaTable = defs_tbl.get(i)?;
+                    let name: String = pair.get(1)?;
+                    let hint: String = pair.get(2)?;
+                    defs.push((name, hint));
+                }
+                Ok(LuaDataFrame::new(
+                    DataFrame::random(&defs, n, seed),
+                    random_state.clone(),
+                ))
+            },
+        )?,
     )?;
     // -- toVec --
     /// Converts a dataframe to a vectorized frame.
@@ -1691,7 +2151,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, df: LuaAnyUserData| {
             let lua_df = df.borrow::<LuaDataFrame>()?;
             let vf = VecFrame::from_dataframe(&lua_df.inner.borrow());
-            Ok(LuaVecFrame::new(vf))
+            Ok(LuaVecFrame::new(vf, lua_df.state.clone()))
         })?,
     )?;
     // -- fromVec --
@@ -1703,7 +2163,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, vf: LuaAnyUserData| {
             let lua_vf = vf.borrow::<LuaVecFrame>()?;
             let df = lua_vf.inner.borrow().to_dataframe();
-            Ok(LuaDataFrame::new(df))
+            Ok(LuaDataFrame::new(df, lua_vf.state.clone()))
         })?,
     )?;
     /// Performs the 'dataframe' operation.

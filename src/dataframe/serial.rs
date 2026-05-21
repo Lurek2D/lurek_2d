@@ -5,6 +5,7 @@
 //! - Compact binary LVDF format encoding and decoding
 //! - Padded string-table rendering for debug and display
 //! - Database-level JSON serialization across all tables
+//! - Database-level JSON parsing from named table arrays
 //! - Nested JSON value and array handling during parse
 
 use crate::dataframe::frame::{CellValue, DataFrame};
@@ -667,6 +668,58 @@ impl DataFrame {
     }
 }
 use crate::dataframe::frame::Database;
+/// Parse Database JSON produced by `Database::to_json`.
+pub fn database_from_json(s: &str) -> Result<Database, String> {
+    let trimmed = s.trim();
+    if trimmed.is_empty() || trimmed == "{}" {
+        return Ok(Database::new());
+    }
+    let chars: Vec<char> = trimmed.chars().collect();
+    let len = chars.len();
+    let mut pos = skip_ws(&chars, 0);
+    if pos >= len || chars[pos] != '{' {
+        return Err("database JSON must be an object of table arrays".to_string());
+    }
+    pos += 1;
+    let mut database = Database::new();
+    loop {
+        pos = skip_ws(&chars, pos);
+        if pos >= len {
+            return Err("unexpected end of database JSON".to_string());
+        }
+        if chars[pos] == '}' {
+            pos += 1;
+            break;
+        }
+        if database.table_count() > 0 {
+            if chars[pos] != ',' {
+                return Err(format!("expected ',' in database object at position {pos}"));
+            }
+            pos += 1;
+            pos = skip_ws(&chars, pos);
+        }
+        let (name, new_pos) = parse_json_string(&chars, pos)?;
+        pos = skip_ws(&chars, new_pos);
+        if pos >= len || chars[pos] != ':' {
+            return Err(format!("expected ':' after table name at position {pos}"));
+        }
+        pos += 1;
+        pos = skip_ws(&chars, pos);
+        if pos >= len || chars[pos] != '[' {
+            return Err(format!(
+                "database table '{name}' must be a JSON array at position {pos}"
+            ));
+        }
+        let (table_json, new_pos) = skip_json_array(&chars, pos)?;
+        let dataframe = from_json(&table_json)?;
+        database.add_table(&name, dataframe);
+        pos = new_pos;
+    }
+    if skip_ws(&chars, pos) != len {
+        return Err("unexpected trailing data after database JSON".to_string());
+    }
+    Ok(database)
+}
 impl Database {
     /// Serialize Database tables to JSON string.
     pub fn to_json(&self) -> String {

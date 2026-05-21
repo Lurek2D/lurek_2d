@@ -2309,7 +2309,7 @@ Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
-    local effects = {{ type = "lowpass", p1 = 1000 }, { type = "highpass", p1 = 80 }}
+    local effects = {{ type = "lowpass", p1 = 1000 }, { type = "gain", p1 = 0.8 }}
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "output/processed.wav"
     lurek.audio.processOffline(path_in, path_out, effects)
@@ -4525,7 +4525,7 @@ Source: [audio.lua](../blob/main/content/examples/audio.lua)
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
-    print("file = " .. tostring(player:getFilePath()))
+    print("file = " .. player:getFilePath())
 end
 ```
 
@@ -4791,7 +4791,7 @@ do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local name = player:getTrackName(1)
-    print("track 1 = " .. tostring(name))
+    print("track 1 = " .. name)
 end
 ```
 
@@ -6489,7 +6489,7 @@ do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     local dur = src:getDuration()
-    print("duration = " .. tostring(dur) .. "s")
+    print("duration = " .. dur .. "s")
 end
 ```
 

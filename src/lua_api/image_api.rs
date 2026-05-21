@@ -64,9 +64,9 @@ impl LuaUserData for LuaProvinceGrid {
         // -- adjacencies --
         /// Returns province adjacency records and shared border pixel counts.
         /// @return | table | Array table with `province_a`, `province_b`, and `border_pixels` fields.
-    /// @field | province_a | integer | First province id.
-    /// @field | province_b | integer | Second province id.
-    /// @field | border_pixels | integer | Number of shared border pixels.
+        /// @field | province_a | integer | First province id.
+        /// @field | province_b | integer | Second province id.
+        /// @field | border_pixels | integer | Number of shared border pixels.
         methods.add_method("adjacencies", |lua, this, ()| {
             let t = lua.create_table()?;
             for (i, &(a, b, bp)) in this.inner.adjacencies().iter().enumerate() {
@@ -84,10 +84,10 @@ impl LuaUserData for LuaProvinceGrid {
         // -- provinceSpans --
         /// Returns horizontal province spans by row.
         /// @return | table | Array table with `province_id`, `y`, `x0`, and `x1` fields.
-    /// @field | province_id | integer | Province id.
-    /// @field | y | integer | Scanline y coordinate.
-    /// @field | x0 | integer | Start x coordinate.
-    /// @field | x1 | integer | End x coordinate.
+        /// @field | province_id | integer | Province id.
+        /// @field | y | integer | Scanline y coordinate.
+        /// @field | x0 | integer | Start x coordinate.
+        /// @field | x1 | integer | End x coordinate.
         methods.add_method("provinceSpans", |lua, this, ()| {
             let t = lua.create_table()?;
             for (i, (id, y, x0, x1)) in this.inner.province_spans().into_iter().enumerate() {
@@ -107,12 +107,12 @@ impl LuaUserData for LuaProvinceGrid {
         // -- borderSegments --
         /// Returns border line segments between neighboring provinces.
         /// @return | table | Array table with province ids and segment coordinates.
-    /// @field | province_a | integer | First province id.
-    /// @field | province_b | integer | Second province id.
-    /// @field | x0 | number | Segment start x.
-    /// @field | y0 | number | Segment start y.
-    /// @field | x1 | number | Segment end x.
-    /// @field | y1 | number | Segment end y.
+        /// @field | province_a | integer | First province id.
+        /// @field | province_b | integer | Second province id.
+        /// @field | x0 | number | Segment start x.
+        /// @field | y0 | number | Segment start y.
+        /// @field | x1 | number | Segment end x.
+        /// @field | y1 | number | Segment end y.
         methods.add_method("borderSegments", |lua, this, ()| {
             let t = lua.create_table()?;
             for (i, (a, b, x0, y0, x1, y1)) in this.inner.border_segments().into_iter().enumerate()
@@ -137,8 +137,8 @@ impl LuaUserData for LuaProvinceGrid {
         // -- getPolygons --
         /// Returns polygon rings for every province.
         /// @return | table | Array table of province polygon records with `province_id` and `rings` fields.
-    /// @field | province_id | integer | Province id.
-    /// @field | rings | table | Array of rings; each ring is an array of [x, y] pairs.
+        /// @field | province_id | integer | Province id.
+        /// @field | rings | table | Array of rings; each ring is an array of [x, y] pairs.
         methods.add_method("getPolygons", |lua, this, ()| {
             let map = this.inner.province_polygons();
             let out = lua.create_table()?;
@@ -168,8 +168,8 @@ impl LuaUserData for LuaProvinceGrid {
         // -- getPolygonsSimplified --
         /// Returns simplified polygon rings for every province.
         /// @return | table | Array table of simplified province polygon records with `province_id` and `rings` fields.
-    /// @field | province_id | integer | Province id.
-    /// @field | rings | table | Array of simplified rings; each ring is an array of [x, y] pairs.
+        /// @field | province_id | integer | Province id.
+        /// @field | rings | table | Array of simplified rings; each ring is an array of [x, y] pairs.
         methods.add_method("getPolygonsSimplified", |lua, this, ()| {
             let map = this.inner.province_polygons_simplified();
             let out = lua.create_table()?;

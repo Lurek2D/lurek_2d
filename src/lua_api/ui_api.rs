@@ -1,9 +1,12 @@
 //! `lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.
 
+use super::dataframe_api::LuaDataFrame;
 use super::SharedState;
+use crate::math::color::Color;
+use crate::ui::chart::ChartDataFrameOptions;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, WidgetKind};
-use crate::ui::extras::{AccordionSection, TableColumn, Toast};
+use crate::ui::extras::{AccordionSection, TableColumn, TableDataFrameOptions, Toast};
 use crate::ui::theme::{Theme, WidgetStyle};
 use crate::ui::widget::{WidgetState, WidgetType};
 use mlua::prelude::*;
@@ -34,7 +37,10 @@ fn create_widget_table<'a>(
     /// Returns the type name string of this widget (e.g. "LButton", "LSlider").
     /// @param | self | LUiWidget | The widget instance.
     /// @return | string | The widget type name.
-    t.set("type", lua.create_function(move |_, _self: LuaValue| Ok(type_name))?)?;
+    t.set(
+        "type",
+        lua.create_function(move |_, _self: LuaValue| Ok(type_name))?,
+    )?;
     // -- typeOf --
     /// Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
     /// @param | self | LUiWidget | The widget instance.
@@ -133,6 +139,77 @@ fn create_widget_table<'a>(
             }
         })?,
     )?;
+
+    let c = ctx.clone();
+    // -- setStyleClass --
+    /// Sets the style class of this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | class | string | The style class name.
+    t.set(
+        "setStyleClass",
+        lua.create_function(move |_, (_self, class): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().style_class = Some(class);
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getStyleClass --
+    /// Returns the style class of this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | string | The style class name, or nil if none is set.
+    t.set(
+        "getStyleClass",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets
+                .get(idx)
+                .and_then(|w| w.base().style_class.clone()))
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setMouseFilter --
+    /// Sets the mouse filter for this widget ("stop", "pass", "ignore").
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | filter | string | The mouse filter type.
+    t.set(
+        "setMouseFilter",
+        lua.create_function(move |_, (_self, filter): (LuaValue, String)| {
+            if let Some(f) = crate::ui::widget::MouseFilter::parse_str(&filter) {
+                let mut g = c.borrow_mut();
+                if let Some(w) = g.widgets.get_mut(idx) {
+                    w.base_mut().mouse_filter = f;
+                }
+                Ok(())
+            } else {
+                Err(LuaError::RuntimeError(format!(
+                    "Invalid mouse filter: {}",
+                    filter
+                )))
+            }
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getMouseFilter --
+    /// Returns the mouse filter of this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | string | The mouse filter type.
+    t.set(
+        "getMouseFilter",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets
+                .get(idx)
+                .map_or("stop", |w| w.base().mouse_filter.as_str())
+                .to_string())
+        })?,
+    )?;
+
     let c = ctx.clone();
     // -- setVisible --
     /// Shows or hides this widget. Hidden widgets are not drawn and do not receive input.
@@ -436,7 +513,14 @@ fn create_widget_table<'a>(
     t.set(
         "setPadding",
         lua.create_function(
-            move |_, (_self, top, right, bottom, left): (LuaValue, f32, Option<f32>, Option<f32>, Option<f32>)| {
+            move |_,
+                  (_self, top, right, bottom, left): (
+                LuaValue,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
                 let mut g = c.borrow_mut();
                 if let Some(w) = g.widgets.get_mut(idx) {
                     let r = right.unwrap_or(top);
@@ -476,7 +560,14 @@ fn create_widget_table<'a>(
     t.set(
         "setMargin",
         lua.create_function(
-            move |_, (_self, top, right, bottom, left): (LuaValue, f32, Option<f32>, Option<f32>, Option<f32>)| {
+            move |_,
+                  (_self, top, right, bottom, left): (
+                LuaValue,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
                 let mut g = c.borrow_mut();
                 if let Some(w) = g.widgets.get_mut(idx) {
                     let r = right.unwrap_or(top);
@@ -612,7 +703,8 @@ fn create_widget_table<'a>(
         "setAnchor",
         lua.create_function(
             move |_,
-                  (_self, left, top, right, bottom): (LuaValue,
+                  (_self, left, top, right, bottom): (
+                LuaValue,
                 Option<f32>,
                 Option<f32>,
                 Option<f32>,
@@ -638,15 +730,17 @@ fn create_widget_table<'a>(
     /// @param | cy | number? | Vertical center fraction (0.5 = centered).
     t.set(
         "setAnchorCenter",
-        lua.create_function(move |_, (_self, cx, cy): (LuaValue, Option<f32>, Option<f32>)| {
-            let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
-                let b = w.base_mut();
-                b.anchor_center_x = cx;
-                b.anchor_center_y = cy;
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, cx, cy): (LuaValue, Option<f32>, Option<f32>)| {
+                let mut g = c.borrow_mut();
+                if let Some(w) = g.widgets.get_mut(idx) {
+                    let b = w.base_mut();
+                    b.anchor_center_x = cx;
+                    b.anchor_center_y = cy;
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- clearAnchor --
@@ -849,7 +943,13 @@ fn create_widget_table<'a>(
     t.set(
         "animateAlpha",
         lua.create_function(
-            move |_, (_self, target, duration, hide_on_complete): (LuaValue, f32, Option<f32>, Option<bool>)| {
+            move |_,
+                  (_self, target, duration, hide_on_complete): (
+                LuaValue,
+                f32,
+                Option<f32>,
+                Option<bool>,
+            )| {
                 Ok(c.borrow_mut().animate_alpha(
                     idx,
                     target,
@@ -869,10 +969,12 @@ fn create_widget_table<'a>(
     /// @return | table | Table result returned by this call.
     t.set(
         "animatePosition",
-        lua.create_function(move |_, (_self, x, y, duration): (LuaValue, f32, f32, Option<f32>)| {
-            Ok(c.borrow_mut()
-                .animate_position(idx, x, y, duration.unwrap_or(0.2)))
-        })?,
+        lua.create_function(
+            move |_, (_self, x, y, duration): (LuaValue, f32, f32, Option<f32>)| {
+                Ok(c.borrow_mut()
+                    .animate_position(idx, x, y, duration.unwrap_or(0.2)))
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- isAnimating --
@@ -2353,16 +2455,18 @@ fn add_nine_patch_methods(
     /// @param | bottom | integer | Bottom inset in pixels.
     t.set(
         "setInsets",
-        lua.create_function(move |_, (_self, left, top, right, bottom): (LuaValue, u32, u32, u32, u32)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::NinePatch(np)) = g.widgets.get_mut(idx) {
-                np.inset_left = left;
-                np.inset_top = top;
-                np.inset_right = right;
-                np.inset_bottom = bottom;
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, left, top, right, bottom): (LuaValue, u32, u32, u32, u32)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::NinePatch(np)) = g.widgets.get_mut(idx) {
+                    np.inset_left = left;
+                    np.inset_top = top;
+                    np.inset_right = right;
+                    np.inset_bottom = bottom;
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- getInsets --
@@ -2645,15 +2749,17 @@ fn add_tree_view_methods(
     /// @return | integer | The 1-based index of the newly added node.
     t.set(
         "addNode",
-        lua.create_function(move |_, (_self, text, parent_index): (LuaValue, String, Option<usize>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
-                let pi = parent_index.map(|i| i.saturating_sub(1));
-                Ok(tv.add_node(text, pi) + 1)
-            } else {
-                Ok(0)
-            }
-        })?,
+        lua.create_function(
+            move |_, (_self, text, parent_index): (LuaValue, String, Option<usize>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+                    let pi = parent_index.map(|i| i.saturating_sub(1));
+                    Ok(tv.add_node(text, pi) + 1)
+                } else {
+                    Ok(0)
+                }
+            },
+        )?,
     )?;
     let c = ctx.clone();
     /// Toggles the expanded/collapsed state of the node at the given 1-based index.
@@ -3522,13 +3628,15 @@ fn add_dock_panel_methods(
     /// @param | side | string | The dock side ("left", "right", "top", "bottom", "center").
     t.set(
         "dock",
-        lua.create_function(move |_, (_self, child_idx, side): (LuaValue, usize, String)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
-                dp.docked.push((child_idx, side));
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, child_idx, side): (LuaValue, usize, String)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
+                    dp.docked.push((child_idx, side));
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- undock --
@@ -3648,14 +3756,16 @@ fn add_toolbar_methods(
     /// @return | integer | The 1-based index of the added button.
     t.set(
         "addButton",
-        lua.create_function(move |_, (_self, id, tooltip): (LuaValue, String, Option<String>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) {
-                Ok(tb.add_button(id, tooltip.unwrap_or_default()) + 1)
-            } else {
-                Ok(0)
-            }
-        })?,
+        lua.create_function(
+            move |_, (_self, id, tooltip): (LuaValue, String, Option<String>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) {
+                    Ok(tb.add_button(id, tooltip.unwrap_or_default()) + 1)
+                } else {
+                    Ok(0)
+                }
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- addSeparator --
@@ -4149,15 +4259,17 @@ fn add_dialog_methods(
     /// @return | integer | The 1-based button index.
     t.set(
         "addButton",
-        lua.create_function(move |_, (_self, text, _cb): (LuaValue, String, Option<LuaFunction>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
-                d.footer_buttons.push(text);
-                Ok(d.footer_buttons.len())
-            } else {
-                Ok(0)
-            }
-        })?,
+        lua.create_function(
+            move |_, (_self, text, _cb): (LuaValue, String, Option<LuaFunction>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
+                    d.footer_buttons.push(text);
+                    Ok(d.footer_buttons.len())
+                } else {
+                    Ok(0)
+                }
+            },
+        )?,
     )?;
     Ok(())
 }
@@ -4176,13 +4288,15 @@ fn add_status_bar_methods(
     /// @param | width | number? | The section width in pixels (default 100).
     t.set(
         "addSection",
-        lua.create_function(move |_, (_self, text, width): (LuaValue, String, Option<f32>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) {
-                sb.sections.push((text, width.unwrap_or(100.0)));
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, text, width): (LuaValue, String, Option<f32>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) {
+                    sb.sections.push((text, width.unwrap_or(100.0)));
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- setSectionText --
@@ -4192,15 +4306,17 @@ fn add_status_bar_methods(
     /// @param | text | string | The new section text.
     t.set(
         "setSectionText",
-        lua.create_function(move |_, (_self, section_idx, text): (LuaValue, usize, String)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) {
-                if section_idx >= 1 && section_idx <= sb.sections.len() {
-                    sb.sections[section_idx - 1].0 = text;
+        lua.create_function(
+            move |_, (_self, section_idx, text): (LuaValue, usize, String)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) {
+                    if section_idx >= 1 && section_idx <= sb.sections.len() {
+                        sb.sections[section_idx - 1].0 = text;
+                    }
                 }
-            }
-            Ok(())
-        })?,
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- getSectionText --
@@ -4268,10 +4384,12 @@ fn add_status_bar_methods(
     /// @param | widget | table? | The widget table to associate, or nil to clear.
     t.set(
         "setSectionWidget",
-        lua.create_function(move |_, (_self, _section_idx, _widget): (LuaValue, usize, LuaValue)| {
-            let _ = c.borrow();
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, _section_idx, _widget): (LuaValue, usize, LuaValue)| {
+                let _ = c.borrow();
+                Ok(())
+            },
+        )?,
     )?;
     Ok(())
 }
@@ -4290,17 +4408,19 @@ fn add_accordion_methods(
     /// @param | content_idx | integer? | Optional widget index for the section content.
     t.set(
         "addSection",
-        lua.create_function(move |_, (_self, title, content_idx): (LuaValue, String, Option<usize>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::Accordion(acc)) = g.widgets.get_mut(idx) {
-                acc.sections.push(AccordionSection {
-                    title,
-                    content_idx,
-                    expanded: false,
-                });
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, title, content_idx): (LuaValue, String, Option<usize>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::Accordion(acc)) = g.widgets.get_mut(idx) {
+                    acc.sections.push(AccordionSection {
+                        title,
+                        content_idx,
+                        expanded: false,
+                    });
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- getSectionCount --
@@ -4551,16 +4671,18 @@ fn add_color_picker_methods(
     /// @param | a | number? | Alpha (0.0 to 1.0), keeps current if omitted.
     t.set(
         "setColor",
-        lua.create_function(move |_, (_self, r, green, b, a): (LuaValue, f32, f32, f32, Option<f32>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::ColorPicker(cp)) = g.widgets.get_mut(idx) {
-                cp.r = r;
-                cp.g = green;
-                cp.b = b;
-                cp.a = a.unwrap_or(cp.a);
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, r, green, b, a): (LuaValue, f32, f32, f32, Option<f32>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::ColorPicker(cp)) = g.widgets.get_mut(idx) {
+                    cp.r = r;
+                    cp.g = green;
+                    cp.b = b;
+                    cp.a = a.unwrap_or(cp.a);
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- getShowAlpha --
@@ -4653,16 +4775,18 @@ fn add_gui_table_methods(
     /// @param | width | number? | The column width in pixels (default 100).
     t.set(
         "addColumn",
-        lua.create_function(move |_, (_self, header, width): (LuaValue, String, Option<f32>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) {
-                tbl.columns.push(TableColumn {
-                    header,
-                    width: width.unwrap_or(100.0),
-                });
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, header, width): (LuaValue, String, Option<f32>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) {
+                    tbl.columns.push(TableColumn {
+                        header,
+                        width: width.unwrap_or(100.0),
+                    });
+                }
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- getColumnCount --
@@ -4693,6 +4817,61 @@ fn add_gui_table_methods(
             }
             Ok(())
         })?,
+    )?;
+    let c = ctx.clone();
+    // -- clearRows --
+    /// Clears all rows and the selected row in this table widget.
+    /// @param | self | LGuiTable | The widget instance.
+    t.set(
+        "clearRows",
+        lua.create_function(move |_, _self: LuaValue| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) {
+                tbl.clear_rows();
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setRows --
+    /// Replaces all rows with an array of row arrays.
+    /// @param | self | LGuiTable | The widget instance.
+    /// @param | rows | table | Array of row arrays containing scalar cell values.
+    /// @return | integer | The resulting row count.
+    t.set(
+        "setRows",
+        lua.create_function(move |_, (_self, rows): (LuaValue, LuaTable)| {
+            let rows = lua_table_to_string_rows(rows)?;
+            let mut g = c.borrow_mut();
+            Ok(match g.widgets.get_mut(idx) {
+                Some(WidgetKind::GUITable(tbl)) => tbl.set_rows(rows),
+                _ => 0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setDataFrame --
+    /// Replaces columns and rows from a dataframe, stringifying cell values for display.
+    /// @param | self | LGuiTable | The widget instance.
+    /// @param | df | LDataFrame | Source dataframe.
+    /// @param | opts | table? | Optional table with maxRows integer, columns string[], and includeHeaders boolean.
+    /// @return | integer | The resulting row count.
+    t.set(
+        "setDataFrame",
+        lua.create_function(
+            move |_, (_self, df, opts): (LuaValue, LuaAnyUserData, Option<LuaTable>)| {
+                let options = parse_table_dataframe_options(opts)?;
+                let df = df.borrow::<LuaDataFrame>()?;
+                let dataframe = df.borrow_dataframe();
+                let mut g = c.borrow_mut();
+                match g.widgets.get_mut(idx) {
+                    Some(WidgetKind::GUITable(tbl)) => tbl
+                        .set_dataframe(&dataframe, options)
+                        .map_err(LuaError::RuntimeError),
+                    _ => Ok(0),
+                }
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- getRowCount --
@@ -4745,15 +4924,21 @@ fn add_gui_table_methods(
     /// @param | text | string | The new cell text.
     t.set(
         "setCell",
-        lua.create_function(move |_, (_self, row, col, text): (LuaValue, usize, usize, String)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) {
-                if row >= 1 && row <= tbl.rows.len() && col >= 1 && col <= tbl.rows[row - 1].len() {
-                    tbl.rows[row - 1][col - 1] = text;
+        lua.create_function(
+            move |_, (_self, row, col, text): (LuaValue, usize, usize, String)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) {
+                    if row >= 1
+                        && row <= tbl.rows.len()
+                        && col >= 1
+                        && col <= tbl.rows[row - 1].len()
+                    {
+                        tbl.rows[row - 1][col - 1] = text;
+                    }
                 }
-            }
-            Ok(())
-        })?,
+                Ok(())
+            },
+        )?,
     )?;
     let c = ctx.clone();
     // -- getSelectedRow --
@@ -4895,13 +5080,15 @@ fn add_image_widget_methods(
     /// @param | a | number? | Alpha (0.0 to 1.0), defaults to 1.0.
     t.set(
         "setTint",
-        lua.create_function(move |_, (_self, r, green, b, a): (LuaValue, f32, f32, f32, Option<f32>)| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::ImageWidget(iw)) = g.widgets.get_mut(idx) {
-                iw.tint = (r, green, b, a.unwrap_or(1.0));
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            move |_, (_self, r, green, b, a): (LuaValue, f32, f32, f32, Option<f32>)| {
+                let mut g = c.borrow_mut();
+                if let Some(WidgetKind::ImageWidget(iw)) = g.widgets.get_mut(idx) {
+                    iw.tint = (r, green, b, a.unwrap_or(1.0));
+                }
+                Ok(())
+            },
+        )?,
     )?;
     Ok(())
 }
@@ -4912,13 +5099,14 @@ struct LuaTheme {
 impl LuaUserData for LuaTheme {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- setStyle --
-        /// Sets a style entry for the given widget type and state.
+        /// Sets a style entry for the given widget type and state, optionally restricted to a style class.
         /// @param | widget_type | string | The widget type name (e.g. "button").
         /// @param | state | string | The widget state (e.g. "normal", "hovered").
+        /// @param | style_class | string? | (Optional) The specific class to apply this style to.
         /// @param | style_table | table | A table of style properties.
         methods.add_method(
             "setStyle",
-            |_, this, (widget_type, state, style_table): (String, String, LuaTable)| {
+            |_, this, (widget_type, state, arg3, arg4): (String, String, LuaValue, Option<LuaTable>)| {
                 let wt = parse_widget_type(&widget_type).ok_or_else(|| {
                     LuaError::external(format!(
                         "gui.newTheme:setStyle: unknown widget type '{widget_type}'"
@@ -4927,8 +5115,23 @@ impl LuaUserData for LuaTheme {
                 let ws = WidgetState::parse_str(&state).ok_or_else(|| {
                     LuaError::external(format!("gui.newTheme:setStyle: unknown state '{state}'"))
                 })?;
+
+                let (style_class, style_table) = match arg3 {
+                    LuaValue::String(s) => {
+                        let sc = s.to_str()?.to_string();
+                        let st = arg4.ok_or_else(|| LuaError::external("Missing style table"))?;
+                        (Some(sc), st)
+                    }
+                    LuaValue::Table(t) => (None, t),
+                    _ => return Err(LuaError::external("Invalid arguments for setStyle")),
+                };
+
                 let style = parse_widget_style(&style_table)?;
-                this.inner.borrow_mut().set_style(wt, ws, style);
+                if let Some(class) = style_class {
+                    this.inner.borrow_mut().set_class_style(wt, ws, class, style);
+                } else {
+                    this.inner.borrow_mut().set_style(wt, ws, style);
+                }
                 Ok(())
             },
         );
@@ -6296,6 +6499,70 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
         children,
     })
 }
+fn scalar_value_to_text(value: LuaValue) -> LuaResult<String> {
+    match value {
+        LuaValue::Nil => Ok("nil".to_string()),
+        LuaValue::Boolean(value) => Ok(value.to_string()),
+        LuaValue::Integer(value) => Ok(value.to_string()),
+        LuaValue::Number(value) if value.fract() == 0.0 && value.is_finite() => {
+            Ok((value as i64).to_string())
+        }
+        LuaValue::Number(value) => Ok(value.to_string()),
+        LuaValue::String(value) => Ok(value.to_str()?.to_string()),
+        _ => Err(LuaError::RuntimeError(
+            "LGuiTable:setRows expects scalar cell values".to_string(),
+        )),
+    }
+}
+fn lua_table_to_string_rows(rows: LuaTable) -> LuaResult<Vec<Vec<String>>> {
+    let len = rows.raw_len();
+    let mut out = Vec::with_capacity(len);
+    for row_index in 1..=len {
+        let row: LuaTable = rows.raw_get(row_index)?;
+        let row_len = row.raw_len();
+        let mut cells = Vec::with_capacity(row_len);
+        for col_index in 1..=row_len {
+            cells.push(scalar_value_to_text(row.raw_get(col_index)?)?);
+        }
+        out.push(cells);
+    }
+    Ok(out)
+}
+fn lua_table_to_strings(table: LuaTable) -> LuaResult<Vec<String>> {
+    let len = table.raw_len();
+    let mut values = Vec::with_capacity(len);
+    for index in 1..=len {
+        values.push(table.raw_get(index)?);
+    }
+    Ok(values)
+}
+fn parse_table_dataframe_options(opts: Option<LuaTable>) -> LuaResult<TableDataFrameOptions> {
+    let Some(opts) = opts else {
+        return Ok(TableDataFrameOptions::default());
+    };
+    let columns = opts
+        .get::<_, Option<LuaTable>>("columns")?
+        .map(lua_table_to_strings)
+        .transpose()?;
+    Ok(TableDataFrameOptions {
+        max_rows: opts.get("maxRows")?,
+        columns,
+        include_headers: opts
+            .get::<_, Option<bool>>("includeHeaders")?
+            .unwrap_or(false),
+    })
+}
+fn parse_chart_dataframe_options(opts: Option<LuaTable>) -> LuaResult<ChartDataFrameOptions> {
+    let Some(opts) = opts else {
+        return Ok(ChartDataFrameOptions::default());
+    };
+    Ok(ChartDataFrameOptions {
+        max_rows: opts.get("maxRows")?,
+    })
+}
+fn rgb_color(r: f32, g: f32, b: f32) -> Color {
+    Color::new(r, g, b, 1.0)
+}
 /// Lua-exposed line chart for data visualization.
 pub struct LuaLineChart {
     pub inner: crate::ui::chart::LineChart,
@@ -6319,9 +6586,48 @@ impl LuaUserData for LuaLineChart {
                     let y: f32 = p.get(2).unwrap_or(0.0);
                     pts.push((x, y));
                 }
-                this.inner
-                    .add_series(&name, &pts, crate::math::color::Color::new(r, g, b, 1.0));
+                this.inner.add_series(&name, &pts, rgb_color(r, g, b));
                 Ok(())
+            },
+        );
+        // -- addSeriesFromDataFrame --
+        /// Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
+        /// @param | name | string | The series name.
+        /// @param | df | LDataFrame | Source dataframe.
+        /// @param | x_col | string | Column name for X values.
+        /// @param | y_col | string | Column name for Y values.
+        /// @param | r | number | Red color component.
+        /// @param | g | number | Green color component.
+        /// @param | b | number | Blue color component.
+        /// @param | opts | table? | Optional table with maxRows integer.
+        /// @return | integer | Number of accepted points added to the series.
+        methods.add_method_mut(
+            "addSeriesFromDataFrame",
+            |_,
+             this,
+             (name, df, x_col, y_col, r, g, b, opts): (
+                String,
+                LuaAnyUserData,
+                String,
+                String,
+                f32,
+                f32,
+                f32,
+                Option<LuaTable>,
+            )| {
+                let options = parse_chart_dataframe_options(opts)?;
+                let df = df.borrow::<LuaDataFrame>()?;
+                let dataframe = df.borrow_dataframe();
+                this.inner
+                    .add_series_from_dataframe(
+                        &name,
+                        &dataframe,
+                        &x_col,
+                        &y_col,
+                        rgb_color(r, g, b),
+                        options,
+                    )
+                    .map_err(LuaError::RuntimeError)
             },
         );
         // -- setYMax --
@@ -6374,8 +6680,7 @@ impl LuaUserData for LuaBarChart {
         methods.add_method_mut(
             "addSeries",
             |_, this, (name, r, g, b): (String, f32, f32, f32)| {
-                this.inner
-                    .add_series(&name, crate::math::color::Color::new(r, g, b, 1.0));
+                this.inner.add_series(&name, rgb_color(r, g, b));
                 Ok(())
             },
         );
@@ -6392,6 +6697,32 @@ impl LuaUserData for LuaBarChart {
                 }
                 this.inner.add_category(&label, &vals);
                 Ok(())
+            },
+        );
+        // -- addCategoriesFromDataFrame --
+        /// Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
+        /// @param | df | LDataFrame | Source dataframe.
+        /// @param | label_col | string | Column name for category labels.
+        /// @param | value_cols | string[] | Value columns matching registered series order.
+        /// @param | opts | table? | Optional table with maxRows integer.
+        /// @return | integer | Number of categories added.
+        methods.add_method_mut(
+            "addCategoriesFromDataFrame",
+            |_,
+             this,
+             (df, label_col, value_cols, opts): (
+                LuaAnyUserData,
+                String,
+                LuaTable,
+                Option<LuaTable>,
+            )| {
+                let value_cols = lua_table_to_strings(value_cols)?;
+                let options = parse_chart_dataframe_options(opts)?;
+                let df = df.borrow::<LuaDataFrame>()?;
+                let dataframe = df.borrow_dataframe();
+                this.inner
+                    .add_categories_from_dataframe(&dataframe, &label_col, &value_cols, options)
+                    .map_err(LuaError::RuntimeError)
             },
         );
         // -- drawToImage --
@@ -6438,9 +6769,48 @@ impl LuaUserData for LuaScatterPlot {
                     let y: f32 = p.get(2).unwrap_or(0.0);
                     pts.push((x, y));
                 }
-                this.inner
-                    .add_series(&name, &pts, crate::math::color::Color::new(r, g, b, 1.0));
+                this.inner.add_series(&name, &pts, rgb_color(r, g, b));
                 Ok(())
+            },
+        );
+        // -- addSeriesFromDataFrame --
+        /// Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
+        /// @param | name | string | The series name.
+        /// @param | df | LDataFrame | Source dataframe.
+        /// @param | x_col | string | Column name for X values.
+        /// @param | y_col | string | Column name for Y values.
+        /// @param | r | number | Red color component.
+        /// @param | g | number | Green color component.
+        /// @param | b | number | Blue color component.
+        /// @param | opts | table? | Optional table with maxRows integer.
+        /// @return | integer | Number of accepted points added to the series.
+        methods.add_method_mut(
+            "addSeriesFromDataFrame",
+            |_,
+             this,
+             (name, df, x_col, y_col, r, g, b, opts): (
+                String,
+                LuaAnyUserData,
+                String,
+                String,
+                f32,
+                f32,
+                f32,
+                Option<LuaTable>,
+            )| {
+                let options = parse_chart_dataframe_options(opts)?;
+                let df = df.borrow::<LuaDataFrame>()?;
+                let dataframe = df.borrow_dataframe();
+                this.inner
+                    .add_series_from_dataframe(
+                        &name,
+                        &dataframe,
+                        &x_col,
+                        &y_col,
+                        rgb_color(r, g, b),
+                        options,
+                    )
+                    .map_err(LuaError::RuntimeError)
             },
         );
         // -- setXRange --
@@ -6496,9 +6866,33 @@ impl LuaUserData for LuaPieChart {
         methods.add_method_mut(
             "addSegment",
             |_, this, (label, value, r, g, b): (String, f32, f32, f32, f32)| {
-                this.inner
-                    .add_segment(&label, value, crate::math::color::Color::new(r, g, b, 1.0));
+                this.inner.add_segment(&label, value, rgb_color(r, g, b));
                 Ok(())
+            },
+        );
+        // -- addSegmentsFromDataFrame --
+        /// Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
+        /// @param | df | LDataFrame | Source dataframe.
+        /// @param | label_col | string | Column name for segment labels.
+        /// @param | value_col | string | Column name for segment values.
+        /// @param | opts | table? | Optional table with maxRows integer.
+        /// @return | integer | Number of segments added.
+        methods.add_method_mut(
+            "addSegmentsFromDataFrame",
+            |_,
+             this,
+             (df, label_col, value_col, opts): (
+                LuaAnyUserData,
+                String,
+                String,
+                Option<LuaTable>,
+            )| {
+                let options = parse_chart_dataframe_options(opts)?;
+                let df = df.borrow::<LuaDataFrame>()?;
+                let dataframe = df.borrow_dataframe();
+                this.inner
+                    .add_segments_from_dataframe(&dataframe, &label_col, &value_col, options)
+                    .map_err(LuaError::RuntimeError)
             },
         );
         // -- drawToImage --
@@ -6542,9 +6936,45 @@ impl LuaUserData for LuaAreaChart {
                 for v in vals_tbl.sequence_values::<f32>() {
                     vals.push(v?);
                 }
-                this.inner
-                    .add_layer(&name, &vals, crate::math::color::Color::new(r, g, b, 1.0));
+                this.inner.add_layer(&name, &vals, rgb_color(r, g, b));
                 Ok(())
+            },
+        );
+        // -- addLayerFromDataFrame --
+        /// Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
+        /// @param | name | string | The layer name.
+        /// @param | df | LDataFrame | Source dataframe.
+        /// @param | value_col | string | Column name for layer values.
+        /// @param | r | number | Red color component.
+        /// @param | g | number | Green color component.
+        /// @param | b | number | Blue color component.
+        /// @param | opts | table? | Optional table with maxRows integer.
+        /// @return | integer | Number of values copied into the layer.
+        methods.add_method_mut(
+            "addLayerFromDataFrame",
+            |_,
+             this,
+             (name, df, value_col, r, g, b, opts): (
+                String,
+                LuaAnyUserData,
+                String,
+                f32,
+                f32,
+                f32,
+                Option<LuaTable>,
+            )| {
+                let options = parse_chart_dataframe_options(opts)?;
+                let df = df.borrow::<LuaDataFrame>()?;
+                let dataframe = df.borrow_dataframe();
+                this.inner
+                    .add_layer_from_dataframe(
+                        &name,
+                        &dataframe,
+                        &value_col,
+                        rgb_color(r, g, b),
+                        options,
+                    )
+                    .map_err(LuaError::RuntimeError)
             },
         );
         // -- setYMax --

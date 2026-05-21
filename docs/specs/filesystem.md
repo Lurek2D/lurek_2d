@@ -49,6 +49,7 @@ Supports synchronous and asynchronous read/write, directory listing, glob matchi
 - JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
 - Recursive and flat directory listing with merged overlay results.
 - File handle creation, copy, move, and remove operations within the save boundary.
+- DataFrame file persistence storage trait implementation that delegates to existing GameFS read/write methods.
 
 ### `watcher.rs`
 - Poll-based file watcher that detects modification-time changes on registered paths.

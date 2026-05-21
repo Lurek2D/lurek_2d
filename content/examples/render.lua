@@ -1,4 +1,4 @@
-﻿-- content/examples/render.lua
+-- content/examples/render.lua
 -- Auto-generated from content/examples2/render_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/render.lua
 
@@ -1641,6 +1641,22 @@ do
     lurek.render.circle("fill", 100, 100, 30)
     lurek.render.setStencilTest("always", 0)
     print("setStencilTest ok")
+end
+
+--@api-stub: lurek.render.setBold
+do
+    -- Sets whether text rendering should use a bold font variant if available.
+    local prev = lurek.render.isBold()
+    lurek.render.setBold(true)
+    lurek.render.print("Bold text", 10, 10)
+    lurek.render.setBold(prev)
+end
+
+--@api-stub: lurek.render.isBold
+do
+    -- Checks if the bold font variant is currently enabled for text rendering.
+    local is_bold = lurek.render.isBold()
+    print("Is bold: " .. tostring(is_bold))
 end
 
 print("content/examples/render.lua")

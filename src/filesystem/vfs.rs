@@ -5,6 +5,7 @@
 //! - Recursive and flat directory listing with merged overlay results.
 //! - File handle creation, copy, move, and remove operations within the save boundary.
 
+use crate::dataframe::file_io::DataFrameFileStore;
 use crate::filesystem::file_handle::{FileHandle, FileMode};
 use crate::log_msg;
 use crate::runtime::error::{EngineError, EngineResult};
@@ -55,6 +56,7 @@ pub struct MountLayer {
     pub mountpoint: String,
 }
 /// Game filesystem rooted at a base directory with optional mount overlays.
+#[derive(Clone)]
 pub struct GameFS {
     /// Root directory used for all resolved filesystem paths.
     base_dir: PathBuf,
@@ -584,6 +586,40 @@ impl GameFS {
             EngineError::FileSystemError(format!("create_temp_file: cannot create file: {}", e))
         })?;
         Ok(format!("save/{}", filename))
+    }
+}
+/// Provide dataframe file persistence storage operations through GameFS.
+impl DataFrameFileStore for GameFS {
+    type Error = EngineError;
+
+    /// Read UTF-8 content through GameFS.
+    fn read_string(&self, path: &str) -> EngineResult<String> {
+        GameFS::read_string(self, path)
+    }
+
+    /// Read JSON content through GameFS validation.
+    fn read_json(&self, path: &str) -> EngineResult<String> {
+        GameFS::read_json(self, path)
+    }
+
+    /// Read binary content through GameFS.
+    fn read_bytes(&self, path: &str) -> EngineResult<Vec<u8>> {
+        GameFS::read_bytes(self, path)
+    }
+
+    /// Write UTF-8 content through GameFS.
+    fn write_string(&self, path: &str, content: &str) -> EngineResult<()> {
+        GameFS::write_string(self, path, content)
+    }
+
+    /// Write JSON content through GameFS validation.
+    fn write_json(&self, path: &str, json: &str) -> EngineResult<()> {
+        GameFS::write_json(self, path, json)
+    }
+
+    /// Write binary content through GameFS.
+    fn write_bytes(&self, path: &str, bytes: &[u8]) -> EngineResult<()> {
+        GameFS::write_bytes(self, path, bytes)
     }
 }
 /// Match a glob pattern against a file name using '*' and '?' only.

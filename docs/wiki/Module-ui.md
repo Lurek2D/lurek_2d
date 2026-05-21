@@ -129,7 +129,11 @@ Retained-mode widget system; rendering deferred through RenderCommand.
 
 Retained-mode GUI framework with 35+ widget types, layout engine, theme system, charts, data binding, and TOML-based layout loading. `GuiContext` is the top-level container managing widget trees, focus state, input routing, and per-frame update/draw cycles. Widgets include buttons, labels, text inputs, checkboxes, sliders, dropdowns, lists, trees, tabs, panels, scrollbars, progress bars, color pickers, date pickers, and custom canvas regions.
 
-Layout uses a flex-based model with containers, rows, columns, grids, and stack panels — supports padding, margin, alignment, grow/shrink factors, and min/max constraints. Themes define color palettes, fonts, spacing, and per-widget style overrides in TOML. Data binding connects widget values to Lua tables with two-way synchronization. Chart widgets (line, bar, scatter, pie, area) render data visualizations to `ImageData` buffers. TOML loader instantiates complete UI hierarchies from declarative layout files. Exposed as `lurek.ui.*`. Feature Systems tier.
+Layout uses a flex-based model with containers, rows, columns, grids, and stack panels — supports padding, margin, alignment, grow/shrink factors, and min/max constraints. Themes define color palettes, fonts, spacing, and per-widget style overrides in TOML. Data binding connects widget values to Lua tables with two-way synchronization. Table and chart helpers can bulk-load `LDataFrame` rows so UI screens do not need Lua-side row loops for common tabular and chart views. Chart widgets (line, bar, scatter, pie, area) render data visualizations to `ImageData` buffers. TOML loader instantiates complete UI hierarchies from declarative layout files. Exposed as `lurek.ui.*`. Feature Systems tier.
+
+Mouse input is routed through existing `lurek.ui.mousepressed`, `lurek.ui.mousereleased`, `lurek.ui.mousemoved`, `lurek.ui.wheelmoved`, and `lurek.ui.update` calls. The retained widget tree runs layout before input hit testing, uses computed screen rectangles when available, falls back to direct widget coordinates for unattached widgets, and respects visibility, enabled state, z-order, and recent paint order. Mouse input updates button clicks, slider press/drag values, tab selection, combo box open/select state, list row selection, table row selection, sortable table headers, switch and checkbox values, radio groups, tree view rows, spin-box step zones, accordion headers, scroll bars, dialog/window close controls, toolbar buttons, color pickers, and hover-routed scrolling.
+
+Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.textinput`, focus methods, and `lurek.ui.update` callback dispatch. Focus changes keep `TextInput.focused` in sync with widget focus state. Text editing emits `GuiEvent::Change` only when text changes, cursor movement marks the UI dirty without emitting a value change, and focused controls support activation and simple arrow-key navigation where the widget has an existing value or selectio
 
 [⬆ back to top](#table-of-contents)
 
@@ -144,7 +148,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - margins, and grid visibility across all chart types.
 - Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
 - scaled to arbitrary value ranges on both axes.
-- Legend panel rendered as a floating colour-swatch box positioned near the top-right corner.
+- Legend panels reserve right or bottom space outside plotted data when the image size allows it.
 - Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
 - anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
 - Area chart performs linear interpolation between uniform X samples and fills columns
@@ -251,21 +255,21 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 ## 🧩 Key Types
 
 - `LAccordion` (7 methods) - Adds accordion-specific methods to an accordion widget table.
-- `LAreaChart` (5 methods) - Lua-exposed area chart for data visualization.
+- `LAreaChart` (6 methods) - Lua-exposed area chart for data visualization.
 - `LBadge` (3 methods) - Adds badge-specific methods to a notification badge widget table.
-- `LBarChart` (5 methods) - Lua-exposed bar chart for data visualization.
+- `LBarChart` (6 methods) - Lua-exposed bar chart for data visualization.
 - `LButton` (2 methods) - Adds button-specific methods (setText, getText) to a button widget table.
 - `LCheckbox` (4 methods) - Adds checkbox-specific methods to a checkbox widget table.
 - `LColorPicker` (7 methods) - Adds color-picker-specific methods to a color picker widget table.
 - `LComboBox` (8 methods) - Adds combo-box-specific methods to a combo box widget table.
 - `LDialog` (11 methods) - Adds dialog-specific methods to a dialog widget table.
 - `LDockPanel` (5 methods) - Adds dock-panel-specific methods to a dock panel widget table.
-- `LGuiTable` (11 methods) - Adds GUI-table-specific methods to a table widget.
+- `LGuiTable` (14 methods) - Adds GUI-table-specific methods to a table widget.
 - `LGuiWindow` (9 methods) - Adds GUI-window-specific methods to a window widget table.
 - `LImageWidget` (4 methods) - Adds image-widget-specific methods to an image widget table.
 - `LLabel` (2 methods) - Adds label-specific methods (setText, getText) to a label widget table.
 - `LLayout` (11 methods) - Adds layout-specific methods to a layout container widget table.
-- `LLineChart` (6 methods) - Lua-exposed line chart for data visualization.
+- `LLineChart` (7 methods) - Lua-exposed line chart for data visualization.
 
 [⬆ back to top](#table-of-contents)
 
@@ -274,7 +278,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - Source spec: [docs/specs/ui.md](../blob/main/docs/specs/ui.md)
 - Module-level functions: 74
 - Lua-visible types: 41
-- Total type methods: 314
+- Total type methods: 326
 
 
 [⬆ back to top](#table-of-contents)
@@ -900,11 +904,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
-    lurek.ui.mousereleased(100, 150, 1)
-    lurek.ui.wheelmoved(0, -1)
-    local cnt = lurek.ui.getWidgetCount()
-    print("mousemoved/pressed/released/wheelmoved ok; widgets:", cnt)
+    local slider = lurek.ui.newSlider(0, 100); slider:setPosition(20, 520); slider:setSize(200, 20); slider:setZOrder(2200)
+    lurek.ui.mousepressed(40, 530, 1); lurek.ui.mousemoved(180, 530); lurek.ui.mousereleased(180, 530, 1)
+    lurek.ui.update(0)
+    print("slider value after drag:", slider:getValue())
 end
 ```
 
@@ -939,11 +942,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
-    lurek.ui.mousereleased(100, 150, 1)
-    lurek.ui.wheelmoved(0, -1)
-    local cnt = lurek.ui.getWidgetCount()
-    print("mousemoved/pressed/released/wheelmoved ok; widgets:", cnt)
+    local tabs = lurek.ui.newTabBar(); tabs:setPosition(20, 560); tabs:setSize(240, 28); tabs:setZOrder(2300)
+    tabs:addTab("Home"); tabs:addTab("Reports"); tabs:addTab("Settings")
+    lurek.ui.mousepressed(120, 574, 1); lurek.ui.mousereleased(120, 574, 1); lurek.ui.update(0)
+    print("active tab after click:", tabs:getActiveTab())
 end
 ```
 
@@ -978,11 +980,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    lurek.ui.mousemoved(100, 150); lurek.ui.mousepressed(100, 150, 1)
-    lurek.ui.mousereleased(100, 150, 1)
-    lurek.ui.wheelmoved(0, -1)
-    local cnt = lurek.ui.getWidgetCount()
-    print("mousemoved/pressed/released/wheelmoved ok; widgets:", cnt)
+    local combo = lurek.ui.newComboBox(); combo:setPosition(20, 600); combo:setSize(160, 28); combo:setZOrder(2400)
+    combo:addItem("All"); combo:addItem("Food"); combo:addItem("Rent")
+    lurek.ui.mousepressed(30, 614, 1); lurek.ui.mousereleased(30, 614, 1)
+    lurek.ui.mousepressed(30, 670, 1); lurek.ui.mousereleased(30, 670, 1); lurek.ui.update(0)
+    print("combo selected:", combo:getSelectedItem())
 end
 ```
 
@@ -2730,11 +2732,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
-    lurek.ui.update_bindings({dt=0.016})
-    lurek.ui.wheelmoved(0, 1)
-    lurek.ui.wheelmoved(1, 0)
-    print("textinput/update_bindings/wheelmoved ok")
+    local panel = lurek.ui.newScrollPanel(); panel:setPosition(300, 520); panel:setSize(120, 70); panel:setZOrder(2500)
+    panel:setContentSize(120, 300)
+    lurek.ui.mousemoved(310, 530); lurek.ui.wheelmoved(0, -3)
+    local _, sy = panel:getScrollPosition()
+    print("hover scroll y:", sy)
 end
 ```
 
@@ -3877,6 +3879,52 @@ do
 end
 ```
 
+#### LAreaChart:addLayerFromDataFrame
+
+#### Definition
+
+```lua
+--- Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
+---@param name string The layer name.
+---@param df LDataFrame Source dataframe.
+---@param value_col string Column name for layer values.
+---@param r number Red color component.
+---@param g number Green color component.
+---@param b number Blue color component.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of values copied into the layer.
+function LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts) end
+```
+
+#### Description
+
+Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
+
+Parameters:
+
+- `name` (`string`, required): The layer name.
+- `df` (`LDataFrame`, required): Source dataframe.
+- `value_col` (`string`, required): Column name for layer values.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+- `opts` (`table`, optional): Optional table with maxRows integer.
+
+Returns: `integer` - Number of values copied into the layer.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local df = lurek.dataframe.fromRows({ "balance" }, { { 1200 }, { "1325" }, { "bad" } })
+    local chart = lurek.ui.newAreaChart({width = 200, height = 100})
+    local count = chart:addLayerFromDataFrame("Balance", df, "balance", 0.2, 0.6, 0.9)
+    print("area df values=" .. count)
+end
+```
+
 #### LAreaChart:drawToImage
 
 #### Definition
@@ -4110,6 +4158,48 @@ end
 ```
 
 ### LBarChart Methods
+
+#### LBarChart:addCategoriesFromDataFrame
+
+#### Definition
+
+```lua
+--- Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
+---@param df LDataFrame Source dataframe.
+---@param label_col string Column name for category labels.
+---@param value_cols string[] Value columns matching registered series order.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of categories added.
+function LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts) end
+```
+
+#### Description
+
+Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
+
+Parameters:
+
+- `df` (`LDataFrame`, required): Source dataframe.
+- `label_col` (`string`, required): Column name for category labels.
+- `value_cols` (`string[]`, required): Value columns matching registered series order.
+- `opts` (`table`, optional): Optional table with maxRows integer.
+
+Returns: `integer` - Number of categories added.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local df = lurek.dataframe.fromRows({ "month", "income", "expense" }, { { "Jan", 100, 60 }, { "Feb", "120", "bad" } })
+    local chart = lurek.ui.newBarChart({width = 200, height = 100})
+    chart:addSeries("Income", 0.2, 0.6, 0.9)
+    chart:addSeries("Expense", 0.9, 0.4, 0.2)
+    local count = chart:addCategoriesFromDataFrame(df, "month", { "income", "expense" })
+    print("bar df categories=" .. count)
+end
+```
 
 #### LBarChart:addCategory
 
@@ -5618,6 +5708,34 @@ do
 end
 ```
 
+#### LGuiTable:clearRows
+
+#### Definition
+
+```lua
+--- Clears all rows and the selected row in this table widget.
+function LGuiTable:clearRows() end
+```
+
+#### Description
+
+Clears all rows and the selected row in this table widget.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local tbl = lurek.ui.newTable(); tbl:addColumn("A"); tbl:addRow({"1"}); tbl:clearRows()
+    print("cleared rows")
+end
+```
+
 #### LGuiTable:getCell
 
 #### Definition
@@ -5829,6 +5947,43 @@ do
 end
 ```
 
+#### LGuiTable:setDataFrame
+
+#### Definition
+
+```lua
+--- Replaces columns and rows from a dataframe, stringifying cell values for display.
+---@param df LDataFrame Source dataframe.
+---@param opts? table Optional table with maxRows integer, columns string[], and includeHeaders boolean.
+---@return number The resulting row count.
+function LGuiTable:setDataFrame(df, opts) end
+```
+
+#### Description
+
+Replaces columns and rows from a dataframe, stringifying cell values for display.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `df` (`LDataFrame`, required): Source dataframe.
+- `opts` (`table`, optional): Optional table with maxRows integer, columns string[], and includeHeaders boolean.
+
+Returns: `integer` - The resulting row count.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 2 } })
+    local tbl = lurek.ui.newTable()
+    tbl:setDataFrame(df)
+    print("set dataframe")
+end
+```
+
 #### LGuiTable:setOnSelect
 
 #### Definition
@@ -5859,6 +6014,39 @@ do
     tbl:setCell(1, 1, "changed")
     tbl:setOnSelect(function(idx) print("row selected", idx) end)
     print("isSortable/setCell/setOnSelect ok")
+end
+```
+
+#### LGuiTable:setRows
+
+#### Definition
+
+```lua
+--- Replaces all rows with an array of row arrays.
+---@param rows table Array of row arrays containing scalar cell values.
+---@return number The resulting row count.
+function LGuiTable:setRows(rows) end
+```
+
+#### Description
+
+Replaces all rows with an array of row arrays.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `rows` (`table`, required): Array of row arrays containing scalar cell values.
+
+Returns: `integer` - The resulting row count.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local tbl = lurek.ui.newTable(); tbl:addColumn("A"); tbl:setRows({{"1"}})
+    print("set rows")
 end
 ```
 
@@ -5920,11 +6108,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("X")
-    tbl:addRow({"row1"}); tbl:setSelectedRow(1)
-    local sel = tbl:getSelectedRow(); tbl:setSortable(false)
-    local win = lurek.ui.newWindow("My Window"); local title = win:getTitle()
-    print("setSelectedRow:", sel, "setSortable ok, win title:", title)
+    local tbl = lurek.ui.newTable(); tbl:setPosition(20, 420); tbl:setSize(220, 90); tbl:setZOrder(2100)
+    tbl:addColumn("Name", 120); tbl:addColumn("Value", 80)
+    tbl:addRow({"B", "20"}); tbl:addRow({"A", "10"}); tbl:setSortable(true)
+    lurek.ui.mousepressed(25, 430, 1); lurek.ui.mousereleased(25, 430, 1); lurek.ui.update(0)
+    print("sorted first row:", tbl:getCell(1, 1))
 end
 ```
 
@@ -6854,6 +7042,54 @@ do
     local img = lurek.image.newImageData(200, 100)
     lc:drawToImage(img)
     print("setWrap ok; addSeries/drawToImage ok")
+end
+```
+
+#### LLineChart:addSeriesFromDataFrame
+
+#### Definition
+
+```lua
+--- Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
+---@param name string The series name.
+---@param df LDataFrame Source dataframe.
+---@param x_col string Column name for X values.
+---@param y_col string Column name for Y values.
+---@param r number Red color component.
+---@param g number Green color component.
+---@param b number Blue color component.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of accepted points added to the series.
+function LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts) end
+```
+
+#### Description
+
+Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
+
+Parameters:
+
+- `name` (`string`, required): The series name.
+- `df` (`LDataFrame`, required): Source dataframe.
+- `x_col` (`string`, required): Column name for X values.
+- `y_col` (`string`, required): Column name for Y values.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+- `opts` (`table`, optional): Optional table with maxRows integer.
+
+Returns: `integer` - Number of accepted points added to the series.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local df = lurek.dataframe.fromRows({ "month", "savings" }, { { 1, 240 }, { 2, "260" }, { 3, "bad" } })
+    local chart = lurek.ui.newLineChart({width = 200, height = 100})
+    local count = chart:addSeriesFromDataFrame("Savings", df, "month", "savings", 0.2, 0.8, 0.4)
+    print("line df points=" .. count)
 end
 ```
 
@@ -8054,6 +8290,46 @@ do
 end
 ```
 
+#### LPieChart:addSegmentsFromDataFrame
+
+#### Definition
+
+```lua
+--- Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
+---@param df LDataFrame Source dataframe.
+---@param label_col string Column name for segment labels.
+---@param value_col string Column name for segment values.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of segments added.
+function LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts) end
+```
+
+#### Description
+
+Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
+
+Parameters:
+
+- `df` (`LDataFrame`, required): Source dataframe.
+- `label_col` (`string`, required): Column name for segment labels.
+- `value_col` (`string`, required): Column name for segment values.
+- `opts` (`table`, optional): Optional table with maxRows integer.
+
+Returns: `integer` - Number of segments added.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local df = lurek.dataframe.fromRows({ "category", "amount" }, { { "Food", 420 }, { "Rent", "1200" }, { "Skip", "bad" } })
+    local chart = lurek.ui.newPieChart({width = 128, height = 128})
+    local count = chart:addSegmentsFromDataFrame(df, "category", "amount")
+    print("pie df segments=" .. count)
+end
+```
+
 #### LPieChart:drawToImage
 
 #### Definition
@@ -8630,6 +8906,54 @@ do
     local img = lurek.image.newImageData(200, 150)
     sp:drawToImage(img)
     print("ScatterPlot addSeries/setXRange/drawToImage ok")
+end
+```
+
+#### LScatterPlot:addSeriesFromDataFrame
+
+#### Definition
+
+```lua
+--- Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
+---@param name string The series name.
+---@param df LDataFrame Source dataframe.
+---@param x_col string Column name for X values.
+---@param y_col string Column name for Y values.
+---@param r number Red color component.
+---@param g number Green color component.
+---@param b number Blue color component.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of accepted points added to the series.
+function LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts) end
+```
+
+#### Description
+
+Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
+
+Parameters:
+
+- `name` (`string`, required): The series name.
+- `df` (`LDataFrame`, required): Source dataframe.
+- `x_col` (`string`, required): Column name for X values.
+- `y_col` (`string`, required): Column name for Y values.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+- `opts` (`table`, optional): Optional table with maxRows integer.
+
+Returns: `integer` - Number of accepted points added to the series.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 2 }, { 3, 4 }, { 5, 6 } })
+    local chart = lurek.ui.newScatterPlot({width = 200, height = 100})
+    local count = chart:addSeriesFromDataFrame("Data", df, "x", "y", 0.5, 0.5, 0.5)
+    print("scatter df points=" .. count)
 end
 ```
 
@@ -10992,22 +11316,24 @@ end
 #### Definition
 
 ```lua
---- Sets a style entry for the given widget type and state.
+--- Sets a style entry for the given widget type and state, optionally restricted to a style class.
 ---@param widget_type string The widget type name (e.g. "button").
 ---@param state string The widget state (e.g. "normal", "hovered").
----@param style_table table A table of style properties.
-function LTheme:setStyle(widget_type, state, style_table) end
+---@param style_class? string (Optional) The specific class to apply this style to.
+---@param style_table? table A table of style properties.
+function LTheme:setStyle(widget_type, state, style_class, style_table) end
 ```
 
 #### Description
 
-Sets a style entry for the given widget type and state.
+Sets a style entry for the given widget type and state, optionally restricted to a style class.
 
 Parameters:
 
 - `widget_type` (`string`, required): The widget type name (e.g. "button").
 - `state` (`string`, required): The widget state (e.g. "normal", "hovered").
-- `style_table` (`table`, required): A table of style properties.
+- `style_class` (`string`, optional): (Optional) The specific class to apply this style to.
+- `style_table` (`table`, optional): A table of style properties.
 
 #### Example
 
@@ -13211,6 +13537,38 @@ do
 end
 ```
 
+#### LUiWidget:getMouseFilter
+
+#### Definition
+
+```lua
+--- Returns the mouse filter of this widget.
+---@return string The mouse filter type.
+function LUiWidget:getMouseFilter() end
+```
+
+#### Description
+
+Returns the mouse filter of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `string` - The mouse filter type.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local panel = lurek.ui.newPanel()
+    panel:setMouseFilter("pass")
+    print("mouse filter: " .. panel:getMouseFilter())
+end
+```
+
 #### LUiWidget:getPadding
 
 #### Definition
@@ -13386,6 +13744,38 @@ do
     w:setTooltip("hover tip")
     local tip = w:getTooltip()
     print("size:", sw, sh, "state:", state, "tooltip:", tip)
+end
+```
+
+#### LUiWidget:getStyleClass
+
+#### Definition
+
+```lua
+--- Returns the style class of this widget.
+---@return string The style class name, or nil if none is set.
+function LUiWidget:getStyleClass() end
+```
+
+#### Description
+
+Returns the style class of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `string` - The style class name, or nil if none is set.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Styled")
+    btn:setStyleClass("danger")
+    print("style class: " .. btn:getStyleClass())
 end
 ```
 
@@ -13940,6 +14330,37 @@ do
 end
 ```
 
+#### LUiWidget:setMouseFilter
+
+#### Definition
+
+```lua
+--- Sets the mouse filter for this widget ("stop", "pass", "ignore").
+---@param filter string The mouse filter type.
+function LUiWidget:setMouseFilter(filter) end
+```
+
+#### Description
+
+Sets the mouse filter for this widget ("stop", "pass", "ignore").
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `filter` (`string`, required): The mouse filter type.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local panel = lurek.ui.newPanel()
+    panel:setMouseFilter("ignore")
+    print("mouse filter set to ignore")
+end
+```
+
 #### LUiWidget:setOnChange
 
 #### Definition
@@ -14145,6 +14566,37 @@ do
     local px, py = w:getPosition(); w:setSize(200, 100)
     local sw, sh = w:getSize()
     print("padding:", pt, "position:", px, py, "size:", sw, sh)
+end
+```
+
+#### LUiWidget:setStyleClass
+
+#### Definition
+
+```lua
+--- Sets the style class of this widget.
+---@param class string The style class name.
+function LUiWidget:setStyleClass(class) end
+```
+
+#### Description
+
+Sets the style class of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `class` (`string`, required): The style class name.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Styled")
+    btn:setStyleClass("primary")
+    print("style class set to primary")
 end
 ```
 
@@ -14429,7 +14881,7 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [household_finance_lab](../tree/main/content/games/apps/household_finance_lab) (apps)
 
 [⬆ back to top](#table-of-contents)
 

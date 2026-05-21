@@ -861,7 +861,9 @@ impl LurekApp {
             }
             self.auto_screenshot_frame_count += 1;
         }
-        if (self.auto_quit_frames.is_some() || self.auto_quit_time.is_some()) && !self.auto_quit_done {
+        if (self.auto_quit_frames.is_some() || self.auto_quit_time.is_some())
+            && !self.auto_quit_done
+        {
             if self.auto_quit_frame_count == 0 {
                 self.auto_quit_start = Some(Instant::now());
             }
@@ -1140,14 +1142,16 @@ impl LurekApp {
         }
         {
             self.auto_ui_cmd_buf.clear();
-            if let Some(rc) = state
-                .borrow()
-                .auto_ui_ctx
-                .as_ref()
-                .and_then(|w| w.upgrade())
-            {
+            let (ui_ctx, ui_font) = {
+                let st = state.borrow();
+                (
+                    st.auto_ui_ctx.as_ref().and_then(|w| w.upgrade()),
+                    st.active_font.or(st.default_font),
+                )
+            };
+            if let (Some(rc), Some(font_key)) = (ui_ctx, ui_font) {
                 self.auto_ui_cmd_buf
-                    .extend(rc.borrow_mut().generate_render_commands());
+                    .extend(rc.borrow_mut().build_render_commands(font_key));
             }
             state
                 .borrow_mut()
@@ -2520,7 +2524,7 @@ impl ApplicationHandler for LurekApp {
                 if !self.lua_initialized {
                     if let Some(win) = &self.window {
                         if !self.hidden_window {
-                        win.set_visible(true);
+                            win.set_visible(true);
                         }
                     }
                     self.init_lua();
@@ -2832,26 +2836,38 @@ pub struct App {
     /// Optional configuration parse error passed to first-frame error handling.
     conf_error: Option<String>,
 }
+
+/// Startup options passed to the GUI/TUI/CLI application runner.
+pub struct AppRunOptions {
+    /// Directory containing the game or generated runtime script.
+    pub game_dir: PathBuf,
+    /// Whether the game directory was explicitly supplied by the user.
+    pub explicit_game_dir: bool,
+    /// Optional screenshot output path used by demo capture tools.
+    pub screenshot_path: Option<PathBuf>,
+    /// Frame count to wait before screenshot capture.
+    pub screenshot_frames: u32,
+    /// Wall-clock delay to wait before screenshot capture.
+    pub screenshot_time: Option<f32>,
+    /// Optional frame count that exits the runtime automatically.
+    pub auto_quit_frames: Option<u32>,
+    /// Optional wall-clock timeout that exits the runtime automatically.
+    pub auto_quit_time: Option<f32>,
+    /// Whether to create the runtime window hidden.
+    pub hidden_window: bool,
+    /// Optional window position requested by screenshot tools.
+    pub window_pos: Option<(i32, i32)>,
+}
+
 impl App {
     /// Create bootstrap app wrapper with config and optional pre-start config error.
     pub fn new(config: Config, conf_error: Option<String>) -> Self {
         App { config, conf_error }
     }
     /// Start the winit event loop and run the runtime for the selected game directory.
-    pub fn run(
-        self,
-        game_dir: PathBuf,
-        explicit_game_dir: bool,
-        screenshot_path: Option<PathBuf>,
-        screenshot_frames: u32,
-        screenshot_time: Option<f32>,
-        auto_quit_frames: Option<u32>,
-        auto_quit_time: Option<f32>,
-        hidden_window: bool,
-        window_pos: Option<(i32, i32)>,
-    ) {
+    pub fn run(self, options: AppRunOptions) {
         init_logging(
-            &game_dir,
+            &options.game_dir,
             self.config.log_file.as_deref(),
             self.config.log_append,
             self.config.log_level.as_deref(),
@@ -2863,21 +2879,21 @@ impl App {
             "v{} (wgpu GPU backend)",
             env!("CARGO_PKG_VERSION"),
         );
-        log_msg!(info, L080_GAME_DIR, "{}", game_dir.display());
+        log_msg!(info, L080_GAME_DIR, "{}", options.game_dir.display());
         let event_loop = EventLoop::new().expect("Failed to create event loop");
         event_loop.set_control_flow(ControlFlow::Poll);
         let mut app = LurekApp::new(
             self.config,
-            game_dir,
+            options.game_dir,
             self.conf_error,
-            explicit_game_dir,
-            screenshot_path,
-            screenshot_frames,
-            screenshot_time,
-            auto_quit_frames,
-            auto_quit_time,
-            hidden_window,
-            window_pos,
+            options.explicit_game_dir,
+            options.screenshot_path,
+            options.screenshot_frames,
+            options.screenshot_time,
+            options.auto_quit_frames,
+            options.auto_quit_time,
+            options.hidden_window,
+            options.window_pos,
         );
         event_loop.run_app(&mut app).expect("Event loop error");
         log_msg!(info, crate::runtime::log_messages::L002_ENGINE_STOP);

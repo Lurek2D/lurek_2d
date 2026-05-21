@@ -7,6 +7,7 @@
 //! - CustomWidget provides a blank shell for fully user-controlled rendering via Lua callbacks.
 //! - All widgets embed `WidgetBase` for shared layout, style, and state; widget-type enum discriminant assigned at construction.
 
+use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Timed overlay notification that disappears after `duration` seconds.
 #[derive(Debug, Clone)]
@@ -604,6 +605,16 @@ pub struct TableColumn {
     /// Pixel width of this column; 0 = auto.
     pub width: f32,
 }
+/// Options used when populating a `GUITable` from a dataframe.
+#[derive(Debug, Clone, Default)]
+pub struct TableDataFrameOptions {
+    /// Optional maximum number of dataframe rows to copy.
+    pub max_rows: Option<usize>,
+    /// Optional ordered subset of dataframe column names to display.
+    pub columns: Option<Vec<String>>,
+    /// Whether to insert the selected column names as the first row.
+    pub include_headers: bool,
+}
 /// Column-row data grid with optional sorting, selectable rows, and configurable column widths.
 #[derive(Debug, Clone)]
 pub struct GUITable {
@@ -617,6 +628,8 @@ pub struct GUITable {
     pub selected_row: Option<usize>,
     /// Whether column header clicks sort the rows.
     pub sortable: bool,
+    /// Vertical scroll offset used by mouse-wheel routing.
+    pub scroll_y: f32,
 }
 impl GUITable {
     /// Create an empty, non-sortable table with no columns or rows.
@@ -627,7 +640,57 @@ impl GUITable {
             rows: Vec::new(),
             selected_row: None,
             sortable: false,
+            scroll_y: 0.0,
         }
+    }
+    /// Remove all rows and clear row selection.
+    pub fn clear_rows(&mut self) {
+        self.rows.clear();
+        self.selected_row = None;
+    }
+    /// Replace all rows with the supplied string cell matrix and return the row count.
+    pub fn set_rows(&mut self, rows: Vec<Vec<String>>) -> usize {
+        self.rows = rows;
+        self.selected_row = None;
+        self.rows.len()
+    }
+    /// Replace columns and rows from a dataframe and return the resulting row count.
+    pub fn set_dataframe(
+        &mut self,
+        dataframe: &DataFrame,
+        options: TableDataFrameOptions,
+    ) -> Result<usize, String> {
+        let column_names = options
+            .columns
+            .unwrap_or_else(|| dataframe.columns().to_vec());
+        let columns = column_names
+            .iter()
+            .map(|name| dataframe.get_column(ColRef::Name(name.clone())))
+            .collect::<Result<Vec<_>, _>>()?;
+        self.columns = column_names
+            .iter()
+            .map(|name| TableColumn {
+                header: name.clone(),
+                width: 100.0,
+            })
+            .collect();
+        self.rows.clear();
+        if options.include_headers {
+            self.rows.push(column_names.clone());
+        }
+        let row_count = options.max_rows.map_or_else(
+            || dataframe.nrows(),
+            |max_rows| dataframe.nrows().min(max_rows),
+        );
+        for row_index in 0..row_count {
+            let row = columns
+                .iter()
+                .map(|column| column[row_index].to_string())
+                .collect();
+            self.rows.push(row);
+        }
+        self.selected_row = None;
+        Ok(self.rows.len())
     }
 }
 /// Provide a default `GUITable` via `Self::new()`.

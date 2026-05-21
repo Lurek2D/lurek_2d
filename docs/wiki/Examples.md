@@ -66,4 +66,5 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [timer.lua](../blob/main/content/examples/timer.lua) | `lurek.timer` | API example |
 | [tween.lua](../blob/main/content/examples/tween.lua) | `lurek.tween` | API example |
 | [ui.lua](../blob/main/content/examples/ui.lua) | `lurek.ui` | API example |
+| [ui_flexbox_styles.lua](../blob/main/content/examples/ui_flexbox_styles.lua) | `lurek.window` | API example |
 | [window.lua](../blob/main/content/examples/window.lua) | `lurek.window` | API example |

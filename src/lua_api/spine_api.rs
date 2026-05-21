@@ -382,8 +382,8 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// @param | from | number | Start time in seconds (inclusive).
         /// @param | to | number | End time in seconds (exclusive).
         /// @return | table | Array of tables, each with "name" (string) and "value" (number) fields.
-    /// @field | name | string | Event name.
-    /// @field | value | number | Event value.
+        /// @field | name | string | Event name.
+        /// @field | value | number | Event value.
         methods.add_method("getEvents", |lua, this, (from, to): (f32, f32)| {
             let pairs = this.inner.collect_events(from, to);
             let tbl = lua.create_table()?;
@@ -407,9 +407,9 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
         /// @param | time | number | Time position in seconds to sample.
         /// @return | table | Array of tables, each with "bone_idx" (integer), "property" (string), and "value" (number).
-    /// @field | bone_idx | integer | Bone index.
-    /// @field | property | string | Property name.
-    /// @field | value | number | Property value.
+        /// @field | bone_idx | integer | Bone index.
+        /// @field | property | string | Property name.
+        /// @field | value | number | Property value.
         methods.add_method("poseAt", |lua, this, time: f32| {
             let snapshot = this.inner.pose_at(time);
             let arr = lua.create_table()?;

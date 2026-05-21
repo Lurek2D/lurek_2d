@@ -3,6 +3,8 @@
 
 -- Helper to build a simple test DataFrame
 
+local TMP = "save/_df_tests/"
+
 local function make_test_df()
     local csv = "name,age,score\nAlice,30,90\nBob,25,85\nCharlie,35,92"
     return lurek.dataframe.fromCSV(csv)
@@ -70,9 +72,34 @@ describe("lurek.dataframe module exists", function()
         expect_type("function", lurek.dataframe.fromJSON)
     end)
 
+    -- @covers lurek.dataframe.fromCSVFile
+    it("has fromCSVFile factory", function()
+        expect_type("function", lurek.dataframe.fromCSVFile)
+    end)
+
+    -- @covers lurek.dataframe.fromJSONFile
+    it("has fromJSONFile factory", function()
+        expect_type("function", lurek.dataframe.fromJSONFile)
+    end)
+
+    -- @covers lurek.dataframe.fromCSVFileAsync
+    it("has fromCSVFileAsync factory", function()
+        expect_type("function", lurek.dataframe.fromCSVFileAsync)
+    end)
+
+    -- @covers lurek.dataframe.fromJSONFileAsync
+    it("has fromJSONFileAsync factory", function()
+        expect_type("function", lurek.dataframe.fromJSONFileAsync)
+    end)
+
     -- @covers lurek.dataframe.fromBinary
     it("has fromBinary factory", function()
         expect_type("function", lurek.dataframe.fromBinary)
+    end)
+
+    -- @covers lurek.dataframe.loadDatabase
+    it("has loadDatabase factory", function()
+        expect_type("function", lurek.dataframe.loadDatabase)
     end)
 
     -- @covers lurek.dataframe.random
@@ -816,6 +843,90 @@ describe("countBy", function()
 end)
 
 -- =========================================================================
+-- 15a. Value Counts And Data Quality Reports
+-- =========================================================================
+-- @describe valueCounts and data quality helpers
+describe("valueCounts and data quality helpers", function()
+    -- @covers LDataFrame:valueCounts
+    -- @covers lurek.dataframe.fromCSV
+    it("valueCounts returns counts and optional percent column", function()
+        local df = lurek.dataframe.fromCSV("color\nred\nblue\nred\ngreen\nred\nblue")
+        local result = df:valueCounts("color", { percent = true })
+        expect_equal(3, result:nrows())
+        expect_equal(3, result:ncols())
+        expect_equal("red", result:getValue(1, "value"))
+        expect_near(3, result:getValue(1, "count"), 1e-5)
+        expect_near(50, result:getValue(1, "percent"), 1e-5)
+    end)
+
+    -- @covers LDataFrame:missingReport
+    -- @covers lurek.dataframe.newDataFrame
+    it("missingReport summarizes missing and non-missing cells", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("name")
+        df:addColumn("amount")
+        df:addRow({ name = "rent", amount = 100 })
+        df:addRow({ name = "food" })
+        df:addRow({ amount = 50 })
+        local report = df:missingReport()
+        expect_equal(2, report:nrows())
+        expect_equal("name", report:getValue(1, "column"))
+        expect_near(1, report:getValue(1, "missing"), 1e-5)
+        expect_near(2, report:getValue(1, "non_missing"), 1e-5)
+        expect_near(33.333333333333, report:getValue(1, "missing_percent"), 1e-5)
+    end)
+
+    -- @covers LDataFrame:duplicateRows
+    -- @covers lurek.dataframe.fromRows
+    it("duplicateRows returns rows with repeated selected-column keys", function()
+        local df = lurek.dataframe.fromRows(
+            { "date", "account", "amount" },
+            {
+                { "2026-05-01", "cash", 10 },
+                { "2026-05-01", "cash", 15 },
+                { "2026-05-02", "card", 20 },
+                { "2026-05-01", "cash", 30 },
+            }
+        )
+        local dups = df:duplicateRows({ "date", "account" })
+        expect_equal(3, dups:nrows())
+        expect_near(30, dups:getValue(3, "amount"), 1e-5)
+    end)
+
+    -- @covers LDataFrame:duplicateRows
+    -- @covers lurek.dataframe.fromRows
+    it("duplicateRows defaults to full-row duplicate keys", function()
+        local df = lurek.dataframe.fromRows(
+            { "date", "account", "amount" },
+            {
+                { "2026-05-01", "cash", 10 },
+                { "2026-05-01", "cash", 10 },
+                { "2026-05-01", "cash", 15 },
+            }
+        )
+        local dups = df:duplicateRows()
+        expect_equal(2, dups:nrows())
+    end)
+
+    -- @covers LDataFrame:dateParts
+    -- @covers lurek.dataframe.newDataFrame
+    it("dateParts extracts simple ISO date columns and leaves invalid dates nil", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("date")
+        df:addRow({ date = "2026-05-21" })
+        df:addRow({ date = "not-a-date" })
+        df:addRow({})
+        local parts = df:dateParts("date", "txn")
+        expect_equal(4, parts:ncols())
+        expect_near(2026, parts:getValue(1, "txn_year"), 1e-5)
+        expect_near(5, parts:getValue(1, "txn_month"), 1e-5)
+        expect_near(21, parts:getValue(1, "txn_day"), 1e-5)
+        expect_nil(parts:getValue(2, "txn_year"))
+        expect_nil(parts:getValue(3, "txn_month"))
+    end)
+end)
+
+-- =========================================================================
 -- 16. DropNil
 -- =========================================================================
 -- @describe dropNil
@@ -1066,6 +1177,18 @@ describe("serialization", function()
         expect_true(#csv > 0)
     end)
 
+    -- @covers LDataFrame:toCSVFile
+    -- @covers lurek.dataframe.fromCSVFile
+    it("toCSVFile/fromCSVFile roundtrip preserves shape", function()
+        local path = TMP .. "roundtrip.csv"
+        local df = make_test_df()
+        expect_true(df:toCSVFile(path))
+        local restored = lurek.dataframe.fromCSVFile(path)
+        expect_equal(df:nrows(), restored:nrows())
+        expect_equal(df:ncols(), restored:ncols())
+        expect_equal("Alice", restored:getValue(1, "name"))
+    end)
+
     -- @covers LDataFrame:ncols
     -- @covers LDataFrame:nrows
     -- @covers LDataFrame:toCSV
@@ -1085,6 +1208,17 @@ describe("serialization", function()
         local json = df:toJSON()
         expect_type("string", json)
         expect_true(#json > 0)
+    end)
+
+    -- @covers LDataFrame:toJSONFile
+    -- @covers lurek.dataframe.fromJSONFile
+    it("toJSONFile/fromJSONFile roundtrip preserves rows", function()
+        local path = TMP .. "roundtrip.json"
+        local df = make_test_df()
+        expect_true(df:toJSONFile(path))
+        local restored = lurek.dataframe.fromJSONFile(path)
+        expect_equal(df:nrows(), restored:nrows())
+        expect_near(85, restored:getValue(2, "score"), 1e-5)
     end)
 
     -- @covers LDataFrame:nrows
@@ -1113,6 +1247,34 @@ describe("serialization", function()
             expect_equal(df:getValue(i, "name"), df2:getValue(i, "name"))
             expect_near(df:getValue(i, "age"), df2:getValue(i, "age"), 1e-5)
         end
+    end)
+
+    -- @covers LDataFrame:toBinaryFile
+    -- @covers lurek.filesystem.readBytes
+    -- @covers lurek.dataframe.fromBinary
+    it("toBinaryFile writes LVDF bytes loadable by fromBinary", function()
+        local path = TMP .. "roundtrip.lvdf"
+        local df = make_test_df()
+        expect_true(df:toBinaryFile(path))
+        local restored = lurek.dataframe.fromBinary(lurek.filesystem.readBytes(path))
+        expect_equal(df:nrows(), restored:nrows())
+        expect_equal("Charlie", restored:getValue(3, "name"))
+    end)
+
+    -- @covers LDatabase:save
+    -- @covers lurek.dataframe.loadDatabase
+    -- @covers LDatabase:getTable
+    it("database save/load uses JSON table map format", function()
+        local path = TMP .. "database.json"
+        local db = lurek.dataframe.newDatabase()
+        db:addTable("people", make_test_df())
+        expect_true(db:save(path))
+
+        local restored = lurek.dataframe.loadDatabase(path)
+        expect_true(restored:hasTable("people"))
+        local table_df = restored:getTable("people")
+        expect_equal(3, table_df:nrows())
+        expect_near(90, table_df:getValue(1, "score"), 1e-5)
     end)
 
     -- @covers LDataFrame:toTable
@@ -1443,6 +1605,233 @@ describe("Database SQL", function()
         local result = db:query("SELECT name FROM users")
         expect_equal(1, result:ncols())
         expect_equal(3, result:nrows())
+    end)
+
+    -- @covers LDatabase:addTable
+    -- @covers LDatabase:queryParams
+    -- @covers lurek.dataframe.newDatabase
+    it("queryParams binds numeric and string parameters", function()
+        local db = lurek.dataframe.newDatabase()
+        db:addTable("users", make_test_df())
+        local result = db:queryParams(
+            "SELECT name FROM users WHERE age > ? AND name != ?",
+            { 26, "Alice" }
+        )
+        expect_equal(1, result:nrows())
+        expect_equal("Charlie", result:getValue(1, "name"))
+    end)
+
+    -- @covers LDatabase:addTable
+    -- @covers LDatabase:queryParams
+    -- @covers lurek.dataframe.newDatabase
+    it("queryParams escapes string literals", function()
+        local db = lurek.dataframe.newDatabase()
+        local df = lurek.dataframe.fromRows(
+            { "name", "amount" },
+            { { "O'Brien", 10 }, { "Alice", 20 } }
+        )
+        db:addTable("payees", df)
+        local result = db:queryParams("SELECT amount FROM payees WHERE name = ?", { "O'Brien" })
+        expect_equal(1, result:nrows())
+        expect_near(10, result:getValue(1, "amount"), 1e-5)
+    end)
+
+    -- @covers LDatabase:addTable
+    -- @covers LDatabase:queryParams
+    -- @covers lurek.dataframe.newDatabase
+    it("queryParams binds booleans and rejects placeholder mismatches", function()
+        local db = lurek.dataframe.newDatabase()
+        local df = lurek.dataframe.fromRows(
+            { "name", "active" },
+            { { "Alice", true }, { "Bob", false } }
+        )
+        db:addTable("flags", df)
+        local result = db:queryParams("SELECT name FROM flags WHERE active = ?", { true })
+        expect_equal(1, result:nrows())
+        expect_equal("Alice", result:getValue(1, "name"))
+
+        local ok = pcall(function()
+            db:queryParams("SELECT name FROM flags WHERE active = ? AND name = ?", { true })
+        end)
+        expect_false(ok)
+    end)
+
+    -- @covers LDatabase:addTable
+    -- @covers LDatabase:queryParams
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.dataframe.newDatabase
+    it("queryParams returns aggregate AS aliases as output columns", function()
+        local db = lurek.dataframe.newDatabase()
+        local df = lurek.dataframe.fromRows(
+            { "score" },
+            { { 10 }, { 20 }, { 30 } }
+        )
+        db:addTable("scores", df)
+
+        local result = db:queryParams(
+            "SELECT COUNT(*) AS row_count, SUM(score) AS total_score FROM scores WHERE score > ?",
+            { 0 }
+        )
+        local columns = result:columns()
+        expect_equal("row_count", columns[1])
+        expect_equal("total_score", columns[2])
+        expect_near(3, result:getValue(1, "row_count"), 1e-5)
+        expect_near(60, result:getValue(1, "total_score"), 1e-5)
+    end)
+
+    -- @covers LDatabase:addTable
+    -- @covers LDatabase:queryParams
+    -- @covers lurek.dataframe.fromRows
+    -- @covers lurek.dataframe.newDatabase
+    it("queryParams evaluates arithmetic SELECT aliases over aggregates", function()
+        local db = lurek.dataframe.newDatabase()
+        local df = lurek.dataframe.fromRows(
+            { "income_amount", "expense_amount", "savings_amount", "debt_amount", "essential_amount", "asset_amount" },
+            {
+                { 100, 40, 20, 10, 25, 1000 },
+                { 200, 80, 30, 20, 40, 2000 },
+            }
+        )
+        db:addTable("transactions", df)
+
+        local result = db:queryParams([[
+SELECT
+    SUM(income_amount) AS income,
+    SUM(expense_amount) AS expense,
+    SUM(income_amount) - SUM(expense_amount) - SUM(savings_amount) AS net_amount,
+    SUM(savings_amount) / SUM(income_amount) AS savings_rate,
+    SUM(debt_amount) / SUM(income_amount) AS debt_ratio,
+    SUM(essential_amount) / SUM(expense_amount) AS essential_ratio,
+    SUM(expense_amount) / ? AS avg_expense,
+    (50000 + SUM(asset_amount) * 0.08) / (SUM(expense_amount) / ?) AS runway_months
+FROM transactions
+]], { 2, 2 })
+
+        expect_equal(1, result:nrows())
+        expect_near(300, result:getValue(1, "income"), 1e-5)
+        expect_near(120, result:getValue(1, "expense"), 1e-5)
+        expect_near(130, result:getValue(1, "net_amount"), 1e-5)
+        expect_near(50 / 300, result:getValue(1, "savings_rate"), 1e-5)
+        expect_near(30 / 300, result:getValue(1, "debt_ratio"), 1e-5)
+        expect_near(65 / 120, result:getValue(1, "essential_ratio"), 1e-5)
+        expect_near(60, result:getValue(1, "avg_expense"), 1e-5)
+        expect_near(50240 / 60, result:getValue(1, "runway_months"), 1e-5)
+
+        local zero_division = db:queryParams(
+            "SELECT SUM(expense_amount) / ? AS unsafe_ratio FROM transactions",
+            { 0 }
+        )
+        expect_nil(zero_division:getValue(1, "unsafe_ratio"))
+    end)
+end)
+
+-- =========================================================================
+-- 28. Async dataframe tasks
+-- =========================================================================
+-- @describe async dataframe tasks
+describe("async dataframe tasks", function()
+    -- @covers lurek.dataframe.fromCSVFileAsync
+    -- @covers LDataFrameTask:isDone
+    -- @covers LDataFrameTask:wait
+    -- @covers LDataFrameTask:result
+    -- @covers LDataFrameTask:getError
+    -- @covers LDataFrameTask:progress
+    -- @covers LDataFrameTask:type
+    -- @covers LDataFrameTask:typeOf
+    it("fromCSVFileAsync waits and returns a dataframe", function()
+        local path = TMP .. "async_success.csv"
+        lurek.filesystem.write(path, "name,score\nAlice,90\nBob,85\n")
+
+        local task = lurek.dataframe.fromCSVFileAsync(path)
+        expect_equal("LDataFrameTask", task:type())
+        expect_true(task:typeOf("LDataFrameTask"))
+        expect_type("boolean", task:isDone())
+        expect_type("number", task:progress())
+        expect_true(task:wait())
+        expect_equal(nil, task:getError())
+
+        local result = task:result()
+        expect_equal(2, result:nrows())
+        expect_equal("Alice", result:getValue(1, "name"))
+    end)
+
+    -- @covers lurek.dataframe.fromJSONFileAsync
+    -- @covers LDataFrameTask:wait
+    -- @covers LDataFrameTask:result
+    it("fromJSONFileAsync waits and returns a dataframe", function()
+        local path = TMP .. "async_success.json"
+        lurek.filesystem.writeJson(path, '[{"id":1,"val":10},{"id":2,"val":20}]')
+
+        local task = lurek.dataframe.fromJSONFileAsync(path)
+        expect_true(task:wait())
+        local result = task:result()
+        expect_equal(2, result:nrows())
+        expect_near(20, result:getValue(2, "val"), 1e-5)
+    end)
+
+    -- @covers lurek.dataframe.fromCSVFileAsync
+    -- @covers LDataFrameTask:getError
+    -- @covers LDataFrameTask:result
+    it("fromCSVFileAsync reports malformed CSV errors", function()
+        local path = TMP .. "async_bad.csv"
+        lurek.filesystem.write(path, "name,score\nAlice\n")
+
+        local task = lurek.dataframe.fromCSVFileAsync(path)
+        expect_false(task:wait())
+        local error_message = task:getError()
+        expect_type("string", error_message)
+        expect_true(tostring(error_message):find("CSV row", 1, true) ~= nil)
+        expect_error(function()
+            task:result()
+        end)
+    end)
+
+    -- @covers lurek.dataframe.fromJSONFileAsync
+    -- @covers LDataFrameTask:getError
+    -- @covers LDataFrameTask:result
+    it("fromJSONFileAsync reports malformed JSON errors", function()
+        local path = TMP .. "async_bad.json"
+        lurek.filesystem.write(path, "{not valid json")
+
+        local task = lurek.dataframe.fromJSONFileAsync(path)
+        expect_false(task:wait())
+        local error_message = task:getError()
+        expect_type("string", error_message)
+        expect_true(tostring(error_message):find("lurek.dataframe.fromJSONFileAsync", 1, true) ~= nil)
+        expect_error(function()
+            task:result()
+        end)
+    end)
+
+    -- @covers LDataFrame:queryAsync
+    -- @covers LDataFrameTask:wait
+    -- @covers LDataFrameTask:result
+    it("queryAsync runs a dataframe SQL query on a task", function()
+        local task = make_test_df():queryAsync("SELECT name FROM self WHERE age > 28")
+        expect_true(task:wait())
+        local result = task:result()
+        expect_equal(2, result:nrows())
+        expect_equal("Alice", result:getValue(1, "name"))
+    end)
+
+    -- @covers LDatabase:queryAsync
+    -- @covers LDatabase:queryParamsAsync
+    -- @covers LDataFrameTask:wait
+    -- @covers LDataFrameTask:result
+    it("database async queries run against a snapshot", function()
+        local db = lurek.dataframe.newDatabase()
+        db:addTable("users", make_test_df())
+
+        local query_task = db:queryAsync("SELECT name FROM users WHERE age > 28")
+        expect_true(query_task:wait())
+        local query_result = query_task:result()
+        expect_equal(2, query_result:nrows())
+
+        local params_task = db:queryParamsAsync("SELECT name FROM users WHERE age > ? AND name != ?", { 26, "Alice" })
+        expect_true(params_task:wait())
+        local params_result = params_task:result()
+        expect_equal(1, params_result:nrows())
+        expect_equal("Charlie", params_result:getValue(1, "name"))
     end)
 end)
 

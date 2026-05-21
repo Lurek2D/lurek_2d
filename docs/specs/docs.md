@@ -120,6 +120,7 @@ Validation and quality reporting (`validate`, `quality`, `coverage`) check docum
 - `lurek.docs.exportCheatsheet`: Writes a compact text cheatsheet from catalog entries.
 - `lurek.docs.schema`: Builds a schema validator from Lua table rules.
 - `lurek.docs.schemaFromToml`: Builds a schema validator from TOML schema text.
+	TOML schema text accepts rule tables under either `[fields.<name>]` or `[rules.<name>]`; both forms populate the same schema rule set.
 - `lurek.docs.reflectLive`: Reflects live `lurek` module tables into plain name and type rows.
 - `lurek.docs.reflectTable`: Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
 

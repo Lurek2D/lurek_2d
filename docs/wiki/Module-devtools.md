@@ -345,7 +345,7 @@ end
 ```lua
 --- Returns Lua call stack frames using the Lua debug library.
 ---@param max_depth? number Optional maximum number of frames to return; defaults to 20 and is capped at 100.
----@return any[] Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
+---@return table Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
 lurek.devtools.getCallStack = function(max_depth) end
 ```
 
@@ -357,7 +357,7 @@ Parameters:
 
 - `max_depth` (`integer`, optional): Optional maximum number of frames to return; defaults to 20 and is capped at 100.
 
-Returns: `any[]` - Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
+Returns: `table` - Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
 
 #### Example
 

@@ -5,21 +5,41 @@ local function round2(value)
 end
 
 local function make_rng(seed)
-    local rng = { state = seed or 20260520 }
+    local engine_rng = lurek.math.newRandomGenerator(seed or 20260520)
+    local rng = { engine = engine_rng }
     function rng:next()
-        self.state = (1103515245 * self.state + 12345) % 2147483648
-        return self.state / 2147483648
+        return self.engine:randomFloat(0, 1)
     end
     function rng:int(min_value, max_value)
-        return min_value + math.floor(self:next() * (max_value - min_value + 1))
+        return self.engine:randomInt(min_value, max_value)
     end
     function rng:pick(values)
         return values[self:int(1, #values)]
     end
     function rng:money(base, spread)
-        return round2(base + (self:next() * 2 - 1) * spread)
+        return round2(base + self.engine:randomNormal((spread or 0) / 3, 0))
+    end
+    function rng:state()
+        return self.engine:getState()
     end
     return rng
+end
+
+local function profile_list(profile, name, fallback)
+    local lists = profile.merchants or {}
+    if lists[name] and #lists[name] > 0 then return lists[name] end
+    return fallback
+end
+
+local function subscriptions_from_profile(profile)
+    local subs = profile.subscriptions or {}
+    local names = subs.merchants or { "StreamBox" }
+    local bases = subs.base_amounts or { 42 }
+    local out = {}
+    for index, name in ipairs(names) do
+        out[#out + 1] = { merchant = tostring(name), base = tonumber(bases[index]) or 30 }
+    end
+    return out
 end
 
 local function date_string(year, month, day)
@@ -171,9 +191,10 @@ end
 
 function DataGeneration.generate(C, options)
     options = options or {}
-    local first_year = options.start_year or C.YEAR_MIN
-    local last_year = options.end_year or C.YEAR_MAX
-    local rng = make_rng(options.seed or 20260520)
+    local profile = C.PROFILE or {}
+    local first_year = options.start_year or tonumber(profile.start_year) or C.YEAR_MIN
+    local last_year = options.end_year or tonumber(profile.end_year) or C.YEAR_MAX
+    local rng = make_rng(options.seed or tonumber(profile.seed) or 20260520)
     local rows = {}
     local counter = 0
     local days_in_month = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
@@ -184,19 +205,18 @@ function DataGeneration.generate(C, options)
         return rows[#rows]
     end
 
-    local groceries = { "Fresh Market", "Family Grocer", "Corner Bakery", "Local Butcher", "Green Farm" }
-    local transport = { "Metro Pass", "Fuel Station", "Rail Tickets", "Bike Service" }
-    local school = { "Primary School", "Bookshop", "Math Tutor", "Sports Club", "Art Class" }
-    local dog = { "Pet Food Store", "Vet Clinic", "Dog Groomer", "Pet Insurance" }
-    local entertainment = { "Cinema", "Museum", "Board Game Cafe", "Streaming Store", "Play Center" }
-    local locations = { "Warsaw", "Praga", "Mokotow", "Online", "Piaseczno" }
-    local subscriptions = {
-        { merchant = "StreamBox", base = 42 },
-        { merchant = "Cloud Drive", base = 25 },
-        { merchant = "Music Plus", base = 29 },
-        { merchant = "Kids Learn", base = 38 },
-        { merchant = "Dog Tracker", base = 18 },
-    }
+    local groceries = profile_list(profile, "groceries", { "Fresh Market", "Family Grocer", "Corner Bakery", "Local Butcher", "Green Farm" })
+    local transport = profile_list(profile, "transport", { "Metro Pass", "Fuel Station", "Rail Tickets", "Bike Service" })
+    local school = profile_list(profile, "school", { "Primary School", "Bookshop", "Math Tutor", "Sports Club", "Art Class" })
+    local dog = profile_list(profile, "dog", { "Pet Food Store", "Vet Clinic", "Dog Groomer", "Pet Insurance" })
+    local entertainment = profile_list(profile, "entertainment", { "Cinema", "Museum", "Board Game Cafe", "Streaming Store", "Play Center" })
+    local locations = profile_list(profile, "locations", { "Warsaw", "Praga", "Mokotow", "Online", "Piaseczno" })
+    local repairs = profile_list(profile, "repairs", { "Home Repair", "Car Service", "Appliance Parts", "Plumber" })
+    local holidays = profile_list(profile, "holiday", { "Travel Agency", "Rail Holiday", "Mountain Stay", "Sea Apartment" })
+    local refunds = profile_list(profile, "refunds", { "Tax Office", "Shop Refund", "Insurance Refund" })
+    local freelance = profile_list(profile, "freelance", { "Design Client A", "Design Client B", "Consulting Client", "UX Workshop" })
+    local healthcare = profile_list(profile, "healthcare", { "Clinic", "Pharmacy", "Dentist", "Optician" })
+    local subscriptions = subscriptions_from_profile(profile)
 
     add({ date = "2021-01-01", year = 2021, month = 1, day = 1, member = "Household", role = "asset", merchant = "Opening Checking", category = "assets", subcategory = "checking_opening", account = "checking", payment_method = "system", direction = "asset", amount = 18000, signed_amount = 18000, essential = true, source = "asset_snapshot", location = "Home" })
     add({ date = "2021-01-01", year = 2021, month = 1, day = 1, member = "Household", role = "asset", merchant = "Opening Savings", category = "assets", subcategory = "savings_opening", account = "savings", payment_method = "system", direction = "asset", amount = 32000, signed_amount = 32000, essential = true, source = "asset_snapshot", location = "Home" })
@@ -205,16 +225,18 @@ function DataGeneration.generate(C, options)
     for year = first_year, last_year do
         for month = 1, 12 do
             local days = days_in_month[month]
-            local inflation = 1.0 + (year - C.YEAR_MIN) * 0.045 + (month - 1) * 0.002
+            local inflation = 1.0
+                + (year - C.YEAR_MIN) * (tonumber(profile.inflation_yearly) or 0.045)
+                + (month - 1) * (tonumber(profile.inflation_monthly) or 0.002)
             local idx = month_index(year, month, C.YEAR_MIN)
 
-            add({ year = year, month = month, day = 26, member = "Anna", role = "parent_salary", merchant = "City Hospital", category = "income", subcategory = "salary", account = "checking", payment_method = "bank_transfer", direction = "in", amount = 8350 * (1 + (year - C.YEAR_MIN) * 0.055), recurring = true, essential = true, source = "payroll", location = "Warsaw", note = "monthly salary" })
+            add({ year = year, month = month, day = 26, member = "Anna", role = "parent_salary", merchant = "City Hospital", category = "income", subcategory = "salary", account = "checking", payment_method = "bank_transfer", direction = "in", amount = (tonumber(profile.base_income_anna) or 8350) * (1 + (year - C.YEAR_MIN) * 0.055), recurring = true, essential = true, source = "payroll", location = "Warsaw", note = "monthly salary" })
             for _ = 1, rng:int(4, 9) do
-                add({ year = year, month = month, day = rng:int(2, days), member = "Marek", role = "parent_freelance", merchant = rng:pick({ "Design Client A", "Design Client B", "Consulting Client", "UX Workshop" }), category = "income", subcategory = "freelance", payment_method = "bank_transfer", direction = "in", amount = rng:money(720 * inflation, 420), source = "invoice", location = "Online" })
+                add({ year = year, month = month, day = rng:int(2, days), member = "Marek", role = "parent_freelance", merchant = rng:pick(freelance), category = "income", subcategory = "freelance", payment_method = "bank_transfer", direction = "in", amount = rng:money((tonumber(profile.base_freelance) or 720) * inflation, 420), source = "invoice", location = "Online" })
             end
 
-            add({ year = year, month = month, day = 2, member = "Household", merchant = "Bank Habitat", category = "housing", subcategory = "mortgage_payment", account = "mortgage", payment_method = "direct_debit", direction = "out", amount = 3920 * inflation, recurring = true, essential = true, source = "bank", location = "Warsaw" })
-            add({ year = year, month = month, day = 5, member = "Household", merchant = "Car Finance", category = "debt", subcategory = "car_loan", account = "loan", payment_method = "direct_debit", direction = "out", amount = 840 * inflation, recurring = true, essential = true, source = "bank", location = "Warsaw" })
+            add({ year = year, month = month, day = 2, member = "Household", merchant = "Bank Habitat", category = "housing", subcategory = "mortgage_payment", account = "mortgage", payment_method = "direct_debit", direction = "out", amount = (tonumber(profile.mortgage_payment) or 3920) * inflation, recurring = true, essential = true, source = "bank", location = "Warsaw" })
+            add({ year = year, month = month, day = 5, member = "Household", merchant = "Car Finance", category = "debt", subcategory = "car_loan", account = "loan", payment_method = "direct_debit", direction = "out", amount = (tonumber(profile.car_loan_payment) or 840) * inflation, recurring = true, essential = true, source = "bank", location = "Warsaw" })
 
             for _, item in ipairs({ { "Power Grid", "utilities", "electricity", 360 }, { "Gas Utility", "utilities", "gas", 260 }, { "Water Utility", "utilities", "water", 170 }, { "Fiber Net", "utilities", "internet", 115 } }) do
                 add({ year = year, month = month, day = rng:int(6, 18), member = "Household", merchant = item[1], category = item[2], subcategory = item[3], payment_method = "direct_debit", direction = "out", amount = rng:money(item[4] * inflation, item[4] * 0.18), recurring = true, essential = true, source = "bill", location = "Online" })
@@ -233,7 +255,7 @@ function DataGeneration.generate(C, options)
                 add({ year = year, month = month, day = rng:int(1, days), member = "Luna", role = "dog", merchant = rng:pick(dog), category = "dog", subcategory = rng:pick({ "food", "vet", "grooming", "insurance" }), account = "credit_card", payment_method = "card", direction = "out", amount = rng:money(125 * inflation, 85), essential = true, source = "card", location = rng:pick(locations) })
             end
             for _ = 1, rng:int(1, 2) do
-                add({ year = year, month = month, day = rng:int(1, days), member = rng:pick({ "Anna", "Marek", "Ola", "Kuba" }), merchant = rng:pick({ "Clinic", "Pharmacy", "Dentist", "Optician" }), category = "healthcare", subcategory = rng:pick({ "medicine", "visit", "dental", "glasses" }), account = "credit_card", payment_method = "card", direction = "out", amount = rng:money(210 * inflation, 160), essential = true, source = "card", location = rng:pick(locations) })
+                add({ year = year, month = month, day = rng:int(1, days), member = rng:pick({ "Anna", "Marek", "Ola", "Kuba" }), merchant = rng:pick(healthcare), category = "healthcare", subcategory = rng:pick({ "medicine", "visit", "dental", "glasses" }), account = "credit_card", payment_method = "card", direction = "out", amount = rng:money(210 * inflation, 160), essential = true, source = "card", location = rng:pick(locations) })
             end
 
             for _, subscription in ipairs(subscriptions) do
@@ -244,16 +266,16 @@ function DataGeneration.generate(C, options)
                 add({ year = year, month = month, day = rng:int(1, days), member = rng:pick({ "Anna", "Marek", "Ola", "Kuba" }), merchant = rng:pick(entertainment), category = "entertainment", subcategory = rng:pick({ "cinema", "games", "culture", "weekend" }), account = "credit_card", payment_method = "card", direction = "out", amount = rng:money(190 * inflation, 130), source = "card", location = rng:pick(locations) })
             end
             if rng:next() < 0.55 then
-                add({ year = year, month = month, day = rng:int(3, days), member = "Household", merchant = rng:pick({ "Home Repair", "Car Service", "Appliance Parts", "Plumber" }), category = "repairs", subcategory = "home", payment_method = "card", direction = "out", amount = rng:money(520 * inflation, 390), source = "card", location = rng:pick(locations) })
+                add({ year = year, month = month, day = rng:int(3, days), member = "Household", merchant = rng:pick(repairs), category = "repairs", subcategory = "home", payment_method = "card", direction = "out", amount = rng:money(520 * inflation, 390), source = "card", location = rng:pick(locations) })
             end
             if month == 7 or month == 8 or month == 12 then
-                add({ year = year, month = month, day = rng:int(8, 22), member = "Household", merchant = rng:pick({ "Travel Agency", "Rail Holiday", "Mountain Stay", "Sea Apartment" }), category = "holiday", subcategory = "lodging", account = "credit_card", payment_method = "card", direction = "out", amount = rng:money(2600 * inflation, 1100), source = "card", location = rng:pick({ "Gdansk", "Zakopane", "Online", "Krakow" }) })
+                add({ year = year, month = month, day = rng:int(8, 22), member = "Household", merchant = rng:pick(holidays), category = "holiday", subcategory = "lodging", account = "credit_card", payment_method = "card", direction = "out", amount = rng:money(2600 * inflation, 1100), source = "card", location = rng:pick({ "Gdansk", "Zakopane", "Online", "Krakow" }) })
             end
 
-            add({ year = year, month = month, day = 27, member = "Household", merchant = "Savings Account", category = "savings", subcategory = "monthly_transfer", account = "savings", payment_method = "bank_transfer", direction = "out", amount = 1200 * inflation, recurring = true, source = "bank", location = "Online" })
-            add({ year = year, month = month, day = 28, member = "Household", merchant = "Brokerage ETF", category = "investment", subcategory = "etf", account = "brokerage", payment_method = "bank_transfer", direction = "out", amount = 850 * inflation, recurring = true, source = "bank", location = "Online" })
+            add({ year = year, month = month, day = 27, member = "Household", merchant = "Savings Account", category = "savings", subcategory = "monthly_transfer", account = "savings", payment_method = "bank_transfer", direction = "out", amount = (tonumber(profile.monthly_savings) or 1200) * inflation, recurring = true, source = "bank", location = "Online" })
+            add({ year = year, month = month, day = 28, member = "Household", merchant = "Brokerage ETF", category = "investment", subcategory = "etf", account = "brokerage", payment_method = "bank_transfer", direction = "out", amount = (tonumber(profile.monthly_investment) or 850) * inflation, recurring = true, source = "bank", location = "Online" })
             if rng:next() < 0.45 then
-                add({ year = year, month = month, day = rng:int(10, days), member = rng:pick({ "Anna", "Marek" }), merchant = rng:pick({ "Tax Office", "Shop Refund", "Insurance Refund" }), category = "refunds", subcategory = "refund", payment_method = "bank_transfer", direction = "in", amount = rng:money(260 * inflation, 180), source = "refund", location = "Online" })
+                add({ year = year, month = month, day = rng:int(10, days), member = rng:pick({ "Anna", "Marek" }), merchant = rng:pick(refunds), category = "refunds", subcategory = "refund", payment_method = "bank_transfer", direction = "in", amount = rng:money(260 * inflation, 180), source = "refund", location = "Online" })
             end
         end
     end
@@ -269,6 +291,7 @@ function DataGeneration.generate(C, options)
         dataframe = df,
         csv = df:toCSV(),
         rows = #rows,
+        rng_state = rng:state(),
     }
 end
 

@@ -1,5 +1,7 @@
 //! Public types and helpers for the widget module.
 
+use crate::runtime::resource_keys::FontKey;
+
 /// Interaction state of a widget used as a theme lookup key.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum WidgetState {
@@ -34,6 +36,35 @@ impl WidgetState {
             Self::Pressed => "pressed",
             Self::Focused => "focused",
             Self::Disabled => "disabled",
+        }
+    }
+}
+/// Mouse interaction filter matching Godot's control behavior.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum MouseFilter {
+    /// Intercepts mouse events and stops propagation.
+    Stop,
+    /// Receives mouse events, but passes them down.
+    Pass,
+    /// Completely transparent to mouse events.
+    Ignore,
+}
+impl MouseFilter {
+    /// Parse from a string representation.
+    pub fn parse_str(s: &str) -> Option<Self> {
+        match s {
+            "stop" => Some(Self::Stop),
+            "pass" => Some(Self::Pass),
+            "ignore" => Some(Self::Ignore),
+            _ => None,
+        }
+    }
+    /// Return the canonical string representation.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Stop => "stop",
+            Self::Pass => "pass",
+            Self::Ignore => "ignore",
         }
     }
 }
@@ -353,6 +384,8 @@ pub struct WidgetBase {
     pub flex_shrink: f32,
     /// Overall opacity multiplier applied by the renderer; 1.0 = fully opaque.
     pub alpha: f32,
+    /// Optional font override inherited by this widget and its descendants when set.
+    pub font_key: Option<FontKey>,
     /// Optional entity ID linking this widget to a game entity.
     pub entity_attachment: Option<u64>,
     /// Optional data-binding key for `GuiContext::apply_bindings`.
@@ -363,11 +396,25 @@ pub struct WidgetBase {
     pub computed_rect: crate::math::Rect,
     /// Effective visibility after layout and parent visibility propagation.
     pub is_visible: bool,
+    /// Optional style class name for category specific styling.
+    pub style_class: Option<String>,
+    /// Mouse filter strategy controlling event interception.
+    pub mouse_filter: MouseFilter,
 }
 impl WidgetBase {
     /// Create a `WidgetBase` with `widget_type` defaults from `WidgetType::default_size`, visible, enabled, alpha 1.
     pub fn new(widget_type: WidgetType) -> Self {
         let (width, height) = widget_type.default_size();
+        let mouse_filter = match widget_type {
+            WidgetType::Layout
+            | WidgetType::Panel
+            | WidgetType::Spacer
+            | WidgetType::Separator
+            | WidgetType::Badge
+            | WidgetType::Custom
+            | WidgetType::Label => MouseFilter::Ignore,
+            _ => MouseFilter::Stop,
+        };
         Self {
             id: String::new(),
             widget_type,
@@ -395,16 +442,24 @@ impl WidgetBase {
             flex_grow: 0.0,
             flex_shrink: 0.0,
             alpha: 1.0,
+            font_key: None,
             entity_attachment: None,
             bind_key: None,
             transitions: Vec::new(),
             computed_rect: crate::math::Rect::new(0.0, 0.0, 0.0, 0.0),
             is_visible: true,
+            style_class: None,
+            mouse_filter,
         }
     }
-    /// Return `true` if `(px, py)` lies within the widget's `x/y/width/height` rectangle.
+    /// Return `true` if `(px, py)` lies within the computed screen rect, falling back to local geometry.
     pub fn contains_point(&self, px: f32, py: f32) -> bool {
-        px >= self.x && px <= self.x + self.width && py >= self.y && py <= self.y + self.height
+        let rect = if self.computed_rect.width > 0.0 && self.computed_rect.height > 0.0 {
+            self.computed_rect
+        } else {
+            crate::math::Rect::new(self.x, self.y, self.width, self.height)
+        };
+        rect.contains(px, py)
     }
     /// Clear all six anchor fields (`anchor_left`, `anchor_top`, `anchor_right`, `anchor_bottom`, `anchor_center_x`, `anchor_center_y`).
     pub fn clear_anchors(&mut self) {

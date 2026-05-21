@@ -1002,7 +1002,7 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [household_finance_lab](../tree/main/content/games/apps/household_finance_lab) (apps)
 
 [⬆ back to top](#table-of-contents)
 

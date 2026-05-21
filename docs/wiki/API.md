@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7167 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26175 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7212 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26398 lines)
 
 ## Coverage
 
 - 52 modules
-- 4804 functions and methods
+- 4842 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -37,7 +37,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.camera](Module-camera) | 3 | 2 | 2D camera and viewport types. Pure data; no GPU resources. |
 | [lurek.compute](Module-compute) | 13 | 1 | Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads. |
 | [lurek.data](Module-data) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
-| [lurek.dataframe](Module-dataframe) | 10 | 5 | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
+| [lurek.dataframe](Module-dataframe) | 15 | 6 | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
 | [lurek.debugbridge](Module-debugbridge) | 16 | 0 | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
 | [lurek.devtools](Module-devtools) | 50 | 2 | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
 | [lurek.docs](Module-docs) | 26 | 5 | In-engine API documentation catalog and lightweight schema validation for structured game data. |
@@ -67,7 +67,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.procgen](Module-procgen) | 24 | 1 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen. CPU-only, headless. |
 | [lurek.province](Module-province) | 8 | 1 | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
 | [lurek.raycaster](Module-raycaster) | 8 | 5 | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
-| [lurek.render](Module-render) | 108 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
+| [lurek.render](Module-render) | 110 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
 | [lurek.repl](Module-repl) | 1 | 1 | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [lurek.save](Module-save) | 1 | 1 | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
 | [lurek.scene](Module-scene) | 50 | 1 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |

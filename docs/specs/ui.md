@@ -7,13 +7,19 @@
 - Lua API path(s): `src/lua_api/ui_api.rs`
 - Primary Lua namespace: `lurek.ui`
 - Rust test path(s): tests/rust/unit/gui_tests.rs
-- Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_i18n_ui.lua
+- Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_input_unit.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_i18n_ui.lua
 
 ## Summary
 
 Retained-mode GUI framework with 35+ widget types, layout engine, theme system, charts, data binding, and TOML-based layout loading. `GuiContext` is the top-level container managing widget trees, focus state, input routing, and per-frame update/draw cycles. Widgets include buttons, labels, text inputs, checkboxes, sliders, dropdowns, lists, trees, tabs, panels, scrollbars, progress bars, color pickers, date pickers, and custom canvas regions.
 
-Layout uses a flex-based model with containers, rows, columns, grids, and stack panels — supports padding, margin, alignment, grow/shrink factors, and min/max constraints. Themes define color palettes, fonts, spacing, and per-widget style overrides in TOML. Data binding connects widget values to Lua tables with two-way synchronization. Chart widgets (line, bar, scatter, pie, area) render data visualizations to `ImageData` buffers. TOML loader instantiates complete UI hierarchies from declarative layout files. Exposed as `lurek.ui.*`. Feature Systems tier.
+Layout uses a flex-based model with containers, rows, columns, grids, and stack panels — supports padding, margin, alignment, grow/shrink factors, and min/max constraints. Themes define color palettes, fonts, spacing, and per-widget style overrides in TOML. Data binding connects widget values to Lua tables with two-way synchronization. Table and chart helpers can bulk-load `LDataFrame` rows so UI screens do not need Lua-side row loops for common tabular and chart views. Chart widgets (line, bar, scatter, pie, area) render data visualizations to `ImageData` buffers. TOML loader instantiates complete UI hierarchies from declarative layout files. Exposed as `lurek.ui.*`. Feature Systems tier.
+
+Mouse input is routed through existing `lurek.ui.mousepressed`, `lurek.ui.mousereleased`, `lurek.ui.mousemoved`, `lurek.ui.wheelmoved`, and `lurek.ui.update` calls. The retained widget tree runs layout before input hit testing, uses computed screen rectangles when available, falls back to direct widget coordinates for unattached widgets, and respects visibility, enabled state, z-order, and recent paint order. Mouse input updates button clicks, slider press/drag values, tab selection, combo box open/select state, list row selection, table row selection, sortable table headers, switch and checkbox values, radio groups, tree view rows, spin-box step zones, accordion headers, scroll bars, dialog/window close controls, toolbar buttons, color pickers, and hover-routed scrolling.
+
+Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.textinput`, focus methods, and `lurek.ui.update` callback dispatch. Focus changes keep `TextInput.focused` in sync with widget focus state. Text editing emits `GuiEvent::Change` only when text changes, cursor movement marks the UI dirty without emitting a value change, and focused controls support activation and simple arrow-key navigation where the widget has an existing value or selection model. Escape closes open combo boxes and dialogs without adding new public API.
+
+Built-in chart renderers keep legends and labels out of the plotted data area. Line, bar, scatter, and area charts reserve right-side legend space when the image is wide enough, fall back to a bottom legend when height allows it, and omit cramped legend panels rather than drawing over series data. Bar charts keep category labels separate from Y-axis numeric labels and suppress value labels on tiny plots when they would collide. Pie charts compute the pie radius from the space left after placing the legend to the right or below, so dashboard-sized images such as 220×130 remain nonblank without legend panels covering wedges.
 
 ## Source Documentation
 
@@ -25,7 +31,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - margins, and grid visibility across all chart types.
 - Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
 - scaled to arbitrary value ranges on both axes.
-- Legend panel rendered as a floating colour-swatch box positioned near the top-right corner.
+- Legend panels reserve right or bottom space outside plotted data when the image size allows it, using the shared 5x7 `ImageData` label advance for width estimates.
 - Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
 - anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
 - Area chart performs linear interpolation between uniform X samples and fills columns
@@ -119,6 +125,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 ## Types
 
+- `ChartDataFrameOptions` (`struct`, `chart.rs`): Options used when adding chart data from a dataframe.
 - `ChartConfig` (`struct`, `chart.rs`): Configuration for chart image generation.
 - `ChartMargin` (`struct`, `chart.rs`): Pixel margins around the chart plot area.
 - `ChartSeries` (`struct`, `chart.rs`): A named data series with colour.
@@ -174,6 +181,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `TooltipPanel` (`struct`, `extras.rs`): A rich tooltip panel attached to a target widget.
 - `ColorPicker` (`struct`, `extras.rs`): A color picker widget with RGB/HSV/HSL modes.
 - `TableColumn` (`struct`, `extras.rs`): A single column in a [`GUITable`].
+- `TableDataFrameOptions` (`struct`, `extras.rs`): Options used when populating a `GUITable` from a dataframe.
 - `GUITable` (`struct`, `extras.rs`): A data table widget with sortable columns and selectable rows.
 - `ImageWidget` (`struct`, `extras.rs`): An image display widget.
 - `Badge` (`struct`, `extras.rs`): A notification badge displaying a numeric count or short label.
@@ -192,19 +200,24 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 - `LineChart::new` (`chart.rs`): Create a new line chart with the given config and default Y/X range of 100.0/6.0.
 - `LineChart::add_series` (`chart.rs`): Append a named data series of `(x, y)` points with the given colour.
+- `LineChart::add_series_from_dataframe` (`chart.rs`): Append a named series from dataframe columns and return the number of accepted points.
 - `LineChart::draw_to_image` (`chart.rs`): Rasterise the line chart into `img`, overwriting its contents.
 - `BarChart::new` (`chart.rs`): Create an empty bar chart with the given config and default Y max of 100.0.
 - `BarChart::add_series` (`chart.rs`): Register a named series with the given colour; call before `add_category`.
 - `BarChart::add_category` (`chart.rs`): Add a labelled category group with one value per series.
+- `BarChart::add_categories_from_dataframe` (`chart.rs`): Append categories from dataframe rows and return the number of categories added.
 - `BarChart::draw_to_image` (`chart.rs`): Rasterise the bar chart into `img`, overwriting its contents.
 - `ScatterPlot::new` (`chart.rs`): Create an empty scatter plot with the given config and default axis ranges of (0.0, 1.0).
 - `ScatterPlot::add_series` (`chart.rs`): Append a named series of `(x, y)` scatter points with the given colour.
+- `ScatterPlot::add_series_from_dataframe` (`chart.rs`): Append a named point series from dataframe columns and return the number of accepted points.
 - `ScatterPlot::draw_to_image` (`chart.rs`): Rasterise the scatter plot into `img`, overwriting its contents.
 - `PieChart::new` (`chart.rs`): Create an empty pie chart with the given config.
 - `PieChart::add_segment` (`chart.rs`): Append a labelled segment with the given value and fill colour.
+- `PieChart::add_segments_from_dataframe` (`chart.rs`): Append positive numeric segments from dataframe rows using a built-in colour palette.
 - `PieChart::draw_to_image` (`chart.rs`): Rasterise the pie chart into `img`, overwriting its contents; no-ops when total value <= 0.
 - `AreaChart::new` (`chart.rs`): Create an empty area chart with the given config and Y max of 100.0.
 - `AreaChart::add_layer` (`chart.rs`): Append a named area layer; `values` are sampled at uniform X intervals across the chart width.
+- `AreaChart::add_layer_from_dataframe` (`chart.rs`): Append one area layer from a dataframe column and return the number of values copied.
 - `AreaChart::draw_to_image` (`chart.rs`): Rasterise the stacked area chart into `img`, overwriting its contents.
 - `Panel::new` (`containers.rs`): Create an empty panel with no title and scrolling disabled.
 - `LayoutDirection::parse_str` (`containers.rs`): Parse a lowercase string to a variant; return `None` for unrecognised values.
@@ -287,7 +300,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `GuiContext::mouse_pressed` (`context.rs`): Process a mouse button press at `(x, y)`; return `true` if any widget consumed it.
 - `GuiContext::mouse_released` (`context.rs`): Process a mouse button release at `(x, y)`; fires `Click` events on clickable widgets.
 - `GuiContext::mouse_moved` (`context.rs`): Process a mouse move to `(x, y)`; updates `Hovered`/`Normal` states; return `true` on any state change.
-- `GuiContext::key_pressed` (`context.rs`): Process a key press by name; `"tab"` advances focus, `"backspace"` deletes in focused text input.
+- `GuiContext::key_pressed` (`context.rs`): Process a key press by name; routes focus, editing, activation, and widget navigation keys.
 - `GuiContext::text_input` (`context.rs`): Insert `text` into the focused `TextInput`; return `true` if consumed.
 - `GuiContext::wheel_moved` (`context.rs`): Scroll the focused `ScrollPanel` by `y` lines; return `true` if consumed.
 - `Button::new` (`controls.rs`): Create a button with the given text.
@@ -295,6 +308,10 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `TextInput::new` (`controls.rs`): Create an empty text input with no placeholder and unlimited length.
 - `TextInput::insert_text` (`controls.rs`): Insert `input` at the cursor position; return `false` if it would exceed `max_length`.
 - `TextInput::backspace` (`controls.rs`): Delete the character before the cursor; return `false` if already at position 0.
+- `TextInput::move_cursor_left` (`controls.rs`): Move the insertion cursor one character left; return `false` when already at the start.
+- `TextInput::move_cursor_right` (`controls.rs`): Move the insertion cursor one character right; return `false` when already at the end.
+- `TextInput::move_cursor_home` (`controls.rs`): Move the insertion cursor to the start; return `false` when already there.
+- `TextInput::move_cursor_end` (`controls.rs`): Move the insertion cursor to the end; return `false` when already there.
 - `CheckBox::new` (`controls.rs`): Create an unchecked checkbox with the given label.
 - `Slider::new` (`controls.rs`): Create a slider with the given range; initial value is `min`, step defaults to 0 (continuous).
 - `Slider::set_value` (`controls.rs`): Clamp `v` to `[min, max]` and snap to the nearest step if step > 0.
@@ -392,6 +409,9 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `TooltipPanel::new` (`extras.rs`): Create a tooltip with the given text and a default delay of 0.5 seconds.
 - `ColorPicker::new` (`extras.rs`): Create a colour picker defaulting to opaque white in RGB mode with alpha shown.
 - `GUITable::new` (`extras.rs`): Create an empty, non-sortable table with no columns or rows.
+- `GUITable::clear_rows` (`extras.rs`): Remove all rows and clear row selection.
+- `GUITable::set_rows` (`extras.rs`): Replace all rows with the supplied string cell matrix and return the row count.
+- `GUITable::set_dataframe` (`extras.rs`): Replace columns and rows from a dataframe and return the resulting row count.
 - `ImageWidget::new` (`extras.rs`): Create an image widget with `"fit"` scale mode and opaque white tint.
 - `Badge::new` (`extras.rs`): Create a badge with the given count and default max_display of 99.
 - `Badge::display_text` (`extras.rs`): Return the display string: `count.to_string()` or `"{max_display}+"` when count exceeds max.
@@ -416,7 +436,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `WidgetTransition::alpha` (`widget.rs`): Create an alpha fade from `from` to `to` over `duration` seconds; optionally hide when done.
 - `WidgetTransition::position` (`widget.rs`): Create a position slide from `(from_x, from_y)` to `(to_x, to_y)` over `duration` seconds.
 - `WidgetBase::new` (`widget.rs`): Create a `WidgetBase` with `widget_type` defaults from `WidgetType::default_size`, visible, enabled, alpha 1.
-- `WidgetBase::contains_point` (`widget.rs`): Return `true` if `(px, py)` lies within the widget's `x/y/width/height` rectangle.
+- `WidgetBase::contains_point` (`widget.rs`): Return `true` if `(px, py)` lies within the computed screen rect, falling back to local geometry.
 - `WidgetBase::clear_anchors` (`widget.rs`): Clear all six anchor fields (`anchor_left`, `anchor_top`, `anchor_right`, `anchor_bottom`, `anchor_center_x`, `anchor_center_y`).
 
 ## Lua API Reference
@@ -425,42 +445,42 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - Namespace: `lurek.ui`
 
 ### Module Functions
-- `lurek.ui.newButton`: Creates a new button widget. This function is exposed to Lua scripts.
-- `lurek.ui.newLabel`: Creates a new label widget. This function is exposed to Lua scripts.
-- `lurek.ui.newTextInput`: Creates a new text input widget. This function is exposed to Lua scripts.
-- `lurek.ui.newCheckbox`: Creates a new checkbox widget. This function is exposed to Lua scripts.
-- `lurek.ui.newSlider`: Creates a new slider widget. This function is exposed to Lua scripts.
-- `lurek.ui.newProgressBar`: Creates a new progress bar widget. This function is exposed to Lua scripts.
+- `lurek.ui.newButton`: Creates a new button widget with optional label text.
+- `lurek.ui.newLabel`: Creates a new label widget for displaying text.
+- `lurek.ui.newTextInput`: Creates a new text input widget for user entry.
+- `lurek.ui.newCheckbox`: Creates a new checkbox widget with optional label.
+- `lurek.ui.newSlider`: Creates a new slider widget with adjustable range.
+- `lurek.ui.newProgressBar`: Creates a new progress bar widget with min and max.
 - `lurek.ui.newComboBox`: Creates a new combo box (drop-down) widget.
-- `lurek.ui.newList`: Creates a new list box widget. This function is exposed to Lua scripts.
+- `lurek.ui.newList`: Creates a new list box widget for item selection.
 - `lurek.ui.newPanel`: Creates a new panel widget (container).
 - `lurek.ui.newLayout`: Creates a new layout container widget.
 - `lurek.ui.newScrollPanel`: Creates a new scrollable panel widget.
 - `lurek.ui.newNinePatch`: Creates a new nine-patch widget for scalable bordered images.
-- `lurek.ui.newTabBar`: Creates a new tab bar widget. This function is exposed to Lua scripts.
-- `lurek.ui.newSeparator`: Creates a new separator widget. This function is exposed to Lua scripts.
+- `lurek.ui.newTabBar`: Creates a new tab bar widget for tabbed navigation.
+- `lurek.ui.newSeparator`: Creates a new separator widget for visual division.
 - `lurek.ui.newSpacer`: Creates a new spacer widget for spacing between other widgets.
 - `lurek.ui.newToast`: Creates a new toast notification widget.
-- `lurek.ui.newTreeView`: Creates a new tree view widget. This function is exposed to Lua scripts.
-- `lurek.ui.newRadioButton`: Creates a new radio button widget. This function is exposed to Lua scripts.
-- `lurek.ui.newScrollBar`: Creates a new scroll bar widget. This function is exposed to Lua scripts.
-- `lurek.ui.newWindow`: Creates a new GUI window widget. This function is exposed to Lua scripts.
+- `lurek.ui.newTreeView`: Creates a new tree view widget for hierarchical data.
+- `lurek.ui.newRadioButton`: Creates a new radio button widget in a named group.
+- `lurek.ui.newScrollBar`: Creates a new scroll bar widget for content scrolling.
+- `lurek.ui.newWindow`: Creates a new GUI window widget with an optional title.
 - `lurek.ui.newSplitPanel`: Creates a new split panel widget with two resizable sub-panels.
 - `lurek.ui.newDockPanel`: Creates a new dock panel widget for docking child widgets to sides.
-- `lurek.ui.newToolbar`: Creates a new toolbar widget. This function is exposed to Lua scripts.
-- `lurek.ui.newMenuBar`: Creates a new menu bar widget. This function is exposed to Lua scripts.
-- `lurek.ui.newMenuItem`: Creates a new menu item widget. This function is exposed to Lua scripts.
-- `lurek.ui.newDialog`: Creates a new dialog widget. This function is exposed to Lua scripts.
-- `lurek.ui.newStatusBar`: Creates a new status bar widget. This function is exposed to Lua scripts.
-- `lurek.ui.newAccordion`: Creates a new accordion widget. This function is exposed to Lua scripts.
+- `lurek.ui.newToolbar`: Creates a new toolbar widget for action buttons.
+- `lurek.ui.newMenuBar`: Creates a new menu bar widget for top-level menus.
+- `lurek.ui.newMenuItem`: Creates a new menu item widget with optional text.
+- `lurek.ui.newDialog`: Creates a new dialog widget with an optional title.
+- `lurek.ui.newStatusBar`: Creates a new status bar widget for app-level info.
+- `lurek.ui.newAccordion`: Creates a new accordion widget with collapsible sections.
 - `lurek.ui.newTooltipPanel`: Creates a new tooltip panel widget.
-- `lurek.ui.newColorPicker`: Creates a new color picker widget. This function is exposed to Lua scripts.
+- `lurek.ui.newColorPicker`: Creates a new color picker widget for color selection.
 - `lurek.ui.newTable`: Creates a new table widget for tabular data display.
 - `lurek.ui.newImageWidget`: Creates a new image display widget.
 - `lurek.ui.newTheme`: Creates a new UI theme for styling widgets.
-- `lurek.ui.setTheme`: Applies a theme to the UI context. This function is exposed to Lua scripts.
+- `lurek.ui.setTheme`: Applies a theme to the entire UI context.
 - `lurek.ui.getTheme`: Returns whether a theme is currently set.
-- `lurek.ui.getRoot`: Returns the root panel widget. This function is exposed to Lua scripts.
+- `lurek.ui.getRoot`: Returns the root panel widget of the UI tree.
 - `lurek.ui.setFocus`: Sets keyboard focus to a widget, or clears focus if nil.
 - `lurek.ui.getFocus`: Returns the index of the currently focused widget, or nil.
 - `lurek.ui.focusNext`: Moves keyboard focus to the next focusable widget.
@@ -490,15 +510,15 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `lurek.ui.newBadge`: Creates a new badge widget for displaying counts.
 - `lurek.ui.setDefaultTheme`: Applies the built-in default theme to the UI context.
 - `lurek.ui.setViewport`: Sets the viewport size for the UI context.
-- `lurek.ui.flushCache`: Flushes internal UI caches. This function is exposed to Lua scripts.
+- `lurek.ui.flushCache`: Flushes internal UI layout and render caches.
 - `lurek.ui.beginDrag`: Begins a drag operation on a widget.
 - `lurek.ui.getActiveDrag`: Returns the widget index currently being dragged, or nil.
 - `lurek.ui.dropOn`: Drops the currently dragged widget onto a target widget.
 - `lurek.ui.endDrag`: Ends the current drag operation without dropping.
 - `lurek.ui.update_bindings`: Updates data bindings for widgets that reference binding keys.
 - `lurek.ui.loadLayout`: Loads a UI layout from a Lua table definition.
-- `lurek.ui.loadLayoutFile`: Loads a UI layout from a TOML file. This function is exposed to Lua scripts.
-- `lurek.ui.renderToImage`: Renders the UI to a PNG file. This function is exposed to Lua scripts.
+- `lurek.ui.loadLayoutFile`: Loads a UI layout from a TOML layout file.
+- `lurek.ui.renderToImage`: Renders the entire UI to a PNG image file.
 
 ### `LAccordion` Methods
 - `LAccordion:addSection`: Adds a collapsible section to this accordion.
@@ -511,6 +531,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 ### `LAreaChart` Methods
 - `LAreaChart:addLayer`: Adds a data layer to this area chart.
+- `LAreaChart:addLayerFromDataFrame`: Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
 - `LAreaChart:setYMax`: Sets the maximum Y-axis value for this area chart.
 - `LAreaChart:drawToImage`: Renders this area chart to an image buffer.
 - `LAreaChart:type`: Returns the type name of this object.
@@ -524,6 +545,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 ### `LBarChart` Methods
 - `LBarChart:addSeries`: Adds a named series to this bar chart.
 - `LBarChart:addCategory`: Adds a category with values for each series.
+- `LBarChart:addCategoriesFromDataFrame`: Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
 - `LBarChart:drawToImage`: Renders this bar chart to an image buffer.
 - `LBarChart:type`: Returns the type name of this object.
 - `LBarChart:typeOf`: Checks whether this object matches the given type name.
@@ -559,9 +581,9 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 ### `LDialog` Methods
 - `LDialog:getTitle`: Returns the title text of this dialog.
-- `LDialog:setTitle`: Sets the title text of this dialog. This method is available to Lua scripts.
+- `LDialog:setTitle`: Sets the title text of this dialog widget.
 - `LDialog:isModal`: Returns whether this dialog is modal (blocks interaction with other widgets).
-- `LDialog:setModal`: Sets whether this dialog is modal. This method is available to Lua scripts.
+- `LDialog:setModal`: Sets whether this dialog widget is modal.
 - `LDialog:isOpen`: Returns whether this dialog is currently open and visible.
 - `LDialog:open`: Opens this dialog, making it visible.
 - `LDialog:close`: Closes this dialog and fires the onClose callback if it was open.
@@ -580,7 +602,10 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 ### `LGuiTable` Methods
 - `LGuiTable:addColumn`: Adds a new column to this table widget.
 - `LGuiTable:getColumnCount`: Returns the number of columns in this table widget.
-- `LGuiTable:addRow`: Adds a row to this table widget. This method is available to Lua scripts.
+- `LGuiTable:addRow`: Adds a row of data to this table widget.
+- `LGuiTable:clearRows`: Clears all rows and the selected row in this table widget.
+- `LGuiTable:setRows`: Replaces all rows with an array of row arrays.
+- `LGuiTable:setDataFrame`: Replaces columns and rows from a dataframe, stringifying cell values for display.
 - `LGuiTable:getRowCount`: Returns the number of rows in this table widget.
 - `LGuiTable:getCell`: Returns the text of a cell at the given 1-based row and column.
 - `LGuiTable:setCell`: Sets the text of a cell at the given 1-based row and column.
@@ -626,6 +651,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 ### `LLineChart` Methods
 - `LLineChart:addSeries`: Adds a named series of points to this line chart.
+- `LLineChart:addSeriesFromDataFrame`: Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
 - `LLineChart:setYMax`: Sets the maximum Y-axis value for this line chart.
 - `LLineChart:setXMax`: Sets the maximum X-axis value for this line chart.
 - `LLineChart:drawToImage`: Renders this line chart to an image buffer.
@@ -672,7 +698,8 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `LPanel:setScrollable`: Enables or disables scrolling within this panel.
 
 ### `LPieChart` Methods
-- `LPieChart:addSegment`: Adds a segment to this pie chart. This method is available to Lua scripts.
+- `LPieChart:addSegment`: Adds a labeled segment to this pie chart widget.
+- `LPieChart:addSegmentsFromDataFrame`: Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
 - `LPieChart:drawToImage`: Renders this pie chart to an image buffer.
 - `LPieChart:type`: Returns the type name of this object.
 - `LPieChart:typeOf`: Checks whether this object matches the given type name.
@@ -696,6 +723,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 ### `LScatterPlot` Methods
 - `LScatterPlot:addSeries`: Adds a data series to this scatter plot.
+- `LScatterPlot:addSeriesFromDataFrame`: Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
 - `LScatterPlot:setXRange`: Sets the X-axis range for this scatter plot.
 - `LScatterPlot:setYRange`: Sets the Y-axis range for this scatter plot.
 - `LScatterPlot:drawToImage`: Renders this scatter plot to an image buffer.
@@ -756,7 +784,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `LSplitPanel:getSecondChild`: Returns the widget index of the second (right/bottom) child panel.
 
 ### `LStatusBar` Methods
-- `LStatusBar:addSection`: Adds a section to this status bar. This method is available to Lua scripts.
+- `LStatusBar:addSection`: Adds a labeled section to this status bar.
 - `LStatusBar:setSectionText`: Sets the text of a status bar section by its 1-based index.
 - `LStatusBar:getSectionText`: Returns the text of a status bar section by its 1-based index.
 - `LStatusBar:getSectionCount`: Returns the number of sections in this status bar.
@@ -772,7 +800,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `LTabBar:addTab`: Adds a new tab with the given label to this tab bar.
 - `LTabBar:removeTab`: Removes the tab at the given 1-based index.
 - `LTabBar:getTab`: Returns the label of the tab at the given 1-based index.
-- `LTabBar:getTabCount`: Returns the total number of tabs. This method is available to Lua scripts.
+- `LTabBar:getTabCount`: Returns the total number of tabs in this tab bar.
 - `LTabBar:setActiveTab`: Sets the active (selected) tab by 1-based index.
 - `LTabBar:getActiveTab`: Returns the 1-based index of the currently active tab.
 
@@ -810,24 +838,24 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 - `LToolbar:isButtonToggled`: Returns whether a toolbar button is toggled on.
 
 ### `LTooltipPanel` Methods
-- `LTooltipPanel:getText`: Returns the tooltip display text. This method is available to Lua scripts.
-- `LTooltipPanel:setText`: Sets the tooltip display text. This method is available to Lua scripts.
+- `LTooltipPanel:getText`: Returns the current tooltip display text.
+- `LTooltipPanel:setText`: Sets the tooltip panel display text content.
 - `LTooltipPanel:getDelay`: Returns the delay in seconds before this tooltip appears.
 - `LTooltipPanel:setDelay`: Sets the delay in seconds before this tooltip appears.
 - `LTooltipPanel:getTarget`: Returns the widget index that this tooltip is attached to.
 - `LTooltipPanel:setTarget`: Sets the widget index that this tooltip is attached to.
 
 ### `LTreeView` Methods
-- `LTreeView:addNode`: Adds node on this LTreeView object.
-- `LTreeView:toggleNode`: Toggle node on this LTreeView object.
-- `LTreeView:isExpanded`: Returns true if expanded on this LTreeView object.
-- `LTreeView:getNodeCount`: Returns the node count on this LTreeView object.
-- `LTreeView:removeNode`: Removes node on this LTreeView object.
-- `LTreeView:clearNodes`: Clears nodes on this LTreeView object.
-- `LTreeView:getNodeText`: Returns the node text on this LTreeView object.
-- `LTreeView:setNodeText`: Sets the node text on this LTreeView object.
-- `LTreeView:setNodeIcon`: Sets the node icon on this LTreeView object.
-- `LTreeView:expandNode`: Expand node on this LTreeView object.
+- `LTreeView:addNode`: Adds a new node to this tree view, optionally under a parent node.
+- `LTreeView:toggleNode`: Toggles the expanded/collapsed state of the node at the given 1-based index.
+- `LTreeView:isExpanded`: Returns whether the node at the given 1-based index is currently expanded.
+- `LTreeView:getNodeCount`: Returns the total number of nodes in this tree view.
+- `LTreeView:removeNode`: Removes the node at the given 1-based index from this tree view.
+- `LTreeView:clearNodes`: Removes all nodes from this tree view.
+- `LTreeView:getNodeText`: Returns the text of the node at the given 1-based index.
+- `LTreeView:setNodeText`: Sets the text of the node at the given 1-based index.
+- `LTreeView:setNodeIcon`: Sets the icon of the node at the given 1-based index.
+- `LTreeView:expandNode`: Expands the node at the given 1-based index to show its children.
 - `LTreeView:collapseNode`: Collapses the node at the given 1-based index to hide its children.
 - `LTreeView:isNodeExpanded`: Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
 - `LTreeView:expandAll`: Expands all nodes in this tree view.
@@ -898,6 +926,7 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 ## References
 
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `image`: Imports or references `image` from `src/image/`.
 - `math`: Imports or references `math` from `src/math/`.
 - `render`: Imports or references `render` from `src/render/`.
@@ -907,3 +936,4 @@ Layout uses a flex-based model with containers, rows, columns, grids, and stack 
 
 - Keep this module reference synchronized with `src/ui/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- Widget input behavior is intentionally exposed through the existing event functions rather than new top-level Lua API calls. Selection callbacks use the existing internal zero-based item index in queued `Select` events, while Lua getters remain 1-based.

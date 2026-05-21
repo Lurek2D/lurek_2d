@@ -1,4 +1,24 @@
 {
-  "version": "household_finance_lab_cache_v2",
-  "tables": ["transactions", "anomalies", "filtered_transactions", "summary_totals", "monthly_cashflow", "category_totals", "member_totals", "payment_mix", "recurring_merchants", "anomaly_duplicates", "anomaly_missing_fields", "anomaly_outliers", "recent_transactions", "widget_summary"]
+  "database": "save/household_finance_lab/cache/database.json",
+  "format": "lurek.dataframe.database.json",
+  "tables": [
+    "amount_outliers",
+    "anomaly_all",
+    "anomaly_duplicates",
+    "anomaly_missing_fields",
+    "anomaly_outliers",
+    "category_grouped",
+    "category_totals",
+    "filtered_transactions",
+    "member_totals",
+    "monthly_cashflow",
+    "payment_mix",
+    "recent_transactions",
+    "recurring_merchants",
+    "sample_transactions",
+    "summary_totals",
+    "transactions",
+    "widget_summary"
+  ],
+  "version": "household_finance_lab_cache_v3"
 }

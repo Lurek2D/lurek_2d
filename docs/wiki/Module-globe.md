@@ -355,7 +355,7 @@ do
     local points = lurek.globe.greatCirclePath(0, 0, 45, 90, 5)
     print("path has " .. #points .. " points")
     for _, p in ipairs(points) do
-        print("  lat=" .. tostring(p[1]) .. " lng=" .. tostring(p[2]))
+        print("  lat=" .. p.lat .. " lng=" .. p.lng)
     end
 end
 ```
@@ -390,7 +390,7 @@ Source: [globe.lua](../blob/main/content/examples/globe.lua)
 ```lua
 do
     local v = lurek.globe.latLonToUnit(0, 0)
-    print("unit vec = " .. tostring(v[1]) .. "," .. tostring(v[2]) .. "," .. tostring(v[3]))
+    print("unit vec = " .. v.x .. "," .. v.y .. "," .. v.z)
 end
 ```
 

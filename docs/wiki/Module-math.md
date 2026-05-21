@@ -608,7 +608,7 @@ do
     local pts = lurek.math.bresenham(0, 0, 5, 3)
     print("bresenham points = " .. #pts)
     for _, p in ipairs(pts) do
-        print("  " .. p[1] .. "," .. p[2])
+        print("  " .. p.x .. "," .. p.y)
     end
 end
 ```
@@ -2577,7 +2577,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("transform created")
+    ---@type LTransform
+    local t = lurek.math.newTransform(100, 200, math.pi / 4, 2, 2)
+    local x, y = t:transformPoint(0, 0)
+    print("origin transformed = " .. x .. "," .. y)
 end
 ```
 
@@ -3148,8 +3151,8 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {{x = 0, y = 0}, {x = 10, y = 0}, {x = 10, y = 10}, {x = 0, y = 10}}
-    local b = {{x = 5, y = 5}, {x = 15, y = 5}, {x = 15, y = 15}, {x = 5, y = 15}}
+    local a = {0, 0, 10, 0, 10, 10, 0, 10}
+    local b = {5, 5, 15, 5, 15, 15, 5, 15}
     local result = lurek.math.polygonDifference(a, b)
     print("difference vertices = " .. #result / 2)
 end
@@ -3184,8 +3187,8 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {{x = 0, y = 0}, {x = 10, y = 0}, {x = 10, y = 10}, {x = 0, y = 10}}
-    local b = {{x = 5, y = 5}, {x = 15, y = 5}, {x = 15, y = 15}, {x = 5, y = 15}}
+    local a = {0, 0, 10, 0, 10, 10, 0, 10}
+    local b = {5, 5, 15, 5, 15, 15, 5, 15}
     local result = lurek.math.polygonIntersection(a, b)
     print("intersection vertices = " .. #result / 2)
 end
@@ -3220,10 +3223,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {{x = 0, y = 0}, {x = 10, y = 0}, {x = 10, y = 10}, {x = 0, y = 10}}
-    local b = {{x = 5, y = 5}, {x = 15, y = 5}, {x = 15, y = 15}, {x = 5, y = 15}}
+    local a = {0, 0, 10, 0, 10, 10, 0, 10}
+    local b = {5, 5, 15, 5, 15, 15, 5, 15}
     local result = lurek.math.polygonUnion(a, b)
-    print("union vertices = " .. (#result / 2))
+    print("union vertices = " .. #result)
 end
 ```
 
@@ -4228,7 +4231,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("transform created")
+    ---@type LTransform
+    local t = lurek.math.newTransform(100, 200, math.pi / 4, 2, 2)
+    local x, y = t:transformPoint(0, 0)
+    print("origin transformed = " .. x .. "," .. y)
 end
 ```
 
@@ -7450,7 +7456,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("clone available")
+    local t = lurek.math.newTransform(10, 20, 0.5); local c = t:clone()
+    local inv = t:inverse(); local x, y = t:transformPoint(0, 0)
+    local rx, ry = inv:transformPoint(x, y); print("original point = " .. x .. "," .. y)
+    print("roundtrip = " .. rx .. "," .. ry)
+    _ = c
 end
 ```
 
@@ -7480,7 +7490,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("decompose available")
+    ---@type LTransform
+    local t = lurek.math.newTransform(10, 20, 1.5, 3, 4)
+    local x, y, angle, sx, sy = t:decompose()
+    print("pos=" .. x .. "," .. y .. " angle=" .. angle .. " scale=" .. sx .. "," .. sy)
 end
 ```
 
@@ -7506,7 +7519,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("getMatrix available")
+    ---@type LTransform
+    local t = lurek.math.newTransform(5, 10)
+    local m = t:getMatrix()
+    print("matrix elements = " .. #m)
 end
 ```
 
@@ -7532,7 +7548,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("inverse available")
+    local t = lurek.math.newTransform(10, 20, 0.5); local c = t:clone()
+    local inv = t:inverse(); local x, y = t:transformPoint(0, 0)
+    local rx, ry = inv:transformPoint(x, y); print("original point = " .. x .. "," .. y)
+    print("roundtrip = " .. rx .. "," .. ry)
+    _ = c
 end
 ```
 
@@ -7566,7 +7586,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("inverseTransformPoint available")
+    local t = lurek.math.newTransform(100, 0, 0, 2, 2)
+    local fx, fy = t:transformPoint(5, 0)
+    local ix, iy = t:inverseTransformPoint(fx, fy)
+    print("forward = " .. fx .. "," .. fy)
+    print("inverse = " .. ix .. "," .. iy)
 end
 ```
 
@@ -7589,7 +7613,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("reset available")
+    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2); t:reset()
+    local x1, y1 = t:transformPoint(10, 10); print("after reset = " .. x1 .. "," .. y1)
+    t:setTransformation(0, 0, math.pi, 1, 1)
+    local x2, y2 = t:transformPoint(10, 0)
+    print("after set = " .. x2 .. "," .. y2)
 end
 ```
 
@@ -7617,7 +7645,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("rotated")
+    local t = lurek.math.newTransform(); t:translate(50, 50)
+    t:rotate(math.pi / 6); t:scale(2, 2)
+    t:shear(0.1, 0)
+    local x, y = t:transformPoint(10, 0)
+    print("point = " .. x .. "," .. y)
 end
 ```
 
@@ -7647,7 +7679,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("scaled")
+    local t = lurek.math.newTransform(); t:translate(50, 50)
+    t:rotate(math.pi / 6); t:scale(2, 2)
+    t:shear(0.1, 0)
+    local x, y = t:transformPoint(10, 0)
+    print("point = " .. x .. "," .. y)
 end
 ```
 
@@ -7691,7 +7727,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("setTransformation available")
+    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2); t:reset()
+    local x1, y1 = t:transformPoint(10, 10); print("after reset = " .. x1 .. "," .. y1)
+    t:setTransformation(0, 0, math.pi, 1, 1)
+    local x2, y2 = t:transformPoint(10, 0)
+    print("after set = " .. x2 .. "," .. y2)
 end
 ```
 
@@ -7721,7 +7761,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("sheared")
+    local t = lurek.math.newTransform(); t:translate(50, 50)
+    t:rotate(math.pi / 6); t:scale(2, 2)
+    t:shear(0.1, 0)
+    local x, y = t:transformPoint(10, 0)
+    print("point = " .. x .. "," .. y)
 end
 ```
 
@@ -7755,7 +7799,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("transformPoint available")
+    local t = lurek.math.newTransform(100, 0, 0, 2, 2)
+    local fx, fy = t:transformPoint(5, 0)
+    local ix, iy = t:inverseTransformPoint(fx, fy)
+    print("forward = " .. fx .. "," .. fy)
+    print("inverse = " .. ix .. "," .. iy)
 end
 ```
 
@@ -7785,7 +7833,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("translated")
+    local t = lurek.math.newTransform(); t:translate(50, 50)
+    t:rotate(math.pi / 6); t:scale(2, 2)
+    t:shear(0.1, 0)
+    local x, y = t:transformPoint(10, 0)
+    print("point = " .. x .. "," .. y)
 end
 ```
 
@@ -7846,8 +7898,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    print("LTransform")
-    print(true)
+    local tf = lurek.math.newTransform(); tf:translate(50, 100); tf:rotate(0.5); tf:scale(2, 2); tf:shear(0.1, 0.0)
+    local wx, wy = tf:transformPoint(10, 20); print("transformed = " .. wx .. ", " .. wy); local ix, iy = tf:inverseTransformPoint(wx, wy); print("inverse = " .. ix .. ", " .. iy)
+    local a, b, c, d, e, f, g, h = tf:getMatrix(); print("matrix", a, b, c, d); tf:setTransformation(0, 0, 0, 1, 1, 0, 0, 0, 0); local tx, ty, r, sx, sy, ox, oy, kx, ky = tf:decompose()
+    print("decompose", tx, ty, r, sx, sy); local tf2 = tf:clone(); print("clone type = " .. tf2:type()); local inv = tf:inverse()
+    print("inv type = " .. inv:type()); tf:reset(); print(tf:type()); print(tf:typeOf("LTransform"))
 end
 ```
 
@@ -8887,10 +8942,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = lurek.math.vec3(1, 2, 3)
-    local b = lurek.math.vec3(4, 5, 6)
-    local sum = a:add(b)
-    print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
+    local a = lurek.math.vec3(1, 2, 3); local b = lurek.math.vec3(4, 5, 6)
+    local sum = a:add(b); local diff = a:sub(b)
+    local scaled = a:scale(2); print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
+    print("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
+    print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
 end
 ```
 
@@ -8959,6 +9015,8 @@ do
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
     print("distance = " .. a:distance(b))
+    local mid = a:lerp(b, 0.5)
+    print("lerp = " .. mid.x .. "," .. mid.y .. "," .. mid.z)
 end
 ```
 
@@ -9086,6 +9144,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 do
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
+    print("distance = " .. a:distance(b))
     local mid = a:lerp(b, 0.5)
     print("lerp = " .. mid.x .. "," .. mid.y .. "," .. mid.z)
 end
@@ -9147,8 +9206,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = lurek.math.vec3(1, 2, 3)
-    local scaled = a:scale(2)
+    local a = lurek.math.vec3(1, 2, 3); local b = lurek.math.vec3(4, 5, 6)
+    local sum = a:add(b); local diff = a:sub(b)
+    local scaled = a:scale(2); print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
+    print("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
     print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
 end
 ```
@@ -9215,10 +9276,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = lurek.math.vec3(1, 2, 3)
-    local b = lurek.math.vec3(4, 5, 6)
-    local diff = a:sub(b)
+    local a = lurek.math.vec3(1, 2, 3); local b = lurek.math.vec3(4, 5, 6)
+    local sum = a:add(b); local diff = a:sub(b)
+    local scaled = a:scale(2); print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
     print("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
+    print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
 end
 ```
 
@@ -9276,36 +9338,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local v = lurek.math.Vec3(1, 2, 3)
-    print("length=" .. v:length())
-    print("lengthSq=" .. v:lengthSquared())
-
-    local v2 = lurek.math.Vec3(4, 5, 6)
-    print("dot=" .. v:dot(v2))
-
-    local cv = v:cross(v2)
-    print("cross type=" .. cv:type())
-    print("dist=" .. v:distance(v2))
-
-    local lv = v:lerp(v2, 0.5)
-    print("lerp=" .. lv:length())
-
-    local av = v:add(v2)
-    print("add=" .. av:length())
-
-    local sv = v:sub(v2)
-    print("sub=" .. sv:length())
-
-    local sc = v:scale(2.0)
-    print("scale=" .. sc:length())
-
-    local normalized = v:normalize()
-    print("normalized type=" .. normalized:type())
-
-    local sp = v:splat(1.0)
-    print("splat length=" .. sp:length())
-    print(v:type())
-    print(v:typeOf("LVec3"))
+    local v = lurek.math.Vec3(1, 2, 3); print("length=" .. v:length()); print("lengthSq=" .. v:lengthSquared()); local v2 = lurek.math.Vec3(4, 5, 6); print("dot=" .. v:dot(v2))
+    local cv = v:cross(v2); print("cross type=" .. cv:type()); print("dist=" .. v:distance(v2)); local lv = v:lerp(v2, 0.5)
+    print("lerp=" .. lv:length()); local av = v:add(v2); print("add=" .. av:length()); local sv = v:sub(v2)
+    print("sub=" .. sv:length()); local sc = v:scale(2.0); print("scale=" .. sc:length()); v:normalize()
+    local sp = lurek.math.Vec3(0, 0, 0); sp:splat(1.0); print(v:type()); print(v:typeOf("LVec3"))
 end
 ```
 

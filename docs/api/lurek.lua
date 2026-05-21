@@ -4813,6 +4813,12 @@ function LDataFrame:count() end
 ---@return LDataFrame New dataframe containing value counts.
 function LDataFrame:countBy(col) end
 
+--- Returns a new dataframe with year, month, and day columns extracted from ISO `yyyy-mm-dd` text.
+---@param date_col any Column name string or one-based column index containing ISO date text.
+---@param prefix? string Optional output prefix; `prefix = "txn"` creates `txn_year`, `txn_month`, and `txn_day`.
+---@return LDataFrame New dataframe with extracted date-part columns; invalid or missing dates produce nil parts.
+function LDataFrame:dateParts(date_col, prefix) end
+
 --- Returns summary statistics for numeric columns.
 ---@return LDataFrame New dataframe containing descriptive statistics.
 function LDataFrame:describe() end
@@ -4821,6 +4827,11 @@ function LDataFrame:describe() end
 ---@param col string Column name string or one-based column index.
 ---@return LDataFrame New dataframe without nil rows for the column.
 function LDataFrame:dropNil(col) end
+
+--- Returns rows whose full-row key or selected-column key appears more than once.
+---@param cols? table Optional array table of column name strings or one-based column indexes used as the duplicate key.
+---@return LDataFrame New dataframe containing duplicate rows in original order.
+function LDataFrame:duplicateRows(cols) end
 
 --- Returns entropy for a column. This method is available to Lua scripts.
 ---@param col string Column name string or one-based column index.
@@ -4918,6 +4929,11 @@ function LDataFrame:merge(other) end
 ---@return number string|boolean|nil | Minimum cell value.
 function LDataFrame:min(col) end
 
+--- Reports missing and non-missing cell counts for every column.
+---@param opts? table Optional options table reserved for future report settings.
+---@return LDataFrame New dataframe containing `column`, `missing`, `non_missing`, and `missing_percent` columns.
+function LDataFrame:missingReport(opts) end
+
 --- Returns the mode value of a column. This method is available to Lua scripts.
 ---@param col string Column name string or one-based column index.
 ---@return number string|boolean|nil | Most common cell value.
@@ -4963,6 +4979,11 @@ function LDataFrame:pivotTable(row_key, col_key, value_key, agg) end
 ---@param sql_str string SQL query text.
 ---@return LDataFrame Query result dataframe.
 function LDataFrame:query(sql_str) end
+
+--- Runs a SQL-style query against this dataframe on a Rust worker thread.
+---@param sql_str string SQL query text.
+---@return LDataFrameTask Task that resolves to the query result dataframe.
+function LDataFrame:queryAsync(sql_str) end
 
 --- Returns a dataframe with a rank column.
 ---@param col string Column name string or one-based column index.
@@ -5055,13 +5076,31 @@ function LDataFrame:tail(n) end
 ---@return string Binary string containing serialized dataframe data.
 function LDataFrame:toBinary() end
 
+--- Serializes this dataframe to LVDF binary data and writes it through GameFS.
+---@param path string GameFS save path to write, usually under `save/`.
+---@param opts? table Optional file options table; reserved for future binary options.
+---@return boolean True when the file was written.
+function LDataFrame:toBinaryFile(path, opts) end
+
 --- Serializes this dataframe to CSV text.
 ---@return string CSV text.
 function LDataFrame:toCSV() end
 
+--- Serializes this dataframe to CSV text and writes it through GameFS.
+---@param path string GameFS save path to write, usually under `save/`.
+---@param opts? table Optional file options table; reserved for future CSV options.
+---@return boolean True when the file was written.
+function LDataFrame:toCSVFile(path, opts) end
+
 --- Serializes this dataframe to JSON text.
 ---@return string JSON text.
 function LDataFrame:toJSON() end
+
+--- Serializes this dataframe to JSON text and writes it through GameFS.
+---@param path string GameFS save path to write, usually under `save/`.
+---@param opts? table Optional file options table; reserved for future JSON options.
+---@return boolean True when the file was written.
+function LDataFrame:toJSONFile(path, opts) end
 
 --- Formats this dataframe as a human-readable text table.
 ---@return string Text table representation.
@@ -5084,6 +5123,12 @@ function LDataFrame:typeOf(name) end
 ---@param col any Column name string or one-based column index.
 ---@return number[] Array table of unique values.
 function LDataFrame:unique(col) end
+
+--- Counts occurrences of each value in a column with optional percentage output.
+---@param col any Column name string or one-based column index.
+---@param opts? table Optional options table; set `percent = true` to include percentage values from 0 to 100.
+---@return LDataFrame New dataframe containing `value`, `count`, and optional `percent` columns.
+function LDataFrame:valueCounts(col, opts) end
 
 --- Returns the numeric variance of a column.
 ---@param col string Column name string or one-based column index.
@@ -5141,6 +5186,40 @@ function LDataFrame:withRollingSum(col, window, name) end
 ---@param name string Output column name.
 function LDataFrame:zscoreCol(col, name) end
 
+--- Lua-side handle for a threaded dataframe job.
+---@class LDataFrameTask
+LDataFrameTask = {}
+
+--- Returns the task error message after failure.
+---@return string a Error message after failure.
+---@return nil b If the task is pending or succeeded.
+function LDataFrameTask:getError() end
+
+--- Returns whether this dataframe task has completed with success or failure.
+---@return boolean True once the worker has produced a result or error.
+function LDataFrameTask:isDone() end
+
+--- Returns a coarse task progress estimate.
+---@return number Progress from 0.0 to 1.0.
+function LDataFrameTask:progress() end
+
+--- Returns the completed dataframe result.
+---@return LDataFrame Completed dataframe result.
+function LDataFrameTask:result() end
+
+--- Returns the Lua-visible type name for this dataframe task handle.
+---@return string The string `LDataFrameTask`.
+function LDataFrameTask:type() end
+
+--- Returns whether this dataframe task handle matches a supported type name.
+---@param name string Type name to compare against `LDataFrameTask`, `DataFrameTask`, and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LDataFrameTask:typeOf(name) end
+
+--- Blocks until this dataframe task completes.
+---@return boolean True when the task completed successfully; false when it completed with an error.
+function LDataFrameTask:wait() end
+
 --- Lua-side in-memory database containing named dataframes.
 ---@class LDatabase
 LDatabase = {}
@@ -5176,9 +5255,32 @@ function LDatabase:merge(other) end
 ---@return LDataFrame Query result dataframe.
 function LDatabase:query(sql_str) end
 
+--- Runs a SQL-style query against a snapshot of the database tables on a Rust worker thread.
+---@param sql_str string SQL query text.
+---@return LDataFrameTask Task that resolves to the query result dataframe.
+function LDatabase:queryAsync(sql_str) end
+
+--- Runs a SQL-style query against the database tables with positional parameters.
+---@param sql_str string SQL query text using `?` placeholders outside string literals.
+---@param params table Array table of positional parameter values; nil maps to SQL NULL, strings are escaped, and booleans/numbers are bound as literals.
+---@return LDataFrame Query result dataframe.
+function LDatabase:queryParams(sql_str, params) end
+
+--- Runs a parameterized SQL query against a snapshot of the database tables on a Rust worker thread.
+---@param sql_str string SQL query text using `?` placeholders outside string literals.
+---@param params table Array table of positional parameter values; nil maps to SQL NULL, strings are escaped, and booleans/numbers are bound as literals.
+---@return LDataFrameTask Task that resolves to the query result dataframe.
+function LDatabase:queryParamsAsync(sql_str, params) end
+
 --- Removes a named table from the database.
 ---@param name string Table name to remove.
 function LDatabase:removeTable(name) end
+
+--- Serializes the database to the JSON database file format and writes it through GameFS.
+---@param path string GameFS save path to write, usually under `save/`.
+---@param opts? table Optional options table; `format = "json"` is the only supported format.
+---@return boolean True when the file was written.
+function LDatabase:save(path, opts) end
 
 --- Returns the number of tables in the database.
 ---@return number Table count.
@@ -5409,10 +5511,34 @@ lurek.dataframe.fromBinary = function(s) end
 ---@return LDataFrame New dataframe handle.
 lurek.dataframe.fromCSV = function(s) end
 
+--- Reads CSV text from GameFS and parses it into a dataframe.
+---@param path string GameFS path to read.
+---@param opts? table Optional file options table; reserved for future CSV options.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromCSVFile = function(path, opts) end
+
+--- Starts a Rust worker task that reads CSV text from GameFS and parses it into a dataframe.
+---@param path string GameFS path to read.
+---@param opts? table Optional file options table; reserved for future CSV options.
+---@return LDataFrameTask Task that resolves to a dataframe loaded from the CSV file.
+lurek.dataframe.fromCSVFileAsync = function(path, opts) end
+
 --- Parses a dataframe from JSON text. This function is exposed to Lua scripts.
 ---@param s string JSON text.
 ---@return LDataFrame New dataframe handle.
 lurek.dataframe.fromJSON = function(s) end
+
+--- Reads JSON text from GameFS and parses it into a dataframe.
+---@param path string GameFS path to read.
+---@param opts? table Optional file options table; reserved for future JSON options.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromJSONFile = function(path, opts) end
+
+--- Starts a Rust worker task that reads JSON text from GameFS and parses it into a dataframe.
+---@param path string GameFS path to read.
+---@param opts? table Optional file options table; reserved for future JSON options.
+---@return LDataFrameTask Task that resolves to a dataframe loaded from the JSON file.
+lurek.dataframe.fromJSONFileAsync = function(path, opts) end
 
 --- Creates a dataframe from column names and array-style rows.
 ---@param columns_tbl table Array table of column names.
@@ -5429,6 +5555,12 @@ lurek.dataframe.fromTable = function(rows) end
 ---@param vf LVecFrame Vectorized frame handle to convert.
 ---@return LDataFrame New dataframe handle.
 lurek.dataframe.fromVec = function(vf) end
+
+--- Reads a JSON database file from GameFS and parses it into a database.
+---@param path string GameFS path to read.
+---@param opts? table Optional options table; `format = "json"` is the only supported format.
+---@return LDatabase New database handle.
+lurek.dataframe.loadDatabase = function(path, opts) end
 
 --- Creates an empty dataframe. This function is exposed to Lua scripts.
 ---@return LDataFrame New empty dataframe handle.
@@ -5623,7 +5755,7 @@ lurek.devtools.fatal = function(message) end
 
 --- Returns Lua call stack frames using the Lua debug library.
 ---@param max_depth? number Optional maximum number of frames to return; defaults to 20 and is capped at 100.
----@return any[] Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
+---@return table Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
 lurek.devtools.getCallStack = function(max_depth) end
 
 --- Returns retained CPU frame duration samples in insertion order.
@@ -20016,8 +20148,9 @@ lurek.render.getDefaultFilter = function() end
 
 --- Returns a built-in default font at the nearest available pixel height.
 ---@param pixelHeight? number Desired pixel height (default 14).
+---@param bold? boolean When true, returns the bold variant (default false).
 ---@return LFont The built-in font handle.
-lurek.render.getDefaultFont = function(pixelHeight) end
+lurek.render.getDefaultFont = function(pixelHeight, bold) end
 
 --- Returns the current depth comparison mode and write-enable flag.
 ---@return string a Depth mode name and whether depth writes are enabled.
@@ -20136,6 +20269,10 @@ lurek.render.getWidth = function() end
 ---@param w number Width.
 ---@param h number Height.
 lurek.render.intersectScissor = function(x, y, w, h) end
+
+--- Returns true if the current default font selection uses the bold variant.
+---@return boolean True when bold is active.
+lurek.render.isBold = function() end
 
 --- Returns whether a named rendering layer is currently visible.
 ---@param name string Layer name.
@@ -20339,6 +20476,10 @@ lurek.render.setBackgroundColor = function(r, g, b) end
 --- Sets the blend mode for subsequent draw operations.
 ---@param mode string One of: "alpha", "add", "multiply", "replace", "screen".
 lurek.render.setBlendMode = function(mode) end
+
+--- Sets whether subsequent font size lookups use the bold Courier New variant.
+---@param bold boolean True to enable bold, false for regular.
+lurek.render.setBold = function(bold) end
 
 --- Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
 ---@param canvas? LCanvas Canvas to draw to, or nil for the main screen.
@@ -24040,6 +24181,17 @@ LAreaChart = {}
 ---@param b number Blue color component.
 function LAreaChart:addLayer(name, vals_tbl, r, g, b) end
 
+--- Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
+---@param name string The layer name.
+---@param df LDataFrame Source dataframe.
+---@param value_col string Column name for layer values.
+---@param r number Red color component.
+---@param g number Green color component.
+---@param b number Blue color component.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of values copied into the layer.
+function LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts) end
+
 --- Renders this area chart to an image buffer.
 ---@param target LImageData The image to draw into.
 function LAreaChart:drawToImage(target) end
@@ -24076,6 +24228,14 @@ function LBadge:setCount(count) end
 --- Lua-exposed bar chart for data visualization.
 ---@class LBarChart
 LBarChart = {}
+
+--- Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
+---@param df LDataFrame Source dataframe.
+---@param label_col string Column name for category labels.
+---@param value_cols string[] Value columns matching registered series order.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of categories added.
+function LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts) end
 
 --- Adds a category with values for each series.
 ---@param label string The category label.
@@ -24297,6 +24457,9 @@ function LGuiTable:addColumn(header, width) end
 ---@param cells table Array of cell text values.
 function LGuiTable:addRow(cells) end
 
+--- Clears all rows and the selected row in this table widget.
+function LGuiTable:clearRows() end
+
 --- Returns the text of a cell at the given 1-based row and column.
 ---@param row number The 1-based row index.
 ---@param col number The 1-based column index.
@@ -24325,9 +24488,20 @@ function LGuiTable:isSortable() end
 ---@param text string The new cell text.
 function LGuiTable:setCell(row, col, text) end
 
+--- Replaces columns and rows from a dataframe, stringifying cell values for display.
+---@param df LDataFrame Source dataframe.
+---@param opts? table Optional table with maxRows integer, columns string[], and includeHeaders boolean.
+---@return number The resulting row count.
+function LGuiTable:setDataFrame(df, opts) end
+
 --- Registers a callback invoked when a table row is selected.
 ---@param f function Callback receiving the widget index.
 function LGuiTable:setOnSelect(f) end
+
+--- Replaces all rows with an array of row arrays.
+---@param rows table Array of row arrays containing scalar cell values.
+---@return number The resulting row count.
+function LGuiTable:setRows(rows) end
 
 --- Sets the selected row by its 1-based index, or nil to deselect.
 ---@param row? number The 1-based row index, or nil.
@@ -24474,6 +24648,18 @@ LLineChart = {}
 ---@param g number Green color component.
 ---@param b number Blue color component.
 function LLineChart:addSeries(name, pts_tbl, r, g, b) end
+
+--- Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
+---@param name string The series name.
+---@param df LDataFrame Source dataframe.
+---@param x_col string Column name for X values.
+---@param y_col string Column name for Y values.
+---@param r number Red color component.
+---@param g number Green color component.
+---@param b number Blue color component.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of accepted points added to the series.
+function LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts) end
 
 --- Renders this line chart to an image buffer.
 ---@param target LImageData The image to draw into.
@@ -24663,6 +24849,14 @@ LPieChart = {}
 ---@param b number Blue color component.
 function LPieChart:addSegment(label, value, r, g, b) end
 
+--- Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
+---@param df LDataFrame Source dataframe.
+---@param label_col string Column name for segment labels.
+---@param value_col string Column name for segment values.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of segments added.
+function LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts) end
+
 --- Renders this pie chart to an image buffer.
 ---@param target LImageData The image to draw into.
 function LPieChart:drawToImage(target) end
@@ -24748,6 +24942,18 @@ LScatterPlot = {}
 ---@param g number Green color component.
 ---@param b number Blue color component.
 function LScatterPlot:addSeries(name, pts_tbl, r, g, b) end
+
+--- Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
+---@param name string The series name.
+---@param df LDataFrame Source dataframe.
+---@param x_col string Column name for X values.
+---@param y_col string Column name for Y values.
+---@param r number Red color component.
+---@param g number Green color component.
+---@param b number Blue color component.
+---@param opts? table Optional table with maxRows integer.
+---@return number Number of accepted points added to the series.
+function LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts) end
 
 --- Renders this scatter plot to an image buffer.
 ---@param target LImageData The image to draw into.
@@ -25078,11 +25284,12 @@ function LTextInput:setText(text) end
 ---@class LTheme
 LTheme = {}
 
---- Sets a style entry for the given widget type and state.
+--- Sets a style entry for the given widget type and state, optionally restricted to a style class.
 ---@param widget_type string The widget type name (e.g. "button").
 ---@param state string The widget state (e.g. "normal", "hovered").
----@param style_table table A table of style properties.
-function LTheme:setStyle(widget_type, state, style_table) end
+---@param style_class? string (Optional) The specific class to apply this style to.
+---@param style_table? table A table of style properties.
+function LTheme:setStyle(widget_type, state, style_class, style_table) end
 
 --- Returns the type name of this object.
 ---@return string Always "LTheme".
@@ -25398,6 +25605,10 @@ function LUiWidget:getMaxSize() end
 ---@return number b Minimum width and height in pixels.
 function LUiWidget:getMinSize() end
 
+--- Returns the mouse filter of this widget.
+---@return string The mouse filter type.
+function LUiWidget:getMouseFilter() end
+
 --- Returns the inner padding of this widget.
 ---@return number a Top, right, bottom, and left padding in pixels.
 ---@return number b Top, right, bottom, and left padding in pixels.
@@ -25425,6 +25636,10 @@ function LUiWidget:getSize() end
 --- Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 ---@return string The widget state name.
 function LUiWidget:getState() end
+
+--- Returns the style class of this widget.
+---@return string The style class name, or nil if none is set.
+function LUiWidget:getStyleClass() end
 
 --- Returns the tooltip text of this widget.
 ---@return string The tooltip text, or an empty string if none is set.
@@ -25499,6 +25714,10 @@ function LUiWidget:setMaxSize(w, h) end
 ---@param h number Minimum height in pixels.
 function LUiWidget:setMinSize(w, h) end
 
+--- Sets the mouse filter for this widget ("stop", "pass", "ignore").
+---@param filter string The mouse filter type.
+function LUiWidget:setMouseFilter(filter) end
+
 --- Registers a callback function invoked when this widget's value changes.
 ---@param f function Callback receiving the widget index as argument.
 function LUiWidget:setOnChange(f) end
@@ -25527,6 +25746,10 @@ function LUiWidget:setPosition(x, y) end
 ---@param w number Width in pixels.
 ---@param h number Height in pixels.
 function LUiWidget:setSize(w, h) end
+
+--- Sets the style class of this widget.
+---@param class string The style class name.
+function LUiWidget:setStyleClass(class) end
 
 --- Sets the tooltip text shown when the user hovers over this widget.
 ---@param text string The tooltip message.

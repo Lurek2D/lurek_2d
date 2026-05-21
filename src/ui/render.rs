@@ -691,7 +691,9 @@ fn resolve_style_with_alpha(
     let style = ctx
         .theme
         .as_ref()
-        .and_then(|t| t.get_style(base.widget_type, base.state))
+        .and_then(|t| {
+            t.get_style_with_class(base.widget_type, base.state, base.style_class.as_deref())
+        })
         .unwrap_or(default_style);
     let mut style_with_alpha = style.clone();
     let alpha = base.alpha.clamp(0.0, 1.0);
@@ -734,10 +736,22 @@ impl<'a> WidgetRenderer<'a> {
     }
     /// Render all immediate children of the root widget (index 0).
     fn render_root_children(&mut self) {
+        let root_font_key = self
+            .ctx
+            .widgets
+            .first()
+            .and_then(|w| w.base().font_key)
+            .unwrap_or(self.font_key);
         if let Some(children) = self.ctx.widgets.first().and_then(|w| w.children()) {
             for &child_idx in children {
                 if child_idx < self.ctx.widgets.len() {
-                    self.render_widget(child_idx);
+                    render_widget(
+                        self.ctx,
+                        child_idx,
+                        root_font_key,
+                        self.default_style,
+                        self.cmds,
+                    );
                 }
             }
         }
@@ -753,9 +767,10 @@ fn render_widget(
 ) {
     let widget = &ctx.widgets[idx];
     let base = widget.base();
-    if !base.visible {
+    if !base.visible || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open) {
         return;
     }
+    let font_key = base.font_key.unwrap_or(font_key);
     let style_with_alpha = resolve_style_with_alpha(ctx, base, default_style);
     let style = &style_with_alpha;
     emit_shadow(base, style, cmds);
@@ -877,11 +892,54 @@ fn render_widget(
                     cmds,
                 );
             }
+            if w.open && !w.items.is_empty() {
+                let row_h = base.height.max(20.0);
+                let drop_y = base.y + base.height;
+                cmds.push(RenderCommand::SetColor(0.10, 0.11, 0.16, 1.0));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: base.x,
+                    y: drop_y,
+                    w: base.width,
+                    h: row_h * w.items.len() as f32,
+                });
+                for (item_idx, item) in w.items.iter().enumerate() {
+                    let row_y = drop_y + item_idx as f32 * row_h;
+                    if w.selected_index == Some(item_idx) {
+                        cmds.push(RenderCommand::SetColor(0.22, 0.36, 0.60, 0.85));
+                        cmds.push(RenderCommand::Rectangle {
+                            mode: DrawMode::Fill,
+                            x: base.x + 1.0,
+                            y: row_y,
+                            w: (base.width - 2.0).max(0.0),
+                            h: row_h,
+                        });
+                    }
+                    emit_text_at(
+                        item,
+                        base.x + 6.0,
+                        row_y + (row_h - style.font_size) * 0.5,
+                        font_key,
+                        style,
+                        cmds,
+                    );
+                    cmds.push(RenderCommand::SetColor(0.22, 0.24, 0.30, 0.60));
+                    cmds.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: base.x,
+                        y: row_y + row_h - 1.0,
+                        w: base.width,
+                        h: 1.0,
+                    });
+                }
+            }
         }
         WidgetKind::ListBox(w) => {
             let row_h = w.item_height.max(14.0);
-            for (row_idx, item) in w.items.iter().enumerate() {
-                let row_y = base.y + row_idx as f32 * row_h;
+            let first_row = (w.scroll_y / row_h).floor().max(0.0) as usize;
+            let scroll_offset = w.scroll_y - first_row as f32 * row_h;
+            for (row_idx, item) in w.items.iter().enumerate().skip(first_row) {
+                let row_y = base.y + (row_idx - first_row) as f32 * row_h - scroll_offset;
                 if row_y + row_h > base.y + base.height {
                     break;
                 }
@@ -959,7 +1017,12 @@ fn render_widget(
             }
         }
         WidgetKind::Toast(w) => {
-            cmds.push(RenderCommand::SetColor(0.39, 0.75, 1.0, 1.0));
+            cmds.push(RenderCommand::SetColor(
+                style.border_color[0],
+                style.border_color[1],
+                style.border_color[2],
+                style.border_color[3],
+            ));
             cmds.push(RenderCommand::Rectangle {
                 mode: DrawMode::Fill,
                 x: base.x,
@@ -1172,6 +1235,21 @@ fn render_widget(
                 ry: style.corner_radius,
             });
             emit_text_at(&w.title, base.x + 10.0, base.y + 6.0, font_key, style, cmds);
+            cmds.push(RenderCommand::SetColor(0.78, 0.26, 0.26, 1.0));
+            let close_x = base.x + base.width - 18.0;
+            let close_y = base.y + 10.0;
+            cmds.push(RenderCommand::Line {
+                x1: close_x,
+                y1: close_y,
+                x2: close_x + 8.0,
+                y2: close_y + 8.0,
+            });
+            cmds.push(RenderCommand::Line {
+                x1: close_x + 8.0,
+                y1: close_y,
+                x2: close_x,
+                y2: close_y + 8.0,
+            });
             if !w.footer_buttons.is_empty() {
                 let footer_y = base.y + base.height - 30.0;
                 let button_w = 70.0;
@@ -1357,8 +1435,11 @@ fn render_widget(
                 });
             }
             let row_h = 20.0;
-            for (row_idx, row) in w.rows.iter().enumerate() {
-                let row_y = base.y + header_h + row_idx as f32 * row_h;
+            let first_row = (w.scroll_y / row_h).floor().max(0.0) as usize;
+            let scroll_offset = w.scroll_y - first_row as f32 * row_h;
+            for (row_idx, row) in w.rows.iter().enumerate().skip(first_row) {
+                let row_y =
+                    base.y + header_h + (row_idx - first_row) as f32 * row_h - scroll_offset;
                 if row_y + row_h > base.y + base.height {
                     break;
                 }
@@ -1454,7 +1535,7 @@ impl GuiContext {
                 continue;
             };
             let base = widget.base();
-            if !base.visible {
+            if !base.visible || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open) {
                 continue;
             }
             let rect = base.computed_rect;
@@ -1795,12 +1876,45 @@ impl GuiContext {
                     let ay = y + h as i32 / 2;
                     img.draw_line(ax - 4, ay - 2, ax, ay + 3, 200, 205, 215, 255);
                     img.draw_line(ax, ay + 3, ax + 4, ay - 2, 200, 205, 215, 255);
+                    if cb.open && !cb.items.is_empty() {
+                        let row_h = (h as i32).max(20);
+                        let drop_y = y + h as i32;
+                        img.draw_rect(
+                            x,
+                            drop_y,
+                            w,
+                            (row_h as usize * cb.items.len()) as u32,
+                            24,
+                            26,
+                            36,
+                            255,
+                        );
+                        for (item_idx, item) in cb.items.iter().enumerate() {
+                            let row_y = drop_y + item_idx as i32 * row_h;
+                            if cb.selected_index == Some(item_idx) {
+                                img.draw_rect(
+                                    x + 1,
+                                    row_y,
+                                    w.saturating_sub(2),
+                                    row_h as u32,
+                                    55,
+                                    90,
+                                    155,
+                                    220,
+                                );
+                            }
+                            img.draw_label(item, x + 6, row_y + (row_h - 7) / 2, fr, fg, fb);
+                            img.draw_rect(x, row_y + row_h - 1, w, 1, 55, 60, 75, 160);
+                        }
+                    }
                     skip_text = true;
                 }
                 WidgetKind::ListBox(lb) => {
                     let row_h = lb.item_height.max(12.0) as i32;
-                    for (i, item) in lb.items.iter().enumerate() {
-                        let iy = y + i as i32 * row_h;
+                    let first_row = (lb.scroll_y / row_h as f32).floor().max(0.0) as usize;
+                    let scroll_offset = (lb.scroll_y - first_row as f32 * row_h as f32) as i32;
+                    for (i, item) in lb.items.iter().enumerate().skip(first_row) {
+                        let iy = y + (i - first_row) as i32 * row_h - scroll_offset;
                         if iy >= y + h as i32 {
                             break;
                         }
@@ -1850,7 +1964,11 @@ impl GuiContext {
                     skip_text = true;
                 }
                 WidgetKind::Toast(t) => {
-                    img.draw_rect(x, y, 4, h, 100, 190, 255, 255);
+                    let [brc, bgc, bbc, _ba] = style.border_color;
+                    let br = (brc * 255.0) as u8;
+                    let bg = (bgc * 255.0) as u8;
+                    let bb = (bbc * 255.0) as u8;
+                    img.draw_rect(x, y, 4, h, br, bg, bb, 255);
                     let fade_a = ((1.0 - t.progress()) * 200.0) as u8;
                     img.draw_rect(x + w as i32 - 6, y, 6, h, 255, 255, 255, fade_a);
                     img.draw_label(
@@ -1921,6 +2039,10 @@ impl GuiContext {
                     img.draw_rect(x, y, w, bar_h, 38, 42, 60, 255);
                     img.draw_rect(x, y + bar_h as i32, w, 1, 55, 60, 80, 255);
                     img.draw_label(&dlg.title, x + 10, y + 9, fr, fg, fb);
+                    let close_x = x + w as i32 - 18;
+                    let close_y = y + 10;
+                    img.draw_line(close_x, close_y, close_x + 8, close_y + 8, 200, 80, 80, 255);
+                    img.draw_line(close_x + 8, close_y, close_x, close_y + 8, 200, 80, 80, 255);
                     if !dlg.footer_buttons.is_empty() {
                         let footer_y = y + h as i32 - 34;
                         img.draw_rect(x, footer_y, w, 1, 55, 60, 80, 255);
@@ -2036,8 +2158,10 @@ impl GuiContext {
                         cx += cw;
                     }
                     let row_h = 20i32;
-                    for (ri, row) in tbl.rows.iter().enumerate() {
-                        let ry = y + col_h + ri as i32 * row_h;
+                    let first_row = (tbl.scroll_y / row_h as f32).floor().max(0.0) as usize;
+                    let scroll_offset = (tbl.scroll_y - first_row as f32 * row_h as f32) as i32;
+                    for (ri, row) in tbl.rows.iter().enumerate().skip(first_row) {
+                        let ry = y + col_h + (ri - first_row) as i32 * row_h - scroll_offset;
                         if ry + row_h > y + h as i32 {
                             break;
                         }

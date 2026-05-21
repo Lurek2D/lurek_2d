@@ -12,6 +12,7 @@
 
 -- Universal render helpers (handles all legacy and current call signatures)
 local _gfx = lurek.render
+local _unpack = table.unpack or unpack
 local function _sc(c)
     if type(c) == "table" then
         local col = c.color or c
@@ -69,6 +70,8 @@ local DAY_SPEED  = 120.0           -- seconds of real time per 1 simulated hour
 local ZOOM_MIN   = 0.5
 local ZOOM_MAX   = 12.0
 local PAN_SCALE  = 0.12            -- degrees per pixel at zoom 1.0
+local PAD_PAN_SPEED = 90.0         -- degrees per second at zoom 1.0
+local PICK_RADIUS   = 28.0
 
 -- ---------------------------------------------------------------------------
 -- Globe state
@@ -97,6 +100,12 @@ local lmb_prev       = false       -- previous frame left-button state
 -- HUD state
 local hud_province   = ""          -- province name shown in HUD
 local hud_lod        = ""
+local hud_status     = "Lua fallback renderer active"
+
+local province_cache = {}
+local projected_cache = {}
+local projected_order = {}
+local REGION_COLORS = {}
 
 -- ---------------------------------------------------------------------------
 -- Province generation helpers
@@ -114,6 +123,133 @@ end
 -- Returns the list of assigned province IDs.
 -- Neighbors are the four grid-adjacent cells (N/S/E/W), clipped at edges.
 local next_pid = 1    -- global province ID counter
+
+local function wrap_lon(v)
+    while v > 180.0 do v = v - 360.0 end
+    while v < -180.0 do v = v + 360.0 end
+    return v
+end
+
+local function deg2rad(v)
+    return v * math.pi / 180.0
+end
+
+local function mix(a, b, t)
+    return a + (b - a) * t
+end
+
+local function orthographic_project(lat, lon)
+    local lat_r = deg2rad(lat)
+    local lon_r = deg2rad(lon)
+    local cam_lat_r = deg2rad(cam_lat)
+    local cam_lon_r = deg2rad(cam_lon)
+    local dlon = lon_r - cam_lon_r
+
+    local cos_lat = math.cos(lat_r)
+    local sin_lat = math.sin(lat_r)
+    local cos_cam = math.cos(cam_lat_r)
+    local sin_cam = math.sin(cam_lat_r)
+    local cos_dlon = math.cos(dlon)
+    local sin_dlon = math.sin(dlon)
+
+    local z = sin_cam * sin_lat + cos_cam * cos_lat * cos_dlon
+    if z <= 0.0 then
+        return nil
+    end
+
+    local px = cos_lat * sin_dlon
+    local py = cos_cam * sin_lat - sin_cam * cos_lat * cos_dlon
+    local scale = GLOBE_R * cam_zoom
+    return GLOBE_CX + px * scale, GLOBE_CY - py * scale, z
+end
+
+local function sunlight_for(lat, lon)
+    local lat_r = deg2rad(lat)
+    local lon_r = deg2rad(lon)
+    local sun_lon = ((time_of_day / 24.0) * 360.0) - 180.0
+    local sun_lon_r = deg2rad(sun_lon)
+    local sun_x = math.cos(sun_lon_r)
+    local sun_y = 0.0
+    local sun_z = math.sin(sun_lon_r)
+    local nx = math.cos(lat_r) * math.cos(lon_r)
+    local ny = math.sin(lat_r)
+    local nz = math.cos(lat_r) * math.sin(lon_r)
+    local lit = nx * sun_x + ny * sun_y + nz * sun_z
+    return clamp(0.25 + math.max(0.0, lit) * 0.85, 0.25, 1.0)
+end
+
+local function province_color(meta, pid)
+    local region_color = REGION_COLORS[meta.region]
+    local base = region_color or meta.base_color or {0.4, 0.55, 0.75, 1.0}
+    local shade = sunlight_for(meta.centroid[1], meta.centroid[2])
+    local r = clamp(base[1] * shade, 0.0, 1.0)
+    local g2 = clamp(base[2] * shade, 0.0, 1.0)
+    local b = clamp(base[3] * shade, 0.0, 1.0)
+
+    if pid == selected_id then
+        r = mix(r, 1.0, 0.45)
+        g2 = mix(g2, 0.85, 0.55)
+        b = mix(b, 0.15, 0.80)
+    elseif pid == hovered_id then
+        r = mix(r, 1.0, 0.30)
+        g2 = mix(g2, 1.0, 0.30)
+        b = mix(b, 1.0, 0.18)
+    end
+
+    return r, g2, b
+end
+
+local function rebuild_projection_cache()
+    projected_cache = {}
+    projected_order = {}
+
+    for pid, meta in pairs(province_cache) do
+        local cx, cy, cz = orthographic_project(meta.centroid[1], meta.centroid[2])
+        if cx then
+            local pts = {}
+            local complete = true
+            for _, v in ipairs(meta.vertices) do
+                local vx, vy = orthographic_project(v[1], v[2])
+                if not vx then
+                    complete = false
+                    break
+                end
+                pts[#pts + 1] = vx
+                pts[#pts + 1] = vy
+            end
+            if complete and #pts >= 6 then
+                projected_cache[pid] = {
+                    x = cx,
+                    y = cy,
+                    z = cz,
+                    points = pts,
+                    meta = meta,
+                }
+                projected_order[#projected_order + 1] = pid
+            end
+        end
+    end
+
+    table.sort(projected_order, function(a, b)
+        return projected_cache[a].z < projected_cache[b].z
+    end)
+end
+
+local function pick_projected_province(x, y)
+    local best_id = nil
+    local best_dist = PICK_RADIUS * PICK_RADIUS
+    for _, pid in ipairs(projected_order) do
+        local item = projected_cache[pid]
+        local dx = item.x - x
+        local dy = item.y - y
+        local dist = dx * dx + dy * dy
+        if dist < best_dist then
+            best_dist = dist
+            best_id = pid
+        end
+    end
+    return best_id
+end
 
 local function generate_grid_provinces(
     region, lat_min, lat_max, lon_min, lon_max,
@@ -166,6 +302,17 @@ local function generate_grid_provinces(
                 base_color = {cr, cg, cb, 1.0},
             })
 
+            province_cache[pid] = {
+                id = pid,
+                region = region,
+                centroid = {clat, clon},
+                vertices = {
+                    {lat0, lon0}, {lat0, lon1},
+                    {lat1, lon1}, {lat1, lon0},
+                },
+                base_color = {cr, cg, cb, 1.0},
+            }
+
             g:setProvinceAttr(pid, "region", region)
             if extra_attrs then
                 for k, v in pairs(extra_attrs) do
@@ -216,7 +363,7 @@ local CONTINENT_LABELS = {
 -- ---------------------------------------------------------------------------
 -- Political layer colors per region
 -- ---------------------------------------------------------------------------
-local REGION_COLORS = {
+REGION_COLORS = {
     ["North America"] = {0.25, 0.50, 0.85, 0.55},
     ["South America"] = {0.30, 0.75, 0.40, 0.55},
     ["Europe"]        = {0.85, 0.75, 0.25, 0.55},
@@ -305,9 +452,18 @@ function lurek.init()
     -- Input bindings
     lurek.input.bind("drag",  {"mouse1"})
     lurek.input.bind("quit",  {"escape"})
+    lurek.input.bind("pan_left",  {"left", "a", "gamepad:0:dpad_left"})
+    lurek.input.bind("pan_right", {"right", "d", "gamepad:0:dpad_right"})
+    lurek.input.bind("pan_up",    {"up", "w", "gamepad:0:dpad_up"})
+    lurek.input.bind("pan_down",  {"down", "s", "gamepad:0:dpad_down"})
+    lurek.input.bind("zoom_in",   {"pageup", "equals", "gamepad:0:rightshoulder", "gamepad:0:y"})
+    lurek.input.bind("zoom_out",  {"pagedown", "minus", "gamepad:0:leftshoulder", "gamepad:0:x"})
+    lurek.input.bind("select",    {"return", "space", "gamepad:0:a"})
 
     -- Set space-background color (fills screen automatically each frame)
     lurek.render.setBackgroundColor(0.02, 0.02, 0.08)
+
+    rebuild_projection_cache()
 
     print("Globe demo loaded successfully.")
 end
@@ -320,14 +476,28 @@ function lurek.process(dt)
     local mx, my = lurek.input.mouse.getPosition()
     local lmb    = lurek.input.isActionDown("drag")
     local _, wdy = lurek.input.mouse.getWheelDelta()
+    local pad_left = lurek.input.isActionDown("pan_left")
+    local pad_right = lurek.input.isActionDown("pan_right")
+    local pad_up = lurek.input.isActionDown("pan_up")
+    local pad_down = lurek.input.isActionDown("pan_down")
+    local pad_zoom_in = lurek.input.isActionDown("zoom_in")
+    local pad_zoom_out = lurek.input.isActionDown("zoom_out")
+    local controller_active = pad_left or pad_right or pad_up or pad_down or pad_zoom_in or pad_zoom_out
+    local was_dragging = is_dragging
 
     -- ── Mouse wheel zoom ──────────────────────────────────────────────────
     if wdy and wdy ~= 0 then
         local factor = wdy > 0 and 1.20 or (1.0 / 1.20)
         cam_zoom     = clamp(cam_zoom * factor, ZOOM_MIN, ZOOM_MAX)
         g:setCamera(cam_lat, cam_lon, cam_zoom)
-        -- also exercise g:zoom (multiplicative convenience method)
-        g:zoom(1.0)   -- identity call to confirm the API is reachable
+    end
+
+    if pad_zoom_in then
+        cam_zoom = clamp(cam_zoom * (1.0 + dt * 1.6), ZOOM_MIN, ZOOM_MAX)
+        g:setCamera(cam_lat, cam_lon, cam_zoom)
+    elseif pad_zoom_out then
+        cam_zoom = clamp(cam_zoom / (1.0 + dt * 1.6), ZOOM_MIN, ZOOM_MAX)
+        g:setCamera(cam_lat, cam_lon, cam_zoom)
     end
 
     -- ── Left-drag pan ────────────────────────────────────────────────────
@@ -350,54 +520,40 @@ function lurek.process(dt)
         is_dragging = false
     end
 
+    if controller_active and not lmb then
+        local pan_speed = PAD_PAN_SPEED * dt / math.max(cam_zoom, 0.75)
+        if pad_left then cam_lon = wrap_lon(cam_lon - pan_speed) end
+        if pad_right then cam_lon = wrap_lon(cam_lon + pan_speed) end
+        if pad_up then cam_lat = clamp(cam_lat + pan_speed, -85.0, 85.0) end
+        if pad_down then cam_lat = clamp(cam_lat - pan_speed, -85.0, 85.0) end
+        g:setCamera(cam_lat, cam_lon, cam_zoom)
+    end
+
+    rebuild_projection_cache()
+
     -- ── Click to select province ──────────────────────────────────────────
-    local lmb_just_released = lmb_prev and not lmb
+    local lmb_just_released = lmb_prev and not lmb and not was_dragging
     lmb_prev = lmb
-    if lmb_just_released and not is_dragging then
-        local clicked = g:pick(mx, my)
+    local target_x = controller_active and GLOBE_CX or mx
+    local target_y = controller_active and GLOBE_CY or my
+    hovered_id = pick_projected_province(target_x, target_y)
+
+    local select_pressed = lurek.input.wasActionPressed("select")
+    if lmb_just_released or select_pressed then
+        local clicked = hovered_id
         if clicked and clicked ~= selected_id then
-            -- Deselect old (clear selection highlight)
-            if selected_id then
-                g:setLayerColor("highlight", selected_id, 0, 0, 0, 0)
-            end
             selected_id = clicked
 
-            -- Highlight selected province gold
-            g:setLayerColor("highlight", selected_id, 1.0, 0.85, 0.1, 0.7)
-
             -- Show a popup label with province info
-            local region = g:getProvinceAttr(selected_id, "region") or "Unknown"
-            local lat, lon = g:pickLatLon(mx, my)
-            if lat then
-                local popup_text = string.format("Province %d — %s (%.1f°, %.1f°)",
-                    selected_id, region, lat, lon)
-                -- Add a temporary selection label; remove previous one first
-                if flight_arc_id then
-                    g:removeArc(flight_arc_id)
-                    flight_arc_id = nil
-                end
-                -- Draw a great-circle arc from camera centre to selected province centroid
-                local clat, clon = g:getCamera()
-                -- We approximate the centroid from pickLatLon
-                flight_arc_id = g:addArc(clat, clon, lat, lon, 24)
-                hud_province = popup_text
-            end
+            local meta = province_cache[selected_id]
+            local region = meta and meta.region or "Unknown"
+            local lat = meta and meta.centroid[1] or 0.0
+            local lon = meta and meta.centroid[2] or 0.0
+            hud_province = string.format("Province %d — %s (%.1f deg, %.1f deg)",
+                selected_id, region, lat, lon)
         end
     end
-
-    -- ── Province hover highlight ──────────────────────────────────────────
-    hovered_id = g:pick(mx, my)
-    if hovered_id ~= prev_hovered then
-        -- Clear old hover highlight (unless it's also the selected province)
-        if prev_hovered and prev_hovered ~= selected_id then
-            g:setLayerColor("highlight", prev_hovered, 0, 0, 0, 0)
-        end
-        -- Apply new hover highlight (unless it's the selected province)
-        if hovered_id and hovered_id ~= selected_id then
-            g:setLayerColor("highlight", hovered_id, 1.0, 1.0, 1.0, 0.35)
-        end
-        prev_hovered = hovered_id
-    end
+    prev_hovered = hovered_id
 
     -- Update HUD LOD string
     hud_lod = g:getLod()
@@ -424,9 +580,39 @@ end
 -- ---------------------------------------------------------------------------
 function lurek.draw()
     -- (background filled automatically via setBackgroundColor set in init)
+    rebuild_projection_cache()
 
-    -- Globe renders via the registered layer pipeline.
-    local cmd_count = 0
+    lurek.render.setColor(0.05, 0.08, 0.16, 1.0)
+    circ("fill", GLOBE_CX, GLOBE_CY, GLOBE_R * cam_zoom)
+    lurek.render.setColor(0.12, 0.18, 0.28, 1.0)
+    circ("line", GLOBE_CX, GLOBE_CY, GLOBE_R * cam_zoom)
+
+    for _, pid in ipairs(projected_order) do
+        local item = projected_cache[pid]
+        local r, g2, b = province_color(item.meta, pid)
+        lurek.render.setColor(r, g2, b, 0.95)
+        lurek.render.polygon("fill", _unpack(item.points))
+        lurek.render.setColor(0.02, 0.04, 0.08, 0.45)
+        lurek.render.polygon("line", _unpack(item.points))
+    end
+
+    for _, cap in ipairs(CAPITALS) do
+        local sx, sy = orthographic_project(cap[1], cap[2])
+        if sx then
+            lurek.render.setColor(1.0, 0.92, 0.55, 0.95)
+            circ("fill", sx, sy, 3 + cam_zoom * 0.5)
+        end
+    end
+
+    for _, lbl in ipairs(CONTINENT_LABELS) do
+        local sx, sy = orthographic_project(lbl[1], lbl[2])
+        if sx then
+            lurek.render.setColor(0.92, 0.96, 1.0, 0.72)
+            text_(lbl[3], sx - 38, sy, 12)
+        end
+    end
+
+    local cmd_count = #projected_order
 
     -- ── HUD strip ─────────────────────────────────────────────────────────
     lurek.render.setColor(0.0, 0.0, 0.0, 0.65)
@@ -439,7 +625,7 @@ function lurek.draw()
         clat, clon, czoom, hud_lod)
     local tod_h = math.floor(tod)
     local tod_m = math.floor((tod - tod_h) * 60)
-    local hud_time = string.format("Time %02d:%02d  Provinces=%d  cmds=%d",
+    local hud_time = string.format("Time %02d:%02d  Provinces=%d  visible=%d",
         tod_h, tod_m, g:provinceCount(), cmd_count)
 
     lurek.render.setColor(0.9, 0.9, 0.9)
@@ -464,10 +650,19 @@ function lurek.draw()
         rect("fill", SCREEN_W/2 - txt_w/2, SCREEN_H - 60, txt_w, 28)
         lurek.render.setColor(1.0, 0.85, 0.1)
         text_(hud_province, SCREEN_W/2 - txt_w/2 + 8, SCREEN_H - 54, 14)
+        local sel = projected_cache[selected_id]
+        if sel then
+            lurek.render.setColor(1.0, 0.85, 0.1, 0.65)
+            ln(GLOBE_CX, GLOBE_CY, sel.x, sel.y)
+            circ("line", sel.x, sel.y, 10)
+        end
     end
 
     -- ── Controls reminder (bottom-right) ─────────────────────────────────
     lurek.render.setColor(0.5, 0.5, 0.5, 0.8)
-    text_("Drag: pan   Wheel: zoom   Click: select   Esc: quit",
-        SCREEN_W - 480, SCREEN_H - 20, 13)
+    text_("Drag/mouse: pan+pick   D-pad/WASD: pan   Shoulder/PgUpPgDn: zoom   A/Enter: select   Esc: quit",
+        SCREEN_W - 760, SCREEN_H - 20, 13)
+
+    lurek.render.setColor(0.7, 0.85, 1.0, 0.85)
+    text_(hud_status, 12, SCREEN_H - 22, 13)
 end

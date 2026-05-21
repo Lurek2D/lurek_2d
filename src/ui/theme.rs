@@ -53,11 +53,11 @@ impl Default for WidgetStyle {
         }
     }
 }
-/// Style registry mapping `(WidgetType, WidgetState)` keys to `WidgetStyle` values; used by `GuiContext` and render.
+/// Style registry mapping `(WidgetType, WidgetState, Option<String>)` keys to `WidgetStyle` values; used by `GuiContext` and render.
 #[derive(Debug, Clone)]
 pub struct Theme {
-    /// Internal map from `(WidgetType, WidgetState)` to style overrides.
-    pub styles: HashMap<(WidgetType, WidgetState), WidgetStyle>,
+    /// Internal map from `(WidgetType, WidgetState, Option<String>)` to style overrides.
+    pub styles: HashMap<(WidgetType, WidgetState, Option<String>), WidgetStyle>,
 }
 impl Theme {
     /// Create a theme with no style overrides.
@@ -68,13 +68,45 @@ impl Theme {
     }
     /// Register `style` for `(widget_type, state)`, replacing any previous entry.
     pub fn set_style(&mut self, widget_type: WidgetType, state: WidgetState, style: WidgetStyle) {
-        self.styles.insert((widget_type, state), style);
+        self.styles.insert((widget_type, state, None), style);
+    }
+    /// Register a class-specific style override.
+    pub fn set_class_style(
+        &mut self,
+        widget_type: WidgetType,
+        state: WidgetState,
+        style_class: String,
+        style: WidgetStyle,
+    ) {
+        self.styles
+            .insert((widget_type, state, Some(style_class)), style);
     }
     /// Return the style for `(widget_type, state)`, falling back to `WidgetState::Normal` if the exact state is absent.
     pub fn get_style(&self, widget_type: WidgetType, state: WidgetState) -> Option<&WidgetStyle> {
+        self.get_style_with_class(widget_type, state, None)
+    }
+    /// Return the style for `(widget_type, state)` with cascading fallback logic to support classes.
+    pub fn get_style_with_class(
+        &self,
+        widget_type: WidgetType,
+        state: WidgetState,
+        style_class: Option<&str>,
+    ) -> Option<&WidgetStyle> {
+        let class_opt = style_class.map(|s| s.to_string());
+        if let Some(ref class) = class_opt {
+            if let Some(style) = self.styles.get(&(widget_type, state, Some(class.clone()))) {
+                return Some(style);
+            }
+            if let Some(style) =
+                self.styles
+                    .get(&(widget_type, WidgetState::Normal, Some(class.clone())))
+            {
+                return Some(style);
+            }
+        }
         self.styles
-            .get(&(widget_type, state))
-            .or_else(|| self.styles.get(&(widget_type, WidgetState::Normal)))
+            .get(&(widget_type, state, None))
+            .or_else(|| self.styles.get(&(widget_type, WidgetState::Normal, None)))
     }
     /// Render all four `Button` states as labelled tiles into a new `ImageData` of `width × height` pixels.
     pub fn draw_button_states_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
@@ -178,6 +210,129 @@ impl Theme {
         };
         let none_shadow = [0.0f32, 0.0, 0.0, 0.0];
         let drop_shadow = [0.0f32, 0.0, 0.0, 0.5];
+
+        // Semantic Bootstrap Button Style Intents
+        let mut reg_class =
+            |class: &str, normal_bg: [f32; 4], hover_bg: [f32; 4], pressed_bg: [f32; 4]| {
+                t.set_class_style(
+                    WidgetType::Button,
+                    WidgetState::Normal,
+                    class.to_string(),
+                    mk(
+                        normal_bg,
+                        [0.92, 0.95, 1.0, 1.0],
+                        [
+                            normal_bg[0] * 0.8,
+                            normal_bg[1] * 0.8,
+                            normal_bg[2] * 0.8,
+                            1.0,
+                        ],
+                        1.0,
+                        4.0,
+                        14.0,
+                        drop_shadow,
+                        [2.0, 2.0],
+                        0.15,
+                        Some(normal_bg),
+                        "center",
+                    ),
+                );
+                t.set_class_style(
+                    WidgetType::Button,
+                    WidgetState::Hovered,
+                    class.to_string(),
+                    mk(
+                        hover_bg,
+                        [1.0, 1.0, 1.0, 1.0],
+                        [hover_bg[0] * 0.8, hover_bg[1] * 0.8, hover_bg[2] * 0.8, 1.0],
+                        1.0,
+                        4.0,
+                        14.0,
+                        drop_shadow,
+                        [2.0, 2.0],
+                        0.22,
+                        Some(hover_bg),
+                        "center",
+                    ),
+                );
+                t.set_class_style(
+                    WidgetType::Button,
+                    WidgetState::Pressed,
+                    class.to_string(),
+                    mk(
+                        pressed_bg,
+                        [0.78, 0.84, 0.96, 1.0],
+                        [
+                            pressed_bg[0] * 0.8,
+                            pressed_bg[1] * 0.8,
+                            pressed_bg[2] * 0.8,
+                            1.0,
+                        ],
+                        1.0,
+                        4.0,
+                        14.0,
+                        none_shadow,
+                        [0.0, 0.0],
+                        0.0,
+                        None,
+                        "center",
+                    ),
+                );
+                t.set_class_style(
+                    WidgetType::Button,
+                    WidgetState::Disabled,
+                    class.to_string(),
+                    mk(
+                        [0.30, 0.30, 0.35, 1.0],
+                        [0.50, 0.50, 0.55, 1.0],
+                        [0.22, 0.22, 0.27, 1.0],
+                        1.0,
+                        4.0,
+                        14.0,
+                        none_shadow,
+                        [0.0, 0.0],
+                        0.0,
+                        None,
+                        "center",
+                    ),
+                );
+            };
+        reg_class(
+            "primary",
+            [0.24, 0.47, 0.78, 1.0],
+            [0.32, 0.58, 0.90, 1.0],
+            [0.16, 0.33, 0.62, 1.0],
+        );
+        reg_class(
+            "secondary",
+            [0.43, 0.47, 0.53, 1.0],
+            [0.50, 0.55, 0.62, 1.0],
+            [0.32, 0.35, 0.40, 1.0],
+        );
+        reg_class(
+            "success",
+            [0.16, 0.54, 0.35, 1.0],
+            [0.22, 0.64, 0.42, 1.0],
+            [0.10, 0.40, 0.25, 1.0],
+        );
+        reg_class(
+            "info",
+            [0.08, 0.64, 0.73, 1.0],
+            [0.12, 0.74, 0.84, 1.0],
+            [0.05, 0.48, 0.55, 1.0],
+        );
+        reg_class(
+            "warning",
+            [0.85, 0.57, 0.08, 1.0],
+            [0.93, 0.65, 0.15, 1.0],
+            [0.65, 0.42, 0.05, 1.0],
+        );
+        reg_class(
+            "danger",
+            [0.86, 0.22, 0.22, 1.0],
+            [0.94, 0.30, 0.30, 1.0],
+            [0.66, 0.15, 0.15, 1.0],
+        );
         t.set_style(
             WidgetType::Button,
             WidgetState::Normal,

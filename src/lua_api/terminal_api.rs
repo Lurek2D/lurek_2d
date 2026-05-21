@@ -620,7 +620,12 @@ impl LuaUserData for LuaTerminal {
         methods.add_method("setFont", |_, this, height: u32| {
             let idx = crate::render::Font::nearest_size(height);
             let st = this.binding.shared_state.borrow();
-            if let Some(key) = st.default_fonts[idx] {
+            let arr = if st.active_bold {
+                &st.default_bold_fonts
+            } else {
+                &st.default_fonts
+            };
+            if let Some(key) = arr[idx] {
                 drop(st);
                 this.binding.shared_state.borrow_mut().active_font = Some(key);
                 queue_terminal_window_fit(&this.binding);
@@ -1514,11 +1519,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     let fg = read_rgb(&fg_t)?;
                     let bg_opt: Option<LuaTable> = rt.get("bg").ok();
                     let bg = bg_opt.map(|bt| read_rgb(&bt)).transpose()?;
-                    rules.push(HighlightRule {
-                        pattern,
-                        fg,
-                        bg,
-                    });
+                    rules.push(HighlightRule { pattern, fg, bg });
                 }
                 let default_fg = [1.0f32, 1.0, 1.0, 1.0];
                 let spans = highlight_spans(&text, &rules, default_fg);

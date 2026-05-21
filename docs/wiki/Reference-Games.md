@@ -24,6 +24,8 @@
   - [soulslike](#soulslike)
   - [stealth](#stealth)
   - [vertical_climber](#verticalclimber)
+- [apps](#apps)
+  - [household_finance_lab](#householdfinancelab)
 - [arcade](#arcade)
   - [asteroids](#asteroids)
   - [centipede](#centipede)
@@ -148,6 +150,8 @@
   - [tower_defense](#towerdefense)
   - [wargame](#wargame)
   - [worms_artillery](#wormsartillery)
+- [test](#test)
+  - [light_min](#lightmin)
 
 Reference games come from `content/games/`. Module usage is detected by scanning each `main.lua`.
 
@@ -159,7 +163,7 @@ Reference games come from `content/games/`. Module usage is detected by scanning
 
 Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to destroy rows of bricks, collect power-ups, and advance through increasingly di...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [bullet_hell](../tree/main/content/games/action/bullet_hell)
 
@@ -167,7 +171,7 @@ Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to d
 
 Dodge intricate bullet patterns, graze for bonus points, and bomb your way through relentless waves.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [cannon_fodder](../tree/main/content/games/action/cannon_fodder)
 
@@ -175,7 +179,7 @@ Dodge intricate bullet patterns, graze for bonus points, and bomb your way throu
 
 Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four soldiers across a tile-based jungle map, click to move the squad, while they auto...
 
-**Modules:** [event](Module-event), [math](Module-math), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [math](Module-math), [render](Module-render), [window](Module-window)
 
 ### [endless_runner](../tree/main/content/games/action/endless_runner)
 
@@ -183,7 +187,7 @@ Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four sold
 
 Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, leap across gaps, and collect coins while the world accelerates.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
 
 ### [fighting_game](../tree/main/content/games/action/fighting_game)
 
@@ -191,7 +195,7 @@ Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, 
 
 1v1 fighting game with Player vs AI — land combos, build super meter, and win best of 3 rounds.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [horde_survivor](../tree/main/content/games/action/horde_survivor)
 
@@ -199,7 +203,7 @@ Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, 
 
 Vampire Survivors-style top-down horde survival — auto-attack with orbiting projectiles while dodging waves of enemies.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [infiltration](../tree/main/content/games/action/infiltration)
 
@@ -207,7 +211,7 @@ Vampire Survivors-style top-down horde survival — auto-attack with orbiting pr
 
 Top-down stealth puzzle — sneak through a guarded facility using gadgets, avoid cameras, hack terminals, and escape with the data.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [metroidvania](../tree/main/content/games/action/metroidvania)
 
@@ -215,7 +219,7 @@ Top-down stealth puzzle — sneak through a guarded facility using gadgets, avoi
 
 Side-scrolling exploration platformer with interconnected rooms, ability unlocks, and multiple enemy types.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [platform_fighter](../tree/main/content/games/action/platform_fighter)
 
@@ -223,7 +227,7 @@ Side-scrolling exploration platformer with interconnected rooms, ability unlocks
 
 Smash Bros-inspired 2-player local platform fighter with damage percentage, knockback scaling, stocks, and blast zones.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [platformer](../tree/main/content/games/action/platformer)
 
@@ -231,7 +235,7 @@ Smash Bros-inspired 2-player local platform fighter with damage percentage, knoc
 
 Classic side-scrolling 2D platformer — run, jump, and stomp through three tile-based levels.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
 
 ### [roguelite](../tree/main/content/games/action/roguelite)
 
@@ -239,7 +243,7 @@ Classic side-scrolling 2D platformer — run, jump, and stomp through three tile
 
 Hades-style top-down action roguelite — fight through room-based dungeons, collect perks, and face bosses every five rooms.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [sniper](../tree/main/content/games/action/sniper)
 
@@ -247,7 +251,7 @@ Hades-style top-down action roguelite — fight through room-based dungeons, col
 
 A ballistics puzzle sniper game built with Lurek2D.
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [soulslike](../tree/main/content/games/action/soulslike)
 
@@ -255,7 +259,7 @@ A ballistics puzzle sniper game built with Lurek2D.
 
 Precision boss fight with stamina management, dodge i-frames, estus heals, and a 3-phase boss AI.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [stealth](../tree/main/content/games/action/stealth)
 
@@ -263,7 +267,7 @@ Precision boss fight with stamina management, dodge i-frames, estus heals, and a
 
 Top-down stealth game — sneak past patrolling guards, collect keycards, and reach the exit unseen.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [vertical_climber](../tree/main/content/games/action/vertical_climber)
 
@@ -271,7 +275,18 @@ Top-down stealth game — sneak past patrolling guards, collect keycards, and re
 
 Endless Doodle Jump-style vertical platformer — auto-bounce upward through procedurally generated platforms, dodge enemies, and climb as high as you can.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+
+## apps
+
+### [household_finance_lab](../tree/main/content/games/apps/household_finance_lab)
+
+![household_finance_lab screenshot](../raw/main/content/games/apps/household_finance_lab/screen.png)
+
+Business/data-science demo for a five-person household finance dashboard.
+
+**Modules:** [filesystem](Module-filesystem), [render](Module-render), [save](Module-save), [ui](Module-ui)
 
 
 ## arcade
@@ -282,7 +297,7 @@ Endless Doodle Jump-style vertical platformer — auto-bounce upward through pro
 
 _Fly, shoot, and survive the asteroid field — classic arcade action with thrust physics, screen wrapping, and particle explosions._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [centipede](../tree/main/content/games/arcade/centipede)
 
@@ -290,7 +305,7 @@ _Fly, shoot, and survive the asteroid field — classic arcade action with thrus
 
 Classic arcade shooter — blast a segmented centipede as it winds through a mushroom field.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
 
 ### [donkey_kong](../tree/main/content/games/arcade/donkey_kong)
 
@@ -298,7 +313,7 @@ Classic arcade shooter — blast a segmented centipede as it winds through a mus
 
 Classic platform climber — navigate sloped girders, dodge rolling barrels, and rescue Pauline at the top.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [frogger](../tree/main/content/games/arcade/frogger)
 
@@ -306,7 +321,7 @@ Classic platform climber — navigate sloped girders, dodge rolling barrels, and
 
 Classic Frogger arcade game — guide the frog across busy roads and treacherous rivers to reach the home slots.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [galaga](../tree/main/content/games/arcade/galaga)
 
@@ -314,7 +329,7 @@ Classic Frogger arcade game — guide the frog across busy roads and treacherous
 
 Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss capture mechanics, and dual-fire power-ups.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [pac_man](../tree/main/content/games/arcade/pac_man)
 
@@ -322,7 +337,7 @@ Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss
 
 _Navigate a maze, eat dots, avoid four ghosts with distinct AI personalities — classic arcade action with power pellets and chase/scatter modes._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [pong](../tree/main/content/games/arcade/pong)
 
@@ -330,7 +345,7 @@ _Navigate a maze, eat dots, avoid four ghosts with distinct AI personalities —
 
 Classic two-player paddle game. First to 7 wins.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
 
 ### [snake](../tree/main/content/games/arcade/snake)
 
@@ -338,7 +353,7 @@ Classic two-player paddle game. First to 7 wins.
 
 _Eat, grow, avoid yourself — classic arcade snake with particles and tweened score._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [space_invaders](../tree/main/content/games/arcade/space_invaders)
 
@@ -346,7 +361,7 @@ _Eat, grow, avoid yourself — classic arcade snake with particles and tweened s
 
 Defend Earth from descending alien formations. Shoot them before they reach you.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [tetris](../tree/main/content/games/arcade/tetris)
 
@@ -354,7 +369,7 @@ Defend Earth from descending alien formations. Shoot them before they reach you.
 
 _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece, ghost preview, and line-clear particles._
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
 
 
 ## retro
@@ -365,7 +380,7 @@ _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece,
 
 Cinematic puzzle-platformer inspired by Eric Chahi's 1991 classic. Navigate interconnected alien scenes, fight hostile creatures with a three-mode energy gun...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [boulder_dash](../tree/main/content/games/retro/boulder_dash)
 
@@ -373,7 +388,7 @@ Cinematic puzzle-platformer inspired by Eric Chahi's 1991 classic. Navigate inte
 
 _Dig through a cave, collect sparkling diamonds, dodge falling boulders, and escape before the clock runs out._
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [cannon_fodder](../tree/main/content/games/retro/cannon_fodder)
 
@@ -381,7 +396,7 @@ _Dig through a cave, collect sparkling diamonds, dodge falling boulders, and esc
 
 _Command a squad of soldiers through five escalating jungle missions — move, shoot, and use grenades wisely, because every casualty is permanent._
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [commando](../tree/main/content/games/retro/commando)
 
@@ -389,7 +404,7 @@ _Command a squad of soldiers through five escalating jungle missions — move, s
 
 Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fight through dense jungle, rescue POW prisoners, hurl grenades at bunkers, and...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [dungeon_crawler](../tree/main/content/games/retro/dungeon_crawler)
 
@@ -397,7 +412,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [event](Module-event), [input](Module-input), [raycaster](Module-raycaster), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [raycaster](Module-raycaster), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [giana_sisters](../tree/main/content/games/retro/giana_sisters)
 
@@ -405,7 +420,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [lemmings](../tree/main/content/games/retro/lemmings)
 
@@ -413,7 +428,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [paradroid](../tree/main/content/games/retro/paradroid)
 
@@ -421,7 +436,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
 
 ### [raycaster_fps](../tree/main/content/games/retro/raycaster_fps)
 
@@ -429,7 +444,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [sensible_soccer](../tree/main/content/games/retro/sensible_soccer)
 
@@ -437,7 +452,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** Retro
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [shadow_beast](../tree/main/content/games/retro/shadow_beast)
 
@@ -445,7 +460,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 Atmospheric side-scrolling action game inspired by Psygnosis' 1989 Amiga masterpiece. Battle through a dark, beautiful world with 5-layer parallax scrolling,...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [turrican](../tree/main/content/games/retro/turrican)
 
@@ -453,7 +468,7 @@ Atmospheric side-scrolling action game inspired by Psygnosis' 1989 Amiga masterp
 
 Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga classic, featuring a dual weapon system and tile-based levels.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 
 ## rpg
@@ -464,7 +479,7 @@ Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga cla
 
 **Category:** rpg
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [alchemy](../tree/main/content/games/rpg/alchemy)
 
@@ -472,7 +487,7 @@ Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga cla
 
 **Category:** RPG
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [courtroom](../tree/main/content/games/rpg/courtroom)
 
@@ -480,7 +495,7 @@ Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga cla
 
 **Category:** RPG
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [creature_collector](../tree/main/content/games/rpg/creature_collector)
 
@@ -488,7 +503,7 @@ Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga cla
 
 _Pokemon-style creature collection RPG with tile-based overworld, turn-based battles, type advantages, and party management._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [dialog_demo](../tree/main/content/games/rpg/dialog_demo)
 
@@ -496,7 +511,7 @@ _Pokemon-style creature collection RPG with tile-based overworld, turn-based bat
 
 **Category:** RPG
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [dungeon_eye](../tree/main/content/games/rpg/dungeon_eye)
 
@@ -504,7 +519,7 @@ _Pokemon-style creature collection RPG with tile-based overworld, turn-based bat
 
 First-person dungeon crawler inspired by Eye of the Beholder (PC 1992). Navigate a hand-crafted grid dungeon using a raycaster renderer, fight enemies in mel...
 
-**Modules:** [event](Module-event), [raycaster](Module-raycaster), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [raycaster](Module-raycaster), [render](Module-render), [window](Module-window)
 
 ### [horror](../tree/main/content/games/rpg/horror)
 
@@ -512,7 +527,7 @@ First-person dungeon crawler inspired by Eye of the Beholder (PC 1992). Navigate
 
 **Category:** rpg
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [loot_rpg](../tree/main/content/games/rpg/loot_rpg)
 
@@ -520,7 +535,7 @@ First-person dungeon crawler inspired by Eye of the Beholder (PC 1992). Navigate
 
 _Descend through procedural dungeons, smash enemies for gear, and climb floors until your build is unstoppable._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [loot_rpg_demo](../tree/main/content/games/rpg/loot_rpg_demo)
 
@@ -528,7 +543,7 @@ _Descend through procedural dungeons, smash enemies for gear, and climb floors u
 
 _A focused demo of the Lurek2D loot-and-combat loop — fight enemies, collect tiered gear, and see how many floors you can climb._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [merchant](../tree/main/content/games/rpg/merchant)
 
@@ -536,7 +551,7 @@ _A focused demo of the Lurek2D loot-and-combat loop — fight enemies, collect t
 
 _Run a medieval trading shop over five days — buy low, sell high, serve customers, and build your reputation to maximise final gold._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [merchant_demo](../tree/main/content/games/rpg/merchant_demo)
 
@@ -544,7 +559,7 @@ _Run a medieval trading shop over five days — buy low, sell high, serve custom
 
 _A playable demo of the Lurek2D merchant simulation — buy, sell, serve customers, and turn a profit over five in-game days._
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [roguelike](../tree/main/content/games/rpg/roguelike)
 
@@ -552,7 +567,7 @@ _A playable demo of the Lurek2D merchant simulation — buy, sell, serve custome
 
 **Category**: rpg
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [social_deduction](../tree/main/content/games/rpg/social_deduction)
 
@@ -560,7 +575,7 @@ _A playable demo of the Lurek2D merchant simulation — buy, sell, serve custome
 
 **Category:** RPG
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [tween](Module-tween), [window](Module-window)
 
 ### [star_voyage](../tree/main/content/games/rpg/star_voyage)
 
@@ -568,7 +583,7 @@ _A playable demo of the Lurek2D merchant simulation — buy, sell, serve custome
 
 Space exploration RPG inspired by Star Control 2 (PC 1994). Navigate a vast starfield, approach alien worlds to dock, and engage in branching dialog with pro...
 
-**Modules:** [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [window](Module-window)
 
 ### [survival_crafting](../tree/main/content/games/rpg/survival_crafting)
 
@@ -576,7 +591,7 @@ Space exploration RPG inspired by Star Control 2 (PC 1994). Navigate a vast star
 
 **Category:** RPG
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [visual_novel](../tree/main/content/games/rpg/visual_novel)
 
@@ -584,7 +599,7 @@ Space exploration RPG inspired by Star Control 2 (PC 1994). Navigate a vast star
 
 A branching visual novel with three acts, three characters, affection tracking, and multiple endings.
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 
 ## showcase
@@ -595,7 +610,7 @@ A branching visual novel with three acts, three characters, affection tracking, 
 
 **Category:** showcase
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [debugbridge_demo](../tree/main/content/games/showcase/debugbridge_demo)
 
@@ -603,7 +618,7 @@ A branching visual novel with three acts, three characters, affection tracking, 
 
 Simulated debug bridge visualization demonstrating runtime inspection concepts: a debug console with typed commands, real-time engine metrics, entity inspect...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [demo_game](../tree/main/content/games/showcase/demo_game)
 
@@ -611,7 +626,7 @@ Simulated debug bridge visualization demonstrating runtime inspection concepts: 
 
 Physics-based shooting gallery with moving targets, combo scoring, and power-ups. Aim with the mouse and fire balls at swaying targets across three increasin...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [devtools_demo](../tree/main/content/games/showcase/devtools_demo)
 
@@ -619,7 +634,7 @@ Physics-based shooting gallery with moving targets, combo scoring, and power-ups
 
 Developer tools profiling showcase: toggle real-time FPS graphs, memory profilers, entity inspectors, performance heatmaps, and draw call counters while a li...
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
 
 ### [docs_demo](../tree/main/content/games/showcase/docs_demo)
 
@@ -627,7 +642,7 @@ Developer tools profiling showcase: toggle real-time FPS graphs, memory profiler
 
 Interactive API documentation browser and viewer: navigate 12 lurek.* namespaces in a sidebar, inspect function signatures with syntax-highlighted params a...
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
 
 ### [entity_showcase](../tree/main/content/games/showcase/entity_showcase)
 
@@ -635,7 +650,7 @@ Interactive API documentation browser and viewer: navigate 12 lurek.* namespaces
 
 **Category:** showcase
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [globe_demo](../tree/main/content/games/showcase/globe_demo)
 
@@ -643,7 +658,7 @@ Interactive API documentation browser and viewer: navigate 12 lurek.* namespaces
 
 A showcase of the lurek.globe.* API: an interactive world globe with ~200
 
-**Modules:** [event](Module-event), [globe](Module-globe), [input](Module-input), [render](Module-render)
+**Modules:** [automation](Module-automation), [event](Module-event), [globe](Module-globe), [input](Module-input), [render](Module-render)
 
 ### [hacking_game](../tree/main/content/games/showcase/hacking_game)
 
@@ -651,7 +666,7 @@ A showcase of the lurek.globe.* API: an interactive world globe with ~200
 
 Terminal-based hacking game with full CRT aesthetics. Type commands at the prompt to scan networks, connect to servers, crack passwords, and download classif...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [hello_world](../tree/main/content/games/showcase/hello_world)
 
@@ -659,7 +674,7 @@ Terminal-based hacking game with full CRT aesthetics. Type commands at the promp
 
 Complete engine feature sampler showcasing basic Lurek2D capabilities in a single interactive screen: animated text, geometric shapes, mouse tracking, partic...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [html-dialog](../tree/main/content/games/showcase/html-dialog)
 
@@ -667,7 +682,7 @@ Complete engine feature sampler showcasing basic Lurek2D capabilities in a singl
 
 An RPG-style NPC conversation system using HTML dialog boxes with branching
 
-**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [html-hud](../tree/main/content/games/showcase/html-hud)
 
@@ -675,7 +690,7 @@ An RPG-style NPC conversation system using HTML dialog boxes with branching
 
 ﻿# HTML HUD Demo
 
-**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [html-inventory](../tree/main/content/games/showcase/html-inventory)
 
@@ -683,13 +698,15 @@ An RPG-style NPC conversation system using HTML dialog boxes with branching
 
 An inventory grid screen built entirely with HTML/CSS, demonstrating how to
 
-**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [html-load-document](../tree/main/content/games/showcase/html-load-document)
 
+![html-load-document screenshot](../raw/main/content/games/showcase/html-load-document/screen.png)
+
 A showcase game that uses only external HTML/CSS files for UI via lurek.html.loadDocument.
 
-**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [html-scoreboard](../tree/main/content/games/showcase/html-scoreboard)
 
@@ -697,7 +714,7 @@ A showcase game that uses only external HTML/CSS files for UI via lurek.html.loa
 
 A live leaderboard that automatically refreshes every two seconds, built with
 
-**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [html-settings](../tree/main/content/games/showcase/html-settings)
 
@@ -705,7 +722,7 @@ A live leaderboard that automatically refreshes every two seconds, built with
 
 A full settings screen with toggle switches and radio groups, demonstrating
 
-**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [light_demo](../tree/main/content/games/showcase/light_demo)
 
@@ -713,7 +730,7 @@ A full settings screen with toggle switches and radio groups, demonstrating
 
 Complete 2D lighting system showcase featuring dynamic point lights, spotlights, flickering torches, shadow-casting wall occluders, and ambient light control...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [light](Module-light), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [light](Module-light), [particle](Module-particle), [render](Module-render), [timer](Module-timer), +2
 
 ### [light_showcase](../tree/main/content/games/showcase/light_showcase)
 
@@ -721,7 +738,7 @@ Complete 2D lighting system showcase featuring dynamic point lights, spotlights,
 
 **Category:** showcase
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [localization_demo](../tree/main/content/games/showcase/localization_demo)
 
@@ -729,7 +746,7 @@ Complete 2D lighting system showcase featuring dynamic point lights, spotlights,
 
 **Category:** showcase
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [minimap_demo](../tree/main/content/games/showcase/minimap_demo)
 
@@ -737,7 +754,7 @@ Complete 2D lighting system showcase featuring dynamic point lights, spotlights,
 
 **Category:** showcase
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [modding_demo](../tree/main/content/games/showcase/modding_demo)
 
@@ -745,7 +762,7 @@ Complete 2D lighting system showcase featuring dynamic point lights, spotlights,
 
 **Category:** showcase
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [music_composer](../tree/main/content/games/showcase/music_composer)
 
@@ -753,7 +770,7 @@ Complete 2D lighting system showcase featuring dynamic point lights, spotlights,
 
 Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smo...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [nine_slice_demo](../tree/main/content/games/showcase/nine_slice_demo)
 
@@ -761,7 +778,7 @@ Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-not
 
 **Category:** showcase
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [overlay_demo](../tree/main/content/games/showcase/overlay_demo)
 
@@ -769,7 +786,7 @@ Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-not
 
 Screen overlay effects showcase demonstrating weather particles, time-of-day tinting, fog, and vignette — all composable and intensity-adjustable.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
 
 ### [particles_demo](../tree/main/content/games/showcase/particles_demo)
 
@@ -777,7 +794,7 @@ Screen overlay effects showcase demonstrating weather particles, time-of-day tin
 
 **Category:** showcase
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [patterns_demo](../tree/main/content/games/showcase/patterns_demo)
 
@@ -785,7 +802,7 @@ Screen overlay effects showcase demonstrating weather particles, time-of-day tin
 
 **Category:** showcase
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [pipeline_showcase](../tree/main/content/games/showcase/pipeline_showcase)
 
@@ -793,7 +810,7 @@ Screen overlay effects showcase demonstrating weather particles, time-of-day tin
 
 Interactive visualization of the full Lurek2D engine callback pipeline — ready, process, process_physics, process_late, render, render_ui — across three scen...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [postfx_demo](../tree/main/content/games/showcase/postfx_demo)
 
@@ -801,7 +818,7 @@ Interactive visualization of the full Lurek2D engine callback pipeline — ready
 
 Complete post-processing effects stacking showcase with 10 toggleable effects, adjustable intensity, and real-time before/after comparison.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [province_demo](../tree/main/content/games/showcase/province_demo)
 
@@ -809,7 +826,7 @@ Complete post-processing effects stacking showcase with 10 toggleable effects, a
 
 Procedural Voronoi-like province map generator with terrain, ownership, fog of war, pathfinding, and multiple visualization modes.
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [scene_demo](../tree/main/content/games/showcase/scene_demo)
 
@@ -817,7 +834,7 @@ Procedural Voronoi-like province map generator with terrain, ownership, fog of w
 
 Scene state machine with enter/exit callbacks, three transition effects, and a collect-the-coins mini-game — all wired through a reusable scene manager.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
 
 ### [signal_demo](../tree/main/content/games/showcase/signal_demo)
 
@@ -825,7 +842,7 @@ Scene state machine with enter/exit callbacks, three transition effects, and a c
 
 Complete pub-sub event signal system showcase demonstrating the publisher-subscriber pattern with five distinct signal types, cascading chain reactions, and ...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [sprites](../tree/main/content/games/showcase/sprites)
 
@@ -833,7 +850,7 @@ Complete pub-sub event signal system showcase demonstrating the publisher-subscr
 
 **Category:** showcase
 
-**Modules:** [camera](Module-camera), [event](Module-event), [image](Module-image), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [image](Module-image), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), +2
 
 ### [terminal_demo](../tree/main/content/games/showcase/terminal_demo)
 
@@ -841,7 +858,7 @@ Complete pub-sub event signal system showcase demonstrating the publisher-subscr
 
 Full-screen terminal UI character creation wizard with box-drawing borders, colored text, stat allocation, and multi-page navigation — all rendered on an 80×...
 
-**Modules:** [render](Module-render), [terminal](Module-terminal), [window](Module-window)
+**Modules:** [automation](Module-automation), [render](Module-render), [terminal](Module-terminal), [window](Module-window)
 
 ### [tween_demo](../tree/main/content/games/showcase/tween_demo)
 
@@ -849,13 +866,15 @@ Full-screen terminal UI character creation wizard with box-drawing borders, colo
 
 **Category:** showcase
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
 
 ### [vending_lights](../tree/main/content/games/showcase/vending_lights)
 
+![vending_lights screenshot](../raw/main/content/games/showcase/vending_lights/screen.png)
+
 No description available.
 
-**Modules:** [event](Module-event), [input](Module-input), [light](Module-light), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [light](Module-light), [render](Module-render), [window](Module-window)
 
 
 ## simulation
@@ -866,7 +885,7 @@ No description available.
 
 **Category:** simulation
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [cooking_sim](../tree/main/content/games/simulation/cooking_sim)
 
@@ -874,7 +893,7 @@ No description available.
 
 Kitchen cooking simulation where you prep ingredients, cook dishes, and serve customers under time pressure.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [factory](../tree/main/content/games/simulation/factory)
 
@@ -882,7 +901,7 @@ Kitchen cooking simulation where you prep ingredients, cook dishes, and serve cu
 
 Factory automation game inspired by Factorio-lite: place conveyor belts, miners, smelters, and assemblers to build a production line that turns raw ore into ...
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [farming_sim](../tree/main/content/games/simulation/farming_sim)
 
@@ -890,7 +909,7 @@ Factory automation game inspired by Factorio-lite: place conveyor belts, miners,
 
 Grow crops, trade at the market, and earn 200 gold to win. Manage your farm through day/night cycles and weather events.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [god_game](../tree/main/content/games/simulation/god_game)
 
@@ -898,7 +917,7 @@ Grow crops, trade at the market, and earn 200 gold to win. Manage your farm thro
 
 **Category:** Simulation
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [hotel_manager](../tree/main/content/games/simulation/hotel_manager)
 
@@ -906,7 +925,7 @@ Grow crops, trade at the market, and earn 200 gold to win. Manage your farm thro
 
 **Category:** Simulation
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [idle_game](../tree/main/content/games/simulation/idle_game)
 
@@ -914,7 +933,7 @@ Grow crops, trade at the market, and earn 200 gold to win. Manage your farm thro
 
 **Category:** Simulation
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [medical_sim](../tree/main/content/games/simulation/medical_sim)
 
@@ -922,7 +941,7 @@ Grow crops, trade at the market, and earn 200 gold to win. Manage your farm thro
 
 Hospital management simulation — triage patients, assign staff, upgrade departments, and maintain a 4+ star rating.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [mining](../tree/main/content/games/simulation/mining)
 
@@ -930,7 +949,7 @@ Hospital management simulation — triage patients, assign staff, upgrade depart
 
 **Category:** Simulation
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [physics_demo](../tree/main/content/games/simulation/physics_demo)
 
@@ -938,7 +957,7 @@ Hospital management simulation — triage patients, assign staff, upgrade depart
 
 **Category:** simulation
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
 
 ### [physics_sandbox](../tree/main/content/games/simulation/physics_sandbox)
 
@@ -946,7 +965,7 @@ Hospital management simulation — triage patients, assign staff, upgrade depart
 
 Free-form physics playground where you build structures and destroy them with explosions, heavy balls, and gravity manipulation.
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [railroad](../tree/main/content/games/simulation/railroad)
 
@@ -954,7 +973,7 @@ Free-form physics playground where you build structures and destroy them with ex
 
 **Category:** Simulation
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [settlers_rise](../tree/main/content/games/simulation/settlers_rise)
 
@@ -962,7 +981,7 @@ Free-form physics playground where you build structures and destroy them with ex
 
 Settlement-building simulation inspired by The Settlers 2 (Amiga 1998). Place production buildings on a procedurally generated map, watch settlers carry good...
 
-**Modules:** [event](Module-event), [input](Module-input), [math](Module-math), [pathfind](Module-pathfind), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [pathfind](Module-pathfind), [render](Module-render), [window](Module-window)
 
 ### [tower_sim](../tree/main/content/games/simulation/tower_sim)
 
@@ -970,7 +989,7 @@ Settlement-building simulation inspired by The Settlers 2 (Amiga 1998). Place pr
 
 **Category:** simulation
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [tycoon](../tree/main/content/games/simulation/tycoon)
 
@@ -978,7 +997,7 @@ Settlement-building simulation inspired by The Settlers 2 (Amiga 1998). Place pr
 
 Business empire tycoon — buy ventures, hire managers, upgrade revenue, and prestige your way to a million gold.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [vehicle_builder](../tree/main/content/games/simulation/vehicle_builder)
 
@@ -986,7 +1005,7 @@ Business empire tycoon — buy ventures, hire managers, upgrade revenue, and pre
 
 Grid-based vehicle construction and physics-driven test track game. Design vehicles from modular parts on a snap-to-grid editor, then switch to a side-scroll...
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [wildlife_photo](../tree/main/content/games/simulation/wildlife_photo)
 
@@ -994,7 +1013,7 @@ Grid-based vehicle construction and physics-driven test track game. Design vehic
 
 Explore a scrolling nature landscape, frame wildlife in your camera viewfinder, and snap photos to fill your species journal. Photograph all 8 species to com...
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [zoo_tycoon](../tree/main/content/games/simulation/zoo_tycoon)
 
@@ -1002,7 +1021,7 @@ Explore a scrolling nature landscape, frame wildlife in your camera viewfinder, 
 
 **Category:** Simulation
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 
 ## sports
@@ -1013,7 +1032,7 @@ Explore a scrolling nature landscape, frame wildlife in your camera viewfinder, 
 
 Side-view boxing game with a full 3-round fight system, stamina management, combo tracking, and an AI opponent that gets tougher each round.
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [drift_racing](../tree/main/content/games/sports/drift_racing)
 
@@ -1021,7 +1040,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [fishing](../tree/main/content/games/sports/fishing)
 
@@ -1029,7 +1048,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [golf_classic](../tree/main/content/games/sports/golf_classic)
 
@@ -1037,7 +1056,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [pinball](../tree/main/content/games/sports/pinball)
 
@@ -1045,7 +1064,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [rhythm_game](../tree/main/content/games/sports/rhythm_game)
 
@@ -1053,7 +1072,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [sensible_soccer](../tree/main/content/games/sports/sensible_soccer)
 
@@ -1061,7 +1080,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 Arcade top-down football inspired by Sensible Soccer (Amiga 1997). 5-a-side with aftertouch shooting, CPU opponents, and a 90-second match clock.
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [ski_jump](../tree/main/content/games/sports/ski_jump)
 
@@ -1069,7 +1088,7 @@ Arcade top-down football inspired by Sensible Soccer (Amiga 1997). 5-a-side with
 
 _Choose your hill, crouch for speed on the approach, time your jump at the ramp lip, and lean through the air for maximum distance and style points._
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [sports_manager](../tree/main/content/games/sports/sports_manager)
 
@@ -1077,7 +1096,7 @@ _Choose your hill, crouch for speed on the approach, time your jump at the ramp 
 
 **Category:** Sports
 
-**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [tennis_classic](../tree/main/content/games/sports/tennis_classic)
 
@@ -1085,7 +1104,7 @@ _Choose your hill, crouch for speed on the approach, time your jump at the ramp 
 
 Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opponent, and full tennis scoring (games, sets, match).
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [track_and_field](../tree/main/content/games/sports/track_and_field)
 
@@ -1093,7 +1112,7 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 
 **Category:** sports
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [trajectory_sports](../tree/main/content/games/sports/trajectory_sports)
 
@@ -1101,7 +1120,7 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 
 **Category:** sports
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 
 ## strategy
@@ -1112,7 +1131,7 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 
 **Category:** strategy
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
 
 ### [card_game](../tree/main/content/games/strategy/card_game)
 
@@ -1120,7 +1139,7 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 
 **Category:** strategy
 
-**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [deckbuilder](../tree/main/content/games/strategy/deckbuilder)
 
@@ -1128,13 +1147,15 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 
 Slay-the-Spire-style turn-based card battler. Build your deck as you climb three floors.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
 
 ### [eu2](../tree/main/content/games/strategy/eu2)
 
+![eu2 screenshot](../raw/main/content/games/strategy/eu2/screen.png)
+
 EU2 Province Viewer demo for Lurek2D.
 
-**Modules:** [event](Module-event), [input](Module-input), [province](Module-province), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [province](Module-province), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [hex_strategy](../tree/main/content/games/strategy/hex_strategy)
 
@@ -1142,7 +1163,7 @@ EU2 Province Viewer demo for Lurek2D.
 
 Turn-based hex-grid expansion game — claim territory, build cities, and accumulate resources over successive turns.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [logic_game](../tree/main/content/games/strategy/logic_game)
 
@@ -1150,7 +1171,7 @@ Turn-based hex-grid expansion game — claim territory, build cities, and accumu
 
 Robot programming puzzle — write a program of movement commands to guide your robot to the goal in limited steps.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [match3](../tree/main/content/games/strategy/match3)
 
@@ -1158,7 +1179,7 @@ Robot programming puzzle — write a program of movement commands to guide your 
 
 **Category:** strategy
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [maze_defense](../tree/main/content/games/strategy/maze_defense)
 
@@ -1166,7 +1187,7 @@ Robot programming puzzle — write a program of movement commands to guide your 
 
 Hybrid tower defense where YOU build the maze. Place walls to extend the enemy path, then add towers to mow them down — but you can never fully block the route.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [party_games](../tree/main/content/games/strategy/party_games)
 
@@ -1174,7 +1195,7 @@ Hybrid tower defense where YOU build the maze. Place walls to extend the enemy p
 
 4 mini-game party collection for 2 players: Reaction, Memory, Typing Race, and Math Duel.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [physics_puzzle](../tree/main/content/games/strategy/physics_puzzle)
 
@@ -1182,7 +1203,7 @@ Hybrid tower defense where YOU build the maze. Place walls to extend the enemy p
 
 Place planks, ramps, and blocks to guide a falling ball into the goal — with a limited shape budget.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [rts](../tree/main/content/games/strategy/rts)
 
@@ -1190,7 +1211,7 @@ Place planks, ramps, and blocks to guide a falling ball into the goal — with a
 
 Real-time strategy game — build a base, train units, harvest resources, and survive 5 enemy waves.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [tactical_battle](../tree/main/content/games/strategy/tactical_battle)
 
@@ -1198,7 +1219,7 @@ Real-time strategy game — build a base, train units, harvest resources, and su
 
 Turn-based grid squad tactics with 4 unit types, terrain effects, and AI-driven enemy turns.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [tower_defense](../tree/main/content/games/strategy/tower_defense)
 
@@ -1206,7 +1227,7 @@ Turn-based grid squad tactics with 4 unit types, terrain effects, and AI-driven 
 
 Classic grid-based tower defense — place towers on a pre-laid path, survive 6 enemy waves.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [wargame](../tree/main/content/games/strategy/wargame)
 
@@ -1214,7 +1235,7 @@ Classic grid-based tower defense — place towers on a pre-laid path, survive 6 
 
 Hex-grid turn-based wargame with infantry, tanks, artillery, and recon across terrain-varied battlefields.
 
-**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
 
 ### [worms_artillery](../tree/main/content/games/strategy/worms_artillery)
 
@@ -1222,4 +1243,13 @@ Hex-grid turn-based wargame with infantry, tanks, artillery, and recon across te
 
 Turn-based artillery game inspired by Worms (Amiga 1998). Two teams take turns firing bazookas across procedurally generated terrain, with wind drift, blast ...
 
-**Modules:** [event](Module-event), [input](Module-input), [math](Module-math), [particle](Module-particle), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+
+## test
+
+### [light_min](../tree/main/content/games/test/light_min)
+
+No description available.
+
+**Modules:** [event](Module-event), [input](Module-input), [light](Module-light), [render](Module-render), [window](Module-window)

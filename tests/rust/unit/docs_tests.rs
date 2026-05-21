@@ -3,8 +3,8 @@
 use std::fs;
 
 use lurek2d::docs::{
-    export_all, export_completions, export_hover, export_signatures, Catalog, DocEntry,
-    FieldRule, FieldType, ParamInfo, QualityReport, ReturnInfo, Schema,
+    export_all, export_completions, export_hover, export_signatures, Catalog, DocEntry, FieldRule,
+    FieldType, ParamInfo, QualityReport, ReturnInfo, Schema,
 };
 
 fn sample_entry() -> DocEntry {

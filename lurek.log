@@ -1,32 +1,24 @@
-[2026-05-20T21:44:17.495Z] INFO  [L081] L081: C:\Users\tombl\Documents\lurek2D\lurek.log
-[2026-05-20T21:44:17.496Z] INFO  [L001] Lurek2D Engine starting: v1.0.0 (wgpu GPU backend)
-[2026-05-20T21:44:17.496Z] INFO  [L080] Game directory: content/games/apps/household_finance_lab
-[2026-05-20T21:44:17.609Z] WARN  InstanceFlags::VALIDATION requested, but unable to find layer: VK_LAYER_KHRONOS_validation
-[2026-05-20T21:44:17.610Z] WARN  GENERAL [Loader Message (0x0)]
+[2026-05-21T16:45:53.047Z] INFO  [L081] L081: C:\Users\tombl\Documents\lurek2D\lurek.log
+[2026-05-21T16:45:53.058Z] INFO  [L001] Lurek2D Engine starting: v1.0.0 (wgpu GPU backend)
+[2026-05-21T16:45:53.058Z] INFO  [L080] Game directory: content/examples/ui.lua
+[2026-05-21T16:45:53.232Z] WARN  InstanceFlags::VALIDATION requested, but unable to find layer: VK_LAYER_KHRONOS_validation
+[2026-05-21T16:45:53.235Z] WARN  GENERAL [Loader Message (0x0)]
 	windows_read_data_files_in_registry: Registry lookup failed to get layer manifest files.
-[2026-05-20T21:44:17.610Z] WARN  	objects: (type: INSTANCE, hndl: 0x1b10232cd50, name: ?)
-[2026-05-20T21:44:17.682Z] WARN  Unable to enable D3D12 debug interface: 0x887A002D
-[2026-05-20T21:44:17.683Z] WARN  Unable to enable DXGI debug interface: 0x887A002D
-[2026-05-20T21:44:17.691Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T21:44:17.950Z] INFO  [L033] GPU adapter selected: NVIDIA GeForce RTX 4060 Laptop GPU (Vulkan, DiscreteGpu) [backend=auto, power=high]
-[2026-05-20T21:44:17.985Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T21:44:17.985Z] INFO  [L034] GPU texture dimension limit: 32768
-[2026-05-20T21:44:17.986Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T21:44:18.269Z] INFO  [L035] GPU initialised: 756ms (format=Bgra8UnormSrgb, present=Fifo, 1280x720)
-[2026-05-20T21:44:18.270Z] DEBUG Loaded 846 mappings.
-[2026-05-20T21:44:18.291Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T21:44:18.296Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T21:44:18.301Z] DEBUG [FS01] GameFS initialised
-[2026-05-20T21:44:18.665Z] DEBUG [AT01] Simulator created
-[2026-05-20T21:44:18.666Z] DEBUG [SC01] SC01
-[2026-05-20T21:44:18.666Z] DEBUG [GU01] GuiContext created
-[2026-05-20T21:44:18.667Z] INFO  [L003] Game loaded: content/games/apps/household_finance_lab\main.lua
-[2026-05-20T21:44:19.916Z] INFO  [L001] Lurek2D Engine starting: auto-screenshot saved to: content/games/apps/household_finance_lab/screen.png
-[2026-05-20T21:44:19.917Z] INFO  content hot-reload triggered (scripts_changed=false, assets_changed=true)
-[2026-05-20T21:44:19.939Z] DEBUG [FS01] GameFS initialised
-[2026-05-20T21:44:20.015Z] DEBUG [AT01] Simulator created
-[2026-05-20T21:44:20.016Z] DEBUG [SC01] SC01
-[2026-05-20T21:44:20.016Z] DEBUG [GU01] GuiContext created
-[2026-05-20T21:44:20.017Z] INFO  [L003] Game loaded: content/games/apps/household_finance_lab\main.lua
-[2026-05-20T21:44:41.937Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T21:44:43.092Z] WARN  Unrecognized present mode 1000361000
+[2026-05-21T16:45:53.235Z] WARN  	objects: (type: INSTANCE, hndl: 0x146e9c0d930, name: ?)
+[2026-05-21T16:45:53.428Z] WARN  Unable to enable D3D12 debug interface: 0x887A002D
+[2026-05-21T16:45:53.428Z] WARN  Unable to enable DXGI debug interface: 0x887A002D
+[2026-05-21T16:45:53.445Z] WARN  Unrecognized present mode 1000361000
+[2026-05-21T16:45:54.030Z] INFO  [L033] GPU adapter selected: NVIDIA GeForce RTX 4060 Laptop GPU (Vulkan, DiscreteGpu) [backend=auto, power=high]
+[2026-05-21T16:45:54.077Z] WARN  Unrecognized present mode 1000361000
+[2026-05-21T16:45:54.078Z] INFO  [L034] GPU texture dimension limit: 32768
+[2026-05-21T16:45:54.081Z] WARN  Unrecognized present mode 1000361000
+[2026-05-21T16:45:54.487Z] INFO  [L035] GPU initialised: 1s (format=Bgra8UnormSrgb, present=Fifo, 800x600)
+[2026-05-21T16:45:54.491Z] DEBUG Loaded 846 mappings.
+[2026-05-21T16:45:54.518Z] WARN  Unrecognized present mode 1000361000
+[2026-05-21T16:45:54.524Z] WARN  Unrecognized present mode 1000361000
+[2026-05-21T16:45:54.530Z] DEBUG [FS01] GameFS initialised
+[2026-05-21T16:45:54.608Z] DEBUG [AT01] Simulator created
+[2026-05-21T16:45:54.615Z] DEBUG [SC01] SC01
+[2026-05-21T16:45:54.619Z] DEBUG [GU01] GuiContext created
+[2026-05-21T16:45:54.623Z] WARN  [L007] No main.lua found in game directory: content/examples/ui.lua
+[2026-05-21T16:45:54.623Z] INFO  [L006] Splash screen — no game loaded

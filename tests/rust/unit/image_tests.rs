@@ -50,6 +50,27 @@ mod render_tests {
         let copy = img.draw_to_image();
         assert_eq!(copy.get_pixel(2, 3), Some((255, 0, 128, 255)));
     }
+
+    #[test]
+    fn draw_label_renders_readable_ascii_ui_glyphs() {
+        let mut img = ImageData::new(48, 12);
+        img.draw_label("A/_=", 0, 0, 255, 255, 255);
+
+        assert_eq!(img.get_pixel(1, 0), Some((255, 255, 255, 255)));
+        assert_eq!(img.get_pixel(10, 0), Some((255, 255, 255, 255)));
+        assert_eq!(img.get_pixel(12, 6), Some((255, 255, 255, 255)));
+        assert_eq!(img.get_pixel(18, 2), Some((255, 255, 255, 255)));
+
+        let lit_pixels = img
+            .as_bytes()
+            .chunks_exact(4)
+            .filter(|px| px[0] == 255 && px[1] == 255 && px[2] == 255 && px[3] == 255)
+            .count();
+        assert!(
+            lit_pixels >= 36,
+            "5x7 label should draw enough pixels to be legible"
+        );
+    }
 }
 
 mod texture_atlas_tests {

@@ -207,7 +207,7 @@ function lurek.init()
             direction = -1.57, spread = 0.8,
             gravityY = -30,
             sizes = { 4, 3, 1, 0 },
-            colors = { 1, 0.7, 0.2, 1,  1, 0.4, 0.1, 0.7,  0.6, 0.1, 0.0, 0 },
+            colors = { {1, 0.7, 0.2, 1}, {1, 0.4, 0.1, 0.7}, {0.6, 0.1, 0.0, 0} },
         })
         torch_particles[i] = { system = ps, x = pos[1], y = pos[2] }
     end
@@ -219,7 +219,7 @@ function lurek.init()
         speedMin = 5, speedMax = 25,
         direction = 0, spread = 6.28,
         sizes = { 3, 2, 0 },
-        colors = { 1, 1, 0.8, 0.6,  0.8, 0.8, 1.0, 0 },
+        colors = { {1, 1, 0.8, 0.6}, {0.8, 0.8, 1.0, 0} },
     })
 
     -- Create wall occluders
@@ -323,7 +323,7 @@ function lurek.process(dt)
     if new_color and new_color ~= color_index then
         color_index = new_color
         local c = LIGHT_COLORS[color_index]
-        tween_api.to(color_tween, 0.4, { r = c[1], g = c[2], b = c[3] }, "inOutSine")
+        tween_api.to(color_tween, { r = c[1], g = c[2], b = c[3] }, 0.4, "inOutSine")
     end
     player_light:setColor(color_tween.r, color_tween.g, color_tween.b)
 
@@ -358,11 +358,11 @@ function lurek.process(dt)
     if lurek.input.wasActionPressed("ambient_tint") then
         ambient_tint_index = ambient_tint_index % #AMBIENT_TINTS + 1
         local tint = AMBIENT_TINTS[ambient_tint_index]
-        tween_api.to(ambient_tween, 0.6, {
+        tween_api.to(ambient_tween, {
             r = ambient_level * tint[1],
             g = ambient_level * tint[2],
             b = ambient_level * tint[3],
-        }, "inOutSine")
+        }, 0.6, "inOutSine")
     end
 
     -- Ambient level (+/-)
@@ -377,11 +377,11 @@ function lurek.process(dt)
     end
     if ambient_changed then
         local tint = AMBIENT_TINTS[ambient_tint_index]
-        tween_api.to(ambient_tween, 0.3, {
+        tween_api.to(ambient_tween, {
             r = ambient_level * tint[1],
             g = ambient_level * tint[2],
             b = ambient_level * tint[3],
-        }, "inOutSine")
+        }, 0.3, "inOutSine")
     end
 
     -- Apply ambient

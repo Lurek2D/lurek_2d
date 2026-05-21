@@ -114,7 +114,7 @@ pub mod window;
 
 /// Starts the Lurek2D runtime using the current CLI arguments and active game path.
 pub fn lurek_run() -> std::process::ExitCode {
-    use app::App;
+    use app::{App, AppRunOptions};
     use runtime::{Config, HeadlessOptions, RuntimeMode};
     use std::env;
     use std::process::ExitCode;
@@ -177,15 +177,21 @@ pub fn lurek_run() -> std::process::ExitCode {
         } else if let Some(val) = arg.strip_prefix("--quit-after-frames=") {
             match val.parse::<u32>() {
                 Ok(n) => auto_quit_frames = Some(n),
-                Err(_) => parse_error = Some(format!("invalid --quit-after-frames value '{}'", val)),
+                Err(_) => {
+                    parse_error = Some(format!("invalid --quit-after-frames value '{}'", val))
+                }
             }
         } else if arg == "--quit-after-frames" {
             match args.next() {
                 Some(value) => match value.parse::<u32>() {
                     Ok(n) => auto_quit_frames = Some(n),
-                    Err(_) => parse_error = Some(format!("invalid --quit-after-frames value '{}'", value)),
+                    Err(_) => {
+                        parse_error = Some(format!("invalid --quit-after-frames value '{}'", value))
+                    }
                 },
-                None => parse_error = Some("--quit-after-frames requires an integer value".to_string()),
+                None => {
+                    parse_error = Some("--quit-after-frames requires an integer value".to_string())
+                }
             }
         } else if let Some(val) = arg.strip_prefix("--quit-after-time=") {
             match val.parse::<f32>() {
@@ -196,9 +202,13 @@ pub fn lurek_run() -> std::process::ExitCode {
             match args.next() {
                 Some(value) => match value.parse::<f32>() {
                     Ok(s) => auto_quit_time = Some(s),
-                    Err(_) => parse_error = Some(format!("invalid --quit-after-time value '{}'", value)),
+                    Err(_) => {
+                        parse_error = Some(format!("invalid --quit-after-time value '{}'", value))
+                    }
                 },
-                None => parse_error = Some("--quit-after-time requires a numeric value".to_string()),
+                None => {
+                    parse_error = Some("--quit-after-time requires a numeric value".to_string())
+                }
             }
         } else if arg == "--hidden-window" {
             hidden_window = true;
@@ -317,7 +327,7 @@ pub fn lurek_run() -> std::process::ExitCode {
         RuntimeMode::Gui => {
             config.modules.validate_and_fix();
             let app = App::new(config, conf_error);
-            app.run(
+            app.run(AppRunOptions {
                 game_dir,
                 explicit_game_dir,
                 screenshot_path,
@@ -326,8 +336,8 @@ pub fn lurek_run() -> std::process::ExitCode {
                 auto_quit_frames,
                 auto_quit_time,
                 hidden_window,
-                window_x.zip(window_y),
-            );
+                window_pos: window_x.zip(window_y),
+            });
             ExitCode::SUCCESS
         }
         RuntimeMode::Headless => {
@@ -368,8 +378,8 @@ pub fn lurek_run() -> std::process::ExitCode {
             };
             _lurek_temp_dir = temp_dir;
             let app = App::new(config, conf_error);
-            app.run(
-                mode_dir,
+            app.run(AppRunOptions {
+                game_dir: mode_dir,
                 explicit_game_dir,
                 screenshot_path,
                 screenshot_frames,
@@ -377,8 +387,8 @@ pub fn lurek_run() -> std::process::ExitCode {
                 auto_quit_frames,
                 auto_quit_time,
                 hidden_window,
-                window_x.zip(window_y),
-            );
+                window_pos: window_x.zip(window_y),
+            });
             ExitCode::SUCCESS
         }
         RuntimeMode::Cli => {
@@ -406,17 +416,17 @@ pub fn lurek_run() -> std::process::ExitCode {
             };
             _lurek_temp_dir = Some(temp_dir);
             let app = App::new(config, conf_error);
-            app.run(
-                mode_dir,
-                false,
+            app.run(AppRunOptions {
+                game_dir: mode_dir,
+                explicit_game_dir: false,
                 screenshot_path,
                 screenshot_frames,
                 screenshot_time,
                 auto_quit_frames,
                 auto_quit_time,
                 hidden_window,
-                window_x.zip(window_y),
-            );
+                window_pos: window_x.zip(window_y),
+            });
             ExitCode::SUCCESS
         }
     }
