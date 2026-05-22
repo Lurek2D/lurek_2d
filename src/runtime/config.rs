@@ -341,7 +341,7 @@ impl Default for Config {
             render: RenderConfig {
                 backend: "auto".to_string(),
                 power_preference: "high".to_string(),
-                default_font_size: 10,
+                default_font_size: 8,
                 default_font_bold: false,
             },
             modules: ModulesConfig {

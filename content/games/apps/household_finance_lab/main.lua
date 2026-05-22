@@ -56,9 +56,18 @@ local function schedule_refresh(ctx)
 end
 
 local function screen_to_virtual(ctx, x, y)
-    local scale = ctx.render_scale or 1
-    if scale <= 0 then scale = 1 end
-    return (x - (ctx.render_offset_x or 0)) / scale, (y - (ctx.render_offset_y or 0)) / scale
+    return x, y
+end
+
+local function apply_window_defaults()
+    pcall(function()
+        lurek.window.windowConfig({
+            width = 1200,
+            height = 800,
+            scaleMode = "letterbox",
+        })
+    end)
+    pcall(function() lurek.window.maximize() end)
 end
 
 local function save_state(ctx)
@@ -138,13 +147,14 @@ local function load_modules()
         Config = load_app_module("app/config.lua"),
         DataGeneration = load_app_module("app/data_generation.lua"),
         Pipeline = load_app_module("app/data_pipeline.lua"),
-        Controls = load_app_module("app/ui_controls.lua"),
+        Controls = load_app_module("app/ui_controls_toml.lua"),
         UIRender = load_app_module("app/ui_render.lua"),
         Tests = load_app_module("app/tests.lua"),
     }
 end
 
 function lurek.init()
+    apply_window_defaults()
     local mods = load_modules()
     local ctx = make_context(mods)
     app.ctx = ctx
@@ -165,6 +175,9 @@ function lurek.process(dt)
     if not ctx then return end
     ctx.clock = ctx.clock + (dt or 0)
     if ctx.UIRender.update_viewport then ctx.UIRender.update_viewport(ctx) end
+    if ctx.Controls.relayout then
+        ctx.Controls.relayout(ctx, ctx.layout_width or ctx.viewport_width, ctx.layout_height or ctx.viewport_height)
+    end
     lurek.ui.update(dt or 0)
     if ctx.save_manager then ctx.save_manager:update(dt or 0) end
     if ctx.Controls.poll(ctx) then schedule_refresh(ctx) end
@@ -187,23 +200,24 @@ function lurek.keypressed(key)
     local ctx = app.ctx
     if not ctx then return false end
     local handled = lurek.ui.keypressed(key)
+    local w = ctx.widgets or {}
     local n = tonumber(key)
     if n and n >= 1 and n <= #ctx.C.TABS then
-        ctx.widgets.tabs:setActiveTab(n)
+        if w.tabs then w.tabs:setActiveTab(n) end
         ctx.needs_refresh = true
         return true
     end
-    if key == "left" then
-        ctx.widgets.start_year:setValue((ctx.widgets.start_year:getValue() or ctx.C.YEAR_MIN) - 1)
+    if key == "left" and w.start_year then
+        w.start_year:setValue((w.start_year:getValue() or ctx.C.YEAR_MIN) - 1)
         ctx.needs_refresh = true
         return true
     end
-    if key == "right" then
-        ctx.widgets.end_year:setValue((ctx.widgets.end_year:getValue() or ctx.C.YEAR_MAX) + 1)
+    if key == "right" and w.end_year then
+        w.end_year:setValue((w.end_year:getValue() or ctx.C.YEAR_MAX) + 1)
         ctx.needs_refresh = true
         return true
     end
-    if key == "c" then ctx.widgets.cleaned:toggle(); ctx.needs_refresh = true; return true end
+    if key == "c" and w.cleaned then w.cleaned:toggle(); ctx.needs_refresh = true; return true end
     if key == "r" then ctx.actions.regenerate(); return true end
     if key == "p" then ctx.actions.screenshot(); return true end
     if key == "s" then ctx.actions.save_state(); return true end
@@ -250,5 +264,8 @@ function lurek.resize(width, height)
         ctx.viewport_width = width
         ctx.viewport_height = height
         if ctx.UIRender.update_viewport then ctx.UIRender.update_viewport(ctx) end
+        if ctx.Controls.relayout then
+            ctx.Controls.relayout(ctx, ctx.layout_width or width, ctx.layout_height or height)
+        end
     end
 end

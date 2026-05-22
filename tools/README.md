@@ -139,7 +139,7 @@ These scripts modify files in place. Prefer `--dry-run` when the tool supports i
 ## tools/ui
 
 - `tools/ui/fix_layouts.py` - normalize or repair UI layout TOML files.
-- `tools/ui/render_layout.py` - render UI layout TOML files to preview output.
+- `content/games/tools/layout_toml_renderer` - render UI layout TOML files to PNG through the engine runtime.
 - `tools/ui/snap_to_grid.py` - snap UI layout coordinates to a grid.
 
 ## tools/github
@@ -171,7 +171,7 @@ This parser-friendly index is kept so `tools/audit/tool_registry_audit.py` can v
 - `tools/dev`: `parallel_cargo.py`, `test_fix_loop.py`
 - `tools/dist`: `pack.py`, `package_games.py`
 - `tools/demos`: `gen_demo_screenshots.py`, `gen_game_readmes.py`, `organize_demos.py`, `smoke_sweep.py`
-- `tools/ui`: `fix_layouts.py`, `render_layout.py`, `snap_to_grid.py`
+- `tools/ui`: `fix_layouts.py`, `snap_to_grid.py`
 - `tools/github`: `ideas_to_github_issues.py`, `sync_agent_rules.py`
 - `tools/mods`: `mod_init.py`
 python tools/audit/audit_module.py --all --docs-quality  # all module reports

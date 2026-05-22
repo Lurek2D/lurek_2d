@@ -1,6 +1,6 @@
 ---
 name: examples-management
-description: "Load this skill when adding or reviewing content/examples/ or content/games/ files, README files, or conf.lua examples. Skip it for engine Rust, tests, docs/, or CAG work."
+description: "Load this skill when adding or reviewing content/examples/, content/games/, or tests/lua/evidence files that demonstrate lurek API usage and output artifacts. Skip it for engine Rust, docs/, or CAG work."
 ---
 # examples-management
 
@@ -12,10 +12,10 @@ description: "Load this skill when adding or reviewing content/examples/ or cont
 - Review content/games/ example content.
 - Check example README or conf files.
 - Improve API coverage through examples.
+- Add or update API evidence generators in tests/lua/evidence/.
 
 ## When To Skip
 - Engine Rust code.
-- Tests.
 - docs/ content.
 - CAG files.
 
@@ -27,11 +27,17 @@ description: "Load this skill when adding or reviewing content/examples/ or cont
 - How to add a new example file: create `content/examples/<module>.lua`, run `cargo test --test examples_load_test`, and confirm the file is picked up and loads without error. If the module has a guard (e.g., `if not lurek.html then return end`), add it at the top of the file so headless CI does not fail.
 - Sync rules: if an example changes a function name or parameter order because the API changed, update the matching entry in `docs/api/lurek.lua` (after regenerating via `python tools/gen_all_docs.py`) and the affected `docs/specs/<module>.md` in the same commit. The example is living documentation; it must stay truthful.
 - Coverage gap workflow: audit → pick one uncovered function → write the `do` block → confirm the stub tag → run load test → commit with sync. Never inflate count by writing stub tags without runnable code.
+- Evidence workflow for `tests/lua/evidence/`: keep setup small, call the real `lurek.*` API being proven, and write one deterministic artifact per case under `tests/output/<module>/`.
+- Evidence artifacts must be produced by engine API output paths (for example `drawToImage`, `renderToImage`, `toImageData`, `saveWAV`, HTML document state accessors). Do not replace missing engine output paths with handmade chart drawing that hides API behavior.
+- If a module has no image output method (for example light systems without `drawToImage`), write a deterministic text/JSON artifact from real API state (counts, params, computed results) instead of synthetic pixel rendering.
+- Prefer one clear concept per evidence case. Avoid giant merged files with repeated blocks and avoid copying the same scaffold into many tests.
+- After evidence edits, run `python tools/dev/parallel_cargo.py test lua` and confirm failures are unrelated before finalizing. When a global compile failure blocks Lua tests, record that blocker explicitly in the report.
 ## Companion File Index
 - None.
 
 ## References
 - content/examples/
 - content/games/
+- tests/lua/evidence/
 - tools/audit/example_coverage.py
 - logs/reports/coverage_gaps.md

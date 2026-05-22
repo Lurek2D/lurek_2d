@@ -25996,6 +25996,11 @@ lurek.ui.loadLayout = function(def) end
 ---@return number The root widget index.
 lurek.ui.loadLayoutFile = function(path) end
 
+--- Loads a UI layout from a TOML file resolved through GameFS.
+---@param path string GameFS path to the TOML layout file.
+---@return number The root widget index.
+lurek.ui.loadLayoutGameFile = function(path) end
+
 --- Delivers a mouse move event to the UI.
 ---@param x number Mouse X position.
 ---@param y number Mouse Y position.

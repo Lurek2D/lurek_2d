@@ -40,6 +40,9 @@ local function place(widget, x, y, w, h)
     return widget
 end
 
+local BASE_LAYOUT_W = 1200
+local BASE_LAYOUT_H = 800
+
 local LABEL_Y = 62
 local CONTROL_Y = 80
 local SUMMARY_Y = 110
@@ -91,6 +94,108 @@ local function ensure_table_rows(tbl, count, columns)
         for _ = 1, #columns do row[#row + 1] = "" end
         tbl:addRow(row)
     end
+end
+
+local function layout_value(v, fallback)
+    local n = tonumber(v)
+    if not n or n <= 0 then return fallback end
+    return n
+end
+
+local function apply_tab_layout(ctx)
+    if not ctx.widgets or not ctx.layout then return end
+    local w = ctx.widgets
+    local L = ctx.layout
+    local active = (ctx.filters and ctx.filters.active_tab) or 1
+
+    if active == 4 then
+        local left = math.floor(L.content_w * 0.46)
+        local right = L.content_w - left - L.gap
+        place(w.transactions, L.margin + left + L.gap, L.content_top, right, L.content_h)
+    elseif active == 7 then
+        place(w.transactions, L.margin, L.content_top, L.content_w, L.content_h)
+    else
+        place(w.transactions, L.margin, L.content_top, L.content_w, L.content_h)
+    end
+
+    local api_w = math.max(300, math.floor(L.content_w * 0.34))
+    place(w.api, L.margin + L.content_w - api_w, L.content_top, api_w, L.content_h)
+end
+
+function Controls.relayout(ctx, width, height)
+    if not ctx.widgets then return end
+    local w = ctx.widgets
+    local W = math.max(BASE_LAYOUT_W, math.floor(layout_value(width, ctx.C.WIDTH)))
+    local H = math.max(BASE_LAYOUT_H, math.floor(layout_value(height, ctx.C.HEIGHT)))
+
+    local margin = math.max(12, math.floor(W * 0.015))
+    local gap = math.max(6, math.floor(W * 0.007))
+    local top = 36
+    local tabs_h = 24
+    local controls_y = top + 56
+    local labels_y = controls_y - 18
+    local summary_y = controls_y + 30
+    local status_h = 28
+    local status_y = H - status_h
+    local content_top = summary_y + 28
+    local content_h = math.max(220, status_y - content_top - 12)
+    local content_w = W - margin * 2
+
+    place(w.tabs, margin, top, content_w, tabs_h)
+
+    local member_w = math.max(110, math.floor(content_w * 0.115))
+    local category_w = math.max(130, math.floor(content_w * 0.145))
+    local year_w = math.max(104, math.floor(content_w * 0.10))
+    local switch_w = math.max(74, math.floor(content_w * 0.07))
+    local threshold_w = math.max(116, math.floor(content_w * 0.11))
+    local button_w = math.max(68, math.floor(content_w * 0.065))
+
+    local x = margin
+    place(w.labels.member, x, labels_y, member_w, 12)
+    place(w.member, x, controls_y, member_w, 22)
+    x = x + member_w + gap
+
+    place(w.labels.category, x, labels_y, category_w, 12)
+    place(w.category, x, controls_y, category_w, 22)
+    x = x + category_w + gap
+
+    place(w.labels.from, x, labels_y, year_w, 12)
+    place(w.start_year, x, controls_y, year_w, 22)
+    x = x + year_w + gap
+
+    place(w.labels.to, x, labels_y, year_w, 12)
+    place(w.end_year, x, controls_y, year_w, 22)
+    x = x + year_w + gap
+
+    place(w.labels.clean, x, labels_y, switch_w, 12)
+    place(w.cleaned, x, controls_y, switch_w, 22)
+    x = x + switch_w + gap
+
+    place(w.labels.score, x, labels_y, threshold_w, 12)
+    place(w.threshold, x, controls_y, threshold_w, 22)
+    x = x + threshold_w + gap
+
+    place(w.regenerate, x, controls_y, button_w, 22)
+    x = x + button_w + gap
+    place(w.reload, x, controls_y, button_w, 22)
+    x = x + button_w + gap
+    place(w.save, x, controls_y, button_w, 22)
+    x = x + button_w + gap
+    place(w.screenshot, x, controls_y, button_w, 22)
+
+    place(w.filter_summary, margin, summary_y, content_w, 12)
+    place(w.status, 0, status_y, W, status_h)
+
+    ctx.layout = {
+        width = W,
+        height = H,
+        margin = margin,
+        gap = gap,
+        content_top = content_top,
+        content_h = content_h,
+        content_w = content_w,
+    }
+    apply_tab_layout(ctx)
 end
 
 function Controls.setup(ctx)
@@ -200,6 +305,7 @@ function Controls.setup(ctx)
 
     ctx.widgets = widgets
     ctx.filters = Controls.read_filters(ctx)
+    Controls.relayout(ctx, ctx.layout_width or ctx.C.WIDTH, ctx.layout_height or ctx.C.HEIGHT)
     Controls.update_visibility(ctx)
 end
 
@@ -287,8 +393,9 @@ end
 function Controls.update_visibility(ctx)
     if not ctx.widgets or not ctx.filters then return end
     local active = ctx.filters.active_tab or 1
-    ctx.widgets.transactions:setVisible(active == 7)
-    ctx.widgets.api:setVisible(false)
+    ctx.widgets.transactions:setVisible(active == 4 or active == 7)
+    ctx.widgets.api:setVisible(active == 1)
+    apply_tab_layout(ctx)
 end
 
 local function update_transactions(ctx)

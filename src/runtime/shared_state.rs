@@ -455,7 +455,7 @@ impl SharedState {
             default_fonts: [None; 7],
             default_bold_fonts: [None; 7],
             active_bold: false,
-            default_font_size: 10,
+            default_font_size: 8,
             default_font_bold: false,
             font_override_active: false,
             sprite_batches: SlotMap::with_key(),

@@ -1,0 +1,71 @@
+# household_finance_lab_tab_03_categories.layout.toml
+# Viewport: 1200 x 800
+resolution = [1200, 800]
+
+[root]
+widget_type = "panel"
+id = "hfl_root_categories"
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 800.0
+
+[[root.children]]
+widget_type = "label"
+id = "title"
+text = "Household Finance Lab"
+x = 16.0
+y = 16.0
+w = 272.0
+h = 32.0
+
+[[root.children]]
+widget_type = "tabbar"
+id = "tabs"
+text = "Widgets/API|Cashflow|[Categories]|Members|Payments|Anomalies|Transactions|Logs"
+x = 16.0
+y = 48.0
+w = 1168.0
+h = 32.0
+
+[[root.children]]
+widget_type = "panel"
+id = "category_totals_panel"
+x = 16.0
+y = 176.0
+w = 576.0
+h = 576.0
+
+[[root.children]]
+widget_type = "panel"
+id = "member_totals_panel"
+x = 608.0
+y = 176.0
+w = 576.0
+h = 352.0
+
+[[root.children]]
+widget_type = "panel"
+id = "methods_panel"
+x = 608.0
+y = 544.0
+w = 576.0
+h = 208.0
+
+[[root.children]]
+widget_type = "listbox"
+id = "dataframe_methods_list"
+text = "fromCSVFileAsync\nqueryParams\nzscoreCol\noutliers\ngroupAgg\nwithRollingMean\nwithRollingSum\nwithPctChange"
+x = 624.0
+y = 576.0
+w = 544.0
+h = 160.0
+
+[[root.children]]
+widget_type = "statusbar"
+id = "status"
+text = "src cache | rows 2626/2631 | sql 90 ms | Categories"
+x = 0.0
+y = 768.0
+w = 1200.0
+h = 32.0

@@ -712,6 +712,7 @@ fn create_widget_table<'a>(
         })?,
     )?;
     let c = ctx.clone();
+    let cbs_find = cbs.clone();
     // -- findById --
     /// Searches this widget's subtree for a child with the given ID.
     /// @param | self | LUiWidget | The widget instance.
@@ -720,12 +721,13 @@ fn create_widget_table<'a>(
     t.set(
         "findById",
         lua.create_function(move |lua, (_self, id): (LuaValue, String)| {
-            let g = c.borrow();
-            match g.find_by_id(idx, &id) {
+            let found = {
+                let g = c.borrow();
+                g.find_by_id(idx, &id)
+            };
+            match found {
                 Some(found_idx) => {
-                    let ft = lua.create_table()?;
-                    /// Performs the '_idx' operation.
-                    ft.set("_idx", found_idx)?;
+                    let ft = create_typed_widget_table(lua, &c, found_idx, &cbs_find)?;
                     Ok(LuaValue::Table(ft))
                 }
                 None => Ok(LuaValue::Nil),
@@ -1326,6 +1328,73 @@ fn create_widget_table<'a>(
         })?,
     )?;
     Ok(t)
+}
+
+/// Creates a widget table with type-specific methods based on runtime WidgetKind.
+fn create_typed_widget_table<'a>(
+    lua: &'a Lua,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+    cbs: &Rc<RefCell<GuiCallbacks>>,
+) -> LuaResult<LuaTable<'a>> {
+    let kind_tag = {
+        let g = ctx.borrow();
+        match g.widgets.get(idx) {
+            Some(WidgetKind::TabBar(_)) => "tabbar",
+            Some(WidgetKind::ComboBox(_)) => "combobox",
+            Some(WidgetKind::Slider(_)) => "slider",
+            Some(WidgetKind::Switch(_)) => "switch",
+            Some(WidgetKind::Button(_)) => "button",
+            Some(WidgetKind::StatusBar(_)) => "statusbar",
+            Some(WidgetKind::GUITable(_)) => "guitable",
+            Some(WidgetKind::Label(_)) => "label",
+            _ => "widget",
+        }
+    };
+
+    match kind_tag {
+        "tabbar" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LTabBar")?;
+            add_tab_bar_methods(lua, &t, ctx, idx)?;
+            Ok(t)
+        }
+        "combobox" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LComboBox")?;
+            add_combo_box_methods(lua, &t, ctx, idx)?;
+            Ok(t)
+        }
+        "slider" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LSlider")?;
+            add_slider_methods(lua, &t, ctx, idx)?;
+            Ok(t)
+        }
+        "switch" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LSwitch")?;
+            add_switch_methods(lua, &t, ctx, idx)?;
+            Ok(t)
+        }
+        "button" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LButton")?;
+            add_button_methods(lua, &t, ctx, idx)?;
+            Ok(t)
+        }
+        "statusbar" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LStatusBar")?;
+            add_status_bar_methods(lua, &t, ctx, idx)?;
+            Ok(t)
+        }
+        "guitable" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LGuiTable")?;
+            add_gui_table_methods(lua, &t, ctx, idx, cbs)?;
+            Ok(t)
+        }
+        "label" => {
+            let t = create_widget_table(lua, ctx, idx, cbs, "LLabel")?;
+            add_label_methods(lua, &t, ctx, idx)?;
+            Ok(t)
+        }
+        _ => create_widget_table(lua, ctx, idx, cbs, "LWidget"),
+    }
 }
 /// Adds button-specific methods (setText, getText) to a button widget table.
 fn add_button_methods(
@@ -6824,6 +6893,26 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let src = std::fs::read_to_string(&path).map_err(|e| {
                 mlua::Error::external(format!("loadLayoutFile: cannot read '{path}': {e}"))
             })?;
+            let mut g = c.borrow_mut();
+            let root_idx =
+                crate::ui::load_layout_toml(&mut g, &src).map_err(mlua::Error::external)?;
+            g.add_child(0, root_idx);
+            Ok(root_idx as u32)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let s = state.clone();
+    // -- loadLayoutGameFile --
+    /// Loads a UI layout from a TOML file resolved through GameFS.
+    /// @param | path | string | GameFS path to the TOML layout file.
+    /// @return | integer | The root widget index.
+    tbl.set(
+        "loadLayoutGameFile",
+        lua.create_function(move |_, path: String| {
+            let src = {
+                let st = s.borrow();
+                st.fs.read_string(&path).map_err(mlua::Error::external)?
+            };
             let mut g = c.borrow_mut();
             let root_idx =
                 crate::ui::load_layout_toml(&mut g, &src).map_err(mlua::Error::external)?;

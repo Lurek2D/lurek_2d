@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+
+ - feat(ui): added `lurek.ui.loadLayoutGameFile(path)` for GameFS-resolved TOML UI loading, and updated `LUiWidget:findById` to return typed widget handles with widget-specific Lua methods (for event binding and value updates after TOML layout load).
+ - refactor(games): migrated `apps/household_finance_lab` control shell from manual Lua widget construction to runtime TOML layout loading (`layouts/household_finance_lab_ui.toml`) with ID-based event/data binding.
+ - feat(games): added engine-driven TOML layout renderer game at `content/games/tools/layout_toml_renderer` and removed the legacy Python preview renderer (`tools/ui/render_layout.py`), so layout PNG generation now runs through the Lurek2D runtime.
+
 - feat(ui): added `lurek.ui.clear()` to reset retained UI state between layout loads while preserving the active theme, switched TOML layout screenshots to the engine's real `GuiContext::draw_to_image()` path instead of debug rectangles, and rewired GUI evidence rendering to sweep actual `content/layouts/*.toml` files through `loadLayoutFile` + `renderToImage`.
 
 - feat(ui): added focus metadata and grouped traversal controls: `WidgetBase` now stores `focusable`, `tab_index`, `focus_group`, directional focus neighbors, and role/name accessibility metadata; Lua widget bindings gained `setFocusable`, `setTabIndex`, `setFocusGroup`, `setFocusNeighbor`, `setRole`, `setAriaName`; global `lurek.ui.focusNeighbor(direction)` now follows explicit directional links.

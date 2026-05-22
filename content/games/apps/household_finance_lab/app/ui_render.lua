@@ -34,8 +34,23 @@ local function frame_max(frame, key)
     return 0
 end
 
+local BASE_DRAW_W = 1200
+local BASE_DRAW_H = 800
+
 local CONTENT_TOP = 146
 local CONTENT_BOTTOM = 548
+
+local function release_image(image)
+    if not image then return end
+    pcall(function() image:release() end)
+end
+
+local function release_chart_images(charts)
+    if type(charts) ~= "table" then return end
+    for _, image in pairs(charts) do
+        release_image(image)
+    end
+end
 
 local function chart_image(chart, width, height)
     local target = lurek.image.newImageData(width, height)
@@ -102,6 +117,7 @@ local function build_charts(ctx)
     scatter:setYRange(0, math.max(1, frame_max(anomalies_frame, "amount_abs")))
     charts.anomalies = chart_image(scatter, 340, 210)
 
+    release_chart_images(ctx.charts)
     ctx.charts = charts
     ctx.chart_count = 7
     ctx.chart_version = ctx.view_version
@@ -112,17 +128,6 @@ local function draw_chart(ctx, name, x, y, sx, sy)
     if not image then return end
     lurek.render.setColor(1, 1, 1, 1)
     lurek.render.draw(image, x, y, 0, sx or 1, sy or sx or 1)
-end
-
-local function draw_ui_layer(ctx)
-    local ok, image_data = pcall(function()
-        return lurek.ui.drawToImage(ctx.C.WIDTH, ctx.C.HEIGHT)
-    end)
-    if not ok or not image_data then return end
-    local image = lurek.render.newImage(image_data)
-    lurek.render.setColor(1, 1, 1, 1)
-    lurek.render.draw(image, 0, 0)
-    lurek.render.setScissor()
 end
 
 local function panel(C, x, y, w, h, title)
@@ -298,7 +303,6 @@ local function draw_widgets(ctx)
     end
     draw_api_compact_text(ctx, 282, 426)
 
-    draw_api_table_text(ctx)
 end
 
 local function draw_cashflow(ctx)
@@ -335,18 +339,8 @@ local function draw_members(ctx)
     panel(C, 12, CONTENT_TOP, 374, CONTENT_BOTTOM - CONTENT_TOP, "Household member load")
     draw_chart(ctx, "members", 20, 172)
     panel(C, 398, CONTENT_TOP, 390, CONTENT_BOTTOM - CONTENT_TOP, "Recent selected member transactions")
-    local y = 168
-    for index, row in ipairs(ctx.view.recent or {}) do
-        if index > 16 then break end
-        set(C.COLORS.text)
-        lurek.render.print(short(row.date, 10), 414, y, 1)
-        lurek.render.print(short(row.member_clean, 8), 482, y, 1)
-        lurek.render.print(short(row.category_clean, 10), 544, y, 1)
-        lurek.render.print(short(row.merchant, 18), 624, y, 1)
-        set((tonumber(row.signed_amount) or 0) < 0 and C.COLORS.red or C.COLORS.green)
-        lurek.render.print(money(row.signed_amount), 728, y, 1)
-        y = y + 24
-    end
+    set(C.COLORS.muted)
+    lurek.render.print("Right panel uses native LGuiTable widget", 414, 168, 1)
 end
 
 local function draw_payments(ctx)
@@ -443,16 +437,25 @@ end
 
 function UIRender.setup(ctx)
     pcall(function() lurek.render.setDefaultFilter("nearest", "nearest", 1) end)
+    local ui_font_size = math.max(10, ctx.C.FONT_SIZE or 8)
     ctx.fonts = {
         small = lurek.render.getDefaultFont(ctx.C.FONT_SIZE or 8),
         title = lurek.render.getDefaultFont(ctx.C.TITLE_FONT_SIZE or 10),
+        ui = lurek.render.getDefaultFont(ui_font_size),
     }
+    if ctx.fonts.ui then
+        pcall(function() lurek.ui.setFont(ctx.fonts.ui) end)
+    elseif ctx.fonts.small then
+        pcall(function() lurek.ui.setFont(ctx.fonts.small) end)
+    end
     ctx.render_scale = 1
     ctx.render_offset_x = 0
     ctx.render_offset_y = 0
     ctx.viewport_width = ctx.C.WIDTH
     ctx.viewport_height = ctx.C.HEIGHT
-    lurek.ui.setViewport(ctx.C.WIDTH, ctx.C.HEIGHT)
+    ctx.layout_width = math.max(1200, ctx.C.WIDTH)
+    ctx.layout_height = math.max(800, ctx.C.HEIGHT)
+    lurek.ui.setViewport(ctx.layout_width, ctx.layout_height)
     lurek.render.setBackgroundColor(ctx.C.COLORS.bg[1], ctx.C.COLORS.bg[2], ctx.C.COLORS.bg[3])
 end
 
@@ -464,15 +467,14 @@ function UIRender.update_viewport(ctx)
     local ok_h, runtime_h = pcall(function() return lurek.window.getHeight() end)
     if ok_w and runtime_w and runtime_w > 0 then width = runtime_w end
     if ok_h and runtime_h and runtime_h > 0 then height = runtime_h end
-    local scale = math.min(width / C.WIDTH, height / C.HEIGHT)
-    if scale <= 0 then scale = 1 end
-    if scale >= 1 then scale = math.max(1, math.floor(scale + 0.0001)) end
     ctx.viewport_width = width
     ctx.viewport_height = height
-    ctx.render_scale = scale
-    ctx.render_offset_x = math.floor((width - C.WIDTH * scale) * 0.5)
-    ctx.render_offset_y = math.floor((height - C.HEIGHT * scale) * 0.5)
-    lurek.ui.setViewport(C.WIDTH, C.HEIGHT)
+    ctx.layout_width = math.max(1200, width)
+    ctx.layout_height = math.max(800, height)
+    ctx.render_scale = 1
+    ctx.render_offset_x = 0
+    ctx.render_offset_y = 0
+    lurek.ui.setViewport(ctx.layout_width, ctx.layout_height)
 end
 
 function UIRender.draw(ctx)
@@ -482,14 +484,12 @@ function UIRender.draw(ctx)
     build_charts(ctx)
     if ctx.Controls then ctx.Controls.update_widgets(ctx) end
     lurek.render.clear(C.COLORS.bg[1], C.COLORS.bg[2], C.COLORS.bg[3])
+    local sx = (ctx.layout_width or ctx.C.WIDTH) / BASE_DRAW_W
+    local sy = (ctx.layout_height or ctx.C.HEIGHT) / BASE_DRAW_H
     lurek.render.push()
-    lurek.render.translate(ctx.render_offset_x or 0, ctx.render_offset_y or 0)
-    lurek.render.scale(ctx.render_scale or 1, ctx.render_scale or 1)
+    lurek.render.scale(sx, sy)
     if ctx.fonts.small then lurek.render.setFont(ctx.fonts.small) end
-    draw_ui_layer(ctx)
     lurek.render.setScissor()
-    if ctx.fonts.small then lurek.render.setFont(ctx.fonts.small) end
-    draw_header(ctx)
     local active_tab = (ctx.filters and ctx.filters.active_tab) or 1
     if active_tab == 1 then
         draw_widgets(ctx)
@@ -511,6 +511,8 @@ function UIRender.draw(ctx)
     lurek.render.setScissor()
     if ctx.fonts.small then lurek.render.setFont(ctx.fonts.small) end
     draw_control_text(ctx)
+    -- Reset render tint so native UI widgets are not dimmed by previous custom draws.
+    lurek.render.setColor(1, 1, 1, 1)
     lurek.render.pop()
 end
 

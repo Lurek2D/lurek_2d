@@ -1537,6 +1537,60 @@ impl LurekApp {
         let (Some(renderer), Some(surface)) = (&mut self.renderer, &self.surface) else {
             return;
         };
+        if let Some(state_rc) = self.state.as_ref().cloned() {
+            let mut st = state_rc.borrow_mut();
+            if let Some(body_key) = st.active_font.or(st.default_font) {
+                let heading_slot = crate::render::Font::nearest_point_size(
+                    st.default_font_size.saturating_add(6),
+                );
+                let heading_key = if st.active_bold {
+                    Some(body_key)
+                } else {
+                    st.default_bold_fonts[heading_slot].or(Some(body_key))
+                };
+                let cmds = error_screen.build_render_commands(
+                    renderer.width,
+                    renderer.height,
+                    heading_key,
+                    Some(body_key),
+                );
+                let bg = [0.11, 0.22, 0.53, 1.0];
+                let no_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch> =
+                    SlotMap::with_key();
+                let no_canvases: SlotMap<CanvasKey, crate::render::Canvas> = SlotMap::with_key();
+                let no_textures: SlotMap<TextureKey, TextureData> = SlotMap::with_key();
+                let no_meshes: SlotMap<MeshKey, crate::render::Mesh> = SlotMap::with_key();
+                let no_shaders: SlotMap<ShaderKey, crate::render::Shader> = SlotMap::with_key();
+                let default_filter = ("linear".to_string(), "linear".to_string(), 1);
+                let no_lights = crate::light::light_world::LightWorld::new();
+                let render_result = renderer.render_frame(
+                    surface,
+                    &cmds,
+                    &no_textures,
+                    &mut st.fonts,
+                    &no_lights,
+                    &no_batches,
+                    &no_canvases,
+                    &no_meshes,
+                    &no_shaders,
+                    &default_filter,
+                    bg,
+                    &crate::math::Mat3::identity(),
+                    0.0,
+                    0u64,
+                    false,
+                );
+                let should_reconfigure = matches!(
+                    render_result,
+                    Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated)
+                );
+                drop(st);
+                if should_reconfigure {
+                    self.reconfigure_surface();
+                }
+                return;
+            }
+        }
         if self.engine_fonts.is_none() {
             let mut fonts: SlotMap<FontKey, crate::render::Font> = SlotMap::with_key();
             let all = crate::render::Font::load_all_sizes();

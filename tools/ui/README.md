@@ -1,36 +1,20 @@
 # tools/ui/
 
-Standalone Python utilities for Lurek2D UI layout tooling.
-No game engine required — these scripts run directly from the command line.
+Standalone utilities for Lurek2D UI layout tooling.
+Grid snapping and layout fixing are Python utilities; PNG rendering is now engine-driven.
 
-## render_layout.py — Layout PNG Preview
+## Engine Layout Renderer — Layout PNG Preview
 
-Renders a Lurek2D TOML UI layout file to a wireframe PNG image.
-Each widget is drawn as a colour-coded filled rectangle with a border and a
-label showing: `widget_type [id] "text"`.
-
-### Requirements
-
-```
-pip install Pillow
-# Python < 3.11 also needs:
-pip install tomli
-```
+Layout PNG previews are rendered by the Lurek2D engine runtime itself.
+Use the dedicated renderer game at `content/games/tools/layout_toml_renderer`.
 
 ### Usage
 
 ```powershell
-# Render a single layout file (outputs hud.png next to hud.layout.toml)
-python tools/ui/render_layout.py content/demos/my_game/hud.layout.toml
+# Render TOML layouts to PNG via engine runtime
+cargo run --bin lurek2d -- content/games/tools/layout_toml_renderer
 
-# Render all *.layout.toml files under content/ (non-recursive)
-python tools/ui/render_layout.py --all content/
-
-# Render all *.layout.toml recursively
-python tools/ui/render_layout.py --all content/ --recursive
-
-# Preview: see what would be rendered without writing PNGs
-python tools/ui/render_layout.py --dry-run content/demos/my_game/hud.layout.toml
+# Output PNG files are written into save/layout_toml_renderer/
 ```
 
 ### Layout file format
@@ -42,69 +26,13 @@ Resolution (output PNG size) is determined in this order:
 2. `root.w` × `root.h`         — root widget size
 3. `1280 × 720`                 — hardcoded fallback
 
-### Example
-
-```toml
-# content/demos/my_game/hud.layout.toml
-resolution = [1280, 720]
-
-[root]
-widget_type = "panel"
-w = 1280.0
-h = 720.0
-
-[[root.children]]
-widget_type = "label"
-id = "score_label"
-text = "Score: 0"
-x = 10.0
-y = 10.0
-w = 200.0
-h = 30.0
-
-[[root.children]]
-widget_type = "button"
-id = "pause_btn"
-text = "Pause"
-x = 1180.0
-y = 10.0
-w = 90.0
-h = 30.0
-```
-
-Run:
-```powershell
-python tools/ui/render_layout.py content/demos/my_game/hud.layout.toml
-# -> writes content/demos/my_game/hud.png
-```
-
-### Widget colour legend
-
-| Widget type       | Colour     |
-| ----------------- | ---------- |
-| button            | Blue       |
-| label             | Green      |
-| panel             | Dark blue  |
-| textinput         | Light grey |
-| checkbox          | Gold       |
-| slider            | Green      |
-| progressbar       | Teal       |
-| combobox          | Purple     |
-| listbox           | Blue-grey  |
-| layout            | Very dark  |
-| guiwindow         | Dark blue  |
-| dialog            | Dark blue  |
-| menubar/statusbar | Very dark  |
-| badge             | Red        |
-| *unknown*         | Mid grey   |
-
 ## snap_to_grid.py — Snap layouts to grid
 
 Snap every pixel-coordinate field in Lurek2D TOML layout files to a grid (default 8 px). Idempotent.
 
 ```powershell
 python tools/ui/snap_to_grid.py content/layouts/hud.layout.toml
-python tools/ui/snap_to_grid.py --all content/ --grid 16
+python tools/ui/snap_to_grid.py --all content/ --grid 8
 python tools/ui/snap_to_grid.py --all content/ --dry-run
 ```
 
@@ -119,5 +47,5 @@ python tools/ui/fix_layouts.py --all content/ --dry-run
 
 ## Filename index
 
-`fix_layouts.py`, `render_layout.py`, `snap_to_grid.py`
+`fix_layouts.py`, `snap_to_grid.py`
 

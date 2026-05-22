@@ -683,6 +683,7 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `lurek.ui.updateBindings`: CamelCase alias for `update_bindings` that returns the number of changed widgets.
 - `lurek.ui.loadLayout`: Loads a UI layout from a Lua table definition.
 - `lurek.ui.loadLayoutFile`: Loads a UI layout from a TOML layout file.
+- `lurek.ui.loadLayoutGameFile`: Loads a UI layout TOML file through GameFS (game-relative path).
 - `lurek.ui.renderToImage`: Renders the entire UI to a PNG image file. The canonical order is `(width, height, path)`; the binding also accepts `(path, width, height)` for compatibility with older tests.
 
 ### `LAccordion` Methods
@@ -1058,7 +1059,7 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `LUiWidget:removeChild`: Removes a child widget from this widget's hierarchy.
 - `LUiWidget:getChildCount`: Returns the number of direct child widgets attached to this widget.
 - `LUiWidget:getChildren`: Returns a table of lightweight child widget references, each containing an _idx field.
-- `LUiWidget:findById`: Searches this widget's subtree for a child with the given ID.
+- `LUiWidget:findById`: Searches this widget's subtree for a child with the given ID and returns a typed widget handle (with widget-specific methods).
 - `LUiWidget:setOnClick`: Registers a callback function invoked when this widget is clicked.
 - `LUiWidget:setOnChange`: Registers a callback function invoked when this widget's value changes.
 - `LUiWidget:setOnDraw`: Registers a custom draw callback for this widget, invoked each frame during the draw pass.

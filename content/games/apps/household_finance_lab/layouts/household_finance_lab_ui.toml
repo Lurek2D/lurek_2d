@@ -1,0 +1,208 @@
+# household_finance_lab_ui.toml
+# Runtime UI layout for app (16x16 grid)
+resolution = [1200, 800]
+
+[root]
+widget_type = "panel"
+id = "hfl_root"
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 800.0
+
+[[root.children]]
+widget_type = "label"
+id = "title"
+text = "Household Finance Lab"
+x = 16.0
+y = 12.0
+w = 352.0
+h = 32.0
+
+[[root.children]]
+widget_type = "label"
+id = "subtitle"
+text = "Public API: TOML + DataFrame + SQL"
+x = 384.0
+y = 12.0
+w = 704.0
+h = 32.0
+
+[[root.children]]
+widget_type = "tabbar"
+id = "tabs"
+x = 16.0
+y = 48.0
+w = 1168.0
+h = 32.0
+
+[[root.children]]
+widget_type = "label"
+id = "member_label"
+text = "Member"
+x = 16.0
+y = 108.0
+w = 128.0
+h = 16.0
+
+[[root.children]]
+widget_type = "label"
+id = "category_label"
+text = "Category"
+x = 160.0
+y = 108.0
+w = 160.0
+h = 16.0
+
+[[root.children]]
+widget_type = "label"
+id = "from_label"
+text = "From"
+x = 336.0
+y = 108.0
+w = 120.0
+h = 16.0
+
+[[root.children]]
+widget_type = "label"
+id = "to_label"
+text = "To"
+x = 472.0
+y = 108.0
+w = 120.0
+h = 16.0
+
+[[root.children]]
+widget_type = "label"
+id = "clean_label"
+text = "Clean"
+x = 608.0
+y = 108.0
+w = 80.0
+h = 16.0
+
+[[root.children]]
+widget_type = "label"
+id = "score_label"
+text = "Score"
+x = 704.0
+y = 108.0
+w = 96.0
+h = 16.0
+
+[[root.children]]
+widget_type = "combobox"
+id = "member_combo"
+x = 16.0
+y = 124.0
+w = 128.0
+h = 32.0
+
+[[root.children]]
+widget_type = "combobox"
+id = "category_combo"
+x = 160.0
+y = 124.0
+w = 160.0
+h = 32.0
+
+[[root.children]]
+widget_type = "slider"
+id = "year_from"
+x = 336.0
+y = 124.0
+w = 120.0
+h = 32.0
+
+[[root.children]]
+widget_type = "slider"
+id = "year_to"
+x = 472.0
+y = 124.0
+w = 120.0
+h = 32.0
+
+[[root.children]]
+widget_type = "switch"
+id = "clean_switch"
+x = 608.0
+y = 124.0
+w = 80.0
+h = 32.0
+
+[[root.children]]
+widget_type = "slider"
+id = "score_threshold"
+x = 704.0
+y = 124.0
+w = 96.0
+h = 32.0
+
+[[root.children]]
+widget_type = "button"
+id = "regen_btn"
+text = "Run"
+x = 824.0
+y = 124.0
+w = 84.0
+h = 32.0
+
+[[root.children]]
+widget_type = "button"
+id = "reload_btn"
+text = "Load"
+x = 916.0
+y = 124.0
+w = 84.0
+h = 32.0
+
+[[root.children]]
+widget_type = "button"
+id = "save_btn"
+text = "Save"
+x = 1008.0
+y = 124.0
+w = 84.0
+h = 32.0
+
+[[root.children]]
+widget_type = "button"
+id = "shot_btn"
+text = "Shot"
+x = 1100.0
+y = 124.0
+w = 84.0
+h = 32.0
+
+[[root.children]]
+widget_type = "label"
+id = "filter_summary"
+text = "All / All | 2021-2025 | clean | >=30"
+x = 16.0
+y = 172.0
+w = 1168.0
+h = 16.0
+
+[[root.children]]
+widget_type = "guitable"
+id = "transactions_table"
+x = 16.0
+y = 204.0
+w = 1168.0
+h = 544.0
+
+[[root.children]]
+widget_type = "guitable"
+id = "api_table"
+x = 784.0
+y = 204.0
+w = 400.0
+h = 544.0
+
+[[root.children]]
+widget_type = "statusbar"
+id = "status"
+x = 0.0
+y = 768.0
+w = 1200.0
+h = 32.0

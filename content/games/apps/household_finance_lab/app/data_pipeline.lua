@@ -201,14 +201,35 @@ function Pipeline.ensure_csv(ctx, options)
 end
 
 local function load_csv_frame(ctx, options)
-    if options.sync_csv_load then
-        append_log(ctx, "info", "Loading CSV with lurek.dataframe.fromCSVFile")
-        return lurek.dataframe.fromCSVFile(ctx.C.CSV_PATH)
+    local dataframe = lurek.dataframe
+    if type(dataframe) ~= "table" then
+        error("lurek.dataframe module is unavailable")
     end
-    local task = lurek.dataframe.fromCSVFileAsync(ctx.C.CSV_PATH)
-    task:wait()
-    append_log(ctx, "info", "Loading CSV with lurek.dataframe.fromCSVFileAsync")
-    return task:result()
+
+    if not options.sync_csv_load then
+        local from_csv_async = dataframe.fromCSVFileAsync
+        if type(from_csv_async) == "function" then
+            local task = from_csv_async(ctx.C.CSV_PATH)
+            task:wait()
+            append_log(ctx, "info", "Loading CSV with lurek.dataframe.fromCSVFileAsync")
+            return task:result()
+        end
+    end
+
+    local from_csv_file = dataframe.fromCSVFile
+    if type(from_csv_file) == "function" then
+        append_log(ctx, "info", "Loading CSV with lurek.dataframe.fromCSVFile")
+        return from_csv_file(ctx.C.CSV_PATH)
+    end
+
+    local from_csv_text = dataframe.fromCSV
+    local fs_read = lurek.filesystem and lurek.filesystem.read
+    if type(from_csv_text) == "function" and type(fs_read) == "function" then
+        append_log(ctx, "warn", "fromCSVFile unavailable, loading CSV through filesystem.read + fromCSV")
+        return from_csv_text(fs_read(ctx.C.CSV_PATH))
+    end
+
+    error("No supported CSV loader available (fromCSVFileAsync/fromCSVFile/fromCSV)")
 end
 
 function Pipeline.build_from_csv(ctx, options)

@@ -34,8 +34,8 @@ function Config.load(path)
 
     local C = {
         RAW = parsed,
-        WIDTH = tonumber(value(window, "width", 800)) or 800,
-        HEIGHT = tonumber(value(window, "height", 600)) or 600,
+        WIDTH = tonumber(value(window, "width", 1200)) or 1200,
+        HEIGHT = tonumber(value(window, "height", 800)) or 800,
         FONT_SIZE = tonumber(value(window, "font_size", 10)) or 10,
         TITLE_FONT_SIZE = tonumber(value(window, "title_font_size", 12)) or 12,
         SAVE_DIR = tostring(value(paths, "save_dir", "save/household_finance_lab")),
