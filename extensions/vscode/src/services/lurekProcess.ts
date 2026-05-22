@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { buildRunCommand, buildTerminalCommand } from "./parallelCargo.js";
+import { buildRunCommand } from "./parallelCargo.js";
 
 /**
  * Manages the Lurek2D game process lifecycle — finding the binary,
@@ -33,9 +33,7 @@ export class LurekProcessService {
    */
   async findLurekBinary(): Promise<string | undefined> {
     // 1. Check user setting
-    const configured = vscode.workspace
-      .getConfiguration("lurek")
-      .get<string>("enginePath", "");
+    const configured = getConfiguredBinaryPath();
     if (configured && fs.existsSync(configured)) {
       return configured;
     }
@@ -77,17 +75,26 @@ export class LurekProcessService {
 
     const binary = await this.findLurekBinary();
     const launchArgs = [gameDir, ...args];
-    const cmd = binary
-      ? buildTerminalCommand(binary, launchArgs)
-      : buildRunCommand("debug", launchArgs);
-
-    const terminal = vscode.window.createTerminal({
+    const workspaceRoot = getWorkspaceRoot();
+    const terminalOptions: vscode.TerminalOptions = {
       name: `Lurek2D Debug #${++this.runCounter}`,
-      cwd: getWorkspaceRoot(),
-    });
+    };
+    if (workspaceRoot) {
+      terminalOptions.cwd = workspaceRoot;
+    }
+    if (binary) {
+      // Launch the installed binary directly so paths like Program Files do not
+      // depend on the user's shell quoting rules.
+      terminalOptions.shellPath = binary;
+      terminalOptions.shellArgs = launchArgs;
+    }
+
+    const terminal = vscode.window.createTerminal(terminalOptions);
     this.terminals.add(terminal);
     terminal.show();
-    terminal.sendText(cmd);
+    if (!binary) {
+      terminal.sendText(buildRunCommand("debug", launchArgs));
+    }
 
     this._onStatusChange.fire(true);
     void vscode.commands.executeCommand("setContext", "lurek.gameRunning", true);
@@ -125,4 +132,21 @@ export class LurekProcessService {
 function getWorkspaceRoot(): string | undefined {
   const folders = vscode.workspace.workspaceFolders;
   return folders?.[0]?.uri.fsPath;
+}
+
+function getConfiguredBinaryPath(): string {
+  const config = vscode.workspace.getConfiguration("lurek");
+  const configuredPaths = [
+    config.get<string>("lurekPath", ""),
+    config.get<string>("enginePath", ""),
+  ];
+
+  for (const configuredPath of configuredPaths) {
+    const trimmed = configuredPath.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+  }
+
+  return "";
 }

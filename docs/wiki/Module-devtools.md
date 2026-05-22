@@ -46,9 +46,13 @@ In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek
 
 ## 📋 Summary
 
-Development-time diagnostic utilities exposed as `lurek.devtools.*` for runtime inspection and profiling. `Logger` provides leveled logging with sink routing (memory, file, callback). `Profiler` measures named code zones with begin/end markers and computes per-zone average/min/max timings. `FrameStats` tracks per-frame CPU time, draw calls, and memory snapshots in a rolling window.
+The `devtools` module provides an extensive suite of development-time diagnostic utilities intended for runtime inspection, profiling, and debugging in Lurek2D. Situated within the Edge/Integration tier, this module empowers developers to analyze performance and iteratively refine game code without interrupting execution. Key among its features is the `Logger`, which provides structured, severity-leveled logging with sophisticated sink routing—allowing logs to be mirrored to in-memory bounded buffers, standard error, or append-only log files. It natively supports severity filtering and prefix-based category filtering.
 
-`FileWatcher` monitors directories for changes and fires callbacks on create/modify/delete events — used for hot-reload workflows. `ReplConsole` wraps the REPL session for in-game command execution. `TimeAnchor` provides relative timing for log correlation. All utilities are headless-safe; the module imports only `runtime` and `log`.
+For performance analysis, the `Profiler` implements a hierarchical, push/pop zone-based timing system. It captures execution durations per named scope (zone), segregating total elapsed time from exclusive 'self-time'. The data is collected on a per-frame basis and stored in a rolling frame history, facilitating deep CPU-cost inspection across consecutive frames. Working alongside the profiler is `FrameStats`, which translates raw per-frame CPU and GPU timing deltas into actionable metrics, including FPS aggregates, minimums, maximums, and percentiles.
+
+To accelerate the development workflow, `devtools` integrates hot-reload capabilities through the `FileWatcher`. This component watches directories for changes using native operating system notification backends, triggering Lua callbacks on file creation, modification, or deletion. Additionally, the `ReplConsole` provides an interactive in-game Read-Eval-Print Loop (REPL), wrapping the release-safe core REPL to offer an integrated environment for executing Lua expressions on the fly while retaining bounded command history.
+
+All these diagnostic tools are designed to be 'headless-safe' and lightweight, importing only core dependencies such as `runtime` and `log`. The module's comprehensive feature set is made accessible to the engine via the `lurek.devtools.*` Lua API namespace, where developers can programmatically inject logs, define profiler zones, query performance aggregates, handle file watches, and even execute Lua snippets directly within the running application.
 
 [⬆ back to top](#table-of-contents)
 

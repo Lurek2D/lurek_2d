@@ -1,4 +1,4 @@
-﻿-- content/examples/window.lua
+-- content/examples/window.lua
 -- Auto-generated from content/examples2/window_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/window.lua
 
@@ -377,7 +377,6 @@ do
     print("call lurek.window.close() from a quit button when you are ready to end the session")
 end
 
---@api-stub: LGuiWindow:getTitle
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())
@@ -386,7 +385,6 @@ do
     print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
 end
 
---@api-stub: LGuiWindow:isCloseable
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())
@@ -395,7 +393,6 @@ do
     print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
 end
 
---@api-stub: LGuiWindow:isDraggable
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())
@@ -404,7 +401,6 @@ do
     print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
 end
 
---@api-stub: LGuiWindow:isResizable
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())
@@ -413,7 +409,6 @@ do
     print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
 end
 
---@api-stub: LGuiWindow:setCloseable
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())
@@ -422,7 +417,6 @@ do
     print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
 end
 
---@api-stub: LGuiWindow:setDraggable
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())
@@ -431,7 +425,6 @@ do
     print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
 end
 
---@api-stub: LGuiWindow:setOnClose
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())
@@ -440,16 +433,6 @@ do
     print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
 end
 
---@api-stub: LGuiWindow:setResizable
-do
-    local win = lurek.ui.newWindow("Test Window")
-    print("win_title=" .. win:getTitle())
-    win:setTitle("Renamed Window"); win:setCloseable(true); win:setDraggable(false); win:setResizable(true)
-    win:setOnClose(function() print("window_closed") end)
-    print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
-end
-
---@api-stub: LGuiWindow:setTitle
 do
     local win = lurek.ui.newWindow("Test Window")
     print("win_title=" .. win:getTitle())

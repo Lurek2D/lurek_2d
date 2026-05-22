@@ -7,13 +7,150 @@
 //! - HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
 //! - `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
 //! - Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
-//! - Approximate character-width text measurement and alignment (left/center/right) for label placement.
+//! - Font-aware text measurement and alignment using the active UI font when available.
 
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
+use crate::render::Font;
 use crate::runtime::resource_keys::FontKey;
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::theme::WidgetStyle;
-use crate::ui::widget::WidgetBase;
+use crate::ui::widget::{TextVAlign, WidgetBase};
+use crate::math::Rect;
+use slotmap::SlotMap;
+
+fn text_scale(style: &WidgetStyle, font: Option<&Font>) -> f32 {
+    let base_height = font.map(|font| font.size()).unwrap_or(14.0).max(1.0);
+    style.font_size / base_height
+}
+
+fn measure_text(text: &str, style: &WidgetStyle, font: Option<&Font>) -> f32 {
+    match font {
+        Some(font) => font.text_width(text) * text_scale(style, Some(font)),
+        None => text.chars().count() as f32 * 6.0 * text_scale(style, None),
+    }
+}
+/// A single laid-out text run with absolute screen position and clip bounds.
+pub struct TextLine {
+    /// Text content for this run.
+    pub text: String,
+    /// Absolute X screen coordinate for the `Print` command origin.
+    pub x: f32,
+    /// Absolute Y screen coordinate for the `Print` command origin.
+    pub y: f32,
+    /// Scissor rect that must enclose this run; caller emits `SetScissor` before printing.
+    pub clip_rect: Rect,
+}
+/// Compute a list of [`TextLine`]s for `text` inside `rect`, applying wrap, ellipsis, and vertical alignment.
+///
+/// - `wrap=false, ellipsis=true`: truncate to one line ending with "…" when text exceeds `rect.width`.
+/// - `wrap=true`: break at word boundaries; no per-line ellipsis.
+/// - `v_align`: distribute the total text block vertically within `rect`.
+/// - `padding`: `[top, right, bottom, left]` insets applied before placement.
+#[allow(clippy::too_many_arguments)]
+fn layout_text(
+    text: &str,
+    rect: Rect,
+    style: &WidgetStyle,
+    font: Option<&Font>,
+    wrap: bool,
+    ellipsis: bool,
+    v_align: TextVAlign,
+    padding: [f32; 4],
+    h_align: &str,
+) -> Vec<TextLine> {
+    let line_height = style.font_size.max(1.0);
+    let inner_x = rect.x + padding[3];
+    let inner_y = rect.y + padding[0];
+    let inner_w = (rect.width - padding[1] - padding[3]).max(0.0);
+    let inner_h = (rect.height - padding[0] - padding[2]).max(0.0);
+    let clip = Rect::new(rect.x, rect.y, rect.width, rect.height);
+
+    // Break text into raw lines (respecting existing newlines).
+    let raw_lines: Vec<&str> = text.split('\n').collect();
+    let mut final_lines: Vec<String> = Vec::new();
+
+    if wrap {
+        for raw in &raw_lines {
+            let mut current = String::new();
+            let mut current_w = 0.0_f32;
+            for word in raw.split_whitespace() {
+                let word_w = measure_text(word, style, font);
+                let space_w = if current.is_empty() {
+                    0.0
+                } else {
+                    measure_text(" ", style, font)
+                };
+                if !current.is_empty() && current_w + space_w + word_w > inner_w {
+                    final_lines.push(current.clone());
+                    current.clear();
+                    current_w = 0.0;
+                }
+                if !current.is_empty() {
+                    current.push(' ');
+                    current_w += space_w;
+                }
+                current.push_str(word);
+                current_w += word_w;
+            }
+            if !current.is_empty() || raw.is_empty() {
+                final_lines.push(current);
+            }
+        }
+    } else {
+        // Single-line: concatenate all raw lines, apply ellipsis if needed.
+        let single: String = raw_lines.join(" ");
+        if ellipsis && inner_w > 0.0 {
+            let total_w = measure_text(&single, style, font);
+            if total_w > inner_w {
+                // Truncate character-by-character, appending "…".
+                let ellipsis_w = measure_text("…", style, font);
+                let mut truncated = String::new();
+                let mut used_w = 0.0_f32;
+                for ch in single.chars() {
+                    let ch_w = measure_text(&ch.to_string(), style, font);
+                    if used_w + ch_w + ellipsis_w > inner_w {
+                        break;
+                    }
+                    truncated.push(ch);
+                    used_w += ch_w;
+                }
+                truncated.push('…');
+                final_lines.push(truncated);
+            } else {
+                final_lines.push(single);
+            }
+        } else {
+            final_lines.push(single);
+        }
+    }
+
+    let total_text_h = final_lines.len() as f32 * line_height;
+    let start_y = match v_align {
+        TextVAlign::Top => inner_y,
+        TextVAlign::Middle => inner_y + ((inner_h - total_text_h) * 0.5).max(0.0),
+        TextVAlign::Bottom => (inner_y + inner_h - total_text_h).max(inner_y),
+    };
+
+    final_lines
+        .into_iter()
+        .enumerate()
+        .map(|(i, line)| {
+            let line_w = measure_text(&line, style, font);
+            let lx = match h_align {
+                "left" => inner_x + 4.0,
+                "right" => (inner_x + inner_w - line_w - 6.0).max(inner_x),
+                _ => inner_x + ((inner_w - line_w) * 0.5).max(0.0),
+            };
+            let ly = start_y + i as f32 * line_height;
+            TextLine {
+                text: line,
+                x: lx,
+                y: ly,
+                clip_rect: clip,
+            }
+        })
+        .collect()
+}
 /// Return the primary display text of text-bearing widget variants, or `None` for all others.
 fn display_text(widget: &WidgetKind) -> Option<&str> {
     let text = match widget {
@@ -48,12 +185,32 @@ fn hsv_to_rgb(h: f32, s: f32, v: f32) -> (u8, u8, u8) {
     };
     ((r * 255.0) as u8, (g * 255.0) as u8, (b * 255.0) as u8)
 }
+/// Draw `text` into `img` using the bundled bitmap font if available, falling back to the 5×7 bitmap.
+#[allow(clippy::too_many_arguments)]
+fn draw_cpu_text(
+    img: &mut crate::image::ImageData,
+    font: Option<&crate::render::font::Font>,
+    text: &str,
+    x: i32,
+    y: i32,
+    r: u8,
+    g: u8,
+    b: u8,
+) {
+    if let Some(f) = font {
+        img.draw_text_with_font(text, x, y, r, g, b, f);
+    } else {
+        img.draw_label(text, x, y, r, g, b);
+    }
+}
+
 /// Recursively draw tree node `idx` and its expanded children into `img` as labelled rows; return next Y.
 #[allow(clippy::too_many_arguments)]
 fn draw_tree_nodes_cpu(
     nodes: &[crate::ui::extras::TreeNode],
     idx: usize,
     img: &mut crate::image::ImageData,
+    font: Option<&crate::render::font::Font>,
     x: i32,
     ry: i32,
     max_y: i32,
@@ -120,14 +277,7 @@ fn draw_tree_nodes_cpu(
             );
         }
     }
-    img.draw_label(
-        &node.text,
-        indent + 10,
-        ry + (row_h - 7) / 2,
-        fg[0],
-        fg[1],
-        fg[2],
-    );
+    draw_cpu_text(img, font, &node.text, indent + 10, ry + (row_h - 7) / 2, fg[0], fg[1], fg[2]);
     let mut next_y = ry + row_h;
     if node.expanded {
         let children: Vec<usize> = node.children.clone();
@@ -136,6 +286,7 @@ fn draw_tree_nodes_cpu(
                 nodes,
                 child_idx,
                 img,
+                font,
                 x,
                 next_y,
                 max_y,
@@ -220,31 +371,45 @@ fn emit_box(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderCommand
         }
     }
 }
-/// Emit a centred or aligned `Print` command for `text` inside `base`.
+/// Emit a centred or aligned `Print` command for `text` inside `base`, using layout_text for wrap/ellipsis/valign.
 fn emit_text(
     base: &WidgetBase,
     text: &str,
     style: &WidgetStyle,
     font_key: FontKey,
+    font: Option<&Font>,
     cmds: &mut Vec<RenderCommand>,
 ) {
     let [fr, fg, fb, fa] = style.fg_color;
     cmds.push(RenderCommand::SetColor(fr, fg, fb, fa));
-    let scale = style.font_size / 14.0;
-    let approx_w = text.chars().count() as f32 * 6.0 * scale;
-    let tx = match style.text_align.as_str() {
-        "left" => base.x + base.padding[3] + 4.0,
-        "right" => base.x + (base.width - approx_w - 6.0).max(0.0),
-        _ => base.x + ((base.width - approx_w) * 0.5).max(2.0),
-    };
-    let ty = base.y + base.padding[0];
-    cmds.push(RenderCommand::Print {
-        font_key,
-        text: text.to_string(),
-        x: tx,
-        y: ty,
-        scale,
-    });
+    let scale = text_scale(style, font);
+    let rect = Rect::new(base.x, base.y, base.width, base.height);
+    let lines = layout_text(
+        text,
+        rect,
+        style,
+        font,
+        base.text_wrap,
+        base.text_ellipsis,
+        base.text_v_align,
+        base.padding,
+        style.text_align.as_str(),
+    );
+    if lines.is_empty() {
+        return;
+    }
+    let clip = lines[0].clip_rect;
+    cmds.push(RenderCommand::SetScissor(Some((clip.x, clip.y, clip.width, clip.height))));
+    for line in &lines {
+        cmds.push(RenderCommand::Print {
+            font_key,
+            text: line.text.clone(),
+            x: line.x,
+            y: line.y,
+            scale,
+        });
+    }
+    cmds.push(RenderCommand::SetScissor(None));
 }
 /// Emit a shadow rectangle behind `base` when `style.shadow_color` alpha is non-zero.
 fn emit_shadow(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderCommand>) {
@@ -515,13 +680,14 @@ fn emit_badge(
     base: &WidgetBase,
     text: &str,
     font_key: FontKey,
+    font: Option<&Font>,
     style: &WidgetStyle,
     cmds: &mut Vec<RenderCommand>,
 ) {
     let [fr, fg, fb, fa] = style.fg_color;
     cmds.push(RenderCommand::SetColor(fr, fg, fb, fa));
-    let scale = style.font_size / 14.0;
-    let tx = base.x + base.width * 0.5;
+    let scale = text_scale(style, font);
+    let tx = base.x + ((base.width - measure_text(text, style, font)) * 0.5).max(0.0);
     let ty = base.y + (base.height - style.font_size) * 0.5;
     cmds.push(RenderCommand::Print {
         font_key,
@@ -537,6 +703,7 @@ fn emit_text_at(
     x: f32,
     y: f32,
     font_key: FontKey,
+    font: Option<&Font>,
     style: &WidgetStyle,
     cmds: &mut Vec<RenderCommand>,
 ) {
@@ -547,7 +714,7 @@ fn emit_text_at(
         text: text.to_string(),
         x,
         y,
-        scale: style.font_size / 14.0,
+        scale: text_scale(style, font),
     });
 }
 /// Temporary borrowed context passed through recursive `emit_tree_nodes` calls.
@@ -558,6 +725,8 @@ struct TreeCtx<'a> {
     selected: Option<usize>,
     /// Font key used to print node labels.
     font_key: FontKey,
+    /// Concrete font metrics for this tree.
+    font: Option<&'a Font>,
     /// Active widget style for colour selection.
     style: &'a WidgetStyle,
     /// Output command buffer.
@@ -635,6 +804,7 @@ fn emit_tree_nodes(
         indent + 10.0,
         y + (row_h - ctx.style.font_size) * 0.5,
         ctx.font_key,
+        ctx.font,
         ctx.style,
         ctx.cmds,
     );
@@ -710,6 +880,8 @@ struct WidgetRenderer<'a> {
     ctx: &'a GuiContext,
     /// Font key passed to all text-emit helpers.
     font_key: FontKey,
+    /// Shared font storage for resolving exact glyph metrics.
+    fonts: &'a SlotMap<FontKey, Font>,
     /// Fallback widget style used when the theme has no entry for a widget type.
     default_style: &'a WidgetStyle,
     /// Output command buffer accumulated during a render pass.
@@ -720,20 +892,19 @@ impl<'a> WidgetRenderer<'a> {
     fn new(
         ctx: &'a GuiContext,
         font_key: FontKey,
+        fonts: &'a SlotMap<FontKey, Font>,
         default_style: &'a WidgetStyle,
         cmds: &'a mut Vec<RenderCommand>,
     ) -> Self {
         Self {
             ctx,
             font_key,
+            fonts,
             default_style,
             cmds,
         }
     }
-    /// Render the widget at `idx` by delegating to the free `render_widget` function.
-    fn render_widget(&mut self, idx: usize) {
-        render_widget(self.ctx, idx, self.font_key, self.default_style, self.cmds);
-    }
+
     /// Render all immediate children of the root widget (index 0).
     fn render_root_children(&mut self) {
         let root_font_key = self
@@ -743,12 +914,15 @@ impl<'a> WidgetRenderer<'a> {
             .and_then(|w| w.base().font_key)
             .unwrap_or(self.font_key);
         if let Some(children) = self.ctx.widgets.first().and_then(|w| w.children()) {
-            for &child_idx in children {
+            let mut sorted = children.to_vec();
+            sorted.sort_by_key(|&i| self.ctx.widgets.get(i).map(|w| w.base().z_order).unwrap_or(0));
+            for child_idx in sorted {
                 if child_idx < self.ctx.widgets.len() {
                     render_widget(
                         self.ctx,
                         child_idx,
                         root_font_key,
+                        self.fonts,
                         self.default_style,
                         self.cmds,
                     );
@@ -762,15 +936,31 @@ fn render_widget(
     ctx: &GuiContext,
     idx: usize,
     font_key: FontKey,
+    fonts: &SlotMap<FontKey, Font>,
     default_style: &WidgetStyle,
     cmds: &mut Vec<RenderCommand>,
 ) {
     let widget = &ctx.widgets[idx];
-    let base = widget.base();
-    if !base.visible || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open) {
+    let raw_base = widget.base();
+    if !raw_base.visible || matches!(widget, WidgetKind::Dialog(dialog) if !dialog.open) {
         return;
     }
+    // Use computed_rect for absolute screen coordinates; fall back to raw fields if layout has not run.
+    let patched;
+    let base: &WidgetBase = if raw_base.computed_rect.width > 0.0 || raw_base.computed_rect.height > 0.0 {
+        patched = WidgetBase {
+            x: raw_base.computed_rect.x,
+            y: raw_base.computed_rect.y,
+            width: raw_base.computed_rect.width,
+            height: raw_base.computed_rect.height,
+            ..raw_base.clone()
+        };
+        &patched
+    } else {
+        raw_base
+    };
     let font_key = base.font_key.unwrap_or(font_key);
+    let font = fonts.get(font_key);
     let style_with_alpha = resolve_style_with_alpha(ctx, base, default_style);
     let style = &style_with_alpha;
     emit_shadow(base, style, cmds);
@@ -790,6 +980,7 @@ fn render_widget(
                 base.x + 8.0,
                 base.y + (base.height - style.font_size) * 0.5,
                 font_key,
+                font,
                 style,
                 cmds,
             );
@@ -803,6 +994,7 @@ fn render_widget(
                 base.x + (base.width - 24.0) * 0.5,
                 base.y + (base.height - style.font_size) * 0.5,
                 font_key,
+                font,
                 style,
                 cmds,
             );
@@ -817,6 +1009,7 @@ fn render_widget(
                     base.x + base.height + 6.0,
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -832,6 +1025,7 @@ fn render_widget(
                     base.x + base.height + 6.0,
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -856,6 +1050,7 @@ fn render_widget(
                     base.x + base.padding[3] + 4.0,
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     &text_style,
                     cmds,
                 );
@@ -864,7 +1059,7 @@ fn render_widget(
                 let cursor_x = base.x
                     + base.padding[3]
                     + 4.0
-                    + w.cursor_pos.min(w.text.len()) as f32 * 6.0 * (style.font_size / 14.0);
+                    + measure_text(&w.text[..w.cursor_pos.min(w.text.len())], style, font);
                 cmds.push(RenderCommand::SetColor(
                     style.fg_color[0],
                     style.fg_color[1],
@@ -888,6 +1083,7 @@ fn render_widget(
                     base.x + 6.0,
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -920,6 +1116,7 @@ fn render_widget(
                         base.x + 6.0,
                         row_y + (row_h - style.font_size) * 0.5,
                         font_key,
+                        font,
                         style,
                         cmds,
                     );
@@ -958,6 +1155,7 @@ fn render_widget(
                     base.x + 6.0,
                     row_y + (row_h - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -1007,9 +1205,10 @@ fn render_widget(
                     }
                     emit_text_at(
                         tab,
-                        tab_x + (tab_w - tab.len() as f32 * 6.0 * (style.font_size / 14.0)) * 0.5,
+                        tab_x + (tab_w - measure_text(tab, style, font)) * 0.5,
                         base.y + (base.height - style.font_size) * 0.5,
                         font_key,
+                        font,
                         style,
                         cmds,
                     );
@@ -1035,6 +1234,7 @@ fn render_widget(
                 base.x + 10.0,
                 base.y + (base.height - style.font_size) * 0.5,
                 font_key,
+                font,
                 style,
                 cmds,
             );
@@ -1070,6 +1270,7 @@ fn render_widget(
                 nodes: &w.nodes,
                 selected: w.selected_node,
                 font_key,
+                font,
                 style,
                 cmds,
             };
@@ -1092,7 +1293,7 @@ fn render_widget(
             emit_switch(base, w.on, w.thumb_t, style, cmds);
         }
         WidgetKind::Badge(w) => {
-            emit_badge(base, &w.display_text(), font_key, style, cmds);
+            emit_badge(base, &w.display_text(), font_key, font, style, cmds);
         }
         WidgetKind::GUIWindow(w) => {
             cmds.push(RenderCommand::SetColor(0.18, 0.22, 0.32, 1.0));
@@ -1105,7 +1306,15 @@ fn render_widget(
                 rx: style.corner_radius,
                 ry: style.corner_radius,
             });
-            emit_text_at(&w.title, base.x + 10.0, base.y + 5.0, font_key, style, cmds);
+            emit_text_at(
+                &w.title,
+                base.x + 10.0,
+                base.y + 5.0,
+                font_key,
+                font,
+                style,
+                cmds,
+            );
             if w.closeable {
                 cmds.push(RenderCommand::SetColor(0.85, 0.35, 0.35, 1.0));
                 cmds.push(RenderCommand::Line {
@@ -1175,6 +1384,7 @@ fn render_widget(
                     button_x + button_size * 0.5 - 3.0,
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -1198,6 +1408,7 @@ fn render_widget(
                     base.x + 4.0,
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -1207,17 +1418,18 @@ fn render_widget(
                 base.x + if w.checked { 18.0 } else { 6.0 },
                 base.y + (base.height - style.font_size) * 0.5,
                 font_key,
+                font,
                 style,
                 cmds,
             );
             if !w.shortcut.is_empty() {
-                let scale = style.font_size / 14.0;
-                let shortcut_w = w.shortcut.chars().count() as f32 * 6.0 * scale;
+                let shortcut_w = measure_text(&w.shortcut, style, font);
                 emit_text_at(
                     &w.shortcut,
                     base.x + (base.width - shortcut_w - 6.0).max(0.0),
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -1234,7 +1446,15 @@ fn render_widget(
                 rx: style.corner_radius,
                 ry: style.corner_radius,
             });
-            emit_text_at(&w.title, base.x + 10.0, base.y + 6.0, font_key, style, cmds);
+            emit_text_at(
+                &w.title,
+                base.x + 10.0,
+                base.y + 6.0,
+                font_key,
+                font,
+                style,
+                cmds,
+            );
             cmds.push(RenderCommand::SetColor(0.78, 0.26, 0.26, 1.0));
             let close_x = base.x + base.width - 18.0;
             let close_y = base.y + 10.0;
@@ -1271,6 +1491,7 @@ fn render_widget(
                         button_x + 14.0,
                         footer_y + 4.0,
                         font_key,
+                        font,
                         style,
                         cmds,
                     );
@@ -1286,6 +1507,7 @@ fn render_widget(
                     section_x + 6.0,
                     base.y + (base.height - style.font_size) * 0.5,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -1318,6 +1540,7 @@ fn render_widget(
                     base.x + 18.0,
                     section_y + 5.0,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -1366,6 +1589,7 @@ fn render_widget(
                 base.x + 6.0,
                 base.y + (base.height - style.font_size) * 0.5,
                 font_key,
+                font,
                 style,
                 cmds,
             );
@@ -1400,6 +1624,7 @@ fn render_widget(
                 base.x + 6.0,
                 base.y + swatch_size + 10.0,
                 font_key,
+                font,
                 style,
                 cmds,
             );
@@ -1421,6 +1646,7 @@ fn render_widget(
                     col_x + 4.0,
                     base.y + 4.0,
                     font_key,
+                    font,
                     style,
                     cmds,
                 );
@@ -1455,7 +1681,7 @@ fn render_widget(
                 }
                 let mut cell_x = base.x;
                 for (cell_idx, cell) in row.iter().enumerate() {
-                    emit_text_at(cell, cell_x + 4.0, row_y + 4.0, font_key, style, cmds);
+                    emit_text_at(cell, cell_x + 4.0, row_y + 4.0, font_key, font, style, cmds);
                     cell_x += w.columns.get(cell_idx).map(|c| c.width).unwrap_or(80.0);
                 }
             }
@@ -1476,9 +1702,10 @@ fn render_widget(
             });
             emit_text_at(
                 "[image]",
-                base.x + (base.width - 42.0) * 0.5,
+                base.x + (base.width - measure_text("[image]", style, font)) * 0.5,
                 base.y + (base.height - style.font_size) * 0.5,
                 font_key,
+                font,
                 style,
                 cmds,
             );
@@ -1497,24 +1724,38 @@ fn render_widget(
     );
     if !skip_text {
         if let Some(text) = display_text(widget) {
-            emit_text(base, text, style, font_key, cmds);
+            emit_text(base, text, style, font_key, font, cmds);
         }
     }
-    for child_idx in widget_render_children(widget) {
+    let mut render_children = widget_render_children(widget);
+    render_children.sort_by_key(|&i| ctx.widgets.get(i).map(|w| w.base().z_order).unwrap_or(0));
+    for child_idx in render_children {
         if child_idx < ctx.widgets.len() {
-            render_widget(ctx, child_idx, font_key, default_style, cmds);
+            render_widget(ctx, child_idx, font_key, fonts, default_style, cmds);
         }
     }
 }
 impl GuiContext {
-    /// Run a layout pass then emit all render commands using `font_key`; return the command list.
-    pub fn build_render_commands(&mut self, font_key: FontKey) -> Vec<RenderCommand> {
+    /// Run a layout pass then emit render commands using `font_key` and explicit font storage.
+    pub fn build_render_commands_with_fonts(
+        &mut self,
+        font_key: FontKey,
+        fonts: &SlotMap<FontKey, Font>,
+    ) -> Vec<RenderCommand> {
         self.run_layout_pass();
         let default_style = WidgetStyle::default();
         let mut cmds = Vec::new();
-        WidgetRenderer::new(self, font_key, &default_style, &mut cmds).render_root_children();
+        WidgetRenderer::new(self, font_key, fonts, &default_style, &mut cmds)
+            .render_root_children();
         cmds
     }
+
+    /// Run a layout pass then emit all render commands using `font_key`; return the command list.
+    pub fn build_render_commands(&mut self, font_key: FontKey) -> Vec<RenderCommand> {
+        let fonts = SlotMap::with_key();
+        self.build_render_commands_with_fonts(font_key, &fonts)
+    }
+
     /// Run a layout pass and emit render commands using the default font key.
     pub fn generate_render_commands(&mut self) -> Vec<RenderCommand> {
         self.build_render_commands(FontKey::default())
@@ -1523,6 +1764,12 @@ impl GuiContext {
     pub fn draw_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(24, 26, 34, 255);
+        // Load the 12-point bundled bitmap font for CPU text rendering.
+        let ui_font: Option<crate::render::font::Font> = {
+            let slot = crate::render::font::Font::nearest_point_size(12);
+            let sizes = crate::render::font::Font::load_all_sizes();
+            sizes.into_iter().nth(slot).map(|(f, _, _)| f)
+        };
         let mut layout_ctx = self.clone();
         layout_ctx.run_layout_pass();
         let default_style = WidgetStyle::default();
@@ -1660,15 +1907,8 @@ impl GuiContext {
                         );
                     }
                     let pct_label = format!("{}%", (t * 100.0).round() as u32);
-                    let lw = (pct_label.chars().count() as i32) * 6;
-                    img.draw_label(
-                        &pct_label,
-                        x + ((w as i32 - lw) / 2).max(1),
-                        y + ((h as i32 - 7) / 2).max(1),
-                        230,
-                        235,
-                        240,
-                    );
+                    let lw = ui_font.as_ref().map(|f| f.text_width(&pct_label) as i32).unwrap_or((pct_label.chars().count() as i32) * 6);
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &pct_label, x + ((w as i32 - lw) / 2).max(1), y + ((h as i32 - 7) / 2).max(1), 230, 235, 240);
                     skip_text = true;
                 }
                 WidgetKind::SpinBox(sb) => {
@@ -1701,15 +1941,8 @@ impl GuiContext {
                     img.draw_line(ax - 3, dy - 2, ax, dy + 2, 200, 210, 220, 255);
                     img.draw_line(ax, dy + 2, ax + 3, dy - 2, 200, 210, 220, 255);
                     let label = format!("{}", sb.value);
-                    let lw = (label.chars().count() as i32) * 6;
-                    img.draw_label(
-                        &label,
-                        x + ((w as i32 - btn_w - lw) / 2).max(2),
-                        y + ((h as i32 - 7) / 2).max(1),
-                        fr,
-                        fg,
-                        fb,
-                    );
+                    let lw = ui_font.as_ref().map(|f| f.text_width(&label) as i32).unwrap_or((label.chars().count() as i32) * 6);
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &label, x + ((w as i32 - btn_w - lw) / 2).max(2), y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     skip_text = true;
                 }
                 WidgetKind::ScrollBar(sb) => {
@@ -1800,14 +2033,7 @@ impl GuiContext {
                         );
                     }
                     if !cb.text.is_empty() {
-                        img.draw_label(
-                            &cb.text,
-                            bx + box_sz + 6,
-                            y + ((h as i32 - 7) / 2).max(1),
-                            fr,
-                            fg,
-                            fb,
-                        );
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &cb.text, bx + box_sz + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     }
                     skip_text = true;
                 }
@@ -1821,56 +2047,28 @@ impl GuiContext {
                         img.draw_circle(cx, cy, (r / 2).max(2), fr, fg, fb, 255);
                     }
                     if !rb.text.is_empty() {
-                        img.draw_label(
-                            &rb.text,
-                            cx + r as i32 + 6,
-                            y + ((h as i32 - 7) / 2).max(1),
-                            fr,
-                            fg,
-                            fb,
-                        );
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &rb.text, cx + r as i32 + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     }
                     skip_text = true;
                 }
                 WidgetKind::TextInput(ti) => {
                     if ti.text.is_empty() && !ti.placeholder.is_empty() {
-                        img.draw_label(
-                            &ti.placeholder,
-                            x + base.padding[3] as i32 + 4,
-                            y + ((h as i32 - 7) / 2).max(1),
-                            120,
-                            125,
-                            145,
-                        );
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &ti.placeholder, x + base.padding[3] as i32 + 4, y + ((h as i32 - 7) / 2).max(1), 120, 125, 145);
                     } else {
-                        img.draw_label(
-                            &ti.text,
-                            x + base.padding[3] as i32 + 4,
-                            y + ((h as i32 - 7) / 2).max(1),
-                            fr,
-                            fg,
-                            fb,
-                        );
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &ti.text, x + base.padding[3] as i32 + 4, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     }
                     if ti.focused {
                         let cursor_x = x
                             + base.padding[3] as i32
                             + 4
-                            + ti.cursor_pos.min(ti.text.len()) as i32 * 6;
+                            + ui_font.as_ref().map(|f| f.text_width(&ti.text[..ti.cursor_pos.min(ti.text.len())]) as i32).unwrap_or(ti.cursor_pos.min(ti.text.len()) as i32 * 6);
                         img.draw_rect(cursor_x, y + 3, 1, h.saturating_sub(6), fr, fg, fb, 220);
                     }
                     skip_text = true;
                 }
                 WidgetKind::ComboBox(cb) => {
                     if let Some(text) = cb.selected_item() {
-                        img.draw_label(
-                            text,
-                            x + base.padding[3] as i32 + 4,
-                            y + ((h as i32 - 7) / 2).max(1),
-                            fr,
-                            fg,
-                            fb,
-                        );
+                        draw_cpu_text(&mut img, ui_font.as_ref(), text, x + base.padding[3] as i32 + 4, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     }
                     let ax = x + w as i32 - 12;
                     let ay = y + h as i32 / 2;
@@ -1903,7 +2101,7 @@ impl GuiContext {
                                     220,
                                 );
                             }
-                            img.draw_label(item, x + 6, row_y + (row_h - 7) / 2, fr, fg, fb);
+                            draw_cpu_text(&mut img, ui_font.as_ref(), item, x + 6, row_y + (row_h - 7) / 2, fr, fg, fb);
                             img.draw_rect(x, row_y + row_h - 1, w, 1, 55, 60, 75, 160);
                         }
                     }
@@ -1930,7 +2128,7 @@ impl GuiContext {
                                 200,
                             );
                         }
-                        img.draw_label(item, x + 6, iy + (row_h - 7) / 2, fr, fg, fb);
+                        draw_cpu_text(&mut img, ui_font.as_ref(), item, x + 6, iy + (row_h - 7) / 2, fr, fg, fb);
                         img.draw_rect(x, iy + row_h - 1, w, 1, 55, 60, 75, 120);
                     }
                     skip_text = true;
@@ -1950,15 +2148,8 @@ impl GuiContext {
                             if i == tb.active_tab {
                                 img.draw_rect(tx, y, tab_w as u32, 2, fr, fg, fb, 255);
                             }
-                            let lw = (tab.chars().count() as i32) * 6;
-                            img.draw_label(
-                                tab,
-                                tx + ((tab_w - lw) / 2).max(2),
-                                y + ((h as i32 - 7) / 2).max(1),
-                                fr,
-                                fg,
-                                fb,
-                            );
+                            let lw = ui_font.as_ref().map(|f| f.text_width(tab) as i32).unwrap_or((tab.chars().count() as i32) * 6);
+                            draw_cpu_text(&mut img, ui_font.as_ref(), tab, tx + ((tab_w - lw) / 2).max(2), y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                         }
                     }
                     skip_text = true;
@@ -1971,40 +2162,19 @@ impl GuiContext {
                     img.draw_rect(x, y, 4, h, br, bg, bb, 255);
                     let fade_a = ((1.0 - t.progress()) * 200.0) as u8;
                     img.draw_rect(x + w as i32 - 6, y, 6, h, 255, 255, 255, fade_a);
-                    img.draw_label(
-                        &t.message,
-                        x + 10,
-                        y + ((h as i32 - 7) / 2).max(1),
-                        fr,
-                        fg,
-                        fb,
-                    );
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &t.message, x + 10, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     skip_text = true;
                 }
                 WidgetKind::Badge(badge) => {
                     let text = badge.display_text();
-                    let lw = (text.chars().count() as i32) * 6;
-                    img.draw_label(
-                        &text,
-                        x + ((w as i32 - lw) / 2).max(1),
-                        y + ((h as i32 - 7) / 2).max(1),
-                        245,
-                        250,
-                        255,
-                    );
+                    let lw = ui_font.as_ref().map(|f| f.text_width(&text) as i32).unwrap_or((text.chars().count() as i32) * 6);
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &text, x + ((w as i32 - lw) / 2).max(1), y + ((h as i32 - 7) / 2).max(1), 245, 250, 255);
                     skip_text = true;
                 }
                 WidgetKind::TooltipPanel(ttp) => {
                     img.draw_rect(x, y, w, 2, fr, fg, fb, 100);
                     if !ttp.text.is_empty() {
-                        img.draw_label(
-                            &ttp.text,
-                            x + 6,
-                            y + ((h as i32 - 7) / 2).max(1),
-                            fr,
-                            fg,
-                            fb,
-                        );
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &ttp.text, x + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     }
                     skip_text = true;
                 }
@@ -2025,7 +2195,7 @@ impl GuiContext {
                     let bar_h = 24u32;
                     img.draw_rect(x, y, w, bar_h, 38, 42, 60, 255);
                     img.draw_rect(x, y + bar_h as i32, w, 1, 55, 60, 80, 255);
-                    img.draw_label(&win.title, x + 10, y + 7, fr, fg, fb);
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &win.title, x + 10, y + 7, fr, fg, fb);
                     if win.closeable {
                         let cx = x + w as i32 - 14;
                         let cy = y + 8;
@@ -2038,7 +2208,7 @@ impl GuiContext {
                     let bar_h = 28u32;
                     img.draw_rect(x, y, w, bar_h, 38, 42, 60, 255);
                     img.draw_rect(x, y + bar_h as i32, w, 1, 55, 60, 80, 255);
-                    img.draw_label(&dlg.title, x + 10, y + 9, fr, fg, fb);
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &dlg.title, x + 10, y + 9, fr, fg, fb);
                     let close_x = x + w as i32 - 18;
                     let close_y = y + 10;
                     img.draw_line(close_x, close_y, close_x + 8, close_y + 8, 200, 80, 80, 255);
@@ -2052,15 +2222,8 @@ impl GuiContext {
                         for label in &dlg.footer_buttons {
                             img.draw_rect(bx, footer_y + 4, btn_w as u32, 24, 48, 52, 72, 255);
                             img.draw_rect(bx, footer_y + 4, btn_w as u32, 1, 75, 80, 105, 255);
-                            let lw = (label.chars().count() as i32) * 6;
-                            img.draw_label(
-                                label,
-                                bx + ((btn_w - lw) / 2).max(2),
-                                footer_y + 10,
-                                fr,
-                                fg,
-                                fb,
-                            );
+                            let lw = ui_font.as_ref().map(|f| f.text_width(label) as i32).unwrap_or((label.chars().count() as i32) * 6);
+                            draw_cpu_text(&mut img, ui_font.as_ref(), label, bx + ((btn_w - lw) / 2).max(2), footer_y + 10, fr, fg, fb);
                             bx += btn_w + 6;
                         }
                     }
@@ -2070,7 +2233,7 @@ impl GuiContext {
                     let mut sx = x;
                     for (text, sec_w) in &sb.sections {
                         let sw = sec_w.max(20.0) as i32;
-                        img.draw_label(text, sx + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(&mut img, ui_font.as_ref(), text, sx + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                         img.draw_rect(sx + sw, y, 1, h, 55, 60, 75, 160);
                         sx += sw;
                     }
@@ -2106,7 +2269,7 @@ impl GuiContext {
                             img.draw_line(axp, ayp - 4, axp + 6, ayp, fr, fg, fb, 220);
                             img.draw_line(axp, ayp + 4, axp + 6, ayp, fr, fg, fb, 220);
                         }
-                        img.draw_label(&section.title, axp + 14, ay + (hdr_h - 7) / 2, fr, fg, fb);
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &section.title, axp + 14, ay + (hdr_h - 7) / 2, fr, fg, fb);
                         ay += hdr_h;
                         if section.expanded {
                             ay += 36;
@@ -2143,7 +2306,7 @@ impl GuiContext {
                         (cp.g * 255.0) as u8,
                         (cp.b * 255.0) as u8
                     );
-                    img.draw_label(&hex, x + 6, y + sw as i32 + 10, fr, fg, fb);
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &hex, x + 6, y + sw as i32 + 10, fr, fg, fb);
                     skip_text = true;
                 }
                 WidgetKind::GUITable(tbl) => {
@@ -2153,7 +2316,7 @@ impl GuiContext {
                     let mut cx = x;
                     for col in &tbl.columns {
                         let cw = col.width.max(20.0) as i32;
-                        img.draw_label(&col.header, cx + 4, y + (col_h - 7) / 2, 190, 200, 220);
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &col.header, cx + 4, y + (col_h - 7) / 2, 190, 200, 220);
                         img.draw_rect(cx + cw, y, 1, col_h as u32, 55, 60, 80, 255);
                         cx += cw;
                     }
@@ -2173,7 +2336,7 @@ impl GuiContext {
                         let mut cx2 = x;
                         for (ci, cell) in row.iter().enumerate() {
                             let cw = tbl.columns.get(ci).map(|c| c.width).unwrap_or(80.0) as i32;
-                            img.draw_label(cell, cx2 + 4, ry + (row_h - 7) / 2, fr, fg, fb);
+                            draw_cpu_text(&mut img, ui_font.as_ref(), cell, cx2 + 4, ry + (row_h - 7) / 2, fr, fg, fb);
                             cx2 += cw;
                         }
                         img.draw_rect(x, ry + row_h - 1, w, 1, 40, 43, 58, 140);
@@ -2190,6 +2353,7 @@ impl GuiContext {
                             &tv.nodes,
                             ri,
                             &mut img,
+                            ui_font.as_ref(),
                             x,
                             ry,
                             max_y,
@@ -2242,14 +2406,7 @@ impl GuiContext {
                         );
                         if let Some(c) = btn.id.chars().next() {
                             let cs = c.to_uppercase().to_string();
-                            img.draw_label(
-                                &cs,
-                                bx + btn_sz as i32 / 2 - 3,
-                                y + (h as i32 - 7) / 2,
-                                fr,
-                                fg,
-                                fb,
-                            );
+                            draw_cpu_text(&mut img, ui_font.as_ref(), &cs, bx + btn_sz as i32 / 2 - 3, y + (h as i32 - 7) / 2, fr, fg, fb);
                         }
                         bx += btn_sz as i32 + 4;
                     }
@@ -2261,27 +2418,13 @@ impl GuiContext {
                 }
                 WidgetKind::MenuItem(mi) => {
                     if mi.checked {
-                        img.draw_label("v", x + 4, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(&mut img, ui_font.as_ref(), "v", x + 4, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     }
                     let label_x = if mi.checked { x + 18 } else { x + 6 };
-                    img.draw_label(
-                        &mi.text,
-                        label_x,
-                        y + ((h as i32 - 7) / 2).max(1),
-                        fr,
-                        fg,
-                        fb,
-                    );
+                    draw_cpu_text(&mut img, ui_font.as_ref(), &mi.text, label_x, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     if !mi.shortcut.is_empty() {
-                        let lw = (mi.shortcut.chars().count() as i32) * 6;
-                        img.draw_label(
-                            &mi.shortcut,
-                            x + w as i32 - lw - 6,
-                            y + ((h as i32 - 7) / 2).max(1),
-                            140,
-                            145,
-                            165,
-                        );
+                        let lw = ui_font.as_ref().map(|f| f.text_width(&mi.shortcut) as i32).unwrap_or((mi.shortcut.chars().count() as i32) * 6);
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &mi.shortcut, x + w as i32 - lw - 6, y + ((h as i32 - 7) / 2).max(1), 140, 145, 165);
                     }
                     skip_text = true;
                 }
@@ -2307,14 +2450,7 @@ impl GuiContext {
                     img.draw_rect(x, y + h as i32 - 1, w, 1, 90, 95, 115, 255);
                     img.draw_rect(x, y, 1, h, 90, 95, 115, 255);
                     img.draw_rect(x + w as i32 - 1, y, 1, h, 90, 95, 115, 255);
-                    img.draw_label(
-                        "[image]",
-                        x + ((w as i32 - 42) / 2).max(1),
-                        y + ((h as i32 - 7) / 2).max(1),
-                        130,
-                        135,
-                        155,
-                    );
+                    draw_cpu_text(&mut img, ui_font.as_ref(), "[image]", x + ((w as i32 - 42) / 2).max(1), y + ((h as i32 - 7) / 2).max(1), 130, 135, 155);
                     skip_text = true;
                 }
                 WidgetKind::SplitPanel(sp) => {
@@ -2337,14 +2473,14 @@ impl GuiContext {
             }
             if !skip_text {
                 if let Some(text) = display_text(widget) {
-                    let approx_w = (text.chars().count() as i32) * 6;
+                    let approx_w = ui_font.as_ref().map(|f| f.text_width(text) as i32).unwrap_or((text.chars().count() as i32) * 6);
                     let tx = match style.text_align.as_str() {
                         "left" => x + base.padding[3] as i32 + 4,
                         "right" => x + w as i32 - approx_w - 6,
                         _ => x + ((w as i32 - approx_w) / 2).max(2),
                     };
                     let ty = y + ((h as i32 - 7) / 2).max(1);
-                    img.draw_label(text, tx, ty, fr, fg, fb);
+                    draw_cpu_text(&mut img, ui_font.as_ref(), text, tx, ty, fr, fg, fb);
                 }
             }
             if let Some(ch) = widget.children() {

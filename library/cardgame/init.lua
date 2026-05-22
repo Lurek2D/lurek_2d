@@ -298,7 +298,7 @@ function Card:setTilePosition(x, y) self.tile_x = x; self.tile_y = y end
 -- @treturn number, number  x, y
 function Card:getTilePosition() return self.tile_x, self.tile_y end
 
--- ������ Stack ���������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������
+-- Stack
 
 ---@class LCardStack
 ---@field name string

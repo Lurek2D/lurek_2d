@@ -2,31 +2,12 @@
 
 use super::SharedState;
 use crate::image::serial;
-use crate::image::{CompressedImageData, ImageData, LayeredImage, ProvinceGrid};
+use crate::image::{CompressedImageData, ImageData, LayeredImage, ProvinceGrid, ProvinceShapeCacheEntry};
 use crate::render::{DrawMode, RenderCommand};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
-#[derive(Clone)]
-/// Cached province polygon draw data with color, bounds, and flattened vertices.
-struct ProvinceShapeCacheEntry {
-    /// Red channel normalized to 0.0 through 1.0.
-    r: f32,
-    /// Green channel normalized to 0.0 through 1.0.
-    g: f32,
-    /// Blue channel normalized to 0.0 through 1.0.
-    b: f32,
-    /// Minimum x coordinate for viewport culling.
-    min_x: f32,
-    /// Minimum y coordinate for viewport culling.
-    min_y: f32,
-    /// Maximum x coordinate for viewport culling.
-    max_x: f32,
-    /// Maximum y coordinate for viewport culling.
-    max_y: f32,
-    /// Flattened `[x, y]` polygon vertices used by renderer commands.
-    vertices: Vec<f32>,
-}
+
 /// Lua-side handle for a province id grid decoded from an image.
 pub struct LuaProvinceGrid {
     /// Province grid, color mapping, adjacency, spans, and polygon extraction data.
@@ -234,56 +215,7 @@ impl LuaUserData for LuaProvinceGrid {
                 Some((x, y, w, h))
             };
             if this.shape_cache.is_none() {
-                let polygons = this.inner.province_polygons_simplified();
-                let mut cache: Vec<ProvinceShapeCacheEntry> = Vec::new();
-                for (&id, rings) in &polygons {
-                    if let Some((r, g, b)) = this.inner.province_color(id) {
-                        let rf = r as f32 / 255.0;
-                        let gf = g as f32 / 255.0;
-                        let bf = b as f32 / 255.0;
-                        for ring in rings {
-                            if ring.len() < 3 {
-                                continue;
-                            }
-                            let ring_points: &[(u32, u32)] =
-                                if ring.len() >= 2 && ring.first() == ring.last() {
-                                    &ring[..ring.len() - 1]
-                                } else {
-                                    ring.as_slice()
-                                };
-                            if ring_points.len() < 3 {
-                                continue;
-                            }
-                            let verts: Vec<f32> = ring_points
-                                .iter()
-                                .flat_map(|&(px, py)| [px as f32, py as f32])
-                                .collect();
-                            let mut min_x = f32::INFINITY;
-                            let mut min_y = f32::INFINITY;
-                            let mut max_x = f32::NEG_INFINITY;
-                            let mut max_y = f32::NEG_INFINITY;
-                            for chunk in verts.chunks_exact(2) {
-                                let x = chunk[0];
-                                let y = chunk[1];
-                                min_x = min_x.min(x);
-                                min_y = min_y.min(y);
-                                max_x = max_x.max(x);
-                                max_y = max_y.max(y);
-                            }
-                            cache.push(ProvinceShapeCacheEntry {
-                                r: rf,
-                                g: gf,
-                                b: bf,
-                                min_x,
-                                min_y,
-                                max_x,
-                                max_y,
-                                vertices: verts,
-                            });
-                        }
-                    }
-                }
-                this.shape_cache = Some(cache);
+                this.shape_cache = Some(this.inner.build_shape_cache());
             }
             let (view_x, view_y, view_w, view_h) = viewport.unwrap_or((
                 f32::NEG_INFINITY,

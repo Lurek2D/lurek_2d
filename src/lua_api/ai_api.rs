@@ -103,9 +103,9 @@ impl LuaUserData for LuaAIWorld {
                 };
                 let lua_bb = {
                     let w = this.inner.borrow();
-                    match w.get_agent_index(&name) {
-                        Some(idx) => LuaAIBlackboard {
-                            inner: Rc::new(RefCell::new(w.agents[idx].blackboard.clone())),
+                    match w.agent(&name) {
+                        Some(agent) => LuaAIBlackboard {
+                            inner: Rc::new(RefCell::new(agent.blackboard.clone())),
                         },
                         None => continue,
                     }
@@ -157,9 +157,8 @@ impl LuaUserData for LuaAgent {
         /// @param | x | number | New X position in world units.
         /// @param | y | number | New Y position in world units.
         methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].position = (x, y);
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.position = (x, y);
             }
             Ok(())
         });
@@ -167,9 +166,8 @@ impl LuaUserData for LuaAgent {
         /// Returns this agent's world position or the origin when the agent has been removed.
         /// @return | number, number | X and Y position in world units.
         methods.add_method("getPosition", |_, this, ()| {
-            let w = this.world.borrow();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                Ok(w.agents[idx].position)
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.position)
             } else {
                 Ok((0.0, 0.0))
             }
@@ -179,9 +177,8 @@ impl LuaUserData for LuaAgent {
         /// @param | x | number | New X velocity in world units per second.
         /// @param | y | number | New Y velocity in world units per second.
         methods.add_method("setVelocity", |_, this, (x, y): (f32, f32)| {
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].velocity = (x, y);
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.velocity = (x, y);
             }
             Ok(())
         });
@@ -189,9 +186,8 @@ impl LuaUserData for LuaAgent {
         /// Returns this agent's velocity vector or zero velocity when the agent has been removed.
         /// @return | number, number | X and Y velocity in world units per second.
         methods.add_method("getVelocity", |_, this, ()| {
-            let w = this.world.borrow();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                Ok(w.agents[idx].velocity)
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.velocity)
             } else {
                 Ok((0.0, 0.0))
             }
@@ -200,9 +196,8 @@ impl LuaUserData for LuaAgent {
         /// Sets this agent's maximum movement speed when the agent still exists in its world.
         /// @param | v | number | Maximum speed in world units per second.
         methods.add_method("setMaxSpeed", |_, this, v: f32| {
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].max_speed = v;
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.max_speed = v;
             }
             Ok(())
         });
@@ -210,9 +205,8 @@ impl LuaUserData for LuaAgent {
         /// Returns this agent's maximum movement speed or the default speed for a missing agent.
         /// @return | number | Maximum speed in world units per second.
         methods.add_method("getMaxSpeed", |_, this, ()| {
-            let w = this.world.borrow();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                Ok(w.agents[idx].max_speed)
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.max_speed)
             } else {
                 Ok(100.0)
             }
@@ -221,9 +215,8 @@ impl LuaUserData for LuaAgent {
         /// Sets this agent's maximum steering force when the agent still exists in its world.
         /// @param | v | number | Maximum steering force applied during steering calculations.
         methods.add_method("setMaxForce", |_, this, v: f32| {
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].max_force = v;
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.max_force = v;
             }
             Ok(())
         });
@@ -231,9 +224,8 @@ impl LuaUserData for LuaAgent {
         /// Returns this agent's maximum steering force or the default force for a missing agent.
         /// @return | number | Maximum steering force value.
         methods.add_method("getMaxForce", |_, this, ()| {
-            let w = this.world.borrow();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                Ok(w.agents[idx].max_force)
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.max_force)
             } else {
                 Ok(200.0)
             }
@@ -242,9 +234,8 @@ impl LuaUserData for LuaAgent {
         /// Sets this agent's integer priority when the agent still exists in its world.
         /// @param | p | integer | Priority value used by game-side AI scheduling or ordering logic.
         methods.add_method("setPriority", |_, this, p: i32| {
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].priority = p;
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.priority = p;
             }
             Ok(())
         });
@@ -252,9 +243,8 @@ impl LuaUserData for LuaAgent {
         /// Returns this agent's integer priority or zero when the agent has been removed.
         /// @return | integer | Current priority value.
         methods.add_method("getPriority", |_, this, ()| {
-            let w = this.world.borrow();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                Ok(w.agents[idx].priority)
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.priority)
             } else {
                 Ok(0)
             }
@@ -275,9 +265,8 @@ impl LuaUserData for LuaAgent {
         /// Returns this agent's decision model name or the default model name for a missing agent.
         /// @return | string | Current decision model name.
         methods.add_method("getDecisionModel", |_, this, ()| {
-            let w = this.world.borrow();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                Ok(w.agents[idx].decision_model.as_str().to_string())
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.decision_model.as_str().to_string())
             } else {
                 Ok("fsm".to_string())
             }
@@ -288,9 +277,8 @@ impl LuaUserData for LuaAgent {
         methods.add_method("setCustomModel", |lua, this, callback: LuaFunction| {
             let key = lua.create_registry_value(callback)?;
             let callback_id = this.callbacks.borrow_mut().register(key);
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].decision_model = crate::ai::DecisionModel::Custom { callback_id };
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.decision_model = crate::ai::DecisionModel::Custom { callback_id };
             }
             Ok(())
         });
@@ -298,9 +286,8 @@ impl LuaUserData for LuaAgent {
         /// Adds a tag string to this agent when the agent still exists in its world.
         /// @param | tag | string | Tag name to insert into the agent tag set.
         methods.add_method("addTag", |_, this, tag: String| {
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].tags.insert(tag);
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.tags.insert(tag);
             }
             Ok(())
         });
@@ -308,9 +295,8 @@ impl LuaUserData for LuaAgent {
         /// Removes a tag string from this agent when the agent still exists in its world.
         /// @param | tag | string | Tag name to remove from the agent tag set.
         methods.add_method("removeTag", |_, this, tag: String| {
-            let mut w = this.world.borrow_mut();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                w.agents[idx].tags.remove(&tag);
+            if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
+                agent.tags.remove(&tag);
             }
             Ok(())
         });
@@ -319,9 +305,8 @@ impl LuaUserData for LuaAgent {
         /// @param | tag | string | Tag name to check in the agent tag set.
         /// @return | boolean | True when the tag exists on the agent.
         methods.add_method("hasTag", |_, this, tag: String| {
-            let w = this.world.borrow();
-            if let Some(idx) = w.get_agent_index(&this.name) {
-                Ok(w.agents[idx].tags.contains(&tag))
+            if let Some(agent) = this.world.borrow().agent(&this.name) {
+                Ok(agent.tags.contains(&tag))
             } else {
                 Ok(false)
             }

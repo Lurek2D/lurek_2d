@@ -166,11 +166,15 @@ end)
 
 -- @describe Channel type and typeOf
 describe("Channel type and typeOf", function()
+    -- @covers LChannel:getCapacity
+    -- @covers LChannel:isBounded
     -- @covers LChannel:type
     -- @covers lurek.thread.newChannel
     it("type returns LChannel", function()
         local ch = lurek.thread.newChannel()
         expect_equal("LChannel", ch:type())
+        expect_equal(0, ch:getCapacity())
+        expect_false(ch:isBounded())
     end)
 
     -- @covers LChannel:typeOf

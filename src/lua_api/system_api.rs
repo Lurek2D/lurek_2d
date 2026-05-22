@@ -3,105 +3,15 @@
 use super::SharedState;
 use crate::log_msg;
 use crate::runtime::log_messages::{
-    self, LA03_OPEN_URL_REJECTED, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL,
+    self, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL,
     LA06_CLIPBOARD_READ_FAIL,
 };
 use crate::runtime::messages;
+use crate::runtime::os::*;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-/// Returns the number of logical processors available on the host system.
-pub fn get_processor_count() -> usize {
-    std::thread::available_parallelism()
-        .map(|n| n.get())
-        .unwrap_or(1)
-}
-
-/// Returns total physical memory in megabytes reported by the operating system.
-pub fn get_memory_size() -> u64 {
-    use sysinfo::System;
-    let sys = System::new_with_specifics(
-        sysinfo::RefreshKind::new().with_memory(sysinfo::MemoryRefreshKind::everything()),
-    );
-    sys.total_memory() / (1024 * 1024)
-}
-
-/// Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are allowed.
-pub fn open_url(url: &str) -> bool {
-    let url_lower = url.to_lowercase();
-    if !url_lower.starts_with("http://")
-        && !url_lower.starts_with("https://")
-        && !url_lower.starts_with("mailto:")
-    {
-        log_msg!(warn, LA03_OPEN_URL_REJECTED);
-        return false;
-    }
-    #[cfg(target_os = "windows")]
-    {
-        std::process::Command::new("cmd")
-            .args(["/C", "start", "", url])
-            .spawn()
-            .is_ok()
-    }
-    #[cfg(target_os = "macos")]
-    {
-        std::process::Command::new("open").arg(url).spawn().is_ok()
-    }
-    #[cfg(target_os = "linux")]
-    {
-        std::process::Command::new("xdg-open")
-            .arg(url)
-            .spawn()
-            .is_ok()
-    }
-    #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
-    {
-        let _ = url;
-        false
-    }
-}
-
-/// Returns the user's preferred locale list from the operating system, falling back to `"en_US"` if unavailable.
-pub fn get_preferred_locales() -> Vec<String> {
-    let locales: Vec<String> = sys_locale::get_locales().map(|l| l.to_string()).collect();
-    if locales.is_empty() {
-        if let Ok(lang) = std::env::var("LANG") {
-            vec![lang.split('.').next().unwrap_or("en_US").to_string()]
-        } else {
-            vec!["en_US".to_string()]
-        }
-    } else {
-        locales
-    }
-}
-/// Describes the current power supply state of the host device.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum PowerState {
-    Unknown,
-    Battery,
-    NoBattery,
-    Charging,
-    Charged,
-}
-
-impl PowerState {
-    /// Returns the Lua-visible power state string.
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            PowerState::Unknown => "unknown",
-            PowerState::Battery => "battery",
-            PowerState::NoBattery => "nobattery",
-            PowerState::Charging => "charging",
-            PowerState::Charged => "charged",
-        }
-    }
-}
-
-/// Returns the current power state, battery percentage (0-100), and estimated seconds remaining.
-pub fn get_power_info() -> (PowerState, Option<u32>, Option<u32>) {
-    (PowerState::Unknown, None, None)
-}
 
 /// Registers all `lurek.system` functions into the Lua runtime table.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
@@ -113,19 +23,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     system.set(
         "getOS",
         lua.create_function(|_, ()| {
-            Ok(if cfg!(target_os = "windows") {
-                "Windows"
-            } else if cfg!(target_os = "linux") {
-                "Linux"
-            } else if cfg!(target_os = "macos") {
-                "macOS"
-            } else if cfg!(target_os = "android") {
-                "Android"
-            } else if cfg!(target_os = "ios") {
-                "iOS"
-            } else {
-                "Unknown"
-            })
+            Ok(get_os_name())
         })?,
     )?;
 
@@ -205,18 +103,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             info.set("lua_version", "Lua 5.4")?;
             /// Performs the 'renderer' operation.
             info.set("renderer", "wgpu")?;
-            info.set(
-                "os",
-                if cfg!(target_os = "windows") {
-                    "Windows"
-                } else if cfg!(target_os = "linux") {
-                    "Linux"
-                } else if cfg!(target_os = "macos") {
-                    "macOS"
-                } else {
-                    "Unknown"
-                },
-            )?;
+            info.set("os", get_os_name())?;
             /// Performs the 'processors' operation.
             info.set("processors", get_processor_count())?;
             /// Performs the 'memory' operation.
@@ -307,7 +194,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     // -- getConfig --
     /// Returns a table containing the current engine runtime configuration values.
-    /// @return | table | Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+    /// @return | table | Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `default_font_size` (integer), `default_font_bold` (boolean), `config_reload_revision` (number).
     /// @field | runtime_mode | string | Runtime mode.
     /// @field | physics_tick_rate | number | Physics tick rate.
     /// @field | fixed_update_tick_rate | number | Fixed update tick rate.
@@ -315,6 +202,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | lua_callback_timeout_ms | number | Lua callback timeout ms.
     /// @field | vsync | boolean | Vsync.
     /// @field | log_level | string | Log level.
+    /// @field | default_font_size | integer | Configured built-in default render font point size.
+    /// @field | default_font_bold | boolean | Configured bold variant flag for the default render font.
     /// @field | config_reload_revision | integer | Config reload revision.
     system.set(
         "getConfig",
@@ -359,6 +248,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             // log_level: current logging verbosity level string
             /// Performs the 'log_level' operation.
             tbl.set("log_level", log_messages::get_log_level().to_string())?;
+            // default_font_size: configured built-in default render font point size
+            /// Performs the 'default_font_size' operation.
+            tbl.set("default_font_size", st.default_font_size)?;
+            // default_font_bold: whether the configured default render font uses the bold variant
+            /// Performs the 'default_font_bold' operation.
+            tbl.set("default_font_bold", st.default_font_bold)?;
             // config_reload_revision: number of times the engine config has been reloaded
             /// Performs the 'config_reload_revision' operation.
             tbl.set("config_reload_revision", st.config_reload_revision)?;

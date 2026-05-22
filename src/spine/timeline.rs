@@ -179,6 +179,27 @@ impl SkeletonAnimation {
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
     }
+    /// Add a keyframe to a specific bone property timeline. Creates the timeline if it doesn't exist.
+    pub fn add_keyframe(
+        &mut self,
+        bone_idx: usize,
+        property: BoneProperty,
+        time: f32,
+        value: f32,
+        easing: EasingType,
+    ) {
+        if let Some(tl) = self
+            .timelines
+            .iter_mut()
+            .find(|tl| tl.bone_idx == bone_idx && tl.property == property)
+        {
+            tl.add_key(time, value, easing);
+        } else {
+            let mut tl = BoneTimeline::new(bone_idx, property);
+            tl.add_key(time, value, easing);
+            self.timelines.push(tl);
+        }
+    }
     /// Return all event (name, value) pairs whose time is in the half-open range (from, to].
     pub fn collect_events(&self, from: f32, to: f32) -> Vec<(String, f32)> {
         self.events

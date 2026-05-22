@@ -776,6 +776,16 @@ do
     local def = lurek.render.getDefaultFont(); lurek.render.setFont(def)
 end
 
+--@api-stub: lurek.render.setDefaultFont
+do
+    local regular = lurek.render.setDefaultFont(10, false)
+    lurek.render.print("Built-in regular font_10", 10, 55)
+    local bold = lurek.render.setDefaultFont(10, true)
+    lurek.render.print("Built-in bold fontb_10", 10, 75)
+    lurek.render.setFont(regular)
+    print("default font switched, bold height = " .. bold:getHeight())
+end
+
 --@api-stub: LFont:getWidth
 do
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14); print("width of 'Hello' = " .. font:getWidth("Hello"))
@@ -1660,4 +1670,45 @@ do
 end
 
 print("content/examples/render.lua")
+
+--@api-stub: lurek.render.printRotatedWithFont
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws text rotated by 45 degrees
+    lurek.render.printRotatedWithFont(font, "Rotated text", 100, 100, math.pi / 4, 1.0)
+end
+
+--@api-stub: lurek.render.printWithFont
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws standard text using a specific font
+    lurek.render.printWithFont(font, "Standard text override", 10, 150)
+end
+
+--@api-stub: lurek.render.printfWithFont
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws formatted text with a specific font
+    lurek.render.printfWithFont(font, "Formatted: %d %s", 10, 200, 42, "items")
+end
+
+--@api-stub: lurek.render.printRichWithFont
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws rich text with styled span tables.
+    lurek.render.printRichWithFont(font, {
+        { text = "Red", r = 255, g = 0, b = 0, a = 255, scale = 1 },
+        { text = " and ", r = 255, g = 255, b = 255, a = 255, scale = 1 },
+        { text = "Green", r = 0, g = 255, b = 0, a = 255, scale = 1 },
+    }, 10, 250)
+end
+
+--@api-stub: lurek.render.getBuiltInFontNames
+do
+    -- Lists available system/fallback fonts
+    local names = lurek.render.getBuiltInFontNames()
+    if #names > 0 then
+        lurek.log.info("Available built-in fonts: " .. table.concat(names, ", "))
+    end
+end
 

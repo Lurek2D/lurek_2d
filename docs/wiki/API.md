@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7212 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26398 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7239 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26540 lines)
 
 ## Coverage
 
 - 52 modules
-- 4842 functions and methods
+- 4869 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -46,9 +46,9 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.engine](Module-engine) | 13 | 0 | lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts. |
 | [lurek.event](Module-event) | 16 | 1 | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
 | [lurek.filesystem](Module-filesystem) | 44 | 3 | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
-| [lurek.globe](Module-globe) | 8 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
+| [lurek.globe](Module-globe) | 9 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [lurek.graph](Module-graph) | 1 | 4 | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
-| [lurek.html](Module-html) | 6 | 2 | HTML/CSS document engine for building game UIs using familiar web markup. |
+| [lurek.html](Module-html) | 6 | 2 | The html module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D. |
 | [lurek.i18n](Module-i18n) | 36 | 0 | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
 | [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 80 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
@@ -67,7 +67,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.procgen](Module-procgen) | 24 | 1 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen. CPU-only, headless. |
 | [lurek.province](Module-province) | 8 | 1 | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
 | [lurek.raycaster](Module-raycaster) | 8 | 5 | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
-| [lurek.render](Module-render) | 110 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
+| [lurek.render](Module-render) | 116 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
 | [lurek.repl](Module-repl) | 1 | 1 | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [lurek.save](Module-save) | 1 | 1 | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
 | [lurek.scene](Module-scene) | 50 | 1 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
@@ -80,7 +80,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.tilemap](Module-tilemap) | 28 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 | [lurek.tween](Module-tween) | 14 | 5 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
-| [lurek.ui](Module-ui) | 74 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
+| [lurek.ui](Module-ui) | 82 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [lurek.window](Module-window) | 55 | 0 | Window control via deferred WindowState writes; winit ops applied at frame start on the main thread. |
 
 One-page callable index: [API Reference](API-Reference).

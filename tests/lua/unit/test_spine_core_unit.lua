@@ -295,10 +295,13 @@ end)
 
 -- @describe SkeletonAnimation
 describe("SkeletonAnimation", function()
+    -- @covers LSkeletonAnimation:reverse
     -- @covers lurek.spine.newSkeletonAnimation
     it("returns a userdata", function()
         local sa = lurek.spine.newSkeletonAnimation("hero_walk", 1.0)
         expect_type("userdata", sa)
+        local reversed = sa:reverse()
+        expect_type("userdata", reversed)
     end)
 
     -- @covers LSkeletonAnimation:getDuration

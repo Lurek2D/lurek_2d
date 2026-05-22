@@ -11,9 +11,11 @@
 
 ## Summary
 
-Executable entry points for the Lurek2D binary distribution. `lurek_headless.rs` provides a windowless runner for CI tests and automation — it initializes the engine without creating a GPU surface or OS window. `lurekc.rs` is the compiler/bundler entry that packages game scripts and assets into a distributable archive.
+The `bin` module provides the executable entry points for the Lurek2D binary distribution, serving as the very top of the Edge/Integration tier. Its primary responsibility is to host the `fn main()` targets that initialize the runtime environment and delegate control to the core engine. This module contains no intrinsic game logic; instead, it parses command-line arguments and coordinates the initialization sequence by calling into the `app` and `runtime` modules.
 
-Neither file contains domain logic; they parse command-line arguments and delegate to `app` and `runtime` for actual execution. The module exists in the Edge/Integration tier solely to host `fn main()` targets.
+The module provides two distinct entry points tailored for different distribution contexts. The first is `lurek_headless.rs`, a specialized CLI tool designed for automation, testing, and game validation. It initializes the engine without creating a GPU surface or OS window, making it ideal for CI pipelines. This headless runner supports several subcommands: `validate` invokes external Python scripts for game data validation, `pack` compresses a game directory into a distributable `.lurek` ZIP archive, and `screenshot-batch` systematically spawns engine instances to capture PNG screenshots over a set number of frames.
+
+The second entry point is `lurekc.rs`, which serves as a console-less launcher variant for the engine's standard bootstrap path. It applies the Windows GUI subsystem attribute to ensure no terminal window spawns alongside the game window, providing a seamless experience for end users. It preserves all standard runtime modes and accurately returns process exit codes. By isolating these `main` targets, the `bin` module cleanly separates executable concerns from the engine library.
 
 ## Source Documentation
 

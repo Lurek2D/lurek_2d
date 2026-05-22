@@ -729,64 +729,25 @@ impl LuaUserData for LuaOverlay {
         // -- pullAmbientFromLight --
         /// Copies ambient color from the shared light world into this overlay.
         methods.add_method_mut("pullAmbientFromLight", |_, this, ()| {
-            let c = this.state.borrow().light_world.ambient;
-            this.inner.ambient.color = [c.r, c.g, c.b, c.a];
+            let st = this.state.borrow();
+            this.inner.pull_ambient_from_light(&st.light_world.ambient);
             Ok(())
         });
         // -- pushAmbientToLight --
         /// Copies this overlay ambient color into the shared light world.
         methods.add_method_mut("pushAmbientToLight", |_, this, ()| {
-            let c = this.inner.ambient.color;
-            this.state.borrow_mut().light_world.ambient =
-                crate::math::Color::new(c[0], c[1], c[2], c[3]);
+            let mut st = this.state.borrow_mut();
+            this.inner.push_ambient_to_light(&mut st.light_world.ambient);
             Ok(())
         });
         // -- syncAmbientWithLight --
         /// Resolves overlay and light ambient colors using a named mode and writes both stores.
         /// @param | mode | string | One of `light`, `overlay`, `avg`, `max`, or `min`.
         methods.add_method_mut("syncAmbientWithLight", |_, this, mode: String| {
-            let light_color = {
-                let st = this.state.borrow();
-                [
-                    st.light_world.ambient.r,
-                    st.light_world.ambient.g,
-                    st.light_world.ambient.b,
-                    st.light_world.ambient.a,
-                ]
-            };
-            let overlay_color = this.inner.ambient.color;
-            let resolved = match mode.as_str() {
-                "light" => light_color,
-                "overlay" => overlay_color,
-                "avg" => [
-                    (light_color[0] + overlay_color[0]) * 0.5,
-                    (light_color[1] + overlay_color[1]) * 0.5,
-                    (light_color[2] + overlay_color[2]) * 0.5,
-                    (light_color[3] + overlay_color[3]) * 0.5,
-                ],
-                "max" => [
-                    light_color[0].max(overlay_color[0]),
-                    light_color[1].max(overlay_color[1]),
-                    light_color[2].max(overlay_color[2]),
-                    light_color[3].max(overlay_color[3]),
-                ],
-                "min" => [
-                    light_color[0].min(overlay_color[0]),
-                    light_color[1].min(overlay_color[1]),
-                    light_color[2].min(overlay_color[2]),
-                    light_color[3].min(overlay_color[3]),
-                ],
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "Overlay:syncAmbientWithLight invalid mode; expected 'light', 'overlay', 'avg', 'max', or 'min'"
-                            .to_string(),
-                    ))
-                }
-            };
-            this.inner.ambient.color = resolved;
-            this.state.borrow_mut().light_world.ambient =
-                crate::math::Color::new(resolved[0], resolved[1], resolved[2], resolved[3]);
-            Ok(())
+            let mut st = this.state.borrow_mut();
+            this.inner
+                .sync_ambient_with_light(&mut st.light_world.ambient, &mode)
+                .map_err(LuaError::RuntimeError)
         });
         // -- setTimeOfDay --
         /// Sets the overlay time-of-day value used by ambient effects.

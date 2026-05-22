@@ -1016,10 +1016,13 @@ end)
 
 -- @describe render strict: canvas and shader
 describe("render strict: canvas and shader", function()
+    -- @covers lurek.render.resetCanvas
     -- @covers lurek.render.setCanvas
     it("setCanvas with nil resets to screen", function()
         local ok = pcall(lurek.render.setCanvas, nil)
         expect_true(ok)
+        local canvas = lurek.render.newCanvas(8, 8)
+        expect_true(pcall(lurek.render.resetCanvas, canvas))
     end)
 
     -- @covers lurek.render.setShader

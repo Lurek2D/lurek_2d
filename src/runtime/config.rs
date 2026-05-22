@@ -56,6 +56,10 @@ pub struct RenderConfig {
     pub backend: String,
     /// Requested adapter power preference.
     pub power_preference: String,
+    /// Requested built-in default font point size for render text.
+    pub default_font_size: u32,
+    /// Requested built-in bold variant for the default render font.
+    pub default_font_bold: bool,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Window and viewport configuration.
@@ -337,6 +341,8 @@ impl Default for Config {
             render: RenderConfig {
                 backend: "auto".to_string(),
                 power_preference: "high".to_string(),
+                default_font_size: 10,
+                default_font_bold: false,
             },
             modules: ModulesConfig {
                 audio: true,

@@ -1,4 +1,4 @@
-﻿-- content/examples/devtools.lua
+-- content/examples/devtools.lua
 -- Auto-generated from content/examples2/devtools_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/devtools.lua
 

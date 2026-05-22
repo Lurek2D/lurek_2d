@@ -5,7 +5,6 @@
 //! The remaining Rust coverage here keeps only the thread-pool helper
 //! invariant.
 
-use lurek2d::pathfind::NavMesh;
 use lurek2d::pathfind::PathThreadPool;
 
 mod async_pool_tests {
@@ -15,81 +14,6 @@ mod async_pool_tests {
     fn default_thread_count() {
         let pool = PathThreadPool::new(0);
         assert!(pool.get_thread_count() >= 1);
-    }
-}
-
-mod navmesh_tests {
-    use super::*;
-
-    #[test]
-    fn navmesh_add_polygon_requires_three_vertices() {
-        let mut mesh = NavMesh::new();
-        assert!(mesh.add_polygon(vec![(0.0, 0.0), (1.0, 0.0)]).is_none());
-        assert_eq!(mesh.polygon_count(), 0);
-    }
-
-    #[test]
-    fn navmesh_finds_path_through_connected_polygons() {
-        let mut mesh = NavMesh::new();
-        let a = mesh
-            .add_polygon(vec![(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0)])
-            .unwrap();
-        let b = mesh
-            .add_polygon(vec![(10.0, 0.0), (20.0, 0.0), (20.0, 10.0), (10.0, 10.0)])
-            .unwrap();
-        assert!(mesh.connect(a, b, true));
-
-        let path = mesh.find_path((2.0, 2.0), (18.0, 8.0));
-        assert!(path.is_some());
-        assert!(path.unwrap().len() >= 2);
-    }
-}
-
-mod ai_flow_field_tests {
-    use lurek2d::pathfind::ai_flow_field::FlowField;
-
-    fn open_grid(w: usize, h: usize) -> Vec<bool> {
-        vec![true; w * h]
-    }
-
-    #[test]
-    fn test_new_field_has_no_goal() {
-        let ff = FlowField::new(4, 4, open_grid(4, 4));
-        assert!(ff.goal.is_none());
-    }
-
-    #[test]
-    fn test_set_goal_computes_directions() {
-        let mut ff = FlowField::new(4, 4, open_grid(4, 4));
-        ff.set_goal(3, 3);
-        assert_eq!(ff.goal, Some((3, 3)));
-        assert_eq!(ff.get_distance(3, 3), 0.0);
-        assert!(ff.get_distance(0, 0) > 0.0);
-        assert!(ff.get_distance(0, 0) < f32::INFINITY);
-    }
-
-    #[test]
-    fn test_blocked_goal_stays_infinity() {
-        let mut walkable = open_grid(3, 3);
-        walkable[2 * 3 + 2] = false;
-        let mut ff = FlowField::new(3, 3, walkable);
-        ff.set_goal(2, 2);
-        assert_eq!(ff.get_distance(0, 0), f32::INFINITY);
-    }
-
-    #[test]
-    fn test_direction_points_toward_goal() {
-        let mut ff = FlowField::new(5, 1, open_grid(5, 1));
-        ff.set_goal(4, 0);
-        let (dx, _dy) = ff.get_direction(0, 0);
-        assert!(dx > 0.0, "should point right toward goal");
-    }
-
-    #[test]
-    fn test_out_of_bounds_returns_defaults() {
-        let ff = FlowField::new(2, 2, open_grid(2, 2));
-        assert_eq!(ff.get_direction(10, 10), (0.0, 0.0));
-        assert_eq!(ff.get_distance(10, 10), f32::INFINITY);
     }
 }
 
@@ -109,72 +33,6 @@ mod async_pool_extra_tests {
         assert_eq!(pool.get_thread_count(), 1);
         pool.set_thread_count(4);
         assert_eq!(pool.get_thread_count(), 4);
-    }
-}
-
-mod bidir_tests {
-    use lurek2d::pathfind::bidirectional_astar;
-    use lurek2d::pathfind::NavGrid;
-
-    #[test]
-    fn test_same_cell_returns_trivial_path() {
-        let g = NavGrid::new(5, 5);
-        let (p, _) = bidirectional_astar(&g, (2, 2), (2, 2), 1, 10000);
-        assert!(p.is_some());
-    }
-
-    #[test]
-    fn test_straight_line_path() {
-        let g = NavGrid::new(10, 1);
-        let (p, _) = bidirectional_astar(&g, (0, 0), (9, 0), 1, 10000);
-        assert!(p.is_some());
-        let path = p.unwrap();
-        assert_eq!(*path.first().unwrap(), (0, 0));
-        assert_eq!(*path.last().unwrap(), (9, 0));
-    }
-
-    #[test]
-    fn test_wall_blocks_path() {
-        let mut g = NavGrid::new(5, 5);
-        for y in 0..5 {
-            g.set_blocked(2, y, true);
-        }
-        let (p, _) = bidirectional_astar(&g, (0, 2), (4, 2), 1, 10000);
-        assert!(p.is_none());
-    }
-
-    #[test]
-    fn test_iteration_limit_triggers_flag() {
-        let g = NavGrid::new(50, 50);
-        let (_, is_complete) = bidirectional_astar(&g, (0, 0), (49, 49), 1, 5);
-        assert!(!is_complete);
-    }
-}
-
-mod flow_field_tests {
-    use lurek2d::pathfind::FlowField;
-    use lurek2d::pathfind::NavGrid;
-    use std::cell::RefCell;
-    use std::rc::Rc;
-
-    fn open_grid(w: u32, h: u32) -> Rc<RefCell<NavGrid>> {
-        Rc::new(RefCell::new(NavGrid::new(w, h)))
-    }
-
-    #[test]
-    fn test_new_field_not_calculated() {
-        let g = open_grid(5, 5);
-        let ff = FlowField::new(g);
-        assert!(!ff.is_calculated());
-    }
-
-    #[test]
-    fn test_calculate_and_get_direction() {
-        let g = open_grid(5, 5);
-        let mut ff = FlowField::new(g);
-        ff.calculate(4, 4, 1);
-        let (dx, dy) = ff.get_direction(0, 0);
-        assert!(dx.is_finite() && dy.is_finite());
     }
 }
 

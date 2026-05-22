@@ -2,8 +2,8 @@
 """Cross-reference Lua example scripts against the lurek.* Lua API.
 
 Coverage is reported in four tiers:
-    - "FULL" -- --@api-stub: block present, NO "-- TODO:" line, and block body has 5+ non-empty lines
-    - "PART" -- --@api-stub: block present, NO "-- TODO:" line, and block body has 1-4 non-empty lines
+    - "FULL" -- --@api-stub: block present, NO "-- TODO:" line, and block body has 1+ non-empty lines
+    - "PART" -- reserved legacy bucket; current real examples should classify as FULL
     - "TODO" -- --@api-stub: block present AND has a "-- TODO:" line
     - "MISS" -- no --@api-stub: marker at all (item not tracked in any example)
 
@@ -14,14 +14,14 @@ Workflow:
 
 Usage:
     python tools/audit/example_coverage.py                  # summary table
-    python tools/audit/example_coverage.py --examples-dir content/examples2
+    python tools/audit/example_coverage.py --examples-dir content/examples
     python tools/audit/example_coverage.py --missing        # list uncovered items
     python tools/audit/example_coverage.py --stubs          # list modules with pending stubs
     python tools/audit/example_coverage.py --module timer   # one module
     python tools/audit/example_coverage.py --json           # machine-readable
     python tools/audit/example_coverage.py --report         # exit 1 if any missing
     python tools/audit/example_coverage.py --report --no-stubs  # also fail if pending
-    python tools/audit/example_coverage.py --examples-dir content/examples2 --markdown
+    python tools/audit/example_coverage.py --examples-dir content/examples --markdown
     python tools/audit/example_coverage.py --markdown FILE  # export Markdown report
 
 Exit codes:
@@ -37,7 +37,9 @@ ROOT = Path(__file__).resolve().parents[2]
 API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
 DEFAULT_EXAMPLES_DIR = ROOT / 'content' / 'examples'
 DEFAULT_MARKDOWN_REPORT = ROOT / 'logs' / 'reports' / 'example_coverage.md'
-FULL_BLOCK_MIN_LINES = 5
+# Real examples are already distinguished from placeholders by marker presence and TODO state.
+# Requiring 5+ lines created a large PART bucket without indicating missing API coverage.
+FULL_BLOCK_MIN_LINES = 1
 
 DO_LINE_RE = re.compile(r'^do(?:\s*--.*)?$')
 FUNCTION_START_RE = re.compile(r'^(?:local\s+)?function\b')
@@ -293,7 +295,7 @@ def _is_outer_block_end(stripped: str, depth: int) -> bool:
 def classify_block(block: dict | None) -> str:
     if not block:
         return 'MISS'
-    if block['has_todo']:
+    if block['has_todo'] or block['body_line_count'] == 0:
         return 'TODO'
     if block['body_line_count'] >= FULL_BLOCK_MIN_LINES:
         return 'FULL'
@@ -306,6 +308,7 @@ def load_texts(d: Path) -> dict[str, dict]:
     Returns dict: filename -> { 'blocks': dict, 'lines': int, 'comments': int }
     """
     out: dict[str, dict] = {}
+    global_markers: dict[str, tuple[str, int]] = {}
     for p in d.glob('*.lua'):
         raw = p.read_text(encoding='utf-8', errors='replace')
         file_lines = raw.splitlines()
@@ -315,13 +318,26 @@ def load_texts(d: Path) -> dict[str, dict]:
         current_stub = None
         current_block = None
         block_depth = 0
-        for ln in file_lines:
+        for line_no, ln in enumerate(file_lines, start=1):
             stripped = ln.strip()
             if stripped.startswith('--'):
                 comments += 1
 
             if stripped.startswith('--@api-stub:'):
                 marker = stripped[len('--@api-stub:'):].strip()
+                if marker in blocks:
+                    import sys
+                    print(f"ERROR: Duplicate stub marker '{marker}' found in {p.name}", file=sys.stderr)
+                    sys.exit(1)
+                if marker in global_markers:
+                    import sys
+                    prev_file, prev_line = global_markers[marker]
+                    print(
+                        f"ERROR: Duplicate stub marker '{marker}' found in {p.name}:{line_no} and {prev_file}:{prev_line}",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
+                global_markers[marker] = (p.name, line_no)
                 current_stub = marker
                 current_block = {'has_todo': False, 'body_line_count': 0, 'found_block': False}
                 blocks[current_stub] = current_block

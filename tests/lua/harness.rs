@@ -726,6 +726,11 @@ fn lua_unit_ui_unit() {
 }
 
 #[test]
+fn lua_unit_ui_font_unit() {
+    run_lua_test("unit/test_ui_font_unit.lua");
+}
+
+#[test]
 fn lua_unit_ui_input_unit() {
     run_lua_test("unit/test_ui_input_unit.lua");
 }
@@ -822,15 +827,6 @@ fn lua_evidence_layers_evidence() {
     run_lua_test("evidence/test_layers_evidence.lua");
 }
 
-#[test]
-fn lua_evidence_light_evidence() {
-    run_lua_test("evidence/test_light_evidence.lua");
-}
-
-#[test]
-fn lua_evidence_light_occluder_evidence() {
-    run_lua_test("evidence/test_light_occluder_evidence.lua");
-}
 
 #[test]
 fn lua_evidence_math_evidence() {
@@ -893,13 +889,28 @@ fn lua_evidence_spine_evidence() {
 }
 
 #[test]
-fn lua_evidence_tilemap_evidence() {
-    run_lua_test("evidence/test_tilemap_evidence.lua");
+fn lua_evidence_globe_evidence() {
+    run_lua_test("evidence/test_globe_evidence.lua");
 }
 
 #[test]
-fn lua_evidence_ui_evidence() {
-    run_lua_test("evidence/test_ui_evidence.lua");
+fn lua_evidence_render_advanced_evidence() {
+    run_lua_test("evidence/test_render_advanced_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_tilemap_advanced_evidence() {
+    run_lua_test("evidence/test_tilemap_advanced_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_ui_advanced_evidence() {
+    run_lua_test("evidence/test_ui_advanced_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_light_advanced_evidence() {
+    run_lua_test("evidence/test_light_advanced_evidence.lua");
 }
 
 // ── golden layer ──

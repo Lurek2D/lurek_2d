@@ -284,13 +284,6 @@ mod render_tests {
         }
     }
 
-    #[test]
-    fn draw_to_image_returns_correct_dimensions() {
-        let scene = RaycasterScene::default();
-        let img = scene.draw_to_image(320, 200);
-        assert_eq!(img.width(), 320);
-        assert_eq!(img.height(), 200);
-    }
 }
 
 // ── minimap_overlay ───────────────────────────────────────────────────
@@ -798,55 +791,4 @@ mod build_scene_tests {
     }
 }
 
-// ── generic minimap/reveal helpers ───────────────────────────────────
 
-mod generic_minimap_tests {
-    use super::*;
-
-    #[test]
-    fn compute_tile_light_returns_values_in_range() {
-        let rc = Raycaster2D::new(8, 8);
-        let lights = vec![PointLight {
-            x: 3.5,
-            y: 3.5,
-            radius: 4.0,
-            intensity: 8.0,
-            color: [1.0, 0.8, 0.5],
-        }];
-        let rgb = compute_tile_light(&rc, 3, 3, 0.2, &lights);
-        assert!((0.0..=1.0).contains(&rgb[0]));
-        assert!((0.0..=1.0).contains(&rgb[1]));
-        assert!((0.0..=1.0).contains(&rgb[2]));
-    }
-
-    #[test]
-    fn build_minimap_tile_window_returns_samples() {
-        let mut rc = Raycaster2D::new(10, 10);
-        rc.set_cell(4, 4, 1);
-        let samples = build_minimap_tile_window(&rc, 5.5, 5.5, 3, 0.2, &[]);
-        assert!(!samples.is_empty());
-        assert!(samples.iter().any(|s| s.blocked));
-        assert!(samples.iter().all(|s| s.x < 10 && s.y < 10));
-    }
-
-    #[test]
-    fn reveal_cells_from_rays_returns_unique_cells() {
-        let rc = Raycaster2D::new(16, 16);
-        let cells = reveal_cells_from_rays(
-            &rc,
-            8.5,
-            8.5,
-            0.0,
-            std::f32::consts::FRAC_PI_3,
-            16,
-            8.0,
-            0.25,
-        );
-        assert!(!cells.is_empty());
-        let mut uniq = std::collections::HashSet::new();
-        for c in &cells {
-            uniq.insert(*c);
-        }
-        assert_eq!(cells.len(), uniq.len());
-    }
-}

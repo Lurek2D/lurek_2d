@@ -188,6 +188,13 @@ mod font_tests {
     }
 
     #[test]
+    fn nearest_point_size_matches_builtin_font_labels() {
+        assert_eq!(Font::nearest_point_size(10), 1);
+        assert_eq!(Font::nearest_point_size(12), 2);
+        assert_eq!(Font::nearest_point_size(29), 6);
+    }
+
+    #[test]
     fn available_heights_and_cell_sizes_correspond() {
         assert_eq!(AVAILABLE_HEIGHTS.len(), AVAILABLE_CELL_SIZES.len());
         for (i, &h) in AVAILABLE_HEIGHTS.iter().enumerate() {

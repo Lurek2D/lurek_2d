@@ -598,6 +598,10 @@ impl LurekApp {
                 Some(rate) if rate > 0 => 1.0 / rate as f64,
                 _ => 0.0,
             };
+        shared_state.set_configured_default_font(
+            self.config.render.default_font_size,
+            self.config.render.default_font_bold,
+        );
         shared_state.frame_budget_warn_ms = self.config.performance.frame_budget_warn_ms;
         shared_state.lua_callback_timeout_ms = self.callback_timeout_ms();
         {
@@ -1142,16 +1146,18 @@ impl LurekApp {
         }
         {
             self.auto_ui_cmd_buf.clear();
-            let (ui_ctx, ui_font) = {
+            let ui_ctx = {
                 let st = state.borrow();
-                (
-                    st.auto_ui_ctx.as_ref().and_then(|w| w.upgrade()),
-                    st.active_font.or(st.default_font),
-                )
+                st.auto_ui_ctx.as_ref().and_then(|w| w.upgrade())
             };
-            if let (Some(rc), Some(font_key)) = (ui_ctx, ui_font) {
-                self.auto_ui_cmd_buf
-                    .extend(rc.borrow_mut().build_render_commands(font_key));
+            if let Some(rc) = ui_ctx {
+                let st = state.borrow();
+                if let Some(font_key) = st.active_font.or(st.default_font) {
+                    self.auto_ui_cmd_buf.extend(
+                        rc.borrow_mut()
+                            .build_render_commands_with_fonts(font_key, &st.fonts),
+                    );
+                }
             }
             state
                 .borrow_mut()
@@ -1674,6 +1680,8 @@ impl LurekApp {
             log::warn!("conf.toml hot-reload failed: {}", err);
             return;
         }
+        let font_config_changed = self.config.render.default_font_size != new_config.render.default_font_size
+            || self.config.render.default_font_bold != new_config.render.default_font_bold;
         self.config = new_config;
         self.window_vsync_mode = if self.config.window.vsync { 1 } else { 0 };
         if let Some(level) = self.config.log_level.as_deref() {
@@ -1691,6 +1699,10 @@ impl LurekApp {
             };
             st.frame_budget_warn_ms = self.config.performance.frame_budget_warn_ms;
             st.lua_callback_timeout_ms = self.callback_timeout_ms();
+            st.set_configured_default_font(
+                self.config.render.default_font_size,
+                self.config.render.default_font_bold,
+            );
             st.window_state.vsync_mode = self.window_vsync_mode;
             st.window_state.pending_vsync = Some(self.window_vsync_mode);
             st.window_state.game_width =
@@ -1707,6 +1719,9 @@ impl LurekApp {
             let (ww, wh) = (st.window_width, st.window_height);
             recompute_viewport(&mut st.window_state, ww, wh);
             st.config_reload_revision = st.config_reload_revision.saturating_add(1);
+        }
+        if font_config_changed {
+            self.engine_fonts = None;
         }
         log::info!("conf.toml hot-reloaded successfully");
     }

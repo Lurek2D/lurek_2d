@@ -24,7 +24,6 @@ The glossary collects terms that appear across module and API pages.
 
 ## Lua API Types
 
-- `BiomeClassifier` ([lurek.procgen](Module-procgen)) - Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
 - `LAabbTree` ([lurek.math](Module-math)) - Lua-side wrapper for an AABB tree spatial index.
 - `LAccordion` ([lurek.ui](Module-ui)) - Adds accordion-specific methods to an accordion widget table.
 - `LAgent` ([lurek.ai](Module-ai)) - Lua handle for a named agent stored inside an AI world.
@@ -47,6 +46,7 @@ The glossary collects terms that appear across module and API pages.
 - `LBehaviorTree` ([lurek.ai](Module-ai)) - Lua handle for a behavior tree root and its most recent execution status.
 - `LBehaviorTree` ([lurek.patterns](Module-patterns)) - Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
 - `LBezierCurve` ([lurek.math](Module-math)) - Lua-side wrapper for a Bezier curve.
+- `LBiomeClassifier` ([lurek.procgen](Module-procgen)) - Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
 - `LBlackboard` ([lurek.patterns](Module-patterns)) - Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
 - `LBlendLayerSet` ([lurek.animation](Module-animation)) - Lua-side blend layer set used to combine animation clips with weights and bone masks.
 - `LBody` ([lurek.physics](Module-physics)) - A handle to a single physics body in the world, providing per-body manipulation methods.

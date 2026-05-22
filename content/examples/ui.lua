@@ -2395,7 +2395,6 @@ do
     print("child toggled")
 end
 
---@api-stub: LAccordion.addSection
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
@@ -2404,7 +2403,6 @@ do
     print("sections:", cnt, "title:", title)
 end
 
---@api-stub: LAccordion.getSectionCount
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
@@ -2413,7 +2411,6 @@ do
     print("sections:", cnt, "title:", title)
 end
 
---@api-stub: LAccordion.getSectionTitle
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
@@ -2422,7 +2419,6 @@ do
     print("sections:", cnt, "title:", title)
 end
 
---@api-stub: LAccordion.isExclusive
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("A")
     acc:setExclusive(true)
@@ -2431,7 +2427,6 @@ do
     print("exclusive:", ex, "expanded:", expanded)
 end
 
---@api-stub: LAccordion.isSectionExpanded
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("A")
     acc:setExclusive(true)
@@ -2440,7 +2435,6 @@ do
     print("exclusive:", ex, "expanded:", expanded)
 end
 
---@api-stub: LAccordion.setExclusive
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("A")
     acc:setExclusive(true)
@@ -2449,7 +2443,6 @@ do
     print("exclusive:", ex, "expanded:", expanded)
 end
 
---@api-stub: LAccordion.toggleSection
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
     local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
@@ -2458,7 +2451,6 @@ do
     print("toggled:", newState, "badge count:", count, "display:", disp)
 end
 
---@api-stub: LBadge.getCount
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
     local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
@@ -2467,7 +2459,6 @@ do
     print("toggled:", newState, "badge count:", count, "display:", disp)
 end
 
---@api-stub: LBadge.getDisplayText
 do
     local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
     local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
@@ -2476,7 +2467,6 @@ do
     print("toggled:", newState, "badge count:", count, "display:", disp)
 end
 
---@api-stub: LBadge.setCount
 do
     local badge = lurek.ui.newBadge(0); badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
@@ -2485,7 +2475,7 @@ do
     print("badge count:", badge:getCount(), "button text:", btn:getText())
 end
 
---@api-stub: LButton.getText
+--@api-stub: LButton:getText
 do
     local badge = lurek.ui.newBadge(0); badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
@@ -2494,7 +2484,7 @@ do
     print("badge count:", badge:getCount(), "button text:", btn:getText())
 end
 
---@api-stub: LButton.setText
+--@api-stub: LButton:setText
 do
     local badge = lurek.ui.newBadge(0); badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
@@ -2503,7 +2493,7 @@ do
     print("badge count:", badge:getCount(), "button text:", btn:getText())
 end
 
---@api-stub: LCheckbox.getText
+--@api-stub: LCheckbox:getText
 do
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
@@ -2512,7 +2502,7 @@ do
     print("checkbox text:", t, "checked:", checked)
 end
 
---@api-stub: LCheckbox.isChecked
+--@api-stub: LCheckbox:isChecked
 do
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
@@ -2521,7 +2511,6 @@ do
     print("checkbox text:", t, "checked:", checked)
 end
 
---@api-stub: LCheckbox.setChecked
 do
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
@@ -2530,7 +2519,6 @@ do
     print("checkbox text:", t, "checked:", checked)
 end
 
---@api-stub: LCheckbox.setText
 do
     local cb = lurek.ui.newCheckbox("old"); cb:setText("new label")
     local chart = lurek.ui.newAreaChart({width = 200, height = 100})
@@ -2647,7 +2635,6 @@ do
     print("LBarChart type:", t, "typeOf:", ok, "typeOf LAreaChart:", notOk)
 end
 
---@api-stub: LColorPicker.getColor
 do
     local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
@@ -2656,7 +2643,6 @@ do
     print("color:", r, g, b, a, "mode:", mode, "showAlpha:", showAlpha)
 end
 
---@api-stub: LColorPicker.getColorMode
 do
     local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
@@ -2665,7 +2651,6 @@ do
     print("color:", r, g, b, a, "mode:", mode, "showAlpha:", showAlpha)
 end
 
---@api-stub: LColorPicker.getShowAlpha
 do
     local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
@@ -2674,7 +2659,6 @@ do
     print("color:", r, g, b, a, "mode:", mode, "showAlpha:", showAlpha)
 end
 
---@api-stub: LColorPicker.setColor
 do
     local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
@@ -2683,7 +2667,6 @@ do
     print("setColor/setColorMode/setOnChange ok")
 end
 
---@api-stub: LColorPicker.setColorMode
 do
     local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
@@ -2692,7 +2675,6 @@ do
     print("setColor/setColorMode/setOnChange ok")
 end
 
---@api-stub: LColorPicker.setOnChange
 do
     local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
@@ -2701,7 +2683,6 @@ do
     print("setColor/setColorMode/setOnChange ok")
 end
 
---@api-stub: LColorPicker.setShowAlpha
 do
     local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
@@ -2710,7 +2691,6 @@ do
     print("setShowAlpha ok; combo items cleared")
 end
 
---@api-stub: LComboBox.addItem
 do
     local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
@@ -2719,7 +2699,6 @@ do
     print("setShowAlpha ok; combo items cleared")
 end
 
---@api-stub: LComboBox.clearItems
 do
     local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
@@ -2728,7 +2707,6 @@ do
     print("setShowAlpha ok; combo items cleared")
 end
 
---@api-stub: LComboBox.getItem
 do
     local cb = lurek.ui.newComboBox(); cb:addItem("First")
     cb:addItem("Second"); cb:addItem("Third")
@@ -2737,7 +2715,6 @@ do
     print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
 end
 
---@api-stub: LComboBox.getItemCount
 do
     local cb = lurek.ui.newComboBox(); cb:addItem("First")
     cb:addItem("Second"); cb:addItem("Third")
@@ -2746,7 +2723,6 @@ do
     print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
 end
 
---@api-stub: LComboBox.getSelectedIndex
 do
     local cb = lurek.ui.newComboBox(); cb:addItem("First")
     cb:addItem("Second"); cb:addItem("Third")
@@ -2755,7 +2731,6 @@ do
     print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
 end
 
---@api-stub: LComboBox.getSelectedItem
 do
     local cb = lurek.ui.newComboBox(); cb:addItem("Alpha")
     cb:addItem("Beta"); cb:setSelectedIndex(2)
@@ -2764,7 +2739,7 @@ do
     print("getSelectedItem:", selItem, "removeItem ok")
 end
 
---@api-stub: LComboBox.removeItem
+--@api-stub: LComboBox:removeItem
 do
     local cb = lurek.ui.newComboBox(); cb:addItem("Alpha")
     cb:addItem("Beta"); cb:setSelectedIndex(2)
@@ -2773,7 +2748,7 @@ do
     print("getSelectedItem:", selItem, "removeItem ok")
 end
 
---@api-stub: LComboBox.setSelectedIndex
+--@api-stub: LComboBox:setSelectedIndex
 do
     local cb = lurek.ui.newComboBox(); cb:addItem("Alpha")
     cb:addItem("Beta"); cb:setSelectedIndex(2)
@@ -2782,7 +2757,7 @@ do
     print("getSelectedItem:", selItem, "removeItem ok")
 end
 
---@api-stub: LDialog.addButton
+--@api-stub: LDialog:addButton
 do
     local dlg = lurek.ui.newDialog("Info"); local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
@@ -2791,7 +2766,7 @@ do
     print("addButton:", btnIdx, "close ok")
 end
 
---@api-stub: LDialog.close
+--@api-stub: LDialog:close
 do
     local dlg = lurek.ui.newDialog("Info"); local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
@@ -2800,7 +2775,7 @@ do
     print("addButton:", btnIdx, "close ok")
 end
 
---@api-stub: LDialog.getContent
+--@api-stub: LDialog:getContent
 do
     local dlg = lurek.ui.newDialog("Info"); local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
@@ -2809,7 +2784,7 @@ do
     print("addButton:", btnIdx, "close ok")
 end
 
---@api-stub: LDialog.getTitle
+--@api-stub: LDialog:getTitle
 do
     local dlg = lurek.ui.newDialog("My Dialog"); local title = dlg:getTitle()
     dlg:setModal(true)
@@ -2818,7 +2793,7 @@ do
     print("title:", title, "isModal:", modal, "isOpen:", open)
 end
 
---@api-stub: LDialog.isModal
+--@api-stub: LDialog:isModal
 do
     local dlg = lurek.ui.newDialog("My Dialog"); local title = dlg:getTitle()
     dlg:setModal(true)
@@ -2827,7 +2802,7 @@ do
     print("title:", title, "isModal:", modal, "isOpen:", open)
 end
 
---@api-stub: LDialog.isOpen
+--@api-stub: LDialog:isOpen
 do
     local dlg = lurek.ui.newDialog("My Dialog"); local title = dlg:getTitle()
     dlg:setModal(true)
@@ -2836,7 +2811,7 @@ do
     print("title:", title, "isModal:", modal, "isOpen:", open)
 end
 
---@api-stub: LDialog.open
+--@api-stub: LDialog:open
 do
     local dlg = lurek.ui.newDialog("Setup"); dlg:setModal(false)
     dlg:setContent(nil)
@@ -2845,7 +2820,7 @@ do
     print("open/setContent/setModal ok")
 end
 
---@api-stub: LDialog.setContent
+--@api-stub: LDialog:setContent
 do
     local dlg = lurek.ui.newDialog("Setup"); dlg:setModal(false)
     dlg:setContent(nil)
@@ -2854,7 +2829,7 @@ do
     print("open/setContent/setModal ok")
 end
 
---@api-stub: LDialog.setModal
+--@api-stub: LDialog:setModal
 do
     local dlg = lurek.ui.newDialog("Setup"); dlg:setModal(false)
     dlg:setContent(nil)
@@ -2863,7 +2838,7 @@ do
     print("open/setContent/setModal ok")
 end
 
---@api-stub: LDialog.setOnClose
+--@api-stub: LDialog:setOnClose
 do
     local dlg = lurek.ui.newDialog("Old"); dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
@@ -2872,7 +2847,7 @@ do
     print("setTitle/setOnClose ok; DockPanel created")
 end
 
---@api-stub: LDialog.setTitle
+--@api-stub: LDialog:setTitle
 do
     local dlg = lurek.ui.newDialog("Old"); dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
@@ -2881,7 +2856,6 @@ do
     print("setTitle/setOnClose ok; DockPanel created")
 end
 
---@api-stub: LDockPanel.dock
 do
     local dlg = lurek.ui.newDialog("Old"); dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
@@ -2890,7 +2864,6 @@ do
     print("setTitle/setOnClose ok; DockPanel created")
 end
 
---@api-stub: LDockPanel.getDockedCount
 do
     local dp = lurek.ui.newDockPanel()
     local cnt = dp:getDockedCount()
@@ -2899,7 +2872,6 @@ do
     print("getDockedCount:", cnt, "splitSize:", sz)
 end
 
---@api-stub: LDockPanel.getSplitSize
 do
     local dp = lurek.ui.newDockPanel()
     local cnt = dp:getDockedCount()
@@ -2908,7 +2880,6 @@ do
     print("getDockedCount:", cnt, "splitSize:", sz)
 end
 
---@api-stub: LDockPanel.setSplitSize
 do
     local dp = lurek.ui.newDockPanel()
     local cnt = dp:getDockedCount()
@@ -2917,7 +2888,6 @@ do
     print("getDockedCount:", cnt, "splitSize:", sz)
 end
 
---@api-stub: LDockPanel.undock
 do
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
@@ -2926,7 +2896,6 @@ do
     print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
 end
 
---@api-stub: LGuiTable.addColumn
 do
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
@@ -2935,7 +2904,6 @@ do
     print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
 end
 
---@api-stub: LGuiTable.addRow
 do
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
@@ -2944,7 +2912,6 @@ do
     print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
 end
 
---@api-stub: LGuiTable.getCell
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("Name", 100)
     tbl:addColumn("Value", 80); tbl:addRow({"Alice", "42"})
@@ -2953,7 +2920,6 @@ do
     print("addColumn/addRow/getCell ok, cell:", cell)
 end
 
---@api-stub: LGuiTable.getColumnCount
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
     tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
@@ -2962,7 +2928,6 @@ do
     print("cols:", cols, "rows:", rows, "selectedRow:", sel)
 end
 
---@api-stub: LGuiTable.getRowCount
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
     tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
@@ -2971,7 +2936,6 @@ do
     print("cols:", cols, "rows:", rows, "selectedRow:", sel)
 end
 
---@api-stub: LGuiTable.getSelectedRow
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
     tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
@@ -2980,7 +2944,7 @@ do
     print("cols:", cols, "rows:", rows, "selectedRow:", sel)
 end
 
---@api-stub: LGuiTable.isSortable
+--@api-stub: LGuiTable:isSortable
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("ID")
     tbl:addRow({"1"}); tbl:setSortable(true)
@@ -2989,7 +2953,6 @@ do
     print("isSortable/setCell/setOnSelect ok")
 end
 
---@api-stub: LGuiTable.setCell
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("ID")
     tbl:addRow({"1"}); tbl:setSortable(true)
@@ -2998,7 +2961,7 @@ do
     print("isSortable/setCell/setOnSelect ok")
 end
 
---@api-stub: LGuiTable.setOnSelect
+--@api-stub: LGuiTable:setOnSelect
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("ID")
     tbl:addRow({"1"}); tbl:setSortable(true)
@@ -3007,7 +2970,6 @@ do
     print("isSortable/setCell/setOnSelect ok")
 end
 
---@api-stub: LGuiTable.setSelectedRow
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("X")
     tbl:addRow({"row1"}); tbl:setSelectedRow(1)
@@ -3016,7 +2978,7 @@ do
     print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 
---@api-stub: LGuiTable.setSortable
+--@api-stub: LGuiTable:setSortable
 do
     local tbl = lurek.ui.newTable(); tbl:setPosition(20, 420); tbl:setSize(220, 90); tbl:setZOrder(2100)
     tbl:addColumn("Name", 120); tbl:addColumn("Value", 80)
@@ -3025,7 +2987,7 @@ do
     print("sorted first row:", tbl:getCell(1, 1))
 end
 
---@api-stub: LGuiWindow.getTitle
+--@api-stub: LGuiWindow:getTitle
 do
     local tbl = lurek.ui.newTable(); tbl:addColumn("X")
     tbl:addRow({"row1"}); tbl:setSelectedRow(1)
@@ -3034,7 +2996,7 @@ do
     print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 
---@api-stub: LGuiWindow.isCloseable
+--@api-stub: LGuiWindow:isCloseable
 do
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
@@ -3043,7 +3005,7 @@ do
     print("isCloseable:", closeable, "isDraggable:", draggable, "isResizable:", resizable)
 end
 
---@api-stub: LGuiWindow.isDraggable
+--@api-stub: LGuiWindow:isDraggable
 do
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
@@ -3052,7 +3014,7 @@ do
     print("isCloseable:", closeable, "isDraggable:", draggable, "isResizable:", resizable)
 end
 
---@api-stub: LGuiWindow.isResizable
+--@api-stub: LGuiWindow:isResizable
 do
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
@@ -3061,7 +3023,7 @@ do
     print("isCloseable:", closeable, "isDraggable:", draggable, "isResizable:", resizable)
 end
 
---@api-stub: LGuiWindow.setCloseable
+--@api-stub: LGuiWindow:setCloseable
 do
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
@@ -3070,7 +3032,7 @@ do
     print("setCloseable/setDraggable/setOnClose ok")
 end
 
---@api-stub: LGuiWindow.setDraggable
+--@api-stub: LGuiWindow:setDraggable
 do
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
@@ -3079,7 +3041,7 @@ do
     print("setCloseable/setDraggable/setOnClose ok")
 end
 
---@api-stub: LGuiWindow.setOnClose
+--@api-stub: LGuiWindow:setOnClose
 do
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
@@ -3088,7 +3050,7 @@ do
     print("setCloseable/setDraggable/setOnClose ok")
 end
 
---@api-stub: LGuiWindow.setResizable
+--@api-stub: LGuiWindow:setResizable
 do
     local win = lurek.ui.newWindow("Old"); win:setResizable(false)
     win:setTitle("New Title")
@@ -3097,7 +3059,7 @@ do
     print("setResizable/setTitle ok; scaleMode:", mode)
 end
 
---@api-stub: LGuiWindow.setTitle
+--@api-stub: LGuiWindow:setTitle
 do
     local win = lurek.ui.newWindow("Old"); win:setResizable(false)
     win:setTitle("New Title")
@@ -3106,7 +3068,6 @@ do
     print("setResizable/setTitle ok; scaleMode:", mode)
 end
 
---@api-stub: LImageWidget.getScaleMode
 do
     local win = lurek.ui.newWindow("Old"); win:setResizable(false)
     win:setTitle("New Title")
@@ -3115,7 +3076,6 @@ do
     print("setResizable/setTitle ok; scaleMode:", mode)
 end
 
---@api-stub: LImageWidget.getTint
 do
     local iw = lurek.ui.newImageWidget()
     iw:setTint(1.0, 0.5, 0.25, 1.0)
@@ -3124,7 +3084,6 @@ do
     print("tint:", r, g, b, a, "scaleMode: fit")
 end
 
---@api-stub: LImageWidget.setScaleMode
 do
     local iw = lurek.ui.newImageWidget()
     iw:setTint(1.0, 0.5, 0.25, 1.0)
@@ -3133,7 +3092,6 @@ do
     print("tint:", r, g, b, a, "scaleMode: fit")
 end
 
---@api-stub: LImageWidget.setTint
 do
     local iw = lurek.ui.newImageWidget()
     iw:setTint(1.0, 0.5, 0.25, 1.0)
@@ -3142,7 +3100,7 @@ do
     print("tint:", r, g, b, a, "scaleMode: fit")
 end
 
---@api-stub: LLabel.getText
+--@api-stub: LLabel:getText
 do
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
@@ -3151,7 +3109,7 @@ do
     print("label text:", lbl:getText(), "layout align:", align)
 end
 
---@api-stub: LLabel.setText
+--@api-stub: LLabel:setText
 do
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
@@ -3160,7 +3118,6 @@ do
     print("label text:", lbl:getText(), "layout align:", align)
 end
 
---@api-stub: LLayout.getAlign
 do
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
@@ -3169,7 +3126,7 @@ do
     print("label text:", lbl:getText(), "layout align:", align)
 end
 
---@api-stub: LLayout.getDirection
+--@api-stub: LLayout:getDirection
 do
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
@@ -3178,7 +3135,6 @@ do
     print("direction:", dir, "justify:", justify, "spacing:", spacing)
 end
 
---@api-stub: LLayout.getJustify
 do
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
@@ -3187,7 +3143,7 @@ do
     print("direction:", dir, "justify:", justify, "spacing:", spacing)
 end
 
---@api-stub: LLayout.getSpacing
+--@api-stub: LLayout:getSpacing
 do
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
@@ -3196,7 +3152,6 @@ do
     print("direction:", dir, "justify:", justify, "spacing:", spacing)
 end
 
---@api-stub: LLayout.getWrap
 do
     local layout = lurek.ui.newLayout("grid")
     local wrap = layout:getWrap()
@@ -3205,7 +3160,6 @@ do
     print("getWrap:", wrap, "setAlign: center, setColumns: 3 ok")
 end
 
---@api-stub: LLayout.setAlign
 do
     local layout = lurek.ui.newLayout("grid")
     local wrap = layout:getWrap()
@@ -3214,7 +3168,6 @@ do
     print("getWrap:", wrap, "setAlign: center, setColumns: 3 ok")
 end
 
---@api-stub: LLayout.setColumns
 do
     local layout = lurek.ui.newLayout("grid")
     local wrap = layout:getWrap()
@@ -3223,7 +3176,6 @@ do
     print("getWrap:", wrap, "setAlign: center, setColumns: 3 ok")
 end
 
---@api-stub: LLayout.setDirection
 do
     local layout = lurek.ui.newLayout("horizontal")
     layout:setDirection("vertical")
@@ -3232,7 +3184,6 @@ do
     print("setDirection/setJustify/setSpacing ok")
 end
 
---@api-stub: LLayout.setJustify
 do
     local layout = lurek.ui.newLayout("horizontal")
     layout:setDirection("vertical")
@@ -3241,7 +3192,7 @@ do
     print("setDirection/setJustify/setSpacing ok")
 end
 
---@api-stub: LLayout.setSpacing
+--@api-stub: LLayout:setSpacing
 do
     local layout = lurek.ui.newLayout("horizontal")
     layout:setDirection("vertical")
@@ -3250,7 +3201,6 @@ do
     print("setDirection/setJustify/setSpacing ok")
 end
 
---@api-stub: LLayout.setWrap
 do
     local layout = lurek.ui.newLayout("horizontal"); layout:setWrap(true)
     local lc = lurek.ui.newLineChart({width = 200, height = 100}); lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
@@ -3320,7 +3270,6 @@ do
     print("LLineChart typeOf:", ok, "typeOf LBarChart:", notOk)
 end
 
---@api-stub: LListBox.addItem
 do
     local lb = lurek.ui.newList(); lb:addItem("Apple")
     lb:addItem("Banana"); lb:addItem("Cherry")
@@ -3329,7 +3278,6 @@ do
     print("addItem/clearItems/getItem ok, item:", item)
 end
 
---@api-stub: LListBox.clearItems
 do
     local lb = lurek.ui.newList(); lb:addItem("Apple")
     lb:addItem("Banana"); lb:addItem("Cherry")
@@ -3338,7 +3286,6 @@ do
     print("addItem/clearItems/getItem ok, item:", item)
 end
 
---@api-stub: LListBox.getItem
 do
     local lb = lurek.ui.newList(); lb:addItem("Apple")
     lb:addItem("Banana"); lb:addItem("Cherry")
@@ -3347,7 +3294,6 @@ do
     print("addItem/clearItems/getItem ok, item:", item)
 end
 
---@api-stub: LListBox.getItemCount
 do
     local lb = lurek.ui.newList(); lb:addItem("X")
     lb:addItem("Y"); lb:addItem("Z")
@@ -3356,7 +3302,6 @@ do
     print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
 end
 
---@api-stub: LListBox.getSelectedIndex
 do
     local lb = lurek.ui.newList(); lb:addItem("X")
     lb:addItem("Y"); lb:addItem("Z")
@@ -3365,7 +3310,6 @@ do
     print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
 end
 
---@api-stub: LListBox.removeItem
 do
     local lb = lurek.ui.newList(); lb:addItem("X")
     lb:addItem("Y"); lb:addItem("Z")
@@ -3374,7 +3318,6 @@ do
     print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
 end
 
---@api-stub: LListBox.setItemHeight
 do
     local lb = lurek.ui.newList(); lb:setItemHeight(20)
     lb:addItem("Item"); lb:setSelectedIndex(1)
@@ -3383,7 +3326,6 @@ do
     print("setItemHeight ok; addMenu idx:", idx)
 end
 
---@api-stub: LListBox.setSelectedIndex
 do
     local lb = lurek.ui.newList(); lb:setItemHeight(20)
     lb:addItem("Item"); lb:setSelectedIndex(1)
@@ -3392,7 +3334,6 @@ do
     print("setItemHeight ok; addMenu idx:", idx)
 end
 
---@api-stub: LMenuBar.addMenu
 do
     local lb = lurek.ui.newList(); lb:setItemHeight(20)
     lb:addItem("Item"); lb:setSelectedIndex(1)
@@ -3401,7 +3342,6 @@ do
     print("setItemHeight ok; addMenu idx:", idx)
 end
 
---@api-stub: LMenuBar.getMenuCount
 do
     local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
@@ -3410,7 +3350,6 @@ do
     print("menuCount:", cnt, "getMenus ok; removeMenu ok")
 end
 
---@api-stub: LMenuBar.getMenus
 do
     local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
@@ -3419,7 +3358,6 @@ do
     print("menuCount:", cnt, "getMenus ok; removeMenu ok")
 end
 
---@api-stub: LMenuBar.removeMenu
 do
     local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
@@ -3428,7 +3366,6 @@ do
     print("menuCount:", cnt, "getMenus ok; removeMenu ok")
 end
 
---@api-stub: LMenuItem.addSubItem
 do
     local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
     mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
@@ -3437,7 +3374,7 @@ do
     print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
 end
 
---@api-stub: LMenuItem.getShortcut
+--@api-stub: LMenuItem:getShortcut
 do
     local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
     mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
@@ -3446,7 +3383,6 @@ do
     print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
 end
 
---@api-stub: LMenuItem.getSubItems
 do
     local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
     mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
@@ -3455,7 +3391,7 @@ do
     print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
 end
 
---@api-stub: LMenuItem.getText
+--@api-stub: LMenuItem:getText
 do
     local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
     mi:setChecked(true)
@@ -3464,7 +3400,6 @@ do
     print("getText:", t, "isChecked:", mi:isChecked(), "setChecked ok")
 end
 
---@api-stub: LMenuItem.isChecked
 do
     local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
     mi:setChecked(true)
@@ -3473,7 +3408,6 @@ do
     print("getText:", t, "isChecked:", mi:isChecked(), "setChecked ok")
 end
 
---@api-stub: LMenuItem.setChecked
 do
     local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
     mi:setChecked(true)
@@ -3482,7 +3416,6 @@ do
     print("getText:", t, "isChecked:", mi:isChecked(), "setChecked ok")
 end
 
---@api-stub: LMenuItem.setOnClick
 do
     local mi = lurek.ui.newMenuItem("Old")
     mi:setOnClick(function(idx) print("menu clicked", idx) end)
@@ -3491,7 +3424,7 @@ do
     print("setOnClick/setShortcut/setText ok")
 end
 
---@api-stub: LMenuItem.setShortcut
+--@api-stub: LMenuItem:setShortcut
 do
     local mi = lurek.ui.newMenuItem("Old")
     mi:setOnClick(function(idx) print("menu clicked", idx) end)
@@ -3500,7 +3433,6 @@ do
     print("setOnClick/setShortcut/setText ok")
 end
 
---@api-stub: LMenuItem.setText
 do
     local mi = lurek.ui.newMenuItem("Old")
     mi:setOnClick(function(idx) print("menu clicked", idx) end)
@@ -3509,7 +3441,6 @@ do
     print("setOnClick/setShortcut/setText ok")
 end
 
---@api-stub: LNinePatch.getImageDimensions
 do
     local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
@@ -3518,7 +3449,6 @@ do
     print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
 end
 
---@api-stub: LNinePatch.getInsets
 do
     local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
@@ -3527,7 +3457,6 @@ do
     print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
 end
 
---@api-stub: LNinePatch.getSlices
 do
     local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
@@ -3536,7 +3465,6 @@ do
     print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
 end
 
---@api-stub: LNinePatch.setImageDimensions
 do
     local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
@@ -3545,7 +3473,6 @@ do
     print("setInsets ok; panel title:", title)
 end
 
---@api-stub: LNinePatch.setInsets
 do
     local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
@@ -3554,7 +3481,7 @@ do
     print("setInsets ok; panel title:", title)
 end
 
---@api-stub: LPanel.getTitle
+--@api-stub: LPanel:getTitle
 do
     local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
@@ -3563,7 +3490,7 @@ do
     print("setInsets ok; panel title:", title)
 end
 
---@api-stub: LPanel.setScrollable
+--@api-stub: LPanel:setScrollable
 do
     local panel = lurek.ui.newPanel(); panel:setScrollable(true)
     panel:setTitle("Data"); local pc = lurek.ui.newPieChart({width = 128, height = 128})
@@ -3572,7 +3499,7 @@ do
     print("panel scrollable ok; pie segments added")
 end
 
---@api-stub: LPanel.setTitle
+--@api-stub: LPanel:setTitle
 do
     local panel = lurek.ui.newPanel(); panel:setScrollable(true)
     panel:setTitle("Data"); local pc = lurek.ui.newPieChart({width = 128, height = 128})
@@ -3625,7 +3552,6 @@ do
     print("drawToImage ok, type:", t, "typeOf:", ok)
 end
 
---@api-stub: LProgressBar.getMax
 do
     local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
     local mx = pb:getMax()
@@ -3634,7 +3560,6 @@ do
     print("min:", mn, "max:", mx, "progress:", prog)
 end
 
---@api-stub: LProgressBar.getMin
 do
     local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
     local mx = pb:getMax()
@@ -3643,7 +3568,6 @@ do
     print("min:", mn, "max:", mx, "progress:", prog)
 end
 
---@api-stub: LProgressBar.getProgress
 do
     local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
     local mx = pb:getMax()
@@ -3652,7 +3576,6 @@ do
     print("min:", mn, "max:", mx, "progress:", prog)
 end
 
---@api-stub: LProgressBar.getValue
 do
     local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
     local v = pb:getValue()
@@ -3661,7 +3584,6 @@ do
     print("getValue:", v, "setRange ok, setValue ok")
 end
 
---@api-stub: LProgressBar.setRange
 do
     local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
     local v = pb:getValue()
@@ -3670,7 +3592,6 @@ do
     print("getValue:", v, "setRange ok, setValue ok")
 end
 
---@api-stub: LProgressBar.setValue
 do
     local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
     local v = pb:getValue()
@@ -3679,7 +3600,6 @@ do
     print("getValue:", v, "setRange ok, setValue ok")
 end
 
---@api-stub: LRadioButton.getGroup
 do
     local rb = lurek.ui.newRadioButton("Option A", "group1")
     local grp = rb:getGroup()
@@ -3688,7 +3608,6 @@ do
     print("group:", grp, "text:", t, "isSelected:", sel)
 end
 
---@api-stub: LRadioButton.getText
 do
     local rb = lurek.ui.newRadioButton("Option A", "group1")
     local grp = rb:getGroup()
@@ -3697,7 +3616,6 @@ do
     print("group:", grp, "text:", t, "isSelected:", sel)
 end
 
---@api-stub: LRadioButton.isSelected
 do
     local rb = lurek.ui.newRadioButton("Option A", "group1")
     local grp = rb:getGroup()
@@ -3706,7 +3624,6 @@ do
     print("group:", grp, "text:", t, "isSelected:", sel)
 end
 
---@api-stub: LRadioButton.setGroup
 do
     local rb = lurek.ui.newRadioButton("B", "g1"); rb:setGroup("g2")
     rb:setSelected(true)
@@ -3715,7 +3632,7 @@ do
     print("setGroup/setSelected/setOnChange/setText ok")
 end
 
---@api-stub: LRadioButton.setOnChange
+--@api-stub: LRadioButton:setOnChange
 do
     local rb = lurek.ui.newRadioButton("B", "g1"); rb:setGroup("g2")
     rb:setSelected(true)
@@ -3724,7 +3641,7 @@ do
     print("setGroup/setSelected/setOnChange/setText ok")
 end
 
---@api-stub: LRadioButton.setSelected
+--@api-stub: LRadioButton:setSelected
 do
     local rb = lurek.ui.newRadioButton("B", "g1"); rb:setGroup("g2")
     rb:setSelected(true)
@@ -3733,7 +3650,7 @@ do
     print("setGroup/setSelected/setOnChange/setText ok")
 end
 
---@api-stub: LRadioButton.setText
+--@api-stub: LRadioButton:setText
 do
     local rb = lurek.ui.newRadioButton("original", "group_test")
     rb:setText("updated")
@@ -3794,7 +3711,7 @@ do
     print("setYRange ok, type:", t, "typeOf:", ok)
 end
 
---@api-stub: LScrollBar.getContentSize
+--@api-stub: LScrollBar:getContentSize
 do
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
@@ -3803,7 +3720,7 @@ do
     print("contentSize:", cs, "scrollPos:", pos, "viewSize:", vs)
 end
 
---@api-stub: LScrollBar.getScrollPosition
+--@api-stub: LScrollBar:getScrollPosition
 do
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
@@ -3812,7 +3729,7 @@ do
     print("contentSize:", cs, "scrollPos:", pos, "viewSize:", vs)
 end
 
---@api-stub: LScrollBar.getViewSize
+--@api-stub: LScrollBar:getViewSize
 do
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
@@ -3821,7 +3738,7 @@ do
     print("contentSize:", cs, "scrollPos:", pos, "viewSize:", vs)
 end
 
---@api-stub: LScrollBar.isVertical
+--@api-stub: LScrollBar:isVertical
 do
     local sb = lurek.ui.newScrollBar(false); local vert = sb:isVertical()
     sb:setContentSize(500)
@@ -3830,7 +3747,7 @@ do
     print("isVertical:", vert, "contentSize after set:", cs)
 end
 
---@api-stub: LScrollBar.setContentSize
+--@api-stub: LScrollBar:setContentSize
 do
     local sb = lurek.ui.newScrollBar(false); local vert = sb:isVertical()
     sb:setContentSize(500)
@@ -3839,7 +3756,7 @@ do
     print("isVertical:", vert, "contentSize after set:", cs)
 end
 
---@api-stub: LScrollBar.setOnChange
+--@api-stub: LScrollBar:setOnChange
 do
     local sb = lurek.ui.newScrollBar(false); local vert = sb:isVertical()
     sb:setContentSize(500)
@@ -3848,7 +3765,7 @@ do
     print("isVertical:", vert, "contentSize after set:", cs)
 end
 
---@api-stub: LScrollBar.setScrollPosition
+--@api-stub: LScrollBar:setScrollPosition
 do
     local sb = lurek.ui.newScrollBar(true); sb:setContentSize(800)
     sb:setViewSize(200); sb:setScrollPosition(100)
@@ -3857,7 +3774,7 @@ do
     print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
 
---@api-stub: LScrollBar.setViewSize
+--@api-stub: LScrollBar:setViewSize
 do
     local sb = lurek.ui.newScrollBar(true); sb:setContentSize(800)
     sb:setViewSize(200); sb:setScrollPosition(100)
@@ -3866,7 +3783,7 @@ do
     print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
 
---@api-stub: LScrollPanel.getContentSize
+--@api-stub: LScrollPanel:getContentSize
 do
     local sb = lurek.ui.newScrollBar(true); sb:setContentSize(800)
     sb:setViewSize(200); sb:setScrollPosition(100)
@@ -3875,7 +3792,7 @@ do
     print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
 
---@api-stub: LScrollPanel.getMaxScroll
+--@api-stub: LScrollPanel:getMaxScroll
 do
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
@@ -3884,7 +3801,7 @@ do
     print("maxScroll:", mx, my, "scrollPos:", px, py, "speed:", speed)
 end
 
---@api-stub: LScrollPanel.getScrollPosition
+--@api-stub: LScrollPanel:getScrollPosition
 do
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
@@ -3893,7 +3810,6 @@ do
     print("maxScroll:", mx, my, "scrollPos:", px, py, "speed:", speed)
 end
 
---@api-stub: LScrollPanel.getScrollSpeed
 do
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
@@ -3902,7 +3818,7 @@ do
     print("maxScroll:", mx, my, "scrollPos:", px, py, "speed:", speed)
 end
 
---@api-stub: LScrollPanel.setContentSize
+--@api-stub: LScrollPanel:setContentSize
 do
     local sp = lurek.ui.newScrollPanel(); sp:setContentSize(800, 600)
     local cw, ch = sp:getContentSize(); sp:setScrollPosition(50, 100)
@@ -3911,7 +3827,7 @@ do
     print("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
 end
 
---@api-stub: LScrollPanel.setScrollPosition
+--@api-stub: LScrollPanel:setScrollPosition
 do
     local sp = lurek.ui.newScrollPanel(); sp:setContentSize(800, 600)
     local cw, ch = sp:getContentSize(); sp:setScrollPosition(50, 100)
@@ -3920,7 +3836,6 @@ do
     print("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
 end
 
---@api-stub: LScrollPanel.setScrollSpeed
 do
     local sp = lurek.ui.newScrollPanel(); sp:setContentSize(800, 600)
     local cw, ch = sp:getContentSize(); sp:setScrollPosition(50, 100)
@@ -3929,7 +3844,7 @@ do
     print("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
 end
 
---@api-stub: LSeparator.getThickness
+--@api-stub: LSeparator:getThickness
 do
     local sep = lurek.ui.newSeparator(true); local vert = sep:isVertical()
     local thick = sep:getThickness()
@@ -3938,7 +3853,7 @@ do
     print("isVertical:", vert, "thickness:", thick, "â†’", t2)
 end
 
---@api-stub: LSeparator.isVertical
+--@api-stub: LSeparator:isVertical
 do
     local sep = lurek.ui.newSeparator(true); local vert = sep:isVertical()
     local thick = sep:getThickness()
@@ -3947,7 +3862,7 @@ do
     print("isVertical:", vert, "thickness:", thick, "â†’", t2)
 end
 
---@api-stub: LSeparator.setThickness
+--@api-stub: LSeparator:setThickness
 do
     local sep = lurek.ui.newSeparator(true); local vert = sep:isVertical()
     local thick = sep:getThickness()
@@ -3956,7 +3871,7 @@ do
     print("isVertical:", vert, "thickness:", thick, "â†’", t2)
 end
 
---@api-stub: LSeparator.setVertical
+--@api-stub: LSeparator:setVertical
 do
     local sep = lurek.ui.newSeparator(false); sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
@@ -3965,7 +3880,7 @@ do
     print("separator setVertical ok; slider min:", mn, "max:", mx)
 end
 
---@api-stub: LSlider.getMax
+--@api-stub: LSlider:getMax
 do
     local sep = lurek.ui.newSeparator(false); sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
@@ -3974,7 +3889,7 @@ do
     print("separator setVertical ok; slider min:", mn, "max:", mx)
 end
 
---@api-stub: LSlider.getMin
+--@api-stub: LSlider:getMin
 do
     local sep = lurek.ui.newSeparator(false); sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
@@ -3983,7 +3898,7 @@ do
     print("separator setVertical ok; slider min:", mn, "max:", mx)
 end
 
---@api-stub: LSlider.getValue
+--@api-stub: LSlider:getValue
 do
     local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
     local mx = sl:getMax(); sl:setStep(5)
@@ -3992,7 +3907,6 @@ do
     print("setRange max:", mx, "getValue:", v)
 end
 
---@api-stub: LSlider.setRange
 do
     local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
     local mx = sl:getMax(); sl:setStep(5)
@@ -4001,7 +3915,6 @@ do
     print("setRange max:", mx, "getValue:", v)
 end
 
---@api-stub: LSlider.setStep
 do
     local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
     local mx = sl:getMax(); sl:setStep(5)
@@ -4010,7 +3923,6 @@ do
     print("setRange max:", mx, "getValue:", v)
 end
 
---@api-stub: LSlider.setValue
 do
     local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
     local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
@@ -4019,7 +3931,6 @@ do
     print("slider value:", v, "spinbox after decrement:", sv)
 end
 
---@api-stub: LSpinBox.decrement
 do
     local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
     local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
@@ -4028,7 +3939,6 @@ do
     print("slider value:", v, "spinbox after decrement:", sv)
 end
 
---@api-stub: LSpinBox.getValue
 do
     local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
     local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
@@ -4037,7 +3947,6 @@ do
     print("slider value:", v, "spinbox after decrement:", sv)
 end
 
---@api-stub: LSpinBox.increment
 do
     local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
     sb:increment(); local v = sb:getValue()
@@ -4046,7 +3955,6 @@ do
     print("after increment:", v, "after setRange/setStep:", v2)
 end
 
---@api-stub: LSpinBox.setRange
 do
     local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
     sb:increment(); local v = sb:getValue()
@@ -4055,7 +3963,6 @@ do
     print("after increment:", v, "after setRange/setStep:", v2)
 end
 
---@api-stub: LSpinBox.setStep
 do
     local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
     sb:increment(); local v = sb:getValue()
@@ -4064,7 +3971,6 @@ do
     print("after increment:", v, "after setRange/setStep:", v2)
 end
 
---@api-stub: LSpinBox.setValue
 do
     local sb = lurek.ui.newSpinBox(1, 100); sb:setValue(42)
     local v = sb:getValue(); sb:setValue(1)
@@ -4073,7 +3979,6 @@ do
     print("setValue: 42â†’", v, "1â†’", v2, "100â†’", v3)
 end
 
---@api-stub: LSplitPanel.getFirstChild
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
@@ -4082,7 +3987,6 @@ do
     print("firstChild:", fc, "secondChild:", sc, "orientation:", ori, "minPanel:", mps)
 end
 
---@api-stub: LSplitPanel.getMinPanelSize
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
@@ -4091,7 +3995,6 @@ do
     print("firstChild:", fc, "secondChild:", sc, "orientation:", ori, "minPanel:", mps)
 end
 
---@api-stub: LSplitPanel.getOrientation
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
@@ -4100,7 +4003,6 @@ do
     print("firstChild:", fc, "secondChild:", sc, "orientation:", ori, "minPanel:", mps)
 end
 
---@api-stub: LSplitPanel.getSecondChild
 do
     local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
@@ -4109,7 +4011,6 @@ do
     print("firstChild after set:", fc, "splitPos:", pos)
 end
 
---@api-stub: LSplitPanel.getSplitPosition
 do
     local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
@@ -4118,7 +4019,6 @@ do
     print("firstChild after set:", fc, "splitPos:", pos)
 end
 
---@api-stub: LSplitPanel.setFirstChild
 do
     local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
@@ -4127,7 +4027,6 @@ do
     print("firstChild after set:", fc, "splitPos:", pos)
 end
 
---@api-stub: LSplitPanel.setMinPanelSize
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
     local ori = sp:getOrientation(); sp:setMinPanelSize(80)
@@ -4136,7 +4035,6 @@ do
     print("orientation:", ori, "minPanel:", mps)
 end
 
---@api-stub: LSplitPanel.setOrientation
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
     local ori = sp:getOrientation(); sp:setMinPanelSize(80)
@@ -4145,7 +4043,6 @@ do
     print("orientation:", ori, "minPanel:", mps)
 end
 
---@api-stub: LSplitPanel.setSecondChild
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
     local ori = sp:getOrientation(); sp:setMinPanelSize(80)
@@ -4154,7 +4051,6 @@ do
     print("orientation:", ori, "minPanel:", mps)
 end
 
---@api-stub: LSplitPanel.setSplitPosition
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
     local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
@@ -4163,7 +4059,6 @@ do
     print("splitPos:", pos, "statusBar sectionCount:", cnt)
 end
 
---@api-stub: LStatusBar.addSection
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
     local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
@@ -4172,7 +4067,6 @@ do
     print("splitPos:", pos, "statusBar sectionCount:", cnt)
 end
 
---@api-stub: LStatusBar.getSectionCount
 do
     local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
     local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
@@ -4181,7 +4075,6 @@ do
     print("splitPos:", pos, "statusBar sectionCount:", cnt)
 end
 
---@api-stub: LStatusBar.getSectionText
 do
     local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
     local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
@@ -4190,7 +4083,7 @@ do
     print("sectionCount:", cnt, "section1:", txt)
 end
 
---@api-stub: LStatusBar.setSectionCount
+--@api-stub: LStatusBar:setSectionCount
 do
     local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
     local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
@@ -4199,7 +4092,6 @@ do
     print("sectionCount:", cnt, "section1:", txt)
 end
 
---@api-stub: LStatusBar.setSectionText
 do
     local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
     local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
@@ -4208,7 +4100,7 @@ do
     print("sectionCount:", cnt, "section1:", txt)
 end
 
---@api-stub: LStatusBar.setSectionWidget
+--@api-stub: LStatusBar:setSectionWidget
 do
     local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
     local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
@@ -4217,7 +4109,6 @@ do
     print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
 
---@api-stub: LSwitch.isOn
 do
     local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
     local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
@@ -4226,7 +4117,6 @@ do
     print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
 
---@api-stub: LSwitch.setOn
 do
     local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
     local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
@@ -4235,7 +4125,6 @@ do
     print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
 
---@api-stub: LSwitch.toggle
 do
     local sw = lurek.ui.newSwitch(false); sw:toggle()
     local on = sw:isOn(); local tb = lurek.ui.newTabBar()
@@ -4244,7 +4133,6 @@ do
     print("switch after toggle:", on, "activeTab:", active)
 end
 
---@api-stub: LTabBar.addTab
 do
     local sw = lurek.ui.newSwitch(false); sw:toggle()
     local on = sw:isOn(); local tb = lurek.ui.newTabBar()
@@ -4253,7 +4141,6 @@ do
     print("switch after toggle:", on, "activeTab:", active)
 end
 
---@api-stub: LTabBar.getActiveTab
 do
     local sw = lurek.ui.newSwitch(false); sw:toggle()
     local on = sw:isOn(); local tb = lurek.ui.newTabBar()
@@ -4262,7 +4149,6 @@ do
     print("switch after toggle:", on, "activeTab:", active)
 end
 
---@api-stub: LTabBar.getTab
 do
     local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
     tb:addTab("Beta"); tb:addTab("Gamma")
@@ -4271,7 +4157,6 @@ do
     print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
 end
 
---@api-stub: LTabBar.getTabCount
 do
     local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
     tb:addTab("Beta"); tb:addTab("Gamma")
@@ -4280,7 +4165,6 @@ do
     print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
 end
 
---@api-stub: LTabBar.removeTab
 do
     local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
     tb:addTab("Beta"); tb:addTab("Gamma")
@@ -4289,7 +4173,6 @@ do
     print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
 end
 
---@api-stub: LTabBar.setActiveTab
 do
     local tb = lurek.ui.newTabBar(); tb:addTab("First")
     tb:addTab("Second"); tb:setActiveTab(2)
@@ -4298,7 +4181,6 @@ do
     print("setActiveTab to 2:", active, "then to 1:", a2)
 end
 
---@api-stub: LTextInput.getCursorPosition
 do
     local ti = lurek.ui.newTextInput(); ti:setText("hello")
     local txt = ti:getText(); ti:setPlaceholder("type here")
@@ -4307,7 +4189,6 @@ do
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
 end
 
---@api-stub: LTextInput.getPlaceholder
 do
     local ti = lurek.ui.newTextInput(); ti:setText("hello")
     local txt = ti:getText(); ti:setPlaceholder("type here")
@@ -4316,7 +4197,7 @@ do
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
 end
 
---@api-stub: LTextInput.getText
+--@api-stub: LTextInput:getText
 do
     local ti = lurek.ui.newTextInput(); ti:setText("hello")
     local txt = ti:getText(); ti:setPlaceholder("type here")
@@ -4325,7 +4206,7 @@ do
     print("text:", txt, "placeholder:", ph, "cursor:", cur)
 end
 
---@api-stub: LTextInput.isFocused
+--@api-stub: LTextInput:isFocused
 do
     local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
@@ -4334,7 +4215,6 @@ do
     print("placeholder:", ph, "isFocused:", focused)
 end
 
---@api-stub: LTextInput.setMaxLength
 do
     local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
@@ -4343,7 +4223,6 @@ do
     print("placeholder:", ph, "isFocused:", focused)
 end
 
---@api-stub: LTextInput.setPlaceholder
 do
     local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
@@ -4352,7 +4231,7 @@ do
     print("placeholder:", ph, "isFocused:", focused)
 end
 
---@api-stub: LTextInput.setText
+--@api-stub: LTextInput:setText
 do
     local ti = lurek.ui.newTextInput(); ti:setText("sample input")
     local txt = ti:getText(); local th = lurek.ui.newTheme()
@@ -4388,7 +4267,6 @@ do
     print("theme typeOf:", ok, "duration:", dur, "message:", msg)
 end
 
---@api-stub: LToast.getDuration
 do
     local th = lurek.ui.newTheme(); local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
@@ -4397,7 +4275,6 @@ do
     print("theme typeOf:", ok, "duration:", dur, "message:", msg)
 end
 
---@api-stub: LToast.getMessage
 do
     local th = lurek.ui.newTheme(); local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
@@ -4406,7 +4283,6 @@ do
     print("theme typeOf:", ok, "duration:", dur, "message:", msg)
 end
 
---@api-stub: LToast.getProgress
 do
     local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
     local exp = toast:isExpired()
@@ -4415,7 +4291,6 @@ do
     print("progress:", prog, "isExpired:", exp, "duration:", dur)
 end
 
---@api-stub: LToast.isExpired
 do
     local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
     local exp = toast:isExpired()
@@ -4424,7 +4299,6 @@ do
     print("progress:", prog, "isExpired:", exp, "duration:", dur)
 end
 
---@api-stub: LToast.setDuration
 do
     local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
     local exp = toast:isExpired()
@@ -4433,7 +4307,6 @@ do
     print("progress:", prog, "isExpired:", exp, "duration:", dur)
 end
 
---@api-stub: LToast.setMessage
 do
     local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
     local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
@@ -4442,7 +4315,6 @@ do
     print("toast:", msg, "toolbar buttons added ok")
 end
 
---@api-stub: LToolbar.addButton
 do
     local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
     local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
@@ -4451,7 +4323,6 @@ do
     print("toast:", msg, "toolbar buttons added ok")
 end
 
---@api-stub: LToolbar.addSeparator
 do
     local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
     local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
@@ -4460,7 +4331,7 @@ do
     print("toast:", msg, "toolbar buttons added ok")
 end
 
---@api-stub: LToolbar.addSpacer
+--@api-stub: LToolbar:addSpacer
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
     tb:addSpacer(10); tb:addButton("paste", "Paste")
@@ -4469,7 +4340,6 @@ do
     print("orientation:", ori, "button:", btn)
 end
 
---@api-stub: LToolbar.getButton
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
     tb:addSpacer(10); tb:addButton("paste", "Paste")
@@ -4478,7 +4348,6 @@ do
     print("orientation:", ori, "button:", btn)
 end
 
---@api-stub: LToolbar.getOrientation
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
     tb:addSpacer(10); tb:addButton("paste", "Paste")
@@ -4487,7 +4356,6 @@ do
     print("orientation:", ori, "button:", btn)
 end
 
---@api-stub: LToolbar.isButtonToggled
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
@@ -4496,7 +4364,6 @@ do
     print("bold toggled:", tog)
 end
 
---@api-stub: LToolbar.setButtonEnabled
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
@@ -4505,7 +4372,6 @@ do
     print("bold toggled:", tog)
 end
 
---@api-stub: LToolbar.setButtonToggled
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
@@ -4514,7 +4380,6 @@ do
     print("bold toggled:", tog)
 end
 
---@api-stub: LToolbar.setOrientation
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
     local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
@@ -4523,7 +4388,6 @@ do
     print("orientation:", ori, "delay:", delay, "target:", target)
 end
 
---@api-stub: LTooltipPanel.getDelay
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
     local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
@@ -4532,7 +4396,7 @@ do
     print("orientation:", ori, "delay:", delay, "target:", target)
 end
 
---@api-stub: LTooltipPanel.getTarget
+--@api-stub: LTooltipPanel:getTarget
 do
     local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
     local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
@@ -4541,7 +4405,6 @@ do
     print("orientation:", ori, "delay:", delay, "target:", target)
 end
 
---@api-stub: LTooltipPanel.getText
 do
     local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
     tp:setDelay(0.5); local d = tp:getDelay()
@@ -4550,7 +4413,6 @@ do
     print("text:", txt, "delay:", d)
 end
 
---@api-stub: LTooltipPanel.setDelay
 do
     local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
     tp:setDelay(0.5); local d = tp:getDelay()
@@ -4559,7 +4421,7 @@ do
     print("text:", txt, "delay:", d)
 end
 
---@api-stub: LTooltipPanel.setTarget
+--@api-stub: LTooltipPanel:setTarget
 do
     local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
     tp:setDelay(0.5); local d = tp:getDelay()
@@ -4568,7 +4430,6 @@ do
     print("text:", txt, "delay:", d)
 end
 
---@api-stub: LTooltipPanel.setText
 do
     local tp = lurek.ui.newTooltipPanel("old tip"); tp:setText("new tooltip text")
     local txt = tp:getText(); tp:setText("another tip")
@@ -4577,7 +4438,6 @@ do
     print("setText:", txt, "â†’", txt2)
 end
 
---@api-stub: LTreeView.addNode
 do
     local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
     local n2 = tv:addNode("Child", n1); tv:collapseAll()
@@ -4586,7 +4446,6 @@ do
     print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
 end
 
---@api-stub: LTreeView.clearNodes
 do
     local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
     local n2 = tv:addNode("Child", n1); tv:collapseAll()
@@ -4595,7 +4454,6 @@ do
     print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
 end
 
---@api-stub: LTreeView.collapseAll
 do
     local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
     local n2 = tv:addNode("Child", n1); tv:collapseAll()
@@ -4604,7 +4462,6 @@ do
     print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
 end
 
---@api-stub: LTreeView.collapseNode
 do
     local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
     local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
@@ -4613,7 +4470,6 @@ do
     print("expandAll/collapseNode/expandNode ok; count:", cnt)
 end
 
---@api-stub: LTreeView.expandAll
 do
     local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
     local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
@@ -4622,7 +4478,6 @@ do
     print("expandAll/collapseNode/expandNode ok; count:", cnt)
 end
 
---@api-stub: LTreeView.expandNode
 do
     local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
     local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
@@ -4631,7 +4486,6 @@ do
     print("expandAll/collapseNode/expandNode ok; count:", cnt)
 end
 
---@api-stub: LTreeView.getChildNodes
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
@@ -4640,7 +4494,6 @@ do
     print("children:", children, "count:", cnt, "depth:", depth)
 end
 
---@api-stub: LTreeView.getNodeCount
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
@@ -4649,7 +4502,6 @@ do
     print("children:", children, "count:", cnt, "depth:", depth)
 end
 
---@api-stub: LTreeView.getNodeDepth
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
@@ -4658,7 +4510,6 @@ do
     print("children:", children, "count:", cnt, "depth:", depth)
 end
 
---@api-stub: LTreeView.getNodeText
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
@@ -4667,7 +4518,6 @@ do
     print("text:", txt, "parent:", parent, "selected:", sel)
 end
 
---@api-stub: LTreeView.getParentNode
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
@@ -4676,7 +4526,6 @@ do
     print("text:", txt, "parent:", parent, "selected:", sel)
 end
 
---@api-stub: LTreeView.getSelectedNode
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
@@ -4685,7 +4534,6 @@ do
     print("text:", txt, "parent:", parent, "selected:", sel)
 end
 
---@api-stub: LTreeView.isExpanded
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r); tv:expandNode(r)
@@ -4694,7 +4542,6 @@ do
     print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
 end
 
---@api-stub: LTreeView.isNodeExpanded
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r); tv:expandNode(r)
@@ -4703,7 +4550,6 @@ do
     print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
 end
 
---@api-stub: LTreeView.removeNode
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r); tv:expandNode(r)
@@ -4712,7 +4558,6 @@ do
     print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
 end
 
---@api-stub: LTreeView.setNodeIcon
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
     tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
@@ -4721,7 +4566,6 @@ do
     print("setText:", txt, "selected:", sel)
 end
 
---@api-stub: LTreeView.setNodeText
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
     tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
@@ -4730,7 +4574,6 @@ do
     print("setText:", txt, "selected:", sel)
 end
 
---@api-stub: LTreeView.setSelectedNode
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
     tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
@@ -4739,7 +4582,6 @@ do
     print("setText:", txt, "selected:", sel)
 end
 
---@api-stub: LTreeView.toggleNode
 do
     local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
     tv:addNode("Child", r); tv:expandNode(r)
@@ -4748,7 +4590,6 @@ do
     local back = tv:isExpanded(r); print("expanded:", was, "after toggle:", now, "after toggle back:", back)
 end
 
---@api-stub: LUiWidget.addChild
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
     w:addChild(child); w:animateAlpha(0.5, 0.3, false)
@@ -4757,7 +4598,6 @@ do
     print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
 end
 
---@api-stub: LUiWidget.animateAlpha
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
     w:addChild(child); w:animateAlpha(0.5, 0.3, false)
@@ -4766,7 +4606,6 @@ do
     print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
 end
 
---@api-stub: LUiWidget.animatePosition
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
     w:addChild(child); w:animateAlpha(0.5, 0.3, false)
@@ -4775,7 +4614,7 @@ do
     print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
 end
 
---@api-stub: LUiWidget.attachToEntity
+--@api-stub: LUiWidget:attachToEntity
 do
     local w = lurek.ui.newCustomWidget({width=80, height=40}); w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false); local animating = w:isAnimating()
@@ -4784,7 +4623,7 @@ do
     print("attachToEntity/bind/cancelAnimations ok")
 end
 
---@api-stub: LUiWidget.bind
+--@api-stub: LUiWidget:bind
 do
     local w = lurek.ui.newCustomWidget({width=80, height=40}); w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false); local animating = w:isAnimating()
@@ -4793,7 +4632,7 @@ do
     print("attachToEntity/bind/cancelAnimations ok")
 end
 
---@api-stub: LUiWidget.cancelAnimations
+--@api-stub: LUiWidget:cancelAnimations
 do
     local w = lurek.ui.newCustomWidget({width=80, height=40}); w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false); local animating = w:isAnimating()
@@ -4802,7 +4641,6 @@ do
     print("attachToEntity/bind/cancelAnimations ok")
 end
 
---@api-stub: LUiWidget.clearAnchor
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
     w:clearAnchor(); w:setPosition(10, 10)
@@ -4811,7 +4649,6 @@ do
     print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
 end
 
---@api-stub: LUiWidget.containsPoint
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
     w:clearAnchor(); w:setPosition(10, 10)
@@ -4820,7 +4657,7 @@ do
     print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
 end
 
---@api-stub: LUiWidget.detachFromEntity
+--@api-stub: LUiWidget:detachFromEntity
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
     w:clearAnchor(); w:setPosition(10, 10)
@@ -4829,7 +4666,6 @@ do
     print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
 end
 
---@api-stub: LUiWidget.fadeIn
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
     w:fadeOut(); w:fadeIn()
@@ -4838,7 +4674,6 @@ do
     print("fadeIn/fadeOut ok; findById:", found)
 end
 
---@api-stub: LUiWidget.fadeOut
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
     w:fadeOut(); w:fadeIn()
@@ -4847,7 +4682,6 @@ do
     print("fadeIn/fadeOut ok; findById:", found)
 end
 
---@api-stub: LUiWidget.findById
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
     w:fadeOut(); w:fadeIn()
@@ -4856,7 +4690,6 @@ do
     print("fadeIn/fadeOut ok; findById:", found)
 end
 
---@api-stub: LUiWidget.getAlpha
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
     local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
@@ -4865,7 +4698,6 @@ do
     print("alpha:", alpha, "childCount:", cnt, "children:", children)
 end
 
---@api-stub: LUiWidget.getChildCount
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
     local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
@@ -4874,7 +4706,6 @@ do
     print("alpha:", alpha, "childCount:", cnt, "children:", children)
 end
 
---@api-stub: LUiWidget.getChildren
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
     local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
@@ -4883,7 +4714,6 @@ do
     print("alpha:", alpha, "childCount:", cnt, "children:", children)
 end
 
---@api-stub: LUiWidget.getFlexGrow
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
     local grow = w:getFlexGrow(); w:setFlexShrink(1)
@@ -4892,7 +4722,6 @@ do
     print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
 end
 
---@api-stub: LUiWidget.getFlexShrink
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
     local grow = w:getFlexGrow(); w:setFlexShrink(1)
@@ -4901,7 +4730,6 @@ do
     print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
 end
 
---@api-stub: LUiWidget.getId
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
     local grow = w:getFlexGrow(); w:setFlexShrink(1)
@@ -4910,7 +4738,6 @@ do
     print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
 end
 
---@api-stub: LUiWidget.getMargin
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
     local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
@@ -4919,7 +4746,6 @@ do
     print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
 end
 
---@api-stub: LUiWidget.getMaxSize
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
     local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
@@ -4928,7 +4754,6 @@ do
     print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
 end
 
---@api-stub: LUiWidget.getMinSize
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
     local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
@@ -4937,7 +4762,6 @@ do
     print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
 end
 
---@api-stub: LUiWidget.getPadding
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
     local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
@@ -4946,7 +4770,6 @@ do
     print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
 end
 
---@api-stub: LUiWidget.getPosition
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
     local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
@@ -4955,7 +4778,6 @@ do
     print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
 end
 
---@api-stub: LUiWidget.getRect
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
     local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
@@ -4964,7 +4786,6 @@ do
     print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
 end
 
---@api-stub: LUiWidget.getSize
 do
     local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
     local sw, sh = w:getSize(); local state = w:getState()
@@ -4973,7 +4794,6 @@ do
     print("size:", sw, sh, "state:", state, "tooltip:", tip)
 end
 
---@api-stub: LUiWidget.getState
 do
     local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
     local sw, sh = w:getSize(); local state = w:getState()
@@ -4982,7 +4802,6 @@ do
     print("size:", sw, sh, "state:", state, "tooltip:", tip)
 end
 
---@api-stub: LUiWidget.getTooltip
 do
     local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
     local sw, sh = w:getSize(); local state = w:getState()
@@ -4991,7 +4810,6 @@ do
     print("size:", sw, sh, "state:", state, "tooltip:", tip)
 end
 
---@api-stub: LUiWidget.getZOrder
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
     local z = w:getZOrder(); local animating = w:isAnimating()
@@ -5000,7 +4818,7 @@ do
     print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
 end
 
---@api-stub: LUiWidget.isAnimating
+--@api-stub: LUiWidget:isAnimating
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
     local z = w:getZOrder(); local animating = w:isAnimating()
@@ -5009,7 +4827,6 @@ do
     print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
 end
 
---@api-stub: LUiWidget.isEnabled
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
     local z = w:getZOrder(); local animating = w:isAnimating()
@@ -5018,7 +4835,6 @@ do
     print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
 end
 
---@api-stub: LUiWidget.isVisible
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
     w:setVisible(false); local child = lurek.ui.newLabel("removable")
@@ -5027,7 +4843,6 @@ do
     print("isVisible:", vis, "removeChild ok, alpha:", alpha)
 end
 
---@api-stub: LUiWidget.removeChild
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
     w:setVisible(false); local child = lurek.ui.newLabel("removable")
@@ -5036,7 +4851,6 @@ do
     print("isVisible:", vis, "removeChild ok, alpha:", alpha)
 end
 
---@api-stub: LUiWidget.setAlpha
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
     w:setVisible(false); local child = lurek.ui.newLabel("removable")
@@ -5045,7 +4859,6 @@ do
     print("isVisible:", vis, "removeChild ok, alpha:", alpha)
 end
 
---@api-stub: LUiWidget.setAnchor
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
     w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
@@ -5054,7 +4867,6 @@ do
     print("setAnchor/setAnchorCenter/setEnabled ok")
 end
 
---@api-stub: LUiWidget.setAnchorCenter
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
     w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
@@ -5063,7 +4875,6 @@ do
     print("setAnchor/setAnchorCenter/setEnabled ok")
 end
 
---@api-stub: LUiWidget.setEnabled
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
     w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
@@ -5072,7 +4883,6 @@ do
     print("setAnchor/setAnchorCenter/setEnabled ok")
 end
 
---@api-stub: LUiWidget.setFlexGrow
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
     local fg = w:getFlexGrow(); w:setFlexShrink(0)
@@ -5081,7 +4891,6 @@ do
     print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
 end
 
---@api-stub: LUiWidget.setFlexShrink
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
     local fg = w:getFlexGrow(); w:setFlexShrink(0)
@@ -5090,7 +4899,6 @@ do
     print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
 end
 
---@api-stub: LUiWidget.setId
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
     local fg = w:getFlexGrow(); w:setFlexShrink(0)
@@ -5099,7 +4907,6 @@ do
     print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
 end
 
---@api-stub: LUiWidget.setMargin
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
     local mt = w:getMargin(); w:setMaxSize(500, 400)
@@ -5108,7 +4915,6 @@ do
     print("margin set ok; maxSize:", mxw, "minSize:", mnw)
 end
 
---@api-stub: LUiWidget.setMaxSize
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
     local mt = w:getMargin(); w:setMaxSize(500, 400)
@@ -5117,7 +4923,6 @@ do
     print("margin set ok; maxSize:", mxw, "minSize:", mnw)
 end
 
---@api-stub: LUiWidget.setMinSize
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
     local mt = w:getMargin(); w:setMaxSize(500, 400)
@@ -5126,7 +4931,7 @@ do
     print("margin set ok; maxSize:", mxw, "minSize:", mnw)
 end
 
---@api-stub: LUiWidget.setOnChange
+--@api-stub: LUiWidget:setOnChange
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setOnChange(function() print("changed") end)
     w:setOnClick(function() print("clicked") end); w:setOnDraw(function() print("drawing") end)
@@ -5135,7 +4940,7 @@ do
     print("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
 end
 
---@api-stub: LUiWidget.setOnClick
+--@api-stub: LUiWidget:setOnClick
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setOnChange(function() print("changed") end)
     w:setOnClick(function() print("clicked") end); w:setOnDraw(function() print("drawing") end)
@@ -5144,7 +4949,7 @@ do
     print("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
 end
 
---@api-stub: LUiWidget.setOnDraw
+--@api-stub: LUiWidget:setOnDraw
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setOnChange(function() print("changed") end)
     w:setOnClick(function() print("clicked") end); w:setOnDraw(function() print("drawing") end)
@@ -5153,7 +4958,6 @@ do
     print("setOnChange/setOnClick/setOnDraw ok; id:", id, "vis:", vis)
 end
 
---@api-stub: LUiWidget.setPadding
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
     local pt = w:getPadding(); w:setPosition(50, 100)
@@ -5162,7 +4966,6 @@ do
     print("padding:", pt, "position:", px, py, "size:", sw, sh)
 end
 
---@api-stub: LUiWidget.setPosition
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
     local pt = w:getPadding(); w:setPosition(50, 100)
@@ -5171,7 +4974,6 @@ do
     print("padding:", pt, "position:", px, py, "size:", sw, sh)
 end
 
---@api-stub: LUiWidget.setSize
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
     local pt = w:getPadding(); w:setPosition(50, 100)
@@ -5180,7 +4982,6 @@ do
     print("padding:", pt, "position:", px, py, "size:", sw, sh)
 end
 
---@api-stub: LUiWidget.setTooltip
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
     local tip = w:getTooltip(); w:setVisible(false)
@@ -5189,7 +4990,6 @@ do
     print("tooltip:", tip, "zOrder:", z)
 end
 
---@api-stub: LUiWidget.setVisible
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
     local tip = w:getTooltip(); w:setVisible(false)
@@ -5198,7 +4998,6 @@ do
     print("tooltip:", tip, "zOrder:", z)
 end
 
---@api-stub: LUiWidget.setZOrder
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
     local tip = w:getTooltip(); w:setVisible(false)
@@ -5207,7 +5006,6 @@ do
     print("tooltip:", tip, "zOrder:", z)
 end
 
---@api-stub: LUiWidget.slideIn
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
     w:slideOut(0, 50); local t = w:type()
@@ -5216,7 +5014,6 @@ do
     print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
 end
 
---@api-stub: LUiWidget.slideOut
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
     w:slideOut(0, 50); local t = w:type()
@@ -5225,7 +5022,7 @@ do
     print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
 end
 
---@api-stub: LUiWidget.type
+--@api-stub: LUiWidget:type
 do
     local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
     w:slideOut(0, 50); local t = w:type()
@@ -5234,7 +5031,7 @@ do
     print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
 end
 
---@api-stub: LUiWidget.typeOf
+--@api-stub: LUiWidget:typeOf
 do
     local w = lurek.ui.newCustomWidget({width=80, height=40}); w:bind("click")
     w:unbind(); local ok1 = w:typeOf("LUiWidget")
@@ -5243,7 +5040,7 @@ do
     print("typeOf LUiWidget:", ok1, "typeOf LButton:", ok2, "type:", t)
 end
 
---@api-stub: LUiWidget.unbind
+--@api-stub: LUiWidget:unbind
 do
     local w = lurek.ui.newCustomWidget({width=80, height=40}); w:bind("click")
     w:unbind(); local ok1 = w:typeOf("LUiWidget")
@@ -5426,7 +5223,6 @@ do
     print("hover scroll y:", sy)
 end
 
---@api-stub: LTextInput:isFocused
 do
     local input = lurek.ui.newTextInput(); input:setPosition(20, 650); input:setSize(160, 28); input:setZOrder(2600)
     lurek.ui.setFocus(input)
@@ -5437,7 +5233,6 @@ do
     print("focused text:", input:isFocused(), input:getText())
 end
 
---@api-stub: LUiWidget:setOnChange
 do
     local toolbar = lurek.ui.newToolbar("horizontal"); toolbar:setPosition(220, 650); toolbar:setSize(120, 32); toolbar:setZOrder(2610)
     toolbar:addButton("save", "Save")
@@ -5447,7 +5242,6 @@ do
     print("save toggled:", toolbar:isButtonToggled("save"))
 end
 
---@api-stub: LRadioButton:setOnChange
 do
     local cash = lurek.ui.newRadioButton("Cash", "payment_kind"); cash:setPosition(370, 650); cash:setSize(100, 24); cash:setZOrder(2620)
     local card = lurek.ui.newRadioButton("Card", "payment_kind"); card:setPosition(370, 678); card:setSize(100, 24); card:setZOrder(2630)
@@ -5457,7 +5251,6 @@ do
     print("cash/card:", cash:isSelected(), card:isSelected())
 end
 
---@api-stub: LScrollBar:setOnChange
 do
     local bar = lurek.ui.newScrollBar(true); bar:setPosition(500, 650); bar:setSize(20, 100); bar:setZOrder(2640)
     bar:setContentSize(400); bar:setViewSize(100)
@@ -5467,7 +5260,6 @@ do
     print("scrollbar position:", bar:getScrollPosition())
 end
 
---@api-stub: LGuiWindow:setOnClose
 do
     local win = lurek.ui.newWindow("Inspector"); win:setPosition(550, 650); win:setSize(150, 90); win:setZOrder(2650)
     win:setOnClose(function() print("window closed") end)
@@ -5476,7 +5268,6 @@ do
     print("window visible:", win:isVisible())
 end
 
---@api-stub: LDialog:setOnClose
 do
     local dialog = lurek.ui.newDialog("Confirm"); dialog:setPosition(720, 650); dialog:setSize(180, 100); dialog:setZOrder(2660)
     dialog:addButton("Close")
@@ -5485,206 +5276,29 @@ do
     lurek.ui.mousepressed(830, 724, 1); lurek.ui.mousereleased(830, 724, 1)
 end
 
---@api-stub: lurek.ui.getToastCount
-do
-    lurek.ui.clearFocus(); local foc = lurek.ui.getFocus()
-    local theme = lurek.ui.getTheme()
-    local toasts = lurek.ui.getToastCount()
-    local widgets = lurek.ui.getWidgetCount()
-    print("focus:", foc, "theme:", theme, "toastCount:", toasts, "widgetCount:", widgets)
-end
 
---@api-stub: lurek.ui.getWidgetCount
-do
-    local cnt = lurek.ui.getWidgetCount()
-    lurek.ui.keypressed("escape")
-    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
-    lurek.ui.textinput("a")
-    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
-end
 
---@api-stub: lurek.ui.keypressed
-do
-    local cnt = lurek.ui.getWidgetCount()
-    lurek.ui.keypressed("escape")
-    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
-    lurek.ui.textinput("a")
-    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
-end
 
---@api-stub: lurek.ui.loadLayoutFile
-do
-    local cnt = lurek.ui.getWidgetCount()
-    lurek.ui.keypressed("escape")
-    local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
-    lurek.ui.textinput("a")
-    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
-end
 
---@api-stub: lurek.ui.mousemoved
-do
-    local slider = lurek.ui.newSlider(0, 100); slider:setPosition(20, 520); slider:setSize(200, 20); slider:setZOrder(2200)
-    lurek.ui.mousepressed(40, 530, 1); lurek.ui.mousemoved(180, 530); lurek.ui.mousereleased(180, 530, 1)
-    lurek.ui.update(0)
-    print("slider value after drag:", slider:getValue())
-end
 
---@api-stub: lurek.ui.mousepressed
-do
-    local tabs = lurek.ui.newTabBar(); tabs:setPosition(20, 560); tabs:setSize(240, 28); tabs:setZOrder(2300)
-    tabs:addTab("Home"); tabs:addTab("Reports"); tabs:addTab("Settings")
-    lurek.ui.mousepressed(120, 574, 1); lurek.ui.mousereleased(120, 574, 1); lurek.ui.update(0)
-    print("active tab after click:", tabs:getActiveTab())
-end
 
---@api-stub: lurek.ui.mousereleased
-do
-    local combo = lurek.ui.newComboBox(); combo:setPosition(20, 600); combo:setSize(160, 28); combo:setZOrder(2400)
-    combo:addItem("All"); combo:addItem("Food"); combo:addItem("Rent")
-    lurek.ui.mousepressed(30, 614, 1); lurek.ui.mousereleased(30, 614, 1)
-    lurek.ui.mousepressed(30, 670, 1); lurek.ui.mousereleased(30, 670, 1); lurek.ui.update(0)
-    print("combo selected:", combo:getSelectedItem())
-end
 
---@api-stub: lurek.ui.newCustomWidget
-do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local layout = lurek.ui.newLayout("row")
-    local sb = lurek.ui.newScrollBar(true)
-    print("newCustomWidget:", w, "newLayout:", layout, "newScrollBar:", sb)
-end
 
---@api-stub: lurek.ui.newScrollBar
-do
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    local layout = lurek.ui.newLayout("row")
-    local sb = lurek.ui.newScrollBar(true)
-    print("newCustomWidget:", w, "newLayout:", layout, "newScrollBar:", sb)
-end
 
---@api-stub: lurek.ui.parseWidgetState
-do
-    local th = lurek.ui.newTheme()
-    local state = lurek.ui.parseWidgetState("normal")
-    local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
-    print("newTheme ok; parseWidgetState:", state, "renderToImage:", result)
-end
 
---@api-stub: lurek.ui.renderToImage
-do
-    local th = lurek.ui.newTheme()
-    local state = lurek.ui.parseWidgetState("normal")
-    local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
-    print("newTheme ok; parseWidgetState:", state, "renderToImage:", result)
-end
 
---@api-stub: lurek.ui.setDefaultTheme
-do
-    local th = lurek.ui.newTheme(); lurek.ui.setTheme(th)
-    lurek.ui.setDefaultTheme()
-    lurek.ui.setViewport(1280, 720)
-    local cnt = lurek.ui.getWidgetCount()
-    print("setTheme/setDefaultTheme/setViewport ok; widgets:", cnt)
-end
 
---@api-stub: lurek.ui.setViewport
-do
-    local th = lurek.ui.newTheme(); lurek.ui.setTheme(th)
-    lurek.ui.setDefaultTheme()
-    lurek.ui.setViewport(1280, 720)
-    local cnt = lurek.ui.getWidgetCount()
-    print("setTheme/setDefaultTheme/setViewport ok; widgets:", cnt)
-end
 
---@api-stub: lurek.ui.textinput
-do
-    lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
-    lurek.ui.update_bindings({dt=0.016})
-    lurek.ui.wheelmoved(0, 1)
-    lurek.ui.wheelmoved(1, 0)
-    print("textinput/update_bindings/wheelmoved ok")
-end
 
---@api-stub: lurek.ui.update_bindings
-do
-    lurek.ui.textinput("hello"); lurek.ui.textinput(" world")
-    lurek.ui.update_bindings({dt=0.016})
-    lurek.ui.wheelmoved(0, 1)
-    lurek.ui.wheelmoved(1, 0)
-    print("textinput/update_bindings/wheelmoved ok")
-end
 
---@api-stub: lurek.ui.wheelmoved
-do
-    local panel = lurek.ui.newScrollPanel(); panel:setPosition(300, 520); panel:setSize(120, 70); panel:setZOrder(2500)
-    panel:setContentSize(120, 300)
-    lurek.ui.mousemoved(310, 530); lurek.ui.wheelmoved(0, -3)
-    local _, sy = panel:getScrollPosition()
-    print("hover scroll y:", sy)
-end
 
---@api-stub: LTextInput:isFocused
-do
-    local input = lurek.ui.newTextInput(); input:setPosition(20, 650); input:setSize(160, 28); input:setZOrder(2600)
-    lurek.ui.setFocus(input)
-    lurek.ui.textinput("42")
-    lurek.ui.keypressed("left")
-    lurek.ui.textinput(".")
-    lurek.ui.update(0)
-    print("focused text:", input:isFocused(), input:getText())
-end
 
---@api-stub: LUiWidget:setOnChange
-do
-    local toolbar = lurek.ui.newToolbar("horizontal"); toolbar:setPosition(220, 650); toolbar:setSize(120, 32); toolbar:setZOrder(2610)
-    toolbar:addButton("save", "Save")
-    toolbar:setOnChange(function() print("toolbar changed") end)
-    lurek.ui.mousepressed(230, 666, 1); lurek.ui.mousereleased(230, 666, 1)
-    lurek.ui.update(0)
-    print("save toggled:", toolbar:isButtonToggled("save"))
-end
 
---@api-stub: LRadioButton:setOnChange
-do
-    local cash = lurek.ui.newRadioButton("Cash", "payment_kind"); cash:setPosition(370, 650); cash:setSize(100, 24); cash:setZOrder(2620)
-    local card = lurek.ui.newRadioButton("Card", "payment_kind"); card:setPosition(370, 678); card:setSize(100, 24); card:setZOrder(2630)
-    card:setOnChange(function() print("card selected") end)
-    lurek.ui.mousepressed(380, 688, 1); lurek.ui.mousereleased(380, 688, 1)
-    lurek.ui.update(0)
-    print("cash/card:", cash:isSelected(), card:isSelected())
-end
 
---@api-stub: LScrollBar:setOnChange
-do
-    local bar = lurek.ui.newScrollBar(true); bar:setPosition(500, 650); bar:setSize(20, 100); bar:setZOrder(2640)
-    bar:setContentSize(400); bar:setViewSize(100)
-    bar:setOnChange(function() print("scrollbar changed") end)
-    lurek.ui.mousepressed(510, 720, 1); lurek.ui.mousemoved(510, 740); lurek.ui.mousereleased(510, 740, 1)
-    lurek.ui.update(0)
-    print("scrollbar position:", bar:getScrollPosition())
-end
 
---@api-stub: LGuiWindow:setOnClose
-do
-    local win = lurek.ui.newWindow("Inspector"); win:setPosition(550, 650); win:setSize(150, 90); win:setZOrder(2650)
-    win:setOnClose(function() print("window closed") end)
-    lurek.ui.mousepressed(690, 660, 1); lurek.ui.mousereleased(690, 660, 1)
-    lurek.ui.update(0)
-    print("window visible:", win:isVisible())
-end
 
---@api-stub: LDialog:setOnClose
-do
-    local dialog = lurek.ui.newDialog("Confirm"); dialog:setPosition(720, 650); dialog:setSize(180, 100); dialog:setZOrder(2660)
-    dialog:addButton("Close")
-    dialog:setOnClose(function() print("dialog closed") end)
-    dialog:open()
-    lurek.ui.mousepressed(830, 724, 1); lurek.ui.mousereleased(830, 724, 1)
-    lurek.ui.update(0)
-    print("dialog open:", dialog:isOpen())
-end
 
---@api-stub: LUiWidget.setMouseFilter
+--@api-stub: LUiWidget:setMouseFilter
 do
     -- Sets the mouse filter mode on a panel. "ignore" passes events to underlying widgets,
     -- useful for decorative overlays or transparent layout containers.
@@ -5693,7 +5307,7 @@ do
     print("mouse filter set to ignore")
 end
 
---@api-stub: LUiWidget.getMouseFilter
+--@api-stub: LUiWidget:getMouseFilter
 do
     -- Retrieves the current mouse filter behavior of a widget.
     local panel = lurek.ui.newPanel()
@@ -5702,7 +5316,7 @@ do
     print("mouse filter: " .. filter)
 end
 
---@api-stub: LUiWidget.setStyleClass
+--@api-stub: LUiWidget:setStyleClass
 do
     -- Assigns a custom style class to a widget. If defined in the active theme,
     -- the button will use "primary" colors and metrics instead of default ones.
@@ -5711,7 +5325,7 @@ do
     print("style class set to primary")
 end
 
---@api-stub: LUiWidget.getStyleClass
+--@api-stub: LUiWidget:getStyleClass
 do
     -- Retrieves the currently assigned style class of a widget, or an empty string if none.
     local btn = lurek.ui.newButton("Cancel")
@@ -5766,7 +5380,6 @@ do
     print("scatter df points=" .. count)
 end
 
---@api-stub: LGuiTable.clearRows
 do
     -- Removes all rows from a GUI table without deleting its column definitions.
     local tbl = lurek.ui.newTable()
@@ -5776,7 +5389,6 @@ do
     print("cleared rows")
 end
 
---@api-stub: LGuiTable.setRows
 do
     -- Bulk-replaces all current rows with the provided list of row data.
     local tbl = lurek.ui.newTable()
@@ -5785,7 +5397,6 @@ do
     print("set rows")
 end
 
---@api-stub: LGuiTable.setDataFrame
 do
     -- Binds a dataframe to the table, automatically setting columns and rows
     -- to match the dataframe contents.
@@ -5796,3 +5407,175 @@ do
 end
 
 print("content/examples/ui.lua")
+
+--@api-stub: lurek.ui.setFont
+do
+    -- Example for setFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using setFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked setFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+
+--@api-stub: lurek.ui.getFont
+do
+    -- Example for getFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using getFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked getFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+
+--@api-stub: lurek.ui.clearFont
+do
+    -- Example for clearFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using clearFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked clearFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+
+--@api-stub: lurek.ui.getWidgetFont
+do
+    -- Example for getWidgetFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using getWidgetFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked getWidgetFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+
+--@api-stub: lurek.ui.updateBindings
+do
+    -- Example for updateBindings
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using updateBindings")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked updateBindings on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+
+--@api-stub: LUiWidget:setFont
+do
+    -- Example for setFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using setFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked setFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+
+--@api-stub: LUiWidget:clearFont
+do
+    -- Example for clearFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using clearFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked clearFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+
+--@api-stub: LUiWidget:setBindKey
+do
+    -- Example for setBindKey
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using setBindKey")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked setBindKey on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+
+--@api-stub: LUiWidget:setTextWrap
+do
+    local lbl = lurek.ui.newLabel("This is a long text that can wrap")
+    lbl:setTextWrap(true)
+end
+
+--@api-stub: LUiWidget:setTextEllipsis
+do
+    local lbl = lurek.ui.newLabel("This is a very long one-line text")
+    lbl:setTextEllipsis(true)
+end
+
+--@api-stub: LUiWidget:setTextVAlign
+do
+    local lbl = lurek.ui.newLabel("Centered")
+    lbl:setTextVAlign("middle")
+end
+
+--@api-stub: LUiWidget:setFocusable
+do
+    local btn = lurek.ui.newButton("Focusable")
+    btn:setFocusable(true)
+end
+
+--@api-stub: LUiWidget:setTabIndex
+do
+    local btn = lurek.ui.newButton("Tab")
+    btn:setTabIndex(10)
+end
+
+--@api-stub: LUiWidget:setFocusGroup
+do
+    local btn = lurek.ui.newButton("Group")
+    btn:setFocusGroup("menu")
+end
+
+--@api-stub: LUiWidget:setFocusNeighbor
+do
+    local a = lurek.ui.newButton("A")
+    local b = lurek.ui.newButton("B")
+    a:setFocusNeighbor("right", b._idx)
+end
+
+--@api-stub: LUiWidget:setRole
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setRole("button")
+end
+
+--@api-stub: LUiWidget:setAriaName
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setAriaName("Save game")
+end
+
+--@api-stub: lurek.ui.getStyleToken
+do
+    local spacing = lurek.ui.getStyleToken("spacing_md")
+    local color = lurek.ui.getStyleToken("color_primary")
+    print("spacing_md=" .. tostring(spacing))
+    if type(color) == "table" then
+        print("color_primary a=" .. tostring(color.a))
+    end
+end
+
+--@api-stub: lurek.ui.focusNeighbor
+do
+    local a = lurek.ui.newButton("A")
+    local b = lurek.ui.newButton("B")
+    a:setFocusNeighbor("right", b._idx)
+    lurek.ui.setFocus(a)
+    local moved = lurek.ui.focusNeighbor("right")
+    print("focus moved=" .. tostring(moved))
+end
+
+--@api-stub: lurek.ui.clear
+do
+    local root = lurek.ui.getRoot()
+    if root then
+        lurek.ui.clear()
+    end
+end
+
+

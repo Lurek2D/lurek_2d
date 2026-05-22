@@ -1,4 +1,4 @@
-﻿-- content/examples/light.lua
+-- content/examples/light.lua
 -- Auto-generated from content/examples2/light_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/light.lua
 

@@ -187,21 +187,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(
             move |_lua, (key, vars, count): (String, Option<LuaTable>, Option<f64>)| {
                 let st = s.borrow();
-                let resolved_key = if let Some(n) = count {
-                    let plural_key = if PluralForm::english(n).key() == "one" {
-                        format!("{key}.one")
-                    } else {
-                        format!("{key}.other")
-                    };
-                    if st.catalog.has_key(&plural_key) {
-                        plural_key
-                    } else {
-                        key.clone()
-                    }
+                let raw = if let Some(n) = count {
+                    st.catalog.translate_plural(&key, n)
                 } else {
-                    key.clone()
+                    st.catalog.translate(&key).to_string()
                 };
-                let raw = st.catalog.translate(&resolved_key).to_string();
                 let result = if let Some(tbl) = vars {
                     let mut map = HashMap::new();
                     for (k, v) in tbl.pairs::<String, String>().flatten() {
@@ -479,27 +469,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 if words.is_empty() {
                     return lua.create_table();
                 }
-                let mut candidate_sets: Vec<std::collections::HashSet<String>> = Vec::new();
+                let mut candidate_lists: Vec<Vec<String>> = Vec::new();
                 for word in &words {
                     let keys_tbl: Option<LuaTable> = index.get(word.as_str())?;
-                    let mut set = std::collections::HashSet::new();
+                    let mut list = Vec::new();
                     if let Some(kt) = keys_tbl {
                         for pair in kt.sequence_values::<String>() {
-                            set.insert(pair?);
+                            list.push(pair?);
                         }
                     }
-                    candidate_sets.push(set);
+                    candidate_lists.push(list);
                 }
-                let intersection = candidate_sets.iter().skip(1).fold(
-                    candidate_sets.first().cloned().unwrap_or_default(),
-                    |acc, set| acc.intersection(set).cloned().collect(),
-                );
-                let mut keys: Vec<String> = intersection.into_iter().collect();
-                keys.sort();
-                let lim = limit.unwrap_or(0);
-                if lim > 0 && keys.len() > lim {
-                    keys.truncate(lim);
-                }
+                let keys = Catalog::search_indexed_intersection(candidate_lists, limit.unwrap_or(0));
                 let tbl = lua.create_table()?;
                 for (i, k) in keys.iter().enumerate() {
                     tbl.set(i + 1, k.as_str())?;
@@ -567,13 +548,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "tGender",
         lua.create_function(
             move |_, (key, gender, vars): (String, String, Option<LuaTable>)| {
-                let gendered_key = format!("{}.{}", key, gender.to_lowercase());
                 let borrowed = s.borrow();
-                let raw = if borrowed.catalog.has_key(&gendered_key) {
-                    borrowed.catalog.translate(&gendered_key).to_owned()
-                } else {
-                    borrowed.catalog.translate(&key).to_owned()
-                };
+                let raw = borrowed.catalog.translate_gender(&key, &gender).to_owned();
                 drop(borrowed);
                 let result = if let Some(tbl) = vars {
                     let mut out = raw;

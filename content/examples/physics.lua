@@ -674,7 +674,7 @@ end
 --@api-stub: LWorld:newBodies
 do
     local world = lurek.physics.newWorld(0, 400)
-    local specs = { { x = 15, y = 50, body_type = "dynamic", shape = "circle", radius = 5 }, { x = 30, y = 50, body_type = "dynamic", shape = "circle", radius = 5 }, { x = 45, y = 50, body_type = "static", shape = "rectangle", width = 10, height = 10 }, }
+    local specs = { { 15, 50, "dynamic" }, { 30, 50, "dynamic" }, { 45, 50, "static" }, }
     local ids = world:newBodies(specs)
     print("batch created = " .. #ids)
 end

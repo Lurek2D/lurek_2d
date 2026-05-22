@@ -939,10 +939,14 @@ end)
 
 -- @describe CameraRig API
 describe("CameraRig API", function()
+    -- @covers LCameraRig:type
+    -- @covers LCameraRig:typeOf
     -- @covers lurek.camera.newRig
     it("creates a rig userdata", function()
         local rig = lurek.camera.newRig()
         expect_type("userdata", rig)
+        expect_equal("LCameraRig", rig:type())
+        expect_true(rig:typeOf("LCameraRig"))
     end)
 
     -- @covers LCameraRig:splitScreen

@@ -1323,10 +1323,12 @@ end)
 -- @describe lurek.ai DialogueAI
 describe("lurek.ai DialogueAI", function()
     -- @covers LDialogueAI:type
+    -- @covers LDialogueAI:typeOf
     -- @covers lurek.ai.newDialogueAI
     it("type returns DialogueAI", function()
         local d = lurek.ai.newDialogueAI()
         expect_equal("LDialogueAI", d:type())
+        expect_true(d:typeOf("LDialogueAI"))
     end)
 
     -- @covers LDialogueAI:addTopic

@@ -31,7 +31,7 @@ pub use extras::{
     TooltipPanel, TreeNode, TreeView,
 };
 pub use theme::{Theme, WidgetStyle};
-pub use widget::{WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind, WidgetType};
+pub use widget::{WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind, WidgetType, TextVAlign};
 /// TOML-based declarative layout loader and image renderer.
 #[cfg(feature = "ui-layout-loader")]
 pub mod layout_loader;

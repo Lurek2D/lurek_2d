@@ -44,18 +44,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | string | `windows`, `linux`, `macos`, or `unknown`.
     tbl.set(
         "platform",
-        lua.create_function(|_, ()| {
-            let name = if cfg!(target_os = "windows") {
-                "windows"
-            } else if cfg!(target_os = "linux") {
-                "linux"
-            } else if cfg!(target_os = "macos") {
-                "macos"
-            } else {
-                "unknown"
-            };
-            Ok(name)
-        })?,
+        lua.create_function(|_, ()| Ok(crate::runtime::os::get_os_name().to_lowercase()))?,
     )?;
     let s = state.clone();
     // -- uptime --

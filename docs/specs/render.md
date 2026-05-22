@@ -11,9 +11,11 @@
 
 ## Summary
 
-wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work executes during Lua callbacks. Lua scripts emit draw commands (rectangles, circles, lines, polygons, text, textures, meshes) into a frame-local command buffer. At frame end the renderer sorts by layer/depth, batches compatible draws, and encodes wgpu render passes.
+The `render` module is a core Platform Services tier subsystem that powers the entire visual output of Lurek2D. Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
 
-`GpuRenderer` owns the device, queue, swap chain, and all GPU resources (textures, buffers, pipelines, shaders). `Font` handles text shaping and glyph atlas management via fontdue. Canvas targets enable off-screen rendering to textures. Post-processing applies shader passes from the `PostFxPipeline`. Custom WGSL shaders can be loaded and bound with uniform data. Mesh rendering supports indexed geometry with vertex attributes. Shape helpers generate circle, rounded-rect, polygon, and arc geometry. Exposed as `lurek.render.*`. Platform Services tier.
+The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
+
+A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
 
 ## Source Documentation
 
@@ -33,11 +35,11 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 - Sorted at flush time so draw callbacks execute in front-to-back order.
 
 ### `font.rs`
-- Bitmap font atlas loading from embedded PNG sprite sheets with per-character cell extraction.
-- Six bundled font sizes (3×5 through 12×22) with nearest-size selection for scaling.
-- Glyph lookup returning UV coordinates, pixel metrics, and advance widths.
+- Bundled Courier New bitmap atlases in regular and bold variants using `assets/fonts/font_*` and `fontb_*`.
+- Latin-1 coverage for 0x20..=0xFF plus terminal-symbol aliases for box-drawing, blocks, and arrows.
+- Runtime rasterisation of TTF/OTF bytes into the same atlas format used by the bundled fonts.
+- Glyph lookup returning UV coordinates, pixel metrics, per-glyph advance widths, and alias resolution.
 - Text measurement: total pixel width, line height with multiplier, ascent and descent.
-- Word-wrap algorithm splitting text into lines that fit a pixel-width limit.
 - Atlas dirty-tracking for lazy GPU texture upload.
 
 ### `gpu_renderer.rs`
@@ -182,8 +184,11 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 - `DrawLayer::flush` (`draw_layer.rs`): Sort entries by `z_order`, drain, and return them; leaves the layer empty.
 - `DrawLayer::clear` (`draw_layer.rs`): Discard all pending entries without firing callbacks.
 - `DrawLayer::get_count` (`draw_layer.rs`): Return the number of pending entries.
+- `Font::builtin_slot_by_name` (`font.rs`): Resolve a stable built-in font name such as `font_12` or `fontb_12` to `(slot, bold)`.
 - `Font::from_png_bytes` (`font.rs`): Load and decode `data` as a PNG bitmap font atlas with `cell_w`×`cell_h` cells; return error on decode failure.
-- `Font::load_all_sizes` (`font.rs`): Load all six bundled bitmap font sizes; silently skip any that fail to decode.
+- `Font::from_font_bytes` (`font.rs`): Rasterise TTF/OTF bytes into a runtime atlas matching the renderer's bitmap-font contract.
+- `Font::load_all_sizes` (`font.rs`): Load all seven bundled regular bitmap font sizes; silently skip any that fail to decode.
+- `Font::load_all_bold` (`font.rs`): Load all seven bundled bold bitmap font sizes; silently skip any that fail to decode.
 - `Font::nearest_size` (`font.rs`): Return the index into `AVAILABLE_HEIGHTS` whose cell height is closest to `pixel_height`.
 - `Font::glyph` (`font.rs`): Return `GlyphInfo` for `ch`, or `None` if the character is not in the atlas.
 - `Font::text_width` (`font.rs`): Return the pixel advance-width sum for all glyphs in `text`.
@@ -196,7 +201,6 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 - `Font::mark_clean` (`font.rs`): Clear the dirty flag after a successful GPU texture upload.
 - `Font::size` (`font.rs`): Return the pixel height of one character cell.
 - `Font::cell_width` (`font.rs`): Return the pixel width of one character cell.
-- `Font::has_box_drawing` (`font.rs`): Return true when this font atlas contains Unicode box-drawing glyphs.
 - `Font::wrap_text` (`font.rs`): Break `text` into lines that each fit within `limit` pixels, honouring existing newlines.
 - `GpuRenderer::new` (`gpu_renderer.rs`): Create a `GpuRenderer` from an already-acquired wgpu device/queue pair and surface format.
 - `GpuRenderer::resize` (`gpu_renderer.rs`): Update viewport dimensions after a window resize; recreates stencil targets and clears light GPU state.
@@ -283,19 +287,26 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 - `lurek.render.getPointSize`: Returns the current point size. This function is exposed to Lua scripts.
 - `lurek.render.setBlendMode`: Sets the blend mode for subsequent draw operations.
 - `lurek.render.getBlendMode`: Returns the current blend mode name.
-- `lurek.render.newFont`: Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.
+- `lurek.render.newFont`: Creates a font from a built-in `font_*` / `fontb_*` name, a font file path, or a numeric built-in size selector.
 - `lurek.render.setFont`: Sets the active font used by print, printf, and other text rendering calls.
 - `lurek.render.getFont`: Returns the currently active font, or nil if none is set.
-- `lurek.render.getFontSizes`: Returns all available built-in font pixel heights.
-- `lurek.render.getDefaultFont`: Returns a built-in default font at the nearest available pixel height.
+- `lurek.render.getFontSizes`: Returns all available built-in bundled point sizes (`8, 10, 12, 16, 20, 24, 30`).
+- `lurek.render.getBuiltInFontNames`: Returns all stable built-in font names in regular-then-bold order.
+- `lurek.render.getDefaultFont`: Returns the configured built-in default font, or the nearest available bundled point size when one is requested explicitly.
+- `lurek.render.setDefaultFont`: Selects a built-in default font by bundled point size and makes it the active render font.
+- `lurek.render.printWithFont`: Draws text with an explicit font without changing the active font.
+- `lurek.render.printfWithFont`: Draws wrapped/aligned text with an explicit font without changing the active font.
+- `lurek.render.printRotatedWithFont`: Draws rotated text with an explicit font without changing the active font.
+- `lurek.render.printRichWithFont`: Draws rich text spans with an explicit font without changing the active font.
 - `lurek.render.getFontCellWidth`: Returns the fixed cell width of a bitmap font.
 - `lurek.render.getFontWidth`: Measures the pixel width of text using the given font.
 - `lurek.render.getFontHeight`: Returns the line height of the given font.
 - `lurek.render.getFontLineHeight`: Returns the line spacing of the given font.
-- `lurek.render.setFontLineHeight`: Sets the line height override for a font (currently a no-op stub).
+- `lurek.render.setFontLineHeight`: Sets the line height override for a font.
 - `lurek.render.getFontAscent`: Returns the ascent (pixels above baseline) of the given font.
 - `lurek.render.getFontDescent`: Returns the descent (pixels below baseline) of the given font.
 - `lurek.render.getFontWrap`: Word-wraps text using the active font and returns the resulting lines and widest line width.
+- `lurek.render.setBold`: Switches the implicit built-in font selection between normal and bold variants while preserving the nearest configured bundled point size.
 - `lurek.render.newImage`: Loads a texture from a file path or creates one from an ImageData object.
 - `lurek.render.newCanvas`: Creates a new off-screen render target with the given dimensions.
 - `lurek.render.setCanvas`: Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.

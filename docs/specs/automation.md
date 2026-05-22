@@ -11,9 +11,13 @@
 
 ## Summary
 
-Headless input simulation framework for automated testing, QA replay, and recorded gameplay sessions. `Script` holds an ordered sequence of `Step` entries — each step is a timed action (key press, mouse move, click, wait, assert) that the `Simulator` executes against the engine's input and event systems without a visible window.
+The `automation` module provides a powerful headless input simulation framework designed for automated testing, QA replay, and recorded gameplay sessions. Positioned within the Feature Systems tier, it enables Lurek2D to execute deterministic, time-sorted sequences of synthetic input events without requiring a visible operating system window or actual hardware interactions. This makes it an invaluable tool for continuous integration pipelines, visual regression testing, and creating in-game replay features.
 
-Scripts can be loaded from TOML files or constructed from Lua tables. The simulator supports pause/resume, conditional branching via named flags, and a highlight mode that overlays action indicators when running with a visible window. Used by `tests/lua/` harness for deterministic integration testing and by `lurek.automation.*` for in-game replay features.
+At the core of the module is the `Script` container, which holds an ordered sequence of `Step` entries. Each `Step` describes a timed action—such as key presses, mouse movements, clicks, scrolling, text input, or wait delays. Scripts can be authored externally in TOML format or constructed dynamically via Lua tables, supporting advanced orchestration capabilities including repeat expansions and configurable step limits to prevent runaway execution. 
+
+Playback is managed by the `Simulator`, an engine that advances virtual time and dispatches events exactly as if they originated from real hardware. The `Simulator` supports complex control flow during playback, including pause and resume functionality, playback speed scaling, and macro invocations where reusable scripts are inlined at the current playback position. Additionally, it features a robust condition evaluation system allowing scripts to branch or assert state based on logical expressions (e.g., `!`, `&&`, `||`, and parentheses) against named boolean flags. 
+
+For visual debugging and regression testing, the module offers unique assertion steps: `Assert` halts playback if a logical condition fails, while `VisualAssert` compares baseline images against actual rendered frames with pixel-diff tolerances. When running with a visible window, developers can enable a `highlight_mode` that overlays action indicators, making it easy to track synthetic inputs visually. The entire framework is fully integrated with the engine's event queue and exposed to Lua via the `lurek.automation.*` namespace, allowing script developers to orchestrate deterministic testing and record-and-playback systems directly from game logic.
 
 ## Source Documentation
 

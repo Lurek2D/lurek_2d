@@ -1,0 +1,11 @@
+C:\Users\tombl\Documents\lurek2D\target_tmp\debug\deps\bitflags-aec5fd09b6358434.d: C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\lib.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\iter.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\parser.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\traits.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\public.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\internal.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\external.rs
+
+C:\Users\tombl\Documents\lurek2D\target_tmp\debug\deps\libbitflags-aec5fd09b6358434.rmeta: C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\lib.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\iter.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\parser.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\traits.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\public.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\internal.rs C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\external.rs
+
+C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\lib.rs:
+C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\iter.rs:
+C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\parser.rs:
+C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\traits.rs:
+C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\public.rs:
+C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\internal.rs:
+C:\Users\tombl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\bitflags-2.11.1\src\external.rs:

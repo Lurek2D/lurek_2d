@@ -350,18 +350,7 @@ do
   lurek.log.info("red team players: " .. by_team["red"]:nrows())
   lurek.log.info("blue team players: " .. by_team["blue"]:nrows())
 end
---@api-stub: LDatabase:merge
--- Appends all rows from another dataframe into this one (in-place)
-do
-  -- merge() concatenates two frames vertically.
-  -- Use it to combine data from multiple sources (e.g., round results).
-  local round1 = lurek.dataframe.fromTable({{player = "Alice", score = 500}})
-  local round2 = lurek.dataframe.fromTable({{player = "Alice", score = 700}})
 
-  -- Combine both rounds into a single history
-  round1:merge(round2)
-  lurek.log.info("total records after merge: " .. round1:nrows())
-end
 --@api-stub: LDataFrame:countBy
 -- Counts occurrences of each value in a column; returns a new dataframe
 do
@@ -835,59 +824,6 @@ do
   base:merge(mod_data)
   lurek.log.info("after mod merge: " .. base:tableCount() .. " tables")
 end
---@api-stub: LDatabase:toJSON
--- Serializes the entire database (all tables) to JSON text
-do
-  -- toJSON serializes every table in the database as a JSON object of arrays.
-  -- Use for full save-game export or debug snapshots.
-  local db = lurek.dataframe.newDatabase()
-  db:addTable("players", lurek.dataframe.fromTable({{name = "Alice", level = 5}}))
-  db:addTable("inventory", lurek.dataframe.fromTable({{item = "potion", qty = 3}}))
-
-  local json = db:toJSON()
-  if lurek.fs then lurek.fs.write("save/full_save.json", json) end
-  lurek.log.info("database JSON: " .. #json .. " bytes")
-end
---@api-stub: LDatabase:query
--- Runs a SQL query across multiple database tables (supports JOINs)
-do
-  -- Database:query() lets you write SQL that references multiple tables by name.
-  -- This is the most powerful way to combine related data.
-  pcall(function()
-    local db = lurek.dataframe.newDatabase()
-    db:addTable("players", lurek.dataframe.fromTable({
-      {id = 1, name = "Alice"},
-      {id = 2, name = "Bob"},
-    }))
-    db:addTable("scores", lurek.dataframe.fromTable({
-      {player_id = 1, points = 9000},
-      {player_id = 2, points = 7500},
-    }))
-
-    -- Cross-table JOIN: match players to their scores
-    local result = db:query(
-      "SELECT players.name, scores.points FROM players, scores WHERE players.id = scores.player_id"
-    )
-    lurek.log.info("joined result: " .. result:nrows() .. " rows")
-  end)
-end
---@api-stub: LVecFrame:type
--- Returns the type name string "Database" for this handle
-do
-  local db = lurek.dataframe.newDatabase()
-  if db:type() == "Database" then
-    lurek.log.info("confirmed: this is a Database handle")
-  end
-end
---@api-stub: LVecFrame:typeOf
--- Returns true if this handle matches the given type name
-do
-  -- typeOf checks against "LDatabase", "Database", or "Object".
-  local db = lurek.dataframe.newDatabase()
-  if db:typeOf("Object") then
-    lurek.log.info("Database is an Object")
-  end
-end
 --@api-stub: LGroupedFrame:aggregate
 -- Aggregates a column in each group using a custom Lua function
 do
@@ -1174,53 +1110,6 @@ do
 
   local df = vf:toDataFrame()
   lurek.log.info("level[1] as float: " .. tostring(df:getValue(1, "level")))
-end
---@api-stub: LVecFrame:nrows
--- Returns the number of rows in this VecFrame
-do
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n10\n20\n30\n"))
-
-  -- Row count is consistent between VecFrame and its source DataFrame
-  lurek.log.info("VecFrame rows: " .. vf:nrows())
-  assert(vf:nrows() == 3)
-end
---@api-stub: LVecFrame:ncols
--- Returns the number of columns in this VecFrame
-do
-  local df = lurek.dataframe.fromCSV("hp,mp,atk\n10,5,8\n")
-  local vf = lurek.dataframe.toVec(df)
-
-  -- Column count matches the source DataFrame
-  lurek.log.info("VecFrame cols: " .. vf:ncols())
-  assert(vf:ncols() == df:ncols())
-end
---@api-stub: LVecFrame:columns
--- Returns an array of column names in this VecFrame
-do
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp,mp,stamina\n1,2,3\n"))
-
-  -- Column names are preserved from the source DataFrame
-  local cols = vf:columns()
-  for i, name in ipairs(cols) do
-    lurek.log.info("VecFrame col " .. i .. ": " .. name)
-  end
-end
---@api-stub: LVecFrame:type
--- Returns the type name string "VecFrame" for this handle
-do
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x\n1\n"))
-  if vf:type() == "VecFrame" then
-    lurek.log.info("confirmed: this is a VecFrame handle")
-  end
-end
---@api-stub: LVecFrame:typeOf
--- Returns true if this handle matches the given type name
-do
-  -- typeOf checks against "VecFrame" or "Object".
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x\n1\n"))
-  if vf:typeOf("Object") then
-    lurek.log.info("VecFrame is an Object")
-  end
 end
 --@api-stub: LDataFrame:addColumn
 -- Adds a new column with an optional default value for existing rows
@@ -1857,3 +1746,351 @@ do
   local lq = df:lazy()
   if lq:typeOf("LLazyQuery") then lurek.log.debug("confirmed LLazyQuery") end
 end
+
+--@api-stub: lurek.dataframe.fromCSVFile
+do
+  -- Save a small CSV and restore it through the file loader.
+  local path = "save/dataframe_example.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local df = lurek.dataframe.fromCSVFile(path)
+  lurek.log.info("CSV loaded successfully, rows: " .. df:nrows())
+  local preview = df:head(1)
+  print("Data preview:", preview)
+end
+
+
+--@api-stub: lurek.dataframe.fromCSVFileAsync
+do
+  -- Save a CSV and load it asynchronously on a worker thread.
+  local path = "save/dataframe_example_async.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
+    lurek.log.info("Started loading CSV asynchronously")
+    task:wait()
+    if task:getError() == nil then
+    local df = task:result()
+    lurek.log.info("Async CSV load finished. Rows: " .. df:nrows())
+    end
+end
+
+
+--@api-stub: lurek.dataframe.fromJSONFile
+do
+  -- Save a small JSON dataframe and reload it.
+  local path = "save/dataframe_example.json"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toJSONFile(path)
+  local df = lurek.dataframe.fromJSONFile(path)
+  lurek.log.info("JSON data loaded, rows: " .. df:nrows())
+  local columns = df:columns()
+  print("Loaded schema:", table.concat(columns, ", "))
+end
+
+
+--@api-stub: lurek.dataframe.fromJSONFileAsync
+do
+  -- Save a JSON dataframe and reload it asynchronously.
+  local path = "save/dataframe_example_async.json"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toJSONFile(path)
+  local task = lurek.dataframe.fromJSONFileAsync(path)
+    lurek.log.info("Started loading JSON asynchronously")
+    task:wait()
+    if not task:getError() then
+    local df = task:result()
+    lurek.log.info("Async JSON load finished. Rows: " .. df:nrows())
+    end
+end
+
+
+--@api-stub: lurek.dataframe.loadDatabase
+do
+  -- Save a JSON database file and restore it through the loader.
+  local path = "save/dataframe_database.json"
+  local db = lurek.dataframe.newDatabase()
+  local players = lurek.dataframe.fromRows({ "name", "level" }, { { "Alice", 10 }, { "Bob", 20 } })
+  db:addTable("players", players)
+  db:save(path)
+  local restored = lurek.dataframe.loadDatabase(path)
+  local loaded_players = restored:getTable("players")
+  if loaded_players then
+    lurek.log.info("Database table 'players' loaded.")
+    print("Loaded " .. loaded_players:nrows() .. " player records")
+    end
+end
+
+
+--@api-stub: LDataFrame:valueCounts
+do
+    -- Count unique values in a column
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("class", "string")
+    df:addRow({"Warrior"}); df:addRow({"Mage"}); df:addRow({"Warrior"})
+    local counts = df:valueCounts("class")
+    lurek.log.info("Value counts for class:")
+    for val, count in pairs(counts) do
+        print(val .. ": " .. count)
+    end
+end
+
+
+--@api-stub: LDataFrame:missingReport
+do
+    -- Generate a report of missing (null) values
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("score", "int")
+    df:addRow({100}); df:addRow({nil}); df:addRow({200})
+    local report = df:missingReport()
+    lurek.log.info("Missing values report:")
+    for col, missing in pairs(report) do
+        print(col .. " has " .. missing .. " missing values")
+    end
+end
+
+
+--@api-stub: LDataFrame:duplicateRows
+do
+    -- Find and extract duplicate rows
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("id", "int")
+    df:addRow({1}); df:addRow({2}); df:addRow({1})
+    local duplicates = df:duplicateRows({ "id" })
+    lurek.log.info("Found " .. duplicates:nrows() .. " duplicate rows")
+    if duplicates:nrows() > 0 then
+        print("Duplicates:", duplicates:head(5))
+    end
+end
+
+
+--@api-stub: LDataFrame:dateParts
+do
+    -- Extract date parts (year, month, day) from a datetime string column
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("login_time", "string")
+    df:addRow({"2026-05-21T10:00:00Z"})
+    local parts = df:dateParts("login_time")
+    lurek.log.info("Extracted date parts.")
+    if parts:nrows() > 0 then
+        local row = parts:getRow(1)
+        print("Year: " .. row.year .. " Month: " .. row.month)
+    end
+end
+
+
+--@api-stub: LDataFrame:toCSVFile
+do
+    -- Export dataframe to a CSV file
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("score", "int")
+    df:addRow({500})
+    local success, err = df:toCSVFile("work/output.csv")
+    if success then
+        lurek.log.info("Data exported to CSV successfully.")
+        print("Output saved to work/output.csv")
+    else
+        lurek.log.error("Failed to export to CSV: " .. tostring(err))
+    end
+end
+
+
+--@api-stub: LDataFrame:toJSONFile
+do
+    -- Export dataframe to a JSON file
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("name", "string")
+    df:addRow({"Alice"})
+    local success, err = df:toJSONFile("work/output.json")
+    if success then
+        lurek.log.info("Data exported to JSON successfully.")
+        print("Output saved to work/output.json")
+    else
+        lurek.log.error("Failed to export to JSON: " .. tostring(err))
+    end
+end
+
+
+--@api-stub: LDataFrame:toBinaryFile
+do
+    -- Export dataframe to an optimized binary format
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("level", "int")
+    df:addRow({42})
+    local success, err = df:toBinaryFile("work/output.bin")
+    if success then
+        lurek.log.info("Data exported to binary format successfully.")
+        print("Output saved to work/output.bin")
+    else
+        lurek.log.error("Failed to export to binary: " .. tostring(err))
+    end
+end
+
+
+--@api-stub: LDataFrame:queryAsync
+do
+    -- Perform an asynchronous SQL query on the dataframe
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("age", "int"); df:addRow({25}); df:addRow({30})
+    local task = df:queryAsync("SELECT * FROM df WHERE age > 26")
+    lurek.log.info("Started async query")
+    task:wait()
+    local result_df = task:result()
+    print("Async query finished, resulting rows: " .. result_df:nrows())
+end
+
+
+--@api-stub: LDataFrameTask:isDone
+do
+    -- Check if an async dataframe task has finished
+  local path = "save/dataframe_task_status.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
+    if not task:isDone() then
+        lurek.log.info("Task is still running in the background...")
+    end
+    task:wait()
+    print("Task isDone: " .. tostring(task:isDone()))
+end
+
+
+--@api-stub: LDataFrameTask:wait
+do
+    -- Block the current thread until an async dataframe task is complete
+  local path = "save/dataframe_task_wait.json"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toJSONFile(path)
+  local task = lurek.dataframe.fromJSONFileAsync(path)
+    lurek.log.info("Waiting for task to complete...")
+    task:wait()
+    lurek.log.info("Task completed. Error: " .. tostring(task:getError()))
+    print("Done waiting.")
+end
+
+
+--@api-stub: LDataFrameTask:result
+do
+    -- Get the resulting dataframe from a completed async task
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("id", "int"); df:addRow({1}); df:addRow({2})
+    local task = df:queryAsync("SELECT * FROM df WHERE id = 1")
+    task:wait()
+    local result_df = task:result()
+    lurek.log.info("Query result has " .. result_df:nrows() .. " rows")
+    print("Result df:", result_df)
+end
+
+
+--@api-stub: LDataFrameTask:getError
+do
+    -- Retrieve any error message that occurred during an async task
+  local task = lurek.dataframe.fromCSVFileAsync("invalid/path/missing.csv")
+    task:wait()
+    local err = task:getError()
+    if err then
+        lurek.log.error("Async task failed with error: " .. err)
+    else
+        print("Task completed successfully")
+    end
+end
+
+
+--@api-stub: LDataFrameTask:progress
+do
+    -- Get the progress of an async task (0.0 to 1.0)
+  local path = "save/dataframe_task_progress.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
+    local prog = task:progress()
+    lurek.log.info("Current task progress: " .. (prog * 100) .. "%")
+    task:wait()
+    print("Final progress: " .. (task:progress() * 100) .. "%")
+end
+
+
+--@api-stub: LDataFrameTask:type
+do
+  -- Get the string type name of an async dataframe task.
+  local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
+  local task = df:queryAsync("SELECT * FROM df WHERE id = 1")
+  local type_name = task:type()
+    lurek.log.info("Object type is: " .. type_name)
+  if type_name == "LDataFrameTask" then
+    print("This is indeed a DataFrameTask")
+    end
+  task:wait()
+end
+
+
+--@api-stub: LDataFrameTask:typeOf
+do
+  -- Check if the object inherits from or matches the task type name.
+  local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
+  local task = df:queryAsync("SELECT * FROM df WHERE id = 1")
+  local is_task = task:typeOf("LDataFrameTask")
+  lurek.log.info("Is object a DataFrameTask? " .. tostring(is_task))
+  if is_task then
+    print("Object is verified as DataFrameTask")
+    end
+  task:wait()
+end
+
+
+--@api-stub: LDatabase:save
+do
+  -- Save a database to the GameFS save directory.
+  local db = lurek.dataframe.newDatabase()
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("score", "int")
+    df:addRow({100})
+  db:addTable("savegame_stats", df)
+  local success = db:save("save/savegame_stats.json")
+    if success then
+    lurek.log.info("Database saved to the default save location.")
+    else
+    lurek.log.error("Failed to save database")
+    end
+end
+
+
+--@api-stub: LDatabase:queryAsync
+do
+  -- Perform an asynchronous SQL query on a database table snapshot.
+  local db = lurek.dataframe.newDatabase()
+  local users = lurek.dataframe.fromRows({ "age" }, { { 25 }, { 30 } })
+  db:addTable("users", users)
+  local task = db:queryAsync("SELECT * FROM users WHERE age > 26")
+    lurek.log.info("Started async query")
+    task:wait()
+    local result_df = task:result()
+  print("Async query finished, resulting rows: " .. result_df:nrows())
+end
+
+
+--@api-stub: LDatabase:queryParams
+do
+    -- Run a SQL query with parameterized arguments to prevent injection
+  local db = lurek.dataframe.newDatabase()
+  local users = lurek.dataframe.fromRows({ "name" }, { { "Alice" }, { "Bob" } })
+  db:addTable("users", users)
+  local result = db:queryParams("SELECT * FROM users WHERE name = ?", {"Alice"})
+  lurek.log.info("Query returned " .. result:nrows() .. " rows")
+    print("Found Alice:", result:head(1))
+end
+
+
+--@api-stub: LDatabase:queryParamsAsync
+do
+    -- Run a parameterized SQL query asynchronously
+  local db = lurek.dataframe.newDatabase()
+  local players = lurek.dataframe.fromRows({ "level" }, { { 10 }, { 20 } })
+  db:addTable("players", players)
+  local task = db:queryParamsAsync("SELECT * FROM players WHERE level > ?", {15})
+    task:wait()
+    local result = task:result()
+  lurek.log.info("Async query returned " .. result:nrows() .. " rows")
+    print("Matches:", result:head(1))
+end
+

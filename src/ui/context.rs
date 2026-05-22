@@ -241,6 +241,14 @@ pub struct GuiContext {
     pub pending_events: Vec<GuiEvent>,
     /// Set to `true` whenever any widget state changes; cleared by `flush_cache`.
     pub dirty: bool,
+    /// True when layout geometry requires recomputation.
+    pub layout_dirty: bool,
+    /// True when style/theme-derived values changed.
+    pub style_dirty: bool,
+    /// True when text content/metrics changed.
+    pub text_dirty: bool,
+    /// True when any visual output changed and render commands should be rebuilt.
+    pub render_dirty: bool,
     /// Last-known viewport width used for layout calculations.
     pub viewport_w: f32,
     /// Last-known viewport height used for layout calculations.
@@ -266,6 +274,10 @@ impl GuiContext {
             theme: Some(crate::ui::theme::Theme::default_dark()),
             pending_events: Vec::new(),
             dirty: true,
+            layout_dirty: true,
+            style_dirty: true,
+            text_dirty: true,
+            render_dirty: true,
             viewport_w: 0.0,
             viewport_h: 0.0,
             drag_widget: None,
@@ -273,6 +285,22 @@ impl GuiContext {
             last_mouse_pos: None,
             last_render_signature: 0,
         }
+    }
+    /// Reset the retained widget tree and transient UI state while preserving the active theme.
+    pub fn clear(&mut self) -> usize {
+        let removed = self.widgets.len().saturating_sub(1);
+        let theme = self.theme.clone();
+        *self = Self::new();
+        self.theme = theme;
+        removed
+    }
+    /// Mark dirty state at both legacy and fine-grained levels.
+    fn mark_dirty_flags(&mut self, layout: bool, style: bool, text: bool, render: bool) {
+        self.dirty = true;
+        self.layout_dirty |= layout;
+        self.style_dirty |= style;
+        self.text_dirty |= text;
+        self.render_dirty |= render;
     }
     /// Return the total number of widgets including the root panel.
     pub fn widget_count(&self) -> usize {
@@ -708,32 +736,41 @@ impl GuiContext {
     pub fn add_badge(&mut self, count: u32) -> usize {
         let idx = self.widgets.len();
         self.widgets.push(WidgetKind::Badge(Badge::new(count)));
-        self.dirty = true;
+        self.mark_dirty_flags(true, false, false, true);
         idx
     }
     /// Add a `CustomWidget` and return its index; marks dirty.
     pub fn add_custom_widget(&mut self) -> usize {
         let idx = self.widgets.len();
         self.widgets.push(WidgetKind::Custom(CustomWidget::new()));
-        self.dirty = true;
+        self.mark_dirty_flags(true, false, false, true);
         idx
     }
     /// Reset to the built-in dark theme and mark dirty.
     pub fn set_default_theme(&mut self) {
         self.theme = Some(crate::ui::theme::Theme::default_dark());
-        self.dirty = true;
+        self.mark_dirty_flags(false, true, false, true);
     }
     /// Set the viewport size used for root-relative layout; marks dirty.
     pub fn set_viewport(&mut self, width: f32, height: f32) {
         self.viewport_w = width;
         self.viewport_h = height;
-        self.dirty = true;
+        self.mark_dirty_flags(true, false, false, true);
     }
     /// Return `true` if the widget tree has changed since the last call; resets `dirty` and updates the render signature.
     pub fn flush_cache(&mut self) -> bool {
         let signature = self.compute_render_signature();
-        let was_dirty = self.dirty || signature != self.last_render_signature;
+        let was_dirty = self.dirty
+            || self.layout_dirty
+            || self.style_dirty
+            || self.text_dirty
+            || self.render_dirty
+            || signature != self.last_render_signature;
         self.dirty = false;
+        self.layout_dirty = false;
+        self.style_dirty = false;
+        self.text_dirty = false;
+        self.render_dirty = false;
         self.last_render_signature = signature;
         was_dirty
     }
@@ -906,9 +943,11 @@ impl GuiContext {
                     }
                     WidgetKind::TextInput(input) => {
                         if input.text != *t {
-                            input.text = t.clone();
-                            input.cursor_pos = input.text.len();
-                            changed += 1;
+                            let previous = input.text.clone();
+                            input.set_text(t.clone());
+                            if input.text != previous {
+                                changed += 1;
+                            }
                         }
                     }
                     WidgetKind::MenuItem(item) => {
@@ -984,7 +1023,7 @@ impl GuiContext {
             if !children.contains(&child_idx) {
                 children.push(child_idx);
             }
-            self.dirty = true;
+            self.mark_dirty_flags(true, false, false, true);
             true
         } else {
             false
@@ -998,7 +1037,7 @@ impl GuiContext {
         if let Some(children) = self.widgets[parent_idx].children_mut() {
             if let Some(pos) = children.iter().position(|&c| c == child_idx) {
                 children.remove(pos);
-                self.dirty = true;
+                self.mark_dirty_flags(true, false, false, true);
                 return true;
             }
         }
@@ -1025,7 +1064,15 @@ impl GuiContext {
                 }
             }
         }
-        if let Some(idx) = widget_idx {
+        let next_focus = widget_idx.and_then(|idx| {
+            let base = self.widgets.get(idx)?.base();
+            if base.visible && base.enabled && base.focusable {
+                Some(idx)
+            } else {
+                None
+            }
+        });
+        if let Some(idx) = next_focus {
             if let Some(w) = self.widgets.get_mut(idx) {
                 w.base_mut().state = WidgetState::Focused;
                 if let WidgetKind::TextInput(ti) = w {
@@ -1033,48 +1080,103 @@ impl GuiContext {
                 }
             }
         }
-        self.focused_widget = widget_idx;
+        self.focused_widget = next_focus;
         if previous_focus != self.focused_widget {
             self.dirty = true;
         }
     }
+    fn collect_focus_candidates(&self, group: Option<&str>) -> Vec<usize> {
+        let mut out: Vec<usize> = self
+            .widgets
+            .iter()
+            .enumerate()
+            .skip(1)
+            .filter_map(|(idx, w)| {
+                let b = w.base();
+                if !(b.visible && b.enabled && b.focusable) {
+                    return None;
+                }
+                if let Some(g) = group {
+                    if !g.is_empty() && b.focus_group != g {
+                        return None;
+                    }
+                }
+                Some(idx)
+            })
+            .collect();
+        out.sort_by_key(|idx| {
+            let b = self.widgets[*idx].base();
+            (b.tab_index, *idx)
+        });
+        out
+    }
     /// Advance focus to the next visible enabled widget, wrapping around.
     pub fn focus_next(&mut self) {
-        let start = self.focused_widget.map_or(0, |i| i + 1);
-        for i in start..self.widgets.len() {
-            let base = self.widgets[i].base();
-            if base.visible && base.enabled {
-                self.set_focus(Some(i));
+        let active_group = self
+            .focused_widget
+            .and_then(|idx| self.widgets.get(idx).map(|w| w.base().focus_group.clone()));
+        let mut candidates = self.collect_focus_candidates(active_group.as_deref());
+        if candidates.is_empty() && active_group.as_deref().is_some_and(|g| !g.is_empty()) {
+            candidates = self.collect_focus_candidates(None);
+        }
+        if candidates.is_empty() {
+            return;
+        }
+        if let Some(current) = self.focused_widget {
+            if let Some(pos) = candidates.iter().position(|&idx| idx == current) {
+                let next = (pos + 1) % candidates.len();
+                self.set_focus(Some(candidates[next]));
                 return;
             }
         }
-        for i in 1..start.min(self.widgets.len()) {
-            let base = self.widgets[i].base();
-            if base.visible && base.enabled {
-                self.set_focus(Some(i));
-                return;
-            }
-        }
+        self.set_focus(Some(candidates[0]));
     }
     /// Move focus to the previous visible enabled widget, wrapping around.
     pub fn focus_prev(&mut self) {
-        let start = self.focused_widget.unwrap_or(self.widgets.len());
-        if start > 1 {
-            for i in (1..start).rev() {
-                let base = self.widgets[i].base();
-                if base.visible && base.enabled {
-                    self.set_focus(Some(i));
-                    return;
-                }
-            }
+        let active_group = self
+            .focused_widget
+            .and_then(|idx| self.widgets.get(idx).map(|w| w.base().focus_group.clone()));
+        let mut candidates = self.collect_focus_candidates(active_group.as_deref());
+        if candidates.is_empty() && active_group.as_deref().is_some_and(|g| !g.is_empty()) {
+            candidates = self.collect_focus_candidates(None);
         }
-        for i in (1..self.widgets.len()).rev() {
-            let base = self.widgets[i].base();
-            if base.visible && base.enabled {
-                self.set_focus(Some(i));
+        if candidates.is_empty() {
+            return;
+        }
+        if let Some(current) = self.focused_widget {
+            if let Some(pos) = candidates.iter().position(|&idx| idx == current) {
+                let prev = if pos == 0 {
+                    candidates.len() - 1
+                } else {
+                    pos - 1
+                };
+                self.set_focus(Some(candidates[prev]));
                 return;
             }
         }
+        self.set_focus(Some(*candidates.last().unwrap_or(&candidates[0])));
+    }
+    /// Move focus using an explicit neighbor edge on the currently focused widget.
+    pub fn focus_neighbor(&mut self, direction: &str) -> bool {
+        let Some(current) = self.focused_widget else {
+            return false;
+        };
+        let Some(w) = self.widgets.get(current) else {
+            return false;
+        };
+        let base = w.base();
+        let target = match direction {
+            "up" => base.focus_neighbor_up,
+            "down" => base.focus_neighbor_down,
+            "left" => base.focus_neighbor_left,
+            "right" => base.focus_neighbor_right,
+            _ => None,
+        };
+        if let Some(idx) = target {
+            self.set_focus(Some(idx));
+            return self.focused_widget == Some(idx);
+        }
+        false
     }
     /// Push a toast message into the overlay queue.
     pub fn add_toast(&mut self, toast: Toast) {
@@ -1223,7 +1325,14 @@ impl GuiContext {
         let mut hit = None;
         for idx in 1..self.widgets.len() {
             let base = self.widgets[idx].base();
-            if base.mouse_filter == crate::ui::widget::MouseFilter::Ignore {
+            // Hidden or disabled widgets never participate in hit-testing.
+            if !base.is_visible || !base.enabled {
+                continue;
+            }
+            // Ignore: the widget itself is not an event target (children are separate entries).
+            // Pass: the widget receives hover styling but is not the authoritative event target.
+            // Both are skipped here; only Stop widgets claim events.
+            if base.mouse_filter != crate::ui::widget::MouseFilter::Stop {
                 continue;
             }
             if !self.widget_contains_point(idx, x, y) {
@@ -1239,6 +1348,9 @@ impl GuiContext {
         let mut hit = None;
         for idx in 1..self.widgets.len() {
             let base = self.widgets[idx].base();
+            if !base.is_visible || !base.enabled {
+                continue;
+            }
             if base.mouse_filter == crate::ui::widget::MouseFilter::Ignore {
                 continue;
             }
@@ -2346,6 +2458,14 @@ impl GuiContext {
         for i in 1..self.widgets.len() {
             let base = self.widgets[i].base();
             if base.state == WidgetState::Pressed {
+                // Defensive: skip widgets that should not have reached Pressed state.
+                if !base.is_visible
+                    || !base.enabled
+                    || base.mouse_filter != crate::ui::widget::MouseFilter::Stop
+                {
+                    self.widgets[i].base_mut().state = WidgetState::Normal;
+                    continue;
+                }
                 let inside = self.widget_contains_point(i, x, y);
                 if inside {
                     let is_clickable = matches!(
@@ -2392,6 +2512,10 @@ impl GuiContext {
         for i in 1..self.widgets.len() {
             let base = self.widgets[i].base();
             if !base.visible || !base.is_visible || !base.enabled {
+                continue;
+            }
+            // Ignore widgets do not receive hover state changes.
+            if base.mouse_filter == crate::ui::widget::MouseFilter::Ignore {
                 continue;
             }
             let inside = self.widget_contains_point(i, x, y);

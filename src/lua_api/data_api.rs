@@ -553,7 +553,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- toMsgPack --
     /// Encodes a Lua value into the current structured binary interchange payload.
-    /// @param | value | table | Lua value to encode through the serial table converter.
+    /// @param | value | any | Lua value to encode through the serial table converter.
     /// @return | string | Encoded binary payload.
     tbl.set(
         "toMsgPack",

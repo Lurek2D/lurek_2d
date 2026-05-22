@@ -217,7 +217,7 @@ end
 
 ```lua
 --- Returns a table containing the current engine runtime configuration values.
----@return RuntimeGetConfigResult Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+---@return RuntimeGetConfigResult Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `default_font_size` (integer), `default_font_bold` (boolean), `config_reload_revision` (number).
 lurek.runtime.getConfig = function() end
 ```
 
@@ -225,7 +225,7 @@ lurek.runtime.getConfig = function() end
 
 Returns a table containing the current engine runtime configuration values.
 
-Returns: `table` - Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+Returns: `table` - Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `default_font_size` (integer), `default_font_bold` (boolean), `config_reload_revision` (number).
 
 #### Example
 

@@ -662,7 +662,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- sum --
         /// Returns the numeric sum of a column.
-        /// @param | col | string | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column sum.
         methods.add_method("sum", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -670,7 +670,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- mean --
         /// Returns the numeric mean of a column.
-        /// @param | col | string | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column mean.
         methods.add_method("mean", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -678,7 +678,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- min --
         /// Returns the minimum value of a column.
-        /// @param | col | string | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number|string|boolean|nil | Minimum cell value.
         methods.add_method("min", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -689,7 +689,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- max --
         /// Returns the maximum value of a column.
-        /// @param | col | string | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number|string|boolean|nil | Maximum cell value.
         methods.add_method("max", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -700,7 +700,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- median --
         /// Returns the numeric median of a column.
-        /// @param | col | string | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column median.
         methods.add_method("median", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -711,7 +711,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- stddev --
         /// Returns the numeric standard deviation of a column.
-        /// @param | col | string | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column standard deviation.
         methods.add_method("stddev", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;
@@ -722,7 +722,7 @@ impl LuaUserData for LuaDataFrame {
         });
         // -- variance --
         /// Returns the numeric variance of a column.
-        /// @param | col | string | Column name string or one-based column index.
+        /// @param | col | any | Column name string or one-based column index.
         /// @return | number | Column variance.
         methods.add_method("variance", |_, this, col: LuaValue| {
             let cr = lua_to_col_ref(col)?;

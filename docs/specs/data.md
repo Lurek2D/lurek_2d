@@ -11,9 +11,13 @@
 
 ## Summary
 
-Binary data toolkit providing byte buffers, compression, hashing, encoding, and structured pack/unpack operations. `ByteData` is a resizable byte vector with cursor-based read/write for all primitive types (u8–u64, i8–i64, f32, f64) in both little-endian and big-endian byte orders. `DataView` provides zero-copy typed access into existing byte slices. `DataWriter` accumulates serialized binary output.
+The `data` module is a comprehensive binary data toolkit situated in the Foundations tier of the engine. It provides high-performance data manipulation utilities entirely decoupled from engine-specific state, making it highly portable and resilient. It offers a robust suite of tools for byte buffering, compression, cryptographic hashing, string encoding, and structured binary packing and unpacking operations, all of which are critical for tasks ranging from network protocols to save-game serialization.
 
-Compression supports LZ4, Zstd, Deflate, and Gzip via `CompressFormat`. Hashing covers MD5, SHA-1, SHA-256, SHA-512, CRC32, xxHash, and BLAKE3 via `HashAlgorithm`. Encoding handles Base64, Hex, and URL-safe variants. `pack`/`unpack` use format strings for struct-style binary layout. `RingBuffer` provides fixed-capacity FIFO for streaming data. Exposed as `lurek.data.*`. Pure Foundations tier.
+At the center of the module is `ByteData`, an owned, resizable byte vector equipped with indexed read and write access for all primitive types (including integers and floating-point numbers) in both little-endian and big-endian formats. For zero-copy inspection of binary payloads, the `DataView` struct provides read-only typed access over shared byte slices, minimizing overhead when decoding large network packets or streaming assets. Complementing this is `DataWriter`, a sequential builder that accumulates serialized binary output using a movable cursor.
+
+The module supports an extensive array of compression codecs—LZ4, Zstd, Deflate, and Gzip—accessible via the `CompressFormat` enum. These codecs are exposed through full-buffer, streaming, and chunked APIs. For integrity checks and cryptography, the `HashAlgorithm` enum gives access to industry-standard hashes such as MD5, SHA-1, SHA-256, SHA-512, CRC32, xxHash, and BLAKE3. The `EncodeFormat` helpers seamlessly handle conversion of binary payloads to and from Base64, Hex, and URL-safe text formats.
+
+A major feature of the module is its `pack` and `unpack` functions, which utilize Python `struct`-style format strings. These utilities translate between dynamically typed inputs (or Lua tables) and strongly typed binary layouts, natively handling endian switching, padding, and both length-prefixed and null-terminated strings. Additionally, the `RingBuffer` type provides a fixed-capacity circular buffer with oldest-overwrite FIFO semantics, ideal for streaming data pipelines or rolling logs. The entire toolset is deeply integrated with the Lua runtime through the `lurek.data.*` namespace, allowing script developers to efficiently process arbitrary binary data.
 
 ## Source Documentation
 

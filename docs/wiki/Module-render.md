@@ -71,9 +71,11 @@ wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua 
 
 ## 📋 Summary
 
-wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work executes during Lua callbacks. Lua scripts emit draw commands (rectangles, circles, lines, polygons, text, textures, meshes) into a frame-local command buffer. At frame end the renderer sorts by layer/depth, batches compatible draws, and encodes wgpu render passes.
+The `render` module is a core Platform Services tier subsystem that powers the entire visual output of Lurek2D. Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
 
-`GpuRenderer` owns the device, queue, swap chain, and all GPU resources (textures, buffers, pipelines, shaders). `Font` handles text shaping and glyph atlas management via fontdue. Canvas targets enable off-screen rendering to textures. Post-processing applies shader passes from the `PostFxPipeline`. Custom WGSL shaders can be loaded and bound with uniform data. Mesh rendering supports indexed geometry with vertex attributes. Shape helpers generate circle, rounded-rect, polygon, and arc geometry. Exposed as `lurek.render.*`. Platform Services tier.
+The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
+
+A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
 
 [⬆ back to top](#table-of-contents)
 
@@ -99,11 +101,11 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 
 ### `font.rs`
 
-- Bitmap font atlas loading from embedded PNG sprite sheets with per-character cell extraction.
-- Six bundled font sizes (3×5 through 12×22) with nearest-size selection for scaling.
-- Glyph lookup returning UV coordinates, pixel metrics, and advance widths.
+- Bundled Courier New bitmap atlases in regular and bold variants using `assets/fonts/font_*` and `fontb_*`.
+- Latin-1 coverage for 0x20..=0xFF plus terminal-symbol aliases for box-drawing, blocks, and arrows.
+- Runtime rasterisation of TTF/OTF bytes into the same atlas format used by the bundled fonts.
+- Glyph lookup returning UV coordinates, pixel metrics, per-glyph advance widths, and alias resolution.
 - Text measurement: total pixel width, line height with multiplier, ascent and descent.
-- Word-wrap algorithm splitting text into lines that fit a pixel-width limit.
 - Atlas dirty-tracking for lazy GPU texture upload.
 
 ### `gpu_renderer.rs`
@@ -216,7 +218,7 @@ wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work execu
 ## 📖 API Overview
 
 - Source spec: [docs/specs/render.md](../blob/main/docs/specs/render.md)
-- Module-level functions: 110
+- Module-level functions: 116
 - Lua-visible types: 12
 - Total type methods: 88
 
@@ -1153,6 +1155,36 @@ do
 end
 ```
 
+#### lurek.render.getBuiltInFontNames
+
+#### Definition
+
+```lua
+--- Returns all stable built-in font names.
+---@return string[] Array of bundled font names such as font_8 and fontb_8.
+lurek.render.getBuiltInFontNames = function() end
+```
+
+#### Description
+
+Returns all stable built-in font names.
+
+Returns: `string[]` - Array of bundled font names such as font_8 and fontb_8.
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+do
+    -- Lists available system/fallback fonts
+    local names = lurek.render.getBuiltInFontNames()
+    if #names > 0 then
+        lurek.log.info("Available built-in fonts: " .. table.concat(names, ", "))
+    end
+end
+```
+
 #### lurek.render.getCanvas
 
 #### Definition
@@ -1320,21 +1352,21 @@ end
 #### Definition
 
 ```lua
---- Returns a built-in default font at the nearest available pixel height.
----@param pixelHeight? number Desired pixel height (default 14).
----@param bold? boolean When true, returns the bold variant (default false).
+--- Returns a built-in default font at the nearest available bundled point size.
+---@param pointSize? number Desired built-in point size. When omitted, returns the current configured default.
+---@param bold? boolean When true, returns the bold variant. When omitted, uses the current bold selection.
 ---@return LFont The built-in font handle.
-lurek.render.getDefaultFont = function(pixelHeight, bold) end
+lurek.render.getDefaultFont = function(pointSize, bold) end
 ```
 
 #### Description
 
-Returns a built-in default font at the nearest available pixel height.
+Returns a built-in default font at the nearest available bundled point size.
 
 Parameters:
 
-- `pixelHeight` (`integer`, optional): Desired pixel height (default 14).
-- `bold` (`boolean`, optional): When true, returns the bold variant (default false).
+- `pointSize` (`integer`, optional): Desired built-in point size. When omitted, returns the current configured default.
+- `bold` (`boolean`, optional): When true, returns the bold variant. When omitted, uses the current bold selection.
 
 Returns: `LFont` - The built-in font handle.
 
@@ -1622,16 +1654,16 @@ end
 #### Definition
 
 ```lua
---- Returns all available built-in font pixel heights.
----@return number[] Array of available font height values.
+--- Returns all available built-in point sizes.
+---@return number[] Array of bundled font sizes such as 8, 10, 12, 16, 20, 24, and 30.
 lurek.render.getFontSizes = function() end
 ```
 
 #### Description
 
-Returns all available built-in font pixel heights.
+Returns all available built-in point sizes.
 
-Returns: `number[]` - Array of available font height values.
+Returns: `number[]` - Array of bundled font sizes such as 8, 10, 12, 16, 20, 24, and 30.
 
 #### Example
 
@@ -2052,53 +2084,11 @@ Returns: `boolean` - True when bold is active.
 Source: [render.lua](../blob/main/content/examples/render.lua)
 
 ```lua
---- Render Module Part 1: basic drawing â€” print, rectangle, circle, line, polygon, points, arc, ellipse, triangle
-
-
---@api-stub: lurek.render.print
 do
-    lurek.render.print("Hello, Lurek2D!", 10, 10)
-       -- Removed scaled and small text prints
-       lurek.render.print("", 0, 0)
+    -- Checks if the bold font variant is currently enabled for text rendering.
+    local is_bold = lurek.render.isBold()
+    print("Is bold: " .. tostring(is_bold))
 end
-
---@api-stub: lurek.render.printf
-do
-       lurek.render.printf("Centered text within a 300px box.", 10, 140, 300, "center")
-end
-
---@api-stub: lurek.render.printRotated
-do
-    lurek.render.printRotated("Rotated!", 200, 200, math.pi / 4)
-end
-
---@api-stub: lurek.render.printRich
-do
-    local spans = { { text = "Red ",   r = 1, g = 0, b = 0, a = 1, scale = 1 }, { text = "Green ", r = 0, g = 1, b = 0, a = 1, scale = 1 }, { text = "Blue",   r = 0, g = 0, b = 1, a = 1, scale = 1.5 }, }
-    lurek.render.printRich(spans, 10, 260)
-end
-
---@api-stub: lurek.render.rectangle
-do
-    lurek.render.setColor(1, 0, 0, 1)
-    lurek.render.rectangle("fill", 50, 300, 100, 60)
-    lurek.render.setColor(1, 1, 1, 1)
-end
-
---@api-stub: lurek.render.circle
-do
-    lurek.render.setColor(1, 0.5, 0, 1); lurek.render.circle("fill", 500, 340, 40)
-    lurek.render.setColor(0, 1, 1, 1); lurek.render.circle("line", 500, 340, 40)
-    lurek.render.setColor(0.5, 0.5, 0.5, 1)
-    lurek.render.circle("fill", 600, 340, 20)
-    lurek.render.setColor(1, 1, 1, 1)
-end
-
---@api-stub: lurek.render.ellipse
-do
-    lurek.render.setColor(0.2, 0.6, 0.9, 1); lurek.render.ellipse("fill", 150, 450, 60, 30)
-    lurek.render.setColor(1, 1, 1, 1); lurek.render.ellipse("line", 150, 450, 60, 30)
-    lurek.render.setColor(0.9, 0.3, 0.1, 1)
 ```
 
 #### lurek.render.isLayerVisible
@@ -2351,21 +2341,21 @@ end
 #### Definition
 
 ```lua
---- Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.
----@param pathOrSize string|number File path to a PNG font sheet, or a pixel height for a built-in font.
----@param size? number Cell height in pixels when loading from a file (default 14).
+--- Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
+---@param pathOrSize any Built-in font name, font file path, or numeric built-in point-size selector.
+---@param size? number Point size for TTF/OTF files, or cell height for PNG atlases.
 ---@return LFont The created font handle.
 lurek.render.newFont = function(pathOrSize, size) end
 ```
 
 #### Description
 
-Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.
+Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
 
 Parameters:
 
-- `pathOrSize` (`string|number`, required): File path to a PNG font sheet, or a pixel height for a built-in font.
-- `size` (`number`, optional): Cell height in pixels when loading from a file (default 14).
+- `pathOrSize` (`any`, required): Built-in font name, font file path, or numeric built-in point-size selector.
+- `size` (`number`, optional): Point size for TTF/OTF files, or cell height for PNG atlases.
 
 Returns: `LFont` - The created font handle.
 
@@ -2901,6 +2891,46 @@ do
 end
 ```
 
+#### lurek.render.printfWithFont
+
+#### Definition
+
+```lua
+--- Draws word-wrapped and aligned text with a specific font without changing the global active font.
+---@param font LFont Font handle to use for this draw.
+---@param text string Text to render.
+---@param x number X position.
+---@param y number Y position.
+---@param limit number Maximum line width in pixels for wrapping.
+---@param align? string Alignment: "left" (default), "center", "right", or "justify".
+lurek.render.printfWithFont = function(font, text, x, y, limit, align) end
+```
+
+#### Description
+
+Draws word-wrapped and aligned text with a specific font without changing the global active font.
+
+Parameters:
+
+- `font` (`LFont`, required): Font handle to use for this draw.
+- `text` (`string`, required): Text to render.
+- `x` (`number`, required): X position.
+- `y` (`number`, required): Y position.
+- `limit` (`number`, required): Maximum line width in pixels for wrapping.
+- `align` (`string`, optional): Alignment: "left" (default), "center", "right", or "justify".
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws formatted text with a specific font
+    lurek.render.printfWithFont(font, "Formatted: %d %s", 10, 200, 42, "items")
+end
+```
+
 #### lurek.render.printRich
 
 #### Definition
@@ -2931,6 +2961,46 @@ Source: [render.lua](../blob/main/content/examples/render.lua)
 do
     local spans = { { text = "Red ",   r = 1, g = 0, b = 0, a = 1, scale = 1 }, { text = "Green ", r = 0, g = 1, b = 0, a = 1, scale = 1 }, { text = "Blue",   r = 0, g = 0, b = 1, a = 1, scale = 1.5 }, }
     lurek.render.printRich(spans, 10, 260)
+end
+```
+
+#### lurek.render.printRichWithFont
+
+#### Definition
+
+```lua
+--- Draws rich text using a specific font without changing the global active font.
+---@param font LFont Font handle to use for this draw.
+---@param spans table Array of span tables, each with fields: text, r, g, b, a, scale.
+---@param x number X position.
+---@param y number Y position.
+lurek.render.printRichWithFont = function(font, spans, x, y) end
+```
+
+#### Description
+
+Draws rich text using a specific font without changing the global active font.
+
+Parameters:
+
+- `font` (`LFont`, required): Font handle to use for this draw.
+- `spans` (`table`, required): Array of span tables, each with fields: text, r, g, b, a, scale.
+- `x` (`number`, required): X position.
+- `y` (`number`, required): Y position.
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws rich text with styled span tables.
+    lurek.render.printRichWithFont(font, {
+        { text = "Red", r = 255, g = 0, b = 0, a = 255, scale = 1 },
+        { text = " and ", r = 255, g = 255, b = 255, a = 255, scale = 1 },
+        { text = "Green", r = 0, g = 255, b = 0, a = 255, scale = 1 },
+    }, 10, 250)
 end
 ```
 
@@ -2967,6 +3037,84 @@ Source: [render.lua](../blob/main/content/examples/render.lua)
 ```lua
 do
     lurek.render.printRotated("Rotated!", 200, 200, math.pi / 4)
+end
+```
+
+#### lurek.render.printRotatedWithFont
+
+#### Definition
+
+```lua
+--- Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
+---@param font LFont Font handle to use for this draw.
+---@param text string Text to render.
+---@param x number Center X position.
+---@param y number Center Y position.
+---@param angle number Rotation angle in radians.
+---@param scale? number Text scale factor (default 1).
+lurek.render.printRotatedWithFont = function(font, text, x, y, angle, scale) end
+```
+
+#### Description
+
+Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
+
+Parameters:
+
+- `font` (`LFont`, required): Font handle to use for this draw.
+- `text` (`string`, required): Text to render.
+- `x` (`number`, required): Center X position.
+- `y` (`number`, required): Center Y position.
+- `angle` (`number`, required): Rotation angle in radians.
+- `scale` (`number`, optional): Text scale factor (default 1).
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws text rotated by 45 degrees
+    lurek.render.printRotatedWithFont(font, "Rotated text", 100, 100, math.pi / 4, 1.0)
+end
+```
+
+#### lurek.render.printWithFont
+
+#### Definition
+
+```lua
+--- Draws text using a specific font without changing the global active font.
+---@param font LFont Font handle to use for this draw.
+---@param text string Text to render.
+---@param x? number X position (default 0).
+---@param y? number Y position (default 0).
+---@param scale? number Text scale factor (default 1).
+lurek.render.printWithFont = function(font, text, x, y, scale) end
+```
+
+#### Description
+
+Draws text using a specific font without changing the global active font.
+
+Parameters:
+
+- `font` (`LFont`, required): Font handle to use for this draw.
+- `text` (`string`, required): Text to render.
+- `x` (`number`, optional): X position (default 0).
+- `y` (`number`, optional): Y position (default 0).
+- `scale` (`number`, optional): Text scale factor (default 1).
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+do
+    local font = lurek.render.getDefaultFont(16)
+    -- Draws standard text using a specific font
+    lurek.render.printWithFont(font, "Standard text override", 10, 150)
 end
 ```
 
@@ -3330,53 +3478,13 @@ Parameters:
 Source: [render.lua](../blob/main/content/examples/render.lua)
 
 ```lua
---- Render Module Part 1: basic drawing â€” print, rectangle, circle, line, polygon, points, arc, ellipse, triangle
-
-
---@api-stub: lurek.render.print
 do
-    lurek.render.print("Hello, Lurek2D!", 10, 10)
-       -- Removed scaled and small text prints
-       lurek.render.print("", 0, 0)
+    -- Sets whether text rendering should use a bold font variant if available.
+    local prev = lurek.render.isBold()
+    lurek.render.setBold(true)
+    lurek.render.print("Bold text", 10, 10)
+    lurek.render.setBold(prev)
 end
-
---@api-stub: lurek.render.printf
-do
-       lurek.render.printf("Centered text within a 300px box.", 10, 140, 300, "center")
-end
-
---@api-stub: lurek.render.printRotated
-do
-    lurek.render.printRotated("Rotated!", 200, 200, math.pi / 4)
-end
-
---@api-stub: lurek.render.printRich
-do
-    local spans = { { text = "Red ",   r = 1, g = 0, b = 0, a = 1, scale = 1 }, { text = "Green ", r = 0, g = 1, b = 0, a = 1, scale = 1 }, { text = "Blue",   r = 0, g = 0, b = 1, a = 1, scale = 1.5 }, }
-    lurek.render.printRich(spans, 10, 260)
-end
-
---@api-stub: lurek.render.rectangle
-do
-    lurek.render.setColor(1, 0, 0, 1)
-    lurek.render.rectangle("fill", 50, 300, 100, 60)
-    lurek.render.setColor(1, 1, 1, 1)
-end
-
---@api-stub: lurek.render.circle
-do
-    lurek.render.setColor(1, 0.5, 0, 1); lurek.render.circle("fill", 500, 340, 40)
-    lurek.render.setColor(0, 1, 1, 1); lurek.render.circle("line", 500, 340, 40)
-    lurek.render.setColor(0.5, 0.5, 0.5, 1)
-    lurek.render.circle("fill", 600, 340, 20)
-    lurek.render.setColor(1, 1, 1, 1)
-end
-
---@api-stub: lurek.render.ellipse
-do
-    lurek.render.setColor(0.2, 0.6, 0.9, 1); lurek.render.ellipse("fill", 150, 450, 60, 30)
-    lurek.render.setColor(1, 1, 1, 1); lurek.render.ellipse("line", 150, 450, 60, 30)
-    lurek.render.setColor(0.9, 0.3, 0.1, 1)
 ```
 
 #### lurek.render.setCanvas
@@ -3519,6 +3627,44 @@ do
     min, mag, aniso = lurek.render.getDefaultFilter()
     print("filter: min=" .. min .. " mag=" .. mag .. " aniso=" .. aniso)
     lurek.render.setDefaultFilter("linear", "linear", 1)
+end
+```
+
+#### lurek.render.setDefaultFont
+
+#### Definition
+
+```lua
+--- Selects a built-in default font by bundled point size and makes it the active render font.
+---@param pointSize? number Desired built-in point size. When omitted, reuses the configured default size.
+---@param bold? boolean When true, selects the bold variant. When omitted, reuses the current bold selection.
+---@return LFont The selected built-in font handle.
+lurek.render.setDefaultFont = function(pointSize, bold) end
+```
+
+#### Description
+
+Selects a built-in default font by bundled point size and makes it the active render font.
+
+Parameters:
+
+- `pointSize` (`integer`, optional): Desired built-in point size. When omitted, reuses the configured default size.
+- `bold` (`boolean`, optional): When true, selects the bold variant. When omitted, reuses the current bold selection.
+
+Returns: `LFont` - The selected built-in font handle.
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+do
+    local regular = lurek.render.setDefaultFont(10, false)
+    lurek.render.print("Built-in regular font_10", 10, 55)
+    local bold = lurek.render.setDefaultFont(10, true)
+    lurek.render.print("Built-in bold fontb_10", 10, 75)
+    lurek.render.setFont(regular)
+    print("default font switched, bold height = " .. bold:getHeight())
 end
 ```
 
@@ -4520,21 +4666,21 @@ end
 #### Definition
 
 ```lua
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Canvas".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Canvas" or "Object").
+---@return boolean True if the name matches.
 function LCanvas:typeOf(name) end
 ```
 
 #### Description
 
-Returns the type name of this object.
+Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check.
+- `name` (`string`, required): Type name to check ("Canvas" or "Object").
 
-Returns: `string` - Always "Canvas".
+Returns: `boolean` - True if the name matches.
 
 #### Example
 
@@ -5040,21 +5186,21 @@ end
 #### Definition
 
 ```lua
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Font".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Font" or "Object").
+---@return boolean True if the name matches.
 function LFont:typeOf(name) end
 ```
 
 #### Description
 
-Returns the type name of this object.
+Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check.
+- `name` (`string`, required): Type name to check ("Font" or "Object").
 
-Returns: `string` - Always "Font".
+Returns: `boolean` - True if the name matches.
 
 #### Example
 
@@ -5251,21 +5397,21 @@ end
 #### Definition
 
 ```lua
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Image".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Image" or "Object").
+---@return boolean True if the name matches.
 function LImage:typeOf(name) end
 ```
 
 #### Description
 
-Returns the type name of this object.
+Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check.
+- `name` (`string`, required): Type name to check ("Image" or "Object").
 
-Returns: `string` - Always "Image".
+Returns: `boolean` - True if the name matches.
 
 #### Example
 
@@ -5771,21 +5917,21 @@ end
 #### Definition
 
 ```lua
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Mesh".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Mesh" or "Object").
+---@return boolean True if the name matches.
 function LMesh:typeOf(name) end
 ```
 
 #### Description
 
-Returns the type name of this object.
+Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check.
+- `name` (`string`, required): Type name to check ("Mesh" or "Object").
 
-Returns: `string` - Always "Mesh".
+Returns: `boolean` - True if the name matches.
 
 #### Example
 
@@ -6258,21 +6404,21 @@ end
 #### Definition
 
 ```lua
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Quad".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Quad" or "Object").
+---@return boolean True if the name matches.
 function LQuad:typeOf(name) end
 ```
 
 #### Description
 
-Returns the type name of this object.
+Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check.
+- `name` (`string`, required): Type name to check ("Quad" or "Object").
 
-Returns: `string` - Always "Quad".
+Returns: `boolean` - True if the name matches.
 
 #### Example
 
@@ -6420,21 +6566,21 @@ end
 #### Definition
 
 ```lua
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Shader".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Shader" or "Object").
+---@return boolean True if the name matches.
 function LShader:typeOf(name) end
 ```
 
 #### Description
 
-Returns the type name of this object.
+Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check.
+- `name` (`string`, required): Type name to check ("Shader" or "Object").
 
-Returns: `string` - Always "Shader".
+Returns: `boolean` - True if the name matches.
 
 #### Example
 
@@ -7243,21 +7389,21 @@ end
 #### Definition
 
 ```lua
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "SpriteBatch".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("SpriteBatch" or "Object").
+---@return boolean True if the name matches.
 function LSpriteBatch:typeOf(name) end
 ```
 
 #### Description
 
-Returns the type name of this object.
+Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check.
+- `name` (`string`, required): Type name to check ("SpriteBatch" or "Object").
 
-Returns: `string` - Always "SpriteBatch".
+Returns: `boolean` - True if the name matches.
 
 #### Example
 

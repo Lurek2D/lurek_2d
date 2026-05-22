@@ -21,7 +21,6 @@
   - [mod.rs](#modrs)
   - [render.rs](#renderrs)
   - [theme.rs](#themers)
-  - [widget.rs](#widgetrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -127,13 +126,11 @@ Retained-mode widget system; rendering deferred through RenderCommand.
 
 ## 📋 Summary
 
-Retained-mode GUI framework with 35+ widget types, layout engine, theme system, charts, data binding, and TOML-based layout loading. `GuiContext` is the top-level container managing widget trees, focus state, input routing, and per-frame update/draw cycles. Widgets include buttons, labels, text inputs, checkboxes, sliders, dropdowns, lists, trees, tabs, panels, scrollbars, progress bars, color pickers, date pickers, and custom canvas regions.
+The `ui` module is a comprehensive Feature Systems tier component that provides a full-featured, retained-mode Graphical User Interface (GUI) toolkit. Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
 
-Layout uses a flex-based model with containers, rows, columns, grids, and stack panels — supports padding, margin, alignment, grow/shrink factors, and min/max constraints. Themes define color palettes, fonts, spacing, and per-widget style overrides in TOML. Data binding connects widget values to Lua tables with two-way synchronization. Table and chart helpers can bulk-load `LDataFrame` rows so UI screens do not need Lua-side row loops for common tabular and chart views. Chart widgets (line, bar, scatter, pie, area) render data visualizations to `ImageData` buffers. TOML loader instantiates complete UI hierarchies from declarative layout files. Exposed as `lurek.ui.*`. Feature Systems tier.
+At the structural level, the module employs a robust flex-based layout engine (`Layout`) that supports vertical, horizontal, and grid packing, alongside alignment, spacing, padding, and min/max constraints. Layouts can be constructed programmatically in Lua or loaded dynamically from declarative TOML files using the built-in layout loader, which dramatically accelerates UI iteration. The visual presentation is governed by a flexible `Theme` system that maps widget states (Normal, Hovered, Pressed, Focused, Disabled) to specific styles containing color palettes, font overrides, borders, and shadows. The module natively supports resolution-independent 9-slice borders (`NinePatch`) and per-widget transition animations (alpha fades, position slides) to deliver a polished, responsive user experience.
 
-Mouse input is routed through existing `lurek.ui.mousepressed`, `lurek.ui.mousereleased`, `lurek.ui.mousemoved`, `lurek.ui.wheelmoved`, and `lurek.ui.update` calls. The retained widget tree runs layout before input hit testing, uses computed screen rectangles when available, falls back to direct widget coordinates for unattached widgets, and respects visibility, enabled state, z-order, and recent paint order. Mouse input updates button clicks, slider press/drag values, tab selection, combo box open/select state, list row selection, table row selection, sortable table headers, switch and checkbox values, radio groups, tree view rows, spin-box step zones, accordion headers, scroll bars, dialog/window close controls, toolbar buttons, color pickers, and hover-routed scrolling.
-
-Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.textinput`, focus methods, and `lurek.ui.update` callback dispatch. Focus changes keep `TextInput.focused` in sync with widget focus state. Text editing emits `GuiEvent::Change` only when text changes, cursor movement marks the UI dirty without emitting a value change, and focused controls support activation and simple arrow-key navigation where the widget has an existing value or selectio
+Beyond standard UI components and input routing, the module uniquely integrates powerful data visualization and binding tools. The built-in chart system (Line, Bar, Scatter, Pie, Area) software-rasterizes complex datasets directly into pixel buffers without GPU dependencies, intelligently handling automatic axes scaling, legends, and grid lines. The `GUITable` and charts seamlessly integrate with the `dataframe` module, enabling bulk loading of structured rows directly into UI views without expensive Lua-side iterations. Fully exposed through the `lurek.ui.*` API, this module equips developers with everything needed to build intricate developer dashboards, complex menus, and data-rich game interfaces.
 
 [⬆ back to top](#table-of-contents)
 
@@ -147,8 +144,8 @@ Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.texti
 - Shared `ChartConfig` controls dimensions, background/axis/grid/label colours, title,
 - margins, and grid visibility across all chart types.
 - Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
-- scaled to arbitrary value ranges on both axes.
-- Legend panels reserve right or bottom space outside plotted data when the image size allows it.
+- scaled to arbitrary value ranges on both axes, with X-axis tick density reduced on compact plots.
+- Legend panels reserve right or bottom space outside plotted data when the image size allows it, using the shared 5x7 `ImageData` label advance for width estimates.
 - Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
 - anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
 - Area chart performs linear interpolation between uniform X samples and fills columns
@@ -184,7 +181,7 @@ Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.texti
 
 - Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
 - Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
-- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
+- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants; `TextInput` also clamps direct `setText` and existing text when `setMaxLength` changes.
 - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
 - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
 
@@ -212,7 +209,7 @@ Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.texti
 - Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
 - Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
 - Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
-- Provide a headless `render_to_image` path that runs a layout pass and alpha-blends flat debug colours per widget kind to an RGBA PNG.
+- Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to an RGBA PNG.
 - Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
 - Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
 
@@ -231,9 +228,9 @@ Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.texti
 - Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
 - Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
 - HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
-- `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
+- `WidgetRenderer` carrier struct threading `GuiContext`, resolved font storage, and output buffer through the render pass.
 - Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
-- Approximate character-width text measurement and alignment (left/center/right) for label placement.
+- Font-aware text measurement and alignment for labels, tabs, menu shortcuts, and text-input cursor placement.
 
 ### `theme.rs`
 
@@ -245,10 +242,8 @@ Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.texti
 - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
 - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
 - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
-
-### `widget.rs`
-
-- Public types and helpers for the widget module.
+- `ThemeToken` enum carries `Color([f32;4])` or `Float(f32)` values; the `tokens` map on `Theme` is keyed by name string.
+- `Theme::get_token(name)` returns `Option<&ThemeToken>` for use at render time or from Lua.
 
 [⬆ back to top](#table-of-contents)
 
@@ -276,9 +271,9 @@ Keyboard input is routed through existing `lurek.ui.keypressed`, `lurek.ui.texti
 ## 📖 API Overview
 
 - Source spec: [docs/specs/ui.md](../blob/main/docs/specs/ui.md)
-- Module-level functions: 74
+- Module-level functions: 82
 - Lua-visible types: 41
-- Total type methods: 326
+- Total type methods: 338
 
 
 [⬆ back to top](#table-of-contents)
@@ -353,6 +348,35 @@ do
 end
 ```
 
+#### lurek.ui.clear
+
+#### Definition
+
+```lua
+--- Clears all retained UI widgets and transient UI state while keeping the active theme.
+---@return number Number of widgets removed from the retained UI tree.
+lurek.ui.clear = function() end
+```
+
+#### Description
+
+Clears all retained UI widgets and transient UI state while keeping the active theme.
+
+Returns: `integer` - Number of widgets removed from the retained UI tree.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local root = lurek.ui.getRoot()
+    if root then
+        lurek.ui.clear()
+    end
+end
+```
+
 #### lurek.ui.clearFocus
 
 #### Definition
@@ -377,6 +401,34 @@ do
     lurek.ui.focusNext(); print("after focusNext:", lurek.ui.getFocus())
     lurek.ui.focusPrev(); print("after focusPrev:", lurek.ui.getFocus())
     lurek.ui.clearFocus(); print("after clear:", lurek.ui.getFocus())
+end
+```
+
+#### lurek.ui.clearFont
+
+#### Definition
+
+```lua
+--- Clears the global UI font override so the UI falls back to the active render font again.
+lurek.ui.clearFont = function() end
+```
+
+#### Description
+
+Clears the global UI font override so the UI falls back to the active render font again.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    -- Example for clearFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using clearFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked clearFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
 end
 ```
 
@@ -539,6 +591,42 @@ do
 end
 ```
 
+#### lurek.ui.focusNeighbor
+
+#### Definition
+
+```lua
+--- Moves keyboard focus using an explicit directional focus link.
+---@param direction string Direction: "up", "down", "left", or "right".
+---@return boolean True when focus was moved to a configured neighbor.
+lurek.ui.focusNeighbor = function(direction) end
+```
+
+#### Description
+
+Moves keyboard focus using an explicit directional focus link.
+
+Parameters:
+
+- `direction` (`string`, required): Direction: "up", "down", "left", or "right".
+
+Returns: `boolean` - True when focus was moved to a configured neighbor.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local a = lurek.ui.newButton("A")
+    local b = lurek.ui.newButton("B")
+    a:setFocusNeighbor("right", b._idx)
+    lurek.ui.setFocus(a)
+    local moved = lurek.ui.focusNeighbor("right")
+    print("focus moved=" .. tostring(moved))
+end
+```
+
 #### lurek.ui.focusNext
 
 #### Definition
@@ -653,6 +741,37 @@ do
 end
 ```
 
+#### lurek.ui.getFont
+
+#### Definition
+
+```lua
+--- Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
+---@return LFont Current global UI font handle.
+lurek.ui.getFont = function() end
+```
+
+#### Description
+
+Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
+
+Returns: `LFont` - Current global UI font handle.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    -- Example for getFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using getFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked getFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
+end
+```
+
 #### lurek.ui.getRoot
 
 #### Definition
@@ -678,6 +797,42 @@ do
     local root = lurek.ui.getRoot()
     print("root = " .. tostring(root))
     print("widget count = " .. lurek.ui.getWidgetCount())
+end
+```
+
+#### lurek.ui.getStyleToken
+
+#### Definition
+
+```lua
+--- Returns the value of a named semantic style token from the active theme.
+---@param name string The token name (e.g. "spacing_md", "color_primary").
+---@return any The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+lurek.ui.getStyleToken = function(name) end
+```
+
+#### Description
+
+Returns the value of a named semantic style token from the active theme.
+
+Parameters:
+
+- `name` (`string`, required): The token name (e.g. "spacing_md", "color_primary").
+
+Returns: `any` - The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local spacing = lurek.ui.getStyleToken("spacing_md")
+    local color = lurek.ui.getStyleToken("color_primary")
+    print("spacing_md=" .. tostring(spacing))
+    if type(color) == "table" then
+        print("color_primary a=" .. tostring(color.a))
+    end
 end
 ```
 
@@ -768,6 +923,42 @@ do
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
     print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+end
+```
+
+#### lurek.ui.getWidgetFont
+
+#### Definition
+
+```lua
+--- Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
+---@param widget LUiWidget Widget handle to query.
+---@return LFont Font override assigned to the widget.
+lurek.ui.getWidgetFont = function(widget) end
+```
+
+#### Description
+
+Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
+
+Parameters:
+
+- `widget` (`LUiWidget`, required): Widget handle to query.
+
+Returns: `LFont` - Font override assigned to the widget.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    -- Example for getWidgetFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using getWidgetFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked getWidgetFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
 end
 ```
 
@@ -2452,10 +2643,10 @@ end
 
 ```lua
 --- Renders the entire UI to a PNG image file.
----@param width number Image width in pixels.
----@param height number Image height in pixels.
----@param path string Output file path.
-lurek.ui.renderToImage = function(width, height, path) end
+---@param pathOrWidth any Output file path for path-first calls, or image width for canonical calls.
+---@param widthOrHeight number Image width for path-first calls, or image height for canonical calls.
+---@param heightOrPath any Image height for path-first calls, or output file path for canonical calls.
+lurek.ui.renderToImage = function(pathOrWidth, widthOrHeight, heightOrPath) end
 ```
 
 #### Description
@@ -2464,9 +2655,9 @@ Renders the entire UI to a PNG image file.
 
 Parameters:
 
-- `width` (`integer`, required): Image width in pixels.
-- `height` (`integer`, required): Image height in pixels.
-- `path` (`string`, required): Output file path.
+- `pathOrWidth` (`any`, required): Output file path for path-first calls, or image width for canonical calls.
+- `widthOrHeight` (`integer`, required): Image width for path-first calls, or image height for canonical calls.
+- `heightOrPath` (`any`, required): Image height for path-first calls, or output file path for canonical calls.
 
 #### Example
 
@@ -2537,6 +2728,39 @@ do
     lurek.ui.clearFocus()
     focused = lurek.ui.getFocus()
     print("after clear = " .. tostring(focused))
+end
+```
+
+#### lurek.ui.setFont
+
+#### Definition
+
+```lua
+--- Sets the global UI font by applying it to the root widget.
+---@param font LFont Font handle used by the UI when widgets do not override it.
+lurek.ui.setFont = function(font) end
+```
+
+#### Description
+
+Sets the global UI font by applying it to the root widget.
+
+Parameters:
+
+- `font` (`LFont`, required): Font handle used by the UI when widgets do not override it.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    -- Example for setFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using setFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked setFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
 end
 ```
 
@@ -2678,6 +2902,7 @@ end
 ```lua
 --- Updates data bindings for widgets that reference binding keys.
 ---@param data table A table mapping binding keys to values.
+---@return number The number of widgets whose state changed.
 lurek.ui.update_bindings = function(data) end
 ```
 
@@ -2688,6 +2913,8 @@ Updates data bindings for widgets that reference binding keys.
 Parameters:
 
 - `data` (`table`, required): A table mapping binding keys to values.
+
+Returns: `integer` - The number of widgets whose state changed.
 
 #### Example
 
@@ -2700,6 +2927,42 @@ do
     lurek.ui.wheelmoved(0, 1)
     lurek.ui.wheelmoved(1, 0)
     print("textinput/update_bindings/wheelmoved ok")
+end
+```
+
+#### lurek.ui.updateBindings
+
+#### Definition
+
+```lua
+--- Updates data bindings for widgets that reference binding keys.
+---@param data table A table mapping binding keys to values.
+---@return number The number of widgets whose state changed.
+lurek.ui.updateBindings = function(data) end
+```
+
+#### Description
+
+Updates data bindings for widgets that reference binding keys.
+
+Parameters:
+
+- `data` (`table`, required): A table mapping binding keys to values.
+
+Returns: `integer` - The number of widgets whose state changed.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    -- Example for updateBindings
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using updateBindings")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked updateBindings on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
 end
 ```
 
@@ -3610,7 +3873,6 @@ Adds a collapsible section to this accordion.
 
 Parameters:
 
-- `self` (`LAccordion`, required): The widget instance.
 - `title` (`string`, required): The section title.
 - `content_idx` (`integer`, optional): Optional widget index for the section content.
 
@@ -3620,11 +3882,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
-    acc:addSection("Chapter 2")
-    local cnt = acc:getSectionCount()
-    local title = acc:getSectionTitle(1)
-    print("sections:", cnt, "title:", title)
+    local acc = lurek.ui.newAccordion(); acc:addSection("Player Stats")
+    acc:addSection("Inventory"); acc:addSection("Quest Log")
+    print("sections = " .. acc:getSectionCount())
+    print("section 1 = " .. acc:getSectionTitle(1))
+    print("section 2 = " .. acc:getSectionTitle(2))
 end
 ```
 
@@ -3642,10 +3904,6 @@ function LAccordion:getSectionCount() end
 
 Returns the number of sections in this accordion.
 
-Parameters:
-
-- `self` (`LAccordion`, required): The widget instance.
-
 Returns: `integer` - The section count.
 
 #### Example
@@ -3654,11 +3912,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
-    acc:addSection("Chapter 2")
-    local cnt = acc:getSectionCount()
-    local title = acc:getSectionTitle(1)
-    print("sections:", cnt, "title:", title)
+    local acc = lurek.ui.newAccordion(); acc:addSection("Player Stats")
+    acc:addSection("Inventory"); acc:addSection("Quest Log")
+    print("sections = " .. acc:getSectionCount())
+    print("section 1 = " .. acc:getSectionTitle(1))
+    print("section 2 = " .. acc:getSectionTitle(2))
 end
 ```
 
@@ -3679,7 +3937,6 @@ Returns the title of an accordion section by its 1-based index.
 
 Parameters:
 
-- `self` (`LAccordion`, required): The widget instance.
 - `section_idx` (`integer`, required): The 1-based section index.
 
 Returns: `string` - The section title, or nil if out of range.
@@ -3690,11 +3947,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("Chapter 1")
-    acc:addSection("Chapter 2")
-    local cnt = acc:getSectionCount()
-    local title = acc:getSectionTitle(1)
-    print("sections:", cnt, "title:", title)
+    local acc = lurek.ui.newAccordion(); acc:addSection("Player Stats")
+    acc:addSection("Inventory"); acc:addSection("Quest Log")
+    print("sections = " .. acc:getSectionCount())
+    print("section 1 = " .. acc:getSectionTitle(1))
+    print("section 2 = " .. acc:getSectionTitle(2))
 end
 ```
 
@@ -3712,10 +3969,6 @@ function LAccordion:isExclusive() end
 
 Returns whether this accordion is in exclusive mode (only one section open at a time).
 
-Parameters:
-
-- `self` (`LAccordion`, required): The widget instance.
-
 Returns: `boolean` - True if exclusive.
 
 #### Example
@@ -3724,11 +3977,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("A")
-    acc:setExclusive(true)
-    local ex = acc:isExclusive()
-    local expanded = acc:isSectionExpanded(1)
-    print("exclusive:", ex, "expanded:", expanded)
+    local acc = lurek.ui.newAccordion(); print("type=" .. acc:type()); acc:addSection("Section A")
+    acc:addSection("Section B"); print("count=" .. acc:getSectionCount()); print("title0=" .. acc:getSectionTitle(1))
+    print("expanded0=" .. tostring(acc:isSectionExpanded(1))); acc:toggleSection(1)
+    print("expanded0_after=" .. tostring(acc:isSectionExpanded(1))); print("exclusive=" .. tostring(acc:isExclusive()))
+    acc:setExclusive(true); print("exclusive_after=" .. tostring(acc:isExclusive()))
 end
 ```
 
@@ -3749,7 +4002,6 @@ Returns whether an accordion section is expanded.
 
 Parameters:
 
-- `self` (`LAccordion`, required): The widget instance.
 - `section_idx` (`integer`, required): The 1-based section index.
 
 Returns: `boolean` - True if expanded.
@@ -3760,11 +4012,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("A")
-    acc:setExclusive(true)
-    local ex = acc:isExclusive()
-    local expanded = acc:isSectionExpanded(1)
-    print("exclusive:", ex, "expanded:", expanded)
+    local acc = lurek.ui.newAccordion(); acc:addSection("A"); acc:addSection("B")
+    acc:addSection("C"); acc:setExclusive(true)
+    print("exclusive = " .. tostring(acc:isExclusive())); acc:toggleSection(1)
+    print("section 1 expanded = " .. tostring(acc:isSectionExpanded(1))); acc:toggleSection(2)
+    print("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1))); print("section 2 expanded = " .. tostring(acc:isSectionExpanded(2)))
 end
 ```
 
@@ -3784,7 +4036,6 @@ Sets exclusive mode. When true, expanding one section collapses all others.
 
 Parameters:
 
-- `self` (`LAccordion`, required): The widget instance.
 - `v` (`boolean`, required): True for exclusive mode.
 
 #### Example
@@ -3793,11 +4044,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("A")
-    acc:setExclusive(true)
-    local ex = acc:isExclusive()
-    local expanded = acc:isSectionExpanded(1)
-    print("exclusive:", ex, "expanded:", expanded)
+    local acc = lurek.ui.newAccordion(); acc:addSection("A"); acc:addSection("B")
+    acc:addSection("C"); acc:setExclusive(true)
+    print("exclusive = " .. tostring(acc:isExclusive())); acc:toggleSection(1)
+    print("section 1 expanded = " .. tostring(acc:isSectionExpanded(1))); acc:toggleSection(2)
+    print("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1))); print("section 2 expanded = " .. tostring(acc:isSectionExpanded(2)))
 end
 ```
 
@@ -3818,7 +4069,6 @@ Toggles the expanded state of an accordion section by its 1-based index.
 
 Parameters:
 
-- `self` (`LAccordion`, required): The widget instance.
 - `section_idx` (`integer`, required): The 1-based section index.
 
 Returns: `boolean` - The new expanded state.
@@ -3829,11 +4079,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
-    local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
-    local count = badge:getCount()
-    local disp = badge:getDisplayText()
-    print("toggled:", newState, "badge count:", count, "display:", disp)
+    local acc = lurek.ui.newAccordion(); acc:addSection("A"); acc:addSection("B")
+    acc:addSection("C"); acc:setExclusive(true)
+    print("exclusive = " .. tostring(acc:isExclusive())); acc:toggleSection(1)
+    print("section 1 expanded = " .. tostring(acc:isSectionExpanded(1))); acc:toggleSection(2)
+    print("section 1 after toggle 2 = " .. tostring(acc:isSectionExpanded(1))); print("section 2 expanded = " .. tostring(acc:isSectionExpanded(2)))
 end
 ```
 
@@ -4070,10 +4320,6 @@ function LBadge:getCount() end
 
 Returns the current notification count of this badge.
 
-Parameters:
-
-- `self` (`LBadge`, required): The widget instance.
-
 Returns: `integer` - The badge count.
 
 #### Example
@@ -4082,11 +4328,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
-    local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
-    local count = badge:getCount()
-    local disp = badge:getDisplayText()
-    print("toggled:", newState, "badge count:", count, "display:", disp)
+    local badge = lurek.ui.newBadge(3); print("type=" .. badge:type())
+    print("count=" .. badge:getCount()); badge:setCount(7)
+    print("count_after=" .. badge:getCount())
+    local text = badge:getDisplayText()
+    print("text=" .. tostring(text))
 end
 ```
 
@@ -4104,10 +4350,6 @@ function LBadge:getDisplayText() end
 
 Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
 
-Parameters:
-
-- `self` (`LBadge`, required): The widget instance.
-
 Returns: `string` - The display text.
 
 #### Example
@@ -4116,11 +4358,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local acc = lurek.ui.newAccordion(); acc:addSection("Toggle me")
-    local newState = acc:toggleSection(1); local badge = lurek.ui.newBadge(5)
-    local count = badge:getCount()
-    local disp = badge:getDisplayText()
-    print("toggled:", newState, "badge count:", count, "display:", disp)
+    local badge = lurek.ui.newBadge(3); print("type=" .. badge:type())
+    print("count=" .. badge:getCount()); badge:setCount(7)
+    print("count_after=" .. badge:getCount())
+    local text = badge:getDisplayText()
+    print("text=" .. tostring(text))
 end
 ```
 
@@ -4140,7 +4382,6 @@ Sets the notification count displayed by this badge.
 
 Parameters:
 
-- `self` (`LBadge`, required): The widget instance.
 - `count` (`integer`, required): The notification count.
 
 #### Example
@@ -4149,11 +4390,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local badge = lurek.ui.newBadge(0); badge:setCount(42)
-    local btn = lurek.ui.newButton("Click me")
-    local t = btn:getText()
-    btn:setText("OK")
-    print("badge count:", badge:getCount(), "button text:", btn:getText())
+    local badge = lurek.ui.newBadge(3); print("type=" .. badge:type())
+    print("count=" .. badge:getCount()); badge:setCount(7)
+    print("count_after=" .. badge:getCount())
+    local text = badge:getDisplayText()
+    print("text=" .. tostring(text))
 end
 ```
 
@@ -4386,10 +4627,6 @@ function LButton:getText() end
 
 Returns the current display text of this button.
 
-Parameters:
-
-- `self` (`LButton`, required): The widget instance.
-
 Returns: `string` - The button label.
 
 #### Example
@@ -4422,7 +4659,6 @@ Sets the display text on this button.
 
 Parameters:
 
-- `self` (`LButton`, required): The widget instance.
 - `text` (`string`, required): The button label text.
 
 #### Example
@@ -4455,10 +4691,6 @@ function LCheckbox:getText() end
 
 Returns the label text of this checkbox.
 
-Parameters:
-
-- `self` (`LCheckbox`, required): The widget instance.
-
 Returns: `string` - The checkbox label.
 
 #### Example
@@ -4488,10 +4720,6 @@ function LCheckbox:isChecked() end
 #### Description
 
 Returns whether this checkbox is currently checked.
-
-Parameters:
-
-- `self` (`LCheckbox`, required): The widget instance.
 
 Returns: `boolean` - True if checked.
 
@@ -4525,7 +4753,6 @@ Sets the checked state of this checkbox.
 
 Parameters:
 
-- `self` (`LCheckbox`, required): The widget instance.
 - `checked` (`boolean`, required): True to check, false to uncheck.
 
 #### Example
@@ -4534,11 +4761,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cb = lurek.ui.newCheckbox("Enable feature")
-    local t = cb:getText()
-    cb:setChecked(true)
-    local checked = cb:isChecked()
-    print("checkbox text:", t, "checked:", checked)
+    local cb = lurek.ui.newCheckbox("Option A"); cb:setChecked(true)
+    print("checked = " .. tostring(cb:isChecked())); cb:setText("Option B")
+    print("text = " .. cb:getText())
+    cb:setChecked(false)
+    print("unchecked = " .. tostring(cb:isChecked()))
 end
 ```
 
@@ -4558,7 +4785,6 @@ Sets the label text displayed next to this checkbox.
 
 Parameters:
 
-- `self` (`LCheckbox`, required): The widget instance.
 - `text` (`string`, required): The checkbox label.
 
 #### Example
@@ -4567,11 +4793,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cb = lurek.ui.newCheckbox("old"); cb:setText("new label")
-    local chart = lurek.ui.newAreaChart({width = 200, height = 100})
-    chart:setYMax(100)
-    chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
-    print("checkbox setText ok; addLayer, setYMax ok")
+    local cb = lurek.ui.newCheckbox("Option A"); cb:setChecked(true)
+    print("checked = " .. tostring(cb:isChecked())); cb:setText("Option B")
+    print("text = " .. cb:getText())
+    cb:setChecked(false)
+    print("unchecked = " .. tostring(cb:isChecked()))
 end
 ```
 
@@ -4594,10 +4820,6 @@ function LColorPicker:getColor() end
 
 Returns the current color as RGBA components (0.0 to 1.0).
 
-Parameters:
-
-- `self` (`LColorPicker`, required): The widget instance.
-
 Returns: `number` - Red component.
 
 #### Example
@@ -4606,11 +4828,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
-    local r, g, b, a = cp:getColor()
-    local mode = cp:getColorMode()
-    local showAlpha = cp:getShowAlpha()
-    print("color:", r, g, b, a, "mode:", mode, "showAlpha:", showAlpha)
+    local cp = lurek.ui.newColorPicker(); print("type=" .. cp:type()); cp:setColor(255, 128, 0, 255)
+    local r, g, b, a = cp:getColor(); print("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    print("mode=" .. tostring(cp:getColorMode())); cp:setColorMode("hsv")
+    print("mode_after=" .. cp:getColorMode()); print("show_alpha=" .. tostring(cp:getShowAlpha()))
+    cp:setShowAlpha(true); cp:setOnChange(function(r2, g2, b2, a2) print("changed") end)
 end
 ```
 
@@ -4628,10 +4850,6 @@ function LColorPicker:getColorMode() end
 
 Returns the color mode of this picker (e.g. "rgb", "hsv").
 
-Parameters:
-
-- `self` (`LColorPicker`, required): The widget instance.
-
 Returns: `string` - The color mode.
 
 #### Example
@@ -4640,11 +4858,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
-    local r, g, b, a = cp:getColor()
-    local mode = cp:getColorMode()
-    local showAlpha = cp:getShowAlpha()
-    print("color:", r, g, b, a, "mode:", mode, "showAlpha:", showAlpha)
+    local cp = lurek.ui.newColorPicker(); print("type=" .. cp:type()); cp:setColor(255, 128, 0, 255)
+    local r, g, b, a = cp:getColor(); print("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    print("mode=" .. tostring(cp:getColorMode())); cp:setColorMode("hsv")
+    print("mode_after=" .. cp:getColorMode()); print("show_alpha=" .. tostring(cp:getShowAlpha()))
+    cp:setShowAlpha(true); cp:setOnChange(function(r2, g2, b2, a2) print("changed") end)
 end
 ```
 
@@ -4662,10 +4880,6 @@ function LColorPicker:getShowAlpha() end
 
 Returns whether the alpha channel slider is visible.
 
-Parameters:
-
-- `self` (`LColorPicker`, required): The widget instance.
-
 Returns: `boolean` - True if the alpha slider is shown.
 
 #### Example
@@ -4674,11 +4888,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setColor(1.0, 0.5, 0.25, 1.0)
-    local r, g, b, a = cp:getColor()
-    local mode = cp:getColorMode()
-    local showAlpha = cp:getShowAlpha()
-    print("color:", r, g, b, a, "mode:", mode, "showAlpha:", showAlpha)
+    local cp = lurek.ui.newColorPicker(); print("type=" .. cp:type()); cp:setColor(255, 128, 0, 255)
+    local r, g, b, a = cp:getColor(); print("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    print("mode=" .. tostring(cp:getColorMode())); cp:setColorMode("hsv")
+    print("mode_after=" .. cp:getColorMode()); print("show_alpha=" .. tostring(cp:getShowAlpha()))
+    cp:setShowAlpha(true); cp:setOnChange(function(r2, g2, b2, a2) print("changed") end)
 end
 ```
 
@@ -4701,7 +4915,6 @@ Sets the current color as RGBA components.
 
 Parameters:
 
-- `self` (`LColorPicker`, required): The widget instance.
 - `r` (`number`, required): Red (0.0 to 1.0).
 - `g` (`number`, required): Green (0.0 to 1.0).
 - `b` (`number`, required): Blue (0.0 to 1.0).
@@ -4713,11 +4926,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
-    cp:setColorMode("hsv")
-    cp:setOnChange(function(idx) print("color changed", idx) end)
-    cp:setShowAlpha(true)
-    print("setColor/setColorMode/setOnChange ok")
+    local cp = lurek.ui.newColorPicker(); print("type=" .. cp:type()); cp:setColor(255, 128, 0, 255)
+    local r, g, b, a = cp:getColor(); print("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    print("mode=" .. tostring(cp:getColorMode())); cp:setColorMode("hsv")
+    print("mode_after=" .. cp:getColorMode()); print("show_alpha=" .. tostring(cp:getShowAlpha()))
+    cp:setShowAlpha(true); cp:setOnChange(function(r2, g2, b2, a2) print("changed") end)
 end
 ```
 
@@ -4737,7 +4950,6 @@ Sets the color mode of this picker (e.g. "rgb", "hsv").
 
 Parameters:
 
-- `self` (`LColorPicker`, required): The widget instance.
 - `mode` (`string`, required): The color mode.
 
 #### Example
@@ -4746,11 +4958,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
-    cp:setColorMode("hsv")
-    cp:setOnChange(function(idx) print("color changed", idx) end)
-    cp:setShowAlpha(true)
-    print("setColor/setColorMode/setOnChange ok")
+    local cp = lurek.ui.newColorPicker(); print("type=" .. cp:type()); cp:setColor(255, 128, 0, 255)
+    local r, g, b, a = cp:getColor(); print("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    print("mode=" .. tostring(cp:getColorMode())); cp:setColorMode("hsv")
+    print("mode_after=" .. cp:getColorMode()); print("show_alpha=" .. tostring(cp:getShowAlpha()))
+    cp:setShowAlpha(true); cp:setOnChange(function(r2, g2, b2, a2) print("changed") end)
 end
 ```
 
@@ -4770,7 +4982,6 @@ Registers a callback invoked when this color picker's value changes.
 
 Parameters:
 
-- `self` (`LColorPicker`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index.
 
 #### Example
@@ -4779,11 +4990,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setColor(0.2, 0.8, 0.4, 1.0)
-    cp:setColorMode("hsv")
-    cp:setOnChange(function(idx) print("color changed", idx) end)
-    cp:setShowAlpha(true)
-    print("setColor/setColorMode/setOnChange ok")
+    local cp = lurek.ui.newColorPicker(); print("type=" .. cp:type()); cp:setColor(255, 128, 0, 255)
+    local r, g, b, a = cp:getColor(); print("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    print("mode=" .. tostring(cp:getColorMode())); cp:setColorMode("hsv")
+    print("mode_after=" .. cp:getColorMode()); print("show_alpha=" .. tostring(cp:getShowAlpha()))
+    cp:setShowAlpha(true); cp:setOnChange(function(r2, g2, b2, a2) print("changed") end)
 end
 ```
 
@@ -4803,7 +5014,6 @@ Sets whether the alpha channel slider is visible.
 
 Parameters:
 
-- `self` (`LColorPicker`, required): The widget instance.
 - `v` (`boolean`, required): True to show the alpha slider.
 
 #### Example
@@ -4812,11 +5022,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
-    local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
-    cb:addItem("Option B"); cb:addItem("Option C")
-    cb:clearItems()
-    print("setShowAlpha ok; combo items cleared")
+    local cp = lurek.ui.newColorPicker(); print("type=" .. cp:type()); cp:setColor(255, 128, 0, 255)
+    local r, g, b, a = cp:getColor(); print("color=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    print("mode=" .. tostring(cp:getColorMode())); cp:setColorMode("hsv")
+    print("mode_after=" .. cp:getColorMode()); print("show_alpha=" .. tostring(cp:getShowAlpha()))
+    cp:setShowAlpha(true); cp:setOnChange(function(r2, g2, b2, a2) print("changed") end)
 end
 ```
 
@@ -4838,7 +5048,6 @@ Appends a new text item to this combo box's dropdown list.
 
 Parameters:
 
-- `self` (`LComboBox`, required): The widget instance.
 - `text` (`string`, required): The item label to add.
 
 #### Example
@@ -4847,11 +5056,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
-    local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
-    cb:addItem("Option B"); cb:addItem("Option C")
-    cb:clearItems()
-    print("setShowAlpha ok; combo items cleared")
+    local combo = lurek.ui.newComboBox(); combo:addItem("Easy")
+    combo:addItem("Normal"); combo:addItem("Hard")
+    combo:addItem("Nightmare"); print("item count = " .. combo:getItemCount())
+    print("item 2 = " .. combo:getItem(2))
+    print("item 4 = " .. combo:getItem(4))
 end
 ```
 
@@ -4868,21 +5077,17 @@ function LComboBox:clearItems() end
 
 Removes all items from this combo box.
 
-Parameters:
-
-- `self` (`LComboBox`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cp = lurek.ui.newColorPicker(); cp:setShowAlpha(false)
-    local cb = lurek.ui.newComboBox(); cb:addItem("Option A")
-    cb:addItem("Option B"); cb:addItem("Option C")
-    cb:clearItems()
-    print("setShowAlpha ok; combo items cleared")
+    local combo = lurek.ui.newComboBox(); combo:addItem("Red")
+    combo:addItem("Green"); combo:addItem("Blue")
+    local idx = combo:getSelectedIndex(); print("selected index = " .. idx)
+    local item = combo:getSelectedItem(); print("selected item = " .. tostring(item))
+    combo:clearItems(); print("after clear = " .. combo:getItemCount())
 end
 ```
 
@@ -4903,7 +5108,6 @@ Returns the text of the item at the given 1-based index.
 
 Parameters:
 
-- `self` (`LComboBox`, required): The widget instance.
 - `index` (`integer`, required): The 1-based item index.
 
 Returns: `string` - The item text, or nil if out of range.
@@ -4914,11 +5118,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox(); cb:addItem("First")
-    cb:addItem("Second"); cb:addItem("Third")
-    local cnt = cb:getItemCount(); local item = cb:getItem(2)
-    cb:setSelectedIndex(1); local sel = cb:getSelectedIndex()
-    print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
+    local combo = lurek.ui.newComboBox(); combo:addItem("Easy")
+    combo:addItem("Normal"); combo:addItem("Hard")
+    combo:addItem("Nightmare"); print("item count = " .. combo:getItemCount())
+    print("item 2 = " .. combo:getItem(2))
+    print("item 4 = " .. combo:getItem(4))
 end
 ```
 
@@ -4936,10 +5140,6 @@ function LComboBox:getItemCount() end
 
 Returns the number of items in this combo box.
 
-Parameters:
-
-- `self` (`LComboBox`, required): The widget instance.
-
 Returns: `integer` - The item count.
 
 #### Example
@@ -4948,11 +5148,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox(); cb:addItem("First")
-    cb:addItem("Second"); cb:addItem("Third")
-    local cnt = cb:getItemCount(); local item = cb:getItem(2)
-    cb:setSelectedIndex(1); local sel = cb:getSelectedIndex()
-    print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
+    local combo = lurek.ui.newComboBox(); combo:addItem("Easy")
+    combo:addItem("Normal"); combo:addItem("Hard")
+    combo:addItem("Nightmare"); print("item count = " .. combo:getItemCount())
+    print("item 2 = " .. combo:getItem(2))
+    print("item 4 = " .. combo:getItem(4))
 end
 ```
 
@@ -4970,10 +5170,6 @@ function LComboBox:getSelectedIndex() end
 
 Returns the 1-based index of the currently selected item, or 0 if none is selected.
 
-Parameters:
-
-- `self` (`LComboBox`, required): The widget instance.
-
 Returns: `integer` - The selected index.
 
 #### Example
@@ -4982,11 +5178,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox(); cb:addItem("First")
-    cb:addItem("Second"); cb:addItem("Third")
-    local cnt = cb:getItemCount(); local item = cb:getItem(2)
-    cb:setSelectedIndex(1); local sel = cb:getSelectedIndex()
-    print("getItemCount:", cnt, "getItem:", item, "getSelectedIndex:", sel)
+    local combo = lurek.ui.newComboBox(); combo:addItem("Red")
+    combo:addItem("Green"); combo:addItem("Blue")
+    local idx = combo:getSelectedIndex(); print("selected index = " .. idx)
+    local item = combo:getSelectedItem(); print("selected item = " .. tostring(item))
+    combo:clearItems(); print("after clear = " .. combo:getItemCount())
 end
 ```
 
@@ -5004,10 +5200,6 @@ function LComboBox:getSelectedItem() end
 
 Returns the text of the currently selected item, or nil if none is selected.
 
-Parameters:
-
-- `self` (`LComboBox`, required): The widget instance.
-
 Returns: `string` - The selected item text.
 
 #### Example
@@ -5016,11 +5208,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local cb = lurek.ui.newComboBox(); cb:addItem("Alpha")
-    cb:addItem("Beta"); cb:setSelectedIndex(2)
-    local selItem = cb:getSelectedItem()
-    cb:removeItem(1)
-    print("getSelectedItem:", selItem, "removeItem ok")
+    local combo = lurek.ui.newComboBox(); combo:addItem("Red")
+    combo:addItem("Green"); combo:addItem("Blue")
+    local idx = combo:getSelectedIndex(); print("selected index = " .. idx)
+    local item = combo:getSelectedItem(); print("selected item = " .. tostring(item))
+    combo:clearItems(); print("after clear = " .. combo:getItemCount())
 end
 ```
 
@@ -5041,7 +5233,6 @@ Removes the item at the given 1-based index from this combo box.
 
 Parameters:
 
-- `self` (`LComboBox`, required): The widget instance.
 - `index` (`integer`, required): The 1-based index of the item to remove.
 
 Returns: `boolean` - True if the item was removed.
@@ -5076,7 +5267,6 @@ Sets the selected item by 1-based index.
 
 Parameters:
 
-- `self` (`LComboBox`, required): The widget instance.
 - `index` (`integer`, required): The 1-based index of the item to select.
 
 #### Example
@@ -5113,7 +5303,6 @@ Adds a footer button to this dialog and returns its 1-based index.
 
 Parameters:
 
-- `self` (`LDialog`, required): The widget instance.
 - `text` (`string`, required): The button label.
 - `cb` (`function`, optional): Optional click callback (reserved for future use).
 
@@ -5146,10 +5335,6 @@ function LDialog:close() end
 
 Closes this dialog and fires the onClose callback if it was open.
 
-Parameters:
-
-- `self` (`LDialog`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
@@ -5177,10 +5362,6 @@ function LDialog:getContent() end
 #### Description
 
 Returns the widget index of this dialog's content, or nil if not set.
-
-Parameters:
-
-- `self` (`LDialog`, required): The widget instance.
 
 Returns: `integer` - The content widget index.
 
@@ -5212,10 +5393,6 @@ function LDialog:getTitle() end
 
 Returns the title text of this dialog.
 
-Parameters:
-
-- `self` (`LDialog`, required): The widget instance.
-
 Returns: `string` - The dialog title.
 
 #### Example
@@ -5245,10 +5422,6 @@ function LDialog:isModal() end
 #### Description
 
 Returns whether this dialog is modal (blocks interaction with other widgets).
-
-Parameters:
-
-- `self` (`LDialog`, required): The widget instance.
 
 Returns: `boolean` - True if modal.
 
@@ -5280,10 +5453,6 @@ function LDialog:isOpen() end
 
 Returns whether this dialog is currently open and visible.
 
-Parameters:
-
-- `self` (`LDialog`, required): The widget instance.
-
 Returns: `boolean` - True if open.
 
 #### Example
@@ -5312,10 +5481,6 @@ function LDialog:open() end
 #### Description
 
 Opens this dialog, making it visible.
-
-Parameters:
-
-- `self` (`LDialog`, required): The widget instance.
 
 #### Example
 
@@ -5347,7 +5512,6 @@ Sets the content widget for this dialog.
 
 Parameters:
 
-- `self` (`LDialog`, required): The widget instance.
 - `content_idx` (`integer`, optional): The widget index to show as content, or nil to clear.
 
 #### Example
@@ -5380,7 +5544,6 @@ Sets whether this dialog widget is modal.
 
 Parameters:
 
-- `self` (`LDialog`, required): The widget instance.
 - `v` (`boolean`, required): True to make modal.
 
 #### Example
@@ -5413,7 +5576,6 @@ Registers a callback invoked when this dialog is closed.
 
 Parameters:
 
-- `self` (`LDialog`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index.
 
 #### Example
@@ -5446,7 +5608,6 @@ Sets the title text of this dialog widget.
 
 Parameters:
 
-- `self` (`LDialog`, required): The widget instance.
 - `title` (`string`, required): The dialog title.
 
 #### Example
@@ -5482,7 +5643,6 @@ Docks a child widget to the specified side of this dock panel.
 
 Parameters:
 
-- `self` (`LDockPanel`, required): The widget instance.
 - `child_idx` (`integer`, required): The widget index to dock.
 - `side` (`string`, required): The dock side ("left", "right", "top", "bottom", "center").
 
@@ -5492,11 +5652,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Old"); dlg:setTitle("New Title")
-    dlg:setOnClose(function(idx) print("closed", idx) end)
-    local dp = lurek.ui.newDockPanel()
-    local btn = lurek.ui.newButton("Side")
-    print("setTitle/setOnClose ok; DockPanel created")
+    local dp = lurek.ui.newDockPanel(); print("type=" .. dp:type())
+    local child = lurek.ui.newPanel(); dp:dock(0, "left")
+    print("docked=" .. dp:getDockedCount()); local sz = dp:getSplitSize("left")
+    print("split_size=" .. tostring(sz)); dp:setSplitSize("left", 150)
+    dp:undock(0); print("docked_after=" .. dp:getDockedCount())
 end
 ```
 
@@ -5514,10 +5674,6 @@ function LDockPanel:getDockedCount() end
 
 Returns the number of widgets docked in this dock panel.
 
-Parameters:
-
-- `self` (`LDockPanel`, required): The widget instance.
-
 Returns: `integer` - The docked widget count.
 
 #### Example
@@ -5526,11 +5682,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local dp = lurek.ui.newDockPanel()
-    local cnt = dp:getDockedCount()
-    dp:setSplitSize("left", 200)
-    local sz = dp:getSplitSize("left")
-    print("getDockedCount:", cnt, "splitSize:", sz)
+    local dp = lurek.ui.newDockPanel(); print("type=" .. dp:type())
+    local child = lurek.ui.newPanel(); dp:dock(0, "left")
+    print("docked=" .. dp:getDockedCount()); local sz = dp:getSplitSize("left")
+    print("split_size=" .. tostring(sz)); dp:setSplitSize("left", 150)
+    dp:undock(0); print("docked_after=" .. dp:getDockedCount())
 end
 ```
 
@@ -5551,7 +5707,6 @@ Returns the size configured for a dock panel side region.
 
 Parameters:
 
-- `self` (`LDockPanel`, required): The widget instance.
 - `side` (`string`, required): The dock side.
 
 Returns: `number` - The size in pixels, or nil if not set.
@@ -5562,11 +5717,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local dp = lurek.ui.newDockPanel()
-    local cnt = dp:getDockedCount()
-    dp:setSplitSize("left", 200)
-    local sz = dp:getSplitSize("left")
-    print("getDockedCount:", cnt, "splitSize:", sz)
+    local dp = lurek.ui.newDockPanel(); print("type=" .. dp:type())
+    local child = lurek.ui.newPanel(); dp:dock(0, "left")
+    print("docked=" .. dp:getDockedCount()); local sz = dp:getSplitSize("left")
+    print("split_size=" .. tostring(sz)); dp:setSplitSize("left", 150)
+    dp:undock(0); print("docked_after=" .. dp:getDockedCount())
 end
 ```
 
@@ -5587,7 +5742,6 @@ Sets the size of a dock panel side region.
 
 Parameters:
 
-- `self` (`LDockPanel`, required): The widget instance.
 - `side` (`string`, required): The dock side ("left", "right", "top", "bottom").
 - `size` (`number`, required): The size in pixels.
 
@@ -5597,11 +5751,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local dp = lurek.ui.newDockPanel()
-    local cnt = dp:getDockedCount()
-    dp:setSplitSize("left", 200)
-    local sz = dp:getSplitSize("left")
-    print("getDockedCount:", cnt, "splitSize:", sz)
+    local dp = lurek.ui.newDockPanel(); print("type=" .. dp:type())
+    local child = lurek.ui.newPanel(); dp:dock(0, "left")
+    print("docked=" .. dp:getDockedCount()); local sz = dp:getSplitSize("left")
+    print("split_size=" .. tostring(sz)); dp:setSplitSize("left", 150)
+    dp:undock(0); print("docked_after=" .. dp:getDockedCount())
 end
 ```
 
@@ -5621,7 +5775,6 @@ Removes a child widget from this dock panel.
 
 Parameters:
 
-- `self` (`LDockPanel`, required): The widget instance.
 - `child_idx` (`integer`, required): The widget index to undock.
 
 #### Example
@@ -5630,11 +5783,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local dp = lurek.ui.newDockPanel()
-    local dockedCount = dp:getDockedCount()
-    dp:undock(0)
-    local tbl = lurek.ui.newTable()
-    print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
+    local dock = lurek.ui.newDockPanel(); local footer = lurek.ui.newPanel()
+    dock:addChild(footer); dock:dock(footer._idx, "bottom")
+    print("docked = " .. dock:getDockedCount())
+    dock:undock(footer._idx)
+    print("after undock = " .. dock:getDockedCount())
 end
 ```
 
@@ -5657,7 +5810,6 @@ Adds a new column to this table widget.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `header` (`string`, required): The column header text.
 - `width` (`number`, optional): The column width in pixels (default 100).
 
@@ -5667,11 +5819,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local dp = lurek.ui.newDockPanel()
-    local dockedCount = dp:getDockedCount()
-    dp:undock(0)
-    local tbl = lurek.ui.newTable()
-    print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -5691,7 +5843,6 @@ Adds a row of data to this table widget.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `cells` (`table`, required): Array of cell text values.
 
 #### Example
@@ -5700,11 +5851,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local dp = lurek.ui.newDockPanel()
-    local dockedCount = dp:getDockedCount()
-    dp:undock(0)
-    local tbl = lurek.ui.newTable()
-    print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -5721,18 +5872,17 @@ function LGuiTable:clearRows() end
 
 Clears all rows and the selected row in this table widget.
 
-Parameters:
-
-- `self` (`LGuiTable`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("A"); tbl:addRow({"1"}); tbl:clearRows()
-    print("cleared rows")
+    local tbl = lurek.ui.newTable()
+    tbl:setRows({ { "Food", 420 }, { "Rent", 1200 } })
+    tbl:setSelectedRow(1)
+    tbl:clearRows()
+    print("rows=" .. tbl:getRowCount())
 end
 ```
 
@@ -5754,7 +5904,6 @@ Returns the text of a cell at the given 1-based row and column.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `row` (`integer`, required): The 1-based row index.
 - `col` (`integer`, required): The 1-based column index.
 
@@ -5766,11 +5915,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("Name", 100)
-    tbl:addColumn("Value", 80); tbl:addRow({"Alice", "42"})
-    tbl:addRow({"Bob", "99"})
-    local cell = tbl:getCell(1, 1)
-    print("addColumn/addRow/getCell ok, cell:", cell)
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -5788,10 +5937,6 @@ function LGuiTable:getColumnCount() end
 
 Returns the number of columns in this table widget.
 
-Parameters:
-
-- `self` (`LGuiTable`, required): The widget instance.
-
 Returns: `integer` - The column count.
 
 #### Example
@@ -5800,11 +5945,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
-    tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
-    tbl:addRow({"B", "2"}); local cols = tbl:getColumnCount()
-    local rows = tbl:getRowCount(); local sel = tbl:getSelectedRow()
-    print("cols:", cols, "rows:", rows, "selectedRow:", sel)
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -5822,10 +5967,6 @@ function LGuiTable:getRowCount() end
 
 Returns the number of rows in this table widget.
 
-Parameters:
-
-- `self` (`LGuiTable`, required): The widget instance.
-
 Returns: `integer` - The row count.
 
 #### Example
@@ -5834,11 +5975,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
-    tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
-    tbl:addRow({"B", "2"}); local cols = tbl:getColumnCount()
-    local rows = tbl:getRowCount(); local sel = tbl:getSelectedRow()
-    print("cols:", cols, "rows:", rows, "selectedRow:", sel)
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -5856,10 +5997,6 @@ function LGuiTable:getSelectedRow() end
 
 Returns the 1-based index of the currently selected row, or nil.
 
-Parameters:
-
-- `self` (`LGuiTable`, required): The widget instance.
-
 Returns: `integer` - The selected row index.
 
 #### Example
@@ -5868,11 +6005,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("Col1")
-    tbl:addColumn("Col2"); tbl:addRow({"A", "1"})
-    tbl:addRow({"B", "2"}); local cols = tbl:getColumnCount()
-    local rows = tbl:getRowCount(); local sel = tbl:getSelectedRow()
-    print("cols:", cols, "rows:", rows, "selectedRow:", sel)
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -5889,10 +6026,6 @@ function LGuiTable:isSortable() end
 #### Description
 
 Returns whether columns in this table can be sorted by clicking headers.
-
-Parameters:
-
-- `self` (`LGuiTable`, required): The widget instance.
 
 Returns: `boolean` - True if sortable.
 
@@ -5928,7 +6061,6 @@ Sets the text of a cell at the given 1-based row and column.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `row` (`integer`, required): The 1-based row index.
 - `col` (`integer`, required): The 1-based column index.
 - `text` (`string`, required): The new cell text.
@@ -5939,11 +6071,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("ID")
-    tbl:addRow({"1"}); tbl:setSortable(true)
-    tbl:setCell(1, 1, "changed")
-    tbl:setOnSelect(function(idx) print("row selected", idx) end)
-    print("isSortable/setCell/setOnSelect ok")
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -5965,7 +6097,6 @@ Replaces columns and rows from a dataframe, stringifying cell values for display
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `df` (`LDataFrame`, required): Source dataframe.
 - `opts` (`table`, optional): Optional table with maxRows integer, columns string[], and includeHeaders boolean.
 
@@ -5977,10 +6108,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 2 } })
+    local df = lurek.dataframe.fromRows({ "category", "amount" }, { { "Food", 420 }, { "Rent", 1200 } })
     local tbl = lurek.ui.newTable()
-    tbl:setDataFrame(df)
-    print("set dataframe")
+    local count = tbl:setDataFrame(df, { columns = { "category", "amount" }, maxRows = 2 })
+    print("setDataFrame=" .. count .. ", cols=" .. tbl:getColumnCount())
 end
 ```
 
@@ -6000,7 +6131,6 @@ Registers a callback invoked when a table row is selected.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index.
 
 #### Example
@@ -6034,7 +6164,6 @@ Replaces all rows with an array of row arrays.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `rows` (`table`, required): Array of row arrays containing scalar cell values.
 
 Returns: `integer` - The resulting row count.
@@ -6045,8 +6174,9 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("A"); tbl:setRows({{"1"}})
-    print("set rows")
+    local tbl = lurek.ui.newTable()
+    local count = tbl:setRows({ { "Income", 3200 }, { "Savings", 640 } })
+    print("setRows=" .. count .. ", first=" .. tostring(tbl:getCell(1, 1)))
 end
 ```
 
@@ -6066,7 +6196,6 @@ Sets the selected row by its 1-based index, or nil to deselect.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `row` (`integer`, optional): The 1-based row index, or nil.
 
 #### Example
@@ -6075,11 +6204,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tbl = lurek.ui.newTable(); tbl:addColumn("X")
-    tbl:addRow({"row1"}); tbl:setSelectedRow(1)
-    local sel = tbl:getSelectedRow(); tbl:setSortable(false)
-    local win = lurek.ui.newWindow("My Window"); local title = win:getTitle()
-    print("setSelectedRow:", sel, "setSortable ok, win title:", title)
+    local tbl = lurek.ui.newTable(); print("type=" .. tbl:type()); tbl:addColumn("Name")
+    tbl:addColumn("Score"); print("cols=" .. tbl:getColumnCount()); tbl:addRow({ "Alice", "100" })
+    tbl:addRow({ "Bob", "80" }); print("rows=" .. tbl:getRowCount()); local cell = tbl:getCell(0, 0)
+    print("cell00=" .. tostring(cell)); tbl:setCell(0, 1, "999")
+    tbl:setSelectedRow(1); print("selected=" .. tbl:getSelectedRow())
 end
 ```
 
@@ -6099,7 +6228,6 @@ Sets whether columns in this table can be sorted by clicking headers.
 
 Parameters:
 
-- `self` (`LGuiTable`, required): The widget instance.
 - `v` (`boolean`, required): True to enable sorting.
 
 #### Example
@@ -6132,10 +6260,6 @@ function LGuiWindow:getTitle() end
 
 Returns the title bar text of this GUI window.
 
-Parameters:
-
-- `self` (`LGuiWindow`, required): The widget instance.
-
 Returns: `string` - The window title.
 
 #### Example
@@ -6165,10 +6289,6 @@ function LGuiWindow:isCloseable() end
 #### Description
 
 Returns whether this window shows a close button.
-
-Parameters:
-
-- `self` (`LGuiWindow`, required): The widget instance.
 
 Returns: `boolean` - True if closeable.
 
@@ -6200,10 +6320,6 @@ function LGuiWindow:isDraggable() end
 
 Returns whether this window can be dragged by its title bar.
 
-Parameters:
-
-- `self` (`LGuiWindow`, required): The widget instance.
-
 Returns: `boolean` - True if draggable.
 
 #### Example
@@ -6233,10 +6349,6 @@ function LGuiWindow:isResizable() end
 #### Description
 
 Returns whether this window can be resized by dragging its edges.
-
-Parameters:
-
-- `self` (`LGuiWindow`, required): The widget instance.
 
 Returns: `boolean` - True if resizable.
 
@@ -6270,7 +6382,6 @@ Sets whether this window shows a close button.
 
 Parameters:
 
-- `self` (`LGuiWindow`, required): The widget instance.
 - `v` (`boolean`, required): True to show the close button.
 
 #### Example
@@ -6303,7 +6414,6 @@ Sets whether this window can be dragged by its title bar.
 
 Parameters:
 
-- `self` (`LGuiWindow`, required): The widget instance.
 - `v` (`boolean`, required): True to allow dragging.
 
 #### Example
@@ -6336,7 +6446,6 @@ Registers a callback invoked when this window is closed.
 
 Parameters:
 
-- `self` (`LGuiWindow`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index.
 
 #### Example
@@ -6369,7 +6478,6 @@ Sets whether this window can be resized.
 
 Parameters:
 
-- `self` (`LGuiWindow`, required): The widget instance.
 - `v` (`boolean`, required): True to allow resizing.
 
 #### Example
@@ -6402,7 +6510,6 @@ Sets the title bar text of this GUI window.
 
 Parameters:
 
-- `self` (`LGuiWindow`, required): The widget instance.
 - `title` (`string`, required): The window title.
 
 #### Example
@@ -6435,10 +6542,6 @@ function LImageWidget:getScaleMode() end
 
 Returns the image scaling mode (e.g. "fit", "fill", "stretch").
 
-Parameters:
-
-- `self` (`LImageWidget`, required): The widget instance.
-
 Returns: `string` - The scale mode.
 
 #### Example
@@ -6447,11 +6550,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local win = lurek.ui.newWindow("Old"); win:setResizable(false)
-    win:setTitle("New Title")
-    local iw = lurek.ui.newImageWidget()
-    local mode = iw:getScaleMode()
-    print("setResizable/setTitle ok; scaleMode:", mode)
+    local iw = lurek.ui.newImageWidget(); print("type=" .. iw:type())
+    print("scale_mode=" .. tostring(iw:getScaleMode())); iw:setScaleMode("stretch")
+    print("scale_mode_after=" .. iw:getScaleMode()); iw:setTint(255, 200, 128, 255)
+    local r, g, b, a = iw:getTint()
+    print("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -6472,10 +6575,6 @@ function LImageWidget:getTint() end
 
 Returns the tint color of this image widget as RGBA components.
 
-Parameters:
-
-- `self` (`LImageWidget`, required): The widget instance.
-
 Returns: `number` - Red component.
 
 #### Example
@@ -6484,11 +6583,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local iw = lurek.ui.newImageWidget()
-    iw:setTint(1.0, 0.5, 0.25, 1.0)
+    local iw = lurek.ui.newImageWidget(); print("type=" .. iw:type())
+    print("scale_mode=" .. tostring(iw:getScaleMode())); iw:setScaleMode("stretch")
+    print("scale_mode_after=" .. iw:getScaleMode()); iw:setTint(255, 200, 128, 255)
     local r, g, b, a = iw:getTint()
-    iw:setScaleMode("fit")
-    print("tint:", r, g, b, a, "scaleMode: fit")
+    print("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -6508,7 +6607,6 @@ Sets the image scaling mode (e.g. "fit", "fill", "stretch").
 
 Parameters:
 
-- `self` (`LImageWidget`, required): The widget instance.
 - `mode` (`string`, required): The scale mode.
 
 #### Example
@@ -6517,11 +6615,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local iw = lurek.ui.newImageWidget()
-    iw:setTint(1.0, 0.5, 0.25, 1.0)
+    local iw = lurek.ui.newImageWidget(); print("type=" .. iw:type())
+    print("scale_mode=" .. tostring(iw:getScaleMode())); iw:setScaleMode("stretch")
+    print("scale_mode_after=" .. iw:getScaleMode()); iw:setTint(255, 200, 128, 255)
     local r, g, b, a = iw:getTint()
-    iw:setScaleMode("fit")
-    print("tint:", r, g, b, a, "scaleMode: fit")
+    print("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -6544,7 +6642,6 @@ Sets the tint color of this image widget as RGBA components.
 
 Parameters:
 
-- `self` (`LImageWidget`, required): The widget instance.
 - `r` (`number`, required): Red (0.0 to 1.0).
 - `g` (`number`, required): Green (0.0 to 1.0).
 - `b` (`number`, required): Blue (0.0 to 1.0).
@@ -6556,11 +6653,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local iw = lurek.ui.newImageWidget()
-    iw:setTint(1.0, 0.5, 0.25, 1.0)
+    local iw = lurek.ui.newImageWidget(); print("type=" .. iw:type())
+    print("scale_mode=" .. tostring(iw:getScaleMode())); iw:setScaleMode("stretch")
+    print("scale_mode_after=" .. iw:getScaleMode()); iw:setTint(255, 200, 128, 255)
     local r, g, b, a = iw:getTint()
-    iw:setScaleMode("fit")
-    print("tint:", r, g, b, a, "scaleMode: fit")
+    print("tint=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -6579,10 +6676,6 @@ function LLabel:getText() end
 #### Description
 
 Returns the current display text of this label.
-
-Parameters:
-
-- `self` (`LLabel`, required): The widget instance.
 
 Returns: `string` - The label text.
 
@@ -6616,7 +6709,6 @@ Sets the display text on this label.
 
 Parameters:
 
-- `self` (`LLabel`, required): The widget instance.
 - `text` (`string`, required): The label text.
 
 #### Example
@@ -6649,10 +6741,6 @@ function LLayout:getAlign() end
 
 Returns the current cross-axis alignment mode.
 
-Parameters:
-
-- `self` (`LLayout`, required): The widget instance.
-
 Returns: `string` - The alignment mode.
 
 #### Example
@@ -6661,11 +6749,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lbl = lurek.ui.newLabel("Hello")
-    lbl:setText("World")
     local layout = lurek.ui.newLayout("horizontal")
-    local align = layout:getAlign()
-    print("label text:", lbl:getText(), "layout align:", align)
+    layout:setAlign("center")
+    print("align = " .. layout:getAlign())
+    layout:setAlign("stretch")
+    print("align = " .. layout:getAlign())
 end
 ```
 
@@ -6682,10 +6770,6 @@ function LLayout:getDirection() end
 #### Description
 
 Returns the current layout direction.
-
-Parameters:
-
-- `self` (`LLayout`, required): The widget instance.
 
 Returns: `string` - The direction name.
 
@@ -6717,10 +6801,6 @@ function LLayout:getJustify() end
 
 Returns the current main-axis justification mode.
 
-Parameters:
-
-- `self` (`LLayout`, required): The widget instance.
-
 Returns: `string` - The justification mode.
 
 #### Example
@@ -6729,11 +6809,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("vertical")
-    local dir = layout:getDirection()
-    local justify = layout:getJustify()
-    local spacing = layout:getSpacing()
-    print("direction:", dir, "justify:", justify, "spacing:", spacing)
+    local layout = lurek.ui.newLayout("horizontal")
+    layout:setJustify("space-between")
+    print("justify = " .. layout:getJustify())
+    layout:setJustify("center")
+    print("justify = " .. layout:getJustify())
 end
 ```
 
@@ -6750,10 +6830,6 @@ function LLayout:getSpacing() end
 #### Description
 
 Returns the current spacing between children.
-
-Parameters:
-
-- `self` (`LLayout`, required): The widget instance.
 
 Returns: `number` - The spacing in pixels.
 
@@ -6785,10 +6861,6 @@ function LLayout:getWrap() end
 
 Returns whether wrapping is enabled for this layout.
 
-Parameters:
-
-- `self` (`LLayout`, required): The widget instance.
-
 Returns: `boolean` - True if wrapping is on.
 
 #### Example
@@ -6797,11 +6869,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("grid")
-    local wrap = layout:getWrap()
-    layout:setAlign("center")
-    layout:setColumns(3)
-    print("getWrap:", wrap, "setAlign: center, setColumns: 3 ok")
+    ---@type LLayout
+    local layout = lurek.ui.newLayout("horizontal")
+    print("wrap = " .. tostring(layout:getWrap()))
+    layout:setWrap(true)
+    print("wrap enabled = " .. tostring(layout:getWrap()))
 end
 ```
 
@@ -6812,6 +6884,7 @@ end
 ```lua
 --- Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
 ---@param align string The alignment mode.
+---@return boolean True when the layout exists and the alignment was set.
 function LLayout:setAlign(align) end
 ```
 
@@ -6821,8 +6894,9 @@ Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stre
 
 Parameters:
 
-- `self` (`LLayout`, required): The widget instance.
 - `align` (`string`, required): The alignment mode.
+
+Returns: `boolean` - True when the layout exists and the alignment was set.
 
 #### Example
 
@@ -6830,11 +6904,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("grid")
-    local wrap = layout:getWrap()
+    local layout = lurek.ui.newLayout("horizontal")
     layout:setAlign("center")
-    layout:setColumns(3)
-    print("getWrap:", wrap, "setAlign: center, setColumns: 3 ok")
+    print("align = " .. layout:getAlign())
+    layout:setAlign("stretch")
+    print("align = " .. layout:getAlign())
 end
 ```
 
@@ -6854,7 +6928,6 @@ Sets the number of columns for grid layout mode (minimum 1).
 
 Parameters:
 
-- `self` (`LLayout`, required): The widget instance.
 - `n` (`integer`, required): Column count.
 
 #### Example
@@ -6863,11 +6936,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("grid")
-    local wrap = layout:getWrap()
-    layout:setAlign("center")
-    layout:setColumns(3)
-    print("getWrap:", wrap, "setAlign: center, setColumns: 3 ok")
+    ---@type LLayout
+    local grid = lurek.ui.newLayout("grid")
+    grid:setColumns(3)
+    grid:setSpacing(5)
+    print("direction = " .. grid:getDirection())
 end
 ```
 
@@ -6887,7 +6960,6 @@ Sets the layout direction for child arrangement ("horizontal", "vertical", or "g
 
 Parameters:
 
-- `self` (`LLayout`, required): The widget instance.
 - `dir` (`string`, required): The layout direction.
 
 #### Example
@@ -6896,11 +6968,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("horizontal")
-    layout:setDirection("vertical")
-    layout:setJustify("center")
-    layout:setSpacing(8)
-    print("setDirection/setJustify/setSpacing ok")
+    ---@type LLayout
+    local grid = lurek.ui.newLayout("grid")
+    grid:setColumns(3)
+    grid:setSpacing(5)
+    print("direction = " .. grid:getDirection())
 end
 ```
 
@@ -6911,6 +6983,7 @@ end
 ```lua
 --- Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
 ---@param justify string The justification mode.
+---@return boolean True when the layout exists and the justification was set.
 function LLayout:setJustify(justify) end
 ```
 
@@ -6920,8 +6993,9 @@ Sets the main-axis justification for children (e.g. "start", "center", "end", "s
 
 Parameters:
 
-- `self` (`LLayout`, required): The widget instance.
 - `justify` (`string`, required): The justification mode.
+
+Returns: `boolean` - True when the layout exists and the justification was set.
 
 #### Example
 
@@ -6930,10 +7004,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 ```lua
 do
     local layout = lurek.ui.newLayout("horizontal")
-    layout:setDirection("vertical")
+    layout:setJustify("space-between")
+    print("justify = " .. layout:getJustify())
     layout:setJustify("center")
-    layout:setSpacing(8)
-    print("setDirection/setJustify/setSpacing ok")
+    print("justify = " .. layout:getJustify())
 end
 ```
 
@@ -6953,7 +7027,6 @@ Sets the spacing in pixels between child widgets in this layout.
 
 Parameters:
 
-- `self` (`LLayout`, required): The widget instance.
 - `spacing` (`number`, required): Gap between children in pixels.
 
 #### Example
@@ -6986,7 +7059,6 @@ Enables or disables wrapping of children to the next row/column when they overfl
 
 Parameters:
 
-- `self` (`LLayout`, required): The widget instance.
 - `wrap` (`boolean`, required): True to enable wrapping.
 
 #### Example
@@ -6995,11 +7067,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local layout = lurek.ui.newLayout("horizontal"); layout:setWrap(true)
-    local lc = lurek.ui.newLineChart({width = 200, height = 100}); lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
-    local img = lurek.image.newImageData(200, 100)
-    lc:drawToImage(img)
-    print("setWrap ok; addSeries/drawToImage ok")
+    ---@type LLayout
+    local layout = lurek.ui.newLayout("horizontal")
+    print("wrap = " .. tostring(layout:getWrap()))
+    layout:setWrap(true)
+    print("wrap enabled = " .. tostring(layout:getWrap()))
 end
 ```
 
@@ -7271,7 +7343,6 @@ Appends a new text item to this list box.
 
 Parameters:
 
-- `self` (`LListBox`, required): The widget instance.
 - `text` (`string`, required): The item text to add.
 
 #### Example
@@ -7280,11 +7351,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:addItem("Apple")
-    lb:addItem("Banana"); lb:addItem("Cherry")
-    local item = lb:getItem(2)
-    lb:clearItems()
-    print("addItem/clearItems/getItem ok, item:", item)
+    local list = lurek.ui.newList(); list:addItem("Sword")
+    list:addItem("Shield"); list:addItem("Potion")
+    list:addItem("Scroll"); print("count = " .. list:getItemCount())
+    print("item 1 = " .. list:getItem(1))
+    print("item 3 = " .. list:getItem(3))
 end
 ```
 
@@ -7301,21 +7372,17 @@ function LListBox:clearItems() end
 
 Removes all items from this list box.
 
-Parameters:
-
-- `self` (`LListBox`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:addItem("Apple")
-    lb:addItem("Banana"); lb:addItem("Cherry")
-    local item = lb:getItem(2)
-    lb:clearItems()
-    print("addItem/clearItems/getItem ok, item:", item)
+    local list = lurek.ui.newList(); list:addItem("First")
+    list:addItem("Second"); list:addItem("Third")
+    list:setItemHeight(30); list:removeItem(2)
+    print("after remove: count=" .. list:getItemCount()); print("item 2 now = " .. list:getItem(2))
+    list:clearItems(); print("after clear = " .. list:getItemCount())
 end
 ```
 
@@ -7336,7 +7403,6 @@ Returns the text of the item at the given 1-based index.
 
 Parameters:
 
-- `self` (`LListBox`, required): The widget instance.
 - `index` (`integer`, required): The 1-based item index.
 
 Returns: `string` - The item text, or empty string if out of range.
@@ -7347,11 +7413,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:addItem("Apple")
-    lb:addItem("Banana"); lb:addItem("Cherry")
-    local item = lb:getItem(2)
-    lb:clearItems()
-    print("addItem/clearItems/getItem ok, item:", item)
+    local list = lurek.ui.newList(); list:addItem("Sword")
+    list:addItem("Shield"); list:addItem("Potion")
+    list:addItem("Scroll"); print("count = " .. list:getItemCount())
+    print("item 1 = " .. list:getItem(1))
+    print("item 3 = " .. list:getItem(3))
 end
 ```
 
@@ -7369,10 +7435,6 @@ function LListBox:getItemCount() end
 
 Returns the number of items in this list box.
 
-Parameters:
-
-- `self` (`LListBox`, required): The widget instance.
-
 Returns: `integer` - The item count.
 
 #### Example
@@ -7381,11 +7443,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:addItem("X")
-    lb:addItem("Y"); lb:addItem("Z")
-    local cnt = lb:getItemCount(); lb:setSelectedIndex(2)
-    local sel = lb:getSelectedIndex(); lb:removeItem(1)
-    print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
+    local list = lurek.ui.newList(); list:addItem("Sword")
+    list:addItem("Shield"); list:addItem("Potion")
+    list:addItem("Scroll"); print("count = " .. list:getItemCount())
+    print("item 1 = " .. list:getItem(1))
+    print("item 3 = " .. list:getItem(3))
 end
 ```
 
@@ -7403,10 +7465,6 @@ function LListBox:getSelectedIndex() end
 
 Returns the 1-based index of the currently selected item, or 0 if none.
 
-Parameters:
-
-- `self` (`LListBox`, required): The widget instance.
-
 Returns: `integer` - The selected index.
 
 #### Example
@@ -7415,11 +7473,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:addItem("X")
-    lb:addItem("Y"); lb:addItem("Z")
-    local cnt = lb:getItemCount(); lb:setSelectedIndex(2)
-    local sel = lb:getSelectedIndex(); lb:removeItem(1)
-    print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
+    local list = lurek.ui.newList(); list:addItem("Option A")
+    list:addItem("Option B"); list:addItem("Option C")
+    list:setSelectedIndex(2); print("selected = " .. list:getSelectedIndex())
+    list:setSelectedIndex(3)
+    print("changed to = " .. list:getSelectedIndex())
 end
 ```
 
@@ -7439,7 +7497,6 @@ Removes the item at the given 1-based index from this list box.
 
 Parameters:
 
-- `self` (`LListBox`, required): The widget instance.
 - `index` (`integer`, required): The 1-based index to remove.
 
 #### Example
@@ -7448,11 +7505,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:addItem("X")
-    lb:addItem("Y"); lb:addItem("Z")
-    local cnt = lb:getItemCount(); lb:setSelectedIndex(2)
-    local sel = lb:getSelectedIndex(); lb:removeItem(1)
-    print("count:", cnt, "selectedIndex:", sel, "removeItem ok")
+    local list = lurek.ui.newList(); list:addItem("First")
+    list:addItem("Second"); list:addItem("Third")
+    list:setItemHeight(30); list:removeItem(2)
+    print("after remove: count=" .. list:getItemCount()); print("item 2 now = " .. list:getItem(2))
+    list:clearItems(); print("after clear = " .. list:getItemCount())
 end
 ```
 
@@ -7472,7 +7529,6 @@ Sets the pixel height of each item row in this list box.
 
 Parameters:
 
-- `self` (`LListBox`, required): The widget instance.
 - `h` (`number`, required): Row height in pixels.
 
 #### Example
@@ -7481,11 +7537,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:setItemHeight(20)
-    lb:addItem("Item"); lb:setSelectedIndex(1)
-    local mb = lurek.ui.newMenuBar(); local mi = lurek.ui.newMenuItem("File")
-    local idx = mb:addMenu(mi._idx)
-    print("setItemHeight ok; addMenu idx:", idx)
+    local list = lurek.ui.newList(); list:addItem("First")
+    list:addItem("Second"); list:addItem("Third")
+    list:setItemHeight(30); list:removeItem(2)
+    print("after remove: count=" .. list:getItemCount()); print("item 2 now = " .. list:getItem(2))
+    list:clearItems(); print("after clear = " .. list:getItemCount())
 end
 ```
 
@@ -7505,7 +7561,6 @@ Sets the selected item by 1-based index.
 
 Parameters:
 
-- `self` (`LListBox`, required): The widget instance.
 - `index` (`integer`, required): The 1-based index of the item to select.
 
 #### Example
@@ -7514,11 +7569,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:setItemHeight(20)
-    lb:addItem("Item"); lb:setSelectedIndex(1)
-    local mb = lurek.ui.newMenuBar(); local mi = lurek.ui.newMenuItem("File")
-    local idx = mb:addMenu(mi._idx)
-    print("setItemHeight ok; addMenu idx:", idx)
+    local list = lurek.ui.newList(); list:addItem("Option A")
+    list:addItem("Option B"); list:addItem("Option C")
+    list:setSelectedIndex(2); print("selected = " .. list:getSelectedIndex())
+    list:setSelectedIndex(3)
+    print("changed to = " .. list:getSelectedIndex())
 end
 ```
 
@@ -7540,7 +7595,6 @@ Adds a menu (by its widget index) to this menu bar.
 
 Parameters:
 
-- `self` (`LMenuBar`, required): The widget instance.
 - `menu_idx` (`integer`, required): The widget index of the menu to add.
 
 #### Example
@@ -7549,11 +7603,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local lb = lurek.ui.newList(); lb:setItemHeight(20)
-    lb:addItem("Item"); lb:setSelectedIndex(1)
-    local mb = lurek.ui.newMenuBar(); local mi = lurek.ui.newMenuItem("File")
-    local idx = mb:addMenu(mi._idx)
-    print("setItemHeight ok; addMenu idx:", idx)
+    local bar = lurek.ui.newMenuBar(); local fileMenu = lurek.ui.newMenuItem("File")
+    local editMenu = lurek.ui.newMenuItem("Edit"); local viewMenu = lurek.ui.newMenuItem("View")
+    bar:addMenu(fileMenu._idx); bar:addMenu(editMenu._idx)
+    bar:addMenu(viewMenu._idx); print("menus = " .. bar:getMenuCount())
+    local menus = bar:getMenus(); print("menu indices: " .. #menus .. " entries")
 end
 ```
 
@@ -7571,10 +7625,6 @@ function LMenuBar:getMenuCount() end
 
 Returns the number of menus in this menu bar.
 
-Parameters:
-
-- `self` (`LMenuBar`, required): The widget instance.
-
 Returns: `integer` - The menu count.
 
 #### Example
@@ -7583,11 +7633,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
-    local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx); local cnt = mb:getMenuCount()
-    local menus = mb:getMenus(); mb:removeMenu(1)
-    print("menuCount:", cnt, "getMenus ok; removeMenu ok")
+    local bar = lurek.ui.newMenuBar(); local fileMenu = lurek.ui.newMenuItem("File")
+    local editMenu = lurek.ui.newMenuItem("Edit"); local viewMenu = lurek.ui.newMenuItem("View")
+    bar:addMenu(fileMenu._idx); bar:addMenu(editMenu._idx)
+    bar:addMenu(viewMenu._idx); print("menus = " .. bar:getMenuCount())
+    local menus = bar:getMenus(); print("menu indices: " .. #menus .. " entries")
 end
 ```
 
@@ -7605,10 +7655,6 @@ function LMenuBar:getMenus() end
 
 Returns a table of widget indices for all menus in this menu bar.
 
-Parameters:
-
-- `self` (`LMenuBar`, required): The widget instance.
-
 Returns: `integer[]` - Menu widget indices.
 
 #### Example
@@ -7617,11 +7663,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
-    local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx); local cnt = mb:getMenuCount()
-    local menus = mb:getMenus(); mb:removeMenu(1)
-    print("menuCount:", cnt, "getMenus ok; removeMenu ok")
+    local bar = lurek.ui.newMenuBar(); local fileMenu = lurek.ui.newMenuItem("File")
+    local editMenu = lurek.ui.newMenuItem("Edit"); local viewMenu = lurek.ui.newMenuItem("View")
+    bar:addMenu(fileMenu._idx); bar:addMenu(editMenu._idx)
+    bar:addMenu(viewMenu._idx); print("menus = " .. bar:getMenuCount())
+    local menus = bar:getMenus(); print("menu indices: " .. #menus .. " entries")
 end
 ```
 
@@ -7642,7 +7688,6 @@ Removes a menu from this menu bar by its widget index.
 
 Parameters:
 
-- `self` (`LMenuBar`, required): The widget instance.
 - `menu_idx` (`integer`, required): The widget index of the menu to remove.
 
 Returns: `boolean` - True if the menu was found and removed.
@@ -7653,11 +7698,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mb = lurek.ui.newMenuBar(); local mi1 = lurek.ui.newMenuItem("Edit")
-    local mi2 = lurek.ui.newMenuItem("View"); mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx); local cnt = mb:getMenuCount()
-    local menus = mb:getMenus(); mb:removeMenu(1)
-    print("menuCount:", cnt, "getMenus ok; removeMenu ok")
+    local bar = lurek.ui.newMenuBar(); local m = lurek.ui.newMenuItem("Tools")
+    bar:addMenu(m._idx); print("before remove = " .. bar:getMenuCount())
+    local ok = bar:removeMenu(m._idx)
+    print("removed = " .. tostring(ok))
+    print("after remove = " .. bar:getMenuCount())
 end
 ```
 
@@ -7679,7 +7724,6 @@ Adds a sub-item to this menu item for building nested menus.
 
 Parameters:
 
-- `self` (`LMenuItem`, required): The widget instance.
 - `child_idx` (`integer`, required): The widget index of the sub-item to add.
 
 #### Example
@@ -7688,11 +7732,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
-    mi:setShortcut("Ctrl+T")
-    local sc = mi:getShortcut()
-    print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
+    local fileMenu = lurek.ui.newMenuItem("File"); local openItem = lurek.ui.newMenuItem("Open"); openItem:setShortcut("Ctrl+O")
+    local saveItem = lurek.ui.newMenuItem("Save"); saveItem:setShortcut("Ctrl+S")
+    local exitItem = lurek.ui.newMenuItem("Exit"); fileMenu:addSubItem(openItem._idx)
+    fileMenu:addSubItem(saveItem._idx); fileMenu:addSubItem(exitItem._idx)
+    local subs = fileMenu:getSubItems(); print("File has " .. #subs .. " sub-items")
 end
 ```
 
@@ -7709,10 +7753,6 @@ function LMenuItem:getShortcut() end
 #### Description
 
 Returns the keyboard shortcut string associated with this menu item.
-
-Parameters:
-
-- `self` (`LMenuItem`, required): The widget instance.
 
 Returns: `string` - The shortcut text.
 
@@ -7744,10 +7784,6 @@ function LMenuItem:getSubItems() end
 
 Returns a table of widget indices for all sub-items of this menu item.
 
-Parameters:
-
-- `self` (`LMenuItem`, required): The widget instance.
-
 Returns: `integer[]` - Sub-item widget indices.
 
 #### Example
@@ -7756,11 +7792,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Tools"); local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx); local subs = mi:getSubItems()
-    mi:setShortcut("Ctrl+T")
-    local sc = mi:getShortcut()
-    print("addSubItem ok; getSubItems:", type(subs), "shortcut:", sc)
+    local fileMenu = lurek.ui.newMenuItem("File"); local openItem = lurek.ui.newMenuItem("Open"); openItem:setShortcut("Ctrl+O")
+    local saveItem = lurek.ui.newMenuItem("Save"); saveItem:setShortcut("Ctrl+S")
+    local exitItem = lurek.ui.newMenuItem("Exit"); fileMenu:addSubItem(openItem._idx)
+    fileMenu:addSubItem(saveItem._idx); fileMenu:addSubItem(exitItem._idx)
+    local subs = fileMenu:getSubItems(); print("File has " .. #subs .. " sub-items")
 end
 ```
 
@@ -7777,10 +7813,6 @@ function LMenuItem:getText() end
 #### Description
 
 Returns the display text of this menu item.
-
-Parameters:
-
-- `self` (`LMenuItem`, required): The widget instance.
 
 Returns: `string` - The menu item text.
 
@@ -7812,10 +7844,6 @@ function LMenuItem:isChecked() end
 
 Returns whether this menu item is checked (for checkable menu items).
 
-Parameters:
-
-- `self` (`LMenuItem`, required): The widget instance.
-
 Returns: `boolean` - True if checked.
 
 #### Example
@@ -7824,11 +7852,15 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
-    mi:setChecked(true)
-    local checked = mi:isChecked()
-    mi:setChecked(false)
-    print("getText:", t, "isChecked:", mi:isChecked(), "setChecked ok")
+    ---@type LMenuItem
+    local item = lurek.ui.newMenuItem("Toggle Grid")
+    item:setOnClick(function()
+        print("  grid toggle clicked")
+    end)
+    item:setChecked(true)
+    print("checked = " .. tostring(item:isChecked()))
+    item:setText("Show Grid")
+    print("renamed = " .. item:getText())
 end
 ```
 
@@ -7848,7 +7880,6 @@ Sets the checked state of this menu item.
 
 Parameters:
 
-- `self` (`LMenuItem`, required): The widget instance.
 - `v` (`boolean`, required): True to check.
 
 #### Example
@@ -7857,11 +7888,15 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Enable"); local t = mi:getText()
-    mi:setChecked(true)
-    local checked = mi:isChecked()
-    mi:setChecked(false)
-    print("getText:", t, "isChecked:", mi:isChecked(), "setChecked ok")
+    ---@type LMenuItem
+    local item = lurek.ui.newMenuItem("Toggle Grid")
+    item:setOnClick(function()
+        print("  grid toggle clicked")
+    end)
+    item:setChecked(true)
+    print("checked = " .. tostring(item:isChecked()))
+    item:setText("Show Grid")
+    print("renamed = " .. item:getText())
 end
 ```
 
@@ -7881,7 +7916,6 @@ Registers a callback invoked when this menu item is clicked.
 
 Parameters:
 
-- `self` (`LMenuItem`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index.
 
 #### Example
@@ -7890,11 +7924,15 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Old")
-    mi:setOnClick(function(idx) print("menu clicked", idx) end)
-    mi:setShortcut("Alt+F4")
-    mi:setText("New Name")
-    print("setOnClick/setShortcut/setText ok")
+    ---@type LMenuItem
+    local item = lurek.ui.newMenuItem("Toggle Grid")
+    item:setOnClick(function()
+        print("  grid toggle clicked")
+    end)
+    item:setChecked(true)
+    print("checked = " .. tostring(item:isChecked()))
+    item:setText("Show Grid")
+    print("renamed = " .. item:getText())
 end
 ```
 
@@ -7914,7 +7952,6 @@ Sets the keyboard shortcut text displayed next to this menu item.
 
 Parameters:
 
-- `self` (`LMenuItem`, required): The widget instance.
 - `shortcut` (`string`, required): The shortcut text (e.g. "Ctrl+S").
 
 #### Example
@@ -7947,7 +7984,6 @@ Sets the display text of this menu item.
 
 Parameters:
 
-- `self` (`LMenuItem`, required): The widget instance.
 - `text` (`string`, required): The menu item text.
 
 #### Example
@@ -7956,11 +7992,15 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local mi = lurek.ui.newMenuItem("Old")
-    mi:setOnClick(function(idx) print("menu clicked", idx) end)
-    mi:setShortcut("Alt+F4")
-    mi:setText("New Name")
-    print("setOnClick/setShortcut/setText ok")
+    ---@type LMenuItem
+    local item = lurek.ui.newMenuItem("Toggle Grid")
+    item:setOnClick(function()
+        print("  grid toggle clicked")
+    end)
+    item:setChecked(true)
+    print("checked = " .. tostring(item:isChecked()))
+    item:setText("Show Grid")
+    print("renamed = " .. item:getText())
 end
 ```
 
@@ -7981,10 +8021,6 @@ function LNinePatch:getImageDimensions() end
 
 Returns the original image dimensions of this nine-patch.
 
-Parameters:
-
-- `self` (`LNinePatch`, required): The widget instance.
-
 Returns: `integer, integer` - Image width and height.
 
 #### Example
@@ -7993,11 +8029,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
-    local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
-    local l, t, r, b = np:getInsets()
-    local slices = np:getSlices()
-    print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
+    local np = lurek.ui.newNinePatch(); print("type=" .. np:type())
+    np:setImageDimensions(64, 64); local w, h = np:getImageDimensions()
+    print("img_dim=" .. w .. "x" .. h); np:setInsets(8, 8, 8, 8)
+    local l, t, r, b = np:getInsets(); print("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    local slices = np:getSlices(); print("slices=" .. tostring(slices ~= nil))
 end
 ```
 
@@ -8018,10 +8054,6 @@ function LNinePatch:getInsets() end
 
 Returns the border insets of this nine-patch.
 
-Parameters:
-
-- `self` (`LNinePatch`, required): The widget instance.
-
 Returns: `integer, integer, integer, integer` - Left, top, right, and bottom insets.
 
 #### Example
@@ -8030,11 +8062,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
-    local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
-    local l, t, r, b = np:getInsets()
-    local slices = np:getSlices()
-    print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
+    local np = lurek.ui.newNinePatch(); print("type=" .. np:type())
+    np:setImageDimensions(64, 64); local w, h = np:getImageDimensions()
+    print("img_dim=" .. w .. "x" .. h); np:setInsets(8, 8, 8, 8)
+    local l, t, r, b = np:getInsets(); print("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    local slices = np:getSlices(); print("slices=" .. tostring(slices ~= nil))
 end
 ```
 
@@ -8052,10 +8084,6 @@ function LNinePatch:getSlices() end
 
 Returns the computed nine-patch slices as a table of source/dest rectangles for rendering.
 
-Parameters:
-
-- `self` (`LNinePatch`, required): The widget instance.
-
 Returns: `table` - Array of slice tables with sx, sy, sw, sh, dx, dy, dw, dh fields, or nil.
 
 #### Example
@@ -8064,11 +8092,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch(); np:setImageDimensions(64, 64)
-    local w, h = np:getImageDimensions(); np:setInsets(8, 8, 8, 8)
-    local l, t, r, b = np:getInsets()
-    local slices = np:getSlices()
-    print("imgDims:", w, h, "insets:", l, t, r, b, "slices:", type(slices))
+    local np = lurek.ui.newNinePatch(); print("type=" .. np:type())
+    np:setImageDimensions(64, 64); local w, h = np:getImageDimensions()
+    print("img_dim=" .. w .. "x" .. h); np:setInsets(8, 8, 8, 8)
+    local l, t, r, b = np:getInsets(); print("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    local slices = np:getSlices(); print("slices=" .. tostring(slices ~= nil))
 end
 ```
 
@@ -8089,7 +8117,6 @@ Sets the original image dimensions used for nine-patch slice calculations.
 
 Parameters:
 
-- `self` (`LNinePatch`, required): The widget instance.
 - `w` (`integer`, required): Image width in pixels.
 - `h` (`integer`, required): Image height in pixels.
 
@@ -8099,11 +8126,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
-    np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
-    local panel = lurek.ui.newPanel(); panel:setTitle("My Panel")
-    local title = panel:getTitle()
-    print("setInsets ok; panel title:", title)
+    local np = lurek.ui.newNinePatch(); print("type=" .. np:type())
+    np:setImageDimensions(64, 64); local w, h = np:getImageDimensions()
+    print("img_dim=" .. w .. "x" .. h); np:setInsets(8, 8, 8, 8)
+    local l, t, r, b = np:getInsets(); print("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    local slices = np:getSlices(); print("slices=" .. tostring(slices ~= nil))
 end
 ```
 
@@ -8126,7 +8153,6 @@ Sets the border insets defining the stretchable center region of the nine-patch 
 
 Parameters:
 
-- `self` (`LNinePatch`, required): The widget instance.
 - `left` (`integer`, required): Left inset in pixels.
 - `top` (`integer`, required): Top inset in pixels.
 - `right` (`integer`, required): Right inset in pixels.
@@ -8138,11 +8164,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local np = lurek.ui.newNinePatch(); np:setImageDimensions(32, 32)
-    np:setInsets(4, 4, 4, 4); local l, t, r, b = np:getInsets()
-    local panel = lurek.ui.newPanel(); panel:setTitle("My Panel")
-    local title = panel:getTitle()
-    print("setInsets ok; panel title:", title)
+    local np = lurek.ui.newNinePatch(); print("type=" .. np:type())
+    np:setImageDimensions(64, 64); local w, h = np:getImageDimensions()
+    print("img_dim=" .. w .. "x" .. h); np:setInsets(8, 8, 8, 8)
+    local l, t, r, b = np:getInsets(); print("insets=" .. l .. "," .. t .. "," .. r .. "," .. b)
+    local slices = np:getSlices(); print("slices=" .. tostring(slices ~= nil))
 end
 ```
 
@@ -8161,10 +8187,6 @@ function LPanel:getTitle() end
 #### Description
 
 Returns the title text of this panel.
-
-Parameters:
-
-- `self` (`LPanel`, required): The widget instance.
 
 Returns: `string` - The panel title.
 
@@ -8198,7 +8220,6 @@ Enables or disables scrolling within this panel.
 
 Parameters:
 
-- `self` (`LPanel`, required): The widget instance.
 - `scrollable` (`boolean`, required): True to enable scrolling.
 
 #### Example
@@ -8231,7 +8252,6 @@ Sets the title text displayed on this panel's header.
 
 Parameters:
 
-- `self` (`LPanel`, required): The widget instance.
 - `title` (`string`, required): The panel title.
 
 #### Example
@@ -8443,10 +8463,6 @@ function LProgressBar:getMax() end
 
 Returns the maximum value of this progress bar's range.
 
-Parameters:
-
-- `self` (`LProgressBar`, required): The widget instance.
-
 Returns: `number` - The maximum value.
 
 #### Example
@@ -8455,11 +8471,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
-    local mx = pb:getMax()
-    pb:setValue(75)
-    local prog = pb:getProgress()
-    print("min:", mn, "max:", mx, "progress:", prog)
+    local pb = lurek.ui.newProgressBar(0, 100); print("type=" .. pb:type())
+    print("min=" .. pb:getMin()); print("max=" .. pb:getMax())
+    pb:setValue(75); print("value=" .. pb:getValue())
+    print("progress=" .. pb:getProgress()); pb:setRange(0, 200)
+    print("max_after=" .. pb:getMax())
 end
 ```
 
@@ -8477,10 +8493,6 @@ function LProgressBar:getMin() end
 
 Returns the minimum value of this progress bar's range.
 
-Parameters:
-
-- `self` (`LProgressBar`, required): The widget instance.
-
 Returns: `number` - The minimum value.
 
 #### Example
@@ -8489,11 +8501,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
-    local mx = pb:getMax()
-    pb:setValue(75)
-    local prog = pb:getProgress()
-    print("min:", mn, "max:", mx, "progress:", prog)
+    local pb = lurek.ui.newProgressBar(0, 100); print("type=" .. pb:type())
+    print("min=" .. pb:getMin()); print("max=" .. pb:getMax())
+    pb:setValue(75); print("value=" .. pb:getValue())
+    print("progress=" .. pb:getProgress()); pb:setRange(0, 200)
+    print("max_after=" .. pb:getMax())
 end
 ```
 
@@ -8511,10 +8523,6 @@ function LProgressBar:getProgress() end
 
 Returns the normalized progress as a fraction (0.0 to 1.0) of the current range.
 
-Parameters:
-
-- `self` (`LProgressBar`, required): The widget instance.
-
 Returns: `number` - The normalized progress.
 
 #### Example
@@ -8523,11 +8531,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 100); local mn = pb:getMin()
-    local mx = pb:getMax()
-    pb:setValue(75)
-    local prog = pb:getProgress()
-    print("min:", mn, "max:", mx, "progress:", prog)
+    local pb = lurek.ui.newProgressBar(0, 100); print("type=" .. pb:type())
+    print("min=" .. pb:getMin()); print("max=" .. pb:getMax())
+    pb:setValue(75); print("value=" .. pb:getValue())
+    print("progress=" .. pb:getProgress()); pb:setRange(0, 200)
+    print("max_after=" .. pb:getMax())
 end
 ```
 
@@ -8545,10 +8553,6 @@ function LProgressBar:getValue() end
 
 Returns the current value of this progress bar.
 
-Parameters:
-
-- `self` (`LProgressBar`, required): The widget instance.
-
 Returns: `number` - The progress value.
 
 #### Example
@@ -8557,11 +8561,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
-    local v = pb:getValue()
-    pb:setRange(10, 90)
-    pb:setValue(50)
-    print("getValue:", v, "setRange ok, setValue ok")
+    local pb = lurek.ui.newProgressBar(0, 100); print("type=" .. pb:type())
+    print("min=" .. pb:getMin()); print("max=" .. pb:getMax())
+    pb:setValue(75); print("value=" .. pb:getValue())
+    print("progress=" .. pb:getProgress()); pb:setRange(0, 200)
+    print("max_after=" .. pb:getMax())
 end
 ```
 
@@ -8582,7 +8586,6 @@ Sets the minimum and maximum bounds for this progress bar.
 
 Parameters:
 
-- `self` (`LProgressBar`, required): The widget instance.
 - `min` (`number`, required): Minimum value.
 - `max` (`number`, required): Maximum value.
 
@@ -8592,11 +8595,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
-    local v = pb:getValue()
-    pb:setRange(10, 90)
-    pb:setValue(50)
-    print("getValue:", v, "setRange ok, setValue ok")
+    local pb = lurek.ui.newProgressBar(0, 100); print("type=" .. pb:type())
+    print("min=" .. pb:getMin()); print("max=" .. pb:getMax())
+    pb:setValue(75); print("value=" .. pb:getValue())
+    print("progress=" .. pb:getProgress()); pb:setRange(0, 200)
+    print("max_after=" .. pb:getMax())
 end
 ```
 
@@ -8616,7 +8619,6 @@ Sets the current fill value of this progress bar, clamped to its range.
 
 Parameters:
 
-- `self` (`LProgressBar`, required): The widget instance.
 - `v` (`number`, required): The progress value.
 
 #### Example
@@ -8625,11 +8627,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local pb = lurek.ui.newProgressBar(0, 200); pb:setValue(100)
-    local v = pb:getValue()
-    pb:setRange(10, 90)
-    pb:setValue(50)
-    print("getValue:", v, "setRange ok, setValue ok")
+    local pb = lurek.ui.newProgressBar(0, 100); print("type=" .. pb:type())
+    print("min=" .. pb:getMin()); print("max=" .. pb:getMax())
+    pb:setValue(75); print("value=" .. pb:getValue())
+    print("progress=" .. pb:getProgress()); pb:setRange(0, 200)
+    print("max_after=" .. pb:getMax())
 end
 ```
 
@@ -8649,10 +8651,6 @@ function LRadioButton:getGroup() end
 
 Returns the radio button group name. Buttons in the same group are mutually exclusive.
 
-Parameters:
-
-- `self` (`LRadioButton`, required): The widget instance.
-
 Returns: `string` - The group name.
 
 #### Example
@@ -8661,11 +8659,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local rb = lurek.ui.newRadioButton("Option A", "group1")
-    local grp = rb:getGroup()
-    local t = rb:getText()
-    local sel = rb:isSelected()
-    print("group:", grp, "text:", t, "isSelected:", sel)
+    local rb1 = lurek.ui.newRadioButton("Option A", "opt_group"); local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
+    print("type=" .. rb1:type()); print("text=" .. rb1:getText())
+    print("group=" .. rb1:getGroup()); print("selected=" .. tostring(rb1:isSelected()))
+    rb1:setGroup("new_group")
+    print("group_after=" .. rb1:getGroup())
 end
 ```
 
@@ -8683,10 +8681,6 @@ function LRadioButton:getText() end
 
 Returns the label text of this radio button.
 
-Parameters:
-
-- `self` (`LRadioButton`, required): The widget instance.
-
 Returns: `string` - The radio button label.
 
 #### Example
@@ -8695,11 +8689,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local rb = lurek.ui.newRadioButton("Option A", "group1")
-    local grp = rb:getGroup()
-    local t = rb:getText()
-    local sel = rb:isSelected()
-    print("group:", grp, "text:", t, "isSelected:", sel)
+    local rb1 = lurek.ui.newRadioButton("Option A", "opt_group"); local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
+    print("type=" .. rb1:type()); print("text=" .. rb1:getText())
+    print("group=" .. rb1:getGroup()); print("selected=" .. tostring(rb1:isSelected()))
+    rb1:setGroup("new_group")
+    print("group_after=" .. rb1:getGroup())
 end
 ```
 
@@ -8717,10 +8711,6 @@ function LRadioButton:isSelected() end
 
 Returns whether this radio button is currently selected.
 
-Parameters:
-
-- `self` (`LRadioButton`, required): The widget instance.
-
 Returns: `boolean` - True if selected.
 
 #### Example
@@ -8729,11 +8719,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local rb = lurek.ui.newRadioButton("Option A", "group1")
-    local grp = rb:getGroup()
-    local t = rb:getText()
-    local sel = rb:isSelected()
-    print("group:", grp, "text:", t, "isSelected:", sel)
+    local rb1 = lurek.ui.newRadioButton("Option A", "opt_group"); local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
+    print("type=" .. rb1:type()); print("text=" .. rb1:getText())
+    print("group=" .. rb1:getGroup()); print("selected=" .. tostring(rb1:isSelected()))
+    rb1:setGroup("new_group")
+    print("group_after=" .. rb1:getGroup())
 end
 ```
 
@@ -8753,7 +8743,6 @@ Sets the radio button group name. Buttons in the same group are mutually exclusi
 
 Parameters:
 
-- `self` (`LRadioButton`, required): The widget instance.
 - `group` (`string`, required): The group name.
 
 #### Example
@@ -8762,11 +8751,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local rb = lurek.ui.newRadioButton("B", "g1"); rb:setGroup("g2")
-    rb:setSelected(true)
-    rb:setOnChange(function(idx) print("radio changed", idx) end)
-    rb:setText("New B")
-    print("setGroup/setSelected/setOnChange/setText ok")
+    local rb1 = lurek.ui.newRadioButton("Option A", "opt_group"); local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
+    print("type=" .. rb1:type()); print("text=" .. rb1:getText())
+    print("group=" .. rb1:getGroup()); print("selected=" .. tostring(rb1:isSelected()))
+    rb1:setGroup("new_group")
+    print("group_after=" .. rb1:getGroup())
 end
 ```
 
@@ -8786,7 +8775,6 @@ Registers a callback invoked when this radio button's selection changes.
 
 Parameters:
 
-- `self` (`LRadioButton`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index.
 
 #### Example
@@ -8819,7 +8807,6 @@ Sets the selected state of this radio button.
 
 Parameters:
 
-- `self` (`LRadioButton`, required): The widget instance.
 - `v` (`boolean`, required): True to select.
 
 #### Example
@@ -8852,7 +8839,6 @@ Sets the label text of this radio button.
 
 Parameters:
 
-- `self` (`LRadioButton`, required): The widget instance.
 - `text` (`string`, required): The radio button label.
 
 #### Example
@@ -8950,6 +8936,8 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
+    -- Adds a series of points to a scatter plot by pulling 'x' and 'y' columns
+    -- directly from a dataframe.
     local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 2 }, { 3, 4 }, { 5, 6 } })
     local chart = lurek.ui.newScatterPlot({width = 200, height = 100})
     local count = chart:addSeriesFromDataFrame("Data", df, "x", "y", 0.5, 0.5, 0.5)
@@ -9138,10 +9126,6 @@ function LScrollBar:getContentSize() end
 
 Returns the total content size tracked by this scroll bar.
 
-Parameters:
-
-- `self` (`LScrollBar`, required): The widget instance.
-
 Returns: `number` - The content size.
 
 #### Example
@@ -9171,10 +9155,6 @@ function LScrollBar:getScrollPosition() end
 #### Description
 
 Returns the current scroll position of this scroll bar.
-
-Parameters:
-
-- `self` (`LScrollBar`, required): The widget instance.
 
 Returns: `number` - The scroll position.
 
@@ -9206,10 +9186,6 @@ function LScrollBar:getViewSize() end
 
 Returns the visible viewport size tracked by this scroll bar.
 
-Parameters:
-
-- `self` (`LScrollBar`, required): The widget instance.
-
 Returns: `number` - The view size.
 
 #### Example
@@ -9239,10 +9215,6 @@ function LScrollBar:isVertical() end
 #### Description
 
 Returns whether this scroll bar is oriented vertically.
-
-Parameters:
-
-- `self` (`LScrollBar`, required): The widget instance.
 
 Returns: `boolean` - True if vertical.
 
@@ -9276,7 +9248,6 @@ Sets the total content size that this scroll bar represents.
 
 Parameters:
 
-- `self` (`LScrollBar`, required): The widget instance.
 - `v` (`number`, required): The content size.
 
 #### Example
@@ -9309,7 +9280,6 @@ Registers a callback invoked when this scroll bar's position changes.
 
 Parameters:
 
-- `self` (`LScrollBar`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index.
 
 #### Example
@@ -9342,7 +9312,6 @@ Sets the scroll position of this scroll bar, clamped to the valid range.
 
 Parameters:
 
-- `self` (`LScrollBar`, required): The widget instance.
 - `v` (`number`, required): The scroll position.
 
 #### Example
@@ -9375,7 +9344,6 @@ Sets the visible viewport size for this scroll bar.
 
 Parameters:
 
-- `self` (`LScrollBar`, required): The widget instance.
 - `v` (`number`, required): The view size.
 
 #### Example
@@ -9409,10 +9377,6 @@ function LScrollPanel:getContentSize() end
 
 Returns the virtual content dimensions of this scroll panel.
 
-Parameters:
-
-- `self` (`LScrollPanel`, required): The widget instance.
-
 Returns: `number, number` - Content width and height in pixels.
 
 #### Example
@@ -9443,10 +9407,6 @@ function LScrollPanel:getMaxScroll() end
 #### Description
 
 Returns the maximum scroll offset allowed in each axis.
-
-Parameters:
-
-- `self` (`LScrollPanel`, required): The widget instance.
 
 Returns: `number, number` - Maximum horizontal and vertical scroll values.
 
@@ -9479,10 +9439,6 @@ function LScrollPanel:getScrollPosition() end
 
 Returns the current scroll offset of this scroll panel.
 
-Parameters:
-
-- `self` (`LScrollPanel`, required): The widget instance.
-
 Returns: `number, number` - Horizontal and vertical scroll offsets.
 
 #### Example
@@ -9513,10 +9469,6 @@ function LScrollPanel:getScrollSpeed() end
 
 Returns the current scroll speed multiplier.
 
-Parameters:
-
-- `self` (`LScrollPanel`, required): The widget instance.
-
 Returns: `number` - The scroll speed.
 
 #### Example
@@ -9525,11 +9477,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newScrollPanel()
-    local mx, my = sp:getMaxScroll()
-    local px, py = sp:getScrollPosition()
-    local speed = sp:getScrollSpeed()
-    print("maxScroll:", mx, my, "scrollPos:", px, py, "speed:", speed)
+    ---@type LScrollPanel
+    local scroll = lurek.ui.newScrollPanel()
+    scroll:setScrollSpeed(30)
+    print("scroll speed = " .. scroll:getScrollSpeed())
 end
 ```
 
@@ -9550,7 +9501,6 @@ Sets the virtual content dimensions of this scroll panel.
 
 Parameters:
 
-- `self` (`LScrollPanel`, required): The widget instance.
 - `w` (`number`, required): Content width in pixels.
 - `h` (`number`, required): Content height in pixels.
 
@@ -9585,7 +9535,6 @@ Sets the scroll offset position of this scroll panel.
 
 Parameters:
 
-- `self` (`LScrollPanel`, required): The widget instance.
 - `x` (`number`, required): Horizontal scroll offset.
 - `y` (`number`, required): Vertical scroll offset.
 
@@ -9619,7 +9568,6 @@ Sets the scroll speed multiplier for mouse wheel scrolling.
 
 Parameters:
 
-- `self` (`LScrollPanel`, required): The widget instance.
 - `speed` (`number`, required): Scroll speed in pixels per scroll tick.
 
 #### Example
@@ -9628,11 +9576,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newScrollPanel(); sp:setContentSize(800, 600)
-    local cw, ch = sp:getContentSize(); sp:setScrollPosition(50, 100)
-    local px, py = sp:getScrollPosition(); sp:setScrollSpeed(3.0)
-    local speed = sp:getScrollSpeed()
-    print("contentSize:", cw, ch, "scrollPos:", px, py, "speed:", speed)
+    ---@type LScrollPanel
+    local scroll = lurek.ui.newScrollPanel()
+    scroll:setScrollSpeed(30)
+    print("scroll speed = " .. scroll:getScrollSpeed())
 end
 ```
 
@@ -9651,10 +9598,6 @@ function LSeparator:getThickness() end
 #### Description
 
 Returns the line thickness of this separator.
-
-Parameters:
-
-- `self` (`LSeparator`, required): The widget instance.
 
 Returns: `number` - The thickness in pixels.
 
@@ -9685,10 +9628,6 @@ function LSeparator:isVertical() end
 #### Description
 
 Returns whether this separator is oriented vertically.
-
-Parameters:
-
-- `self` (`LSeparator`, required): The widget instance.
 
 Returns: `boolean` - True if vertical.
 
@@ -9722,7 +9661,6 @@ Sets the line thickness of this separator in pixels.
 
 Parameters:
 
-- `self` (`LSeparator`, required): The widget instance.
 - `thickness` (`number`, required): Thickness in pixels.
 
 #### Example
@@ -9755,7 +9693,6 @@ Sets whether this separator draws vertically or horizontally.
 
 Parameters:
 
-- `self` (`LSeparator`, required): The widget instance.
 - `v` (`boolean`, required): True for vertical, false for horizontal.
 
 #### Example
@@ -9788,10 +9725,6 @@ function LSlider:getMax() end
 
 Returns the maximum value of this slider's range.
 
-Parameters:
-
-- `self` (`LSlider`, required): The widget instance.
-
 Returns: `number` - The maximum value.
 
 #### Example
@@ -9822,10 +9755,6 @@ function LSlider:getMin() end
 
 Returns the minimum value of this slider's range.
 
-Parameters:
-
-- `self` (`LSlider`, required): The widget instance.
-
 Returns: `number` - The minimum value.
 
 #### Example
@@ -9855,10 +9784,6 @@ function LSlider:getValue() end
 #### Description
 
 Returns the current value of this slider.
-
-Parameters:
-
-- `self` (`LSlider`, required): The widget instance.
 
 Returns: `number` - The slider value.
 
@@ -9893,7 +9818,6 @@ Sets the minimum and maximum bounds for this slider.
 
 Parameters:
 
-- `self` (`LSlider`, required): The widget instance.
 - `min` (`number`, required): Minimum value.
 - `max` (`number`, required): Maximum value.
 
@@ -9903,11 +9827,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
-    local mx = sl:getMax(); sl:setStep(5)
-    sl:setValue(75)
-    local v = sl:getValue()
-    print("setRange max:", mx, "getValue:", v)
+    local slider = lurek.ui.newSlider(0, 10)
+    slider:setValue(5)
+    print("before: " .. slider:getMin() .. " to " .. slider:getMax() .. " val=" .. slider:getValue())
+    slider:setRange(0, 100)
+    print("after: " .. slider:getMin() .. " to " .. slider:getMax() .. " val=" .. slider:getValue())
 end
 ```
 
@@ -9927,7 +9851,6 @@ Sets the step increment for this slider's value snapping.
 
 Parameters:
 
-- `self` (`LSlider`, required): The widget instance.
 - `step` (`number`, required): The step size.
 
 #### Example
@@ -9936,11 +9859,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 50); sl:setRange(0, 100)
-    local mx = sl:getMax(); sl:setStep(5)
-    sl:setValue(75)
-    local v = sl:getValue()
-    print("setRange max:", mx, "getValue:", v)
+    local slider = lurek.ui.newSlider(0, 1); slider:setStep(0.1)
+    slider:setValue(0.5)
+    print("value = " .. slider:getValue())
+    slider:setValue(1.5)
+    print("clamped = " .. slider:getValue())
 end
 ```
 
@@ -9960,7 +9883,6 @@ Sets the current value of this slider, clamped to its range.
 
 Parameters:
 
-- `self` (`LSlider`, required): The widget instance.
 - `v` (`number`, required): The value to set.
 
 #### Example
@@ -9969,11 +9891,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
-    local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
-    sb:setValue(5); sb:decrement()
-    local sv = sb:getValue()
-    print("slider value:", v, "spinbox after decrement:", sv)
+    local slider = lurek.ui.newSlider(0, 1); slider:setStep(0.1)
+    slider:setValue(0.5)
+    print("value = " .. slider:getValue())
+    slider:setValue(1.5)
+    print("clamped = " .. slider:getValue())
 end
 ```
 
@@ -9992,21 +9914,17 @@ function LSpinBox:decrement() end
 
 Decreases this spin box's value by one step.
 
-Parameters:
-
-- `self` (`LSpinBox`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
-    local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
-    sb:setValue(5); sb:decrement()
-    local sv = sb:getValue()
-    print("slider value:", v, "spinbox after decrement:", sv)
+    local spin = lurek.ui.newSpinBox(0, 100); spin:setValue(10)
+    spin:setStep(5); spin:increment()
+    print("after increment = " .. spin:getValue()); spin:decrement()
+    spin:decrement()
+    print("after 2 decrements = " .. spin:getValue())
 end
 ```
 
@@ -10024,10 +9942,6 @@ function LSpinBox:getValue() end
 
 Returns the current numeric value of this spin box.
 
-Parameters:
-
-- `self` (`LSpinBox`, required): The widget instance.
-
 Returns: `number` - The spin box value.
 
 #### Example
@@ -10036,11 +9950,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sl = lurek.ui.newSlider(0, 10); sl:setValue(7)
-    local v = sl:getValue(); local sb = lurek.ui.newSpinBox(0, 10)
-    sb:setValue(5); sb:decrement()
-    local sv = sb:getValue()
-    print("slider value:", v, "spinbox after decrement:", sv)
+    local sb = lurek.ui.newSpinBox(1, 10); print("type=" .. sb:type())
+    sb:setValue(5); print("value=" .. sb:getValue())
+    sb:setStep(2); sb:setRange(0, 100)
+    sb:increment(); print("value_after_inc=" .. sb:getValue())
+    sb:decrement(); print("value_after_dec=" .. sb:getValue())
 end
 ```
 
@@ -10057,21 +9971,17 @@ function LSpinBox:increment() end
 
 Increases this spin box's value by one step.
 
-Parameters:
-
-- `self` (`LSpinBox`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
-    sb:increment(); local v = sb:getValue()
-    sb:setRange(5, 50); sb:setStep(2)
-    local v2 = sb:getValue()
-    print("after increment:", v, "after setRange/setStep:", v2)
+    local spin = lurek.ui.newSpinBox(0, 100); spin:setValue(10)
+    spin:setStep(5); spin:increment()
+    print("after increment = " .. spin:getValue()); spin:decrement()
+    spin:decrement()
+    print("after 2 decrements = " .. spin:getValue())
 end
 ```
 
@@ -10092,7 +10002,6 @@ Sets the minimum and maximum bounds for this spin box.
 
 Parameters:
 
-- `self` (`LSpinBox`, required): The widget instance.
 - `min` (`number`, required): Minimum value.
 - `max` (`number`, required): Maximum value.
 
@@ -10102,11 +10011,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
-    sb:increment(); local v = sb:getValue()
-    sb:setRange(5, 50); sb:setStep(2)
-    local v2 = sb:getValue()
-    print("after increment:", v, "after setRange/setStep:", v2)
+    ---@type LSpinBox
+    local spin = lurek.ui.newSpinBox(0, 10)
+    spin:setValue(8)
+    spin:setRange(0, 5)
+    print("clamped to range = " .. spin:getValue())
 end
 ```
 
@@ -10126,7 +10035,6 @@ Sets the step increment for this spin box.
 
 Parameters:
 
-- `self` (`LSpinBox`, required): The widget instance.
 - `step` (`number`, required): The step size (minimum 1e-9).
 
 #### Example
@@ -10135,11 +10043,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(0, 100); sb:setValue(10)
-    sb:increment(); local v = sb:getValue()
-    sb:setRange(5, 50); sb:setStep(2)
-    local v2 = sb:getValue()
-    print("after increment:", v, "after setRange/setStep:", v2)
+    local spin = lurek.ui.newSpinBox(0, 100); spin:setValue(10)
+    spin:setStep(5); spin:increment()
+    print("after increment = " .. spin:getValue()); spin:decrement()
+    spin:decrement()
+    print("after 2 decrements = " .. spin:getValue())
 end
 ```
 
@@ -10159,7 +10067,6 @@ Sets the numeric value of this spin box, clamped to its range.
 
 Parameters:
 
-- `self` (`LSpinBox`, required): The widget instance.
 - `v` (`number`, required): The value to set.
 
 #### Example
@@ -10168,11 +10075,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newSpinBox(1, 100); sb:setValue(42)
-    local v = sb:getValue(); sb:setValue(1)
-    local v2 = sb:getValue(); sb:setValue(100)
-    local v3 = sb:getValue()
-    print("setValue: 42â†’", v, "1â†’", v2, "100â†’", v3)
+    local sb = lurek.ui.newSpinBox(1, 10); print("type=" .. sb:type())
+    sb:setValue(5); print("value=" .. sb:getValue())
+    sb:setStep(2); sb:setRange(0, 100)
+    sb:increment(); print("value_after_inc=" .. sb:getValue())
+    sb:decrement(); print("value_after_dec=" .. sb:getValue())
 end
 ```
 
@@ -10192,10 +10099,6 @@ function LSplitPanel:getFirstChild() end
 
 Returns the widget index of the first (left/top) child panel.
 
-Parameters:
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
 Returns: `integer` - The widget index, or nil if not set.
 
 #### Example
@@ -10204,11 +10107,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
-    local sc = sp:getSecondChild()
-    local ori = sp:getOrientation()
-    local mps = sp:getMinPanelSize()
-    print("firstChild:", fc, "secondChild:", sc, "orientation:", ori, "minPanel:", mps)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10226,10 +10129,6 @@ function LSplitPanel:getMinPanelSize() end
 
 Returns the minimum pixel size of each split sub-panel.
 
-Parameters:
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
 Returns: `number` - The minimum size in pixels.
 
 #### Example
@@ -10238,11 +10137,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
-    local sc = sp:getSecondChild()
-    local ori = sp:getOrientation()
-    local mps = sp:getMinPanelSize()
-    print("firstChild:", fc, "secondChild:", sc, "orientation:", ori, "minPanel:", mps)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10260,10 +10159,6 @@ function LSplitPanel:getOrientation() end
 
 Returns the orientation of this split panel ("horizontal" or "vertical").
 
-Parameters:
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
 Returns: `string` - The orientation.
 
 #### Example
@@ -10272,11 +10167,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); local fc = sp:getFirstChild()
-    local sc = sp:getSecondChild()
-    local ori = sp:getOrientation()
-    local mps = sp:getMinPanelSize()
-    print("firstChild:", fc, "secondChild:", sc, "orientation:", ori, "minPanel:", mps)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10294,10 +10189,6 @@ function LSplitPanel:getSecondChild() end
 
 Returns the widget index of the second (right/bottom) child panel.
 
-Parameters:
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
 Returns: `integer` - The widget index, or nil if not set.
 
 #### Example
@@ -10306,11 +10197,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
-    local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
-    local fc = sp:getFirstChild(); sp:setSecondChild(btn:getId() and 2 or 2)
-    local pos = sp:getSplitPosition()
-    print("firstChild after set:", fc, "splitPos:", pos)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10328,10 +10219,6 @@ function LSplitPanel:getSplitPosition() end
 
 Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
 
-Parameters:
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
 Returns: `number` - The split fraction.
 
 #### Example
@@ -10340,11 +10227,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
-    local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
-    local fc = sp:getFirstChild(); sp:setSecondChild(btn:getId() and 2 or 2)
-    local pos = sp:getSplitPosition()
-    print("firstChild after set:", fc, "splitPos:", pos)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10364,7 +10251,6 @@ Sets the widget index for the first (left/top) panel.
 
 Parameters:
 
-- `self` (`LSplitPanel`, required): The widget instance.
 - `child_idx` (`integer`, required): The widget index.
 
 #### Example
@@ -10373,11 +10259,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("vertical"); local lbl = lurek.ui.newLabel("left")
-    local btn = lurek.ui.newButton("right"); sp:setFirstChild(lbl:getId() and 1 or 1)
-    local fc = sp:getFirstChild(); sp:setSecondChild(btn:getId() and 2 or 2)
-    local pos = sp:getSplitPosition()
-    print("firstChild after set:", fc, "splitPos:", pos)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10397,7 +10283,6 @@ Sets the minimum pixel size of each split sub-panel.
 
 Parameters:
 
-- `self` (`LSplitPanel`, required): The widget instance.
 - `v` (`number`, required): The minimum size in pixels.
 
 #### Example
@@ -10406,11 +10291,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
-    local ori = sp:getOrientation(); sp:setMinPanelSize(80)
-    local mps = sp:getMinPanelSize(); local lbl = lurek.ui.newLabel("panel")
-    sp:setSecondChild(lbl:getId() and 1 or 1)
-    print("orientation:", ori, "minPanel:", mps)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10430,7 +10315,6 @@ Sets the orientation of this split panel ("horizontal" or "vertical").
 
 Parameters:
 
-- `self` (`LSplitPanel`, required): The widget instance.
 - `v` (`string`, required): The orientation.
 
 #### Example
@@ -10439,11 +10323,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
-    local ori = sp:getOrientation(); sp:setMinPanelSize(80)
-    local mps = sp:getMinPanelSize(); local lbl = lurek.ui.newLabel("panel")
-    sp:setSecondChild(lbl:getId() and 1 or 1)
-    print("orientation:", ori, "minPanel:", mps)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10463,7 +10347,6 @@ Sets the widget index for the second (right/bottom) panel.
 
 Parameters:
 
-- `self` (`LSplitPanel`, required): The widget instance.
 - `child_idx` (`integer`, required): The widget index.
 
 #### Example
@@ -10472,11 +10355,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setOrientation("vertical")
-    local ori = sp:getOrientation(); sp:setMinPanelSize(80)
-    local mps = sp:getMinPanelSize(); local lbl = lurek.ui.newLabel("panel")
-    sp:setSecondChild(lbl:getId() and 1 or 1)
-    print("orientation:", ori, "minPanel:", mps)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10496,7 +10379,6 @@ Sets the split position as a fraction (0.0 to 1.0).
 
 Parameters:
 
-- `self` (`LSplitPanel`, required): The widget instance.
 - `v` (`number`, required): The split fraction.
 
 #### Example
@@ -10505,11 +10387,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
-    local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
-    sb:addSection("Ready", 100)
-    local cnt = sb:getSectionCount()
-    print("splitPos:", pos, "statusBar sectionCount:", cnt)
+    local sp = lurek.ui.newSplitPanel("horizontal"); print("type=" .. sp:type()); print("orientation=" .. sp:getOrientation())
+    sp:setFirstChild(0); sp:setSecondChild(1); local fc = sp:getFirstChild()
+    print("fc=" .. tostring(fc)); local sc = sp:getSecondChild(); print("sc=" .. tostring(sc))
+    sp:setSplitPosition(200); print("split_pos=" .. sp:getSplitPosition()); sp:setMinPanelSize(80)
+    print("min_panel=" .. sp:getMinPanelSize()); sp:setOrientation("vertical"); print("orientation_after=" .. sp:getOrientation())
 end
 ```
 
@@ -10532,7 +10414,6 @@ Adds a labeled section to this status bar.
 
 Parameters:
 
-- `self` (`LStatusBar`, required): The widget instance.
 - `text` (`string`, required): The section display text.
 - `width` (`number`, optional): The section width in pixels (default 100).
 
@@ -10542,11 +10423,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
-    local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
-    sb:addSection("Ready", 100)
-    local cnt = sb:getSectionCount()
-    print("splitPos:", pos, "statusBar sectionCount:", cnt)
+    local sb = lurek.ui.newStatusBar(); print("type=" .. sb:type())
+    sb:addSection("Ready", 120); sb:addSection("Line 1", 80)
+    print("sections=" .. sb:getSectionCount()); print("text1=" .. sb:getSectionText(1))
+    sb:setSectionText(1, "Loading...")
+    print("text1_after=" .. sb:getSectionText(1))
 end
 ```
 
@@ -10564,10 +10445,6 @@ function LStatusBar:getSectionCount() end
 
 Returns the number of sections in this status bar.
 
-Parameters:
-
-- `self` (`LStatusBar`, required): The widget instance.
-
 Returns: `integer` - The section count.
 
 #### Example
@@ -10576,11 +10453,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sp = lurek.ui.newSplitPanel("horizontal"); sp:setSplitPosition(200)
-    local pos = sp:getSplitPosition(); local sb = lurek.ui.newStatusBar()
-    sb:addSection("Ready", 100)
-    local cnt = sb:getSectionCount()
-    print("splitPos:", pos, "statusBar sectionCount:", cnt)
+    local sb = lurek.ui.newStatusBar(); print("type=" .. sb:type())
+    sb:addSection("Ready", 120); sb:addSection("Line 1", 80)
+    print("sections=" .. sb:getSectionCount()); print("text0=" .. sb:getSectionText(0))
+    sb:setSectionText(0, "Loading...")
+    print("text0_after=" .. sb:getSectionText(0))
 end
 ```
 
@@ -10601,7 +10478,6 @@ Returns the text of a status bar section by its 1-based index.
 
 Parameters:
 
-- `self` (`LStatusBar`, required): The widget instance.
 - `section_idx` (`integer`, required): The 1-based section index.
 
 Returns: `string` - The section text, or nil if out of range.
@@ -10612,11 +10488,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
-    local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
-    local txt = sb:getSectionText(1)
-    sb:setSectionText(2, "Col 5")
-    print("sectionCount:", cnt, "section1:", txt)
+    local sb = lurek.ui.newStatusBar(); print("type=" .. sb:type())
+    sb:addSection("Ready", 120); sb:addSection("Line 1", 80)
+    print("sections=" .. sb:getSectionCount()); print("text0=" .. sb:getSectionText(0))
+    sb:setSectionText(0, "Loading...")
+    print("text0_after=" .. sb:getSectionText(0))
 end
 ```
 
@@ -10636,7 +10512,6 @@ Sets the number of sections, truncating or adding empty sections as needed.
 
 Parameters:
 
-- `self` (`LStatusBar`, required): The widget instance.
 - `count` (`integer`, required): The desired section count.
 
 #### Example
@@ -10670,7 +10545,6 @@ Sets the text of a status bar section by its 1-based index.
 
 Parameters:
 
-- `self` (`LStatusBar`, required): The widget instance.
 - `section_idx` (`integer`, required): The 1-based section index.
 - `text` (`string`, required): The new section text.
 
@@ -10680,11 +10554,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(3)
-    local cnt = sb:getSectionCount(); sb:setSectionText(1, "Line 1")
-    local txt = sb:getSectionText(1)
-    sb:setSectionText(2, "Col 5")
-    print("sectionCount:", cnt, "section1:", txt)
+    local sb = lurek.ui.newStatusBar(); print("type=" .. sb:type())
+    sb:addSection("Ready", 120); sb:addSection("Line 1", 80)
+    print("sections=" .. sb:getSectionCount()); print("text0=" .. sb:getSectionText(0))
+    sb:setSectionText(0, "Loading...")
+    print("text0_after=" .. sb:getSectionText(0))
 end
 ```
 
@@ -10705,7 +10579,6 @@ Associates a widget with a status bar section (reserved for future use).
 
 Parameters:
 
-- `self` (`LStatusBar`, required): The widget instance.
 - `section_idx` (`integer`, required): The 1-based section index.
 - `widget` (`table`, optional): The widget table to associate, or nil to clear.
 
@@ -10739,10 +10612,6 @@ function LSwitch:isOn() end
 
 Returns whether this switch is currently in the on state.
 
-Parameters:
-
-- `self` (`LSwitch`, required): The widget instance.
-
 Returns: `boolean` - True if the switch is on.
 
 #### Example
@@ -10751,11 +10620,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
-    local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
-    local sw = lurek.ui.newSwitch(false); local on = sw:isOn()
+    local sw = lurek.ui.newSwitch(false); print("type=" .. sw:type())
+    print("is_on=" .. tostring(sw:isOn()))
     sw:setOn(true)
-    print("sectionWidget set ok; switch isOn:", sw:isOn())
+    print("is_on_after=" .. tostring(sw:isOn()))
+    sw:setOnChange(function(v) print("switch_changed=" .. tostring(v)) end)
 end
 ```
 
@@ -10775,7 +10644,6 @@ Sets the on/off state of this toggle switch.
 
 Parameters:
 
-- `self` (`LSwitch`, required): The widget instance.
 - `on` (`boolean`, required): True to turn on, false to turn off.
 
 #### Example
@@ -10784,11 +10652,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sb = lurek.ui.newStatusBar(); sb:setSectionCount(2)
-    local lbl = lurek.ui.newLabel("status"); sb:setSectionWidget(1, lbl)
-    local sw = lurek.ui.newSwitch(false); local on = sw:isOn()
+    local sw = lurek.ui.newSwitch(true); print("initial = " .. tostring(sw:isOn()))
+    sw:toggle()
+    print("toggled = " .. tostring(sw:isOn()))
     sw:setOn(true)
-    print("sectionWidget set ok; switch isOn:", sw:isOn())
+    print("forced on = " .. tostring(sw:isOn()))
 end
 ```
 
@@ -10805,21 +10673,17 @@ function LSwitch:toggle() end
 
 Toggles this switch between on and off states.
 
-Parameters:
-
-- `self` (`LSwitch`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sw = lurek.ui.newSwitch(false); sw:toggle()
-    local on = sw:isOn(); local tb = lurek.ui.newTabBar()
-    tb:addTab("Tab 1"); tb:addTab("Tab 2")
-    local active = tb:getActiveTab()
-    print("switch after toggle:", on, "activeTab:", active)
+    local sw = lurek.ui.newSwitch(true); print("initial = " .. tostring(sw:isOn()))
+    sw:toggle()
+    print("toggled = " .. tostring(sw:isOn()))
+    sw:setOn(true)
+    print("forced on = " .. tostring(sw:isOn()))
 end
 ```
 
@@ -10841,7 +10705,6 @@ Adds a new tab with the given label to this tab bar.
 
 Parameters:
 
-- `self` (`LTabBar`, required): The widget instance.
 - `label` (`string`, required): The tab label text.
 
 #### Example
@@ -10850,11 +10713,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sw = lurek.ui.newSwitch(false); sw:toggle()
-    local on = sw:isOn(); local tb = lurek.ui.newTabBar()
-    tb:addTab("Tab 1"); tb:addTab("Tab 2")
-    local active = tb:getActiveTab()
-    print("switch after toggle:", on, "activeTab:", active)
+    local tabs = lurek.ui.newTabBar(); tabs:addTab("General")
+    tabs:addTab("Graphics"); tabs:addTab("Audio")
+    tabs:addTab("Controls"); print("count = " .. tabs:getTabCount())
+    print("tab 1 = " .. tabs:getTab(1))
+    print("tab 3 = " .. tabs:getTab(3))
 end
 ```
 
@@ -10872,10 +10735,6 @@ function LTabBar:getActiveTab() end
 
 Returns the 1-based index of the currently active tab.
 
-Parameters:
-
-- `self` (`LTabBar`, required): The widget instance.
-
 Returns: `integer` - The active tab index.
 
 #### Example
@@ -10884,11 +10743,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local sw = lurek.ui.newSwitch(false); sw:toggle()
-    local on = sw:isOn(); local tb = lurek.ui.newTabBar()
-    tb:addTab("Tab 1"); tb:addTab("Tab 2")
-    local active = tb:getActiveTab()
-    print("switch after toggle:", on, "activeTab:", active)
+    local tabs = lurek.ui.newTabBar(); tabs:addTab("Home")
+    tabs:addTab("Settings"); tabs:addTab("Help")
+    tabs:setActiveTab(2); print("active = " .. tabs:getActiveTab())
+    local ok = tabs:removeTab(3); print("removed Help = " .. tostring(ok))
+    print("remaining = " .. tabs:getTabCount())
 end
 ```
 
@@ -10909,7 +10768,6 @@ Returns the label of the tab at the given 1-based index.
 
 Parameters:
 
-- `self` (`LTabBar`, required): The widget instance.
 - `index` (`integer`, required): The 1-based tab index.
 
 Returns: `string` - The tab label, or nil if out of range.
@@ -10920,11 +10778,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
-    tb:addTab("Beta"); tb:addTab("Gamma")
-    local cnt = tb:getTabCount(); local label = tb:getTab(1)
-    tb:removeTab(3); local cnt2 = tb:getTabCount()
-    print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
+    local tabs = lurek.ui.newTabBar(); tabs:addTab("General")
+    tabs:addTab("Graphics"); tabs:addTab("Audio")
+    tabs:addTab("Controls"); print("count = " .. tabs:getTabCount())
+    print("tab 1 = " .. tabs:getTab(1))
+    print("tab 3 = " .. tabs:getTab(3))
 end
 ```
 
@@ -10942,10 +10800,6 @@ function LTabBar:getTabCount() end
 
 Returns the total number of tabs in this tab bar.
 
-Parameters:
-
-- `self` (`LTabBar`, required): The widget instance.
-
 Returns: `integer` - The tab count.
 
 #### Example
@@ -10954,11 +10808,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
-    tb:addTab("Beta"); tb:addTab("Gamma")
-    local cnt = tb:getTabCount(); local label = tb:getTab(1)
-    tb:removeTab(3); local cnt2 = tb:getTabCount()
-    print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
+    local tabs = lurek.ui.newTabBar(); tabs:addTab("General")
+    tabs:addTab("Graphics"); tabs:addTab("Audio")
+    tabs:addTab("Controls"); print("count = " .. tabs:getTabCount())
+    print("tab 1 = " .. tabs:getTab(1))
+    print("tab 3 = " .. tabs:getTab(3))
 end
 ```
 
@@ -10979,7 +10833,6 @@ Removes the tab at the given 1-based index.
 
 Parameters:
 
-- `self` (`LTabBar`, required): The widget instance.
 - `index` (`integer`, required): The 1-based tab index.
 
 Returns: `boolean` - True if the tab was removed.
@@ -10990,11 +10843,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar(); tb:addTab("Alpha")
-    tb:addTab("Beta"); tb:addTab("Gamma")
-    local cnt = tb:getTabCount(); local label = tb:getTab(1)
-    tb:removeTab(3); local cnt2 = tb:getTabCount()
-    print("tabCount:", cnt, "tab1:", label, "after remove:", cnt2)
+    local tabs = lurek.ui.newTabBar(); tabs:addTab("Home")
+    tabs:addTab("Settings"); tabs:addTab("Help")
+    tabs:setActiveTab(2); print("active = " .. tabs:getActiveTab())
+    local ok = tabs:removeTab(3); print("removed Help = " .. tostring(ok))
+    print("remaining = " .. tabs:getTabCount())
 end
 ```
 
@@ -11014,7 +10867,6 @@ Sets the active (selected) tab by 1-based index.
 
 Parameters:
 
-- `self` (`LTabBar`, required): The widget instance.
 - `index` (`integer`, required): The 1-based tab index to activate.
 
 #### Example
@@ -11023,53 +10875,12 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newTabBar(); tb:addTab("First")
-    tb:addTab("Second"); tb:setActiveTab(2)
-    local active = tb:getActiveTab(); tb:setActiveTab(1)
-    local a2 = tb:getActiveTab()
-    print("setActiveTab to 2:", active, "then to 1:", a2)
+    local tabs = lurek.ui.newTabBar(); tabs:addTab("Home")
+    tabs:addTab("Settings"); tabs:addTab("Help")
+    tabs:setActiveTab(2); print("active = " .. tabs:getActiveTab())
+    local ok = tabs:removeTab(3); print("removed Help = " .. tostring(ok))
+    print("remaining = " .. tabs:getTabCount())
 end
-
---@api-stub: LTextInput.getCursorPosition
-do
-    local ti = lurek.ui.newTextInput(); ti:setText("hello")
-    local txt = ti:getText(); ti:setPlaceholder("type here")
-    local ph = ti:getPlaceholder()
-    local cur = ti:getCursorPosition()
-    print("text:", txt, "placeholder:", ph, "cursor:", cur)
-end
-
---@api-stub: LTextInput.getPlaceholder
-do
-    local ti = lurek.ui.newTextInput(); ti:setText("hello")
-    local txt = ti:getText(); ti:setPlaceholder("type here")
-    local ph = ti:getPlaceholder()
-    local cur = ti:getCursorPosition()
-    print("text:", txt, "placeholder:", ph, "cursor:", cur)
-end
-
---@api-stub: LTextInput.getText
-do
-    local ti = lurek.ui.newTextInput(); ti:setText("hello")
-    local txt = ti:getText(); ti:setPlaceholder("type here")
-    local ph = ti:getPlaceholder()
-    local cur = ti:getCursorPosition()
-    print("text:", txt, "placeholder:", ph, "cursor:", cur)
-end
-
---@api-stub: LTextInput.isFocused
-do
-    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
-    local ph = ti:getPlaceholder()
-    ti:setMaxLength(50)
-    local focused = ti:isFocused()
-    print("placeholder:", ph, "isFocused:", focused)
-end
-
---@api-stub: LTextInput.setMaxLength
-do
-    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
-    local ph = ti:getPlaceholder()
 ```
 
 ### LTextInput Methods
@@ -11088,10 +10899,6 @@ function LTextInput:getCursorPosition() end
 
 Returns the current cursor position (character index) within the text input.
 
-Parameters:
-
-- `self` (`LTextInput`, required): The widget instance.
-
 Returns: `integer` - The zero-based cursor position.
 
 #### Example
@@ -11100,11 +10907,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput(); ti:setText("hello")
-    local txt = ti:getText(); ti:setPlaceholder("type here")
-    local ph = ti:getPlaceholder()
-    local cur = ti:getCursorPosition()
-    print("text:", txt, "placeholder:", ph, "cursor:", cur)
+    local input = lurek.ui.newTextInput(); input:setMaxLength(50)
+    input:setText("Short text")
+    local pos = input:getCursorPosition()
+    print("cursor at = " .. pos)
+    print("focused = " .. tostring(input:isFocused()))
 end
 ```
 
@@ -11122,10 +10929,6 @@ function LTextInput:getPlaceholder() end
 
 Returns the placeholder text of this text input.
 
-Parameters:
-
-- `self` (`LTextInput`, required): The widget instance.
-
 Returns: `string` - The placeholder text.
 
 #### Example
@@ -11134,11 +10937,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput(); ti:setText("hello")
-    local txt = ti:getText(); ti:setPlaceholder("type here")
-    local ph = ti:getPlaceholder()
-    local cur = ti:getCursorPosition()
-    print("text:", txt, "placeholder:", ph, "cursor:", cur)
+    ---@type LTextInput
+    local input = lurek.ui.newTextInput()
+    input:setPlaceholder("Enter your name...")
+    print("placeholder = " .. input:getPlaceholder())
 end
 ```
 
@@ -11155,10 +10957,6 @@ function LTextInput:getText() end
 #### Description
 
 Returns the current text content of this text input field.
-
-Parameters:
-
-- `self` (`LTextInput`, required): The widget instance.
 
 Returns: `string` - The input text.
 
@@ -11189,10 +10987,6 @@ function LTextInput:isFocused() end
 #### Description
 
 Returns whether this text input currently has keyboard focus.
-
-Parameters:
-
-- `self` (`LTextInput`, required): The widget instance.
 
 Returns: `boolean` - True if focused.
 
@@ -11226,7 +11020,6 @@ Sets the maximum number of characters allowed in this text input.
 
 Parameters:
 
-- `self` (`LTextInput`, required): The widget instance.
 - `n` (`integer`, required): Maximum character count.
 
 #### Example
@@ -11235,11 +11028,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
-    local ph = ti:getPlaceholder()
-    ti:setMaxLength(50)
-    local focused = ti:isFocused()
-    print("placeholder:", ph, "isFocused:", focused)
+    local input = lurek.ui.newTextInput(); input:setMaxLength(50)
+    input:setText("Short text")
+    local pos = input:getCursorPosition()
+    print("cursor at = " .. pos)
+    print("focused = " .. tostring(input:isFocused()))
 end
 ```
 
@@ -11259,7 +11052,6 @@ Sets the placeholder text shown when the input is empty.
 
 Parameters:
 
-- `self` (`LTextInput`, required): The widget instance.
 - `text` (`string`, required): The placeholder text.
 
 #### Example
@@ -11268,11 +11060,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local ti = lurek.ui.newTextInput(); ti:setPlaceholder("Search...")
-    local ph = ti:getPlaceholder()
-    ti:setMaxLength(50)
-    local focused = ti:isFocused()
-    print("placeholder:", ph, "isFocused:", focused)
+    ---@type LTextInput
+    local input = lurek.ui.newTextInput()
+    input:setPlaceholder("Enter your name...")
+    print("placeholder = " .. input:getPlaceholder())
 end
 ```
 
@@ -11292,7 +11083,6 @@ Sets the text content of this text input field and moves the cursor to the end.
 
 Parameters:
 
-- `self` (`LTextInput`, required): The widget instance.
 - `text` (`string`, required): The text to set.
 
 #### Example
@@ -11319,9 +11109,10 @@ end
 --- Sets a style entry for the given widget type and state, optionally restricted to a style class.
 ---@param widget_type string The widget type name (e.g. "button").
 ---@param state string The widget state (e.g. "normal", "hovered").
----@param style_class? string (Optional) The specific class to apply this style to.
----@param style_table? table A table of style properties.
-function LTheme:setStyle(widget_type, state, style_class, style_table) end
+---@param styleOrClass any Style table for default styles, or a class string when `styleTable` is supplied.
+---@param styleTable? table Style table used when `styleOrClass` is a class string.
+---@return boolean True when the style is applied.
+function LTheme:setStyle(widget_type, state, styleOrClass, styleTable) end
 ```
 
 #### Description
@@ -11332,8 +11123,10 @@ Parameters:
 
 - `widget_type` (`string`, required): The widget type name (e.g. "button").
 - `state` (`string`, required): The widget state (e.g. "normal", "hovered").
-- `style_class` (`string`, optional): (Optional) The specific class to apply this style to.
-- `style_table` (`table`, optional): A table of style properties.
+- `styleOrClass` (`any`, required): Style table for default styles, or a class string when `styleTable` is supplied.
+- `styleTable` (`table`, optional): Style table used when `styleOrClass` is a class string.
+
+Returns: `boolean` - True when the style is applied.
 
 #### Example
 
@@ -11430,10 +11223,6 @@ function LToast:getDuration() end
 
 Returns the display duration of this toast in seconds.
 
-Parameters:
-
-- `self` (`LToast`, required): The widget instance.
-
 Returns: `number` - The duration.
 
 #### Example
@@ -11442,11 +11231,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local th = lurek.ui.newTheme(); local ok = th:typeOf("LTheme")
-    local toast = lurek.ui.newToast("Level up!", 3.0)
-    local dur = toast:getDuration()
-    local msg = toast:getMessage()
-    print("theme typeOf:", ok, "duration:", dur, "message:", msg)
+    local toast = lurek.ui.newToast("File saved", 3.0); print("type=" .. toast:type())
+    print("msg=" .. toast:getMessage()); print("dur=" .. toast:getDuration())
+    print("progress=" .. toast:getProgress()); print("expired=" .. tostring(toast:isExpired()))
+    toast:setMessage("Updated message"); toast:setDuration(5.0)
+    print("msg_after=" .. toast:getMessage()); print("dur_after=" .. toast:getDuration())
 end
 ```
 
@@ -11464,10 +11253,6 @@ function LToast:getMessage() end
 
 Returns the message text of this toast.
 
-Parameters:
-
-- `self` (`LToast`, required): The widget instance.
-
 Returns: `string` - The toast message.
 
 #### Example
@@ -11476,11 +11261,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local th = lurek.ui.newTheme(); local ok = th:typeOf("LTheme")
-    local toast = lurek.ui.newToast("Level up!", 3.0)
-    local dur = toast:getDuration()
-    local msg = toast:getMessage()
-    print("theme typeOf:", ok, "duration:", dur, "message:", msg)
+    local toast = lurek.ui.newToast("File saved", 3.0); print("type=" .. toast:type())
+    print("msg=" .. toast:getMessage()); print("dur=" .. toast:getDuration())
+    print("progress=" .. toast:getProgress()); print("expired=" .. tostring(toast:isExpired()))
+    toast:setMessage("Updated message"); toast:setDuration(5.0)
+    print("msg_after=" .. toast:getMessage()); print("dur_after=" .. toast:getDuration())
 end
 ```
 
@@ -11498,10 +11283,6 @@ function LToast:getProgress() end
 
 Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
 
-Parameters:
-
-- `self` (`LToast`, required): The widget instance.
-
 Returns: `number` - The progress fraction.
 
 #### Example
@@ -11510,11 +11291,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
-    local exp = toast:isExpired()
-    toast:setDuration(5.0)
-    local dur = toast:getDuration()
-    print("progress:", prog, "isExpired:", exp, "duration:", dur)
+    local toast = lurek.ui.newToast("File saved", 3.0); print("type=" .. toast:type())
+    print("msg=" .. toast:getMessage()); print("dur=" .. toast:getDuration())
+    print("progress=" .. toast:getProgress()); print("expired=" .. tostring(toast:isExpired()))
+    toast:setMessage("Updated message"); toast:setDuration(5.0)
+    print("msg_after=" .. toast:getMessage()); print("dur_after=" .. toast:getDuration())
 end
 ```
 
@@ -11532,10 +11313,6 @@ function LToast:isExpired() end
 
 Returns whether this toast has exceeded its display duration.
 
-Parameters:
-
-- `self` (`LToast`, required): The widget instance.
-
 Returns: `boolean` - True if expired.
 
 #### Example
@@ -11544,11 +11321,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
-    local exp = toast:isExpired()
-    toast:setDuration(5.0)
-    local dur = toast:getDuration()
-    print("progress:", prog, "isExpired:", exp, "duration:", dur)
+    local toast = lurek.ui.newToast("File saved", 3.0); print("type=" .. toast:type())
+    print("msg=" .. toast:getMessage()); print("dur=" .. toast:getDuration())
+    print("progress=" .. toast:getProgress()); print("expired=" .. tostring(toast:isExpired()))
+    toast:setMessage("Updated message"); toast:setDuration(5.0)
+    print("msg_after=" .. toast:getMessage()); print("dur_after=" .. toast:getDuration())
 end
 ```
 
@@ -11568,7 +11345,6 @@ Sets how long this toast is displayed in seconds.
 
 Parameters:
 
-- `self` (`LToast`, required): The widget instance.
 - `d` (`number`, required): Duration in seconds.
 
 #### Example
@@ -11577,11 +11353,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local toast = lurek.ui.newToast("Achievement unlocked", 2.0); local prog = toast:getProgress()
-    local exp = toast:isExpired()
-    toast:setDuration(5.0)
-    local dur = toast:getDuration()
-    print("progress:", prog, "isExpired:", exp, "duration:", dur)
+    local toast = lurek.ui.newToast("File saved", 3.0); print("type=" .. toast:type())
+    print("msg=" .. toast:getMessage()); print("dur=" .. toast:getDuration())
+    print("progress=" .. toast:getProgress()); print("expired=" .. tostring(toast:isExpired()))
+    toast:setMessage("Updated message"); toast:setDuration(5.0)
+    print("msg_after=" .. toast:getMessage()); print("dur_after=" .. toast:getDuration())
 end
 ```
 
@@ -11601,7 +11377,6 @@ Sets the message text displayed by this toast notification.
 
 Parameters:
 
-- `self` (`LToast`, required): The widget instance.
 - `msg` (`string`, required): The toast message.
 
 #### Example
@@ -11610,11 +11385,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
-    local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("save", "Save file"); tb:addSeparator()
-    tb:addButton("open", "Open file")
-    print("toast:", msg, "toolbar buttons added ok")
+    local toast = lurek.ui.newToast("File saved", 3.0); print("type=" .. toast:type())
+    print("msg=" .. toast:getMessage()); print("dur=" .. toast:getDuration())
+    print("progress=" .. toast:getProgress()); print("expired=" .. tostring(toast:isExpired()))
+    toast:setMessage("Updated message"); toast:setDuration(5.0)
+    print("msg_after=" .. toast:getMessage()); print("dur_after=" .. toast:getDuration())
 end
 ```
 
@@ -11638,7 +11413,6 @@ Adds a new button to this toolbar and returns its 1-based index.
 
 Parameters:
 
-- `self` (`LToolbar`, required): The widget instance.
 - `id` (`string`, required): The button identifier.
 - `tooltip` (`string`, optional): Optional tooltip text for the button.
 
@@ -11650,11 +11424,9 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
-    local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("save", "Save file"); tb:addSeparator()
-    tb:addButton("open", "Open file")
-    print("toast:", msg, "toolbar buttons added ok")
+    local bar = lurek.ui.newToolbar("horizontal")
+    bar:addButton("btn_save", "Save file")
+    print("btn=" .. tostring(bar:getButton("btn_save") ~= nil))
 end
 ```
 
@@ -11671,21 +11443,16 @@ function LToolbar:addSeparator() end
 
 Adds a visual separator to this toolbar.
 
-Parameters:
-
-- `self` (`LToolbar`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local toast = lurek.ui.newToast("old message", 2.0); toast:setMessage("new message")
-    local msg = toast:getMessage(); local tb = lurek.ui.newToolbar("horizontal")
-    tb:addButton("save", "Save file"); tb:addSeparator()
-    tb:addButton("open", "Open file")
-    print("toast:", msg, "toolbar buttons added ok")
+    local bar = lurek.ui.newToolbar("horizontal")
+    bar:addButton("btn_save", "Save file")
+    bar:addSeparator()
+    print("separator added")
 end
 ```
 
@@ -11705,7 +11472,6 @@ Adds a flexible spacer to this toolbar.
 
 Parameters:
 
-- `self` (`LToolbar`, required): The widget instance.
 - `_size` (`number`, optional): Optional size hint (reserved for future use).
 
 #### Example
@@ -11739,7 +11505,6 @@ Returns a table describing the toolbar button with the given ID.
 
 Parameters:
 
-- `self` (`LToolbar`, required): The widget instance.
 - `id` (`string`, required): The button identifier.
 
 Returns: `table` - Table with id, tooltip, enabled, toggled fields, or nil if not found.
@@ -11750,11 +11515,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
-    tb:addSpacer(10); tb:addButton("paste", "Paste")
-    local ori = tb:getOrientation()
-    local btn = tb:getButton("cut")
-    print("orientation:", ori, "button:", btn)
+    local bar = lurek.ui.newToolbar("horizontal")
+    bar:addButton("btn_save", "Save file")
+    local btn = bar:getButton("btn_save")
+    print("btn=" .. tostring(btn ~= nil))
 end
 ```
 
@@ -11772,10 +11536,6 @@ function LToolbar:getOrientation() end
 
 Returns the toolbar orientation ("horizontal" or "vertical").
 
-Parameters:
-
-- `self` (`LToolbar`, required): The widget instance.
-
 Returns: `string` - The orientation.
 
 #### Example
@@ -11784,11 +11544,8 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("cut", "Cut")
-    tb:addSpacer(10); tb:addButton("paste", "Paste")
-    local ori = tb:getOrientation()
-    local btn = tb:getButton("cut")
-    print("orientation:", ori, "button:", btn)
+    local bar = lurek.ui.newToolbar("horizontal")
+    print("orientation=" .. bar:getOrientation())
 end
 ```
 
@@ -11809,7 +11566,6 @@ Returns whether a toolbar button is toggled on.
 
 Parameters:
 
-- `self` (`LToolbar`, required): The widget instance.
 - `id` (`string`, required): The button identifier.
 
 Returns: `boolean` - True if toggled, nil if not found.
@@ -11820,11 +11576,9 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
-    tb:setButtonToggled("bold", true)
-    local tog = tb:isButtonToggled("bold")
-    tb:setButtonEnabled("bold", false)
-    print("bold toggled:", tog)
+    local bar = lurek.ui.newToolbar("horizontal")
+    bar:addButton("btn_save", "Save file")
+    print("toggled=" .. tostring(bar:isButtonToggled("btn_save")))
 end
 ```
 
@@ -11846,7 +11600,6 @@ Enables or disables a toolbar button by its ID.
 
 Parameters:
 
-- `self` (`LToolbar`, required): The widget instance.
 - `id` (`string`, required): The button identifier.
 - `enabled` (`boolean`, required): True to enable.
 
@@ -11858,11 +11611,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
-    tb:setButtonToggled("bold", true)
-    local tog = tb:isButtonToggled("bold")
-    tb:setButtonEnabled("bold", false)
-    print("bold toggled:", tog)
+    local bar = lurek.ui.newToolbar("horizontal")
+    bar:addButton("btn_open", "Open file")
+    bar:setButtonEnabled("btn_open", false)
+    print("btn_open disabled")
 end
 ```
 
@@ -11884,7 +11636,6 @@ Sets the toggle state of a toolbar button by its ID.
 
 Parameters:
 
-- `self` (`LToolbar`, required): The widget instance.
 - `id` (`string`, required): The button identifier.
 - `toggled` (`boolean`, required): True to toggle on.
 
@@ -11896,11 +11647,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal"); tb:addButton("bold", "Bold")
-    tb:setButtonToggled("bold", true)
-    local tog = tb:isButtonToggled("bold")
-    tb:setButtonEnabled("bold", false)
-    print("bold toggled:", tog)
+    local bar = lurek.ui.newToolbar("horizontal")
+    bar:addButton("btn_save", "Save file")
+    bar:setButtonToggled("btn_save", true)
+    print("toggled_after=" .. tostring(bar:isButtonToggled("btn_save")))
 end
 ```
 
@@ -11920,7 +11670,6 @@ Sets the toolbar orientation ("horizontal" or "vertical").
 
 Parameters:
 
-- `self` (`LToolbar`, required): The widget instance.
 - `v` (`string`, required): The orientation.
 
 #### Example
@@ -11929,11 +11678,9 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
-    local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
-    local delay = tp:getDelay()
-    local target = tp:getTarget()
-    print("orientation:", ori, "delay:", delay, "target:", target)
+    local bar = lurek.ui.newToolbar("horizontal")
+    bar:setOrientation("vertical")
+    print("orientation_after=" .. bar:getOrientation())
 end
 ```
 
@@ -11953,10 +11700,6 @@ function LTooltipPanel:getDelay() end
 
 Returns the delay in seconds before this tooltip appears.
 
-Parameters:
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-
 Returns: `number` - The delay in seconds.
 
 #### Example
@@ -11965,11 +11708,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tb = lurek.ui.newToolbar("horizontal"); tb:setOrientation("vertical")
-    local ori = tb:getOrientation(); local tp = lurek.ui.newTooltipPanel("Hover help")
-    local delay = tp:getDelay()
-    local target = tp:getTarget()
-    print("orientation:", ori, "delay:", delay, "target:", target)
+    local ttp = lurek.ui.newTooltipPanel("Hover info"); print("type=" .. ttp:type())
+    print("text=" .. ttp:getText()); ttp:setText("Updated tooltip")
+    print("text_after=" .. ttp:getText())
+    ttp:setDelay(0.5)
+    print("delay=" .. ttp:getDelay())
 end
 ```
 
@@ -11986,10 +11729,6 @@ function LTooltipPanel:getTarget() end
 #### Description
 
 Returns the widget index that this tooltip is attached to.
-
-Parameters:
-
-- `self` (`LTooltipPanel`, required): The widget instance.
 
 Returns: `integer` - The target widget index, or nil if unset.
 
@@ -12021,10 +11760,6 @@ function LTooltipPanel:getText() end
 
 Returns the current tooltip display text.
 
-Parameters:
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-
 Returns: `string` - The tooltip text.
 
 #### Example
@@ -12033,11 +11768,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
-    tp:setDelay(0.5); local d = tp:getDelay()
-    local btn = lurek.ui.newButton("hover me")
-    tp:setTarget(btn:getId() and 1 or 1)
-    print("text:", txt, "delay:", d)
+    local ttp = lurek.ui.newTooltipPanel("Hover info"); print("type=" .. ttp:type())
+    print("text=" .. ttp:getText()); ttp:setText("Updated tooltip")
+    print("text_after=" .. ttp:getText())
+    ttp:setDelay(0.5)
+    print("delay=" .. ttp:getDelay())
 end
 ```
 
@@ -12057,7 +11792,6 @@ Sets the delay in seconds before this tooltip appears.
 
 Parameters:
 
-- `self` (`LTooltipPanel`, required): The widget instance.
 - `v` (`number`, required): The delay in seconds.
 
 #### Example
@@ -12066,11 +11800,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tp = lurek.ui.newTooltipPanel("initial tip"); local txt = tp:getText()
-    tp:setDelay(0.5); local d = tp:getDelay()
-    local btn = lurek.ui.newButton("hover me")
-    tp:setTarget(btn:getId() and 1 or 1)
-    print("text:", txt, "delay:", d)
+    local ttp = lurek.ui.newTooltipPanel("Hover info"); print("type=" .. ttp:type())
+    print("text=" .. ttp:getText()); ttp:setText("Updated tooltip")
+    print("text_after=" .. ttp:getText())
+    ttp:setDelay(0.5)
+    print("delay=" .. ttp:getDelay())
 end
 ```
 
@@ -12090,7 +11824,6 @@ Sets the widget index that this tooltip is attached to.
 
 Parameters:
 
-- `self` (`LTooltipPanel`, required): The widget instance.
 - `target` (`integer`, optional): The target widget index, or nil to detach.
 
 #### Example
@@ -12123,7 +11856,6 @@ Sets the tooltip panel display text content.
 
 Parameters:
 
-- `self` (`LTooltipPanel`, required): The widget instance.
 - `text` (`string`, required): The tooltip text.
 
 #### Example
@@ -12132,11 +11864,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tp = lurek.ui.newTooltipPanel("old tip"); tp:setText("new tooltip text")
-    local txt = tp:getText(); tp:setText("another tip")
-    local txt2 = tp:getText()
-    tp:setDelay(1.0)
-    print("setText:", txt, "â†’", txt2)
+    local ttp = lurek.ui.newTooltipPanel("Hover info"); print("type=" .. ttp:type())
+    print("text=" .. ttp:getText()); ttp:setText("Updated tooltip")
+    print("text_after=" .. ttp:getText())
+    ttp:setDelay(0.5)
+    print("delay=" .. ttp:getDelay())
 end
 ```
 
@@ -12160,7 +11892,6 @@ Adds a new node to this tree view, optionally under a parent node.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `text` (`string`, required): The node label text.
 - `parent_index` (`integer`, optional): The 1-based parent node index, or nil for a root node.
 
@@ -12172,11 +11903,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
-    local n2 = tv:addNode("Child", n1); tv:collapseAll()
-    tv:clearNodes()
-    local cnt = tv:getNodeCount()
-    print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child = tv:addNode("Child C", root)
+    print("child added = " .. tostring(child ~= nil))
 end
 ```
 
@@ -12193,21 +11923,17 @@ function LTreeView:clearNodes() end
 
 Removes all nodes from this tree view.
 
-Parameters:
-
-- `self` (`LTreeView`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
-    local n2 = tv:addNode("Child", n1); tv:collapseAll()
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    tv:addNode("Child A", root)
     tv:clearNodes()
-    local cnt = tv:getNodeCount()
-    print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
+    print("nodes = " .. tv:getNodeCount())
 end
 ```
 
@@ -12224,21 +11950,17 @@ function LTreeView:collapseAll() end
 
 Collapses all nodes in this tree view.
 
-Parameters:
-
-- `self` (`LTreeView`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Root", nil)
-    local n2 = tv:addNode("Child", n1); tv:collapseAll()
-    tv:clearNodes()
-    local cnt = tv:getNodeCount()
-    print("addNode/collapseAll/clearNodes ok; count after clear:", cnt)
+    local tv = lurek.ui.newTreeView(); local root = tv:addNode("Root", nil)
+    tv:addNode("Child A", root)
+    tv:expandAll()
+    tv:collapseAll()
+    print("root expanded = " .. tostring(tv:isExpanded(root)))
 end
 ```
 
@@ -12259,7 +11981,6 @@ Collapses the node at the given 1-based index to hide its children.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `boolean` - True if the node was collapsed.
@@ -12270,11 +11991,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
-    local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
-    tv:expandAll(); tv:collapseNode(n1)
-    tv:expandNode(n1); local cnt = tv:getNodeCount()
-    print("expandAll/collapseNode/expandNode ok; count:", cnt)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    tv:expandNode(root)
+    tv:collapseNode(root)
+    print("root expanded = " .. tostring(tv:isNodeExpanded(root)))
 end
 ```
 
@@ -12291,21 +12012,17 @@ function LTreeView:expandAll() end
 
 Expands all nodes in this tree view.
 
-Parameters:
-
-- `self` (`LTreeView`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
-    local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
-    tv:expandAll(); tv:collapseNode(n1)
-    tv:expandNode(n1); local cnt = tv:getNodeCount()
-    print("expandAll/collapseNode/expandNode ok; count:", cnt)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    tv:addNode("Child A", root)
+    tv:expandAll()
+    print("root expanded = " .. tostring(tv:isExpanded(root)))
 end
 ```
 
@@ -12326,7 +12043,6 @@ Expands the node at the given 1-based index to show its children.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `boolean` - True if the node was expanded.
@@ -12337,11 +12053,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local n1 = tv:addNode("Animals", nil)
-    local n2 = tv:addNode("Mammals", n1); tv:addNode("Dog", n2)
-    tv:expandAll(); tv:collapseNode(n1)
-    tv:expandNode(n1); local cnt = tv:getNodeCount()
-    print("expandAll/collapseNode/expandNode ok; count:", cnt)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    tv:expandNode(root)
+    print("root expanded = " .. tostring(tv:isNodeExpanded(root)))
 end
 ```
 
@@ -12362,7 +12077,6 @@ Returns a table of 1-based child node indices for the node at the given index.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based parent node index.
 
 Returns: `integer[]` - 1-based child indices.
@@ -12373,11 +12087,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
-    local children = tv:getChildNodes(r); local cnt = tv:getNodeCount()
-    local depth = tv:getNodeDepth(c1)
-    print("children:", children, "count:", cnt, "depth:", depth)
+    local tv = lurek.ui.newTreeView(); local root = tv:addNode("Root", nil)
+    tv:addNode("Child A", root)
+    tv:addNode("Child B", root)
+    local children = tv:getChildNodes(root)
+    print("child count = " .. #children)
 end
 ```
 
@@ -12395,10 +12109,6 @@ function LTreeView:getNodeCount() end
 
 Returns the total number of nodes in this tree view.
 
-Parameters:
-
-- `self` (`LTreeView`, required): The widget instance.
-
 Returns: `integer` - The node count.
 
 #### Example
@@ -12407,11 +12117,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
-    local children = tv:getChildNodes(r); local cnt = tv:getNodeCount()
-    local depth = tv:getNodeDepth(c1)
-    print("children:", children, "count:", cnt, "depth:", depth)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    tv:addNode("Child A", root)
+    print("nodes = " .. tv:getNodeCount())
 end
 ```
 
@@ -12432,7 +12141,6 @@ Returns the nesting depth of the node at the given index (0 for root nodes).
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `integer` - The depth, or nil if index is invalid.
@@ -12443,11 +12151,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c1 = tv:addNode("Child1", r); tv:addNode("Child2", r)
-    local children = tv:getChildNodes(r); local cnt = tv:getNodeCount()
-    local depth = tv:getNodeDepth(c1)
-    print("children:", children, "count:", cnt, "depth:", depth)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child1 = tv:addNode("Child A", root)
+    print("depth = " .. tv:getNodeDepth(child1))
 end
 ```
 
@@ -12468,7 +12175,6 @@ Returns the text of the node at the given 1-based index.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `string` - The node text, or nil if the index is invalid.
@@ -12479,11 +12185,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
-    local parent = tv:getParentNode(c)
-    local sel = tv:getSelectedNode()
-    print("text:", txt, "parent:", parent, "selected:", sel)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child1 = tv:addNode("Child A", root)
+    print("text = " .. tv:getNodeText(child1))
 end
 ```
 
@@ -12504,7 +12209,6 @@ Returns the 1-based index of the parent of the node at the given index.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `integer` - The parent node index, or nil for root nodes.
@@ -12515,11 +12219,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
-    local parent = tv:getParentNode(c)
-    local sel = tv:getSelectedNode()
-    print("text:", txt, "parent:", parent, "selected:", sel)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child1 = tv:addNode("Child A", root)
+    print("parent = " .. tostring(tv:getParentNode(child1) == root))
 end
 ```
 
@@ -12537,10 +12240,6 @@ function LTreeView:getSelectedNode() end
 
 Returns the 1-based index of the currently selected node.
 
-Parameters:
-
-- `self` (`LTreeView`, required): The widget instance.
-
 Returns: `integer` - The selected node index, or nil if none.
 
 #### Example
@@ -12549,11 +12248,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r); local txt = tv:getNodeText(c)
-    local parent = tv:getParentNode(c)
-    local sel = tv:getSelectedNode()
-    print("text:", txt, "parent:", parent, "selected:", sel)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child1 = tv:addNode("Child A", root)
+    tv:setSelectedNode(child1)
+    print("selected = " .. tostring(tv:getSelectedNode()))
 end
 ```
 
@@ -12574,7 +12273,6 @@ Returns whether the node at the given 1-based index is currently expanded.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `boolean` - True if expanded.
@@ -12585,11 +12283,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r); tv:expandNode(r)
-    local exp = tv:isExpanded(r); local ne = tv:isNodeExpanded(r)
-    tv:removeNode(c); local cnt = tv:getNodeCount()
-    print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    tv:expandAll()
+    print("expanded = " .. tostring(tv:isExpanded(root)))
 end
 ```
 
@@ -12610,7 +12307,6 @@ Returns whether the node at the given 1-based index is expanded. Returns nil if 
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `boolean` - True if expanded, false if collapsed, nil if invalid.
@@ -12621,11 +12317,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r); tv:expandNode(r)
-    local exp = tv:isExpanded(r); local ne = tv:isNodeExpanded(r)
-    tv:removeNode(c); local cnt = tv:getNodeCount()
-    print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    tv:expandNode(root)
+    print("node expanded = " .. tostring(tv:isNodeExpanded(root)))
 end
 ```
 
@@ -12646,7 +12341,6 @@ Removes the node at the given 1-based index from this tree view.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `boolean` - True if the node was removed.
@@ -12657,11 +12351,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    local c = tv:addNode("Child", r); tv:expandNode(r)
-    local exp = tv:isExpanded(r); local ne = tv:isNodeExpanded(r)
-    tv:removeNode(c); local cnt = tv:getNodeCount()
-    print("isExpanded:", exp, "isNodeExpanded:", ne, "count after remove:", cnt)
+    local tv = lurek.ui.newTreeView(); local root = tv:addNode("Root", nil)
+    tv:addNode("Child A", root)
+    local child2 = tv:addNode("Child B", root)
+    tv:removeNode(child2)
+    print("nodes = " .. tv:getNodeCount())
 end
 ```
 
@@ -12683,7 +12377,6 @@ Sets the icon of the node at the given 1-based index.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 - `icon` (`string`, required): The icon identifier string.
 
@@ -12695,11 +12388,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
-    tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
-    tv:setSelectedNode(r); local sel = tv:getSelectedNode()
-    tv:setNodeIcon(r, "folder")
-    print("setText:", txt, "selected:", sel)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child1 = tv:addNode("Child A", root)
+    tv:setNodeIcon(child1, "folder")
+    print("icon set on child")
 end
 ```
 
@@ -12721,7 +12414,6 @@ Sets the text of the node at the given 1-based index.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 - `text` (`string`, required): The new node text.
 
@@ -12733,11 +12425,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
-    tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
-    tv:setSelectedNode(r); local sel = tv:getSelectedNode()
-    tv:setNodeIcon(r, "folder")
-    print("setText:", txt, "selected:", sel)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child1 = tv:addNode("Child A", root)
+    tv:setNodeText(child1, "Renamed A")
+    print("text = " .. tv:getNodeText(child1))
 end
 ```
 
@@ -12758,7 +12450,6 @@ Sets the selected node by 1-based index.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `boolean` - True if the node was selected.
@@ -12769,11 +12460,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("old text", nil)
-    tv:setNodeText(r, "new text"); local txt = tv:getNodeText(r)
-    tv:setSelectedNode(r); local sel = tv:getSelectedNode()
-    tv:setNodeIcon(r, "folder")
-    print("setText:", txt, "selected:", sel)
+    local tv = lurek.ui.newTreeView()
+    local root = tv:addNode("Root", nil)
+    local child1 = tv:addNode("Child A", root)
+    tv:setSelectedNode(child1)
+    print("selected = " .. tostring(tv:getSelectedNode()))
 end
 ```
 
@@ -12794,7 +12485,6 @@ Toggles the expanded/collapsed state of the node at the given 1-based index.
 
 Parameters:
 
-- `self` (`LTreeView`, required): The widget instance.
 - `index` (`integer`, required): The 1-based node index.
 
 Returns: `boolean` - True if the node is now expanded, false if collapsed.
@@ -12805,11 +12495,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local tv = lurek.ui.newTreeView(); local r = tv:addNode("Root", nil)
-    tv:addNode("Child", r); tv:expandNode(r)
-    local was = tv:isExpanded(r); tv:toggleNode(r)
-    local now = tv:isExpanded(r); tv:toggleNode(r)
-    local back = tv:isExpanded(r); print("expanded:", was, "after toggle:", now, "after toggle back:", back)
+    local tv = lurek.ui.newTreeView(); local root = tv:addNode("Root", nil)
+    tv:addNode("Child A", root)
+    local child2 = tv:addNode("Child B", root)
+    tv:toggleNode(child2)
+    print("child toggled")
 end
 ```
 
@@ -12831,7 +12521,6 @@ Adds a child widget to this widget's hierarchy.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `child` (`LUiWidget|integer`, required): The child widget table or widget index to add.
 
 #### Example
@@ -12840,11 +12529,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
-    w:addChild(child); w:animateAlpha(0.5, 0.3, false)
-    w:animatePosition(10, 20, 0.5)
-    local cnt = w:getChildCount()
-    print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
+    local layout = lurek.ui.newLayout("vertical"); local btn1 = lurek.ui.newButton("First")
+    local btn2 = lurek.ui.newButton("Second"); local btn3 = lurek.ui.newButton("Third")
+    layout:addChild(btn1); layout:addChild(btn2)
+    layout:addChild(btn3); print("children = " .. layout:getChildCount())
+    layout:removeChild(btn2); print("after remove = " .. layout:getChildCount())
 end
 ```
 
@@ -12867,7 +12556,6 @@ Smoothly animates this widget's opacity toward a target value over the given dur
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `target` (`number`, required): Target alpha value (0.0 to 1.0).
 - `duration` (`number`, optional): Animation duration in seconds. Defaults to 0.2.
 - `hide_on_complete` (`boolean`, optional): If true, hides the widget when alpha reaches 0.
@@ -12880,11 +12568,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
-    w:addChild(child); w:animateAlpha(0.5, 0.3, false)
-    w:animatePosition(10, 20, 0.5)
-    local cnt = w:getChildCount()
-    print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
+    local btn = lurek.ui.newButton("Fade"); btn:setAlpha(1.0)
+    btn:animateAlpha(0.0, 0.5)
+    print("animating = " .. tostring(btn:isAnimating()))
+    btn:animateAlpha(1.0, 0.3, true)
+    print("fade with hide_on_complete")
 end
 ```
 
@@ -12907,7 +12595,6 @@ Smoothly animates this widget's position toward the target coordinates.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `x` (`number`, required): Target x position.
 - `y` (`number`, required): Target y position.
 - `duration` (`number`, optional): Animation duration in seconds. Defaults to 0.2.
@@ -12920,11 +12607,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); local child = lurek.ui.newLabel("label")
-    w:addChild(child); w:animateAlpha(0.5, 0.3, false)
-    w:animatePosition(10, 20, 0.5)
-    local cnt = w:getChildCount()
-    print("addChild/animateAlpha/animatePosition ok; childCount:", cnt)
+    local panel = lurek.ui.newPanel(); panel:setPosition(0, 0)
+    panel:animatePosition(200, 100, 0.5); print("moving to 200,100 over 0.5s")
+    panel:cancelAnimations()
+    panel:slideIn(300, 0)
+    print("sliding in from right")
 end
 ```
 
@@ -12944,7 +12631,6 @@ Attaches this widget to a game entity so it follows the entity's position on scr
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `entity_id` (`integer`, required): The entity ID to attach to.
 
 #### Example
@@ -12977,7 +12663,6 @@ Binds this widget to a data key for use with update_bindings.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `key` (`string`, required): The binding key name.
 
 #### Example
@@ -13008,10 +12693,6 @@ function LUiWidget:cancelAnimations() end
 
 Cancels all active animations on this widget, leaving it at its current state.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `boolean` - True if any animations were cancelled.
 
 #### Example
@@ -13041,9 +12722,32 @@ function LUiWidget:clearAnchor() end
 
 Removes all anchor constraints from this widget.
 
-Parameters:
+#### Example
 
-- `self` (`LUiWidget`, required): The widget instance.
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Anchored"); btn:setAnchor(10, 10, 10, nil)
+    print("anchored left=10, top=10, right=10")
+    btn:clearAnchor()
+    btn:setAnchorCenter(0.5, 0.5)
+    print("centered in parent")
+end
+```
+
+#### LUiWidget:clearFont
+
+#### Definition
+
+```lua
+--- Clears any font override on this widget so it inherits from its parent again.
+function LUiWidget:clearFont() end
+```
+
+#### Description
+
+Clears any font override on this widget so it inherits from its parent again.
 
 #### Example
 
@@ -13051,11 +12755,12 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor(); w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15); w:attachToEntity(2)
-    w:detachFromEntity()
-    print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
+    -- Example for clearFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using clearFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked clearFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
 end
 ```
 
@@ -13077,7 +12782,6 @@ Tests whether the given screen-space point is inside this widget's bounds.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `x` (`number`, required): X coordinate in screen pixels.
 - `y` (`number`, required): Y coordinate in screen pixels.
 
@@ -13089,11 +12793,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor(); w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15); w:attachToEntity(2)
-    w:detachFromEntity()
-    print("clearAnchor/containsPoint:", hit, "detachFromEntity ok")
+    local btn = lurek.ui.newButton("Hit Test")
+    btn:setPosition(50, 50)
+    btn:setSize(100, 40)
+    print("(75,60) inside = " .. tostring(btn:containsPoint(75, 60)))
+    print("(200,200) inside = " .. tostring(btn:containsPoint(200, 200)))
 end
 ```
 
@@ -13109,10 +12813,6 @@ function LUiWidget:detachFromEntity() end
 #### Description
 
 Detaches this widget from any previously attached entity.
-
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
 
 #### Example
 
@@ -13141,21 +12841,17 @@ function LUiWidget:fadeIn() end
 
 Instantly makes this widget fully opaque and visible.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
-    w:fadeOut(); w:fadeIn()
-    local child = lurek.ui.newLabel("inner"); child:setId("inner-lbl")
-    w:addChild(child); local found = w:findById("inner-lbl")
-    print("fadeIn/fadeOut ok; findById:", found)
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel("Fading")
+    lbl:setAlpha(0)
+    lbl:fadeIn()
+    print("fading in, animating = " .. tostring(lbl:isAnimating()))
 end
 ```
 
@@ -13172,21 +12868,16 @@ function LUiWidget:fadeOut() end
 
 Instantly makes this widget fully transparent and hidden.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 #### Example
 
 Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
-    w:fadeOut(); w:fadeIn()
-    local child = lurek.ui.newLabel("inner"); child:setId("inner-lbl")
-    w:addChild(child); local found = w:findById("inner-lbl")
-    print("fadeIn/fadeOut ok; findById:", found)
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel("Fading")
+    lbl:fadeOut()
+    print("fading out")
 end
 ```
 
@@ -13207,7 +12898,6 @@ Searches this widget's subtree for a child with the given ID.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `id` (`string`, required): The widget ID to search for.
 
 Returns: `LWidget` - The found widget table, or nil if not found.
@@ -13218,11 +12908,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setId("my-panel")
-    w:fadeOut(); w:fadeIn()
-    local child = lurek.ui.newLabel("inner"); child:setId("inner-lbl")
-    w:addChild(child); local found = w:findById("inner-lbl")
-    print("fadeIn/fadeOut ok; findById:", found)
+    local root = lurek.ui.newLayout("vertical"); local btn = lurek.ui.newButton("Find Me")
+    btn:setId("target_btn")
+    root:addChild(btn)
+    local found = root:findById("target_btn")
+    print("found = " .. tostring(found ~= nil))
 end
 ```
 
@@ -13240,10 +12930,6 @@ function LUiWidget:getAlpha() end
 
 Returns the current opacity of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number` - The alpha value between 0.0 and 1.0.
 
 #### Example
@@ -13252,11 +12938,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
-    local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
-    w:addChild(lurek.ui.newLabel("c2")); local cnt = w:getChildCount()
-    local children = w:getChildren()
-    print("alpha:", alpha, "childCount:", cnt, "children:", children)
+    local panel = lurek.ui.newPanel()
+    print("alpha = " .. panel:getAlpha())
+    panel:setAlpha(0.5)
+    print("set to 50% = " .. panel:getAlpha())
+    panel:setAlpha(1.0)
 end
 ```
 
@@ -13274,10 +12960,6 @@ function LUiWidget:getChildCount() end
 
 Returns the number of direct child widgets attached to this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `integer` - The child count.
 
 #### Example
@@ -13286,11 +12968,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
-    local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
-    w:addChild(lurek.ui.newLabel("c2")); local cnt = w:getChildCount()
-    local children = w:getChildren()
-    print("alpha:", alpha, "childCount:", cnt, "children:", children)
+    local layout = lurek.ui.newLayout("vertical"); local btn1 = lurek.ui.newButton("First")
+    local btn2 = lurek.ui.newButton("Second"); local btn3 = lurek.ui.newButton("Third")
+    layout:addChild(btn1); layout:addChild(btn2)
+    layout:addChild(btn3); print("children = " .. layout:getChildCount())
+    layout:removeChild(btn2); print("after remove = " .. layout:getChildCount())
 end
 ```
 
@@ -13308,10 +12990,6 @@ function LUiWidget:getChildren() end
 
 Returns a table of lightweight child widget references, each containing an _idx field.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `table` - Array of child widget tables.
 
 #### Example
@@ -13320,11 +12998,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAlpha(0.75)
-    local alpha = w:getAlpha(); w:addChild(lurek.ui.newLabel("c1"))
-    w:addChild(lurek.ui.newLabel("c2")); local cnt = w:getChildCount()
-    local children = w:getChildren()
-    print("alpha:", alpha, "childCount:", cnt, "children:", children)
+    local panel = lurek.ui.newPanel(); panel:addChild(lurek.ui.newLabel("A"))
+    panel:addChild(lurek.ui.newLabel("B"))
+    panel:addChild(lurek.ui.newLabel("C"))
+    local children = panel:getChildren()
+    print("child list length = " .. #children)
 end
 ```
 
@@ -13342,10 +13020,6 @@ function LUiWidget:getFlexGrow() end
 
 Returns the flex-grow factor of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number` - The grow factor.
 
 #### Example
@@ -13354,11 +13028,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
-    local grow = w:getFlexGrow(); w:setFlexShrink(1)
-    local shrink = w:getFlexShrink(); w:setId("widget-abc")
-    local id = w:getId()
-    print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
+    local row = lurek.ui.newLayout("horizontal"); local left = lurek.ui.newPanel()
+    left:setFlexGrow(1); local right = lurek.ui.newPanel()
+    right:setFlexGrow(2); row:addChild(left)
+    row:addChild(right); print("left grow = " .. left:getFlexGrow())
+    print("right grow = " .. right:getFlexGrow())
 end
 ```
 
@@ -13376,10 +13050,6 @@ function LUiWidget:getFlexShrink() end
 
 Returns the flex-shrink factor of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number` - The shrink factor.
 
 #### Example
@@ -13388,11 +13058,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
-    local grow = w:getFlexGrow(); w:setFlexShrink(1)
-    local shrink = w:getFlexShrink(); w:setId("widget-abc")
-    local id = w:getId()
-    print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
+    local btn = lurek.ui.newButton("Shrinkable")
+    btn:setFlexShrink(0)
+    print("shrink = " .. btn:getFlexShrink())
+    btn:setFlexShrink(1)
+    print("shrink = " .. btn:getFlexShrink())
 end
 ```
 
@@ -13410,10 +13080,6 @@ function LUiWidget:getId() end
 
 Returns the string identifier assigned to this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `string` - The widget ID, or an empty string if none was set.
 
 #### Example
@@ -13422,11 +13088,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(2)
-    local grow = w:getFlexGrow(); w:setFlexShrink(1)
-    local shrink = w:getFlexShrink(); w:setId("widget-abc")
-    local id = w:getId()
-    print("flexGrow:", grow, "flexShrink:", shrink, "id:", id)
+    local btn = lurek.ui.newButton("Info")
+    btn:setId("info_button")
+    btn:setTooltip("Click for more information")
+    print("id = " .. btn:getId())
+    print("tooltip = " .. btn:getTooltip())
 end
 ```
 
@@ -13447,10 +13113,6 @@ function LUiWidget:getMargin() end
 
 Returns the outer margin of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number, number, number, number` - Top, right, bottom, and left margin in pixels.
 
 #### Example
@@ -13459,11 +13121,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
-    local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
-    local mxw, mxh = w:getMaxSize(); w:setMinSize(50, 25)
-    local mnw, mnh = w:getMinSize()
-    print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
+    local btn = lurek.ui.newButton("Margin"); btn:setMargin(10, 20, 10, 20)
+    local top, right, bottom, left = btn:getMargin(); print("margin = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
+    btn:setMargin(5)
+    top, right, bottom, left = btn:getMargin()
+    print("uniform = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
 end
 ```
 
@@ -13482,10 +13144,6 @@ function LUiWidget:getMaxSize() end
 
 Returns the maximum width and height of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number, number` - Maximum width and height in pixels.
 
 #### Example
@@ -13494,11 +13152,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
-    local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
-    local mxw, mxh = w:getMaxSize(); w:setMinSize(50, 25)
-    local mnw, mnh = w:getMinSize()
-    print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
+    local panel = lurek.ui.newPanel(); panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize(); print("min = " .. minW .. "x" .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print("max = " .. maxW .. "x" .. maxH)
 end
 ```
 
@@ -13517,10 +13175,6 @@ function LUiWidget:getMinSize() end
 
 Returns the minimum width and height of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number, number` - Minimum width and height in pixels.
 
 #### Example
@@ -13529,11 +13183,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(4, 8, 4, 8)
-    local mt, mr, mb, ml = w:getMargin(); w:setMaxSize(400, 300)
-    local mxw, mxh = w:getMaxSize(); w:setMinSize(50, 25)
-    local mnw, mnh = w:getMinSize()
-    print("margin:", mt, mr, mb, ml, "max:", mxw, mxh, "min:", mnw, mnh)
+    local panel = lurek.ui.newPanel(); panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize(); print("min = " .. minW .. "x" .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print("max = " .. maxW .. "x" .. maxH)
 end
 ```
 
@@ -13551,10 +13205,6 @@ function LUiWidget:getMouseFilter() end
 
 Returns the mouse filter of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `string` - The mouse filter type.
 
 #### Example
@@ -13563,9 +13213,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
+    -- Retrieves the current mouse filter behavior of a widget.
     local panel = lurek.ui.newPanel()
     panel:setMouseFilter("pass")
-    print("mouse filter: " .. panel:getMouseFilter())
+    local filter = panel:getMouseFilter()
+    print("mouse filter: " .. filter)
 end
 ```
 
@@ -13586,10 +13238,6 @@ function LUiWidget:getPadding() end
 
 Returns the inner padding of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number, number, number, number` - Top, right, bottom, and left padding in pixels.
 
 #### Example
@@ -13598,11 +13246,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
-    local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
-    local px, py = w:getPosition()
-    local rx, ry, rw, rh = w:getRect()
-    print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setPadding(8, 16, 8, 16)
+    local top, right, bottom, left = panel:getPadding()
+    print("padding = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
 end
 ```
 
@@ -13621,10 +13269,6 @@ function LUiWidget:getPosition() end
 
 Returns the local position of this widget relative to its parent.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number, number` - The x and y coordinates in pixels.
 
 #### Example
@@ -13633,11 +13277,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
-    local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
-    local px, py = w:getPosition()
-    local rx, ry, rw, rh = w:getRect()
-    print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
+    ---@type LButton
+    local btn = lurek.ui.newButton("Pos Test")
+    btn:setPosition(100, 50)
+    local x, y = btn:getPosition()
+    print("position = " .. x .. ", " .. y)
 end
 ```
 
@@ -13658,10 +13302,6 @@ function LUiWidget:getRect() end
 
 Returns the computed bounding rectangle of this widget in screen coordinates after layout.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number, number, number, number` - The x, y, width, and height of the computed rect.
 
 #### Example
@@ -13670,11 +13310,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(5, 5, 5, 5)
-    local pt, pr, pb, pl = w:getPadding(); w:setPosition(30, 40)
-    local px, py = w:getPosition()
-    local rx, ry, rw, rh = w:getRect()
-    print("padding:", pt, "position:", px, py, "rect:", rx, ry, rw, rh)
+    local btn = lurek.ui.newButton("Bounds")
+    btn:setPosition(50, 30)
+    btn:setSize(120, 40)
+    local x, y, w, h = btn:getRect()
+    print("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
 end
 ```
 
@@ -13693,10 +13333,6 @@ function LUiWidget:getSize() end
 
 Returns the width and height of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `number, number` - The width and height in pixels.
 
 #### Example
@@ -13705,11 +13341,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
-    local sw, sh = w:getSize(); local state = w:getState()
-    w:setTooltip("hover tip")
-    local tip = w:getTooltip()
-    print("size:", sw, sh, "state:", state, "tooltip:", tip)
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setSize(300, 200)
+    local w, h = panel:getSize()
+    print("size = " .. w .. "x" .. h)
 end
 ```
 
@@ -13727,10 +13363,6 @@ function LUiWidget:getState() end
 
 Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `string` - The widget state name.
 
 #### Example
@@ -13739,11 +13371,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
-    local sw, sh = w:getSize(); local state = w:getState()
-    w:setTooltip("hover tip")
-    local tip = w:getTooltip()
-    print("size:", sw, sh, "state:", state, "tooltip:", tip)
+    ---@type LButton
+    local btn = lurek.ui.newButton("State")
+    local state = btn:getState()
+    print("state = " .. state)
 end
 ```
 
@@ -13753,7 +13384,7 @@ end
 
 ```lua
 --- Returns the style class of this widget.
----@return string The style class name, or nil if none is set.
+---@return string The style class name, or an empty string if none is set.
 function LUiWidget:getStyleClass() end
 ```
 
@@ -13761,11 +13392,7 @@ function LUiWidget:getStyleClass() end
 
 Returns the style class of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-Returns: `string` - The style class name, or nil if none is set.
+Returns: `string` - The style class name, or an empty string if none is set.
 
 #### Example
 
@@ -13773,9 +13400,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local btn = lurek.ui.newButton("Styled")
+    -- Retrieves the currently assigned style class of a widget, or an empty string if none.
+    local btn = lurek.ui.newButton("Cancel")
     btn:setStyleClass("danger")
-    print("style class: " .. btn:getStyleClass())
+    local class = btn:getStyleClass()
+    print("style class: " .. class)
 end
 ```
 
@@ -13793,10 +13422,6 @@ function LUiWidget:getTooltip() end
 
 Returns the tooltip text of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `string` - The tooltip text, or an empty string if none is set.
 
 #### Example
@@ -13805,11 +13430,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=120, height=60}); w:setSize(150, 80)
-    local sw, sh = w:getSize(); local state = w:getState()
-    w:setTooltip("hover tip")
-    local tip = w:getTooltip()
-    print("size:", sw, sh, "state:", state, "tooltip:", tip)
+    local btn = lurek.ui.newButton("Info")
+    btn:setId("info_button")
+    btn:setTooltip("Click for more information")
+    print("id = " .. btn:getId())
+    print("tooltip = " .. btn:getTooltip())
 end
 ```
 
@@ -13827,10 +13452,6 @@ function LUiWidget:getZOrder() end
 
 Returns the z-order (draw priority) of this widget.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `integer` - The z-order value.
 
 #### Example
@@ -13839,11 +13460,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
-    local z = w:getZOrder(); local animating = w:isAnimating()
-    local enabled = w:isEnabled()
-    w:setEnabled(false)
-    print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
+    local front = lurek.ui.newPanel(); local back = lurek.ui.newPanel()
+    front:setZOrder(10)
+    back:setZOrder(1)
+    print("front z = " .. front:getZOrder())
+    print("back z = " .. back:getZOrder())
 end
 ```
 
@@ -13860,10 +13481,6 @@ function LUiWidget:isAnimating() end
 #### Description
 
 Returns whether this widget currently has an active animation.
-
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
 
 Returns: `boolean` - True if an animation is in progress.
 
@@ -13895,10 +13512,6 @@ function LUiWidget:isEnabled() end
 
 Returns whether this widget is currently enabled and can receive input.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `boolean` - True if the widget is enabled.
 
 #### Example
@@ -13907,11 +13520,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setZOrder(5)
-    local z = w:getZOrder(); local animating = w:isAnimating()
-    local enabled = w:isEnabled()
-    w:setEnabled(false)
-    print("zOrder:", z, "isAnimating:", animating, "isEnabled:", enabled)
+    ---@type LButton
+    local btn = lurek.ui.newButton("Action")
+    print("enabled = " .. tostring(btn:isEnabled()))
+    btn:setEnabled(false)
+    print("disabled = " .. tostring(btn:isEnabled()))
 end
 ```
 
@@ -13929,10 +13542,6 @@ function LUiWidget:isVisible() end
 
 Returns whether this widget is currently visible.
 
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
-
 Returns: `boolean` - True if the widget is visible.
 
 #### Example
@@ -13941,11 +13550,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
-    w:setVisible(false); local child = lurek.ui.newLabel("removable")
-    w:addChild(child); w:removeChild(child)
-    w:setAlpha(0.9); local alpha = w:getAlpha()
-    print("isVisible:", vis, "removeChild ok, alpha:", alpha)
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel("Toggle Me")
+    print("visible = " .. tostring(lbl:isVisible()))
+    lbl:setVisible(false)
+    print("hidden = " .. tostring(lbl:isVisible()))
 end
 ```
 
@@ -13965,7 +13574,6 @@ Removes a child widget from this widget's hierarchy.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `child` (`LUiWidget|integer`, required): The child widget table or widget index to remove.
 
 #### Example
@@ -13974,11 +13582,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
-    w:setVisible(false); local child = lurek.ui.newLabel("removable")
-    w:addChild(child); w:removeChild(child)
-    w:setAlpha(0.9); local alpha = w:getAlpha()
-    print("isVisible:", vis, "removeChild ok, alpha:", alpha)
+    local layout = lurek.ui.newLayout("vertical"); local btn1 = lurek.ui.newButton("First")
+    local btn2 = lurek.ui.newButton("Second"); local btn3 = lurek.ui.newButton("Third")
+    layout:addChild(btn1); layout:addChild(btn2)
+    layout:addChild(btn3); print("children = " .. layout:getChildCount())
+    layout:removeChild(btn2); print("after remove = " .. layout:getChildCount())
 end
 ```
 
@@ -13998,7 +13606,6 @@ Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `alpha` (`number`, required): The opacity value.
 
 #### Example
@@ -14007,11 +13614,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); local vis = w:isVisible()
-    w:setVisible(false); local child = lurek.ui.newLabel("removable")
-    w:addChild(child); w:removeChild(child)
-    w:setAlpha(0.9); local alpha = w:getAlpha()
-    print("isVisible:", vis, "removeChild ok, alpha:", alpha)
+    local panel = lurek.ui.newPanel()
+    print("alpha = " .. panel:getAlpha())
+    panel:setAlpha(0.5)
+    print("set to 50% = " .. panel:getAlpha())
+    panel:setAlpha(1.0)
 end
 ```
 
@@ -14034,7 +13641,6 @@ Anchors this widget to its parent's edges. Pass nil for any side to leave it una
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `left` (`number`, optional): Distance from parent's left edge, or nil.
 - `top` (`number`, optional): Distance from parent's top edge, or nil.
 - `right` (`number`, optional): Distance from parent's right edge, or nil.
@@ -14046,11 +13652,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
-    w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
-    w:setEnabled(true); local enabled = w:isEnabled()
-    w:setEnabled(false)
-    print("setAnchor/setAnchorCenter/setEnabled ok")
+    local btn = lurek.ui.newButton("Anchored"); btn:setAnchor(10, 10, 10, nil)
+    print("anchored left=10, top=10, right=10")
+    btn:clearAnchor()
+    btn:setAnchorCenter(0.5, 0.5)
+    print("centered in parent")
 end
 ```
 
@@ -14071,7 +13677,6 @@ Centers this widget within its parent using proportional anchor offsets (0.0 to 
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `cx` (`number`, optional): Horizontal center fraction (0.5 = centered).
 - `cy` (`number`, optional): Vertical center fraction (0.5 = centered).
 
@@ -14081,11 +13686,76 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
-    w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
-    w:setEnabled(true); local enabled = w:isEnabled()
-    w:setEnabled(false)
-    print("setAnchor/setAnchorCenter/setEnabled ok")
+    local btn = lurek.ui.newButton("Anchored"); btn:setAnchor(10, 10, 10, nil)
+    print("anchored left=10, top=10, right=10")
+    btn:clearAnchor()
+    btn:setAnchorCenter(0.5, 0.5)
+    print("centered in parent")
+end
+```
+
+#### LUiWidget:setAriaName
+
+#### Definition
+
+```lua
+--- Sets the accessible name metadata for this widget.
+---@param name string Accessible name value.
+function LUiWidget:setAriaName(name) end
+```
+
+#### Description
+
+Sets the accessible name metadata for this widget.
+
+Parameters:
+
+- `name` (`string`, required): Accessible name value.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setAriaName("Save game")
+end
+```
+
+#### LUiWidget:setBindKey
+
+#### Definition
+
+```lua
+--- Binds this widget to a data key and reports whether the widget exists.
+---@param key string The binding key name.
+---@return boolean True when the widget exists and the binding key was set.
+function LUiWidget:setBindKey(key) end
+```
+
+#### Description
+
+Binds this widget to a data key and reports whether the widget exists.
+
+Parameters:
+
+- `key` (`string`, required): The binding key name.
+
+Returns: `boolean` - True when the widget exists and the binding key was set.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    -- Example for setBindKey
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using setBindKey")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked setBindKey on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
 end
 ```
 
@@ -14105,7 +13775,6 @@ Enables or disables this widget. Disabled widgets appear grayed out and ignore i
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `v` (`boolean`, required): True to enable, false to disable.
 
 #### Example
@@ -14114,11 +13783,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setAnchor(0, 0, 1, 1)
-    w:clearAnchor(); w:setAnchorCenter(0.5, 0.5)
-    w:setEnabled(true); local enabled = w:isEnabled()
-    w:setEnabled(false)
-    print("setAnchor/setAnchorCenter/setEnabled ok")
+    ---@type LButton
+    local btn = lurek.ui.newButton("Action")
+    btn:setEnabled(false)
+    print("disabled = " .. tostring(btn:isEnabled()))
 end
 ```
 
@@ -14138,7 +13806,6 @@ Sets the flex-grow factor controlling how much extra space this widget receives 
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `grow` (`number`, required): The grow factor (0 = no growth).
 
 #### Example
@@ -14147,11 +13814,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
-    local fg = w:getFlexGrow(); w:setFlexShrink(0)
-    local fs = w:getFlexShrink(); w:setId("flex-widget")
-    local id = w:getId()
-    print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
+    local row = lurek.ui.newLayout("horizontal"); local left = lurek.ui.newPanel()
+    left:setFlexGrow(1); local right = lurek.ui.newPanel()
+    right:setFlexGrow(2); row:addChild(left)
+    row:addChild(right); print("left grow = " .. left:getFlexGrow())
+    print("right grow = " .. right:getFlexGrow())
 end
 ```
 
@@ -14171,7 +13838,6 @@ Sets the flex-shrink factor controlling how much this widget shrinks when layout
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `shrink` (`number`, required): The shrink factor (0 = no shrinkage).
 
 #### Example
@@ -14180,11 +13846,137 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
-    local fg = w:getFlexGrow(); w:setFlexShrink(0)
-    local fs = w:getFlexShrink(); w:setId("flex-widget")
-    local id = w:getId()
-    print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
+    local btn = lurek.ui.newButton("Shrinkable")
+    btn:setFlexShrink(0)
+    print("shrink = " .. btn:getFlexShrink())
+    btn:setFlexShrink(1)
+    print("shrink = " .. btn:getFlexShrink())
+end
+```
+
+#### LUiWidget:setFocusable
+
+#### Definition
+
+```lua
+--- Sets whether this widget participates in keyboard focus traversal.
+---@param value boolean True to allow focus traversal; false to skip this widget.
+function LUiWidget:setFocusable(value) end
+```
+
+#### Description
+
+Sets whether this widget participates in keyboard focus traversal.
+
+Parameters:
+
+- `value` (`boolean`, required): True to allow focus traversal; false to skip this widget.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Focusable")
+    btn:setFocusable(true)
+end
+```
+
+#### LUiWidget:setFocusGroup
+
+#### Definition
+
+```lua
+--- Sets the focus traversal group for this widget.
+---@param group string Focus group name; empty string means the default/global group.
+function LUiWidget:setFocusGroup(group) end
+```
+
+#### Description
+
+Sets the focus traversal group for this widget.
+
+Parameters:
+
+- `group` (`string`, required): Focus group name; empty string means the default/global group.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Group")
+    btn:setFocusGroup("menu")
+end
+```
+
+#### LUiWidget:setFocusNeighbor
+
+#### Definition
+
+```lua
+--- Sets an explicit directional focus neighbor for this widget.
+---@param direction string Neighbor direction: "up", "down", "left", or "right".
+---@param target? number Target widget index, or nil to clear the neighbor.
+---@return boolean True when direction is valid; false otherwise.
+function LUiWidget:setFocusNeighbor(direction, target) end
+```
+
+#### Description
+
+Sets an explicit directional focus neighbor for this widget.
+
+Parameters:
+
+- `direction` (`string`, required): Neighbor direction: "up", "down", "left", or "right".
+- `target` (`integer`, optional): Target widget index, or nil to clear the neighbor.
+
+Returns: `boolean` - True when direction is valid; false otherwise.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local a = lurek.ui.newButton("A")
+    local b = lurek.ui.newButton("B")
+    a:setFocusNeighbor("right", b._idx)
+end
+```
+
+#### LUiWidget:setFont
+
+#### Definition
+
+```lua
+--- Assigns a specific font to this widget and its descendants unless overridden further down the tree.
+---@param font LFont Font handle to use for this widget subtree.
+function LUiWidget:setFont(font) end
+```
+
+#### Description
+
+Assigns a specific font to this widget and its descendants unless overridden further down the tree.
+
+Parameters:
+
+- `font` (`LFont`, required): Font handle to use for this widget subtree.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    -- Example for setFont
+    local widget = lurek.ui.newButton("Test Widget")
+    widget:setText("Using setFont")
+    local w, h = widget:getSize()
+    lurek.log.info("Invoked setFont on widget size " .. w .. "x" .. h)
+    if w > 0 then widget:setVisible(true) end
 end
 ```
 
@@ -14204,7 +13996,6 @@ Assigns a string identifier to this widget for lookup with findById.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `id` (`string`, required): A unique identifier string.
 
 #### Example
@@ -14213,11 +14004,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setFlexGrow(3)
-    local fg = w:getFlexGrow(); w:setFlexShrink(0)
-    local fs = w:getFlexShrink(); w:setId("flex-widget")
-    local id = w:getId()
-    print("flexGrow:", fg, "flexShrink:", fs, "id:", id)
+    local btn = lurek.ui.newButton("Info")
+    btn:setId("info_button")
+    btn:setTooltip("Click for more information")
+    print("id = " .. btn:getId())
+    print("tooltip = " .. btn:getTooltip())
 end
 ```
 
@@ -14240,7 +14031,6 @@ Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `top` (`number`, required): Top margin in pixels (also used as default for other sides).
 - `right` (`number`, optional): Right margin. Defaults to top.
 - `bottom` (`number`, optional): Bottom margin. Defaults to top.
@@ -14252,11 +14042,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
-    local mt = w:getMargin(); w:setMaxSize(500, 400)
-    local mxw = w:getMaxSize(); w:setMinSize(60, 30)
-    local mnw = w:getMinSize()
-    print("margin set ok; maxSize:", mxw, "minSize:", mnw)
+    local btn = lurek.ui.newButton("Margin"); btn:setMargin(10, 20, 10, 20)
+    local top, right, bottom, left = btn:getMargin(); print("margin = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
+    btn:setMargin(5)
+    top, right, bottom, left = btn:getMargin()
+    print("uniform = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
 end
 ```
 
@@ -14277,7 +14067,6 @@ Sets the maximum allowed width and height for this widget during layout.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `w` (`number`, required): Maximum width in pixels.
 - `h` (`number`, required): Maximum height in pixels.
 
@@ -14287,11 +14076,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
-    local mt = w:getMargin(); w:setMaxSize(500, 400)
-    local mxw = w:getMaxSize(); w:setMinSize(60, 30)
-    local mnw = w:getMinSize()
-    print("margin set ok; maxSize:", mxw, "minSize:", mnw)
+    local panel = lurek.ui.newPanel(); panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize(); print("min = " .. minW .. "x" .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print("max = " .. maxW .. "x" .. maxH)
 end
 ```
 
@@ -14312,7 +14101,6 @@ Sets the minimum allowed width and height for this widget during layout.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `w` (`number`, required): Minimum width in pixels.
 - `h` (`number`, required): Minimum height in pixels.
 
@@ -14322,11 +14110,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setMargin(2, 4, 2, 4)
-    local mt = w:getMargin(); w:setMaxSize(500, 400)
-    local mxw = w:getMaxSize(); w:setMinSize(60, 30)
-    local mnw = w:getMinSize()
-    print("margin set ok; maxSize:", mxw, "minSize:", mnw)
+    local panel = lurek.ui.newPanel(); panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize(); print("min = " .. minW .. "x" .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print("max = " .. maxW .. "x" .. maxH)
 end
 ```
 
@@ -14337,6 +14125,7 @@ end
 ```lua
 --- Sets the mouse filter for this widget ("stop", "pass", "ignore").
 ---@param filter string The mouse filter type.
+---@return boolean True for a valid filter, false when reset to "stop".
 function LUiWidget:setMouseFilter(filter) end
 ```
 
@@ -14346,8 +14135,9 @@ Sets the mouse filter for this widget ("stop", "pass", "ignore").
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `filter` (`string`, required): The mouse filter type.
+
+Returns: `boolean` - True for a valid filter, false when reset to "stop".
 
 #### Example
 
@@ -14355,6 +14145,8 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
+    -- Sets the mouse filter mode on a panel. "ignore" passes events to underlying widgets,
+    -- useful for decorative overlays or transparent layout containers.
     local panel = lurek.ui.newPanel()
     panel:setMouseFilter("ignore")
     print("mouse filter set to ignore")
@@ -14377,7 +14169,6 @@ Registers a callback function invoked when this widget's value changes.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index as argument.
 
 #### Example
@@ -14410,7 +14201,6 @@ Registers a callback function invoked when this widget is clicked.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `f` (`function`, required): Callback receiving the widget index as argument.
 
 #### Example
@@ -14443,7 +14233,6 @@ Registers a custom draw callback for this widget, invoked each frame during the 
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `f` (`function`, required): Callback receiving a rect table {x, y, w, h} with the computed bounds.
 
 #### Example
@@ -14479,7 +14268,6 @@ Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, botto
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `top` (`number`, required): Top padding in pixels (also used as default for other sides).
 - `right` (`number`, optional): Right padding. Defaults to top.
 - `bottom` (`number`, optional): Bottom padding. Defaults to top.
@@ -14491,11 +14279,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
-    local pt = w:getPadding(); w:setPosition(50, 100)
-    local px, py = w:getPosition(); w:setSize(200, 100)
-    local sw, sh = w:getSize()
-    print("padding:", pt, "position:", px, py, "size:", sw, sh)
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setPadding(8, 16, 8, 16)
+    local top, right, bottom, left = panel:getPadding()
+    print("padding = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
 end
 ```
 
@@ -14516,7 +14304,6 @@ Sets the local position of this widget relative to its parent.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `x` (`number`, required): Horizontal position in pixels.
 - `y` (`number`, required): Vertical position in pixels.
 
@@ -14526,11 +14313,40 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
-    local pt = w:getPadding(); w:setPosition(50, 100)
-    local px, py = w:getPosition(); w:setSize(200, 100)
-    local sw, sh = w:getSize()
-    print("padding:", pt, "position:", px, py, "size:", sw, sh)
+    ---@type LButton
+    local btn = lurek.ui.newButton("Pos Test")
+    btn:setPosition(100, 50)
+    local x, y = btn:getPosition()
+    print("position = " .. x .. ", " .. y)
+end
+```
+
+#### LUiWidget:setRole
+
+#### Definition
+
+```lua
+--- Sets a semantic role string for this widget.
+---@param role string Semantic role name.
+function LUiWidget:setRole(role) end
+```
+
+#### Description
+
+Sets a semantic role string for this widget.
+
+Parameters:
+
+- `role` (`string`, required): Semantic role name.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setRole("button")
 end
 ```
 
@@ -14551,7 +14367,6 @@ Sets the width and height of this widget in pixels.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `w` (`number`, required): Width in pixels.
 - `h` (`number`, required): Height in pixels.
 
@@ -14561,11 +14376,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setPadding(6, 6, 6, 6)
-    local pt = w:getPadding(); w:setPosition(50, 100)
-    local px, py = w:getPosition(); w:setSize(200, 100)
-    local sw, sh = w:getSize()
-    print("padding:", pt, "position:", px, py, "size:", sw, sh)
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setSize(300, 200)
+    local w, h = panel:getSize()
+    print("size = " .. w .. "x" .. h)
 end
 ```
 
@@ -14576,6 +14391,7 @@ end
 ```lua
 --- Sets the style class of this widget.
 ---@param class string The style class name.
+---@return boolean True when the widget exists and the class was set.
 function LUiWidget:setStyleClass(class) end
 ```
 
@@ -14585,8 +14401,9 @@ Sets the style class of this widget.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `class` (`string`, required): The style class name.
+
+Returns: `boolean` - True when the widget exists and the class was set.
 
 #### Example
 
@@ -14594,9 +14411,130 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local btn = lurek.ui.newButton("Styled")
+    -- Assigns a custom style class to a widget. If defined in the active theme,
+    -- the button will use "primary" colors and metrics instead of default ones.
+    local btn = lurek.ui.newButton("Submit")
     btn:setStyleClass("primary")
     print("style class set to primary")
+end
+```
+
+#### LUiWidget:setTabIndex
+
+#### Definition
+
+```lua
+--- Sets the tab-order index for this widget.
+---@param value number Tab-order index.
+function LUiWidget:setTabIndex(value) end
+```
+
+#### Description
+
+Sets the tab-order index for this widget.
+
+Parameters:
+
+- `value` (`integer`, required): Tab-order index.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local btn = lurek.ui.newButton("Tab")
+    btn:setTabIndex(10)
+end
+```
+
+#### LUiWidget:setTextEllipsis
+
+#### Definition
+
+```lua
+--- Enables or disables ellipsis clipping for overflowing single-line text.
+---@param ellipsis boolean True to enable ellipsis on overflow.
+function LUiWidget:setTextEllipsis(ellipsis) end
+```
+
+#### Description
+
+Enables or disables ellipsis clipping for overflowing single-line text.
+
+Parameters:
+
+- `ellipsis` (`boolean`, required): True to enable ellipsis on overflow.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local lbl = lurek.ui.newLabel("This is a very long one-line text")
+    lbl:setTextEllipsis(true)
+end
+```
+
+#### LUiWidget:setTextVAlign
+
+#### Definition
+
+```lua
+--- Sets the vertical alignment of text inside this widget.
+---@param align string Vertical alignment: "top", "middle", or "bottom".
+---@return boolean True when the alignment string is recognised; false leaves the previous value unchanged.
+function LUiWidget:setTextVAlign(align) end
+```
+
+#### Description
+
+Sets the vertical alignment of text inside this widget.
+
+Parameters:
+
+- `align` (`string`, required): Vertical alignment: "top", "middle", or "bottom".
+
+Returns: `boolean` - True when the alignment string is recognised; false leaves the previous value unchanged.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local lbl = lurek.ui.newLabel("Centered")
+    lbl:setTextVAlign("middle")
+end
+```
+
+#### LUiWidget:setTextWrap
+
+#### Definition
+
+```lua
+--- Enables or disables word-wrap for text inside this widget.
+---@param wrap boolean True to wrap text, false for single-line.
+function LUiWidget:setTextWrap(wrap) end
+```
+
+#### Description
+
+Enables or disables word-wrap for text inside this widget.
+
+Parameters:
+
+- `wrap` (`boolean`, required): True to wrap text, false for single-line.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local lbl = lurek.ui.newLabel("This is a long text that can wrap")
+    lbl:setTextWrap(true)
 end
 ```
 
@@ -14616,7 +14554,6 @@ Sets the tooltip text shown when the user hovers over this widget.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `text` (`string`, required): The tooltip message.
 
 #### Example
@@ -14625,11 +14562,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
-    local tip = w:getTooltip(); w:setVisible(false)
-    w:setVisible(true); w:setZOrder(10)
-    local z = w:getZOrder()
-    print("tooltip:", tip, "zOrder:", z)
+    local btn = lurek.ui.newButton("Info")
+    btn:setId("info_button")
+    btn:setTooltip("Click for more information")
+    print("id = " .. btn:getId())
+    print("tooltip = " .. btn:getTooltip())
 end
 ```
 
@@ -14649,7 +14586,6 @@ Shows or hides this widget. Hidden widgets are not drawn and do not receive inpu
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `v` (`boolean`, required): True to show, false to hide.
 
 #### Example
@@ -14658,11 +14594,10 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
-    local tip = w:getTooltip(); w:setVisible(false)
-    w:setVisible(true); w:setZOrder(10)
-    local z = w:getZOrder()
-    print("tooltip:", tip, "zOrder:", z)
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel("Toggle Me")
+    lbl:setVisible(false)
+    print("hidden = " .. tostring(lbl:isVisible()))
 end
 ```
 
@@ -14682,7 +14617,6 @@ Sets the z-order (draw priority) of this widget. Higher values draw on top.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `z` (`integer`, required): The z-order integer value.
 
 #### Example
@@ -14691,11 +14625,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:setTooltip("my tooltip")
-    local tip = w:getTooltip(); w:setVisible(false)
-    w:setVisible(true); w:setZOrder(10)
-    local z = w:getZOrder()
-    print("tooltip:", tip, "zOrder:", z)
+    local front = lurek.ui.newPanel(); local back = lurek.ui.newPanel()
+    front:setZOrder(10)
+    back:setZOrder(1)
+    print("front z = " .. front:getZOrder())
+    print("back z = " .. back:getZOrder())
 end
 ```
 
@@ -14716,7 +14650,6 @@ Moves this widget to the given position and makes it visible.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `x` (`number`, required): Target x position.
 - `y` (`number`, required): Target y position.
 
@@ -14726,11 +14659,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
-    w:slideOut(0, 50); local t = w:type()
-    local ok = w:typeOf("LUiWidget")
-    w:unbind()
-    print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
+    local panel = lurek.ui.newPanel(); panel:setPosition(0, 0)
+    panel:animatePosition(200, 100, 0.5); print("moving to 200,100 over 0.5s")
+    panel:cancelAnimations()
+    panel:slideIn(300, 0)
+    print("sliding in from right")
 end
 ```
 
@@ -14751,7 +14684,6 @@ Moves this widget to the given position and hides it.
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `x` (`number`, required): Target x position.
 - `y` (`number`, required): Target y position.
 
@@ -14761,11 +14693,11 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local w = lurek.ui.newCustomWidget({width=100, height=50}); w:slideIn(0, -50)
-    w:slideOut(0, 50); local t = w:type()
-    local ok = w:typeOf("LUiWidget")
-    w:unbind()
-    print("slideIn/slideOut ok; type:", t, "typeOf:", ok)
+    local panel = lurek.ui.newPanel(); panel:setPosition(0, 0)
+    panel:animatePosition(200, 100, 0.5); print("moving to 200,100 over 0.5s")
+    panel:cancelAnimations()
+    panel:slideIn(300, 0)
+    print("sliding in from right")
 end
 ```
 
@@ -14782,10 +14714,6 @@ function LUiWidget:type() end
 #### Description
 
 Returns the type name string of this widget (e.g. "LButton", "LSlider").
-
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
 
 Returns: `string` - The widget type name.
 
@@ -14820,7 +14748,6 @@ Checks whether this widget matches the given type name, including base types "LW
 
 Parameters:
 
-- `self` (`LUiWidget`, required): The widget instance.
 - `name` (`string`, required): The type name to check against.
 
 Returns: `boolean` - True if the widget is of the given type.
@@ -14851,10 +14778,6 @@ function LUiWidget:unbind() end
 #### Description
 
 Removes the data binding from this widget.
-
-Parameters:
-
-- `self` (`LUiWidget`, required): The widget instance.
 
 #### Example
 

@@ -1,4 +1,4 @@
-﻿-- content/examples/minimap.lua
+-- content/examples/minimap.lua
 -- Auto-generated from content/examples2/minimap_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/minimap.lua
 
@@ -622,7 +622,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
     local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
-    print("grid(8,8) â†’ screen = " .. sx .. "," .. sy .. " screen â†’ grid = " .. gx .. "," .. gy)
+    print("grid(8,8) → screen = " .. sx .. "," .. sy .. " screen → grid = " .. gx .. "," .. gy)
 end
 
 --@api-stub: LMinimap:screenToGrid
@@ -630,7 +630,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
     local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
-    print("grid(8,8) â†’ screen = " .. sx .. "," .. sy .. " screen â†’ grid = " .. gx .. "," .. gy)
+    print("grid(8,8) → screen = " .. sx .. "," .. sy .. " screen → grid = " .. gx .. "," .. gy)
 end
 
 --@api-stub: LMinimap:getHoverInfo

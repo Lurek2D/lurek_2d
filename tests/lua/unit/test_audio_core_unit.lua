@@ -621,6 +621,8 @@ end)
 
 -- @describe lurek.audio SoundData
 describe("lurek.audio SoundData", function()
+    -- @covers LSoundData:type
+    -- @covers LSoundData:typeOf
     -- @covers LSoundData:getChannelCount
     -- @covers LSoundData:getSample
     -- @covers LSoundData:getSampleCount
@@ -628,6 +630,8 @@ describe("lurek.audio SoundData", function()
     -- @covers lurek.audio.newSoundData
     it("newSoundData creates a silent buffer with requested shape", function()
         local sd = lurek.audio.newSoundData(100, 44100, 1)
+        expect_equal("LSoundData", sd:type())
+        expect_true(sd:typeOf("LSoundData"))
         expect_equal(100, sd:getSampleCount())
         expect_equal(44100, sd:getSampleRate())
         expect_equal(1, sd:getChannelCount())

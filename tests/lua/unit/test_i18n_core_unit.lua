@@ -256,7 +256,22 @@ describe("lurek.i18n.interpolate / pluralFor", function()
     -- @covers lurek.i18n.pluralFor
     it("pluralFor returns other for n=5", function()
         local form = lurek.i18n.pluralFor(5)
-        expect_equal("other", form)
+        expect_equal(form, "other")
+    end)
+
+    -- @covers lurek.i18n.t
+    it("t uses extracted plural logic correctly", function()
+        lurek.i18n.loadTable("en_US", {
+            item = {
+                one = "1 item",
+                other = "{count} items"
+            }
+        })
+        lurek.i18n.setLanguage("en_US")
+        local res_one = lurek.i18n.t("item", nil, 1)
+        local res_other = lurek.i18n.t("item", {count = "5"}, 5)
+        expect_equal(res_one, "1 item")
+        expect_equal(res_other, "5 items")
     end)
 end)
 

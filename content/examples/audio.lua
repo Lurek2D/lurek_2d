@@ -1,4 +1,4 @@
-﻿-- content/examples/audio.lua
+-- content/examples/audio.lua
 -- Auto-generated from content/examples2/audio_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/audio.lua
 

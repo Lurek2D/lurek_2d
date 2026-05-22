@@ -52,6 +52,18 @@ impl AIWorld {
     pub fn get_agent_index(&self, name: &str) -> Option<usize> {
         self.name_index.get(name).copied()
     }
+    /// Return a reference to an agent by name.
+    pub fn agent(&self, name: &str) -> Option<&Agent> {
+        self.name_index.get(name).map(|&idx| &self.agents[idx])
+    }
+    /// Return a mutable reference to an agent by name.
+    pub fn agent_mut(&mut self, name: &str) -> Option<&mut Agent> {
+        if let Some(&idx) = self.name_index.get(name) {
+            Some(&mut self.agents[idx])
+        } else {
+            None
+        }
+    }
     /// Return the number of agents in the world.
     pub fn agent_count(&self) -> usize {
         self.agents.len()

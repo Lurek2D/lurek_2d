@@ -599,6 +599,8 @@ end)
 
 -- @describe math.newRectPacker
 describe("math.newRectPacker", function()
+    -- @covers LRectPacker:clear
+    -- @covers LRectPacker:getPacked
     -- @covers LRectPacker:pack
     -- @covers LRectPacker:occupancy
     -- @covers lurek.math.newRectPacker
@@ -607,6 +609,10 @@ describe("math.newRectPacker", function()
         local x, y = packer:pack(8, 8, "hero")
         expect_type("number", x)
         expect_type("number", y)
+        local packed = packer:getPacked()
+        expect_equal(1, #packed)
+        packer:clear()
+        expect_equal(0, #packer:getPacked())
         expect_true(packer:occupancy() > 0)
     end)
 end)

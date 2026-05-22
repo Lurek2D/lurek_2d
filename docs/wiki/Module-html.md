@@ -39,15 +39,17 @@ This page is generated from the current module specs, examples, and Lua API data
 
 ## 🎯 Purpose
 
-HTML/CSS document engine for building game UIs using familiar web markup.
+The html module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D.
 
 [⬆ back to top](#table-of-contents)
 
 ## 📋 Summary
 
-HTML/CSS document engine for building game UIs using familiar web markup. Parses HTML into a DOM tree of `HtmlElement` nodes, applies CSS rules via selector matching (tag, class, id, attribute, pseudo-class, combinators), and computes box-model layout with flexbox support. The layout engine produces `HtmlDrawCommand` entries — renderer-agnostic draw instructions for rectangles, text, borders, images, and clipping regions.
+The `html` module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D. It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element.
 
-CSS color parsing covers hex, rgb(), rgba(), hsl(), hsla(), and named keywords. Text rendering supports wrapping, alignment, and multi-line overflow. Interactive elements handle click, hover, focus, and keyboard events with Lua callback binding. Style properties include margin, padding, border, background, font, opacity, transform, and transition. Exposed as `lurek.html.*`.
+Layout computation is driven by a flexible vertical block layout engine with robust flexbox support, accurately calculating an `HtmlRect` for every DOM node. Instead of rendering pixels directly, the module translates the computed layout into a renderer-agnostic list of `HtmlDrawCommand` instructions (rectangles, text, borders, images, and clipping regions). The engine includes a comprehensive CSS color parser that understands hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and an extended set of named color keywords.
+
+The module also handles complex text rendering, ensuring accurate wrapping, alignment, and multi-line overflow management. Furthermore, the `html` module is deeply interactive. It routes user input—such as mouse clicks, hover events, keyboard focus, and text input—directly to the appropriate DOM elements, executing bound Lua callbacks (`mousepressed`, `mousemoved`, `keypressed`). The entire document lifecycle, from DOM queries (`getElementById`, `querySelector`) to dynamic structural mutations, is fully scriptable via the `lurek.html.*` API.
 
 [⬆ back to top](#table-of-contents)
 

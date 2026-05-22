@@ -67,9 +67,11 @@ CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG enc
 
 ## 📋 Summary
 
-CPU-side pixel buffer operations for loading, manipulating, and exporting RGBA8 image data. `ImageData` is the core type — a width/height/pixel-data triple with blit, fill, crop, resize (nearest/bilinear), flip, rotate, clear, gradient, and region operations. `LayeredImage` stacks multiple `ImageData` layers with blend modes (normal, multiply, screen, overlay, add).
+The `image` module is an extensive Platform Services tier component responsible for CPU-side pixel buffer operations, providing a robust suite of tools for loading, manipulating, and exporting image data. The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
 
-Province grid detection segments pixel regions into numbered provinces via flood-fill with configurable color keys. `TextureAtlas` packs multiple images into a single texture with bin-packing. DDS decoding handles BC1–BC7 compressed textures. Palette-based LUT color remapping enables retro effects. Effects include blur, sharpen, edge detect, desaturate, and threshold. Exposed as `lurek.image.*`. Platform Services tier.
+Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
+
+The `image` module features specialized systems for game development, most notably the `ProvinceGrid`. This system performs high-speed flood-fill analysis on color-coded PNG maps to generate optimized spatial indexes, identifying distinct provinces, calculating adjacencies, tracing polygonal borders, and exporting compressed shape data for Geoscape-style games. Additionally, `PaletteLUT` provides hardware-accelerated color remapping for retro palette-swapping effects. The module also contains an extensive set of debug visualization renderers for animation, audio, camera bounds, easing curves, and procedural generation (Voronoi, noise, cellular automata). The entire API, including CPU-to-GPU texture upload helpers, is fully exposed to Lua via the `lurek.image.*` namespace.
 
 [⬆ back to top](#table-of-contents)
 
@@ -100,7 +102,7 @@ Province grid detection segments pixel regions into numbered provinces via flood
 - Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
 - Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
 - Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
-- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
+- Primitive drawing: filled rectangles, circles, Bresenham lines, and compact 5x7 bitmap text labels for ASCII letters, digits, and common UI punctuation.
 - PNG encoding for serialization and export.
 
 ### `layers.rs`
@@ -3287,7 +3289,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 do
     local lut = lurek.image.newPaletteLut()
     lut:setColor(1, 0, 0, 1, 0, 1, 0, 1)
-    print("red â†’ green mapping set")
+    print("red → green mapping set")
 end
 ```
 

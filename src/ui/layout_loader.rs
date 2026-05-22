@@ -1,7 +1,7 @@
 //! - Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
 //! - Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
 //! - Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
-//! - Provide a headless `render_to_image` path that runs a layout pass and alpha-blends flat debug colours per widget kind to an RGBA PNG.
+//! - Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to PNG.
 //! - Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
 //! - Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
 
@@ -78,7 +78,7 @@ pub fn load_layout_toml(ctx: &mut GuiContext, toml_src: &str) -> Result<usize, S
         toml::from_str(toml_src).map_err(|e| format!("TOML parse error: {e}"))?;
     load_layout_def(ctx, &layout_def.root)
 }
-/// Run a layout pass on `ctx` at the given resolution and save an RGBA flat-colour rasterisation to `path`.
+/// Run the engine UI rasteriser on `ctx` at the given resolution and save the PNG to `path`.
 pub fn render_to_image(
     ctx: &mut GuiContext,
     width: u32,
@@ -86,25 +86,9 @@ pub fn render_to_image(
     path: &str,
 ) -> Result<(), String> {
     ctx.set_viewport(width as f32, height as f32);
-    ctx.run_layout_pass();
-    let pixel_count = (width * height) as usize;
-    let mut pixels: Vec<u8> = Vec::with_capacity(pixel_count * 4);
-    for _ in 0..pixel_count {
-        pixels.extend_from_slice(&[30u8, 30u8, 30u8, 255u8]);
-    }
-    for idx in 1..ctx.widgets.len() {
-        let base = ctx.widgets[idx].base();
-        if !base.is_visible {
-            continue;
-        }
-        let rect = base.computed_rect;
-        if rect.width <= 0.0 || rect.height <= 0.0 {
-            continue;
-        }
-        let color = widget_kind_color(&ctx.widgets[idx]);
-        fill_rect(&mut pixels, width, height, &rect, color);
-    }
-    image::save_buffer(path, &pixels, width, height, image::ColorType::Rgba8)
+    let img = ctx.draw_to_image(width, height);
+    let png = img.encode_png()?;
+    std::fs::write(path, png)
         .map_err(|e| format!("render_to_image: failed to save '{path}': {e}"))
 }
 /// Instantiate a single widget from `def` in `ctx` without recursing into children; return its index or an error.
@@ -243,7 +227,7 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
                 ti.placeholder = p.clone();
             }
             if let Some(ref t) = def.text {
-                ti.text = t.clone();
+                ti.set_text(t.clone());
             }
         }
         Some(WidgetKind::Layout(lay)) => {
@@ -252,79 +236,5 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
             }
         }
         _ => {}
-    }
-}
-/// Return a representative RGBA debug colour for each `WidgetKind` variant used by `render_to_image`.
-fn widget_kind_color(kind: &WidgetKind) -> [u8; 4] {
-    match kind {
-        WidgetKind::Panel(_) => [60, 60, 70, 200],
-        WidgetKind::Button(_) => [70, 120, 200, 255],
-        WidgetKind::Label(_) => [200, 200, 200, 180],
-        WidgetKind::TextInput(_) => [240, 240, 240, 255],
-        WidgetKind::CheckBox(_) => [180, 140, 60, 255],
-        WidgetKind::Slider(_) => [80, 160, 80, 255],
-        WidgetKind::ProgressBar(_) => [60, 160, 100, 255],
-        WidgetKind::ComboBox(_) => [140, 100, 180, 255],
-        WidgetKind::ListBox(_) => [100, 130, 160, 255],
-        WidgetKind::Layout(_) => [50, 50, 80, 120],
-        WidgetKind::ScrollPanel(_) => [70, 80, 90, 200],
-        WidgetKind::TabBar(_) => [90, 90, 140, 255],
-        WidgetKind::Separator(_) => [120, 120, 120, 255],
-        WidgetKind::Spacer(_) => [30, 30, 30, 0],
-        WidgetKind::ImageWidget(_) => [100, 140, 180, 255],
-        WidgetKind::NinePatch(_) => [80, 120, 140, 255],
-        WidgetKind::SplitPanel(_) => [55, 65, 75, 200],
-        WidgetKind::DockPanel(_) => [50, 60, 80, 200],
-        WidgetKind::Accordion(_) => [110, 80, 140, 255],
-        WidgetKind::TreeView(_) => [70, 130, 100, 255],
-        WidgetKind::RadioButton(_) => [180, 90, 90, 255],
-        WidgetKind::SpinBox(_) => [160, 120, 80, 255],
-        WidgetKind::Switch(_) => [80, 160, 140, 255],
-        WidgetKind::ColorPicker(_) => [200, 100, 100, 255],
-        WidgetKind::GUITable(_) => [90, 110, 130, 255],
-        WidgetKind::GUIWindow(_) => [60, 70, 100, 230],
-        WidgetKind::Dialog(_) => [70, 80, 120, 240],
-        WidgetKind::MenuBar(_) => [50, 50, 60, 255],
-        WidgetKind::StatusBar(_) => [50, 50, 60, 255],
-        WidgetKind::Toolbar(_) => [55, 55, 70, 255],
-        WidgetKind::ScrollBar(_) => [90, 90, 110, 255],
-        WidgetKind::Badge(_) => [220, 60, 60, 255],
-        WidgetKind::TooltipPanel(_) => [200, 200, 150, 220],
-        WidgetKind::MenuItem(_) => [80, 90, 100, 255],
-        WidgetKind::Toast(_) => [160, 120, 60, 220],
-        WidgetKind::Custom(_) => [255, 200, 100, 200],
-    }
-}
-/// Alpha-blend `color` over the pixels of `rect` inside a raw RGBA `pixels` buffer of `img_w × img_h`.
-#[allow(clippy::ptr_arg)]
-fn fill_rect(
-    pixels: &mut Vec<u8>,
-    img_w: u32,
-    img_h: u32,
-    rect: &crate::math::Rect,
-    color: [u8; 4],
-) {
-    let src_a = color[3] as u32;
-    if src_a == 0 {
-        return;
-    }
-    let x0 = rect.x.max(0.0) as u32;
-    let y0 = rect.y.max(0.0) as u32;
-    let x1 = (rect.x + rect.width).min(img_w as f32) as u32;
-    let y1 = (rect.y + rect.height).min(img_h as f32) as u32;
-    for y in y0..y1 {
-        for x in x0..x1 {
-            let off = ((y * img_w + x) * 4) as usize;
-            if off + 3 >= pixels.len() {
-                continue;
-            }
-            let dst_a = 255u32 - src_a;
-            pixels[off] = ((color[0] as u32 * src_a + pixels[off] as u32 * dst_a) / 255) as u8;
-            pixels[off + 1] =
-                ((color[1] as u32 * src_a + pixels[off + 1] as u32 * dst_a) / 255) as u8;
-            pixels[off + 2] =
-                ((color[2] as u32 * src_a + pixels[off + 2] as u32 * dst_a) / 255) as u8;
-            pixels[off + 3] = 255;
-        }
     }
 }

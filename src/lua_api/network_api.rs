@@ -861,7 +861,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- pack --
     /// Packs a supported Lua value into a binary network message string.
-    /// @param | value | table | Lua value to pack (table, number, string, or boolean).
+    /// @param | value | any | Lua value to pack (table, number, string, or boolean).
     /// @return | string | Binary packed message.
     tbl.set(
         "pack",

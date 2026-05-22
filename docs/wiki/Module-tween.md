@@ -49,9 +49,11 @@ Property animation: interpolated transitions on Lua table fields without per-fra
 
 ## 📋 Summary
 
-Smooth value interpolation engine with easing functions, sequenced chains, parallel groups, and spring physics. `LuaTween` interpolates a single numeric property from start to end over a duration using one of 30+ easing curves (linear, quad, cubic, quart, elastic, bounce, back, etc.). Tweens fire `onUpdate`, `onComplete`, and `onRepeat` callbacks.
+The `tween` module is a versatile Feature Systems tier component responsible for smooth value interpolation, easing, and spring-physics animations. It provides a robust engine for animating numeric properties over time, making it ideal for UI transitions, camera movements, and gameplay juice. At its core, `LuaTween` interpolates a single numeric property (or multiple numeric fields on a single Lua table) from a start value to a target value over a specified duration. Developers can choose from over 30 built-in easing curves—including linear, quadratic, cubic, elastic, bounce, and back—or register custom easing functions to achieve the exact feel required. Tweens support full lifecycle callbacks (`onUpdate`, `onComplete`, `onCancel`) and can be configured to repeat infinitely, yoyo (reverse direction on repeat), or operate in relative mode where targets act as offsets.
 
-`LuaTweenSequence` chains multiple tweens with optional delays between steps — each tween starts when the previous completes. `LuaTweenParallel` runs multiple tweens simultaneously and completes when all children finish. `SpringSystem` provides physics-based interpolation with configurable stiffness, damping, and mass for natural-feeling UI animations. `TweenEngine` pools all active tweens and advances them each frame via `update(dt)`. Yoyo and repeat modes enable looping. Exposed as `lurek.tween.*`. Feature Systems tier.
+To handle complex animation choreography, the module provides powerful combinators. `LuaTweenSequence` enables the chaining of multiple tweens, delays, and callbacks into an ordered execution pipeline, where each step seamlessly transitions to the next while carrying over leftover frame delta time. Conversely, `LuaTweenParallel` groups multiple tweens together, executing them simultaneously and completing only when the longest-running child finishes. For a more organic, physics-driven feel, `SpringSystem` offers damped spring interpolation with configurable stiffness and damping. This eliminates fixed durations in favor of natural settling dynamics, which is particularly effective for responsive UI elements or following camera logic.
+
+The entire system is driven by a centralized `TweenEngine` that efficiently updates all active tweens, sequences, parallels, and springs every frame. The module is fully integrated with Lua coroutines via the `await()` method, allowing developers to yield execution until an animation completes, drastically simplifying sequential scripting without callback hell. Exposed via the comprehensive `lurek.tween.*` Lua API, this module is an essential tool for bringing fluid, polished motion to Lurek2D games.
 
 [⬆ back to top](#table-of-contents)
 
@@ -1310,7 +1312,6 @@ Sets a callback to fire when the tween completes. Returns the tween for chaining
 
 Parameters:
 
-- `self` (`LTween`, required): The tween instance.
 - `f` (`function`, required): Callback fired when the tween finishes.
 
 Returns: `LTween` - The same tween handle for chaining.
@@ -1321,11 +1322,10 @@ Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
-    local target = { x = 0.0 } ; local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear") ; print("duration=" .. tw:getDuration())
-    print("easing=" .. tw:getEasingName()) ; print("elapsed=" .. tw:getElapsed()) ; print("progress=" .. tw:getProgress())
-    print("remaining=" .. tw:getRemaining()) ; print("active=" .. tostring(tw:isActive())) ; tw:onComplete(function() print("tween_complete") end)
-    tw:setRelative(false) ; print("type=" .. tw:type()) ; print("typeOf=" .. tostring(tw:typeOf("LTween")))
-    tw:await() ; tw:cancel()
+    local obj = { scale = 1 }
+    local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
+    tw:onComplete(function() print("  completed! scale=" .. obj.scale) end)
+    lurek.tween.update(0.5)
 end
 ```
 
@@ -1667,7 +1667,6 @@ Adds an existing tween handle to this parallel group. The tween becomes owned by
 
 Parameters:
 
-- `self` (`LTweenParallel`, required): The parallel group instance.
 - `tw_ud` (`LTween`, required): The tween handle returned by `lurek.tween.tween()` to add to this group.
 
 #### Example
@@ -1676,11 +1675,11 @@ Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
-    local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
-    par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
-    par:add(tw_extra) ; par:onComplete(function() print("parallel_done") end) ; print("par_active=" .. tostring(par:isActive()))
-    print("par_type=" .. par:type()) ; print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
-    par:start() ; par:cancel()
+    local obj1 = { alpha = 1 } ; local obj2 = { scale = 1 } ; local tw1 = lurek.tween.tween(0.8, obj1, { alpha = 0 })
+    local tw2 = lurek.tween.tween(0.8, obj2, { scale = 3 }) ; local par = lurek.tween.parallel()
+    par:add(tw1) ; par:add(tw2)
+    par:onComplete(function() print("  parallel group done") end) ; par:start()
+    lurek.tween.update(0.8) ; print("alpha=" .. obj1.alpha .. " scale=" .. obj2.scale)
 end
 ```
 
@@ -1758,7 +1757,6 @@ Sets a callback to fire when all tweens in this parallel group have finished. Re
 
 Parameters:
 
-- `self` (`LTweenParallel`, required): The parallel group instance.
 - `f` (`function`, required): Function to call when all tweens in the group complete.
 
 Returns: `LTweenParallel` - This parallel group for chaining.
@@ -2022,7 +2020,6 @@ Appends a delay step to this sequence. Optionally fires a callback when the dela
 
 Parameters:
 
-- `self` (`LTweenSequence`, required): The sequence instance.
 - `seconds` (`number`, required): Duration to wait in seconds.
 - `cb` (`function`, optional): Optional callback fired when the delay elapses.
 
@@ -2034,11 +2031,11 @@ Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
-    local obj = { x = 0.0, alpha = 1.0 } ; local seq = lurek.tween.sequence() ; seq:tween(0.5, obj, { x = 100 }, "linear")
-    seq:delay(0.1, function() print("seq_delay_cb") end) ; seq:tween(0.5, obj, { alpha = 0 }, "easeout") ; seq:onComplete(function() print("seq_done") end)
-    print("seq_active=" .. tostring(seq:isActive())) ; print("seq_type=" .. seq:type())
-    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence"))) ; seq:start()
-    seq:await() ; seq:cancel()
+    local obj = { alpha = 0 } ; local seq = lurek.tween.sequence() ; seq:tween(0.3, obj, { alpha = 1 })
+    seq:delay(0.5) ; seq:tween(0.3, obj, { alpha = 0 }) ; seq:start()
+    lurek.tween.update(0.3) ; print("fade in done: alpha=" .. obj.alpha)
+    lurek.tween.update(0.5) ; print("after delay: alpha=" .. obj.alpha)
+    lurek.tween.update(0.3) ; print("fade out done: alpha=" .. obj.alpha)
 end
 ```
 
@@ -2119,7 +2116,6 @@ Sets a callback to fire when the sequence finishes all steps. Returns the sequen
 
 Parameters:
 
-- `self` (`LTweenSequence`, required): The sequence instance.
 - `f` (`function`, required): Function to call when the sequence completes.
 
 Returns: `LTweenSequence` - This sequence for chaining.

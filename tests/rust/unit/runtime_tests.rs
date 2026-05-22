@@ -426,6 +426,32 @@ dt = 0.25
         assert_eq!(cfg.headless.frames, Some(3));
         assert_eq!(cfg.headless.dt, 0.25);
     }
+
+    #[test]
+    fn load_from_conf_toml_reads_default_render_font_settings() {
+        let tmp = tempfile::tempdir().expect("tempdir");
+        let conf = r#"
+[render]
+default_font_size = 12
+default_font_bold = true
+"#;
+        std::fs::write(tmp.path().join("conf.toml"), conf).expect("write conf.toml");
+
+        let (cfg, err) = Config::load_from_conf_toml(tmp.path());
+        assert!(err.is_none(), "unexpected parse error: {:?}", err);
+        assert_eq!(cfg.render.default_font_size, 12);
+        assert!(cfg.render.default_font_bold);
+    }
+
+    #[test]
+    fn shared_state_load_default_fonts_uses_configured_builtin_font() {
+        let mut st = SharedState::new(800, 600, "Test", PathBuf::from("."));
+        st.set_configured_default_font(10, true);
+        st.load_default_fonts();
+        assert_eq!(st.default_font, st.default_bold_fonts[1]);
+        assert_eq!(st.active_font, st.default_bold_fonts[1]);
+        assert!(st.active_bold);
+    }
 }
 
 // ── ErrorCategory::Filesystem ────────────────────────────────────────────────

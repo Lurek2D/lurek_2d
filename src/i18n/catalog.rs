@@ -200,13 +200,55 @@ impl Catalog {
                 }
             }
         }
-        for entries in index.values_mut() {
-            entries.sort();
-            entries.dedup();
+        for list in index.values_mut() {
+            list.sort();
+            list.dedup();
         }
         *self.index_cache.borrow_mut() = Some((self.locale.clone(), index.clone()));
         index
     }
+    pub fn translate_gender<'a>(&'a self, key: &'a str, gender: &str) -> &'a str {
+        let gender_lower = gender.to_lowercase();
+        let gendered_key = format!("{}.{}", key, gender_lower);
+        if let Ok(val) = self.get(&gendered_key) {
+            val
+        } else {
+            self.translate(key)
+        }
+    }
+    pub fn translate_plural(&self, key: &str, count: f64) -> String {
+        let plural_key = if super::PluralForm::english(count).key() == "one" {
+            format!("{}.one", key)
+        } else {
+            format!("{}.other", key)
+        };
+        if self.has_key(&plural_key) {
+            self.translate(&plural_key).to_string()
+        } else {
+            self.translate(key).to_string()
+        }
+    }
+    /// Compute the intersection of multiple candidate key lists and return them sorted and optionally truncated.
+    pub fn search_indexed_intersection(candidate_lists: Vec<Vec<String>>, limit: usize) -> Vec<String> {
+        if candidate_lists.is_empty() {
+            return Vec::new();
+        }
+        let mut candidate_sets: Vec<std::collections::HashSet<String>> = Vec::new();
+        for list in candidate_lists {
+            candidate_sets.push(list.into_iter().collect());
+        }
+        let intersection = candidate_sets.iter().skip(1).fold(
+            candidate_sets.first().cloned().unwrap_or_default(),
+            |acc, set| acc.intersection(set).cloned().collect(),
+        );
+        let mut keys: Vec<String> = intersection.into_iter().collect();
+        keys.sort();
+        if limit > 0 && keys.len() > limit {
+            keys.truncate(limit);
+        }
+        keys
+    }
+
     /// Return keys missing from locales compared to a reference locale.
     pub fn coverage_gaps(&self, reference_locale: &str) -> Vec<CoverageGap> {
         let Some(ref_table) = self.tables.get(reference_locale) else {

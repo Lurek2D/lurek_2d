@@ -61,9 +61,13 @@ In-memory column-major tabular data with lightweight SQL-style queries (lurek.da
 
 ## 📋 Summary
 
-In-memory column-major tabular data engine with lightweight SQL-style queries. `DataFrame` stores named columns of `CellValue` (Nil, Bool, Int, Float, String) with typed column operations. Supports adding/removing columns and rows, cell access, sorting, filtering by predicate, aggregation (sum, mean, min, max, count), grouping, joins (inner, left, right, full), reusable processing helpers (value counts, missing reports, duplicate-row extraction, and ISO date parts), window functions (rank, row_number, lag, lead, running totals), and CSV/JSON/LVDF import/export through text, binary, and storage-backed file APIs. The module owns parsing and serialization and accepts a narrow storage trait; GameFS supplies the runtime implementation outside this module. Async file loaders use Rust worker threads over worker-owned GameFS snapshots, so large CSV/JSON files do not have to be read into Lua strings before parsing.
+The `dataframe` module provides a powerful in-memory, column-major tabular data engine that brings lightweight SQL-style querying and advanced data manipulation to Lurek2D. Positioned within the Foundations tier, it offers robust data analytics capabilities completely decoupled from engine-specific state. The core data structure is the `DataFrame`, which stores named columns containing `CellValue` variants (Nil, Bool, Int, Float, String). It provides a comprehensive set of operations including adding or removing columns and rows, cell access, sorting, and filtering via predicates. The module also supports advanced tabular functions like inner, left, right, and full joins, grouping, and aggregations (sum, mean, min, max, count).
 
-`Database` holds multiple named DataFrames and executes SQL queries parsed by a built-in SQL engine supporting SELECT, WHERE, JOIN, GROUP BY, ORDER BY, LIMIT, and subqueries. SELECT lists support explicit `AS` aliases for columns, aggregate calls, and arithmetic expressions over numeric literals, numeric columns, and aggregate results. Arithmetic division by zero returns `CellValue::Nil`, matching the module's existing missing numeric value convention instead of raising a query error. Parameterized database queries use positional `?` placeholders and bind Rust-side `CellValue` literals before parsing, with string escaping, NULL, boolean, and finite-number handling. Database persistence uses the JSON object format emitted by `LDatabase:toJSON`: each top-level key is a table name and each value is a DataFrame JSON array. Binary database persistence is not exposed yet. `DataFrameTask` provides one-shot async result handles for CSV/JSON file loads, `LDataFrame:queryAsync`, and snapshot-based `LDatabase:queryAsync` / `LDatabase:queryParamsAsync`; database tasks clone the current database before leaving the Lua thread and never share live mutable database state with a worker. `VecFrame` provides a lightweight vectorized variant for bulk numeric operations. Exposed as `lurek.dataframe.*`. Foundations tier with no engine dependencies.
+For analytical workloads, the module includes an extensive suite of window functions (rank, row_number, lag, lead, running totals) and processing helpers such as value counts, missing value reports, duplicate row extraction, and ISO date part extraction. A lazy query builder (`LazyQuery`) is available to chain sequential query steps (filter, sort, select, slice) before materializing the final frame, improving efficiency for complex data pipelines. Additionally, for highly performant bulk numeric operations, a vectorized variant called `VecFrame` leverages parallel operations and typed storage.
+
+A standout feature is the `Database` container, which holds multiple named `DataFrame` instances and acts as a localized query catalog. The module features a bespoke, built-in SQL engine complete with a tokenizer and recursive-descent parser. This engine natively executes SQL queries across the database, supporting full SELECT statements with WHERE clauses, GROUP BY, ORDER BY, LIMIT, subqueries, and table JOINs. It robustly handles explicit `AS` aliases, aggregate calls, and complex arithmetic expressions, including parameterized queries with positional `?` placeholders.
+
+To facilitate seamless data interchange, the module implements native serialization and deserialization for CSV, JSON, and compact binary (LVDF) formats. Recognizing the performance impact of parsing large datasets, these operations—alongside SQL queries—can be executed asynchronously on Rust worker threads using `DataFrameTask`. These tasks operate on storage snapshots, ensuring that heavy I/O and SQL processing do not block the main Lua thread. The entire robust feature set
 
 [⬆ back to top](#table-of-contents)
 
@@ -342,54 +346,16 @@ Returns: `LDataFrame` - New dataframe handle.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  -- Save a small CSV and restore it through the file loader.
+  local path = "save/dataframe_example.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local df = lurek.dataframe.fromCSVFile(path)
+  lurek.log.info("CSV loaded successfully, rows: " .. df:nrows())
+  local preview = df:head(1)
+  print("Data preview:", preview)
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### lurek.dataframe.fromCSVFileAsync
@@ -420,54 +386,19 @@ Returns: `LDataFrameTask` - Task that resolves to a dataframe loaded from the CS
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  -- Save a CSV and load it asynchronously on a worker thread.
+  local path = "save/dataframe_example_async.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
+    lurek.log.info("Started loading CSV asynchronously")
+    task:wait()
+    if task:getError() == nil then
+    local df = task:result()
+    lurek.log.info("Async CSV load finished. Rows: " .. df:nrows())
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### lurek.dataframe.fromJSON
@@ -534,54 +465,16 @@ Returns: `LDataFrame` - New dataframe handle.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  -- Save a small JSON dataframe and reload it.
+  local path = "save/dataframe_example.json"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toJSONFile(path)
+  local df = lurek.dataframe.fromJSONFile(path)
+  lurek.log.info("JSON data loaded, rows: " .. df:nrows())
+  local columns = df:columns()
+  print("Loaded schema:", table.concat(columns, ", "))
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### lurek.dataframe.fromJSONFileAsync
@@ -612,54 +505,19 @@ Returns: `LDataFrameTask` - Task that resolves to a dataframe loaded from the JS
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  -- Save a JSON dataframe and reload it asynchronously.
+  local path = "save/dataframe_example_async.json"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toJSONFile(path)
+  local task = lurek.dataframe.fromJSONFileAsync(path)
+    lurek.log.info("Started loading JSON asynchronously")
+    task:wait()
+    if not task:getError() then
+    local df = task:result()
+    lurek.log.info("Async JSON load finished. Rows: " .. df:nrows())
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### lurek.dataframe.fromRows
@@ -816,54 +674,20 @@ Returns: `LDatabase` - New database handle.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
-end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
+  -- Save a JSON database file and restore it through the loader.
+  local path = "save/dataframe_database.json"
   local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
+  local players = lurek.dataframe.fromRows({ "name", "level" }, { { "Alice", 10 }, { "Bob", 20 } })
   db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
+  db:save(path)
+  local restored = lurek.dataframe.loadDatabase(path)
+  local loaded_players = restored:getTable("players")
+  if loaded_players then
+    lurek.log.info("Database table 'players' loaded.")
+    print("Loaded " .. loaded_players:nrows() .. " player records")
+    end
 end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### lurek.dataframe.newDatabase
@@ -1045,18 +869,18 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
+  -- Save a JSON database file and restore it through the loader.
+  local path = "save/dataframe_database.json"
   local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
+  local players = lurek.dataframe.fromRows({ "name", "level" }, { { "Alice", 10 }, { "Bob", 20 } })
   db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
+  db:save(path)
+  local restored = lurek.dataframe.loadDatabase(path)
+  local loaded_players = restored:getTable("players")
+  if loaded_players then
+    lurek.log.info("Database table 'players' loaded.")
+    print("Loaded " .. loaded_players:nrows() .. " player records")
+    end
 end
 ```
 
@@ -1099,54 +923,19 @@ Lua-side handle for a threaded dataframe job.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  -- Save a CSV and load it asynchronously on a worker thread.
+  local path = "save/dataframe_example_async.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
+    lurek.log.info("Started loading CSV asynchronously")
+    task:wait()
+    if task:getError() == nil then
+    local df = task:result()
+    lurek.log.info("Async CSV load finished. Rows: " .. df:nrows())
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 ### LGroupedFrame
@@ -1507,25 +1296,17 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  -- Database:query() lets you write SQL that references multiple tables by name.
-  -- This is the most powerful way to combine related data.
-  pcall(function()
-    local db = lurek.dataframe.newDatabase()
-    db:addTable("players", lurek.dataframe.fromTable({
-      {id = 1, name = "Alice"},
-      {id = 2, name = "Bob"},
-    }))
-    db:addTable("scores", lurek.dataframe.fromTable({
-      {player_id = 1, points = 9000},
-      {player_id = 2, points = 7500},
-    }))
+  -- query() lets you use SQL syntax for complex filtering and projection.
+  -- The dataframe is exposed as table "t" in the SQL context.
+  local players = lurek.dataframe.fromTable({
+    {name = "Alice", hp = 80, level = 12},
+    {name = "Bob", hp = 20, level = 5},
+    {name = "Cara", hp = 45, level = 8},
+  })
 
-    -- Cross-table JOIN: match players to their scores
-    local result = db:query(
-      "SELECT players.name, scores.points FROM players, scores WHERE players.id = scores.player_id"
-    )
-    lurek.log.info("joined result: " .. result:nrows() .. " rows")
-  end)
+  -- Find players with low HP who might need healing
+  local wounded = players:query("SELECT name, hp FROM t WHERE hp < 50")
+  lurek.log.info("wounded players: " .. wounded:nrows())
 end
 ```
 
@@ -1555,54 +1336,17 @@ Returns: `LDataFrameTask` - Task that resolves to the query result dataframe.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
-end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
+  -- Perform an asynchronous SQL query on a database table snapshot.
   local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
+  local users = lurek.dataframe.fromRows({ "age" }, { { 25 }, { 30 } })
+  db:addTable("users", users)
+  local task = db:queryAsync("SELECT * FROM users WHERE age > 26")
+    lurek.log.info("Started async query")
+    task:wait()
+    local result_df = task:result()
+  print("Async query finished, resulting rows: " .. result_df:nrows())
 end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDatabase:queryParams
@@ -1633,54 +1377,15 @@ Returns: `LDataFrame` - Query result dataframe.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
-end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
+    -- Run a SQL query with parameterized arguments to prevent injection
   local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
+  local users = lurek.dataframe.fromRows({ "name" }, { { "Alice" }, { "Bob" } })
+  db:addTable("users", users)
+  local result = db:queryParams("SELECT * FROM users WHERE name = ?", {"Alice"})
+  lurek.log.info("Query returned " .. result:nrows() .. " rows")
+    print("Found Alice:", result:head(1))
 end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDatabase:queryParamsAsync
@@ -1711,54 +1416,17 @@ Returns: `LDataFrameTask` - Task that resolves to the query result dataframe.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
-end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
+    -- Run a parameterized SQL query asynchronously
   local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
+  local players = lurek.dataframe.fromRows({ "level" }, { { 10 }, { 20 } })
   db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
+  local task = db:queryParamsAsync("SELECT * FROM players WHERE level > ?", {15})
+    task:wait()
+    local result = task:result()
+  lurek.log.info("Async query returned " .. result:nrows() .. " rows")
+    print("Matches:", result:head(1))
 end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDatabase:removeTable
@@ -1823,54 +1491,20 @@ Returns: `boolean` - True when the file was written.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
-end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
+  -- Save a database to the GameFS save directory.
   local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("score", "int")
+    df:addRow({100})
+  db:addTable("savegame_stats", df)
+  local success = db:save("save/savegame_stats.json")
+    if success then
+    lurek.log.info("Database saved to the default save location.")
+    else
+    lurek.log.error("Failed to save database")
+    end
 end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDatabase:tableCount
@@ -1928,15 +1562,15 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  -- toJSON serializes every table in the database as a JSON object of arrays.
-  -- Use for full save-game export or debug snapshots.
-  local db = lurek.dataframe.newDatabase()
-  db:addTable("players", lurek.dataframe.fromTable({{name = "Alice", level = 5}}))
-  db:addTable("inventory", lurek.dataframe.fromTable({{item = "potion", qty = 3}}))
+  -- toJSON produces a JSON string for web API output or inter-process communication.
+  local save_data = lurek.dataframe.fromTable({
+    {slot = 1, name = "World 1", playtime = 3600},
+    {slot = 2, name = "World 2", playtime = 1200},
+  })
 
-  local json = db:toJSON()
-  if lurek.fs then lurek.fs.write("save/full_save.json", json) end
-  lurek.log.info("database JSON: " .. #json .. " bytes")
+  local json = save_data:toJSON()
+  if lurek.fs then lurek.fs.write("save/slots.json", json) end
+  lurek.log.info("exported JSON: " .. #json .. " bytes")
 end
 ```
 
@@ -2407,54 +2041,18 @@ Returns: `LDataFrame` - New dataframe with extracted date-part columns; invalid 
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Extract date parts (year, month, day) from a datetime string column
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("login_time", "string")
+    df:addRow({"2026-05-21T10:00:00Z"})
+    local parts = df:dateParts("login_time")
+    lurek.log.info("Extracted date parts.")
+    if parts:nrows() > 0 then
+        local row = parts:getRow(1)
+        print("Year: " .. row.year .. " Month: " .. row.month)
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:describe
@@ -2553,54 +2151,17 @@ Returns: `LDataFrame` - New dataframe containing duplicate rows in original orde
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Find and extract duplicate rows
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("id", "int")
+    df:addRow({1}); df:addRow({2}); df:addRow({1})
+    local duplicates = df:duplicateRows({ "id" })
+    lurek.log.info("Found " .. duplicates:nrows() .. " duplicate rows")
+    if duplicates:nrows() > 0 then
+        print("Duplicates:", duplicates:head(5))
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:entropy
@@ -3149,7 +2710,7 @@ end
 
 ```lua
 --- Returns the maximum value of a column.
----@param col string Column name string or one-based column index.
+---@param col any Column name string or one-based column index.
 ---@return number string|boolean|nil | Maximum cell value.
 function LDataFrame:max(col) end
 ```
@@ -3160,7 +2721,7 @@ Returns the maximum value of a column.
 
 Parameters:
 
-- `col` (`string`, required): Column name string or one-based column index.
+- `col` (`any`, required): Column name string or one-based column index.
 
 Returns: `number|string|boolean|nil` - Maximum cell value.
 
@@ -3188,7 +2749,7 @@ end
 
 ```lua
 --- Returns the numeric mean of a column.
----@param col string Column name string or one-based column index.
+---@param col any Column name string or one-based column index.
 ---@return number Column mean.
 function LDataFrame:mean(col) end
 ```
@@ -3199,7 +2760,7 @@ Returns the numeric mean of a column.
 
 Parameters:
 
-- `col` (`string`, required): Column name string or one-based column index.
+- `col` (`any`, required): Column name string or one-based column index.
 
 Returns: `number` - Column mean.
 
@@ -3228,7 +2789,7 @@ end
 
 ```lua
 --- Returns the numeric median of a column.
----@param col string Column name string or one-based column index.
+---@param col any Column name string or one-based column index.
 ---@return number Column median.
 function LDataFrame:median(col) end
 ```
@@ -3239,7 +2800,7 @@ Returns the numeric median of a column.
 
 Parameters:
 
-- `col` (`string`, required): Column name string or one-based column index.
+- `col` (`any`, required): Column name string or one-based column index.
 
 Returns: `number` - Column median.
 
@@ -3303,7 +2864,7 @@ end
 
 ```lua
 --- Returns the minimum value of a column.
----@param col string Column name string or one-based column index.
+---@param col any Column name string or one-based column index.
 ---@return number string|boolean|nil | Minimum cell value.
 function LDataFrame:min(col) end
 ```
@@ -3314,7 +2875,7 @@ Returns the minimum value of a column.
 
 Parameters:
 
-- `col` (`string`, required): Column name string or one-based column index.
+- `col` (`any`, required): Column name string or one-based column index.
 
 Returns: `number|string|boolean|nil` - Minimum cell value.
 
@@ -3362,54 +2923,17 @@ Returns: `LDataFrame` - New dataframe containing `column`, `missing`, `non_missi
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Generate a report of missing (null) values
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("score", "int")
+    df:addRow({100}); df:addRow({nil}); df:addRow({200})
+    local report = df:missingReport()
+    lurek.log.info("Missing values report:")
+    for col, missing in pairs(report) do
+        print(col .. " has " .. missing .. " missing values")
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:modeVal
@@ -3755,54 +3279,16 @@ Returns: `LDataFrameTask` - Task that resolves to the query result dataframe.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Perform an asynchronous SQL query on the dataframe
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("age", "int"); df:addRow({25}); df:addRow({30})
+    local task = df:queryAsync("SELECT * FROM df WHERE age > 26")
+    lurek.log.info("Started async query")
+    task:wait()
+    local result_df = task:result()
+    print("Async query finished, resulting rows: " .. result_df:nrows())
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:rank
@@ -4320,7 +3806,7 @@ end
 
 ```lua
 --- Returns the numeric standard deviation of a column.
----@param col string Column name string or one-based column index.
+---@param col any Column name string or one-based column index.
 ---@return number Column standard deviation.
 function LDataFrame:stddev(col) end
 ```
@@ -4331,7 +3817,7 @@ Returns the numeric standard deviation of a column.
 
 Parameters:
 
-- `col` (`string`, required): Column name string or one-based column index.
+- `col` (`any`, required): Column name string or one-based column index.
 
 Returns: `number` - Column standard deviation.
 
@@ -4355,7 +3841,7 @@ end
 
 ```lua
 --- Returns the numeric sum of a column.
----@param col string Column name string or one-based column index.
+---@param col any Column name string or one-based column index.
 ---@return number Column sum.
 function LDataFrame:sum(col) end
 ```
@@ -4366,7 +3852,7 @@ Returns the numeric sum of a column.
 
 Parameters:
 
-- `col` (`string`, required): Column name string or one-based column index.
+- `col` (`any`, required): Column name string or one-based column index.
 
 Returns: `number` - Column sum.
 
@@ -4491,54 +3977,19 @@ Returns: `boolean` - True when the file was written.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Export dataframe to an optimized binary format
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("level", "int")
+    df:addRow({42})
+    local success, err = df:toBinaryFile("work/output.bin")
+    if success then
+        lurek.log.info("Data exported to binary format successfully.")
+        print("Output saved to work/output.bin")
+    else
+        lurek.log.error("Failed to export to binary: " .. tostring(err))
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:toCSV
@@ -4605,54 +4056,19 @@ Returns: `boolean` - True when the file was written.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Export dataframe to a CSV file
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("score", "int")
+    df:addRow({500})
+    local success, err = df:toCSVFile("work/output.csv")
+    if success then
+        lurek.log.info("Data exported to CSV successfully.")
+        print("Output saved to work/output.csv")
+    else
+        lurek.log.error("Failed to export to CSV: " .. tostring(err))
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:toJSON
@@ -4715,54 +4131,19 @@ Returns: `boolean` - True when the file was written.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Export dataframe to a JSON file
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("name", "string")
+    df:addRow({"Alice"})
+    local success, err = df:toJSONFile("work/output.json")
+    if success then
+        lurek.log.info("Data exported to JSON successfully.")
+        print("Output saved to work/output.json")
+    else
+        lurek.log.error("Failed to export to JSON: " .. tostring(err))
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:toString
@@ -4965,54 +4346,17 @@ Returns: `LDataFrame` - New dataframe containing `value`, `count`, and optional 
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Count unique values in a column
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("class", "string")
+    df:addRow({"Warrior"}); df:addRow({"Mage"}); df:addRow({"Warrior"})
+    local counts = df:valueCounts("class")
+    lurek.log.info("Value counts for class:")
+    for val, count in pairs(counts) do
+        print(val .. ": " .. count)
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrame:variance
@@ -5021,7 +4365,7 @@ do
 
 ```lua
 --- Returns the numeric variance of a column.
----@param col string Column name string or one-based column index.
+---@param col any Column name string or one-based column index.
 ---@return number Column variance.
 function LDataFrame:variance(col) end
 ```
@@ -5032,7 +4376,7 @@ Returns the numeric variance of a column.
 
 Parameters:
 
-- `col` (`string`, required): Column name string or one-based column index.
+- `col` (`any`, required): Column name string or one-based column index.
 
 Returns: `number` - Column variance.
 
@@ -5430,54 +4774,17 @@ Returns: `string` - Error message after failure.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Retrieve any error message that occurred during an async task
+  local task = lurek.dataframe.fromCSVFileAsync("invalid/path/missing.csv")
+    task:wait()
+    local err = task:getError()
+    if err then
+        lurek.log.error("Async task failed with error: " .. err)
+    else
+        print("Task completed successfully")
+    end
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrameTask:isDone
@@ -5501,54 +4808,18 @@ Returns: `boolean` - True once the worker has produced a result or error.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Check if an async dataframe task has finished
+  local path = "save/dataframe_task_status.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
+    if not task:isDone() then
+        lurek.log.info("Task is still running in the background...")
+    end
+    task:wait()
+    print("Task isDone: " .. tostring(task:isDone()))
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrameTask:progress
@@ -5572,54 +4843,17 @@ Returns: `number` - Progress from 0.0 to 1.0.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Get the progress of an async task (0.0 to 1.0)
+  local path = "save/dataframe_task_progress.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
+    local prog = task:progress()
+    lurek.log.info("Current task progress: " .. (prog * 100) .. "%")
+    task:wait()
+    print("Final progress: " .. (task:progress() * 100) .. "%")
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrameTask:result
@@ -5643,54 +4877,16 @@ Returns: `LDataFrame` - Completed dataframe result.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Get the resulting dataframe from a completed async task
+    local df = lurek.dataframe.newDataFrame()
+    df:addColumn("id", "int"); df:addRow({1}); df:addRow({2})
+    local task = df:queryAsync("SELECT * FROM df WHERE id = 1")
+    task:wait()
+    local result_df = task:result()
+    lurek.log.info("Query result has " .. result_df:nrows() .. " rows")
+    print("Result df:", result_df)
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrameTask:type
@@ -5714,54 +4910,17 @@ Returns: `string` - The string `LDataFrameTask`.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  -- Get the string type name of an async dataframe task.
+  local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
+  local task = df:queryAsync("SELECT * FROM df WHERE id = 1")
+  local type_name = task:type()
+    lurek.log.info("Object type is: " .. type_name)
+  if type_name == "LDataFrameTask" then
+    print("This is indeed a DataFrameTask")
+    end
+  task:wait()
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrameTask:typeOf
@@ -5790,54 +4949,17 @@ Returns: `boolean` - True when the supplied type name matches this handle.
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  -- Check if the object inherits from or matches the task type name.
+  local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
+  local task = df:queryAsync("SELECT * FROM df WHERE id = 1")
+  local is_task = task:typeOf("LDataFrameTask")
+  lurek.log.info("Is object a DataFrameTask? " .. tostring(is_task))
+  if is_task then
+    print("Object is verified as DataFrameTask")
+    end
+  task:wait()
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 #### LDataFrameTask:wait
@@ -5861,54 +4983,17 @@ Returns: `boolean` - True when the task completed successfully; false when it co
 Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
--- content/examples/dataframe.lua
--- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
--- Run: cargo run -- content/examples/dataframe.lua
---@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
-
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
-
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+    -- Block the current thread until an async dataframe task is complete
+  local path = "save/dataframe_task_wait.json"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toJSONFile(path)
+  local task = lurek.dataframe.fromJSONFileAsync(path)
+    lurek.log.info("Waiting for task to complete...")
+    task:wait()
+    lurek.log.info("Task completed. Error: " .. tostring(task:getError()))
+    print("Done waiting.")
 end
---@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
-do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
-  local db = lurek.dataframe.newDatabase()
-
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
-  db:addTable("players", players)
-  db:addTable("items", items)
-
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
-end
---@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
-do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
-  local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
 ```
 
 ### LGroupedFrame Methods
@@ -6990,12 +6075,14 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp,mp,stamina\n1,2,3\n"))
+  -- columns() gives you the schema as a string array.
+  -- Useful for rendering table headers or validating imported data.
+  local df = lurek.dataframe.fromTable({{hp = 100, mp = 50, stamina = 80}})
+  local headers = df:columns()
 
-  -- Column names are preserved from the source DataFrame
-  local cols = vf:columns()
-  for i, name in ipairs(cols) do
-    lurek.log.info("VecFrame col " .. i .. ": " .. name)
+  -- headers = {"hp", "mp", "stamina"} (order matches creation)
+  for _, name in ipairs(headers) do
+    lurek.log.info("stat: " .. name)
   end
 end
 ```
@@ -7064,12 +6151,14 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  local df = lurek.dataframe.fromCSV("hp,mp,atk\n10,5,8\n")
-  local vf = lurek.dataframe.toVec(df)
+  -- ncols tells you how wide the schema is.
+  -- Useful for dynamic rendering (e.g., how many columns to draw in a HUD table).
+  local df = lurek.dataframe.fromTable({{x = 1, y = 2, z = 3, w = 4}})
 
-  -- Column count matches the source DataFrame
-  lurek.log.info("VecFrame cols: " .. vf:ncols())
-  assert(vf:ncols() == df:ncols())
+  -- Iterate columns by index to build dynamic headers
+  for i = 1, df:ncols() do
+    lurek.log.info("column " .. i .. " = " .. df:columns()[i])
+  end
 end
 ```
 
@@ -7095,11 +6184,13 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n10\n20\n30\n"))
+  -- Use nrows to check if a dataframe has data before processing
+  local df = lurek.dataframe.fromTable({{name = "Alice"}, {name = "Bob"}, {name = "Cara"}})
 
-  -- Row count is consistent between VecFrame and its source DataFrame
-  lurek.log.info("VecFrame rows: " .. vf:nrows())
-  assert(vf:nrows() == 3)
+  -- Common pattern: guard against empty frames before accessing values
+  if df:nrows() > 0 then
+    lurek.log.info("first player: " .. df:getValue(1, "name"))
+  end
 end
 ```
 
@@ -7275,9 +6366,10 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x\n1\n"))
-  if vf:type() == "VecFrame" then
-    lurek.log.info("confirmed: this is a VecFrame handle")
+  -- type() and typeOf() let you do runtime type checking on dataframe handles.
+  local df = lurek.dataframe.newDataFrame()
+  if df:type() == "DataFrame" then
+    lurek.log.info("confirmed: this is a DataFrame handle")
   end
 end
 ```
@@ -7309,10 +6401,11 @@ Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
-  -- typeOf checks against "VecFrame" or "Object".
-  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x\n1\n"))
-  if vf:typeOf("Object") then
-    lurek.log.info("VecFrame is an Object")
+  -- typeOf checks against "LDataFrame", "DataFrame", or "Object".
+  -- Useful for generic functions that accept multiple handle types.
+  local df = lurek.dataframe.newDataFrame()
+  if df:typeOf("Object") then
+    lurek.log.info("DataFrame is an Object (all handles are)")
   end
 end
 ```

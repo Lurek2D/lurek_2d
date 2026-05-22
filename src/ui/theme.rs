@@ -9,6 +9,15 @@
 
 use crate::ui::widget::{WidgetState, WidgetType};
 use std::collections::HashMap;
+
+/// A named semantic design token value used for consistent spacing, colour roles, and visual cues.
+#[derive(Debug, Clone)]
+pub enum ThemeToken {
+    /// RGBA colour value with each channel in `[0.0, 1.0]`.
+    Color([f32; 4]),
+    /// Scalar float value (spacing, opacity, etc.).
+    Float(f32),
+}
 /// Per-state visual properties for a single widget type.
 #[derive(Debug, Clone)]
 pub struct WidgetStyle {
@@ -58,12 +67,15 @@ impl Default for WidgetStyle {
 pub struct Theme {
     /// Internal map from `(WidgetType, WidgetState, Option<String>)` to style overrides.
     pub styles: HashMap<(WidgetType, WidgetState, Option<String>), WidgetStyle>,
+    /// Named semantic design tokens (spacing scale, colour roles, focus ring, disabled opacity, etc.).
+    pub tokens: HashMap<String, ThemeToken>,
 }
 impl Theme {
     /// Create a theme with no style overrides.
     pub fn new() -> Self {
         Self {
             styles: HashMap::new(),
+            tokens: HashMap::new(),
         }
     }
     /// Register `style` for `(widget_type, state)`, replacing any previous entry.
@@ -107,6 +119,10 @@ impl Theme {
         self.styles
             .get(&(widget_type, state, None))
             .or_else(|| self.styles.get(&(widget_type, WidgetState::Normal, None)))
+    }
+    /// Return the named semantic token, or `None` if the name is not registered.
+    pub fn get_token(&self, name: &str) -> Option<&ThemeToken> {
+        self.tokens.get(name)
     }
     /// Render all four `Button` states as labelled tiles into a new `ImageData` of `width × height` pixels.
     pub fn draw_button_states_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
@@ -1149,6 +1165,16 @@ impl Theme {
                 "left",
             ),
         );
+        // Semantic design tokens
+        t.tokens.insert("spacing_sm".to_string(), ThemeToken::Float(4.0));
+        t.tokens.insert("spacing_md".to_string(), ThemeToken::Float(8.0));
+        t.tokens.insert("spacing_lg".to_string(), ThemeToken::Float(16.0));
+        t.tokens.insert("color_primary".to_string(), ThemeToken::Color([0.2, 0.5, 1.0, 1.0]));
+        t.tokens.insert("color_danger".to_string(), ThemeToken::Color([0.9, 0.2, 0.2, 1.0]));
+        t.tokens.insert("color_warning".to_string(), ThemeToken::Color([1.0, 0.7, 0.1, 1.0]));
+        t.tokens.insert("color_success".to_string(), ThemeToken::Color([0.2, 0.8, 0.3, 1.0]));
+        t.tokens.insert("focus_ring_color".to_string(), ThemeToken::Color([0.3, 0.6, 1.0, 0.8]));
+        t.tokens.insert("disabled_opacity".to_string(), ThemeToken::Float(0.4));
         t
     }
 }

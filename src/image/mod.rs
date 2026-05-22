@@ -38,4 +38,4 @@ pub use texture_atlas::{NineSliceInsets, TextureAtlas};
 /// Province-grid extraction and adjacency helpers.
 pub mod province_grid;
 /// Province grid type and adjacency pair type.
-pub use province_grid::{AdjacencyPair, ProvinceGrid};
+pub use province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};

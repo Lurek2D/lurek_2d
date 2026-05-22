@@ -1078,7 +1078,7 @@ describe("analytics", function()
     it("analytics by column index", function()
         local df = make_test_df()
         -- column 2 = age, sum = 90
-        expect_near(90, df:sum(2 --[[@as string]]), 1e-5)
+        expect_near(90, df:sum(2), 1e-5)
     end)
 end)
 
@@ -3952,11 +3952,21 @@ end)
 describe("lazy evaluation pipeline", function()
 
     -- @covers LDataFrame:lazy
+    -- @covers LLazyQuery:type
     it("lazy has lazy factory method", function()
         local df = lurek.dataframe.fromCSV("a,b\n1,2\n3,4")
         local lq = df:lazy()
         expect_not_nil(lq, "lazy() returns a value")
         expect_equal("LLazyQuery", lq:type(), "type is LLazyQuery")
+    end)
+
+    -- @covers LLazyQuery:slice
+    -- @covers LLazyQuery:collect
+    it("lazy slice keeps the requested row window", function()
+        local df = lurek.dataframe.fromCSV("x\n10\n20\n30")
+        local out = df:lazy():slice(2, 2):collect()
+        expect_equal(2, out:nrows(), "slice keeps two rows")
+        expect_equal(20, out:getValue(1, "x"), "slice starts at requested row")
     end)
 
     -- @covers LDataFrame:lazy

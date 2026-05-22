@@ -101,6 +101,7 @@ pub mod sprite;
 pub mod terminal;
 /// Exposes the threading subsystem module.
 pub mod thread;
+
 /// Exposes the tilemap subsystem module.
 pub mod tilemap;
 /// Exposes the timer subsystem module.

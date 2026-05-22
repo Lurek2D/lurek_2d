@@ -195,6 +195,7 @@ describe("lurek.input.gamepad functions", function()
     end)
 
     -- @covers lurek.input.gamepad
+    -- @covers lurek.input.gamepad.virtualDpad
     it("virtualDpad returns stable digital direction table", function()
         local center = lurek.input.gamepad.virtualDpad(0.0, 0.0)
         expect_type("table", center)

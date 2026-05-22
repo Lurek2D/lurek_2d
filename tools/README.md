@@ -47,7 +47,6 @@ Policy:
 - `tools/audit/example_add_missing.py` - append missing example stubs for uncovered API items.
 - `tools/audit/example_coverage.py` - measure `content/examples/` coverage against the Lua API.
 - `tools/audit/extract_constructors.py` - extract constructor information from API metadata.
-- `tools/audit/generate_examples2_stubs.py` - scaffold alternate `content/examples2/` stub files from API data.
 - `tools/audit/gen_coverage_gaps.py` - generate the Rust-to-Lua coverage gap report.
 - `tools/audit/gen_lua_contract_tests.py` - generate Lua contract-test scaffolding from API data.
 - `tools/audit/get_api_sigs.py` - extract API signatures for inspection or comparison.

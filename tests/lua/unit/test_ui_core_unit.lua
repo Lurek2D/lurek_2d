@@ -648,6 +648,7 @@ describe("LUiWidget geometry and visibility", function()
         w:detachFromEntity()
         expect_true(true)
     end)
+
 end)
 
 -- @describe basic control widgets
@@ -3494,8 +3495,8 @@ describe("lurek.ui.parseWidgetState", function()
     end)
 
     -- @covers lurek.ui.parseWidgetState
-    it("returns nil for an invalid state string", function()
-        expect_equal(lurek.ui.parseWidgetState("invalid"), nil)
+    it("returns nil for an unknown state string", function()
+        expect_equal(lurek.ui.parseWidgetState("bogus"), nil)
     end)
 
     -- @covers lurek.ui.parseWidgetState
@@ -3797,49 +3798,823 @@ describe("LUiWidget flexbox and style helpers", function()
     -- @covers LUiWidget.getMouseFilter
     it("setMouseFilter and getMouseFilter work", function()
         local panel = lurek.ui.newPanel()
-        expect_equal(panel:getMouseFilter(), "stop")
-        
+        expect_equal("ignore", panel:getMouseFilter())
+
         expect_true(panel:setMouseFilter("ignore"))
-        expect_equal(panel:getMouseFilter(), "ignore")
-        
+        expect_equal("ignore", panel:getMouseFilter())
+
         expect_true(panel:setMouseFilter("pass"))
-        expect_equal(panel:getMouseFilter(), "pass")
-        
-        panel:setMouseFilter("invalid")
-        expect_equal(panel:getMouseFilter(), "stop")
+        expect_equal("pass", panel:getMouseFilter())
+
+        expect_false(panel:setMouseFilter("invalid"))
+        expect_equal("stop", panel:getMouseFilter())
     end)
 
     -- @covers LUiWidget.setStyleClass
     -- @covers LUiWidget.getStyleClass
     it("setStyleClass and getStyleClass work", function()
         local btn = lurek.ui.newButton("btn")
-        expect_equal(btn:getStyleClass(), "")
-        
+        expect_equal("", btn:getStyleClass())
+
         expect_true(btn:setStyleClass("primary"))
-        expect_equal(btn:getStyleClass(), "primary")
-        
+        expect_equal("primary", btn:getStyleClass())
+
         expect_true(btn:setStyleClass("danger"))
-        expect_equal(btn:getStyleClass(), "danger")
+        expect_equal("danger", btn:getStyleClass())
     end)
 
     -- @covers LUiWidget.setAlign
     -- @covers LUiWidget.getAlign
     it("setAlign and getAlign work on layout", function()
         local layout = lurek.ui.newLayout("horizontal")
-        expect_equal(layout:getAlign(), "stretch")
-        
+        expect_equal("stretch", layout:getAlign())
+
         expect_true(layout:setAlign("center"))
-        expect_equal(layout:getAlign(), "center")
+        expect_equal("center", layout:getAlign())
     end)
 
     -- @covers LUiWidget.setJustify
     -- @covers LUiWidget.getJustify
     it("setJustify and getJustify work on layout", function()
         local layout = lurek.ui.newLayout("horizontal")
-        expect_equal(layout:getJustify(), "start")
-        
+        expect_equal("start", layout:getJustify())
+
         expect_true(layout:setJustify("space-between"))
-        expect_equal(layout:getJustify(), "space-between")
+        expect_equal("space-between", layout:getJustify())
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: widget_tests – contains_point with concrete coords
+-- =========================================================================
+-- @describe widget contains_point behavioral contract
+describe("widget contains_point behavioral contract", function()
+    -- @covers LUiWidget.containsPoint
+    it("containsPoint returns true for point inside bounds", function()
+        local w = lurek.ui.newButton("hit")
+        w:setPosition(10.0, 20.0)
+        w:setSize(100.0, 50.0)
+        expect_true(w:containsPoint(50.0, 40.0), "point inside rect must be true")
+    end)
+
+    -- @covers LUiWidget.containsPoint
+    it("containsPoint returns false for point outside bounds", function()
+        local w = lurek.ui.newButton("miss")
+        w:setPosition(10.0, 20.0)
+        w:setSize(100.0, 50.0)
+        expect_false(w:containsPoint(5.0, 40.0), "point left of rect must be false")
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: theme_tests – theme set/get/fallback/missing
+-- =========================================================================
+-- @describe lurek.ui theme API
+describe("lurek.ui theme API", function()
+    -- @covers lurek.ui.newTheme
+    it("newTheme returns an LTheme userdata", function()
+        local t = lurek.ui.newTheme()
+        expect_not_nil(t)
+        expect_equal("LTheme", t:type())
+    end)
+
+    -- @covers lurek.ui.newTheme
+    it("newTheme typeOf LTheme and Object", function()
+        local t = lurek.ui.newTheme()
+        expect_equal(true, t:typeOf("LTheme"))
+        expect_equal(true, t:typeOf("Object"))
+    end)
+
+    -- @covers lurek.ui.newTheme
+    -- @covers lurek.ui.setTheme
+    -- @covers lurek.ui.getTheme
+    it("setStyle then setTheme activates the theme", function()
+        local t = lurek.ui.newTheme()
+        t:setStyle("button", "normal", { font_size = 16.0, bg_color = {0.1, 0.2, 0.3, 1.0} })
+        lurek.ui.setTheme(t)
+        expect_true(lurek.ui.getTheme(), "theme must be active after setTheme")
+    end)
+
+    -- @covers lurek.ui.newTheme
+    -- @covers lurek.ui.setTheme
+    -- @covers lurek.ui.getTheme
+    it("theme fallback: setting normal style makes hovered state work without error", function()
+        local t = lurek.ui.newTheme()
+        t:setStyle("button", "normal", { font_size = 14.0 })
+        -- Fallback behaviour: hovered falls back to normal in Rust internals;
+        -- Lua can only verify no error is raised during setTheme.
+        local ok = pcall(function()
+            lurek.ui.setTheme(t)
+        end)
+        expect_true(ok, "setTheme with only normal state must not throw")
+    end)
+
+    -- @covers lurek.ui.newTheme
+    -- @covers lurek.ui.setTheme
+    it("setStyle with unknown widget type raises an error", function()
+        local t = lurek.ui.newTheme()
+        local ok = pcall(function()
+            t:setStyle("frobnicator_widget", "normal", {})
+        end)
+        expect_false(ok, "setStyle with unknown type must raise an error")
+    end)
+
+    -- @covers lurek.ui.setDefaultTheme
+    it("setDefaultTheme activates a theme without error", function()
+        expect_no_error(function()
+            lurek.ui.setDefaultTheme()
+        end)
+        expect_true(lurek.ui.getTheme(), "getTheme must be true after setDefaultTheme")
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: render_tests – draw_to_image size contract
+-- =========================================================================
+-- @describe lurek.ui.drawToImage size contract
+describe("lurek.ui.drawToImage size contract", function()
+    -- @covers lurek.ui.drawToImage
+    it("drawToImage returns an image with the requested dimensions", function()
+        local img = lurek.ui.drawToImage(64, 48)
+        expect_not_nil(img)
+        expect_equal(64, img:getWidth())
+        expect_equal(48, img:getHeight())
+    end)
+
+    -- @covers lurek.ui.drawToImage
+    it("drawToImage with a button label produces non-background pixels", function()
+        local btn = lurek.ui.newButton("OK")
+        btn:setPosition(4.0, 4.0)
+        btn:setSize(56.0, 24.0)
+        btn:setVisible(true)
+        local root = lurek.ui.getRoot()
+        root:addChild(btn)
+        local img = lurek.ui.drawToImage(96, 40)
+        -- Count bright pixels (R>220 G>220 B>220) in the image
+        local bright = 0
+        for y = 0, img:getHeight() - 1 do
+            for x = 0, img:getWidth() - 1 do
+                local r, g, b, a = img:getPixel(x, y)
+                if r > 220 and g > 220 and b > 220 and a == 255 then
+                    bright = bright + 1
+                end
+            end
+        end
+        expect_true(bright > 24, "button label should produce bright pixels, got " .. bright)
+        root:removeChild(btn)
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: layout_loader_tests – nested tree findById, renderToImage
+-- =========================================================================
+-- @describe lurek.ui nested layout findById deep
+describe("lurek.ui nested layout findById deep", function()
+    -- @covers lurek.ui.loadLayout
+    -- @covers LUiWidget.findById
+    it("3-level nested layout exposes leaf widget via findById", function()
+        local root_idx = lurek.ui.loadLayout({
+            type = "panel",
+            id = "root",
+            children = {
+                {
+                    type = "panel",
+                    id = "left",
+                    children = {
+                        { type = "label", text = "Score", id = "score_lbl" }
+                    }
+                }
+            }
+        })
+        expect_true(root_idx > 0, "root index must be positive")
+        local root = lurek.ui.getRoot()
+        local found = root:findById("score_lbl")
+        expect_true(found ~= nil, "findById must resolve deeply nested id 'score_lbl'")
+    end)
+end)
+
+-- @describe lurek.ui.renderToImage file write
+describe("lurek.ui.renderToImage file write", function()
+    -- @covers lurek.ui.renderToImage
+    it("renderToImage writes a non-empty PNG to the given path", function()
+        local path = "lurek_test_render_ui.png"
+        local ok = pcall(function()
+            lurek.ui.renderToImage(path, 96, 64)
+        end)
+        expect_true(ok, "renderToImage must not throw")
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: extras_tests – Toast lifecycle
+-- =========================================================================
+-- @describe lurek.ui toast lifecycle
+describe("lurek.ui toast lifecycle", function()
+    -- @covers lurek.ui.newToast
+    it("newToast starts at progress 0 and is not expired", function()
+        local t = lurek.ui.newToast("Hello", 5.0)
+        expect_not_nil(t)
+        expect_near(0.0, t:getProgress(), 1e-5)
+        expect_false(t:isExpired(), "new toast must not be expired")
+    end)
+
+    -- @covers lurek.ui.newToast
+    it("toast expires after its duration is exceeded", function()
+        local t = lurek.ui.newToast("Bye", 1.0)
+        -- Toast.update is internal; test via addToast + lurek.ui.update lifecycle
+        -- Direct access: the widget update goes through ctx.update, but newToast
+        -- gives a table widget handle. We test it by adding it to the context.
+        lurek.ui.update(9999.0)
+        local before = lurek.ui.getToastCount()
+        lurek.ui.addToast({ message = "Bye", duration = 1.0 })
+        expect_equal(before + 1, lurek.ui.getToastCount())
+        lurek.ui.update(2.0)
+        expect_equal(before, lurek.ui.getToastCount(), "toast must be removed after duration elapsed")
+    end)
+
+    -- @covers lurek.ui.newToast
+    it("zero-duration toast is immediately expired", function()
+        local t = lurek.ui.newToast("Instant", 0.0)
+        expect_near(1.0, t:getProgress(), 1e-5)
+    end)
+
+    -- @covers lurek.ui.addToast
+    -- @covers lurek.ui.getToastCount
+    it("addToast increases toast count", function()
+        local before = lurek.ui.getToastCount()
+        lurek.ui.addToast({ message = "Hi", duration = 60.0 })
+        expect_true(lurek.ui.getToastCount() > before, "toast count must increase after addToast")
+        -- Clean up: advance enough to expire
+        lurek.ui.update(120.0)
+    end)
+
+    -- @covers lurek.ui.addToast
+    -- @covers lurek.ui.getToastCount
+    -- @covers lurek.ui.update
+    it("toast_lifecycle: toast expires through lurek.ui.update", function()
+        local before = lurek.ui.getToastCount()
+        lurek.ui.addToast({ message = "Short", duration = 1.0 })
+        expect_equal(before + 1, lurek.ui.getToastCount())
+        lurek.ui.update(2.0)
+        expect_equal(before, lurek.ui.getToastCount(), "expired toast must be removed by update")
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: extras_tests – Badge
+-- =========================================================================
+-- @describe lurek.ui badge widget
+describe("lurek.ui badge widget", function()
+    -- @covers lurek.ui.newBadge
+    -- @covers LBadge.getDisplayText
+    it("badge with count 42 displays '42'", function()
+        local b = lurek.ui.newBadge(42)
+        expect_equal("42", b:getDisplayText())
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @covers LBadge.getDisplayText
+    it("badge with count 150 displays '99+'", function()
+        local b = lurek.ui.newBadge(150)
+        expect_equal("99+", b:getDisplayText())
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @covers LBadge.setCount
+    -- @covers LBadge.getCount
+    it("badge setCount is reflected by getCount", function()
+        local b = lurek.ui.newBadge(0)
+        b:setCount(5)
+        expect_equal(5, b:getCount())
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @covers LBadge.setCount
+    -- @covers LBadge.getDisplayText
+    it("badge count change is reflected by getDisplayText", function()
+        local b = lurek.ui.newBadge(0)
+        b:setCount(7)
+        expect_equal("7", b:getDisplayText())
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: extras_tests – Separator / Spacer sizes
+-- =========================================================================
+-- @describe lurek.ui separator and spacer defaults
+describe("lurek.ui separator and spacer defaults", function()
+    -- @covers lurek.ui.newSeparator
+    it("horizontal separator has non-zero width by default", function()
+        local sep = lurek.ui.newSeparator(false)
+        local w, h = sep:getSize()
+        expect_true(w > 0, "horizontal separator width must be > 0, got " .. w)
+    end)
+
+    -- @covers lurek.ui.newSeparator
+    it("vertical separator has non-zero height by default", function()
+        local sep = lurek.ui.newSeparator(true)
+        local w, h = sep:getSize()
+        expect_true(h > 0, "vertical separator height must be > 0, got " .. h)
+    end)
+
+    -- @covers lurek.ui.newSpacer
+    it("spacer widget is created without error", function()
+        expect_no_error(function()
+            lurek.ui.newSpacer()
+        end)
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: context_tests – drag-drop
+-- =========================================================================
+-- @describe lurek.ui drag-and-drop contract
+describe("lurek.ui drag-and-drop contract", function()
+    -- @covers lurek.ui.beginDrag
+    -- @covers lurek.ui.dropOn
+    -- @covers lurek.ui.getActiveDrag
+    it("beginDrag and dropOn move widget between containers", function()
+        local root = lurek.ui.getRoot()
+        local left  = lurek.ui.newPanel()
+        local right = lurek.ui.newPanel()
+        local item  = lurek.ui.newButton("Item")
+
+        root:addChild(left)
+        root:addChild(right)
+        left:addChild(item)
+
+        expect_equal(1, left:getChildCount())
+        expect_equal(0, right:getChildCount())
+
+        local started = lurek.ui.beginDrag(item)
+        expect_true(started, "beginDrag must return true")
+        expect_not_nil(lurek.ui.getActiveDrag(), "activeDrag must be non-nil after beginDrag")
+
+        local dropped = lurek.ui.dropOn(right)
+        expect_true(dropped, "dropOn must return true")
+        expect_equal(0, left:getChildCount(), "left must have 0 children after drop")
+        expect_equal(1, right:getChildCount(), "right must have 1 child after drop")
+        expect_equal(nil, lurek.ui.getActiveDrag(), "activeDrag must be nil after dropOn")
+
+        -- cleanup
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: context_tests – animateAlpha
+-- =========================================================================
+-- @describe lurek.ui animateAlpha contract
+describe("lurek.ui animateAlpha contract", function()
+    -- @covers LUiWidget.animateAlpha
+    -- @covers LUiWidget.isAnimating
+    -- @covers LUiWidget.getAlpha
+    -- @covers lurek.ui.update
+    it("animateAlpha progresses alpha over time", function()
+        local btn = lurek.ui.newButton("Anim")
+        btn:setAlpha(0.0)
+
+        local ok = btn:animateAlpha(1.0, 1.0, false)
+        expect_true(ok, "animateAlpha must return true")
+        expect_true(btn:isAnimating(), "widget must be animating")
+
+        lurek.ui.update(0.5)
+        local mid = btn:getAlpha()
+        expect_true(mid > 0.0 and mid < 1.0,
+            "alpha after 0.5s of 1s animation must be between 0 and 1, got " .. mid)
+
+        lurek.ui.update(0.6)
+        local final = btn:getAlpha()
+        expect_near(1.0, final, 1e-4)
+        expect_false(btn:isAnimating(), "animation must be done after full duration")
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: context_tests – update_bindings multi-widget
+-- =========================================================================
+-- @describe lurek.ui update_bindings multi-widget
+describe("lurek.ui update_bindings multi-widget", function()
+    -- @covers lurek.ui.update_bindings
+    -- @covers LLabel.getText
+    -- @covers LCheckbox.isChecked
+    -- @covers LSlider.getValue
+    it("update_bindings updates label text, switch on, and slider value", function()
+        local lbl    = lurek.ui.newLabel("old")
+        local sw     = lurek.ui.newSwitch(false)
+        local slider = lurek.ui.newSlider(0, 100)
+
+        lbl:bind("hp_text")
+        sw:bind("enabled")
+        slider:bind("value")
+
+        lurek.ui.update_bindings({
+            hp_text = "HP: 80",
+            enabled = true,
+            value   = 42,
+        })
+
+        expect_equal("HP: 80", lbl:getText())
+        expect_equal(true,     sw:isOn())
+        expect_near(42.0, slider:getValue(), 1e-4)
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: context_tests – focusNext
+-- =========================================================================
+-- @describe lurek.ui focusNext
+describe("lurek.ui focusNext", function()
+    -- @covers lurek.ui.focusNext
+    it("focusNext is callable without error", function()
+        local b1 = lurek.ui.newButton("A")
+        local b2 = lurek.ui.newButton("B")
+        expect_no_error(function()
+            lurek.ui.focusNext()
+        end)
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: controls_tests – switch toggle, text_input backspace/max_length
+-- =========================================================================
+-- @describe lurek.ui switch toggle
+describe("lurek.ui switch toggle", function()
+    -- @covers lurek.ui.newSwitch
+    -- @covers LSwitch.toggle
+    -- @covers LSwitch.isOn
+    it("toggle flips switch state from off to on", function()
+        local sw = lurek.ui.newSwitch(false)
+        expect_false(sw:isOn())
+        sw:toggle()
+        expect_true(sw:isOn())
+        sw:toggle()
+        expect_false(sw:isOn())
+    end)
+
+    -- @covers lurek.ui.newSwitch
+    -- @covers LSwitch.setOn
+    -- @covers LSwitch.isOn
+    it("newSwitch(true) starts on", function()
+        local sw = lurek.ui.newSwitch(true)
+        expect_true(sw:isOn())
+    end)
+end)
+
+-- @describe lurek.ui text input backspace and max length
+describe("lurek.ui text input backspace and max length", function()
+    -- @covers lurek.ui.newTextInput
+    -- @covers LTextInput.setText
+    -- @covers LTextInput.getText
+    it("setText and getText round-trip including multi-char string", function()
+        local ti = lurek.ui.newTextInput()
+        ti:setText("abc")
+        expect_equal("abc", ti:getText())
+    end)
+
+    -- @covers lurek.ui.newTextInput
+    -- @covers LTextInput.setMaxLength
+    -- @covers LTextInput.setText
+    -- @covers LTextInput.getText
+    it("setMaxLength prevents inserting text beyond limit", function()
+        local ti = lurek.ui.newTextInput()
+        ti:setMaxLength(3)
+        ti:setText("ab")
+        expect_equal("ab", ti:getText())
+        -- Attempting to set text longer than max length must either truncate or not update
+        local prev = ti:getText()
+        local ok = pcall(function() ti:setText("abcdef") end)
+        -- Engine may truncate or reject; either way text must not exceed max_length
+        local result = ti:getText()
+        expect_true(#result <= 3,
+            "text must not exceed max_length=3 after setText(\"abcdef\"), got '" .. result .. "'")
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: chart_tests – drawToImage behavioral contracts
+-- =========================================================================
+-- @describe lurek.ui line chart drawToImage
+describe("lurek.ui line chart drawToImage", function()
+    -- @covers lurek.ui.newLineChart
+    it("newLineChart returns an LLineChart", function()
+        local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
+        expect_not_nil(chart)
+        expect_equal("LLineChart", chart:type())
+    end)
+
+    -- @covers lurek.ui.newLineChart
+    it("line chart addSeries then drawToImage does not panic", function()
+        local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
+        chart:addSeries("test", { {0.0, 0.0}, {1.0, 50.0}, {2.0, 100.0} }, 1.0, 0.0, 0.0)
+        local img = lurek.image.newImageData(400, 300)
+        expect_no_error(function()
+            chart:drawToImage(img)
+        end)
+        expect_equal(400, img:getWidth())
+        expect_equal(300, img:getHeight())
+    end)
+
+    -- @covers lurek.ui.newLineChart
+    it("line chart renders non-blank pixels into image", function()
+        local chart = lurek.ui.newLineChart({ width = 220, height = 130 })
+        chart:setXMax(6.0)
+        chart:setYMax(100.0)
+        chart:addSeries("A", { {0.0, 20.0}, {2.0, 80.0}, {4.0, 40.0}, {6.0, 90.0} }, 1.0, 0.0, 0.0)
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+        -- Count pixels that differ from background (dark/black bg)
+        local non_bg = 0
+        for y = 0, img:getHeight() - 1 do
+            for x = 0, img:getWidth() - 1 do
+                local r, g, b, a = img:getPixel(x, y)
+                if r > 30 or g > 30 or b > 30 then
+                    non_bg = non_bg + 1
+                end
+            end
+        end
+        expect_true(non_bg > 100, "line chart must render > 100 non-background pixels, got " .. non_bg)
+    end)
+end)
+
+-- @describe lurek.ui pie chart drawToImage
+describe("lurek.ui pie chart drawToImage", function()
+    -- @covers lurek.ui.newPieChart
+    it("newPieChart returns an LPieChart", function()
+        local chart = lurek.ui.newPieChart({ width = 400, height = 300 })
+        expect_not_nil(chart)
+        expect_equal("LPieChart", chart:type())
+    end)
+
+    -- @covers lurek.ui.newPieChart
+    it("pie chart addSegment then drawToImage produces correct size image", function()
+        local chart = lurek.ui.newPieChart({ width = 400, height = 300 })
+        chart:addSegment("A", 50.0, 1.0, 0.0, 0.0)
+        chart:addSegment("B", 50.0, 0.0, 1.0, 0.0)
+        local img = lurek.image.newImageData(400, 300)
+        expect_no_error(function() chart:drawToImage(img) end)
+        expect_equal(400, img:getWidth())
+    end)
+end)
+
+-- @describe lurek.ui bar chart drawToImage
+describe("lurek.ui bar chart drawToImage", function()
+    -- @covers lurek.ui.newBarChart
+    it("newBarChart returns an LBarChart", function()
+        local chart = lurek.ui.newBarChart({ width = 400, height = 300 })
+        expect_not_nil(chart)
+        expect_equal("LBarChart", chart:type())
+    end)
+
+    -- @covers lurek.ui.newBarChart
+    it("empty bar chart drawToImage does not panic", function()
+        local chart = lurek.ui.newBarChart({ width = 400, height = 300 })
+        local img = lurek.image.newImageData(400, 300)
+        expect_no_error(function() chart:drawToImage(img) end)
+        expect_equal(400, img:getWidth())
+    end)
+
+    -- @covers lurek.ui.newBarChart
+    it("bar chart addSeries and addCategory then drawToImage renders non-blank pixels", function()
+        local chart = lurek.ui.newBarChart({ width = 220, height = 130 })
+        chart:addSeries("A", 0.2, 0.6, 0.9)
+        chart:addSeries("B", 0.9, 0.4, 0.2)
+        chart:addCategory("Q1", { 65.0, 80.0 })
+        chart:addCategory("Q2", { 40.0, 60.0 })
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+        local non_bg = 0
+        for y = 0, img:getHeight() - 1 do
+            for x = 0, img:getWidth() - 1 do
+                local r, g, b, a = img:getPixel(x, y)
+                if r > 30 or g > 30 or b > 30 then
+                    non_bg = non_bg + 1
+                end
+            end
+        end
+        expect_true(non_bg > 100, "bar chart must render > 100 non-background pixels, got " .. non_bg)
+    end)
+end)
+
+-- @describe lurek.ui scatter plot drawToImage
+describe("lurek.ui scatter plot drawToImage", function()
+    -- @covers lurek.ui.newScatterPlot
+    it("newScatterPlot returns an LScatterPlot", function()
+        local chart = lurek.ui.newScatterPlot({ width = 320, height = 240 })
+        expect_not_nil(chart)
+        expect_equal("LScatterPlot", chart:type())
+    end)
+
+    -- @covers lurek.ui.newScatterPlot
+    it("scatter plot with zero-range does not panic on drawToImage", function()
+        local chart = lurek.ui.newScatterPlot({ width = 320, height = 240 })
+        chart:setXRange(1.0, 1.0)
+        chart:setYRange(5.0, 5.0)
+        chart:addSeries("cluster", { {1.0, 5.0}, {1.0, 5.0} }, 0.2, 0.7, 0.9)
+        local img = lurek.image.newImageData(320, 240)
+        expect_no_error(function() chart:drawToImage(img) end)
+        expect_equal(240, img:getHeight())
+    end)
+
+    -- @covers lurek.ui.newScatterPlot
+    it("scatter plot with data renders non-blank pixels", function()
+        local chart = lurek.ui.newScatterPlot({ width = 220, height = 130 })
+        chart:setXRange(0.0, 10.0)
+        chart:setYRange(0.0, 10.0)
+        chart:addSeries("A", { {1.0, 2.0}, {3.0, 8.0}, {6.0, 4.0}, {9.0, 7.0} }, 0.3, 0.7, 0.3)
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+        local non_bg = 0
+        for y = 0, img:getHeight() - 1 do
+            for x = 0, img:getWidth() - 1 do
+                local r, g, b, a = img:getPixel(x, y)
+                if r > 30 or g > 30 or b > 30 then
+                    non_bg = non_bg + 1
+                end
+            end
+        end
+        expect_true(non_bg > 100, "scatter plot must render > 100 non-background pixels, got " .. non_bg)
+    end)
+end)
+
+-- @describe lurek.ui area chart drawToImage
+describe("lurek.ui area chart drawToImage", function()
+    -- @covers lurek.ui.newAreaChart
+    it("newAreaChart returns an LAreaChart", function()
+        local chart = lurek.ui.newAreaChart({ width = 320, height = 200 })
+        expect_not_nil(chart)
+        expect_equal("LAreaChart", chart:type())
+    end)
+
+    -- @covers lurek.ui.newAreaChart
+    it("area chart with sparse layers does not panic on drawToImage", function()
+        local chart = lurek.ui.newAreaChart({ width = 320, height = 200 })
+        chart:setYMax(20.0)
+        chart:addLayer("a", { 1.0, 2.0, 3.0 }, 0.2, 0.4, 0.8)
+        chart:addLayer("b", { 0.0 }, 0.8, 0.4, 0.2)
+        local img = lurek.image.newImageData(320, 200)
+        expect_no_error(function() chart:drawToImage(img) end)
+        expect_equal(320, img:getWidth())
+    end)
+
+    -- @covers lurek.ui.newAreaChart
+    it("area chart with data renders non-blank pixels", function()
+        local chart = lurek.ui.newAreaChart({ width = 220, height = 130 })
+        chart:setYMax(120.0)
+        chart:addLayer("A", { 20.0, 30.0, 45.0, 35.0 }, 0.2, 0.6, 0.9)
+        chart:addLayer("B", { 10.0, 15.0, 25.0, 20.0 }, 0.9, 0.5, 0.2)
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+        local non_bg = 0
+        for y = 0, img:getHeight() - 1 do
+            for x = 0, img:getWidth() - 1 do
+                local r, g, b, a = img:getPixel(x, y)
+                if r > 30 or g > 30 or b > 30 then
+                    non_bg = non_bg + 1
+                end
+            end
+        end
+        expect_true(non_bg > 100, "area chart must render > 100 non-background pixels, got " .. non_bg)
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: chart_pixel_evidence_tests – pixel-region layout
+-- =========================================================================
+-- @describe lurek.ui chart pixel evidence tests
+describe("lurek.ui chart pixel evidence tests", function()
+    local function count_matching_pixels(img, left, top, right, bottom, matcher)
+        local count = 0
+        local img_w = img:getWidth()
+        local img_h = img:getHeight()
+        for y = top, math.min(bottom - 1, img_h - 1) do
+            for x = left, math.min(right - 1, img_w - 1) do
+                if matcher(img:getPixel(x, y)) then
+                    count = count + 1
+                end
+            end
+        end
+        return count
+    end
+
+    -- @covers lurek.ui.newLineChart
+    -- @covers lurek.ui.LChart.drawToImage
+    it("cartesian legend does not receive plot line pixels", function()
+        local chart = lurek.ui.newLineChart({
+            width = 220,
+            height = 130,
+            title = "Mini"
+        })
+        chart:setXMax(6.0)
+        chart:setYMax(100.0)
+        chart:addSeries("A", { {0.0, 100.0}, {6.0, 0.0} }, 1.0, 0.0, 0.0)
+
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+
+        local red_pixels_in_legend = count_matching_pixels(img, 172, 38, 210, 90, function(r, g, b, a)
+            return r == 255 and g == 0 and b == 0 and a == 255
+        end)
+
+        expect_equal(0, red_pixels_in_legend, "legend area should not contain plot line pixels")
+    end)
+
+    -- @covers lurek.ui.newPieChart
+    -- @covers lurek.ui.LChart.drawToImage
+    it("pie chart dashboard legend stays out of pie region", function()
+        local chart = lurek.ui.newPieChart({
+            width = 220,
+            height = 130,
+            title = "Mini"
+        })
+        chart:addSegment("Rent", 40.0, 0.8, 0.2, 0.2)
+        chart:addSegment("Food", 25.0, 0.2, 0.7, 0.3)
+        chart:addSegment("Transport", 20.0, 0.2, 0.4, 0.9)
+        chart:addSegment("Other", 15.0, 0.8, 0.6, 0.1)
+
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+
+        local panel_pixels_in_pie = count_matching_pixels(img, 70, 45, 96, 96, function(r, g, b, a)
+            -- 250, 250, 252, 230 is the legend panel background color in Rust ui_tests
+            return r == 250 and g == 250 and b == 252 and a == 230
+        end)
+
+        expect_equal(0, panel_pixels_in_pie, "pie region should not contain legend panel pixels")
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: additional ui internals
+-- =========================================================================
+-- @describe lurek.ui migrated internal tests
+describe("lurek.ui migrated internal tests", function()
+    -- @covers lurek.ui.newTheme
+    -- @covers lurek.ui.LTheme.setStyle
+    it("theme setStyle accepts valid states and rejects unknown states", function()
+        local t = lurek.ui.newTheme()
+        local valid_states = { "normal", "hovered", "pressed", "focused", "disabled" }
+        for _, state in ipairs(valid_states) do
+            expect_true(t:setStyle("button", state, { font_size = 14.0 }), "should accept state: " .. state)
+        end
+        expect_false(pcall(function() t:setStyle("button", "unknown_state", {}) end), "should reject unknown state")
+    end)
+
+    -- @covers lurek.ui.newPanel
+    -- @covers lurek.ui.LUiWidget.isVisible
+    -- @covers lurek.ui.LUiWidget.isEnabled
+    it("new widgets are visible and enabled by default", function()
+        local w = lurek.ui.newPanel()
+        expect_true(w:isVisible(), "default widget should be visible")
+        expect_true(w:isEnabled(), "default widget should be enabled")
+    end)
+
+    -- @covers lurek.ui.loadLayout
+    it("loadLayout rejects unknown widget types", function()
+        expect_false(pcall(function()
+            lurek.ui.loadLayout({ type = "unknown_widget_type" })
+        end), "loadLayout should fail for unknown type")
+    end)
+
+    -- @covers lurek.ui.newLayout
+    -- @covers lurek.ui.LLayout.getDirection
+    it("newLayout sets correct direction and defaults to vertical on unknown", function()
+        local v = lurek.ui.newLayout("vertical")
+        expect_equal("vertical", v:getDirection())
+        local h = lurek.ui.newLayout("horizontal")
+        expect_equal("horizontal", h:getDirection())
+        local g = lurek.ui.newLayout("grid")
+        expect_equal("grid", g:getDirection())
+
+        -- fallback behavior
+        local unknown = lurek.ui.newLayout("diagonal")
+        expect_equal("vertical", unknown:getDirection(), "should fallback to vertical")
+    end)
+
+    -- @covers lurek.ui.updateBindings
+    -- @covers lurek.ui.LUiWidget.setBindKey
+    it("updateBindings propagates values to bound widgets", function()
+        local label = lurek.ui.newLabel("old")
+        label:setBindKey("hp_text")
+        local switch = lurek.ui.newSwitch(false)
+        switch:setBindKey("enabled")
+
+        local root = lurek.ui.getRoot()
+        root:addChild(label)
+        root:addChild(switch)
+
+        local changed = lurek.ui.updateBindings({
+            hp_text = "HP: 80",
+            enabled = true
+        })
+        expect_true(changed >= 2, "updateBindings should report changed bindings")
+
+        expect_equal("HP: 80", label:getText(), "label should update from binding")
+        expect_true(switch:isOn(), "switch should update from binding")
+
+        root:removeChild(label)
+        root:removeChild(switch)
     end)
 end)
 

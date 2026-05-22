@@ -2,6 +2,36 @@
 
 use crate::runtime::resource_keys::FontKey;
 
+/// Vertical alignment of text inside a text-bearing widget.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum TextVAlign {
+    /// Text is pinned to the top edge plus padding.
+    Top,
+    /// Text is centred vertically in the widget bounds.
+    Middle,
+    /// Text is pinned to the bottom edge minus padding.
+    Bottom,
+}
+impl TextVAlign {
+    /// Parse a lowercase string ("top", "middle", "bottom") to a variant; returns `None` on unknown input.
+    pub fn parse_str(s: &str) -> Option<Self> {
+        match s {
+            "top" => Some(Self::Top),
+            "middle" => Some(Self::Middle),
+            "bottom" => Some(Self::Bottom),
+            _ => None,
+        }
+    }
+    /// Return the canonical lowercase name string for this alignment.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Top => "top",
+            Self::Middle => "middle",
+            Self::Bottom => "bottom",
+        }
+    }
+}
+
 /// Interaction state of a widget used as a theme lookup key.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum WidgetState {
@@ -15,6 +45,18 @@ pub enum WidgetState {
     Focused,
     /// Widget does not respond to interaction.
     Disabled,
+    /// Widget is part of the current selection (e.g. a selected list item).
+    Selected,
+    /// Widget is in a checked or ticked state (e.g. a checked checkbox).
+    Checked,
+    /// Widget has failed validation or contains erroneous input.
+    Invalid,
+    /// Widget is read-only: visible and focusable but not editable.
+    ReadOnly,
+    /// Widget is the primary active element (e.g. the currently open menu).
+    Active,
+    /// Widget is in an expanded or open state (e.g. an open accordion section).
+    Expanded,
 }
 impl WidgetState {
     /// Parse a lowercase state name to a variant, or return `None` if unrecognised.
@@ -25,6 +67,12 @@ impl WidgetState {
             "pressed" => Some(Self::Pressed),
             "focused" => Some(Self::Focused),
             "disabled" => Some(Self::Disabled),
+            "selected" => Some(Self::Selected),
+            "checked" => Some(Self::Checked),
+            "invalid" => Some(Self::Invalid),
+            "readonly" => Some(Self::ReadOnly),
+            "active" => Some(Self::Active),
+            "expanded" => Some(Self::Expanded),
             _ => None,
         }
     }
@@ -36,6 +84,12 @@ impl WidgetState {
             Self::Pressed => "pressed",
             Self::Focused => "focused",
             Self::Disabled => "disabled",
+            Self::Selected => "selected",
+            Self::Checked => "checked",
+            Self::Invalid => "invalid",
+            Self::ReadOnly => "readonly",
+            Self::Active => "active",
+            Self::Expanded => "expanded",
         }
     }
 }
@@ -400,6 +454,34 @@ pub struct WidgetBase {
     pub style_class: Option<String>,
     /// Mouse filter strategy controlling event interception.
     pub mouse_filter: MouseFilter,
+    /// Whether text content wraps at word boundaries when it exceeds the widget width.
+    pub text_wrap: bool,
+    /// Whether overflowing single-line text is clipped with a trailing "…" ellipsis.
+    pub text_ellipsis: bool,
+    /// Vertical alignment of text inside the widget bounds.
+    pub text_v_align: TextVAlign,
+    /// Whether this widget can receive keyboard focus via traversal APIs.
+    pub focusable: bool,
+    /// Order key for focus traversal; lower values are visited first.
+    pub tab_index: i32,
+    /// Optional focus traversal group name; empty string means default/global group.
+    pub focus_group: String,
+    /// Explicit focus neighbor for up-direction traversal.
+    pub focus_neighbor_up: Option<usize>,
+    /// Explicit focus neighbor for down-direction traversal.
+    pub focus_neighbor_down: Option<usize>,
+    /// Explicit focus neighbor for left-direction traversal.
+    pub focus_neighbor_left: Option<usize>,
+    /// Explicit focus neighbor for right-direction traversal.
+    pub focus_neighbor_right: Option<usize>,
+    /// Semantic widget role identifier used by tooling and accessibility metadata.
+    pub role: String,
+    /// Human-readable accessible name.
+    pub aria_name: String,
+    /// Extended accessible description.
+    pub description: String,
+    /// Optional widget index this widget labels.
+    pub label_for: Option<usize>,
 }
 impl WidgetBase {
     /// Create a `WidgetBase` with `widget_type` defaults from `WidgetType::default_size`, visible, enabled, alpha 1.
@@ -450,6 +532,20 @@ impl WidgetBase {
             is_visible: true,
             style_class: None,
             mouse_filter,
+            text_wrap: false,
+            text_ellipsis: true,
+            text_v_align: TextVAlign::Middle,
+            focusable: true,
+            tab_index: 0,
+            focus_group: String::new(),
+            focus_neighbor_up: None,
+            focus_neighbor_down: None,
+            focus_neighbor_left: None,
+            focus_neighbor_right: None,
+            role: "generic".to_string(),
+            aria_name: String::new(),
+            description: String::new(),
+            label_for: None,
         }
     }
     /// Return `true` if `(px, py)` lies within the computed screen rect, falling back to local geometry.

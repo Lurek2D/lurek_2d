@@ -40,7 +40,7 @@ impl LuaUserData for LuaUniverse {
         /// Stores or replaces a component value on an entity.
         /// @param | id | integer | Entity id that receives the component.
         /// @param | name | string | Component name.
-        /// @param | value | table | Lua value stored as the component payload.
+        /// @param | value | any | Lua value stored as the component payload.
         methods.add_method(
             "set",
             |lua, this, (id, name, value): (u32, String, LuaValue)| {
@@ -201,7 +201,7 @@ impl LuaUserData for LuaUniverse {
         // -- emit --
         /// Calls matching event-named functions on registered systems.
         /// @param | event | string | Function name looked up on each system table.
-        /// @param | ... | table | Extra values forwarded after the system and universe arguments.
+        /// @param | ... | any | Extra values forwarded after the system and universe arguments.
         methods.add_method("emit", |lua, this, args: LuaMultiValue| {
             let mut args_iter = args.into_iter();
             let event: String = match args_iter.next() {

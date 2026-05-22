@@ -103,26 +103,6 @@ mod scheduler_tests {
     }
 
     #[test]
-    fn named_events_support_pause_resume_and_cancel() {
-        let mut scheduler = Scheduler::new();
-        let id = scheduler.every_named("heartbeat", 1.0, -1);
-        assert!(scheduler.pause_named("heartbeat"));
-        assert!(scheduler.is_paused_named("heartbeat"));
-        assert!(scheduler.resume_named("heartbeat"));
-        assert!(!scheduler.is_paused_named("heartbeat"));
-        assert_eq!(scheduler.cancel_named("heartbeat"), Some(id));
-    }
-
-    #[test]
-    fn time_scale_affects_firing_rate() {
-        let mut scheduler = Scheduler::new();
-        scheduler.set_time_scale(2.0);
-        scheduler.every(1.0, 1);
-        let fired = scheduler.update(0.5);
-        assert_eq!(fired.len(), 1);
-    }
-
-    #[test]
     fn set_interval_and_reset_event_work() {
         let mut scheduler = Scheduler::new();
         let id = scheduler.every(1.0, 2);

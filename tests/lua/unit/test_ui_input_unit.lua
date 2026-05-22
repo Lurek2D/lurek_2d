@@ -773,5 +773,165 @@ describe("input + ui integration", function()
         expect_false(dialog:isOpen())
         expect_equal(1, dialog_closed)
     end)
+    -- @covers LUiWidget:setMouseFilter
+    -- @covers lurek.ui.mousepressed
+    -- @covers lurek.ui.mousereleased
+    -- @covers lurek.ui.newButton
+    -- @covers lurek.ui.newPanel
+    -- @covers lurek.ui.update
+    it("mouse_filter_pass_lets_click_fall_through", function()
+        local bottom = lurek.ui.newButton("Bottom")
+        bottom:setPosition(600, 1100)
+        bottom:setSize(120, 40)
+        bottom:setZOrder(2000)
+
+        local top_panel = lurek.ui.newPanel()
+        top_panel:setPosition(600, 1100)
+        top_panel:setSize(120, 40)
+        top_panel:setZOrder(2001)
+        top_panel:setMouseFilter("pass")
+
+        local bottom_clicks = 0
+        bottom:setOnClick(function()
+            bottom_clicks = bottom_clicks + 1
+        end)
+
+        lurek.ui.mousepressed(660, 1120, 1)
+        lurek.ui.mousereleased(660, 1120, 1)
+        lurek.ui.update(0.0)
+
+        expect_equal(1, bottom_clicks)
+    end)
+
+    -- @covers LUiWidget:setMouseFilter
+    -- @covers lurek.ui.mousepressed
+    -- @covers lurek.ui.mousereleased
+    -- @covers lurek.ui.newButton
+    -- @covers lurek.ui.update
+    it("mouse_filter_ignore_widget_not_hit", function()
+        local btn = lurek.ui.newButton("Ignored")
+        btn:setPosition(750, 1100)
+        btn:setSize(100, 40)
+        btn:setZOrder(2010)
+        btn:setMouseFilter("ignore")
+
+        local click_count = 0
+        btn:setOnClick(function()
+            click_count = click_count + 1
+        end)
+
+        lurek.ui.mousepressed(800, 1120, 1)
+        lurek.ui.mousereleased(800, 1120, 1)
+        lurek.ui.update(0.0)
+
+        expect_equal(0, click_count)
+    end)
+
+    -- @covers LUiWidget:setEnabled
+    -- @covers lurek.ui.mousepressed
+    -- @covers lurek.ui.mousereleased
+    -- @covers lurek.ui.newButton
+    -- @covers lurek.ui.update
+    it("disabled_widget_ignored_in_hit_test", function()
+        local btn = lurek.ui.newButton("Disabled")
+        btn:setPosition(600, 1160)
+        btn:setSize(100, 40)
+        btn:setZOrder(2020)
+        btn:setEnabled(false)
+
+        local click_count = 0
+        btn:setOnClick(function()
+            click_count = click_count + 1
+        end)
+
+        lurek.ui.mousepressed(650, 1180, 1)
+        lurek.ui.mousereleased(650, 1180, 1)
+        lurek.ui.update(0.0)
+
+        expect_equal(0, click_count)
+    end)
+
+    -- @covers LUiWidget:setVisible
+    -- @covers lurek.ui.mousepressed
+    -- @covers lurek.ui.mousereleased
+    -- @covers lurek.ui.newButton
+    -- @covers lurek.ui.update
+    it("hidden_widget_ignored_in_hit_test", function()
+        local btn = lurek.ui.newButton("Hidden")
+        btn:setPosition(720, 1160)
+        btn:setSize(100, 40)
+        btn:setZOrder(2030)
+        btn:setVisible(false)
+
+        local click_count = 0
+        btn:setOnClick(function()
+            click_count = click_count + 1
+        end)
+
+        lurek.ui.mousepressed(770, 1180, 1)
+        lurek.ui.mousereleased(770, 1180, 1)
+        lurek.ui.update(0.0)
+
+        expect_equal(0, click_count)
+    end)
+
+    -- @covers LUiWidget:setFocusable
+    -- @covers LUiWidget:setTabIndex
+    -- @covers lurek.ui.focusNext
+    -- @covers lurek.ui.getFocus
+    -- @covers lurek.ui.setFocus
+    -- @covers lurek.ui.newButton
+    it("focus_next_respects_tab_index_order", function()
+        local a = lurek.ui.newButton("A")
+        local b = lurek.ui.newButton("B")
+        local c = lurek.ui.newButton("C")
+
+        a:setFocusable(true)
+        b:setFocusable(true)
+        c:setFocusable(true)
+        a:setFocusGroup("phase6_order")
+        b:setFocusGroup("phase6_order")
+        c:setFocusGroup("phase6_order")
+
+        a:setTabIndex(20)
+        b:setTabIndex(10)
+        c:setTabIndex(30)
+
+        lurek.ui.setFocus(b)
+        lurek.ui.focusNext()
+        expect_equal(a._idx, lurek.ui.getFocus())
+
+        lurek.ui.focusNext()
+        expect_equal(c._idx, lurek.ui.getFocus())
+
+        lurek.ui.focusNext()
+        expect_equal(b._idx, lurek.ui.getFocus())
+    end)
+
+    -- @covers LUiWidget:setFocusGroup
+    -- @covers LUiWidget:setTabIndex
+    -- @covers lurek.ui.focusNext
+    -- @covers lurek.ui.getFocus
+    -- @covers lurek.ui.setFocus
+    -- @covers lurek.ui.newButton
+    it("focus_group_isolated_traversal", function()
+        local g1_a = lurek.ui.newButton("G1-A")
+        local g1_b = lurek.ui.newButton("G1-B")
+        local g2_a = lurek.ui.newButton("G2-A")
+
+        g1_a:setFocusGroup("menu")
+        g1_b:setFocusGroup("menu")
+        g2_a:setFocusGroup("hud")
+
+        g1_a:setTabIndex(1)
+        g1_b:setTabIndex(2)
+        g2_a:setTabIndex(0)
+
+        lurek.ui.setFocus(g1_a)
+        lurek.ui.focusNext()
+        expect_equal(g1_b._idx, lurek.ui.getFocus())
+        lurek.ui.focusNext()
+        expect_equal(g1_a._idx, lurek.ui.getFocus())
+    end)
 end)
 test_summary()

@@ -55,7 +55,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- toJson --
     /// Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
-    /// @param | value | table | The Lua value to serialize into JSON.
+    /// @param | value | any | The Lua value to serialize into JSON.
     /// @param | pretty | boolean? | When true, outputs indented human-readable JSON. Defaults to false (compact).
     /// @return | string | The JSON-encoded string representation of the value.
     tbl.set(
@@ -187,7 +187,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- validate --
     /// Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
-    /// @param | value | table | The data to validate.
+    /// @param | value | any | The data to validate.
     /// @param | schema | table | A schema table defining the expected structure and constraints.
     /// @return | boolean | True if validation passes, false otherwise.
     /// @return | string | An error message describing the validation failure, or nil on success.
@@ -286,7 +286,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- encode --
     /// Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
-    /// @param | value | table | The Lua value to encode.
+    /// @param | value | any | The Lua value to encode.
     /// @param | format | string | Target format: "json", "toml", "csv", or "msgpack".
     /// @param | opts | table? | Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
     /// @return | string | The encoded string (text or binary depending on format).
@@ -312,7 +312,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- applyDefaults --
     /// Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
-    /// @param | value | table | The data table that may have missing fields.
+    /// @param | value | any | The data value that may have missing fields.
     /// @param | schema | table | A schema table containing `default` entries for fields.
     /// @return | table | A new table with defaults applied for any absent fields.
     tbl.set(

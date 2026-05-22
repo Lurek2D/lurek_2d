@@ -56,9 +56,15 @@ Sprite animation: source-rect changes over time. Imports only math; headless-tes
 
 ## 📋 Summary
 
-Sprite and skeletal animation runtime managing frame sequences, blend layers, state machines, and synchronization groups. `AnimClip` holds ordered `AnimFrame` entries with per-frame duration, source rectangle, and optional event triggers. `AnimStateMachine` drives clip transitions with configurable blend durations and exit-time rules. `AnimSyncGroup` locks multiple animations to a shared normalized timeline for coordinated character movement.
+The `animation` module provides a comprehensive sprite and skeletal animation runtime for Lurek2D, managing frame sequences, blend layers, parameter-driven state machines, and synchronization groups. At its core, the module uses `AnimClip` to hold ordered sequences of `AnimFrame` entries, each specifying a source texture rectangle, an optional per-frame duration, and event triggers. This allows for both uniform and variable-timing animations. Playback is managed by the `Animation` controller, which handles forward, reverse, and ping-pong playback modes, along with looping and playback speed scaling.
 
-The module provides `AnimCurve` for easing-driven value interpolation along keyframes, `BlendLayerSet` for multi-layer additive/override mixing, and an Aseprite JSON importer that converts tagged frame ranges into engine clips. A `buildCharacter` helper assembles direction-based clip sets from atlas regions. Exposed as `lurek.animation.*` with state machine, curve, blend, and sync constructors. Imports only `math`; fully headless-testable.
+To support complex character and entity animations, the module implements a robust `AnimStateMachine`. This finite-state machine (FSM) drives transitions between named animation clips based on configurable conditions. Transitions can evaluate float, integer, and boolean parameters using standard relational operators, enabling logic like switching from a 'running' state to a 'jumping' state when a velocity parameter exceeds a threshold. Furthermore, `BlendLayerSet` provides support for multi-layer additive and override mixing, allowing multiple animations to be combined—for instance, playing a 'shooting' animation on the upper body while a 'running' animation plays on the lower body.
+
+For coordinated character movement and advanced timing, the `AnimSyncGroup` locks multiple animation keyframes to a shared normalized timeline. The module also includes `AnimCurve` and `AnimPropertyTimeline` to support easing-driven value interpolation along keyframes. These curves evaluate properties over time using step, linear, or custom easing functions, which are heavily utilized by higher-level animation systems to drive parameters smoothly.
+
+The module offers seamless integration with external tools and formats. An Aseprite JSON importer (`load_aseprite_json`) parses exported frame tags into named clip ranges, supporting both array and object layouts while extracting per-frame durations. Additionally, a `SpineAnimBridge` maps the module's FSM states to Spine skeleton animations, allowing 2D skeletal animations to be controlled through the same uniform interface.
+
+Finally, the module generates textured draw commands from active frame quads via the `render` utilities, tightly integrating with the engine's graphics pipeline. The API is thoroughly exposed to Lua via the `lurek.an
 
 [⬆ back to top](#table-of-contents)
 

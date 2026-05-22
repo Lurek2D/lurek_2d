@@ -11,9 +11,11 @@
 
 ## Summary
 
-Runtime documentation catalog that scans Lua API metadata at startup and provides programmatic access to function signatures, parameter descriptions, return types, and usage examples. `DocEntry` stores per-function documentation including summary, params, returns, and source location. `Catalog` holds the complete API surface indexed by namespace path.
+The `docs` module is an Edge/Integration tier component responsible for maintaining the engine's runtime documentation catalog. By scanning and reflecting Lua API metadata upon startup, it provides robust, programmatic access to function signatures, parameter descriptions, return types, and usage examples. The foundational structure of this module is the `DocEntry`, which securely encapsulates the canonical details of one documented API item—from its prose description to structured parameter and return metadata. These entries are efficiently stored and aggregated within an in-memory `Catalog`, fully searchable and indexable by namespace path.
 
-Validation and quality reporting (`validate`, `quality`, `coverage`) check documentation completeness and flag missing entries. Export functions generate IDE integration data: completions, hover info, and signature help in JSON format. Schema generation from TOML definitions produces typed config documentation. Exposed as `lurek.docs.*`. Edge/Integration tier — consumes metadata from all other modules.
+A key capability of the module is its rigorous validation and quality-reporting system. By comparing the populated catalog against the live, reflected `lurek` API surface, it accurately generates `ValidationReport` and `QualityReport` structures. These tools score documentation completeness, assign letter grades, and identify missing, phantom, or incomplete entries, ensuring that the engine's documentation quality remains consistently high.
+
+Beyond in-engine diagnostics, the `docs` module drives Lurek2D's IDE integration capabilities. It features specialized export functions capable of generating structured JSON payloads for code completions, hover information, and signature help, ready to be consumed directly by editors like VS Code. Furthermore, the module facilitates schema validation by generating typed config documentation from TOML definitions, serving as an access bridge for the `lurek_schema` crate. The entirety of this robust toolset is accessible via the `lurek.docs.*` namespace, allowing scripts and CI pipelines to autonomously validate API coverage, export artifacts, and maintain documentation hygiene.
 
 ## Source Documentation
 

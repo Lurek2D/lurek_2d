@@ -787,18 +787,31 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                     table_namespace = table_namespaces.get(table_var)
                     owner = "" if table_namespace else (current_widget_type if current_widget_type else "")
                     kind = "method" if owner else "function"
-                    lua_name = (
-                        f"{owner}.{func_name}"
-                        if owner
-                        else f"{table_namespace or f'lurek.{_lua_namespace(module)}'}.{func_name}"
-                    )
-
                     if not docstring and owner:
                         docstring = f"/// Returns a value for {func_name} (auto-generated)."
 
                     desc = _first_desc_line(docstring)
                     params, returns = _extract_params_returns(docstring)
                     inferred = _infer_signature(lines, i)
+                    typed = _merge_typed_params_with_inferred(
+                        _parse_tagged_params(docstring), inferred
+                    )
+                    if owner:
+                        _is_instance = bool(typed) and typed[0][0] == "self"
+                        if _is_instance:
+                            lua_name = f"{owner}:{func_name}"
+                            typed = typed[1:]
+                            if params:
+                                non_empty = [l for l in params.splitlines() if l.strip()]
+                                params = "\n".join(non_empty[1:]) if non_empty else ""
+                            if inferred and inferred.startswith("("):
+                                inner = inferred[1:-1].strip()
+                                tokens = [p.strip() for p in inner.split(",") if p.strip()]
+                                inferred = "(" + ", ".join(tokens[1:]) + ")" if tokens else "()"
+                        else:
+                            lua_name = f"{owner}.{func_name}"
+                    else:
+                        lua_name = f"{table_namespace or f'lurek.{_lua_namespace(module)}'}.{func_name}"
 
                     functions.append(LuaFunction(
                         module=module, name=func_name,
@@ -808,9 +821,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                         returns=returns, line=i + 1,
                         file=rel_path, kind=kind,
                         inferred_sig=inferred,
-                        typed_params=_merge_typed_params_with_inferred(
-                            _parse_tagged_params(docstring), inferred
-                        ),
+                        typed_params=typed,
                         inferred_return=_parse_tagged_return(docstring)[0],
                         return_description=_parse_tagged_return(docstring)[1],
                     ))
@@ -824,11 +835,6 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
             table_namespace = table_namespaces.get(table_var)
             owner = "" if table_namespace else (current_widget_type if current_widget_type else "")
             kind = "method" if owner else "function"
-            lua_name = (
-                f"{owner}.{func_name}"
-                if owner
-                else f"{table_namespace or f'lurek.{_lua_namespace(module)}'}.{func_name}"
-            )
 
             if not docstring and owner:
                 docstring = f"/// Returns a value for {func_name} (auto-generated)."
@@ -836,6 +842,25 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
             desc = _first_desc_line(docstring)
             params, returns = _extract_params_returns(docstring)
             inferred = _infer_signature(lines, i)
+            typed = _merge_typed_params_with_inferred(
+                _parse_tagged_params(docstring), inferred
+            )
+            if owner:
+                _is_instance = bool(typed) and typed[0][0] == "self"
+                if _is_instance:
+                    lua_name = f"{owner}:{func_name}"
+                    typed = typed[1:]
+                    if params:
+                        non_empty = [l for l in params.splitlines() if l.strip()]
+                        params = "\n".join(non_empty[1:]) if non_empty else ""
+                    if inferred and inferred.startswith("("):
+                        inner = inferred[1:-1].strip()
+                        tokens = [p.strip() for p in inner.split(",") if p.strip()]
+                        inferred = "(" + ", ".join(tokens[1:]) + ")" if tokens else "()"
+                else:
+                    lua_name = f"{owner}.{func_name}"
+            else:
+                lua_name = f"{table_namespace or f'lurek.{_lua_namespace(module)}'}.{func_name}"
 
             functions.append(LuaFunction(
                 module=module, name=func_name,
@@ -845,9 +870,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 returns=returns, line=i + 1,
                 file=rel_path, kind=kind,
                 inferred_sig=inferred,
-                typed_params=_merge_typed_params_with_inferred(
-                    _parse_tagged_params(docstring), inferred
-                ),
+                typed_params=typed,
                 inferred_return=_parse_tagged_return(docstring)[0],
                 return_description=_parse_tagged_return(docstring)[1],
             ))
@@ -983,17 +1006,30 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 desc = _first_desc_line(docstring)
                 params, returns = _extract_params_returns(docstring)
                 inferred = _infer_signature(lines, i)
+                typed = _merge_typed_params_with_inferred(
+                    _parse_tagged_params(docstring), inferred
+                )
+                # Always colon for multi-line add_function inside impl LuaUserData
+                # (first closure arg is always the userdata/self in this codebase)
+                lua_name = f"{display_owner}:{func_name}"
+                if typed and typed[0][0] == "self":
+                    typed = typed[1:]
+                    if params:
+                        non_empty = [l for l in params.splitlines() if l.strip()]
+                        params = "\n".join(non_empty[1:]) if non_empty else ""
+                    if inferred and inferred.startswith("("):
+                        inner = inferred[1:-1].strip()
+                        tokens = [p.strip() for p in inner.split(",") if p.strip()]
+                        inferred = "(" + ", ".join(tokens[1:]) + ")" if tokens else "()"
                 functions.append(LuaFunction(
                     module=module, name=func_name,
-                    lua_name=f"{display_owner}.{func_name}",
+                    lua_name=lua_name,
                     owner_type=display_owner, description=desc,
                     full_doc=docstring, params=params,
                     returns=returns, line=i + 1,
                     file=rel_path, kind="method",
                     inferred_sig=inferred,
-                    typed_params=_merge_typed_params_with_inferred(
-                        _parse_tagged_params(docstring), inferred
-                    ),
+                    typed_params=typed,
                     inferred_return=_parse_tagged_return(docstring)[0],
                     return_description=_parse_tagged_return(docstring)[1],
                 ))

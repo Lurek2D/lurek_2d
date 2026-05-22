@@ -19,6 +19,8 @@ pub mod mode;
 pub mod resource_keys;
 /// Shared mutable runtime state consumed by app and Lua callbacks.
 pub mod shared_state;
+/// OS-level utilities including clipboard, system info, and platform detection.
+pub mod os;
 pub use config::Config;
 pub use error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot};
 pub use headless::{run_headless, run_headless_checked, HeadlessOptions};

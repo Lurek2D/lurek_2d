@@ -1,4 +1,4 @@
-﻿-- content/examples/province.lua
+-- content/examples/province.lua
 -- Auto-generated from content/examples2/province_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/province.lua
 

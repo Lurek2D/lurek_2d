@@ -17,6 +17,7 @@ use crate::sprite::SpriteBatch;
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
+use std::path::Path;
 use std::rc::Rc;
 /// Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
 pub struct LuaImageData {
@@ -204,10 +205,12 @@ impl LuaUserData for LuaImage {
             }
         });
         // -- typeOf --
-        /// Returns the type name of this object.
-        /// @param | name | string | Type name to check.
-        /// @return | string | Always "Image".
-        methods.add_method("typeOf", |_, _, ()| Ok("Image"));
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check ("Image" or "Object").
+        /// @return | boolean | True if the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Image" || name == "Object")
+        });
         // -- type --
         /// Returns the type name string for this image object.
         /// @return | string | Always "LImage".
@@ -323,16 +326,105 @@ impl LuaUserData for LuaFont {
             }
         });
         // -- typeOf --
-        /// Returns the type name of this object.
-        /// @param | name | string | Type name to check.
-        /// @return | string | Always "Font".
-        methods.add_method("typeOf", |_, _, ()| Ok("Font"));
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check ("Font" or "Object").
+        /// @return | boolean | True if the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Font" || name == "Object")
+        });
         // -- type --
         /// Returns the type name string for this font object.
         /// @return | string | Always "LFont".
         methods.add_method("type", |_, _, ()| Ok("LFont"));
     }
 }
+
+fn active_font_key(st: &SharedState) -> Option<FontKey> {
+    st.active_font.or(st.default_font)
+}
+
+fn resolve_font_key(font_ud: &LuaAnyUserData) -> LuaResult<FontKey> {
+    let font = font_ud.borrow::<LuaFont>()?;
+    let key = font.key;
+    let valid = font.state.borrow().fonts.contains_key(key);
+    drop(font);
+    if valid {
+        Ok(key)
+    } else {
+        Err(LuaError::RuntimeError(
+            "font handle is not valid or was released".into(),
+        ))
+    }
+}
+
+fn builtin_font_key_by_name(st: &SharedState, name: &str) -> Option<FontKey> {
+    let (slot, bold) = Font::builtin_slot_by_name(name)?;
+    let arr = if bold {
+        &st.default_bold_fonts
+    } else {
+        &st.default_fonts
+    };
+    arr[slot]
+}
+
+fn builtin_font_key_by_point_size(
+    st: &SharedState,
+    point_size: u32,
+    bold: Option<bool>,
+) -> Option<FontKey> {
+    let idx = Font::nearest_point_size(point_size);
+    let use_bold = bold.unwrap_or(st.active_bold);
+    let arr = if use_bold {
+        &st.default_bold_fonts
+    } else {
+        &st.default_fonts
+    };
+    arr[idx]
+}
+
+fn load_font_from_path(st: &mut SharedState, path: &str, size: f32) -> LuaResult<FontKey> {
+    let full_path = st.game_dir.join(path);
+    let data = std::fs::read(&full_path).map_err(|e| {
+        LuaError::RuntimeError(format!(
+            "lurek.graphic.newFont: failed to read '{}': {}",
+            path, e
+        ))
+    })?;
+    let ext = Path::new(path)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .map(|ext| ext.to_ascii_lowercase());
+    let bitmap_cell_h = size.max(1.0).round() as u32;
+    let bitmap_cell_w = (size.max(1.0) * 0.6).round().max(1.0) as u32;
+    let font = match ext.as_deref() {
+        Some("ttf") | Some("otf") | Some("ttc") => Font::from_font_bytes(&data, size),
+        Some("png") => Font::from_png_bytes(&data, bitmap_cell_w, bitmap_cell_h, false),
+        _ => Font::from_font_bytes(&data, size)
+            .or_else(|_| Font::from_png_bytes(&data, bitmap_cell_w, bitmap_cell_h, false)),
+    }
+    .map_err(|e| LuaError::RuntimeError(format!("lurek.graphic.newFont: {}", e)))?;
+    Ok(st.fonts.insert(font))
+}
+
+fn build_rich_text_spans(
+    spans_table: &LuaTable,
+) -> LuaResult<Vec<crate::render::renderer::TextSpan>> {
+    use crate::render::renderer::TextSpan;
+
+    let mut spans = Vec::new();
+    for pair in spans_table.clone().pairs::<LuaValue, LuaTable>() {
+        let (_, span_tbl) = pair.map_err(mlua::Error::external)?;
+        let text: String = span_tbl.get::<_, String>("text").unwrap_or_default();
+        let r: u8 = span_tbl.get::<_, u8>("r").unwrap_or(255);
+        let g: u8 = span_tbl.get::<_, u8>("g").unwrap_or(255);
+        let b: u8 = span_tbl.get::<_, u8>("b").unwrap_or(255);
+        let a: u8 = span_tbl.get::<_, u8>("a").unwrap_or(255);
+        let scale: f32 = span_tbl.get::<_, f32>("scale").unwrap_or(1.0);
+        spans.push(TextSpan::new(text, r, g, b, a, scale));
+    }
+    Ok(spans)
+}
+
 /// Off-screen render target that can be drawn to and then composited onto the screen.
 #[derive(Clone)]
 pub struct LuaCanvas {
@@ -387,10 +479,12 @@ impl LuaUserData for LuaCanvas {
             }
         });
         // -- typeOf --
-        /// Returns the type name of this object.
-        /// @param | name | string | Type name to check.
-        /// @return | string | Always "Canvas".
-        methods.add_method("typeOf", |_, _, ()| Ok("Canvas"));
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check ("Canvas" or "Object").
+        /// @return | boolean | True if the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Canvas" || name == "Object")
+        });
         // -- type --
         /// Returns the type name string for this canvas object.
         /// @return | string | Always "LCanvas".
@@ -486,10 +580,12 @@ impl LuaUserData for LuaSpriteBatch {
             Ok(st.sprite_batches.remove(this.key).is_some())
         });
         // -- typeOf --
-        /// Returns the type name of this object.
-        /// @param | name | string | Type name to check.
-        /// @return | string | Always "SpriteBatch".
-        methods.add_method("typeOf", |_, _, ()| Ok("SpriteBatch"));
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check ("SpriteBatch" or "Object").
+        /// @return | boolean | True if the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "SpriteBatch" || name == "Object")
+        });
         // -- type --
         /// Returns the type name string for this sprite batch.
         /// @return | string | Always "LSpriteBatch".
@@ -581,10 +677,12 @@ impl LuaUserData for LuaMesh {
             Ok(st.meshes.remove(this.key).is_some())
         });
         // -- typeOf --
-        /// Returns the type name of this object.
-        /// @param | name | string | Type name to check.
-        /// @return | string | Always "Mesh".
-        methods.add_method("typeOf", |_, _, ()| Ok("Mesh"));
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check ("Mesh" or "Object").
+        /// @return | boolean | True if the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Mesh" || name == "Object")
+        });
         // -- type --
         /// Returns the type name string for this mesh object.
         /// @return | string | Always "LMesh".
@@ -638,10 +736,12 @@ impl LuaUserData for LuaShader {
             }
         });
         // -- typeOf --
-        /// Returns the type name of this object.
-        /// @param | name | string | Type name to check.
-        /// @return | string | Always "Shader".
-        methods.add_method("typeOf", |_, _, ()| Ok("Shader"));
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check ("Shader" or "Object").
+        /// @return | boolean | True if the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Shader" || name == "Object")
+        });
         // -- type --
         /// Returns the type name string for this shader object.
         /// @return | string | Always "LShader".
@@ -687,10 +787,12 @@ impl LuaUserData for LuaQuad {
         /// @return | number, number | Source texture width and height.
         methods.add_method("getTextureDimensions", |_, this, ()| Ok((this.sw, this.sh)));
         // -- typeOf --
-        /// Returns the type name of this object.
-        /// @param | name | string | Type name to check.
-        /// @return | string | Always "Quad".
-        methods.add_method("typeOf", |_, _, ()| Ok("Quad"));
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check ("Quad" or "Object").
+        /// @return | boolean | True if the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Quad" || name == "Object")
+        });
         // -- type --
         /// Returns the type name string for this quad object.
         /// @return | string | Always "LQuad".
@@ -1797,6 +1899,46 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     let s = state.clone();
+    // -- printRotatedWithFont --
+    /// Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
+    /// @param | font | LFont | Font handle to use for this draw.
+    /// @param | text | string | Text to render.
+    /// @param | x | number | Center X position.
+    /// @param | y | number | Center Y position.
+    /// @param | angle | number | Rotation angle in radians.
+    /// @param | scale | number? | Text scale factor (default 1).
+    graphics.set(
+        "printRotatedWithFont",
+        lua.create_function(
+            move |_, (font_ud, text, x, y, angle, scale): (LuaAnyUserData, String, f32, f32, f32, Option<f32>)| {
+                let scale = scale.unwrap_or(1.0);
+                let key = resolve_font_key(&font_ud)?;
+                let (origin_x, origin_y) = {
+                    let st = s.borrow();
+                    let Some(font) = st.fonts.get(key) else {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.graphic.printRotatedWithFont: font handle is not valid or was released".into(),
+                        ));
+                    };
+                    (-font.text_width(&text) * scale * 0.5, -font.line_height() * scale * 0.5)
+                };
+                let st = &mut s.borrow_mut().render_commands;
+                st.push(RenderCommand::PushTransform);
+                st.push(RenderCommand::Translate { x, y });
+                st.push(RenderCommand::Rotate { angle });
+                st.push(RenderCommand::Print {
+                    font_key: key,
+                    text,
+                    x: origin_x,
+                    y: origin_y,
+                    scale,
+                });
+                st.push(RenderCommand::PopTransform);
+                Ok(())
+            },
+        )?,
+    )?;
+    let s = state.clone();
     // -- print --
     /// Draws text using the active font at the given position.
     /// @param | text | string | Text to render.
@@ -1825,6 +1967,37 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         log::warn!("lurek.graphic.print: no font loaded, text not rendered");
                     }
                 }
+                Ok(())
+            },
+        )?,
+    )?;
+    let s = state.clone();
+    // -- printWithFont --
+    /// Draws text using a specific font without changing the global active font.
+    /// @param | font | LFont | Font handle to use for this draw.
+    /// @param | text | string | Text to render.
+    /// @param | x | number? | X position (default 0).
+    /// @param | y | number? | Y position (default 0).
+    /// @param | scale | number? | Text scale factor (default 1).
+    graphics.set(
+        "printWithFont",
+        lua.create_function(
+            move |_,
+                  (font_ud, text, x, y, scale): (
+                LuaAnyUserData,
+                String,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                let key = resolve_font_key(&font_ud)?;
+                s.borrow_mut().render_commands.push(RenderCommand::Print {
+                    font_key: key,
+                    text,
+                    x: x.unwrap_or(0.0),
+                    y: y.unwrap_or(0.0),
+                    scale: scale.unwrap_or(1.0),
+                });
                 Ok(())
             },
         )?,
@@ -1869,6 +2042,49 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     let s = state.clone();
+    // -- printfWithFont --
+    /// Draws word-wrapped and aligned text with a specific font without changing the global active font.
+    /// @param | font | LFont | Font handle to use for this draw.
+    /// @param | text | string | Text to render.
+    /// @param | x | number | X position.
+    /// @param | y | number | Y position.
+    /// @param | limit | number | Maximum line width in pixels for wrapping.
+    /// @param | align | string? | Alignment: "left" (default), "center", "right", or "justify".
+    graphics.set(
+        "printfWithFont",
+        lua.create_function(
+            move |_,
+                  (font_ud, text, x, y, limit, align): (
+                LuaAnyUserData,
+                String,
+                f32,
+                f32,
+                f32,
+                Option<String>,
+            )| {
+                let key = resolve_font_key(&font_ud)?;
+                let align = match align.as_deref() {
+                    Some("center") => TextAlign::Center,
+                    Some("right") => TextAlign::Right,
+                    Some("justify") => TextAlign::Justify,
+                    _ => TextAlign::Left,
+                };
+                s.borrow_mut()
+                    .render_commands
+                    .push(RenderCommand::PrintFormatted {
+                        font_key: key,
+                        text,
+                        x,
+                        y,
+                        limit,
+                        align,
+                        scale: 1.0,
+                    });
+                Ok(())
+            },
+        )?,
+    )?;
+    let s = state.clone();
     // -- printRich --
     /// Draws rich text composed of individually styled spans at the given position.
     /// @param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.
@@ -1877,25 +2093,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "printRich",
         lua.create_function(move |_, (spans_table, x, y): (mlua::Table, f32, f32)| {
-            use crate::render::renderer::TextSpan;
             let font_key_opt = {
                 let st = s.borrow();
-                st.active_font.or(st.default_font)
+                active_font_key(&st)
             };
             let Some(font_key) = font_key_opt else {
                 return Ok(());
             };
-            let mut spans: Vec<TextSpan> = Vec::new();
-            for pair in spans_table.pairs::<mlua::Value, mlua::Table>() {
-                let (_, span_tbl) = pair.map_err(mlua::Error::external)?;
-                let text: String = span_tbl.get::<_, String>("text").unwrap_or_default();
-                let r: u8 = span_tbl.get::<_, u8>("r").unwrap_or(255);
-                let g: u8 = span_tbl.get::<_, u8>("g").unwrap_or(255);
-                let b: u8 = span_tbl.get::<_, u8>("b").unwrap_or(255);
-                let a: u8 = span_tbl.get::<_, u8>("a").unwrap_or(255);
-                let scale: f32 = span_tbl.get::<_, f32>("scale").unwrap_or(1.0);
-                spans.push(TextSpan::new(text, r, g, b, a, scale));
-            }
+            let spans = build_rich_text_spans(&spans_table)?;
             s.borrow_mut().render_commands.push(
                 crate::render::renderer::RenderCommand::DrawRichText {
                     font_key,
@@ -1906,6 +2111,31 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             );
             Ok(())
         })?,
+    )?;
+    let s = state.clone();
+    // -- printRichWithFont --
+    /// Draws rich text using a specific font without changing the global active font.
+    /// @param | font | LFont | Font handle to use for this draw.
+    /// @param | spans | table | Array of span tables, each with fields: text, r, g, b, a, scale.
+    /// @param | x | number | X position.
+    /// @param | y | number | Y position.
+    graphics.set(
+        "printRichWithFont",
+        lua.create_function(
+            move |_, (font_ud, spans_table, x, y): (LuaAnyUserData, LuaTable, f32, f32)| {
+                let key = resolve_font_key(&font_ud)?;
+                let spans = build_rich_text_spans(&spans_table)?;
+                s.borrow_mut().render_commands.push(
+                    crate::render::renderer::RenderCommand::DrawRichText {
+                        font_key: key,
+                        spans,
+                        x,
+                        y,
+                    },
+                );
+                Ok(())
+            },
+        )?,
     )?;
     let s = state.clone();
     // -- clear --
@@ -2004,23 +2234,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- newFont --
-    /// Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.
-    /// @param | pathOrSize | string|number | File path to a PNG font sheet, or a pixel height for a built-in font.
-    /// @param | size | number? | Cell height in pixels when loading from a file (default 14).
+    /// Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
+    /// @param | pathOrSize | any | Built-in font name, font file path, or numeric built-in point-size selector.
+    /// @param | size | number? | Point size for TTF/OTF files, or cell height for PNG atlases.
     /// @return | LFont | The created font handle.
     graphics.set(
         "newFont",
         lua.create_function(move |_, args: LuaMultiValue| {
             let mut st = s.borrow_mut();
             if let Some(LuaValue::Number(n)) = args.get(0) {
-                let height = *n as u32;
-                let idx = crate::render::Font::nearest_size(height);
-                let arr = if st.active_bold {
-                    &st.default_bold_fonts
-                } else {
-                    &st.default_fonts
-                };
-                if let Some(key) = arr[idx] {
+                let point_size = (*n).max(1.0) as u32;
+                if let Some(key) = builtin_font_key_by_point_size(&st, point_size, None) {
                     return Ok(LuaFont {
                         state: s.clone(),
                         key,
@@ -2031,14 +2255,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 ));
             }
             if let Some(LuaValue::Integer(n)) = args.get(0) {
-                let height = *n as u32;
-                let idx = crate::render::Font::nearest_size(height);
-                let arr = if st.active_bold {
-                    &st.default_bold_fonts
-                } else {
-                    &st.default_fonts
-                };
-                if let Some(key) = arr[idx] {
+                let point_size = (*n).max(1) as u32;
+                if let Some(key) = builtin_font_key_by_point_size(&st, point_size, None) {
                     return Ok(LuaFont {
                         state: s.clone(),
                         key,
@@ -2070,31 +2288,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 _ => 14.0,
             };
             if path == "default" {
-                let idx = crate::render::Font::nearest_size(size as u32);
-                let arr = if st.active_bold {
-                    &st.default_bold_fonts
-                } else {
-                    &st.default_fonts
-                };
-                if let Some(key) = arr[idx] {
+                if let Some(key) = builtin_font_key_by_point_size(&st, size.max(1.0) as u32, None) {
                     return Ok(LuaFont {
                         state: s.clone(),
                         key,
                     });
                 }
             }
-            let full_path = st.game_dir.join(&path);
-            let data = std::fs::read(&full_path).map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "lurek.graphic.newFont: failed to read '{}': {}",
-                    path, e
-                ))
-            })?;
-            let cell_h = size as u32;
-            let cell_w = (size * 0.6).round() as u32;
-            let font = Font::from_png_bytes(&data, cell_w, cell_h, false)
-                .map_err(|e| LuaError::RuntimeError(format!("lurek.graphic.newFont: {}", e)))?;
-            let key = st.fonts.insert(font);
+            if let Some(key) = builtin_font_key_by_name(&st, &path) {
+                return Ok(LuaFont {
+                    state: s.clone(),
+                    key,
+                });
+            }
+            let key = load_font_from_path(&mut st, &path, size)?;
             Ok(LuaFont {
                 state: s.clone(),
                 key,
@@ -2108,16 +2315,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "setFont",
         lua.create_function(move |_, ud: LuaAnyUserData| {
-            let font = ud.borrow::<LuaFont>()?;
-            let key = font.key;
-            drop(font);
-            let mut st = s.borrow_mut();
-            if !st.fonts.contains_key(key) {
-                return Err(LuaError::RuntimeError(
+            let key = resolve_font_key(&ud).map_err(|_| {
+                LuaError::RuntimeError(
                     "lurek.graphic.setFont: font handle is not valid or was released".into(),
-                ));
-            }
+                )
+            })?;
+            let mut st = s.borrow_mut();
             st.active_font = Some(key);
+            st.font_override_active = true;
             Ok(())
         })?,
     )?;
@@ -2139,38 +2344,51 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     // -- getFontSizes --
-    /// Returns all available built-in font pixel heights.
-    /// @return | number[] | Array of available font height values.
+    /// Returns all available built-in point sizes.
+    /// @return | number[] | Array of bundled font sizes such as 8, 10, 12, 16, 20, 24, and 30.
     graphics.set(
         "getFontSizes",
         lua.create_function(|lua, ()| {
             let tbl = lua.create_table()?;
-            for (i, &h) in crate::render::font::AVAILABLE_HEIGHTS.iter().enumerate() {
-                tbl.set(i + 1, h)?;
+            for (i, &size) in crate::render::font::AVAILABLE_POINT_SIZES.iter().enumerate() {
+                tbl.set(i + 1, size)?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
+    // -- getBuiltInFontNames --
+    /// Returns all stable built-in font names.
+    /// @return | string[] | Array of bundled font names such as font_8 and fontb_8.
+    graphics.set(
+        "getBuiltInFontNames",
+        lua.create_function(|lua, ()| {
+            let tbl = lua.create_table()?;
+            for (i, name) in crate::render::font::BUILTIN_FONT_NAMES.iter().enumerate() {
+                tbl.set(i + 1, *name)?;
             }
             Ok(tbl)
         })?,
     )?;
     let s = state.clone();
     // -- getDefaultFont --
-    /// Returns a built-in default font at the nearest available pixel height.
-    /// @param | pixelHeight | integer? | Desired pixel height (default 14).
-    /// @param | bold | boolean? | When true, returns the bold variant (default false).
+    /// Returns a built-in default font at the nearest available bundled point size.
+    /// @param | pointSize | integer? | Desired built-in point size. When omitted, returns the current configured default.
+    /// @param | bold | boolean? | When true, returns the bold variant. When omitted, uses the current bold selection.
     /// @return | LFont | The built-in font handle.
     graphics.set(
         "getDefaultFont",
         lua.create_function(
-            move |_, (pixel_height, bold): (Option<u32>, Option<bool>)| {
-                let height = pixel_height.unwrap_or(14);
-                let idx = crate::render::Font::nearest_size(height);
+            move |_, (point_size, bold): (Option<u32>, Option<bool>)| {
                 let st = s.borrow();
                 let use_bold = bold.unwrap_or(st.active_bold);
-                let arr = if use_bold {
-                    &st.default_bold_fonts
+                let key = if let Some(point_size) = point_size {
+                    builtin_font_key_by_point_size(&st, point_size, Some(use_bold))
+                } else if use_bold == st.default_font_bold {
+                    st.default_font
                 } else {
-                    &st.default_fonts
+                    builtin_font_key_by_point_size(&st, st.default_font_size, Some(use_bold))
                 };
-                if let Some(key) = arr[idx] {
+                if let Some(key) = key {
                     Ok(LuaFont {
                         state: s.clone(),
                         key,
@@ -2184,6 +2402,29 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     let s = state.clone();
+    // -- setDefaultFont --
+    /// Selects a built-in default font by bundled point size and makes it the active render font.
+    /// @param | pointSize | integer? | Desired built-in point size. When omitted, reuses the configured default size.
+    /// @param | bold | boolean? | When true, selects the bold variant. When omitted, reuses the current bold selection.
+    /// @return | LFont | The selected built-in font handle.
+    graphics.set(
+        "setDefaultFont",
+        lua.create_function(move |_, (point_size, bold): (Option<u32>, Option<bool>)| {
+            let mut st = s.borrow_mut();
+            let point_size = point_size.unwrap_or(st.default_font_size);
+            let use_bold = bold.unwrap_or(st.active_bold);
+            let key = st.set_active_builtin_font(point_size, use_bold).ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "lurek.graphic.setDefaultFont: built-in fonts not loaded".into(),
+                )
+            })?;
+            Ok(LuaFont {
+                state: s.clone(),
+                key,
+            })
+        })?,
+    )?;
+    let s = state.clone();
     // -- setBold --
     /// Sets whether subsequent font size lookups use the bold Courier New variant.
     /// @param | bold | boolean | True to enable bold, false for regular.
@@ -2192,6 +2433,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, bold: bool| {
             let mut st = s.borrow_mut();
             st.active_bold = bold;
+            st.font_override_active = true;
             // Re-select active_font to match the new variant at the current size.
             let current_key = st.active_font.or(st.default_font);
             if let Some(ck) = current_key {
@@ -2212,14 +2454,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         return Ok(());
                     }
                 }
-                // Fallback: pick slot 2 (12 pt) from the new variant.
+                // Fallback: use the configured default slot in the new variant.
                 let new_arr = if bold {
                     &st.default_bold_fonts
                 } else {
                     &st.default_fonts
                 };
-                if let Some(k) = new_arr[2] {
+                let slot = crate::render::Font::nearest_point_size(st.default_font_size);
+                if let Some(k) = new_arr[slot] {
                     st.active_font = Some(k);
+                    st.default_font = Some(k);
                 }
             }
             Ok(())
@@ -2317,13 +2561,28 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(f.line_height())
         })?,
     )?;
+    let s = state.clone();
     // -- setFontLineHeight --
     /// Sets the line height override for a font (currently a no-op stub).
     /// @param | font | LFont | Font handle.
     /// @param | lh | number | Line height value.
     graphics.set(
         "setFontLineHeight",
-        lua.create_function(|_, (_font, _lh): (LuaAnyUserData, f32)| Ok(()))?,
+        lua.create_function(move |_, (font_ud, lh): (LuaAnyUserData, f32)| {
+            let key = resolve_font_key(&font_ud).map_err(|_| {
+                LuaError::RuntimeError(
+                    "lurek.graphic.setFontLineHeight: font handle is not valid".into(),
+                )
+            })?;
+            let mut st = s.borrow_mut();
+            let f = st.fonts.get_mut(key).ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "lurek.graphic.setFontLineHeight: font handle is not valid".into(),
+                )
+            })?;
+            f.set_line_height(lh);
+            Ok(())
+        })?,
     )?;
     let s = state.clone();
     // -- getFontAscent --
@@ -2375,7 +2634,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getFontWrap",
         lua.create_function(move |lua, (text, limit): (String, f32)| {
             let st = s.borrow();
-            if let Some(font_key) = st.active_font {
+            if let Some(font_key) = active_font_key(&st) {
                 if let Some(font) = st.fonts.get(font_key) {
                     let lines = font.wrap_text(&text, limit);
                     let mut max_w: f32 = 0.0;

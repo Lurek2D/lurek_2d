@@ -1,4 +1,4 @@
-﻿-- content/examples/html.lua
+-- content/examples/html.lua
 -- Auto-generated from content/examples2/html_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/html.lua
 

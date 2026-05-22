@@ -302,6 +302,12 @@ pub struct SharedState {
     pub default_bold_fonts: [Option<FontKey>; 7],
     /// True when the active font selection should use the bold variant.
     pub active_bold: bool,
+    /// Requested built-in point size for the configured default render font.
+    pub default_font_size: u32,
+    /// Requested bold variant for the configured default render font.
+    pub default_font_bold: bool,
+    /// True when runtime code explicitly changed the render font selection.
+    pub font_override_active: bool,
     /// Stores sprite_batches state.
     pub sprite_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>,
     /// Stores canvases state.
@@ -449,6 +455,9 @@ impl SharedState {
             default_fonts: [None; 7],
             default_bold_fonts: [None; 7],
             active_bold: false,
+            default_font_size: 10,
+            default_font_bold: false,
+            font_override_active: false,
             sprite_batches: SlotMap::with_key(),
             canvases: SlotMap::with_key(),
             particle_systems: SlotMap::with_key(),
@@ -626,9 +635,48 @@ impl SharedState {
             .request_write(resolved, data);
         Ok(handle.0)
     }
+    fn builtin_default_font_key(&self, point_size: u32, bold: bool) -> Option<FontKey> {
+        let slot = crate::render::Font::nearest_point_size(point_size);
+        let fonts = if bold {
+            &self.default_bold_fonts
+        } else {
+            &self.default_fonts
+        };
+        fonts[slot]
+    }
+
+    fn apply_configured_default_font(&mut self) {
+        let default_key = self.builtin_default_font_key(self.default_font_size, self.default_font_bold);
+        self.default_font = default_key;
+        if !self.font_override_active || self.active_font.is_none() {
+            self.active_font = default_key;
+            self.active_bold = self.default_font_bold;
+        }
+    }
+
+    /// Update the configured built-in default render font.
+    pub fn set_configured_default_font(&mut self, point_size: u32, bold: bool) {
+        self.default_font_size = point_size;
+        self.default_font_bold = bold;
+        if self.default_fonts.iter().any(Option::is_some) {
+            self.apply_configured_default_font();
+        }
+    }
+
+    /// Select a built-in font by point size and make it the active render font.
+    pub fn set_active_builtin_font(&mut self, point_size: u32, bold: bool) -> Option<FontKey> {
+        let key = self.builtin_default_font_key(point_size, bold)?;
+        self.default_font = Some(key);
+        self.active_font = Some(key);
+        self.active_bold = bold;
+        self.font_override_active = true;
+        Some(key)
+    }
+
     /// Load all built-in font sizes and set the default active font.
     pub fn load_default_fonts(&mut self) {
-        if self.default_font.is_some() {
+        if self.default_fonts.iter().any(Option::is_some) {
+            self.apply_configured_default_font();
             return;
         }
         // Regular Courier New.
@@ -636,11 +684,6 @@ impl SharedState {
         for (i, (font, _cw, _ch)) in regular.into_iter().enumerate() {
             let key = self.fonts.insert(font);
             self.default_fonts[i] = Some(key);
-            if i == 2 {
-                // Index 2 = 12 pt — good medium default.
-                self.default_font = Some(key);
-                self.active_font = Some(key);
-            }
         }
         // Bold Courier New.
         let bold = crate::render::Font::load_all_bold();
@@ -648,6 +691,7 @@ impl SharedState {
             let key = self.fonts.insert(font);
             self.default_bold_fonts[i] = Some(key);
         }
+        self.apply_configured_default_font();
     }
     /// Check the status of a pending asynchronous read operation.
     pub fn poll_async_load(&self, handle_id: u64) -> (String, Option<String>) {

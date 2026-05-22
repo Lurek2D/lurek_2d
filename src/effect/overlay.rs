@@ -259,6 +259,61 @@ impl Overlay {
         self.water = crate::effect::water_overlay::WaterOverlayState::default();
         self.custom_shader = None;
     }
+
+    /// Copies ambient color from the given light world ambient color into this overlay.
+    pub fn pull_ambient_from_light(&mut self, light_color: &crate::math::Color) {
+        self.ambient.color = [light_color.r, light_color.g, light_color.b, light_color.a];
+    }
+
+    /// Copies this overlay ambient color into the given light world ambient color.
+    pub fn push_ambient_to_light(&self, light_color: &mut crate::math::Color) {
+        light_color.r = self.ambient.color[0];
+        light_color.g = self.ambient.color[1];
+        light_color.b = self.ambient.color[2];
+        light_color.a = self.ambient.color[3];
+    }
+
+    /// Resolves overlay and light ambient colors using a named mode and writes both stores.
+    pub fn sync_ambient_with_light(
+        &mut self,
+        light_color: &mut crate::math::Color,
+        mode: &str,
+    ) -> Result<(), String> {
+        let lc = [light_color.r, light_color.g, light_color.b, light_color.a];
+        let oc = self.ambient.color;
+        let resolved = match mode {
+            "light" => lc,
+            "overlay" => oc,
+            "avg" => [
+                (lc[0] + oc[0]) * 0.5,
+                (lc[1] + oc[1]) * 0.5,
+                (lc[2] + oc[2]) * 0.5,
+                (lc[3] + oc[3]) * 0.5,
+            ],
+            "max" => [
+                lc[0].max(oc[0]),
+                lc[1].max(oc[1]),
+                lc[2].max(oc[2]),
+                lc[3].max(oc[3]),
+            ],
+            "min" => [
+                lc[0].min(oc[0]),
+                lc[1].min(oc[1]),
+                lc[2].min(oc[2]),
+                lc[3].min(oc[3]),
+            ],
+            _ => {
+                return Err("Overlay:syncAmbientWithLight invalid mode; expected 'light', 'overlay', 'avg', 'max', or 'min'".to_string());
+            }
+        };
+        self.ambient.color = resolved;
+        light_color.r = resolved[0];
+        light_color.g = resolved[1];
+        light_color.b = resolved[2];
+        light_color.a = resolved[3];
+        Ok(())
+    }
+
     /// Updates the overlay target dimensions.
     pub fn resize(&mut self, width: u32, height: u32) {
         self.width = width;

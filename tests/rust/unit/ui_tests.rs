@@ -88,9 +88,49 @@ mod theme_tests {
     #[test]
     fn widget_style_default_values() {
         let s = WidgetStyle::default();
-        assert_eq!(s.font_size, 14.0);
-        assert_eq!(s.border_width, 1.0);
-        assert_eq!(s.corner_radius, 0.0);
+        assert!((s.font_size - 14.0).abs() < 1e-5, "expected 14.0 got {}", s.font_size);
+        assert!((s.border_width - 1.0).abs() < 1e-5, "expected 1.0 got {}", s.border_width);
+        assert!((s.corner_radius - 0.0).abs() < 1e-5, "expected 0.0 got {}", s.corner_radius);
+    }
+
+    #[test]
+    fn theme_token_lookup_returns_float() {
+        let t = Theme::default_dark();
+        let token = t.get_token("spacing_md").expect("spacing_md must exist");
+        match token {
+            lurek2d::ui::theme::ThemeToken::Float(v) => {
+                assert!((*v - 8.0).abs() < 1e-5, "expected 8.0 got {v}");
+            }
+            other => panic!("expected Float, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn theme_token_lookup_returns_color() {
+        let t = Theme::default_dark();
+        let token = t.get_token("color_primary").expect("color_primary must exist");
+        match token {
+            lurek2d::ui::theme::ThemeToken::Color([r, g, b, a]) => {
+                assert!((*r - 0.2).abs() < 1e-5, "r={r}");
+                assert!((*g - 0.5).abs() < 1e-5, "g={g}");
+                assert!((*b - 1.0).abs() < 1e-5, "b={b}");
+                assert!((*a - 1.0).abs() < 1e-5, "a={a}");
+            }
+            other => panic!("expected Color, got {other:?}"),
+        }
+    }
+}
+
+mod widget_state_tests {
+    use lurek2d::ui::widget::WidgetState;
+
+    #[test]
+    fn widget_state_new_variants_roundtrip() {
+        for name in &["selected", "checked", "invalid", "readonly", "active", "expanded"] {
+            let state = WidgetState::parse_str(name)
+                .unwrap_or_else(|| panic!("parse_str({name}) returned None"));
+            assert_eq!(state.as_str(), *name, "roundtrip failed for {name}");
+        }
     }
 }
 
@@ -190,6 +230,101 @@ mod render_tests {
         assert!(
             bright_pixels > 24,
             "button label should be visible in draw_to_image output"
+        );
+    }
+
+    #[test]
+    fn render_nested_button_uses_computed_rect() {
+        let mut ctx = GuiContext::new();
+        let panel = ctx.add_panel();
+        ctx.widgets[panel].base_mut().x = 100.0;
+        ctx.widgets[panel].base_mut().y = 100.0;
+        ctx.widgets[panel].base_mut().width = 200.0;
+        ctx.widgets[panel].base_mut().height = 200.0;
+        ctx.add_child(0, panel);
+        let btn = ctx.add_button("OK");
+        ctx.widgets[btn].base_mut().x = 50.0;
+        ctx.widgets[btn].base_mut().y = 50.0;
+        ctx.add_child(panel, btn);
+        ctx.run_layout_pass();
+        let btn_rect = ctx.widgets[btn].base().computed_rect;
+        assert!(
+            (btn_rect.x - 150.0).abs() < 1e-3,
+            "expected computed_rect.x == 150.0, got {}",
+            btn_rect.x
+        );
+        assert!(
+            (btn_rect.y - 150.0).abs() < 1e-3,
+            "expected computed_rect.y == 150.0, got {}",
+            btn_rect.y
+        );
+    }
+
+    #[test]
+    fn label_ellipsis_truncates_long_text() {
+        let mut ctx = GuiContext::new();
+        let lbl = ctx.add_label("Hello World This Is Very Long");
+        ctx.widgets[lbl].base_mut().x = 0.0;
+        ctx.widgets[lbl].base_mut().y = 0.0;
+        ctx.widgets[lbl].base_mut().width = 50.0;
+        ctx.widgets[lbl].base_mut().height = 20.0;
+        // Defaults: text_ellipsis=true, text_wrap=false
+        ctx.add_child(0, lbl);
+        let cmds = ctx.build_render_commands(FontKey::default());
+        let print_cmd = cmds.iter().find(|c| matches!(c, RenderCommand::Print { .. }));
+        assert!(print_cmd.is_some(), "expected a Print command");
+        if let Some(RenderCommand::Print { text, .. }) = print_cmd {
+            assert!(
+                text.ends_with('…') || text.len() < "Hello World This Is Very Long".len(),
+                "expected ellipsis or truncation, got: {:?}",
+                text
+            );
+        }
+    }
+
+    #[test]
+    fn label_valign_middle_centers_text() {
+        let mut ctx = GuiContext::new();
+        let lbl = ctx.add_label("Hi");
+        ctx.widgets[lbl].base_mut().x = 0.0;
+        ctx.widgets[lbl].base_mut().y = 0.0;
+        ctx.widgets[lbl].base_mut().width = 100.0;
+        ctx.widgets[lbl].base_mut().height = 100.0;
+        // text_v_align defaults to Middle; font_size defaults to 14.0
+        ctx.add_child(0, lbl);
+        let cmds = ctx.build_render_commands(FontKey::default());
+        let print_cmd = cmds.iter().find(|c| matches!(c, RenderCommand::Print { .. }));
+        assert!(print_cmd.is_some(), "expected a Print command");
+        if let Some(RenderCommand::Print { y, .. }) = print_cmd {
+            // Middle: y = rect.y + (rect.height - font_size) / 2 = (100 - 14) / 2 = 43
+            let expected_y = (100.0_f32 - 14.0_f32) * 0.5;
+            assert!(
+                (y - expected_y).abs() < 2.0,
+                "expected y ≈ {expected_y}, got {y}"
+            );
+        }
+    }
+
+    #[test]
+    fn label_wrap_breaks_at_word_boundary() {
+        let mut ctx = GuiContext::new();
+        let lbl = ctx.add_label("Hello World");
+        ctx.widgets[lbl].base_mut().x = 0.0;
+        ctx.widgets[lbl].base_mut().y = 0.0;
+        ctx.widgets[lbl].base_mut().width = 60.0;
+        ctx.widgets[lbl].base_mut().height = 60.0;
+        ctx.widgets[lbl].base_mut().text_wrap = true;
+        ctx.widgets[lbl].base_mut().text_ellipsis = false;
+        ctx.add_child(0, lbl);
+        let cmds = ctx.build_render_commands(FontKey::default());
+        let print_count = cmds
+            .iter()
+            .filter(|c| matches!(c, RenderCommand::Print { .. }))
+            .count();
+        assert!(
+            print_count >= 2,
+            "expected at least 2 Print commands for wrapped text, got {}",
+            print_count
         );
     }
 }
@@ -298,7 +433,7 @@ mod extras_tests {
     #[test]
     fn toast_progress_starts_at_zero() {
         let t = Toast::new("Hello", 5.0);
-        assert_eq!(t.progress(), 0.0);
+        assert!((t.progress() - 0.0).abs() < 1e-5, "expected 0.0 got {}", t.progress());
         assert!(!t.is_expired());
     }
 
@@ -313,28 +448,28 @@ mod extras_tests {
     #[test]
     fn toast_zero_duration_is_immediately_done() {
         let t = Toast::new("Instant", 0.0);
-        assert_eq!(t.progress(), 1.0);
+        assert!((t.progress() - 1.0).abs() < 1e-5, "expected 1.0 got {}", t.progress());
     }
 
     #[test]
     fn separator_horizontal_dimensions() {
         let sep = Separator::new(false);
         assert!(!sep.vertical);
-        assert_eq!(sep.base.width, 100.0);
+        assert!((sep.base.width - 100.0).abs() < 1e-5, "expected 100.0 got {}", sep.base.width);
     }
 
     #[test]
     fn separator_vertical_dimensions() {
         let sep = Separator::new(true);
         assert!(sep.vertical);
-        assert_eq!(sep.base.height, 30.0);
+        assert!((sep.base.height - 30.0).abs() < 1e-5, "expected 30.0 got {}", sep.base.height);
     }
 
     #[test]
     fn spacer_default_zero_size() {
         let sp = Spacer::default();
-        assert_eq!(sp.base.width, 0.0);
-        assert_eq!(sp.base.height, 0.0);
+        assert!((sp.base.width - 0.0).abs() < 1e-5, "expected 0.0 got {}", sp.base.width);
+        assert!((sp.base.height - 0.0).abs() < 1e-5, "expected 0.0 got {}", sp.base.height);
     }
 
     #[test]
@@ -550,6 +685,33 @@ mod context_tests {
         assert!((ctx.widgets[label].base().y - 22.0).abs() < f32::EPSILON);
         assert!((ctx.widgets[switch].base().width - 33.0).abs() < f32::EPSILON);
     }
+
+    #[test]
+    fn dirty_flags_layout_only_after_add_child() {
+        let mut ctx = GuiContext::new();
+        let panel = ctx.add_panel();
+        let btn = ctx.add_button("X");
+        let _ = ctx.flush_cache();
+
+        let ok = ctx.add_child(panel, btn);
+        assert!(ok);
+        assert!(ctx.layout_dirty);
+        assert!(!ctx.style_dirty);
+        assert!(!ctx.text_dirty);
+        assert!(ctx.render_dirty);
+    }
+
+    #[test]
+    fn dirty_flags_style_only_after_default_theme() {
+        let mut ctx = GuiContext::new();
+        let _ = ctx.flush_cache();
+
+        ctx.set_default_theme();
+        assert!(!ctx.layout_dirty);
+        assert!(ctx.style_dirty);
+        assert!(!ctx.text_dirty);
+        assert!(ctx.render_dirty);
+    }
 }
 
 // ── data_graph_renderer ───────────────────────────────────────────────────────
@@ -708,9 +870,9 @@ mod containers_tests {
     #[test]
     fn layout_new_defaults() {
         let l = Layout::new(LayoutDirection::Vertical);
-        assert_eq!(l.spacing, 0.0);
+        assert!((l.spacing - 0.0).abs() < 1e-5, "expected 0.0 got {}", l.spacing);
         assert!(!l.wrap);
-        assert_eq!(l.align, "start");
+        assert_eq!(l.align, "stretch");
         assert_eq!(l.justify, "start");
     }
 

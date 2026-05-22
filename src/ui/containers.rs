@@ -79,7 +79,7 @@ pub struct Layout {
     pub columns: usize,
     /// Whether children wrap to the next row/column when they exceed the layout extent.
     pub wrap: bool,
-    /// Cross-axis alignment token, e.g. `"start"`, `"center"`, `"end"`.
+    /// Cross-axis alignment token, e.g. `"start"`, `"center"`, `"end"`, or `"stretch"`.
     pub align: String,
     /// Main-axis justification token, e.g. `"start"`, `"space-between"`.
     pub justify: String,
@@ -94,7 +94,7 @@ impl Layout {
             spacing: 0.0,
             columns: 1,
             wrap: false,
-            align: "start".to_string(),
+            align: "stretch".to_string(),
             justify: "start".to_string(),
         }
     }

@@ -323,7 +323,7 @@ impl LuaUserData for LuaMod {
         });
         // -- setConfig --
         /// Stores a Lua config value for this mod.
-        /// @param | value | table | Config value to store (table, number, string, or boolean).
+        /// @param | value | any | Config value to store (table, number, string, or boolean).
         methods.add_method_mut("setConfig", |lua, this, value: LuaValue| {
             if let Some(old_key) = this.config.take() {
                 lua.remove_registry_value(old_key)?;
@@ -693,84 +693,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "checkApiVersion",
         lua.create_function(|lua, (mod_ud, host_version): (LuaAnyUserData, String)| {
-            let api_ver = {
-                let m = mod_ud.borrow::<LuaMod>()?;
-                m.inner.api_version.clone()
-            };
-            let required = match api_ver {
-                None => return Ok((true, LuaValue::Nil)),
-                Some(v) => v,
-            };
-            let parse = |s: &str| -> Option<(u32, u32, u32)> {
-                let mut parts = s.splitn(3, '.');
-                let maj = parts.next()?.parse::<u32>().ok()?;
-                let min = parts.next()?.parse::<u32>().ok()?;
-                let pat = parts
-                    .next()
-                    .and_then(|p| p.parse::<u32>().ok())
-                    .unwrap_or(0);
-                Some((maj, min, pat))
-            };
-            let (req_maj, req_min, _) = match parse(&required) {
-                Some(v) => v,
-                None => {
-                    return Ok((
-                        false,
-                        LuaValue::String(
-                            lua.create_string(
-                                format!("mod api_version '{}' is not a valid semver", required)
-                                    .as_bytes(),
-                            )?,
-                        ),
-                    ))
-                }
-            };
-            let (host_maj, host_min, _) = match parse(&host_version) {
-                Some(v) => v,
-                None => {
-                    return Ok((
-                        false,
-                        LuaValue::String(
-                            lua.create_string(
-                                format!(
-                                    "host api_version '{}' is not a valid semver",
-                                    host_version
-                                )
-                                .as_bytes(),
-                            )?,
-                        ),
-                    ))
-                }
-            };
-            if req_maj != host_maj {
-                return Ok((
-                    false,
-                    LuaValue::String(
-                        lua.create_string(
-                            format!(
-                                "mod requires API {}.x but host provides {}.x",
-                                req_maj, host_maj
-                            )
-                            .as_bytes(),
-                        )?,
-                    ),
-                ));
+            let m = mod_ud.borrow::<LuaMod>()?;
+            match m.inner.check_api_version(&host_version) {
+                Ok(()) => Ok((true, LuaValue::Nil)),
+                Err(e) => Ok((false, LuaValue::String(lua.create_string(e.as_bytes())?))),
             }
-            if req_min > host_min {
-                return Ok((
-                    false,
-                    LuaValue::String(
-                        lua.create_string(
-                            format!(
-                                "mod requires API {}.{}.x but host provides {}.{}.x",
-                                req_maj, req_min, host_maj, host_min
-                            )
-                            .as_bytes(),
-                        )?,
-                    ),
-                ));
-            }
-            Ok((true, LuaValue::Nil))
         })?,
     )?;
     /// Performs the 'mods' operation.

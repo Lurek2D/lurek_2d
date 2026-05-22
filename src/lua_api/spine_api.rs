@@ -2,7 +2,7 @@
 
 use super::SharedState;
 use crate::spine::ik::IKConstraint;
-use crate::spine::timeline::{BoneProperty, BoneTimeline, EasingType, Keyframe, SkeletonAnimation};
+use crate::spine::timeline::{BoneProperty, EasingType, SkeletonAnimation};
 use crate::spine::{BoneParams, Skeleton};
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -339,25 +339,7 @@ impl LuaUserData for LuaSkeletonAnimation {
                         )))
                     }
                 };
-                let keyframe = Keyframe {
-                    time,
-                    value,
-                    easing,
-                };
-                let existing = this
-                    .inner
-                    .timelines
-                    .iter_mut()
-                    .find(|tl| tl.bone_idx == bone_idx && tl.property == property);
-                if let Some(tl) = existing {
-                    tl.keys.push(keyframe);
-                } else {
-                    this.inner.timelines.push(BoneTimeline {
-                        bone_idx,
-                        property,
-                        keys: vec![keyframe],
-                    });
-                }
+                this.inner.add_keyframe(bone_idx, property, time, value, easing);
                 Ok(())
             },
         );

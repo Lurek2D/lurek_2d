@@ -226,18 +226,19 @@ function Tests.check_ui_mouse_interactions(ctx)
         button_hits = button_hits + 1
     end
 
+    local control_y = 93
     local tab_clicked = click_ui(158, 48)
-    local member_opened = click_ui(20, 83)
-    local member_selected = click_ui(20, 128)
-    local category_opened = click_ui(118, 83)
-    local category_selected = click_ui(118, 150)
-    local start_dragged = click_ui(278, 83)
-    lurek.ui.mousepressed(500, 83, 1)
-    lurek.ui.mousemoved(522, 83)
-    lurek.ui.mousereleased(522, 83, 1)
+    local member_opened = click_ui(20, control_y)
+    local member_selected = click_ui(20, control_y + 45)
+    local category_opened = click_ui(118, control_y)
+    local category_selected = click_ui(118, control_y + 67)
+    local start_dragged = click_ui(278, control_y)
+    lurek.ui.mousepressed(500, control_y, 1)
+    lurek.ui.mousemoved(522, control_y)
+    lurek.ui.mousereleased(522, control_y, 1)
     lurek.ui.update(0.0)
-    local switch_clicked = click_ui(418, 83)
-    local button_clicked = click_ui(710, 83)
+    local switch_clicked = click_ui(418, control_y)
+    local button_clicked = click_ui(710, control_y)
 
     local filters = ctx.Controls.read_filters(ctx)
     return tab_clicked

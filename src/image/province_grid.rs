@@ -19,6 +19,26 @@ pub struct AdjacencyPair {
     /// Number of border pixels shared by the pair.
     pub border_pixels: u32,
 }
+#[derive(Clone)]
+/// Cached province polygon draw data with color, bounds, and flattened vertices.
+pub struct ProvinceShapeCacheEntry {
+    /// Red channel normalized to 0.0 through 1.0.
+    pub r: f32,
+    /// Green channel normalized to 0.0 through 1.0.
+    pub g: f32,
+    /// Blue channel normalized to 0.0 through 1.0.
+    pub b: f32,
+    /// Minimum x coordinate for viewport culling.
+    pub min_x: f32,
+    /// Minimum y coordinate for viewport culling.
+    pub min_y: f32,
+    /// Maximum x coordinate for viewport culling.
+    pub max_x: f32,
+    /// Maximum y coordinate for viewport culling.
+    pub max_y: f32,
+    /// Flattened `[x, y]` polygon vertices used by renderer commands.
+    pub vertices: Vec<f32>,
+}
 /// Province id grid derived from image colors and cached geometry.
 pub struct ProvinceGrid {
     /// Grid width in pixels.
@@ -278,6 +298,59 @@ impl ProvinceGrid {
         }
         polygons.retain(|_, loops| !loops.is_empty());
         polygons
+    }
+    /// Build a simplified polygon shape cache for efficient drawing.
+    pub fn build_shape_cache(&self) -> Vec<ProvinceShapeCacheEntry> {
+        let polygons = self.province_polygons_simplified();
+        let mut cache: Vec<ProvinceShapeCacheEntry> = Vec::new();
+        for (&id, rings) in &polygons {
+            if let Some((r, g, b)) = self.province_color(id) {
+                let rf = r as f32 / 255.0;
+                let gf = g as f32 / 255.0;
+                let bf = b as f32 / 255.0;
+                for ring in rings {
+                    if ring.len() < 3 {
+                        continue;
+                    }
+                    let ring_points: &[(u32, u32)] =
+                        if ring.len() >= 2 && ring.first() == ring.last() {
+                            &ring[..ring.len() - 1]
+                        } else {
+                            ring.as_slice()
+                        };
+                    if ring_points.len() < 3 {
+                        continue;
+                    }
+                    let verts: Vec<f32> = ring_points
+                        .iter()
+                        .flat_map(|&(px, py)| [px as f32, py as f32])
+                        .collect();
+                    let mut min_x = f32::INFINITY;
+                    let mut min_y = f32::INFINITY;
+                    let mut max_x = f32::NEG_INFINITY;
+                    let mut max_y = f32::NEG_INFINITY;
+                    for chunk in verts.chunks_exact(2) {
+                        let x = chunk[0];
+                        let y = chunk[1];
+                        min_x = min_x.min(x);
+                        min_y = min_y.min(y);
+                        max_x = max_x.max(x);
+                        max_y = max_y.max(y);
+                    }
+                    cache.push(ProvinceShapeCacheEntry {
+                        r: rf,
+                        g: gf,
+                        b: bf,
+                        min_x,
+                        min_y,
+                        max_x,
+                        max_y,
+                        vertices: verts,
+                    });
+                }
+            }
+        }
+        cache
     }
     /// Detect adjacent province pairs and count shared borders.
     fn detect_adjacencies_internal(ids: &[u32], width: u32, height: u32) -> Vec<(u32, u32, u32)> {

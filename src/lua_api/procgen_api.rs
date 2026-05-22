@@ -60,14 +60,14 @@ impl LuaUserData for LuaBiomeClassifier {
         );
         // -- type --
         /// Returns the type name of this object.
-        /// @return | string | Always returns "BiomeClassifier".
-        methods.add_method("type", |_, _, ()| Ok("BiomeClassifier"));
+        /// @return | string | Always returns "LBiomeClassifier".
+        methods.add_method("type", |_, _, ()| Ok("LBiomeClassifier"));
         // -- typeOf --
         /// Check whether this object matches a given type name.
-        /// @param | name | string | Type name to test (e.g. "BiomeClassifier" or "Object").
+        /// @param | name | string | Type name to test (e.g. "LBiomeClassifier" or "Object").
         /// @return | boolean | True if the object is of the specified type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "BiomeClassifier" || name == "Object")
+            Ok(name == "LBiomeClassifier" || name == "Object")
         });
     }
 }
@@ -1136,7 +1136,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- newBiomeClassifier --
     /// Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
     /// @param | opts | table? | Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
-    /// @return | BiomeClassifier | A classifier object with :classify() and :classifyMap() methods.
+    /// @return | LBiomeClassifier | A classifier object with :classify() and :classifyMap() methods.
     tbl.set(
         "newBiomeClassifier",
         lua.create_function(|lua, opts: Option<LuaTable>| {

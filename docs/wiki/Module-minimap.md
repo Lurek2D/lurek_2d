@@ -41,9 +41,11 @@ Grid-based minimap data model: fog of war, tracked objects, pings, viewport over
 
 ## 📋 Summary
 
-Grid-based minimap data model with fog-of-war, tracked objects, markers, overlays, and render pipeline. `Minimap` owns a grid of terrain cells with per-cell color, type, and fog level (hidden, explored, visible). Objects are tracked entities that appear as colored dots on the minimap with optional labels and update callbacks.
+The `minimap` module is a robust Feature Systems tier component that implements a highly configurable, grid-based minimap and radar system for Lurek2D. It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
 
-Markers are persistent or timed icons at fixed world positions (quest markers, points of interest). Overlays render geometric shapes (circles, rectangles, lines, polygons) over the grid for zone highlighting. The render pipeline converts grid + objects + markers + overlays into `ImageData` at configurable resolution and viewport bounds. Viewport overlay shows the camera's visible area as a rectangle. Exposed as `lurek.minimap.*`. Feature Systems tier.
+Beyond basic terrain visualization, the minimap acts as a comprehensive strategic display. It tracks active game entities via `MinimapObject`s, which project world positions onto the grid and render as typed, owner-colored dots or assigned texture icons. To support mission and location tracking, it provides a `MinimapMarker` system for persistent or timed points of interest, featuring built-in animation states like blinking, pulsing, or rotating crosshairs. For strategic feedback, the module supports dynamic `OverlayShape`s (lines, rectangles, named polyline paths) and temporary animated `MinimapPing` alerts to draw player attention to specific map coordinates.
+
+The module also features a robust rendering pipeline that composites these layers—terrain, fog, overlays, objects, markers, and pings—into an optimized `ImageData` buffer or directly generates an ordered list of `RenderCommand`s. It fully supports configurable display resolutions, zoom levels, panning, and automatic camera-tracking viewports that overlay the player's active screen bounds. To support diverse game genres, it offers multiple color modes, such as switching between standard terrain-colored views and political owner-colored strategic modes. Bridging seamlessly with other systems like the `province` registry, this entire feature set is exposed to Lua scripts via the `lurek.minimap.*` API, enabling developers to build complex, interactive UI maps with minimal engine overhead.
 
 [⬆ back to top](#table-of-contents)
 
@@ -1644,7 +1646,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
     local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
-    print("grid(8,8) â†’ screen = " .. sx .. "," .. sy .. " screen â†’ grid = " .. gx .. "," .. gy)
+    print("grid(8,8) → screen = " .. sx .. "," .. sy .. " screen → grid = " .. gx .. "," .. gy)
 end
 ```
 
@@ -2007,7 +2009,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
     local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
-    print("grid(8,8) â†’ screen = " .. sx .. "," .. sy .. " screen â†’ grid = " .. gx .. "," .. gy)
+    print("grid(8,8) → screen = " .. sx .. "," .. sy .. " screen → grid = " .. gx .. "," .. gy)
 end
 ```
 

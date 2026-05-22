@@ -1218,6 +1218,46 @@ describe("lurek.pathfind FlowField", function()
         local d = ff:getDistance(3, 3)
         expect_near(0, d, 0.01)
     end)
+
+    -- @covers LAIFlowField:getDistance
+    -- @covers LAIFlowField:setGoal
+    -- @covers LPathGrid:setWalkable
+    -- @covers lurek.pathfind.newPathFlowField
+    -- @covers lurek.pathfind.newPathGrid
+    it("setGoal on blocked cell leaves distance as infinity", function()
+        local g = lurek.pathfind.newPathGrid(3, 3, 10)
+        g:setWalkable(3, 3, false)
+        local ff = lurek.pathfind.newPathFlowField(g)
+        ff:setGoal(3, 3)
+        local d = ff:getDistance(1, 1)
+        expect_equal(math.huge, d)
+    end)
+
+    -- @covers LAIFlowField:getDirection
+    -- @covers LAIFlowField:setGoal
+    -- @covers lurek.pathfind.newPathFlowField
+    -- @covers lurek.pathfind.newPathGrid
+    it("getDirection points toward goal", function()
+        local g = lurek.pathfind.newPathGrid(5, 1, 10)
+        local ff = lurek.pathfind.newPathFlowField(g)
+        ff:setGoal(5, 1)
+        local dx, dy = ff:getDirection(1, 1)
+        expect_true(dx > 0)
+    end)
+
+    -- @covers LAIFlowField:getDirection
+    -- @covers LAIFlowField:getDistance
+    -- @covers lurek.pathfind.newPathFlowField
+    -- @covers lurek.pathfind.newPathGrid
+    it("out-of-bounds coordinates return zero direction and infinite distance", function()
+        local g = lurek.pathfind.newPathGrid(2, 2, 10)
+        local ff = lurek.pathfind.newPathFlowField(g)
+        local dx, dy = ff:getDirection(10, 10)
+        expect_equal(0, dx)
+        expect_equal(0, dy)
+        local d = ff:getDistance(10, 10)
+        expect_equal(math.huge, d)
+    end)
 end)
 
 -- @describe pathfind constructors migrated from ai unit
@@ -1812,10 +1852,14 @@ end)
 
 -- @describe NavMesh
 describe("NavMesh", function()
+    -- @covers LNavMesh:type
+    -- @covers LNavMesh:typeOf
     -- @covers lurek.pathfind.newNavMesh
     it("newNavMesh returns userdata", function()
         local mesh = lurek.pathfind.newNavMesh()
         expect_type("userdata", mesh)
+        expect_type("string", mesh:type())
+        expect_type("boolean", mesh:typeOf("Object"))
     end)
 
     -- @covers LNavMesh:addPolygon
@@ -1831,6 +1875,18 @@ describe("NavMesh", function()
         })
         expect_equal(1, a)
         expect_equal(1, mesh:getPolygonCount())
+    end)
+
+    -- @covers LNavMesh:addPolygon
+    -- @covers LNavMesh:getPolygonCount
+    -- @covers lurek.pathfind.newNavMesh
+    it("addPolygon with fewer than 3 vertices raises an error", function()
+        local mesh = lurek.pathfind.newNavMesh()
+        local ok = pcall(function()
+            mesh:addPolygon({{x = 0, y = 0}, {x = 1, y = 0}})
+        end)
+        expect_false(ok)
+        expect_equal(0, mesh:getPolygonCount())
     end)
 
     -- @covers LNavMesh:addPolygon

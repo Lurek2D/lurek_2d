@@ -713,14 +713,14 @@ window.addEventListener('resize',draw);
     const exe = path.join(wsRoot, "build", "debug", "lurek2d.exe");
     const t = getOrCreateBuildTerminal();
     t.show();
-    t.sendText(`"${exe}"`);
+    t.sendText(`& "${exe}"`);
   });
   registerCommand(context, "lurek.run.releaseNoRebuild", () => {
     const wsRoot = getWorkspaceRoot() ?? ".";
     const exe = path.join(wsRoot, "build", "release", "lurek2d.exe");
     const t = getOrCreateBuildTerminal();
     t.show();
-    t.sendText(`"${exe}"`);
+    t.sendText(`& "${exe}"`);
   });
 
   // ─── Additional Test Module Commands ─────────────────────

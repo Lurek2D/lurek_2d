@@ -1991,13 +1991,13 @@ describe("lurek.patterns.newGraph", function()
     -- @covers lurek.patterns.newGraph
     it("creates a Graph with correct type", function()
         local g = newGraph()
-        expect_equal("LGraph", g["type"](g))
-        expect_true(g["typeOf"](g, "LGraph"))
+        expect_equal("LPatternGraph", g["type"](g))
+        expect_true(g["typeOf"](g, "LPatternGraph"))
         expect_true(g["typeOf"](g, "Object"))
     end)
 
-    -- @covers LGraph:addNode
-    -- @covers LGraph:nodeCount
+    -- @covers LPatternGraph:addNode
+    -- @covers LPatternGraph:nodeCount
     -- @covers lurek.patterns.newGraph
     it("addNode increases nodeCount", function()
         local g = newGraph()
@@ -2007,8 +2007,8 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(g:nodeCount(), 2)
     end)
 
-    -- @covers LGraph:addNode
-    -- @covers LGraph:hasNode
+    -- @covers LPatternGraph:addNode
+    -- @covers LPatternGraph:hasNode
     -- @covers lurek.patterns.newGraph
     it("hasNode returns true for added nodes", function()
         local g = newGraph()
@@ -2017,8 +2017,8 @@ describe("lurek.patterns.newGraph", function()
         expect_true(not g:hasNode(9999))
     end)
 
-    -- @covers LGraph:addEdge
-    -- @covers LGraph:edgeCount
+    -- @covers LPatternGraph:addEdge
+    -- @covers LPatternGraph:edgeCount
     -- @covers lurek.patterns.newGraph
     it("addEdge increases edgeCount", function()
         local g = newGraph()
@@ -2028,8 +2028,8 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(g:edgeCount(), 1)
     end)
 
-    -- @covers LGraph:addEdge
-    -- @covers LGraph:neighbors
+    -- @covers LPatternGraph:addEdge
+    -- @covers LPatternGraph:neighbors
     -- @covers lurek.patterns.newGraph
     it("neighbors returns reachable targets", function()
         local g = newGraph()
@@ -2042,7 +2042,7 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(#nbs, 2)
     end)
 
-    -- @covers LGraph:bfs
+    -- @covers LPatternGraph:bfs
     -- @covers lurek.patterns.newGraph
     it("bfs visits all reachable nodes", function()
         local g = newGraph()
@@ -2056,7 +2056,7 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(order[1], a)
     end)
 
-    -- @covers LGraph:dfs
+    -- @covers LPatternGraph:dfs
     -- @covers lurek.patterns.newGraph
     it("dfs visits all reachable nodes in depth-first order", function()
         local g = newGraph()
@@ -2070,7 +2070,7 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(order[1], a)
     end)
 
-    -- @covers LGraph:isConnected
+    -- @covers LPatternGraph:isConnected
     -- @covers lurek.patterns.newGraph
     it("isConnected returns true when path exists", function()
         local g = newGraph()
@@ -2083,8 +2083,8 @@ describe("lurek.patterns.newGraph", function()
         expect_true(not g:isConnected(c, a))
     end)
 
-    -- @covers LGraph:addNode
-    -- @covers LGraph:getNodeValue
+    -- @covers LPatternGraph:addNode
+    -- @covers LPatternGraph:getNodeValue
     -- @covers lurek.patterns.newGraph
     it("addNode stores a payload value", function()
         local g = newGraph()
@@ -2095,7 +2095,7 @@ describe("lurek.patterns.newGraph", function()
         end
     end)
 
-    -- @covers LGraph:removeNode
+    -- @covers LPatternGraph:removeNode
     -- @covers lurek.patterns.newGraph
     it("removeNode removes node and incident edges", function()
         local g = newGraph()
@@ -2107,7 +2107,7 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(g:edgeCount(), 0)
     end)
 
-    -- @covers LGraph:clearAll
+    -- @covers LPatternGraph:clearAll
     -- @covers lurek.patterns.newGraph
     it("clearAll removes everything", function()
         local g = newGraph()
@@ -2119,8 +2119,8 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(g:edgeCount(), 0)
     end)
 
-    -- @covers LGraph:addEdge
-    -- @covers LGraph:neighbors
+    -- @covers LPatternGraph:addEdge
+    -- @covers LPatternGraph:neighbors
     -- @covers lurek.patterns.newGraph
     it("undirected graph adds reverse edge automatically", function()
         local g = newGraph(true)
@@ -2129,6 +2129,17 @@ describe("lurek.patterns.newGraph", function()
         g:addEdge(a, b)
         expect_true(g:isConnected(a, b))
         expect_true(g:isConnected(b, a))
+    end)
+
+    -- @covers LPatternGraph:removeEdge
+    -- @covers lurek.patterns.newGraph
+    it("removeEdge removes an existing edge", function()
+        local g = newGraph()
+        local a = g:addNode("a")
+        local b = g:addNode("b")
+        g:addEdge(a, b)
+        expect_true(g:removeEdge(a, b))
+        expect_equal(0, g:edgeCount())
     end)
 end)
 

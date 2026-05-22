@@ -11,6 +11,10 @@ local function round(value)
     return math.floor((tonumber(value) or 0) + 0.5)
 end
 
+local function ms(value)
+    return string.format("%.0f ms", tonumber(value) or 0)
+end
+
 local function index_of(values, target)
     for index, value in ipairs(values or {}) do
         if value == target then return index end
@@ -36,9 +40,9 @@ local function place(widget, x, y, w, h)
     return widget
 end
 
-local LABEL_Y = 60
-local CONTROL_Y = 72
-local SUMMARY_Y = 96
+local LABEL_Y = 62
+local CONTROL_Y = 80
+local SUMMARY_Y = 110
 
 local function make_label(text, x, y, w)
     return place(lurek.ui.newLabel(text), x, y, w, 12)
@@ -58,11 +62,22 @@ end
 
 local function ensure_status_sections(status)
     if status:getSectionCount() == 0 then
-        status:addSection("ready", 240)
-        status:addSection("rows", 130)
-        status:addSection("cache", 230)
-        status:addSection("slot", 200)
+        status:addSection("source", 120)
+        status:addSection("rows", 120)
+        status:addSection("refresh", 120)
+        status:addSection("view", 440)
     end
+end
+
+local function status_source(source)
+    source = tostring(source or "ready")
+    local known = {
+        ["database cache"] = "cache",
+        ["generated csv"] = "generated",
+        ["csv file"] = "csv",
+        ["restored save"] = "save",
+    }
+    return short(known[source] or source, 10)
 end
 
 local function ensure_table_rows(tbl, count, columns)
@@ -133,12 +148,12 @@ function Controls.setup(ctx)
     widgets.save = make_button(ctx, "Save", 696, CONTROL_Y, 44, "save_state")
     widgets.screenshot = make_button(ctx, "Shot", 748, CONTROL_Y, 40, "screenshot")
 
-    widgets.filter_summary = make_label("Filters: All / All", 12, SUMMARY_Y, 776)
+    widgets.filter_summary = make_label("All/All 2021-2025 clean >=30", 12, SUMMARY_Y, 776)
 
-    widgets.status = place(lurek.ui.newStatusBar(), 0, 568, ctx.C.WIDTH, 32)
+    widgets.status = place(lurek.ui.newStatusBar(), 0, 560, ctx.C.WIDTH, 24)
     ensure_status_sections(widgets.status)
 
-    widgets.transactions = place(lurek.ui.newTable(), 16, 142, 768, 404)
+    widgets.transactions = place(lurek.ui.newTable(), 16, 156, 768, 390)
     ensure_table_rows(widgets.transactions, 18, {
         { "Date", 70 },
         { "Member", 70 },
@@ -149,7 +164,7 @@ function Controls.setup(ctx)
         { "Issue", 98 },
     })
 
-    widgets.api = place(lurek.ui.newTable(), 526, 112, 262, 444)
+    widgets.api = place(lurek.ui.newTable(), 526, 134, 262, 422)
     ensure_table_rows(widgets.api, 14, {
         { "Key", 76 },
         { "Value", 104 },
@@ -348,19 +363,19 @@ function Controls.update_widgets(ctx)
     local filters = ctx.filters or Controls.read_filters(ctx)
     if ctx.widgets.filter_summary then
         ctx.widgets.filter_summary:setText(short(string.format(
-            "Filters: %s / %s | %d-%d | %s | anomaly >= %d | buttons: Regen Reload Save Shot",
-            short(filters.member or "All", 10),
-            short(filters.category or "All", 12),
+            "%s/%s %d-%d %s >=%d",
+            short(filters.member or "All", 8),
+            short(filters.category or "All", 10),
             filters.start_year or ctx.C.YEAR_MIN,
             filters.end_year or ctx.C.YEAR_MAX,
             (filters.use_cleaned == false) and "raw" or "clean",
             filters.anomaly_threshold or 30
-        ), 118))
+        ), 40))
     end
-    status:setSectionText(1, short(ctx.status or "ready", 34))
-    status:setSectionText(2, tostring(ctx.row_count or 0) .. "/" .. tostring(ctx.clean_count or 0) .. " rows")
-    status:setSectionText(3, short((ctx.source or "") .. " | " .. ctx.C.CACHE_MANIFEST, 30))
-    status:setSectionText(4, short(ctx.C.SAVE_SLOT .. " | " .. (ctx.C.TABS[filters.active_tab] or ""), 24))
+    status:setSectionText(1, "src " .. status_source(ctx.source))
+    status:setSectionText(2, string.format("rows %s/%s", tostring(ctx.clean_count or 0), tostring(ctx.row_count or 0)))
+    status:setSectionText(3, "sql " .. ms(ctx.refresh_ms))
+    status:setSectionText(4, string.format("%s | %s/%s", short(ctx.C.TABS[filters.active_tab] or "view", 12), short(filters.member or "All", 6), short(filters.category or "All", 8)))
     update_transactions(ctx)
     update_api_table(ctx)
     Controls.update_visibility(ctx)

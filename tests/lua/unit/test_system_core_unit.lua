@@ -60,6 +60,9 @@ describe("lurek.runtime platform info", function()
         local os = lurek.runtime.getOS()
         expect_type("string", os)
         expect_true(#os > 0, "OS name must be non-empty")
+        
+        local valid_os = { Windows = true, Linux = true, macOS = true, Android = true, iOS = true, Unknown = true }
+        expect_true(valid_os[os] == true, "OS name must be a recognized Lurek2D platform name")
     end)
 
     -- @covers lurek.runtime.getVersion

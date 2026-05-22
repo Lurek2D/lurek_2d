@@ -213,6 +213,7 @@ end)
 
 -- @describe pause and resume
 describe("pause and resume", function()
+    -- @covers LTween:setRelative
     -- @covers LTween:pause
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
@@ -221,6 +222,7 @@ describe("pause and resume", function()
         lurek.tween.cancelAll()
         local obj = { x = 0 }
         local t = lurek.tween.tween(2.0, obj, { x = 100 }, "linear")
+        t:setRelative(false)
         lurek.tween.update(0.5)
         local before = obj.x
         t:pause()
@@ -354,10 +356,12 @@ end)
 
 -- @describe sequence()
 describe("sequence()", function()
+    -- @covers LTweenSequence:getProgress
     -- @covers lurek.tween.sequence
     it("returns a userdata", function()
         local seq = lurek.tween.sequence()
         expect_type("userdata", seq)
+        expect_type("number", seq:getProgress())
     end)
 
     -- @covers LTweenSequence:isActive

@@ -155,26 +155,26 @@ end
 --- Procgen Module Part 1: BiomeClassifier, generateNames, noiseMapParallelSeeded, simplex3d
 
 
---@api-stub: BiomeClassifier:classify
+--@api-stub: LBiomeClassifier:classify
 do
     local bc = lurek.procgen.newBiomeClassifier({ biomes = { { name = "ocean", h_max = 0.3, m_min = 0.0, t_min = 0.0 }, { name = "forest", h_min = 0.3, m_min = 0.3, t_min = 0.0 } } })
     print("biome=" .. bc:classify(0.5, 0.6, 0.4))
 end
 
---@api-stub: BiomeClassifier:classifyMap
+--@api-stub: LBiomeClassifier:classifyMap
 do
     local bc = lurek.procgen.newBiomeClassifier({ biomes = { { name = "ocean", h_max = 0.3, m_min = 0.0, t_min = 0.0 }, { name = "forest", h_min = 0.3, m_min = 0.3, t_min = 0.0 } } })
     local map = bc:classifyMap(2, 2, { 0.1, 0.2, 0.6, 0.7 }, { 0.8, 0.7, 0.5, 0.4 }, { 0.4, 0.4, 0.4, 0.4 })
     print("map_size=" .. #map)
 end
 
---@api-stub: BiomeClassifier:type
+--@api-stub: LBiomeClassifier:type
 do
     local bc = lurek.procgen.newBiomeClassifier({ biomes = { { name = "ocean", h_max = 1.0, m_min = 0.0, t_min = 0.0 } } })
     print("type=" .. bc:type())
 end
 
---@api-stub: BiomeClassifier:typeOf
+--@api-stub: LBiomeClassifier:typeOf
 do
     local bc = lurek.procgen.newBiomeClassifier({ biomes = { { name = "ocean", h_max = 1.0, m_min = 0.0, t_min = 0.0 } } })
     print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))

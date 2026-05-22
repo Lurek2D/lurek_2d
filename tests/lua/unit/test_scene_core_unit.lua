@@ -1595,7 +1595,7 @@ describe("lurek.scene transition helper aliases", function()
         return transitions[name]
     end
 
-    -- @covers lurek.scene.fade
+    -- @covers lurek.scene.transitions.fade
     it("fade returns a fade transition table", function()
         local fade = get_helper("fade")
         expect_equal("function", type(fade))
@@ -1604,7 +1604,7 @@ describe("lurek.scene transition helper aliases", function()
         expect_near(1.0, t.duration, 0.001)
     end)
 
-    -- @covers lurek.scene.slide
+    -- @covers lurek.scene.transitions.slide
     it("slide returns a directional slide transition table", function()
         local slide = get_helper("slide")
         expect_equal("function", type(slide))
@@ -1613,7 +1613,7 @@ describe("lurek.scene transition helper aliases", function()
         expect_near(0.75, t.duration, 0.001)
     end)
 
-    -- @covers lurek.scene.wipe
+    -- @covers lurek.scene.transitions.wipe
     it("wipe returns a wipe transition table", function()
         local wipe = get_helper("wipe")
         expect_equal("function", type(wipe))
@@ -1622,7 +1622,7 @@ describe("lurek.scene transition helper aliases", function()
         expect_near(0.25, t.duration, 0.001)
     end)
 
-    -- @covers lurek.scene.iris
+    -- @covers lurek.scene.transitions.iris
     it("iris returns an iris transition table", function()
         local iris = get_helper("iris")
         expect_equal("function", type(iris))
@@ -1686,9 +1686,9 @@ end)
 
 -- @describe scene strict: fade / slide / wipe / iris transitions
 describe("scene strict: fade / slide / wipe / iris transitions", function()
-    -- @covers lurek.scene.fade
+    -- @covers lurek.scene.transitions.fade
     it("lurek.scene.transitions.fade is callable", function()
-        local ok, t = pcall(function() return lurek.scene.fade(0.5) end)
+        local ok, t = pcall(function() return lurek.scene.transitions.fade(0.5) end)
         if ok then
             expect_not_nil(t)
         else
@@ -1696,21 +1696,21 @@ describe("scene strict: fade / slide / wipe / iris transitions", function()
         end
     end)
 
-    -- @covers lurek.scene.slide
+    -- @covers lurek.scene.transitions.slide
     it("lurek.scene.transitions.slide is callable", function()
-        local ok, t = pcall(function() return lurek.scene.slide("left", 0.5) end)
+        local ok, t = pcall(function() return lurek.scene.transitions.slide("left", 0.5) end)
         expect_type("boolean", ok)
     end)
 
-    -- @covers lurek.scene.wipe
+    -- @covers lurek.scene.transitions.wipe
     it("lurek.scene.transitions.wipe is callable", function()
-        local ok, t = pcall(function() return lurek.scene.wipe(0.5) end)
+        local ok, t = pcall(function() return lurek.scene.transitions.wipe(0.5) end)
         expect_type("boolean", ok)
     end)
 
-    -- @covers lurek.scene.iris
+    -- @covers lurek.scene.transitions.iris
     it("lurek.scene.transitions.iris is callable", function()
-        local ok, t = pcall(function() return lurek.scene.iris(0.5) end)
+        local ok, t = pcall(function() return lurek.scene.transitions.iris(0.5) end)
         expect_type("boolean", ok)
     end)
 

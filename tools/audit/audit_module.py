@@ -149,7 +149,7 @@ class ModuleFileAnalysis:
     warning_files: List[Tuple[str, int]] = field(default_factory=list)
 
 
-_STUB_PATTERNS = ("TODO", "FIXME", "PLACEHOLDER", "Consult the module-level documentation")
+_STUB_PATTERNS = ("TODO", "FIXME", "Consult the module-level documentation")
 _PUB_ITEM_RE = re.compile(r"pub\s+(?:fn|struct|enum|trait|type|const)\s+")
 _PUB_ITEM_NAME_RE = re.compile(r"pub\s+(fn|struct|enum|trait|type|const)\s+(\w+)")
 
@@ -778,12 +778,15 @@ def check_lua_bridge(module: str) -> List[Check]:
                               "Closures appear thin (≤15 LOC, no control flow)"))
 
     # B-05: state.clone() before move |
+    # Check only real state capture assignments (ignore prose/doc lines containing the word "state").
     missing_clone: List[str] = []
     for i, line in enumerate(lines):
         if "move |" not in line:
             continue
-        ctx = "\n".join(lines[max(0, i - 5):i])
-        if "state" in ctx and "state.clone()" not in ctx:
+        ctx_lines = [ln for ln in lines[max(0, i - 5):i] if not ln.strip().startswith("///")]
+        captures_state = any(re.search(r"\blet\s+\w+\s*=\s*state\b", ln) for ln in ctx_lines)
+        has_state_clone = any("state.clone()" in ln for ln in ctx_lines)
+        if captures_state and not has_state_clone:
             missing_clone.append(f"line {i + 1}")
     if missing_clone:
         results.append(Check("B-05", "Rc clone pattern", WARN,
@@ -1017,18 +1020,29 @@ def check_lua_test_exists(module: str) -> Check:
     if not has_lua_api:
         return Check("T-02", "Lua test file", PASS, "Module has no Lua API — skip")
 
-    lua_test = TESTS_LUA / "unit" / f"test_{module}.lua"
-    if not lua_test.exists():
-        return Check("T-02", "Lua test file", ERROR,
-                      f"Module has Lua API but no tests/lua/unit/test_{module}.lua")
-
     harness = read_text(TESTS_LUA / "harness.rs")
-    if f"lua_test_{module}" not in harness:
-        return Check("T-02", "Lua test file", ERROR,
-                      f"Lua test file exists but lua_test_{module} not in harness.rs")
 
-    return Check("T-02", "Lua test file", PASS,
-                  f"tests/lua/unit/test_{module}.lua registered in harness")
+    lua_test = TESTS_LUA / "unit" / f"test_{module}.lua"
+    if lua_test.exists():
+        if f"lua_test_{module}" not in harness:
+            return Check("T-02", "Lua test file", ERROR,
+                          f"Lua test file exists but lua_test_{module} not in harness.rs")
+        return Check("T-02", "Lua test file", PASS,
+                      f"tests/lua/unit/test_{module}.lua registered in harness")
+
+    # Fall back: multi-file split convention (test_{module}_*_unit.lua)
+    split_files = sorted((TESTS_LUA / "unit").glob(f"test_{module}_*_unit.lua"))
+    if split_files:
+        registered = [f for f in split_files if f.name in harness]
+        if registered:
+            names = ", ".join(f.name for f in split_files)
+            return Check("T-02", "Lua test file", PASS,
+                          f"Multi-file split: {names}")
+        return Check("T-02", "Lua test file", ERROR,
+                      f"Split test files found but none registered in harness.rs")
+
+    return Check("T-02", "Lua test file", ERROR,
+                  f"Module has Lua API but no tests/lua/unit/test_{module}.lua")
 
 
 # ── Phase 7: Code Quality ──

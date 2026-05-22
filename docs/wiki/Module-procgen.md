@@ -33,9 +33,9 @@
 - [⚙️ Module Functions](#module-functions)
   - [Module-Level Functions](#module-level-functions)
 - [🔷 Module Types](#module-types)
-  - [BiomeClassifier](#biomeclassifier)
+  - [LBiomeClassifier](#lbiomeclassifier)
 - [🔹 Module Methods](#module-methods)
-  - [BiomeClassifier Methods](#biomeclassifier-methods)
+  - [LBiomeClassifier Methods](#lbiomeclassifier-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -53,9 +53,11 @@ Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen. CPU-only
 
 ## 📋 Summary
 
-Procedural content generation library providing noise, dungeon generation, heightmaps, Voronoi tessellation, Wave Function Collapse, L-systems, name generation, and spatial sampling. `NoiseGenerator` wraps Perlin/Simplex/Worley/Value noise with FBM octave stacking and domain warping. `BspDungeon` and `CellularOpts` generate room-and-corridor or cave-like maps with configurable parameters.
+The `procgen` module is a versatile Foundations tier library dedicated to procedural content generation in Lurek2D. It offers a rich suite of deterministic, headless-testable algorithms for creating diverse game worlds, terrains, and structures. Central to the module is a robust `NoiseGenerator` built on an internal seeded Linear Congruential Generator (LCG). It supports 2D/3D/4D Perlin and Simplex noise, as well as 2D/3D Worley (cellular) noise with various distance metrics. These base noises can be combined using fractal combinators like Fractal Brownian Motion (FBM), ridged multifractal, and turbulence, and deformed via domain warping. For map generation, `procgen` provides sequential and parallel (`rayon`-powered) heightmap generation with options for hydraulic erosion, which can then be classified into dynamic biomes (e.g., ocean, desert, forest) via the `BiomeClassifier`.
 
-`Heightmap` provides terrain generation with erosion simulation, biome assignment, and river carving. Voronoi generates cell-based region partitioning for province maps. WFC solves constraint-based tile placement from example patterns. L-systems produce fractal vegetation and road networks. Name generation uses Markov chains trained on input word lists. Poisson-disk sampling distributes points with minimum spacing guarantees. All algorithms are CPU-only and headless-testable. Exposed as `lurek.procgen.*`. Foundations tier.
+The module also excels at dungeon and interior generation. The `BspDungeon` generator uses Binary Space Partitioning to recursively divide space and carve rooms connected by L-shaped corridors. Alternatively, the `rooms_dungeon` generator places random non-overlapping rooms. Both systems support a prefab stamping feature that cleanly pastes named template shapes into qualifying rooms in a round-robin fashion. For organic caves, the `cellular_automata` generator applies birth/survival rules to a grid to form natural-looking caverns.
+
+For advanced world-building, `procgen` includes a `world_graph` subsystem for generating overworld node topologies, complete with A* pathfinding and Kruskal's minimum spanning tree algorithms. It also features a Wave Function Collapse (`wfc`) solver for constraint-based tile placement, Voronoi tessellation for regional partitioning, and Poisson-disk sampling for natural, evenly-spaced object distribution. L-systems provide string-rewriting and turtle-graphics interpretation for generating fractal trees or road networks. Finally, a Markov-chain `NameGen` creates plausible, random names trained on input word corpora. All these algorithms are thoroughly exposed to Lua via the `lurek.procgen.*` API, enabling script developers to construct infinitely varied, reproducible game content on the fly.
 
 [⬆ back to top](#table-of-contents)
 
@@ -187,7 +189,7 @@ Procedural content generation library providing noise, dungeon generation, heigh
 
 ## 🧩 Key Types
 
-- `BiomeClassifier` (4 methods) - Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
+- `LBiomeClassifier` (4 methods) - Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
 
 [⬆ back to top](#table-of-contents)
 
@@ -619,7 +621,7 @@ end
 ```lua
 --- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
 ---@param opts? table Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
----@return BiomeClassifier A classifier object with :classify() and :classifyMap() methods.
+---@return LBiomeClassifier A classifier object with :classify() and :classifyMap() methods.
 lurek.procgen.newBiomeClassifier = function(opts) end
 ```
 
@@ -631,7 +633,7 @@ Parameters:
 
 - `opts` (`table`, optional): Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
 
-Returns: `BiomeClassifier` - A classifier object with :classify() and :classifyMap() methods.
+Returns: `LBiomeClassifier` - A classifier object with :classify() and :classifyMap() methods.
 
 #### Example
 
@@ -1097,7 +1099,7 @@ end
 
 ## 🔷 Module Types
 
-### BiomeClassifier
+### LBiomeClassifier
 
 #### Description
 
@@ -1119,9 +1121,9 @@ end
 
 ## 🔹 Module Methods
 
-### BiomeClassifier Methods
+### LBiomeClassifier Methods
 
-#### BiomeClassifier:classify
+#### LBiomeClassifier:classify
 
 #### Definition
 
@@ -1131,7 +1133,7 @@ end
 ---@param moisture number Moisture level (0.0–1.0) at the point.
 ---@param temperature number Temperature value (0.0–1.0) at the point.
 ---@return string Biome name such as "ocean", "desert", "grassland", "taiga", etc.
-function BiomeClassifier:classify(height, moisture, temperature) end
+function LBiomeClassifier:classify(height, moisture, temperature) end
 ```
 
 #### Description
@@ -1157,7 +1159,7 @@ do
 end
 ```
 
-#### BiomeClassifier:classifyMap
+#### LBiomeClassifier:classifyMap
 
 #### Definition
 
@@ -1169,7 +1171,7 @@ end
 ---@param moisture table Flat array of moisture values (length = width*height).
 ---@param temperature? table Optional flat array of temperature values. If omitted, temperature is ignored.
 ---@return string[] Biome name strings (length = width*height).
-function BiomeClassifier:classifyMap(width, height, heights, moisture, temperature) end
+function LBiomeClassifier:classifyMap(width, height, heights, moisture, temperature) end
 ```
 
 #### Description
@@ -1198,21 +1200,21 @@ do
 end
 ```
 
-#### BiomeClassifier:type
+#### LBiomeClassifier:type
 
 #### Definition
 
 ```lua
 --- Returns the type name of this object.
----@return string Always returns "BiomeClassifier".
-function BiomeClassifier:type() end
+---@return string Always returns "LBiomeClassifier".
+function LBiomeClassifier:type() end
 ```
 
 #### Description
 
 Returns the type name of this object.
 
-Returns: `string` - Always returns "BiomeClassifier".
+Returns: `string` - Always returns "LBiomeClassifier".
 
 #### Example
 
@@ -1225,15 +1227,15 @@ do
 end
 ```
 
-#### BiomeClassifier:typeOf
+#### LBiomeClassifier:typeOf
 
 #### Definition
 
 ```lua
 --- Check whether this object matches a given type name.
----@param name string Type name to test (e.g. "BiomeClassifier" or "Object").
+---@param name string Type name to test (e.g. "LBiomeClassifier" or "Object").
 ---@return boolean True if the object is of the specified type.
-function BiomeClassifier:typeOf(name) end
+function LBiomeClassifier:typeOf(name) end
 ```
 
 #### Description
@@ -1242,7 +1244,7 @@ Check whether this object matches a given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to test (e.g. "BiomeClassifier" or "Object").
+- `name` (`string`, required): Type name to test (e.g. "LBiomeClassifier" or "Object").
 
 Returns: `boolean` - True if the object is of the specified type.
 

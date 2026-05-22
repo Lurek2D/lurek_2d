@@ -966,6 +966,22 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     }
     {
         let reg = registry.clone();
+        // -- remove --
+        /// Removes a globe from the registry by name.
+        /// @param | name | string | Globe registry name.
+        /// @return | boolean | True when a globe was removed.
+        tbl.set(
+            "remove",
+            lua.create_function(move |_, name: String| {
+                let mut guard = reg.lock().map_err(|e| {
+                    mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                })?;
+                Ok(guard.remove(&name).is_some())
+            })?,
+        )?;
+    }
+    {
+        let reg = registry.clone();
         let s = state.clone();
         // -- loadFromTOML --
         /// Creates a globe and populates provinces from TOML source text.

@@ -1361,7 +1361,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Computes reachable cells from range map options.
     /// @param | opts | table | Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells.
     /// @return | table | Range map result with `cells`, `width`, and `height` fields.
-    /// @field | cells | number[] | Reachability cost per cell.
+    /// @field | cells | table | Array of reachable cell tables, each with integer x, y and number cost fields.
     /// @field | width | integer | Grid width.
     /// @field | height | integer | Grid height.
     tbl.set(

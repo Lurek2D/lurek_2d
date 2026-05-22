@@ -659,10 +659,14 @@ describe("unit: migrated from integration/test_procgen_tilemap.lua", function()
             expect_type("number", a)
         end)
 
+        -- @covers BiomeClassifier:type
+        -- @covers BiomeClassifier:typeOf
         -- @covers lurek.procgen.newBiomeClassifier
         it("newBiomeClassifier returns userdata", function()
             local bc = lurek.procgen.newBiomeClassifier({ ocean_threshold = 0.2 })
             expect_type("userdata", bc)
+            expect_equal("BiomeClassifier", bc:type())
+            expect_true(bc:typeOf("BiomeClassifier"))
         end)
 
         -- @covers BiomeClassifier:classifyMap

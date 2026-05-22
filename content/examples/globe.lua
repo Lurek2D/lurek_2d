@@ -617,4 +617,11 @@ do
     print("registry typeOf = " .. tostring(reg and reg:typeOf("LGlobeRegistry")))
 end
 
+--@api-stub: lurek.globe.remove
+do
+    local g = lurek.globe.new("tmp_remove")
+    local ok = lurek.globe.remove("tmp_remove")
+    print("removed=" .. tostring(ok))
+end
+
 print("content/examples/globe.lua")

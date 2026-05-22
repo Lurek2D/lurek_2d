@@ -938,7 +938,7 @@ impl LuaUserData for LuaWorld {
         // -- setBodyData --
         /// Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
         /// @param | id | integer | The body ID.
-        /// @param | value | table | Lua value to associate with this body (table, number, string, etc.).
+        /// @param | value | any | Lua value to associate with this body (table, number, string, etc.).
         methods.add_method(
             "setBodyData",
             |lua, this, (id, value): (usize, LuaValue)| {

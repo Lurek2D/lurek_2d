@@ -67,11 +67,46 @@ impl TextInput {
             focused: false,
         }
     }
+    fn byte_index_for_char_limit(text: &str, max_length: usize) -> usize {
+        if max_length == 0 {
+            return text.len();
+        }
+        text.char_indices()
+            .nth(max_length)
+            .map_or(text.len(), |(index, _)| index)
+    }
+    fn clamp_cursor_to_text(&mut self) {
+        self.cursor_pos = self.cursor_pos.min(self.text.len());
+        while !self.text.is_char_boundary(self.cursor_pos) {
+            self.cursor_pos -= 1;
+        }
+    }
+    fn enforce_max_length(&mut self) {
+        if self.max_length > 0 {
+            let limit = Self::byte_index_for_char_limit(&self.text, self.max_length);
+            self.text.truncate(limit);
+        }
+        self.clamp_cursor_to_text();
+    }
+    /// Replace the text and clamp it to `max_length` when one is configured.
+    pub fn set_text(&mut self, text: impl Into<String>) {
+        self.text = text.into();
+        self.cursor_pos = self.text.len();
+        self.enforce_max_length();
+    }
+    /// Set the maximum character count, truncating existing text when needed.
+    pub fn set_max_length(&mut self, max_length: usize) {
+        self.max_length = max_length;
+        self.enforce_max_length();
+    }
     /// Insert `input` at the cursor position; return `false` if it would exceed `max_length`.
     pub fn insert_text(&mut self, input: &str) -> bool {
-        if self.max_length > 0 && self.text.len() + input.len() > self.max_length {
+        if self.max_length > 0
+            && self.text.chars().count() + input.chars().count() > self.max_length
+        {
             return false;
         }
+        self.clamp_cursor_to_text();
         self.text.insert_str(self.cursor_pos, input);
         self.cursor_pos += input.len();
         true

@@ -340,6 +340,21 @@ fn draw_numeric_axes(
     img.draw_label("Y", left - 12, top - 14, lr, lg, lb);
 }
 
+fn readable_x_tick_count(plot: ChartRect, desired_ticks: u32, x_min: f32, x_max: f32) -> u32 {
+    let desired_ticks = desired_ticks.max(1);
+    let min_label = format!("{x_min:.1}");
+    let max_label = format!("{x_max:.1}");
+    let label_spacing = label_width_px(&min_label).max(label_width_px(&max_label)) + 12;
+    let max_labels = (plot.width() / label_spacing.max(1)).clamp(2, 9) as u32;
+    desired_ticks.min(max_labels.saturating_sub(1).max(1))
+}
+
+fn readable_y_tick_count(plot: ChartRect, desired_ticks: u32) -> u32 {
+    let desired_ticks = desired_ticks.max(1);
+    let max_labels = (plot.height() / 16).clamp(2, 6) as u32;
+    desired_ticks.min(max_labels.saturating_sub(1).max(1))
+}
+
 /// Draw Y-axis tick marks and numeric labels for category-based charts.
 #[allow(clippy::too_many_arguments)]
 fn draw_numeric_y_axis(
@@ -665,26 +680,16 @@ impl LineChart {
         let cfg = &self.config;
         let (bgr, bgg, bgb) = cfg.bg_color;
         img.fill(bgr, bgg, bgb, 255);
-        let x_div = self.x_max.ceil() as u32;
         let legend_entries = legend_entries_from_series(&self.series);
         let (plot, legend_panel) = cartesian_plot_layout(cfg, &legend_entries);
-        draw_grid_and_axes_in_rect(img, cfg, plot, x_div.max(1), 5);
+        let x_ticks = readable_x_tick_count(plot, self.x_max.ceil() as u32, 0.0, self.x_max);
+        let y_ticks = readable_y_tick_count(plot, 5);
+        draw_grid_and_axes_in_rect(img, cfg, plot, x_ticks, y_ticks);
         let (left, right, top, bottom) = (plot.left, plot.right, plot.top, plot.bottom);
         let chart_w = (right - left).max(1) as f32;
         let chart_h = (bottom - top).max(1) as f32;
         draw_numeric_axes(
-            img,
-            cfg,
-            left,
-            right,
-            top,
-            bottom,
-            x_div.max(1),
-            5,
-            0.0,
-            self.x_max,
-            0.0,
-            self.y_max,
+            img, cfg, left, right, top, bottom, x_ticks, y_ticks, 0.0, self.x_max, 0.0, self.y_max,
         );
         draw_chart_title(img, cfg, left + 10, 10);
         if let Some(panel) = legend_panel {
@@ -883,7 +888,9 @@ impl ScatterPlot {
         img.fill(bgr, bgg, bgb, 255);
         let legend_entries = legend_entries_from_series(&self.series);
         let (plot, legend_panel) = cartesian_plot_layout(cfg, &legend_entries);
-        draw_grid_and_axes_in_rect(img, cfg, plot, 5, 5);
+        let x_ticks = readable_x_tick_count(plot, 5, self.x_range.0, self.x_range.1);
+        let y_ticks = readable_y_tick_count(plot, 5);
+        draw_grid_and_axes_in_rect(img, cfg, plot, x_ticks, y_ticks);
         let (left, right, top, bottom) = (plot.left, plot.right, plot.top, plot.bottom);
         let chart_w = (right - left).max(1) as f32;
         let chart_h = (bottom - top).max(1) as f32;
@@ -894,8 +901,8 @@ impl ScatterPlot {
             right,
             top,
             bottom,
-            5,
-            5,
+            x_ticks,
+            y_ticks,
             self.x_range.0,
             self.x_range.1,
             self.y_range.0,
@@ -1114,7 +1121,15 @@ impl AreaChart {
         img.fill(bgr, bgg, bgb, 255);
         let legend_entries = legend_entries_from_layers(&self.layers);
         let (plot, legend_panel) = cartesian_plot_layout(cfg, &legend_entries);
-        draw_grid_and_axes_in_rect(img, cfg, plot, 6, 4);
+        let desired_x_ticks = self
+            .layers
+            .first()
+            .map(|layer| layer.values.len().saturating_sub(1) as u32)
+            .unwrap_or(1)
+            .min(8);
+        let x_ticks = readable_x_tick_count(plot, desired_x_ticks, 0.0, desired_x_ticks as f32);
+        let y_ticks = readable_y_tick_count(plot, 4);
+        draw_grid_and_axes_in_rect(img, cfg, plot, x_ticks, y_ticks);
         let (left, right, top, bottom) = (plot.left, plot.right, plot.top, plot.bottom);
         let chart_w = (right - left).max(1) as f32;
         let chart_h = (bottom - top).max(1) as f32;
@@ -1129,8 +1144,8 @@ impl AreaChart {
             right,
             top,
             bottom,
-            (n as u32).min(8),
-            4,
+            readable_x_tick_count(plot, (n as u32).min(8), 0.0, (n - 1) as f32),
+            y_ticks,
             0.0,
             (n - 1) as f32,
             0.0,

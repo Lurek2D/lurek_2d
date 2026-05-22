@@ -10,13 +10,16 @@ describe("evidence: canvas", function()
 
     -- @evidence file
     it("canvas API functions are exposed as functions", function()
+        local g = lurek.render
+        if not g then
+            return
+        end
         if type(io) ~= "table" or type(io.open) ~= "function" then
             expect_true(type(io) ~= "table" or type(io.open) ~= "function")
             return
         end
         local dir = evidence_output_dir("canvas")
         local path = dir .. "canvas_api_surface.json"
-        local g = lurek.render
         local has_new    = type(g.newCanvas)   == "function"
         local has_set    = type(g.setCanvas)   == "function"
         local has_reset  = type(rawget(g --[[@as table]], "resetCanvas")) == "function" or true  -- optional
@@ -34,13 +37,17 @@ describe("evidence: canvas", function()
 
     -- @evidence file
     it("canvas dimension accessors return correct values", function()
+        local g = lurek.render
+        if not g then
+            return
+        end
         if type(io) ~= "table" or type(io.open) ~= "function" then
             expect_true(type(io) ~= "table" or type(io.open) ~= "function")
             return
         end
         local dir = evidence_output_dir("canvas")
         local path = dir .. "canvas_dimensions.json"
-        local ok, c = pcall(lurek.render.newCanvas, 320, 240)
+        local ok, c = pcall(g.newCanvas, 320, 240)
         if not ok then
             -- GPU context unavailable in headless: write a skip-reason file
             local f = io.open(path, "w")
@@ -71,20 +78,20 @@ describe("evidence: canvas", function()
 
     -- @evidence file
     it("canvas renders a scene to texture (requires GPU)", function()
-        if type(lurek.render.newCanvas) ~= "function" or type(lurek.render.setCanvas) ~= "function" then
-            expect_true(type(lurek.render.newCanvas) ~= "function" or type(lurek.render.setCanvas) ~= "function")
+        local g = lurek.render
+        if not g or type(g.newCanvas) ~= "function" or type(g.setCanvas) ~= "function" then
             return
         end
-        local ok, c = pcall(function() return lurek.render.newCanvas(256, 256) end)
+        local ok, c = pcall(function() return g.newCanvas(256, 256) end)
         if not ok then
             expect_not_nil(c)
             return
         end
-        lurek.render.setCanvas(c)
+        g.setCanvas(c)
         -- ... draw calls would go here ...
-        local reset_canvas = rawget(lurek.render --[[@as table]], "resetCanvas")
+        local reset_canvas = rawget(g --[[@as table]], "resetCanvas")
         if type(reset_canvas) == "function" then
-            reset_canvas()
+            reset_canvas(c)
         end
         c:release()
     end)

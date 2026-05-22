@@ -1,18 +1,23 @@
 //! `lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.
 
 use super::dataframe_api::LuaDataFrame;
+use super::render_api::LuaFont;
 use super::SharedState;
 use crate::math::color::Color;
 use crate::ui::chart::ChartDataFrameOptions;
 use crate::ui::containers::LayoutDirection;
-use crate::ui::context::{GuiContext, GuiEvent, WidgetKind};
+use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetKind};
 use crate::ui::extras::{AccordionSection, TableColumn, TableDataFrameOptions, Toast};
-use crate::ui::theme::{Theme, WidgetStyle};
-use crate::ui::widget::{WidgetState, WidgetType};
+use crate::ui::theme::{Theme, ThemeToken, WidgetStyle};
+use crate::ui::widget::{MouseFilter, WidgetState, WidgetType};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+
+// -----------------------------------------------------------------------------
+// UI Lua bindings and callback registry
+// -----------------------------------------------------------------------------
 /// Internal callback registry that stores Lua function references for widget events.
 #[derive(Default)]
 struct GuiCallbacks {
@@ -22,6 +27,76 @@ struct GuiCallbacks {
     on_select: HashMap<usize, LuaRegistryKey>,
     on_draw: HashMap<usize, LuaRegistryKey>,
 }
+
+fn render_to_image_u32_arg(name: &str, value: &LuaValue) -> LuaResult<u32> {
+    match value {
+        LuaValue::Integer(n) if *n > 0 && *n <= u32::MAX as i64 => Ok(*n as u32),
+        LuaValue::Number(n) if n.is_finite() && *n > 0.0 && *n <= u32::MAX as f64 => Ok(*n as u32),
+        _ => Err(LuaError::RuntimeError(format!(
+            "lurek.ui.renderToImage: {name} must be a positive integer"
+        ))),
+    }
+}
+
+fn render_to_image_string_arg(name: &str, value: LuaValue) -> LuaResult<String> {
+    match value {
+        LuaValue::String(s) => Ok(s.to_str()?.to_string()),
+        _ => Err(LuaError::RuntimeError(format!(
+            "lurek.ui.renderToImage: {name} must be a string"
+        ))),
+    }
+}
+
+fn parse_render_to_image_args(args: LuaMultiValue) -> LuaResult<(u32, u32, String)> {
+    if args.len() != 3 {
+        return Err(LuaError::RuntimeError(
+            "lurek.ui.renderToImage: expected (width, height, path) or (path, width, height)"
+                .to_string(),
+        ));
+    }
+
+    let mut values = args.into_iter();
+    let first = values.next().unwrap_or(LuaValue::Nil);
+    let second = values.next().unwrap_or(LuaValue::Nil);
+    let third = values.next().unwrap_or(LuaValue::Nil);
+
+    if matches!(first, LuaValue::String(_)) {
+        let path = render_to_image_string_arg("path", first)?;
+        let width = render_to_image_u32_arg("width", &second)?;
+        let height = render_to_image_u32_arg("height", &third)?;
+        Ok((width, height, path))
+    } else {
+        let width = render_to_image_u32_arg("width", &first)?;
+        let height = render_to_image_u32_arg("height", &second)?;
+        let path = render_to_image_string_arg("path", third)?;
+        Ok((width, height, path))
+    }
+}
+
+fn ui_binding_values_from_lua_table(
+    data: LuaTable<'_>,
+) -> LuaResult<HashMap<String, UiBindingValue>> {
+    let mut values = HashMap::new();
+    for pair in data.pairs::<LuaValue, LuaValue>() {
+        let (key_value, value) = pair?;
+        let key = match key_value {
+            LuaValue::String(s) => s.to_str()?.to_string(),
+            LuaValue::Integer(n) => n.to_string(),
+            LuaValue::Number(n) => n.to_string(),
+            _ => continue,
+        };
+        let binding_value = match value {
+            LuaValue::Number(n) => UiBindingValue::Number(n),
+            LuaValue::Integer(n) => UiBindingValue::Number(n as f64),
+            LuaValue::Boolean(b) => UiBindingValue::Bool(b),
+            LuaValue::String(s) => UiBindingValue::Text(s.to_str()?.to_string()),
+            _ => continue,
+        };
+        values.insert(key, binding_value);
+    }
+    Ok(values)
+}
+
 /// Creates a Lua table representing a widget with all shared base methods common to every widget type.
 fn create_widget_table<'a>(
     lua: &'a Lua,
@@ -123,6 +198,44 @@ fn create_widget_table<'a>(
         })?,
     )?;
     let c = ctx.clone();
+    // -- setFont --
+    /// Assigns a specific font to this widget and its descendants unless overridden further down the tree.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | font | LFont | Font handle to use for this widget subtree.
+    t.set(
+        "setFont",
+        lua.create_function(move |_, (_self, font_ud): (LuaValue, LuaAnyUserData)| {
+            let font = font_ud.borrow::<LuaFont>()?;
+            let key = font.key;
+            let valid = font.state.borrow().fonts.contains_key(key);
+            drop(font);
+            if !valid {
+                return Err(LuaError::RuntimeError(
+                    "LUiWidget:setFont: font handle is not valid or was released".into(),
+                ));
+            }
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().font_key = Some(key);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- clearFont --
+    /// Clears any font override on this widget so it inherits from its parent again.
+    /// @param | self | LUiWidget | The widget instance.
+    t.set(
+        "clearFont",
+        lua.create_function(move |_, _self: LuaValue| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().font_key = None;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
     // -- getRect --
     /// Returns the computed bounding rectangle of this widget in screen coordinates after layout.
     /// @param | self | LUiWidget | The widget instance.
@@ -145,14 +258,16 @@ fn create_widget_table<'a>(
     /// Sets the style class of this widget.
     /// @param | self | LUiWidget | The widget instance.
     /// @param | class | string | The style class name.
+    /// @return | boolean | True when the widget exists and the class was set.
     t.set(
         "setStyleClass",
         lua.create_function(move |_, (_self, class): (LuaValue, String)| {
             let mut g = c.borrow_mut();
             if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().style_class = Some(class);
+                return Ok(true);
             }
-            Ok(())
+            Ok(false)
         })?,
     )?;
 
@@ -160,14 +275,15 @@ fn create_widget_table<'a>(
     // -- getStyleClass --
     /// Returns the style class of this widget.
     /// @param | self | LUiWidget | The widget instance.
-    /// @return | string | The style class name, or nil if none is set.
+    /// @return | string | The style class name, or an empty string if none is set.
     t.set(
         "getStyleClass",
         lua.create_function(move |_, _self: LuaValue| {
             let g = c.borrow();
             Ok(g.widgets
                 .get(idx)
-                .and_then(|w| w.base().style_class.clone()))
+                .and_then(|w| w.base().style_class.clone())
+                .unwrap_or_default())
         })?,
     )?;
 
@@ -176,21 +292,190 @@ fn create_widget_table<'a>(
     /// Sets the mouse filter for this widget ("stop", "pass", "ignore").
     /// @param | self | LUiWidget | The widget instance.
     /// @param | filter | string | The mouse filter type.
+    /// @return | boolean | True for a valid filter, false when reset to "stop".
     t.set(
         "setMouseFilter",
         lua.create_function(move |_, (_self, filter): (LuaValue, String)| {
-            if let Some(f) = crate::ui::widget::MouseFilter::parse_str(&filter) {
-                let mut g = c.borrow_mut();
-                if let Some(w) = g.widgets.get_mut(idx) {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                if let Some(f) = MouseFilter::parse_str(&filter) {
                     w.base_mut().mouse_filter = f;
+                    Ok(true)
+                } else {
+                    w.base_mut().mouse_filter = MouseFilter::Stop;
+                    Ok(false)
                 }
-                Ok(())
             } else {
-                Err(LuaError::RuntimeError(format!(
-                    "Invalid mouse filter: {}",
-                    filter
-                )))
+                Ok(false)
             }
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setTextWrap --
+    /// Enables or disables word-wrap for text inside this widget.
+    /// @summary Sets whether text wraps at word boundaries when it overflows the widget width.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | wrap | boolean | True to wrap text, false for single-line.
+    t.set(
+        "setTextWrap",
+        lua.create_function(move |_, (_self, wrap): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().text_wrap = wrap;
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setTextEllipsis --
+    /// Enables or disables ellipsis clipping for overflowing single-line text.
+    /// @summary When true and wrap is false, overflowing text is truncated with "…".
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | ellipsis | boolean | True to enable ellipsis on overflow.
+    t.set(
+        "setTextEllipsis",
+        lua.create_function(move |_, (_self, ellipsis): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().text_ellipsis = ellipsis;
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setTextVAlign --
+    /// Sets the vertical alignment of text inside this widget.
+    /// @summary Controls whether text is pinned to the top, centred, or pinned to the bottom.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | align | string | Vertical alignment: "top", "middle", or "bottom".
+    /// @return | boolean | True when the alignment string is recognised; false leaves the previous value unchanged.
+    t.set(
+        "setTextVAlign",
+        lua.create_function(move |_, (_self, align): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                if let Some(va) = crate::ui::widget::TextVAlign::parse_str(&align) {
+                    w.base_mut().text_v_align = va;
+                    return Ok(true);
+                }
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setFocusable --
+    /// Sets whether this widget participates in keyboard focus traversal.
+    /// @summary Enables or disables focus eligibility for this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | value | boolean | True to allow focus traversal; false to skip this widget.
+    t.set(
+        "setFocusable",
+        lua.create_function(move |_, (_self, value): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().focusable = value;
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setTabIndex --
+    /// Sets the tab-order index for this widget.
+    /// @summary Lower tab-index values are traversed first within the active focus group.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | value | integer | Tab-order index.
+    t.set(
+        "setTabIndex",
+        lua.create_function(move |_, (_self, value): (LuaValue, i32)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().tab_index = value;
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setFocusGroup --
+    /// Sets the focus traversal group for this widget.
+    /// @summary Widgets in the same focus group are traversed together by focusNext/focusPrev.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | group | string | Focus group name; empty string means the default/global group.
+    t.set(
+        "setFocusGroup",
+        lua.create_function(move |_, (_self, group): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().focus_group = group;
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setFocusNeighbor --
+    /// Sets an explicit directional focus neighbor for this widget.
+    /// @summary Use this to override automatic tab traversal for directional navigation.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | direction | string | Neighbor direction: "up", "down", "left", or "right".
+    /// @param | target | integer? | Target widget index, or nil to clear the neighbor.
+    /// @return | boolean | True when direction is valid; false otherwise.
+    t.set(
+        "setFocusNeighbor",
+        lua.create_function(move |_, (_self, direction, target): (LuaValue, String, Option<u32>)| {
+            let mut g = c.borrow_mut();
+            let Some(w) = g.widgets.get_mut(idx) else {
+                return Ok(false);
+            };
+            let base = w.base_mut();
+            let slot = match direction.as_str() {
+                "up" => &mut base.focus_neighbor_up,
+                "down" => &mut base.focus_neighbor_down,
+                "left" => &mut base.focus_neighbor_left,
+                "right" => &mut base.focus_neighbor_right,
+                _ => return Ok(false),
+            };
+            *slot = target.map(|v| v as usize);
+            Ok(true)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setRole --
+    /// Sets a semantic role string for this widget.
+    /// @summary Stores metadata such as "button", "label", or "textbox" for tooling and accessibility layers.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | role | string | Semantic role name.
+    t.set(
+        "setRole",
+        lua.create_function(move |_, (_self, role): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().role = role;
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setAriaName --
+    /// Sets the accessible name metadata for this widget.
+    /// @summary Stores a human-readable assistive label independent from visible text.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | name | string | Accessible name value.
+    t.set(
+        "setAriaName",
+        lua.create_function(move |_, (_self, name): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().aria_name = name;
+            }
+            Ok(())
         })?,
     )?;
 
@@ -826,6 +1111,23 @@ fn create_widget_table<'a>(
         })?,
     )?;
     let c = ctx.clone();
+    // -- setBindKey --
+    /// Binds this widget to a data key and reports whether the widget exists.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | key | string | The binding key name.
+    /// @return | boolean | True when the widget exists and the binding key was set.
+    t.set(
+        "setBindKey",
+        lua.create_function(move |_, (_self, key): (LuaValue, String)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().bind_key = Some(key);
+                return Ok(true);
+            }
+            Ok(false)
+        })?,
+    )?;
+    let c = ctx.clone();
     // -- unbind --
     /// Removes the data binding from this widget.
     /// @param | self | LUiWidget | The widget instance.
@@ -1120,8 +1422,7 @@ fn add_text_input_methods(
         lua.create_function(move |_, (_self, text): (LuaValue, String)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::TextInput(ti)) = g.widgets.get_mut(idx) {
-                ti.cursor_pos = text.len();
-                ti.text = text;
+                ti.set_text(text);
             }
             Ok(())
         })?,
@@ -1181,7 +1482,7 @@ fn add_text_input_methods(
         lua.create_function(move |_, (_self, n): (LuaValue, usize)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::TextInput(ti)) = g.widgets.get_mut(idx) {
-                ti.max_length = n;
+                ti.set_max_length(n);
             }
             Ok(())
         })?,
@@ -2261,14 +2562,16 @@ fn add_layout_methods(
     /// Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
     /// @param | self | LLayout | The widget instance.
     /// @param | align | string | The alignment mode.
+    /// @return | boolean | True when the layout exists and the alignment was set.
     t.set(
         "setAlign",
         lua.create_function(move |_, (_self, align): (LuaValue, String)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::Layout(l)) = g.widgets.get_mut(idx) {
                 l.align = align;
+                return Ok(true);
             }
-            Ok(())
+            Ok(false)
         })?,
     )?;
     let c = ctx.clone();
@@ -2282,7 +2585,7 @@ fn add_layout_methods(
             let g = c.borrow();
             Ok(match g.widgets.get(idx) {
                 Some(WidgetKind::Layout(l)) => l.align.clone(),
-                _ => "start".to_string(),
+                _ => "stretch".to_string(),
             })
         })?,
     )?;
@@ -2291,14 +2594,16 @@ fn add_layout_methods(
     /// Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
     /// @param | self | LLayout | The widget instance.
     /// @param | justify | string | The justification mode.
+    /// @return | boolean | True when the layout exists and the justification was set.
     t.set(
         "setJustify",
         lua.create_function(move |_, (_self, justify): (LuaValue, String)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::Layout(l)) = g.widgets.get_mut(idx) {
                 l.justify = justify;
+                return Ok(true);
             }
-            Ok(())
+            Ok(false)
         })?,
     )?;
     let c = ctx.clone();
@@ -5102,8 +5407,9 @@ impl LuaUserData for LuaTheme {
         /// Sets a style entry for the given widget type and state, optionally restricted to a style class.
         /// @param | widget_type | string | The widget type name (e.g. "button").
         /// @param | state | string | The widget state (e.g. "normal", "hovered").
-        /// @param | style_class | string? | (Optional) The specific class to apply this style to.
-        /// @param | style_table | table | A table of style properties.
+        /// @param | styleOrClass | any | Style table for default styles, or a class string when `styleTable` is supplied.
+        /// @param | styleTable | table? | Style table used when `styleOrClass` is a class string.
+        /// @return | boolean | True when the style is applied.
         methods.add_method(
             "setStyle",
             |_, this, (widget_type, state, arg3, arg4): (String, String, LuaValue, Option<LuaTable>)| {
@@ -5132,7 +5438,7 @@ impl LuaUserData for LuaTheme {
                 } else {
                     this.inner.borrow_mut().set_style(wt, ws, style);
                 }
-                Ok(())
+                Ok(true)
             },
         );
         // -- type --
@@ -5821,6 +6127,77 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
     let c = ctx.clone();
+    // -- setFont --
+    /// Sets the global UI font by applying it to the root widget.
+    /// @param | font | LFont | Font handle used by the UI when widgets do not override it.
+    tbl.set(
+        "setFont",
+        lua.create_function(move |_, font_ud: LuaAnyUserData| {
+            let font = font_ud.borrow::<LuaFont>()?;
+            let key = font.key;
+            let valid = font.state.borrow().fonts.contains_key(key);
+            drop(font);
+            if !valid {
+                return Err(LuaError::RuntimeError(
+                    "lurek.ui.setFont: font handle is not valid or was released".into(),
+                ));
+            }
+            if let Some(root) = c.borrow_mut().widgets.get_mut(0) {
+                root.base_mut().font_key = Some(key);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    let s_get = state.clone();
+    // -- getFont --
+    /// Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
+    /// @return | LFont | Current global UI font handle.
+    tbl.set(
+        "getFont",
+        lua.create_function(move |_, ()| {
+            let key = c.borrow().widgets.first().and_then(|w| w.base().font_key);
+            Ok(key.map(|key| LuaFont {
+                state: s_get.clone(),
+                key,
+            }))
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- clearFont --
+    /// Clears the global UI font override so the UI falls back to the active render font again.
+    tbl.set(
+        "clearFont",
+        lua.create_function(move |_, ()| {
+            if let Some(root) = c.borrow_mut().widgets.get_mut(0) {
+                root.base_mut().font_key = None;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    let s = state.clone();
+    // -- getWidgetFont --
+    /// Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
+    /// @param | widget | LUiWidget | Widget handle to query.
+    /// @return | LFont | Font override assigned to the widget.
+    tbl.set(
+        "getWidgetFont",
+        lua.create_function(move |_, widget: LuaValue| {
+            let LuaValue::Table(widget) = widget else {
+                return Err(LuaError::RuntimeError(
+                    "lurek.ui.getWidgetFont: widget must be a UI widget table".to_string(),
+                ));
+            };
+            let idx = widget.get::<_, usize>("_idx")?;
+            let key = c.borrow().widgets.get(idx).and_then(|w| w.base().font_key);
+            Ok(key.map(|key| LuaFont {
+                state: s.clone(),
+                key,
+            }))
+        })?,
+    )?;
+    let c = ctx.clone();
     let _cbs = callbacks.clone();
     // -- setFocus --
     /// Sets keyboard focus to a widget, or clears focus if nil.
@@ -5866,6 +6243,27 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             c.borrow_mut().focus_prev();
             Ok(())
         })?,
+    )?;
+    let c = ctx.clone();
+    let _cbs = callbacks.clone();
+    // -- focusNeighbor --
+    /// Moves keyboard focus using an explicit directional focus link.
+    /// @param | direction | string | Direction: "up", "down", "left", or "right".
+    /// @return | boolean | True when focus was moved to a configured neighbor.
+    tbl.set(
+        "focusNeighbor",
+        lua.create_function(move |_, direction: String| {
+            Ok(c.borrow_mut().focus_neighbor(&direction))
+        })?,
+    )?;
+    let c = ctx.clone();
+    let _cbs = callbacks.clone();
+    // -- clear --
+    /// Clears all retained UI widgets and transient UI state while keeping the active theme.
+    /// @return | integer | Number of widgets removed from the retained UI tree.
+    tbl.set(
+        "clear",
+        lua.create_function(move |_, ()| Ok(c.borrow_mut().clear() as u32))?,
     )?;
     let c = ctx.clone();
     let _cbs = callbacks.clone();
@@ -6379,31 +6777,24 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- update_bindings --
     /// Updates data bindings for widgets that reference binding keys.
     /// @param | data | table | A table mapping binding keys to values.
+    /// @return | integer | The number of widgets whose state changed.
     tbl.set(
         "update_bindings",
         lua.create_function(move |_, data: mlua::Table| {
-            let mut values = std::collections::HashMap::new();
-            for pair in data.clone().pairs::<mlua::Value, mlua::Value>() {
-                let (k, v) = pair?;
-                let key = match k {
-                    mlua::Value::String(s) => s.to_str()?.to_string(),
-                    mlua::Value::Integer(n) => n.to_string(),
-                    mlua::Value::Number(n) => n.to_string(),
-                    _ => continue,
-                };
-                let val = match v {
-                    mlua::Value::Number(n) => crate::ui::UiBindingValue::Number(n),
-                    mlua::Value::Integer(n) => crate::ui::UiBindingValue::Number(n as f64),
-                    mlua::Value::Boolean(b) => crate::ui::UiBindingValue::Bool(b),
-                    mlua::Value::String(s) => {
-                        crate::ui::UiBindingValue::Text(s.to_str()?.to_string())
-                    }
-                    _ => continue,
-                };
-                values.insert(key, val);
-            }
-            c.borrow_mut().update_bindings(&values);
-            Ok(())
+            let values = ui_binding_values_from_lua_table(data)?;
+            Ok(c.borrow_mut().update_bindings(&values) as i64)
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- updateBindings --
+    /// Updates data bindings for widgets that reference binding keys.
+    /// @param | data | table | A table mapping binding keys to values.
+    /// @return | integer | The number of widgets whose state changed.
+    tbl.set(
+        "updateBindings",
+        lua.create_function(move |_, data: mlua::Table| {
+            let values = ui_binding_values_from_lua_table(data)?;
+            Ok(c.borrow_mut().update_bindings(&values) as i64)
         })?,
     )?;
     let c = ctx.clone();
@@ -6443,14 +6834,41 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let c = ctx.clone();
     // -- renderToImage --
     /// Renders the entire UI to a PNG image file.
-    /// @param | width | integer | Image width in pixels.
-    /// @param | height | integer | Image height in pixels.
-    /// @param | path | string | Output file path.
+    /// @param | pathOrWidth | any | Output file path for path-first calls, or image width for canonical calls.
+    /// @param | widthOrHeight | integer | Image width for path-first calls, or image height for canonical calls.
+    /// @param | heightOrPath | any | Image height for path-first calls, or output file path for canonical calls.
     tbl.set(
         "renderToImage",
-        lua.create_function(move |_, (width, height, path): (u32, u32, String)| {
+        lua.create_function(move |_, args: LuaMultiValue| {
+            let (width, height, path) = parse_render_to_image_args(args)?;
             let mut g = c.borrow_mut();
             crate::ui::render_to_image(&mut g, width, height, &path).map_err(mlua::Error::external)
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getStyleToken --
+    /// Returns the value of a named semantic style token from the active theme.
+    /// @summary | Returns a style token value by name. Float tokens return a number; Color tokens return a table {r, g, b, a}. Returns nil if not found.
+    /// @param | name | string | The token name (e.g. "spacing_md", "color_primary").
+    /// @return | any | The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+    tbl.set(
+        "getStyleToken",
+        lua.create_function(move |lua, name: String| {
+            let g = c.borrow();
+            let token_opt = g.theme.as_ref().and_then(|t| t.get_token(&name)).cloned();
+            drop(g);
+            match token_opt {
+                None => Ok(LuaValue::Nil),
+                Some(ThemeToken::Float(v)) => Ok(LuaValue::Number(v as f64)),
+                Some(ThemeToken::Color([r, g2, b, a])) => {
+                    let t = lua.create_table()?;
+                    t.set("r", r as f64)?;
+                    t.set("g", g2 as f64)?;
+                    t.set("b", b as f64)?;
+                    t.set("a", a as f64)?;
+                    Ok(LuaValue::Table(t))
+                }
+            }
         })?,
     )?;
     /// Performs the 'ui' operation.

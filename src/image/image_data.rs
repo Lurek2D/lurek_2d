@@ -431,6 +431,86 @@ impl ImageData {
             cx += ADVANCE;
         }
     }
+    /// Draw `text` into this image using a bitmap font atlas produced by `crate::render::font::Font`.
+    ///
+    /// Glyphs are blitted from the atlas RGBA data with per-pixel alpha blending.
+    /// The pen starts at `(x, y)` where `y` is the top of the cell.
+    #[allow(clippy::too_many_arguments)]
+    pub fn draw_text_with_font(
+        &mut self,
+        text: &str,
+        x: i32,
+        y: i32,
+        r: u8,
+        g: u8,
+        b: u8,
+        font: &crate::render::font::Font,
+    ) {
+        let (atlas_bytes, atlas_w, atlas_h) = font.atlas_data();
+        let img_w = self.width as i32;
+        let img_h = self.height as i32;
+        let mut pen_x = x;
+        let cell_h = font.size() as i32;
+        for ch in text.chars() {
+            if ch == '\n' {
+                pen_x = x;
+                continue;
+            }
+            if ch == ' ' {
+                if let Some(info) = font.glyph(' ') {
+                    pen_x += info.advance_width as i32;
+                } else {
+                    pen_x += (font.cell_width() as i32) / 2;
+                }
+                continue;
+            }
+            let info = match font.glyph(ch) {
+                Some(i) => i,
+                None => {
+                    pen_x += font.cell_width() as i32;
+                    continue;
+                }
+            };
+            // Atlas pixel origin for this glyph
+            let ax = (info.uv_x * atlas_w as f32).round() as i32;
+            let ay = (info.uv_y * atlas_h as f32).round() as i32;
+            let gw = info.width as i32;
+            let gh = info.height as i32;
+            // Vertical offset: align glyph top relative to cell top
+            let glyph_top_in_cell = info.offset_y as i32;
+            let dst_y_base = y + (cell_h - gh - glyph_top_in_cell).max(0);
+            for gy in 0..gh {
+                for gx in 0..gw {
+                    let atlas_idx = ((ay + gy) * atlas_w as i32 + (ax + gx)) as usize * 4;
+                    if atlas_idx + 3 >= atlas_bytes.len() {
+                        continue;
+                    }
+                    let alpha = atlas_bytes[atlas_idx + 3];
+                    if alpha == 0 {
+                        continue;
+                    }
+                    let dst_x = pen_x + info.offset_x as i32 + gx;
+                    let dst_y = dst_y_base + gy;
+                    if dst_x < 0 || dst_y < 0 || dst_x >= img_w || dst_y >= img_h {
+                        continue;
+                    }
+                    // Alpha blend: src colour tinted to (r,g,b), dst already in buffer
+                    let a = alpha as u32;
+                    let idx = ((dst_y as u32 * self.width + dst_x as u32) * 4) as usize;
+                    let dr = self.pixels[idx] as u32;
+                    let dg = self.pixels[idx + 1] as u32;
+                    let db = self.pixels[idx + 2] as u32;
+                    let da = self.pixels[idx + 3] as u32;
+                    self.pixels[idx] = ((r as u32 * a + dr * (255 - a)) / 255) as u8;
+                    self.pixels[idx + 1] = ((g as u32 * a + dg * (255 - a)) / 255) as u8;
+                    self.pixels[idx + 2] = ((b as u32 * a + db * (255 - a)) / 255) as u8;
+                    self.pixels[idx + 3] = (a + da * (255 - a) / 255).min(255) as u8;
+                }
+            }
+            pen_x += info.advance_width as i32;
+        }
+    }
+
     /// Encode the image as PNG bytes and return an error on encode failure.
     pub fn encode_png(&self) -> Result<Vec<u8>, String> {
         let img: ::image::ImageBuffer<::image::Rgba<u8>, Vec<u8>> =

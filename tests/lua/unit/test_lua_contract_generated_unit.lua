@@ -4538,9 +4538,9 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.scene.draw)
     end)
 
-    -- @covers lurek.scene.fade
-    it("lurek.scene.fade exists", function()
-        expect_type("function", lurek.scene.fade)
+    -- @covers lurek.scene.transitions.fade
+    it("lurek.scene.transitions.fade exists", function()
+        expect_type("function", lurek.scene.transitions.fade)
     end)
 
     -- @covers lurek.scene.getActiveScenes
@@ -4598,9 +4598,9 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.scene.hasRegistered)
     end)
 
-    -- @covers lurek.scene.iris
-    it("lurek.scene.iris exists", function()
-        expect_type("function", lurek.scene.iris)
+    -- @covers lurek.scene.transitions.iris
+    it("lurek.scene.transitions.iris exists", function()
+        expect_type("function", lurek.scene.transitions.iris)
     end)
 
     -- @covers lurek.scene.isEmpty
@@ -4713,9 +4713,9 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.scene.setData)
     end)
 
-    -- @covers lurek.scene.slide
-    it("lurek.scene.slide exists", function()
-        expect_type("function", lurek.scene.slide)
+    -- @covers lurek.scene.transitions.slide
+    it("lurek.scene.transitions.slide exists", function()
+        expect_type("function", lurek.scene.transitions.slide)
     end)
 
     -- @covers lurek.scene.switchTo
@@ -4733,9 +4733,9 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.scene.update)
     end)
 
-    -- @covers lurek.scene.wipe
-    it("lurek.scene.wipe exists", function()
-        expect_type("function", lurek.scene.wipe)
+    -- @covers lurek.scene.transitions.wipe
+    it("lurek.scene.transitions.wipe exists", function()
+        expect_type("function", lurek.scene.transitions.wipe)
     end)
 
     -- @covers lurek.serial.applyDefaults

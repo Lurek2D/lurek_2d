@@ -471,11 +471,15 @@ end)
 
 -- @describe data.newByteData
 describe("data.newByteData", function()
+  -- @covers LByteData:type
+  -- @covers LByteData:typeOf
   -- @covers LByteData:getByte
   -- @covers LByteData:getSize
   -- @covers lurek.data.newByteData
   it("creates zeroed buffer from size", function()
     local bd = lurek.data.newByteData(10)
+    expect_equal("LByteData", bd:type())
+    expect_true(bd:typeOf("LByteData"))
     expect_equal(bd:getSize(), 10)
     expect_equal(bd:getByte(0), 0)
   end)

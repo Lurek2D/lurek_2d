@@ -50,6 +50,7 @@ describe("LReplSession", function()
         expect_equal(2, repl:len())
     end)
 
+    -- @covers LReplSession:clear
     -- @covers LReplSession:eval
     -- @covers LReplSession:len
     -- @covers lurek.repl.new
@@ -58,6 +59,7 @@ describe("LReplSession", function()
         expect_contains(repl:eval(":help"), ":load")
         expect_equal("(quit)", repl:eval(":quit"))
         expect_equal("(cleared)", repl:eval(":clear"))
+        repl:clear()
         expect_equal(0, repl:len())
     end)
 

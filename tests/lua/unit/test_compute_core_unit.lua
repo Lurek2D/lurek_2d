@@ -419,6 +419,29 @@ describe("arithmetic", function()
         expect_near(36.0, a:get(2, 3), 1e-5)
     end)
 
+    -- @covers LArray:sub
+    -- @covers lurek.compute.fromTable
+    it("sub supports reverse 1D from 2D row broadcast", function()
+        local a = lurek.compute.fromTable({100, 200, 300}, {3})
+        local b = lurek.compute.fromTable({1, 2, 3, 10, 20, 30}, {2, 3})
+        local c = a:sub(b)
+        expect_near(99.0,  c:get(1, 1), 1e-5)
+        expect_near(198.0, c:get(1, 2), 1e-5)
+        expect_near(297.0, c:get(1, 3), 1e-5)
+        expect_near(90.0,  c:get(2, 1), 1e-5)
+        expect_near(180.0, c:get(2, 2), 1e-5)
+        expect_near(270.0, c:get(2, 3), 1e-5)
+    end)
+
+    -- @covers LArray:addInplace
+    -- @covers lurek.compute.fromTable
+    it("inplace rejects unsupported broadcast direction", function()
+        local a = lurek.compute.fromTable({1, 2, 3}, {3})
+        local b = lurek.compute.fromTable({1, 2, 3, 4}, {2, 2})
+        local ok, err = pcall(function() a:addInplace(b) end)
+        expect_false(ok, "inplace with unsupported broadcast direction should error")
+    end)
+
     -- @covers LArray:subInplace
     -- @covers LArray:mulInplace
     -- @covers LArray:divInplace
@@ -1463,6 +1486,16 @@ describe("lurek.compute.Array analytics", function()
         expect_equal(2, h[2].count)
     end)
 
+    -- @covers LArray:histogram
+    -- @covers lurek.compute.fromTable
+    it("histogram ignores values outside min/max range", function()
+        local a = lurek.compute.fromTable({-10, 0.5, 1.5, 9}, nil, "float32")
+        local h = a:histogram(2, 0, 2)
+        expect_equal(2, #h)
+        expect_equal(1, h[1].count)
+        expect_equal(1, h[2].count)
+    end)
+
     -- @covers LArray:percentile
     -- @covers lurek.compute.fromTable
     it("percentile 50 is median", function()
@@ -2287,6 +2320,20 @@ describe("LArray:eigenPower", function()
         expect_type("number", result.value)
         expect_type("table", result.vector)
     end)
+
+    -- @covers LArray:eigenPower
+    -- @covers lurek.compute.newArray
+    it("eigenPower converges to known dominant eigenvalue for 3x3 matrix", function()
+        -- Symmetric 3x3 with known dominant eigenvalue ≈ 4.618034
+        local m = lurek.compute.newArray({3, 3})
+        m:set(1, 1, 4.0)  m:set(1, 2, 1.0)  m:set(1, 3, 0.0)
+        m:set(2, 1, 1.0)  m:set(2, 2, 3.0)  m:set(2, 3, 0.0)
+        m:set(3, 1, 0.0)  m:set(3, 2, 0.0)  m:set(3, 3, 2.0)
+        local result = m:eigenPower(500, 1e-12)
+        expect_not_nil(result)
+        expect_near(4.618034, result.value, 1e-4)
+        expect_equal(3, #result.vector)
+    end)
 end)
 
 -- @describe compute strict: LArray where
@@ -2341,6 +2388,19 @@ describe("lurek.compute parallelization configuration", function()
         local result = lurek.compute.getParThreshold()
         expect_true(result >= 1, "threshold should be at least 1")
         lurek.compute.setParThreshold(original)
+    end)
+    -- @covers LArray:eigenvaluePower
+    -- @covers lurek.compute.fromTable
+    it("eigenvaluePower converges on known 3x3", function()
+        local a = lurek.compute.fromTable({
+            4.0, 1.0, 0.0,
+            1.0, 3.0, 0.0,
+            0.0, 0.0, 2.0
+        }, {3, 3})
+        local result = a:eigenPower(500, 1e-12)
+        expect_type("table", result)
+        expect_near(4.6180339887, result.value, 1e-6)
+        expect_equal(3, #result.vector)
     end)
 end)
 

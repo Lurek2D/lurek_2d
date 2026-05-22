@@ -310,7 +310,6 @@ end
 --- Tween Part 2: LTween extended, LTweenParallel, LTweenSequence, LTweenState, advanced module fns
 
 
---@api-stub: LTween.onComplete
 do
     local target = { x = 0.0 } ; local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear") ; print("duration=" .. tw:getDuration())
     print("easing=" .. tw:getEasingName()) ; print("elapsed=" .. tw:getElapsed()) ; print("progress=" .. tw:getProgress())
@@ -409,7 +408,6 @@ do
     tw:await() ; tw:cancel()
 end
 
---@api-stub: LTweenParallel.add
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -427,7 +425,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel.onComplete
+--@api-stub: LTweenParallel:onComplete
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -445,7 +443,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel.tween
+--@api-stub: LTweenParallel:tween
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -472,7 +470,6 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenSequence.delay
 do
     local obj = { x = 0.0, alpha = 1.0 } ; local seq = lurek.tween.sequence() ; seq:tween(0.5, obj, { x = 100 }, "linear")
     seq:delay(0.1, function() print("seq_delay_cb") end) ; seq:tween(0.5, obj, { alpha = 0 }, "easeout") ; seq:onComplete(function() print("seq_done") end)
@@ -481,7 +478,7 @@ do
     seq:await() ; seq:cancel()
 end
 
---@api-stub: LTweenSequence.onComplete
+--@api-stub: LTweenSequence:onComplete
 do
     local obj = { x = 0.0, alpha = 1.0 } ; local seq = lurek.tween.sequence() ; seq:tween(0.5, obj, { x = 100 }, "linear")
     seq:delay(0.1, function() print("seq_delay_cb") end) ; seq:tween(0.5, obj, { alpha = 0 }, "easeout") ; seq:onComplete(function() print("seq_done") end)
@@ -490,7 +487,7 @@ do
     seq:await() ; seq:cancel()
 end
 
---@api-stub: LTweenSequence.tween
+--@api-stub: LTweenSequence:tween
 do
     local obj = { x = 0.0, alpha = 1.0 } ; local seq = lurek.tween.sequence() ; seq:tween(0.5, obj, { x = 100 }, "linear")
     seq:delay(0.1, function() print("seq_delay_cb") end) ; seq:tween(0.5, obj, { alpha = 0 }, "easeout") ; seq:onComplete(function() print("seq_done") end)

@@ -268,16 +268,30 @@ describe("generic minimap and reveal helpers", function()
     end)
 
     -- @covers LRaycaster:computeTileLight
-    -- @covers lurek.raycaster.new
+    -- @covers LRaycaster:computeTileLight
     it("computeTileLight returns rgb+luma in range", function()
         local rc = lurek.raycaster.new(8, 8)
         local r, g, b, l = rc:computeTileLight(3, 3, 0.2, {
-            { x = 3.5, y = 3.5, radius = 4.0, r = 1.0, g = 0.8, b = 0.5, intensity = 8.0 }
+            { x = 3.5, y = 3.5, radius = 4.0, intensity = 8.0, color = {1.0, 0.8, 0.5} }
         })
-        expect_true(r >= 0.0 and r <= 1.0)
-        expect_true(g >= 0.0 and g <= 1.0)
-        expect_true(b >= 0.0 and b <= 1.0)
-        expect_true(l >= 0.0 and l <= 1.0)
+        expect_true(r >= 0 and r <= 1)
+        expect_true(g >= 0 and g <= 1)
+        expect_true(b >= 0 and b <= 1)
+        expect_true(l >= 0 and l <= 1)
+    end)
+
+    -- @covers LRaycaster:buildMinimapTileWindow
+    it("buildMinimapTileWindow returns samples", function()
+        local rc = lurek.raycaster.new(16, 16)
+        rc:setCell(4, 4, 1)
+        local samples = rc:buildMinimapTileWindow(5.5, 5.5, 3, 0.2, {})
+        expect_true(#samples > 0)
+        local has_blocked = false
+        for _, s in ipairs(samples) do
+            if s.blocked then has_blocked = true end
+            expect_true(s.x < 16 and s.y < 16)
+        end
+        expect_true(has_blocked)
     end)
 
     -- @covers LRaycaster:buildMinimapWindow
@@ -1234,6 +1248,17 @@ describe("lowered floor and model-scene helpers", function()
         }
         local count = rc:buildSceneWithModels(params, nil, nil, nil, nil)
         expect_type("number", count)
+    end)
+end)
+
+-- @describe RaycasterScene rendering
+describe("RaycasterScene rendering", function()
+    -- @covers LRaycasterScene:drawToImage
+    it("drawToImage returns correct dimensions", function()
+        local scene = lurek.raycaster.newScene()
+        local img = scene:drawToImage(320, 200)
+        expect_equal(320, img:getWidth())
+        expect_equal(200, img:getHeight())
     end)
 end)
 
