@@ -29,6 +29,25 @@ fn call_scene_table_method<'a>(
     }
     Ok(())
 }
+
+/// Resolve a scene id from an optional target selector:
+/// - nil: current top scene
+/// - string: registered scene name
+/// - integer: 1-based stack index (bottom=1)
+fn resolve_target_scene_id(state: &SceneState, target: Option<LuaValue>) -> Option<SceneId> {
+    match target {
+        None | Some(LuaValue::Nil) => state.stack.get_current(),
+        Some(LuaValue::String(name)) => name
+            .to_str()
+            .ok()
+            .and_then(|n| state.stack.get_registered(n)),
+        Some(LuaValue::Integer(idx)) if idx > 0 => {
+            let index = (idx as usize) - 1;
+            state.stack.get_all().get(index).copied()
+        }
+        _ => None,
+    }
+}
 /// Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
 pub struct LuaDepthSorter {
     inner: Rc<RefCell<DepthSorter>>,
@@ -388,7 +407,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- update --
-    /// Advance any active transition animation and call `update(self, dt)` on the current top scene. Call this once per frame from your main loop to drive scene logic and transition timing.
+    /// Advance any active transition animation and call `update(self, dt)` on the current top scene.
+    /// Execution can be frozen per scene via `setUpdateEnabled`.
     /// @param | dt | number | Delta time in seconds since the last frame (e.g. from `lurek.timer.getDelta()`).
     let st = state.clone();
     tbl.set(
@@ -397,10 +417,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             let top_table = {
                 let mut s = st.borrow_mut();
                 s.stack.update_transition(dt);
-                s.stack
-                    .get_current()
-                    .and_then(|top_id| s.scene_refs.get(&top_id))
-                    .and_then(|top_key| lua.registry_value::<LuaTable>(top_key).ok())
+                s.stack.get_current().and_then(|top_id| {
+                    if !s.stack.is_update_enabled(top_id) {
+                        return None;
+                    }
+                    s.scene_refs
+                        .get(&top_id)
+                        .and_then(|top_key| lua.registry_value::<LuaTable>(top_key).ok())
+                })
             };
             if let Some(top_table) = top_table {
                 let _ = call_scene_table_method(top_table, "update", dt);
@@ -409,7 +433,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- process --
-    /// Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first). Use this for deterministic game-logic ticks at a fixed time step. Scenes pushed as overlays and underlying scenes all receive this callback.
+    /// Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every process-active scene ordered by layer (lowest first).
+    /// Individual scenes can be frozen/unfrozen with `setProcessEnabled`.
     /// @param | dt | number | Fixed time-step delta in seconds (e.g. 1/60 for 60-tick logic).
     let st = state.clone();
     tbl.set(
@@ -438,6 +463,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 if let Some(table) = ready_table {
                     let _ = call_scene_table_method(table, "ready", ());
                 }
+                let should_process = {
+                    let s = st.borrow();
+                    s.stack.is_process_enabled(*id)
+                };
+                if !should_process {
+                    continue;
+                }
                 if let Some(table) = process_table {
                     let _ = call_scene_table_method(table, "process", dt);
                 }
@@ -446,7 +478,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- processPhysics --
-    /// Call `process_physics(self, dt)` on every active scene ordered by layer. Run this callback after your physics world step so scenes can react to collision results, apply forces, or synchronize sprite positions with physics bodies.
+    /// Call `process_physics(self, dt)` on every process-active scene ordered by layer.
+    /// Individual scenes can be frozen/unfrozen with `setPhysicsEnabled`.
     /// @param | dt | number | Physics time-step delta in seconds.
     let st = state.clone();
     tbl.set(
@@ -459,9 +492,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             for id in &active_ids {
                 let table = {
                     let s = st.borrow();
+                    if !s.stack.is_physics_enabled(*id) {
+                        None
+                    } else {
                     s.scene_refs
                         .get(id)
                         .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
+                    }
                 };
                 if let Some(table) = table {
                     let _ = call_scene_table_method(table, "process_physics", dt);
@@ -471,7 +508,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- processLate --
-    /// Call `process_late(self, dt)` on every active scene after all other processing. Ideal for camera follow logic, HUD synchronization, deferred cleanup, or any work that depends on the final positions of game objects.
+    /// Call `process_late(self, dt)` on every process-active scene after all other processing.
+    /// Individual scenes can be frozen/unfrozen with `setLateEnabled`.
     /// @param | dt | number | Delta time in seconds (same value passed to `process`).
     let st = state.clone();
     tbl.set(
@@ -484,9 +522,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             for id in &active_ids {
                 let table = {
                     let s = st.borrow();
+                    if !s.stack.is_late_enabled(*id) {
+                        None
+                    } else {
                     s.scene_refs
                         .get(id)
                         .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
+                    }
                 };
                 if let Some(table) = table {
                     let _ = call_scene_table_method(table, "process_late", dt);
@@ -496,16 +538,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- draw --
-    /// Call `draw(self)` on every scene in the stack from bottom to top. This is the legacy draw callback — prefer `render` and `renderUi` for world-space and screen-space separation.
+    /// Call `draw(self)` on render-active scenes ordered by layer (lowest first).
+    /// Engine-level render policy is single-scene: only the current top scene is rendered.
+    /// This is the legacy draw callback — prefer `render` and `renderUi` for world-space and screen-space separation.
     let st = state.clone();
     tbl.set(
         "draw",
         lua.create_function(move |lua, ()| {
-            let all_ids: Vec<SceneId> = {
+            let active_ids: Vec<SceneId> = {
                 let s = st.borrow();
-                s.stack.get_all().to_vec()
+                s.stack.get_render_ids_ordered_by_layer()
             };
-            for id in &all_ids {
+            for id in &active_ids {
                 let table = {
                     let s = st.borrow();
                     s.scene_refs
@@ -520,16 +564,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- render --
-    /// Call `render(self)` on every scene in the stack from bottom to top. This is the preferred world-space rendering callback — draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
+    /// Call `render(self)` on render-active scenes ordered by layer (lowest first).
+    /// Engine-level render policy is single-scene: only the current top scene is rendered.
+    /// This is the preferred world-space rendering callback — draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
     let st = state.clone();
     tbl.set(
         "render",
         lua.create_function(move |lua, ()| {
-            let all_ids: Vec<SceneId> = {
+            let active_ids: Vec<SceneId> = {
                 let s = st.borrow();
-                s.stack.get_all().to_vec()
+                s.stack.get_render_ids_ordered_by_layer()
             };
-            for id in &all_ids {
+            for id in &active_ids {
                 let table = {
                     let s = st.borrow();
                     s.scene_refs
@@ -544,16 +590,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- renderUi --
-    /// Call `render_ui(self)` on every scene in the stack from bottom to top. Use this for screen-space HUD elements, health bars, score displays, menus, and overlays that should draw on top of the world after `render`.
+    /// Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
+    /// Engine-level render policy is single-scene: only the current top scene is rendered.
+    /// Use this for screen-space HUD elements, health bars, score displays, menus, and overlays that should draw on top of the world after `render`.
     let st = state.clone();
     tbl.set(
         "renderUi",
         lua.create_function(move |lua, ()| {
-            let all_ids: Vec<SceneId> = {
+            let active_ids: Vec<SceneId> = {
                 let s = st.borrow();
-                s.stack.get_all().to_vec()
+                s.stack.get_render_ids_ordered_by_layer()
             };
-            for id in &all_ids {
+            for id in &active_ids {
                 let table = {
                     let s = st.borrow();
                     s.scene_refs
@@ -889,7 +937,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(move |_, ()| Ok(st.borrow().stack.get_transition_progress_eased()))?,
     )?;
     // -- pushOverlay --
-    /// Push a scene as a transparent overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it continues to receive `process`, `draw`, and `render` callbacks. Use overlays for pause menus, dialog boxes, inventory screens, or debug panels that should draw on top without stopping gameplay.
+    /// Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
     /// @param | scene | table | The overlay scene table.
     /// @param | transition | string? | Transition type name. Defaults to `"none"`.
     /// @param | duration | number? | Transition animation duration in seconds. Defaults to 0.
@@ -936,7 +984,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
     // -- isOverlay --
-    /// Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both to update and render simultaneously.
+    /// Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both scenes to remain process-active unless explicitly frozen.
     /// @return | boolean | True if the top scene is an overlay, false otherwise.
     let st = state.clone();
     tbl.set(
@@ -952,7 +1000,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- getActiveScenes --
-    /// Returns a Lua array of all active scene tables ordered by their layer value (lowest layer first). Includes both regular scenes and overlays. Useful for iterating over all scenes for custom processing or debugging.
+    /// Returns a Lua array of all process-active scene tables ordered by their layer value (lowest layer first). Includes regular scenes and overlays.
     /// @return | table | Lua array of active scene tables sorted by layer.
     /// @field | __index | table | Prototype table (the scene definition used to create this instance).
     let st = state.clone();
@@ -962,13 +1010,182 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             let s = st.borrow();
             let active_ids: Vec<SceneId> = s.stack.get_active_ids_ordered_by_layer();
             let result = lua.create_table()?;
-            for (i, id) in active_ids.iter().enumerate() {
+            let mut out_index = 1;
+            for id in &active_ids {
+                if !s.stack.is_process_enabled(*id) {
+                    continue;
+                }
+                if let Some(key) = s.scene_refs.get(id) {
+                    let table: LuaTable = lua.registry_value(key)?;
+                    result.raw_set(out_index, table)?;
+                    out_index = out_index + 1;
+                }
+            }
+            Ok(result)
+        })?,
+    )?;
+    // -- getRenderActiveScenes --
+    /// Returns the scene table(s) that are render-active this frame.
+    /// Engine-level render policy is single-scene, so this returns either an empty table or a table with one element (top scene).
+    /// @return | table | Lua array of render-active scene tables.
+    let st = state.clone();
+    tbl.set(
+        "getRenderActiveScenes",
+        lua.create_function(move |lua, ()| {
+            let s = st.borrow();
+            let render_ids: Vec<SceneId> = s.stack.get_render_ids_ordered_by_layer();
+            let result = lua.create_table()?;
+            for (i, id) in render_ids.iter().enumerate() {
                 if let Some(key) = s.scene_refs.get(id) {
                     let table: LuaTable = lua.registry_value(key)?;
                     result.raw_set(i + 1, table)?;
                 }
             }
             Ok(result)
+        })?,
+    )?;
+
+    // -- setProcessEnabled --
+    /// Enable or disable `process(self, dt)` execution for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @param | enabled | boolean | True to run process, false to freeze it.
+    /// @return | boolean | True when target scene was resolved and updated.
+    let st = state.clone();
+    tbl.set(
+        "setProcessEnabled",
+        lua.create_function(move |_, (target, enabled): (Option<LuaValue>, bool)| {
+            let mut s = st.borrow_mut();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                s.stack.set_process_enabled(id, enabled);
+                return Ok(true);
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    // -- setPhysicsEnabled --
+    /// Enable or disable `process_physics(self, dt)` execution for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @param | enabled | boolean | True to run physics callback, false to freeze it.
+    /// @return | boolean | True when target scene was resolved and updated.
+    let st = state.clone();
+    tbl.set(
+        "setPhysicsEnabled",
+        lua.create_function(move |_, (target, enabled): (Option<LuaValue>, bool)| {
+            let mut s = st.borrow_mut();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                s.stack.set_physics_enabled(id, enabled);
+                return Ok(true);
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    // -- setLateEnabled --
+    /// Enable or disable `process_late(self, dt)` execution for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @param | enabled | boolean | True to run late callback, false to freeze it.
+    /// @return | boolean | True when target scene was resolved and updated.
+    let st = state.clone();
+    tbl.set(
+        "setLateEnabled",
+        lua.create_function(move |_, (target, enabled): (Option<LuaValue>, bool)| {
+            let mut s = st.borrow_mut();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                s.stack.set_late_enabled(id, enabled);
+                return Ok(true);
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    // -- setUpdateEnabled --
+    /// Enable or disable `update(self, dt)` execution for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @param | enabled | boolean | True to run update callback, false to freeze it.
+    /// @return | boolean | True when target scene was resolved and updated.
+    let st = state.clone();
+    tbl.set(
+        "setUpdateEnabled",
+        lua.create_function(move |_, (target, enabled): (Option<LuaValue>, bool)| {
+            let mut s = st.borrow_mut();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                s.stack.set_update_enabled(id, enabled);
+                return Ok(true);
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    // -- isProcessEnabled --
+    /// Returns whether `process` is enabled for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @return | boolean | True when enabled, false when frozen or target not found.
+    let st = state.clone();
+    tbl.set(
+        "isProcessEnabled",
+        lua.create_function(move |_, target: Option<LuaValue>| {
+            let s = st.borrow();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                return Ok(s.stack.is_process_enabled(id));
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    // -- isPhysicsEnabled --
+    /// Returns whether `process_physics` is enabled for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @return | boolean | True when enabled, false when frozen or target not found.
+    let st = state.clone();
+    tbl.set(
+        "isPhysicsEnabled",
+        lua.create_function(move |_, target: Option<LuaValue>| {
+            let s = st.borrow();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                return Ok(s.stack.is_physics_enabled(id));
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    // -- isLateEnabled --
+    /// Returns whether `process_late` is enabled for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @return | boolean | True when enabled, false when frozen or target not found.
+    let st = state.clone();
+    tbl.set(
+        "isLateEnabled",
+        lua.create_function(move |_, target: Option<LuaValue>| {
+            let s = st.borrow();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                return Ok(s.stack.is_late_enabled(id));
+            }
+            Ok(false)
+        })?,
+    )?;
+
+    // -- isUpdateEnabled --
+    /// Returns whether `update` is enabled for a selected scene.
+    /// Target selector supports nil (current top), registered name string, or 1-based stack index.
+    /// @param | target | any? | nil/current, registered scene name, or 1-based stack index.
+    /// @return | boolean | True when enabled, false when frozen or target not found.
+    let st = state.clone();
+    tbl.set(
+        "isUpdateEnabled",
+        lua.create_function(move |_, target: Option<LuaValue>| {
+            let s = st.borrow();
+            if let Some(id) = resolve_target_scene_id(&s, target) {
+                return Ok(s.stack.is_update_enabled(id));
+            }
+            Ok(false)
         })?,
     )?;
     // -- preload --

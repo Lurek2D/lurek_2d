@@ -87,8 +87,19 @@ def pack_game(game_dir: pathlib.Path, out_dir: pathlib.Path, archive_stem: str) 
 
 
 def main():
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/dist/package_games.py
+
+  # Show all arguments
+  python tools/dist/package_games.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Pack Lurek2D games into .lurek archives."
+        description="Pack Lurek2D games into .lurek archives.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument(
         "--out",

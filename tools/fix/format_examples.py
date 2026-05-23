@@ -156,7 +156,20 @@ def process_file(path: Path, dry_run: bool = False) -> bool:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/fix/format_examples.py
+
+  # Show all arguments
+  python tools/fix/format_examples.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Lurek2D Tool",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 

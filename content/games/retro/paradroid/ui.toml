@@ -1,21 +1,21 @@
 [root]
 widget_type = "panel"
 id = "root_ui"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0]
 
   [[root.children]]
   widget_type = "panel"
   id = "title_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "PARADROID"
-    font_size = 48
+    font_size = 30
     color = [0.3, 0.8, 1.0, 1]
     anchor = "center"
     y = -140
@@ -23,7 +23,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "Lurek2D Remake"
-    font_size = 18
+    font_size = 16
     color = [0.5, 0.5, 0.6, 1]
     anchor = "center"
     y = -80
@@ -40,7 +40,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "Arrow keys: Move | Space: Fire | E: Transfer"
-    font_size = 14
+    font_size = 12
     color = [0.4, 0.4, 0.5, 1]
     anchor = "center"
     y = 200
@@ -48,14 +48,14 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "game_over_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "GAME OVER"
-    font_size = 48
+    font_size = 30
     color = [1.0, 0.3, 0.2, 1]
     anchor = "center"
     y = -80
@@ -90,15 +90,15 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "level_clear_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     id = "lc_title"
     text = "LEVEL 1 CLEAR"
-    font_size = 40
+    font_size = 30
     color = [0.3, 1.0, 0.4, 1]
     anchor = "center"
     y = -60
@@ -116,7 +116,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "lc_press_start"
     text = "PRESS SPACE FOR NEXT LEVEL"
-    font_size = 18
+    font_size = 16
     color = [0.7, 0.7, 0.7, 1]
     anchor = "center"
     y = 100
@@ -124,15 +124,15 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "transfer_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   bg_color = [0, 0, 0, 0.6]
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "TRANSFER SEQUENCE"
-    font_size = 28
+    font_size = 30
     color = [0.4, 0.8, 1.0, 1]
     anchor = "center"
     y = -200
@@ -156,8 +156,8 @@ bg_color = [0, 0, 0, 0]
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 300
-    height = 30
+    w = 300
+    h = 30
     bg_color = [0.1, 0.1, 0.15, 1]
     x = 250
     y = 220
@@ -165,8 +165,8 @@ bg_color = [0, 0, 0, 0]
       [[root.children.children.children]]
       widget_type = "panel"
       id = "transfer_player_bar"
-      width = 0
-      height = 30
+      w = 0
+      h = 30
       bg_color = [0.3, 0.7, 1.0, 1]
 
     [[root.children.children]]
@@ -180,8 +180,8 @@ bg_color = [0, 0, 0, 0]
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 300
-    height = 30
+    w = 300
+    h = 30
     bg_color = [0.1, 0.1, 0.15, 1]
     x = 250
     y = 300
@@ -189,14 +189,14 @@ bg_color = [0, 0, 0, 0]
       [[root.children.children.children]]
       widget_type = "panel"
       id = "transfer_enemy_bar"
-      width = 0
-      height = 30
+      w = 0
+      h = 30
       bg_color = [1.0, 0.3, 0.3, 1]
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 300
-    height = 6
+    w = 300
+    h = 6
     bg_color = [0.15, 0.15, 0.2, 1]
     x = 250
     y = 360
@@ -204,8 +204,8 @@ bg_color = [0, 0, 0, 0]
       [[root.children.children.children]]
       widget_type = "panel"
       id = "transfer_time_bar"
-      width = 0
-      height = 6
+      w = 0
+      h = 6
       bg_color = [0.8, 0.8, 0.3, 1]
 
     [[root.children.children]]
@@ -220,14 +220,14 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "hud_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 120
-    height = 28
+    w = 120
+    h = 28
     bg_color = [0.05, 0.05, 0.1, 0.9]
     x = 4
     y = 4
@@ -236,15 +236,15 @@ bg_color = [0, 0, 0, 0]
       widget_type = "label"
       id = "hud_droid"
       text = "DROID 001"
-      font_size = 18
+      font_size = 16
       color = [0.3, 0.8, 1.0, 1]
       x = 8
       y = 4
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 120
-    height = 14
+    w = 120
+    h = 14
     bg_color = [0.1, 0.05, 0.05, 0.9]
     x = 4
     y = 36
@@ -252,22 +252,22 @@ bg_color = [0, 0, 0, 0]
       [[root.children.children.children]]
       widget_type = "panel"
       id = "hud_hp_bar"
-      width = 120
-      height = 14
+      w = 120
+      h = 14
       bg_color = [0.2, 0.8, 0.3, 1]
 
       [[root.children.children.children]]
       widget_type = "label"
       text = "HP"
-      font_size = 11
+      font_size = 10
       color = [1, 1, 1, 1]
       x = 4
       y = 1
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 120
-    height = 14
+    w = 120
+    h = 14
     bg_color = [0.05, 0.05, 0.1, 0.9]
     x = 4
     y = 54
@@ -275,22 +275,22 @@ bg_color = [0, 0, 0, 0]
       [[root.children.children.children]]
       widget_type = "panel"
       id = "hud_en_bar"
-      width = 120
-      height = 14
+      w = 120
+      h = 14
       bg_color = [0.3, 0.6, 1.0, 1]
 
       [[root.children.children.children]]
       widget_type = "label"
       text = "NRG"
-      font_size = 11
+      font_size = 10
       color = [1, 1, 1, 1]
       x = 4
       y = 1
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 136
-    height = 28
+    w = 136
+    h = 28
     bg_color = [0.05, 0.05, 0.1, 0.9]
     x = 660
     y = 4
@@ -306,8 +306,8 @@ bg_color = [0, 0, 0, 0]
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 136
-    height = 18
+    w = 136
+    h = 18
     bg_color = [0.05, 0.05, 0.1, 0.9]
     x = 660
     y = 36
@@ -316,7 +316,7 @@ bg_color = [0, 0, 0, 0]
       widget_type = "label"
       id = "hud_level"
       text = "LEVEL 1"
-      font_size = 14
+      font_size = 12
       color = [0.6, 0.6, 0.7, 1]
       x = 8
       y = 2

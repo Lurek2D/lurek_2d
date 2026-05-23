@@ -1,5 +1,11 @@
 -- Integration: compute statistics fed into dataframe reports
 -- @describe integration: compute statistics to dataframe
+-- @covers lurek.compute.fromTable
+-- @covers lurek.compute.ones
+-- @covers lurek.compute.range
+-- @covers lurek.dataframe.newDataFrame
+-- @covers lurek.image.newImageData
+
 describe("integration: compute statistics to dataframe", function()
     -- @integration LDataFrame:addColumn
     -- @integration LDataFrame:addRow

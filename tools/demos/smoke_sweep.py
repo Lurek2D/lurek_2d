@@ -27,12 +27,71 @@ Typical usage (PowerShell, from repo root):
 
 Advanced:
 
-    python tools/demos/smoke_sweep.py --frames 60 --timeout 20 --jobs 1 \
-        --report work/smoke.json
+    python tools/demos/smoke_sweep.py --frames 60 --timeout 20 --jobs 1         --report work/smoke.json
 
 The engine binary defaults to ``build/debug/lurek2d.exe`` on Windows (the
 ``build/debug/lurek2d`` layout elsewhere) - override with ``--binary`` if
 a release build should be used instead.
+
+Usage:
+```
+usage: smoke_sweep.py [-h] [--binary BINARY] [--games-root GAMES_ROOT]
+                      [--examples-root EXAMPLES_ROOT] [--frames FRAMES]
+                      [--timeout TIMEOUT] [--report REPORT] [--only ONLY]
+                      [--kind {game,example,all}] [--limit LIMIT] [--dry-run]
+
+Smoke-sweep every playable project under content/games/ and every single-file
+content/examples/*.lua.
+
+For each target the tool runs the Lurek2D engine binary with the existing
+`--screenshot` / `--screenshot-frames` flags, which capture a PNG from the GPU
+read-back path and then exit cleanly. A run is graded:
+
+* PASS     - process exited 0 AND the PNG file is present and non-empty.
+* CRASH    - process exited non-zero.
+* TIMEOUT  - process was killed because it exceeded the per-target wall clock.
+* NO_IMAGE - process exited 0 but no PNG was produced.
+
+Results are written to two files in the session work folder:
+
+* <report>.json - one object per target with full stderr tail, exit code,
+                  elapsed time, and a coarse error bucket.
+* <report>.md   - human summary grouped by bucket.
+
+The tool is stdlib-only (subprocess, json, pathlib, argparse) so it runs on any
+Python 3.9+ without extra setup. It is safe to run against a repo where many
+demos are broken: crashes are captured, not propagated.
+
+Typical usage (PowerShell, from repo root):
+
+    python tools/demos/smoke_sweep.py
+
+Advanced:
+
+    python tools/demos/smoke_sweep.py --frames 60 --timeout 20 --jobs 1         --report work/smoke.json
+
+The engine binary defaults to ``build/debug/lurek2d.exe`` on Windows (the
+``build/debug/lurek2d`` layout elsewhere) - override with ``--binary`` if
+a release build should be used instead.
+
+options:
+  -h, --help            show this help message and exit
+  --binary BINARY       Engine binary (default C:/Users\tombl\Documents\lurek2
+                        D\build\debug\lurek2d.exe)
+  --games-root GAMES_ROOT
+  --examples-root EXAMPLES_ROOT
+  --frames FRAMES       --screenshot-frames value passed to engine (default
+                        120)
+  --timeout TIMEOUT     Per-target wall-clock timeout in seconds (default
+                        30.0)
+  --report REPORT       Output JSON report path (default
+                        C:/Users\tombl\Documents\lurek2D\work\engine-
+                        recovery-20260421\reports\smoke_results.json)
+  --only ONLY           Run only targets whose label contains this substring
+  --kind {game,example,all}
+  --limit LIMIT         Run at most N targets (0 = all)
+  --dry-run             List targets and exit without running anything
+```
 """
 
 from __future__ import annotations

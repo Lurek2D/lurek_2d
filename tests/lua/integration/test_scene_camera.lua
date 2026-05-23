@@ -1,5 +1,8 @@
 -- Integration: camera viewport tracking entity positions via ECS
 -- @describe integration: scene camera viewport operations
+-- @covers lurek.camera.newCamera
+-- @covers lurek.ecs.newUniverse
+
 describe("integration: scene camera viewport operations", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition

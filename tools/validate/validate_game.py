@@ -28,6 +28,7 @@ from typing import Dict, List, Set
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 EXAMPLES_DIR = WORKSPACE_ROOT / "content" / "examples"
+ALLOWED_BITMAP_FONT_SIZES = {8, 10, 12, 16, 20, 24, 30}
 
 
 def _build_api_manifest() -> Dict[str, Set[str]]:
@@ -79,6 +80,11 @@ KNOWN_PROPERTIES = {
     "lurek.data", "lurek.image", "lurek.thread", "lurek.compute",
     "lurek.dataframe", "lurek.ai", "lurek.graph", "lurek.particle",
     "lurek.tilemap",
+}
+
+# Known callable helpers that may not be present in generated manifest yet.
+KNOWN_MANUAL_APIS = {
+    "lurek.ui.getElementById",
 }
 
 
@@ -136,6 +142,9 @@ def validate_lua_file(
             if name in full_names:
                 continue
 
+            if name in KNOWN_MANUAL_APIS:
+                continue
+
             # Check partial match (module.func pattern)
             parts = name.split(".")
             if len(parts) >= 3:
@@ -162,6 +171,42 @@ def validate_lua_file(
     return issues
 
 
+def validate_ui_toml(ui_path: Path) -> List[dict]:
+    """Validate font_size fields in a UI TOML file for bitmap-font compatibility."""
+    try:
+        content = ui_path.read_text(encoding="utf-8")
+    except OSError as e:
+        return [{"type": "error", "message": str(e), "line": 0, "call": ""}]
+
+    issues: List[dict] = []
+    for i, line in enumerate(content.splitlines()):
+        if re.match(r"^\s*(width|height)\s*=", line):
+            issues.append({
+                "type": "invalid_ui_geometry_key",
+                "message": "Use w/h keys in UI TOML instead of width/height",
+                "line": i + 1,
+                "call": line.strip(),
+            })
+
+        m = re.match(r"^\s*font_size\s*=\s*(\d+)\s*$", line)
+        if not m:
+            continue
+        font_size = int(m.group(1))
+        if font_size not in ALLOWED_BITMAP_FONT_SIZES:
+            allowed = ", ".join(str(v) for v in sorted(ALLOWED_BITMAP_FONT_SIZES))
+            issues.append({
+                "type": "invalid_font_size",
+                "message": (
+                    f"Unsupported bitmap font_size={font_size}. "
+                    f"Allowed sizes: {allowed}"
+                ),
+                "line": i + 1,
+                "call": f"font_size={font_size}",
+            })
+
+    return issues
+
+
 def validate_game_folder(
     game_dir: Path,
     manifest: Dict[str, Set[str]],
@@ -172,6 +217,13 @@ def validate_game_folder(
         rel = str(lua_file.relative_to(game_dir))
         issues = validate_lua_file(lua_file, manifest)
         results[rel] = issues
+
+    ui_toml = game_dir / "ui.toml"
+    if ui_toml.exists():
+        rel = str(ui_toml.relative_to(game_dir))
+        issues = validate_ui_toml(ui_toml)
+        results[rel] = issues
+
     return results
 
 

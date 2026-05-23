@@ -1,22 +1,22 @@
 [root]
 widget_type = "panel"
 id = "root_ui"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0]
 
   [[root.children]]
   widget_type = "panel"
   id = "title_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0, 0, 0, 0.5]
 
     [[root.children.children]]
     widget_type = "label"
     text = "A N O T H E R   W O R L D"
-    font_size = 32
+    font_size = 30
     color = [0.85, 0.75, 0.95, 1]
     anchor = "top_center"
     y = 180
@@ -41,7 +41,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "F = shoot | hold F = shield | hold longer = super-shot"
-    font_size = 14
+    font_size = 12
     color = [0.4, 0.35, 0.5, 0.5]
     anchor = "top_center"
     y = 420
@@ -49,7 +49,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "A/D = move  |  Space = jump  |  Escape = quit"
-    font_size = 14
+    font_size = 12
     color = [0.4, 0.35, 0.5, 0.5]
     anchor = "top_center"
     y = 445
@@ -57,8 +57,8 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "intro_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0, 0, 0, 1]
 
@@ -153,15 +153,15 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "dead_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0.6, 0.1, 0.1, 0.4]
 
     [[root.children.children]]
     widget_type = "label"
     text = "YOU DIED"
-    font_size = 32
+    font_size = 30
     color = [1, 0.3, 0.3, 1]
     anchor = "center"
     y = -20
@@ -178,15 +178,15 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "game_over_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0, 0, 0, 0.7]
 
     [[root.children.children]]
     widget_type = "label"
     text = "G A M E   O V E R"
-    font_size = 32
+    font_size = 30
     color = [0.9, 0.2, 0.2, 1]
     anchor = "center"
     y = -30
@@ -203,8 +203,8 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "hud_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
@@ -220,7 +220,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "fps_label"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.4, 0.4, 0.5, 0.4]
     x = 10
     y = 36
@@ -246,8 +246,8 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "panel"
     id = "charge_bar_bg"
-    width = 60
-    height = 8
+    w = 60
+    h = 8
     bg_color = [0.2, 0.2, 0.3, 0.7]
     x = 20
     y = 550
@@ -256,8 +256,8 @@ bg_color = [0, 0, 0, 0]
       [[root.children.children.children]]
       widget_type = "panel"
       id = "charge_bar_fill"
-      width = 0
-      height = 8
+      w = 0
+      h = 8
       bg_color = [1, 0.9, 0.3, 0.9]
       x = 0
       y = 0
@@ -265,8 +265,8 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "panel"
     id = "life_1"
-    width = 16
-    height = 16
+    w = 16
+    h = 16
     bg_color = [0.9, 0.3, 0.3, 0.9]
     x = 770
     y = 20
@@ -274,8 +274,8 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "panel"
     id = "life_2"
-    width = 16
-    height = 16
+    w = 16
+    h = 16
     bg_color = [0.9, 0.3, 0.3, 0.9]
     x = 740
     y = 20
@@ -283,8 +283,8 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "panel"
     id = "life_3"
-    width = 16
-    height = 16
+    w = 16
+    h = 16
     bg_color = [0.9, 0.3, 0.3, 0.9]
     x = 710
     y = 20
@@ -292,7 +292,7 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "fade_panel"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0, 0, 0, 0]

@@ -48,7 +48,20 @@ def run_mutants(modules: list[str]) -> tuple[int, str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run cargo-mutants and save a report")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/mutation_report.py
+
+  # Show all arguments
+  python tools/audit/mutation_report.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Run cargo-mutants and save a report",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--modules", nargs="*", default=DEFAULT_MODULES)
     parser.add_argument(
         "--output",

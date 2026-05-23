@@ -14,6 +14,34 @@ Examples:
     python tools/dev/parallel_cargo.py clippy --deny-warnings
     python tools/dev/parallel_cargo.py fmt check
     python tools/dev/parallel_cargo.py doc --open --no-deps
+
+Usage:
+```
+usage: parallel_cargo.py [-h] {build,check,run,test,clippy,fmt,doc} ...
+
+Run repository-owned cargo workflows through one orchestration wrapper.
+
+positional arguments:
+  {build,check,run,test,clippy,fmt,doc}
+    build               Build the workspace in debug or release mode.
+    check               Run cargo check.
+    run                 Run the workspace via cargo run.
+    test                Run Lua tests, Rust fan-out, or targeted test
+                        binaries.
+    clippy              Run cargo clippy.
+    fmt                 Run cargo fmt or cargo fmt --check.
+    doc                 Run cargo doc.
+
+options:
+  -h, --help            show this help message and exit
+
+Examples:
+  # Default execution
+  python tools/dev/parallel_cargo.py
+
+  # Show all arguments
+  python tools/dev/parallel_cargo.py --help
+```
 """
 
 from __future__ import annotations
@@ -540,8 +568,19 @@ def add_common_flags(parser: argparse.ArgumentParser, *, jobs: bool = True, verb
 
 
 def parse_args() -> argparse.Namespace:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/dev/parallel_cargo.py
+
+  # Show all arguments
+  python tools/dev/parallel_cargo.py --help
+"""
     parser = argparse.ArgumentParser(
         description="Run repository-owned cargo workflows through one orchestration wrapper.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 

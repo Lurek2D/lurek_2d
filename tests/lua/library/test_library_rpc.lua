@@ -7,6 +7,11 @@
 ---------------------------------------------------------------------------
 
 -- Mock lurek.network.pack/unpack using identity (tables pass through)
+-- @covers lurek.network.pack
+-- @covers lurek.network.unpack
+-- @covers lurek.serial.fromJson
+-- @covers lurek.serial.toJson
+
 if not lurek then lurek = {} end
 if not lurek.network then
     lurek.network = {

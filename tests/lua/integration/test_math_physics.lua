@@ -1,5 +1,12 @@
 -- Integration: math utility functions used alongside physics body state
 -- @describe math + physics integration
+-- @covers lurek.math.cos
+-- @covers lurek.math.sin
+-- @covers lurek.math.sqrt
+-- @covers lurek.physics.destroyWorld
+-- @covers lurek.physics.newBody
+-- @covers lurek.physics.newWorld
+
 describe("math + physics integration", function()
     -- @integration LBody:getPosition
     -- @integration LBody:setPosition

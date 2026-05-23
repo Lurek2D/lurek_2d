@@ -7,6 +7,21 @@ target under ``tests/rust/unit/<module>_tests.rs`` (plus a Lua candidate
 when a ``src/lua_api/<module>_api.rs`` exists, per TST-01).
 
 Exit code: 0 if no blocks found, 1 otherwise.
+
+Usage:
+```
+usage: inline_test_audit.py [-h] [--root ROOT] [--scope SCOPE]
+                            [--format {text,json}] [--output OUTPUT]
+
+inline_test_audit.py â€” Enforce TST-02 (no inline `#[cfg(test)]` in src/).
+
+options:
+  -h, --help            show this help message and exit
+  --root ROOT
+  --scope SCOPE         Restrict to one src/ subdirectory.
+  --format {text,json}
+  --output OUTPUT       Optional JSON output path.
+```
 """
 
 from __future__ import annotations

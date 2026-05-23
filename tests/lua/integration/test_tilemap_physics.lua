@@ -1,5 +1,14 @@
 -- Integration: tilemap solid tiles generating physics collision boundaries
 -- @describe integration: tilemap solid tiles as physics boundaries
+-- @covers lurek.pathfind.newNavGrid
+-- @covers lurek.pathfind.newPathfinder
+-- @covers lurek.physics.destroyWorld
+-- @covers lurek.physics.newBody
+-- @covers lurek.physics.newWorld
+-- @covers lurek.physics.step
+-- @covers lurek.tilemap.newTileMap
+-- @covers lurek.tilemap.newTileSet
+
 describe("integration: tilemap solid tiles as physics boundaries", function()
     -- @integration LBody:getPosition
     -- @integration LTileMap:addLayer

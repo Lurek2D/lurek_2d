@@ -30,6 +30,7 @@
   - [asteroids](#asteroids)
   - [centipede](#centipede)
   - [donkey_kong](#donkeykong)
+  - [dyna_blaster](#dynablaster)
   - [frogger](#frogger)
   - [galaga](#galaga)
   - [pac_man](#pacman)
@@ -163,7 +164,7 @@ Reference games come from `content/games/`. Module usage is detected by scanning
 
 Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to destroy rows of bricks, collect power-ups, and advance through increasingly di...
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [bullet_hell](../tree/main/content/games/action/bullet_hell)
 
@@ -171,7 +172,7 @@ Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to d
 
 Dodge intricate bullet patterns, graze for bonus points, and bomb your way through relentless waves.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [cannon_fodder](../tree/main/content/games/action/cannon_fodder)
 
@@ -179,7 +180,7 @@ Dodge intricate bullet patterns, graze for bonus points, and bomb your way throu
 
 Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four soldiers across a tile-based jungle map, click to move the squad, while they auto...
 
-**Modules:** [automation](Module-automation), [event](Module-event), [math](Module-math), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [math](Module-math), [render](Module-render), [ui](Module-ui), [window](Module-window)
 
 ### [endless_runner](../tree/main/content/games/action/endless_runner)
 
@@ -187,7 +188,7 @@ Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four sold
 
 Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, leap across gaps, and collect coins while the world accelerates.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [ui](Module-ui), +1
 
 ### [fighting_game](../tree/main/content/games/action/fighting_game)
 
@@ -195,7 +196,7 @@ Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, 
 
 1v1 fighting game with Player vs AI — land combos, build super meter, and win best of 3 rounds.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [horde_survivor](../tree/main/content/games/action/horde_survivor)
 
@@ -203,7 +204,7 @@ Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, 
 
 Vampire Survivors-style top-down horde survival — auto-attack with orbiting projectiles while dodging waves of enemies.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [infiltration](../tree/main/content/games/action/infiltration)
 
@@ -211,7 +212,7 @@ Vampire Survivors-style top-down horde survival — auto-attack with orbiting pr
 
 Top-down stealth puzzle — sneak through a guarded facility using gadgets, avoid cameras, hack terminals, and escape with the data.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [metroidvania](../tree/main/content/games/action/metroidvania)
 
@@ -219,7 +220,7 @@ Top-down stealth puzzle — sneak through a guarded facility using gadgets, avoi
 
 Side-scrolling exploration platformer with interconnected rooms, ability unlocks, and multiple enemy types.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [platform_fighter](../tree/main/content/games/action/platform_fighter)
 
@@ -227,7 +228,7 @@ Side-scrolling exploration platformer with interconnected rooms, ability unlocks
 
 Smash Bros-inspired 2-player local platform fighter with damage percentage, knockback scaling, stocks, and blast zones.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [platformer](../tree/main/content/games/action/platformer)
 
@@ -235,7 +236,7 @@ Smash Bros-inspired 2-player local platform fighter with damage percentage, knoc
 
 Classic side-scrolling 2D platformer — run, jump, and stomp through three tile-based levels.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [ui](Module-ui), +1
 
 ### [roguelite](../tree/main/content/games/action/roguelite)
 
@@ -243,7 +244,7 @@ Classic side-scrolling 2D platformer — run, jump, and stomp through three tile
 
 Hades-style top-down action roguelite — fight through room-based dungeons, collect perks, and face bosses every five rooms.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [sniper](../tree/main/content/games/action/sniper)
 
@@ -251,7 +252,7 @@ Hades-style top-down action roguelite — fight through room-based dungeons, col
 
 A ballistics puzzle sniper game built with Lurek2D.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [ui](Module-ui), [window](Module-window)
 
 ### [soulslike](../tree/main/content/games/action/soulslike)
 
@@ -259,7 +260,7 @@ A ballistics puzzle sniper game built with Lurek2D.
 
 Precision boss fight with stamina management, dodge i-frames, estus heals, and a 3-phase boss AI.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [stealth](../tree/main/content/games/action/stealth)
 
@@ -267,7 +268,7 @@ Precision boss fight with stamina management, dodge i-frames, estus heals, and a
 
 Top-down stealth game — sneak past patrolling guards, collect keycards, and reach the exit unseen.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [vertical_climber](../tree/main/content/games/action/vertical_climber)
 
@@ -275,7 +276,7 @@ Top-down stealth game — sneak past patrolling guards, collect keycards, and re
 
 Endless Doodle Jump-style vertical platformer — auto-bounce upward through procedurally generated platforms, dodge enemies, and climb as high as you can.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 
 ## apps
@@ -286,7 +287,7 @@ Endless Doodle Jump-style vertical platformer — auto-bounce upward through pro
 
 Business/data-science demo for a five-person household finance dashboard.
 
-**Modules:** [filesystem](Module-filesystem), [render](Module-render), [save](Module-save), [ui](Module-ui)
+**Modules:** [filesystem](Module-filesystem), [render](Module-render), [save](Module-save), [ui](Module-ui), [window](Module-window)
 
 
 ## arcade
@@ -297,7 +298,7 @@ Business/data-science demo for a five-person household finance dashboard.
 
 _Fly, shoot, and survive the asteroid field — classic arcade action with thrust physics, screen wrapping, and particle explosions._
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [centipede](../tree/main/content/games/arcade/centipede)
 
@@ -305,7 +306,7 @@ _Fly, shoot, and survive the asteroid field — classic arcade action with thrus
 
 Classic arcade shooter — blast a segmented centipede as it winds through a mushroom field.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [ui](Module-ui), +1
 
 ### [donkey_kong](../tree/main/content/games/arcade/donkey_kong)
 
@@ -313,7 +314,13 @@ Classic arcade shooter — blast a segmented centipede as it winds through a mus
 
 Classic platform climber — navigate sloped girders, dodge rolling barrels, and rescue Pauline at the top.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
+
+### [dyna_blaster](../tree/main/content/games/arcade/dyna_blaster)
+
+Top-down bomber-style arcade demo using scene flow, ECS entities, grid explosions, and TOML-driven UI.
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [scene](Module-scene), [ui](Module-ui), [window](Module-window)
 
 ### [frogger](../tree/main/content/games/arcade/frogger)
 
@@ -321,7 +328,7 @@ Classic platform climber — navigate sloped girders, dodge rolling barrels, and
 
 Classic Frogger arcade game — guide the frog across busy roads and treacherous rivers to reach the home slots.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [galaga](../tree/main/content/games/arcade/galaga)
 
@@ -329,7 +336,7 @@ Classic Frogger arcade game — guide the frog across busy roads and treacherous
 
 Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss capture mechanics, and dual-fire power-ups.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [input](Module-input), [scene](Module-scene), [ui](Module-ui)
 
 ### [pac_man](../tree/main/content/games/arcade/pac_man)
 
@@ -337,7 +344,7 @@ Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss
 
 _Navigate a maze, eat dots, avoid four ghosts with distinct AI personalities — classic arcade action with power pellets and chase/scatter modes._
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [pong](../tree/main/content/games/arcade/pong)
 
@@ -345,7 +352,7 @@ _Navigate a maze, eat dots, avoid four ghosts with distinct AI personalities —
 
 Classic two-player paddle game. First to 7 wins.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [ui](Module-ui), +1
 
 ### [snake](../tree/main/content/games/arcade/snake)
 
@@ -353,7 +360,7 @@ Classic two-player paddle game. First to 7 wins.
 
 _Eat, grow, avoid yourself — classic arcade snake with particles and tweened score._
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [space_invaders](../tree/main/content/games/arcade/space_invaders)
 
@@ -361,7 +368,7 @@ _Eat, grow, avoid yourself — classic arcade snake with particles and tweened s
 
 Defend Earth from descending alien formations. Shoot them before they reach you.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [tetris](../tree/main/content/games/arcade/tetris)
 
@@ -369,7 +376,7 @@ Defend Earth from descending alien formations. Shoot them before they reach you.
 
 _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece, ghost preview, and line-clear particles._
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [ui](Module-ui), +1
 
 
 ## retro
@@ -380,7 +387,7 @@ _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece,
 
 Cinematic puzzle-platformer inspired by Eric Chahi's 1991 classic. Navigate interconnected alien scenes, fight hostile creatures with a three-mode energy gun...
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [boulder_dash](../tree/main/content/games/retro/boulder_dash)
 
@@ -388,7 +395,7 @@ Cinematic puzzle-platformer inspired by Eric Chahi's 1991 classic. Navigate inte
 
 _Dig through a cave, collect sparkling diamonds, dodge falling boulders, and escape before the clock runs out._
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [cannon_fodder](../tree/main/content/games/retro/cannon_fodder)
 
@@ -396,7 +403,7 @@ _Dig through a cave, collect sparkling diamonds, dodge falling boulders, and esc
 
 _Command a squad of soldiers through five escalating jungle missions — move, shoot, and use grenades wisely, because every casualty is permanent._
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [commando](../tree/main/content/games/retro/commando)
 
@@ -404,7 +411,7 @@ _Command a squad of soldiers through five escalating jungle missions — move, s
 
 Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fight through dense jungle, rescue POW prisoners, hurl grenades at bunkers, and...
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [dungeon_crawler](../tree/main/content/games/retro/dungeon_crawler)
 
@@ -412,7 +419,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [raycaster](Module-raycaster), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [raycaster](Module-raycaster), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [giana_sisters](../tree/main/content/games/retro/giana_sisters)
 
@@ -420,7 +427,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [lemmings](../tree/main/content/games/retro/lemmings)
 
@@ -428,7 +435,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [paradroid](../tree/main/content/games/retro/paradroid)
 
@@ -436,7 +443,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [ui](Module-ui), [window](Module-window)
 
 ### [raycaster_fps](../tree/main/content/games/retro/raycaster_fps)
 
@@ -444,7 +451,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** retro
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [sensible_soccer](../tree/main/content/games/retro/sensible_soccer)
 
@@ -452,7 +459,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 **Category:** Retro
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [shadow_beast](../tree/main/content/games/retro/shadow_beast)
 
@@ -460,7 +467,7 @@ Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fi
 
 Atmospheric side-scrolling action game inspired by Psygnosis' 1989 Amiga masterpiece. Battle through a dark, beautiful world with 5-layer parallax scrolling,...
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [turrican](../tree/main/content/games/retro/turrican)
 
@@ -468,7 +475,7 @@ Atmospheric side-scrolling action game inspired by Psygnosis' 1989 Amiga masterp
 
 Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga classic, featuring a dual weapon system and tile-based levels.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 
 ## rpg
@@ -479,7 +486,7 @@ Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga cla
 
 **Category:** rpg
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [alchemy](../tree/main/content/games/rpg/alchemy)
 
@@ -487,7 +494,7 @@ Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga cla
 
 **Category:** RPG
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [courtroom](../tree/main/content/games/rpg/courtroom)
 
@@ -495,7 +502,7 @@ Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga cla
 
 **Category:** RPG
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [creature_collector](../tree/main/content/games/rpg/creature_collector)
 
@@ -1032,7 +1039,7 @@ Explore a scrolling nature landscape, frame wildlife in your camera viewfinder, 
 
 Side-view boxing game with a full 3-round fight system, stamina management, combo tracking, and an AI opponent that gets tougher each round.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [drift_racing](../tree/main/content/games/sports/drift_racing)
 
@@ -1040,7 +1047,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [fishing](../tree/main/content/games/sports/fishing)
 
@@ -1048,7 +1055,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [golf_classic](../tree/main/content/games/sports/golf_classic)
 
@@ -1056,15 +1063,13 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
-
 ### [pinball](../tree/main/content/games/sports/pinball)
 
 ![pinball screenshot](../raw/main/content/games/sports/pinball/screen.png)
 
 **Category:** Sports
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [rhythm_game](../tree/main/content/games/sports/rhythm_game)
 
@@ -1072,7 +1077,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [sensible_soccer](../tree/main/content/games/sports/sensible_soccer)
 
@@ -1080,7 +1085,7 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 Arcade top-down football inspired by Sensible Soccer (Amiga 1997). 5-a-side with aftertouch shooting, CPU opponents, and a 90-second match clock.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [ui](Module-ui), [window](Module-window)
 
 ### [ski_jump](../tree/main/content/games/sports/ski_jump)
 
@@ -1088,7 +1093,7 @@ Arcade top-down football inspired by Sensible Soccer (Amiga 1997). 5-a-side with
 
 _Choose your hill, crouch for speed on the approach, time your jump at the ramp lip, and lean through the air for maximum distance and style points._
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [sports_manager](../tree/main/content/games/sports/sports_manager)
 
@@ -1096,7 +1101,7 @@ _Choose your hill, crouch for speed on the approach, time your jump at the ramp 
 
 **Category:** Sports
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 ### [tennis_classic](../tree/main/content/games/sports/tennis_classic)
 
@@ -1104,7 +1109,7 @@ _Choose your hill, crouch for speed on the approach, time your jump at the ramp 
 
 Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opponent, and full tennis scoring (games, sets, match).
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [ui](Module-ui), +1
 
 ### [track_and_field](../tree/main/content/games/sports/track_and_field)
 
@@ -1112,7 +1117,7 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 
 **Category:** sports
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
 ### [trajectory_sports](../tree/main/content/games/sports/trajectory_sports)
 
@@ -1120,7 +1125,7 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 
 **Category:** sports
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
 
 ## strategy
@@ -1249,6 +1254,8 @@ Turn-based artillery game inspired by Worms (Amiga 1998). Two teams take turns f
 ## test
 
 ### [light_min](../tree/main/content/games/test/light_min)
+
+![light_min screenshot](../raw/main/content/games/test/light_min/screen.png)
 
 No description available.
 

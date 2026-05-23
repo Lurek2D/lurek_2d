@@ -1,5 +1,10 @@
 -- Evidence tests: tween module
 -- Evidence validates lurek.tween interpolation and control flow.
+-- @covers lurek.filesystem.write
+-- @covers lurek.tween.sequence
+-- @covers lurek.tween.tween
+-- @covers lurek.tween.update
+
 
 local OUT = "tests/output/tween/"
 

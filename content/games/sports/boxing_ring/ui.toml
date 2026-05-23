@@ -2,14 +2,14 @@
 type = "panel"
 id = "title_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "BOXING RING"
-  font_size = 48
+  font_size = 30
   color = [1, 0.85, 0.3, 1]
   anchor = "top_center"
   y = 140
@@ -17,7 +17,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "FIGHT NIGHT"
-  font_size = 32
+  font_size = 30
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 190
@@ -34,7 +34,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "J=Jab  K=Hook  L=Uppercut  Space=Block"
-  font_size = 18
+  font_size = 16
   color = [0.5, 0.5, 0.5, 1]
   anchor = "top_center"
   y = 380
@@ -42,7 +42,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "W=Duck  S=Lean back  A/D=Move"
-  font_size = 18
+  font_size = 16
   color = [0.5, 0.5, 0.5, 1]
   anchor = "top_center"
   y = 405
@@ -51,15 +51,15 @@ visible = false
 type = "panel"
 id = "hud"
 anchor = "top_left"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = true
 
   [[widget.children]]
   type = "panel"
   anchor = "top_left"
-  width = 800
-  height = 55
+  w = 800
+  h = 55
   bg_color = [0.1, 0.1, 0.12, 0.85]
 
     [[widget.children.children]]
@@ -83,7 +83,7 @@ visible = true
     type = "label"
     id = "round_info"
     text = "Round 1/3"
-    font_size = 18
+    font_size = 16
     color = [1, 1, 1, 1]
     anchor = "top_center"
     y = 4
@@ -92,7 +92,7 @@ visible = true
     type = "label"
     id = "timer_label"
     text = "60"
-    font_size = 28
+    font_size = 30
     color = [1, 0.85, 0.3, 1]
     anchor = "top_center"
     y = 22
@@ -101,7 +101,7 @@ visible = true
     type = "label"
     id = "wins_label"
     text = "0 - 0"
-    font_size = 14
+    font_size = 12
     color = [0.5, 0.5, 0.5, 1]
     anchor = "top_center"
     y = 44
@@ -109,8 +109,8 @@ visible = true
   [[widget.children]]
   type = "panel"
   anchor = "bottom_left"
-  width = 800
-  height = 30
+  w = 800
+  h = 30
   bg_color = [0.1, 0.1, 0.12, 0.85]
 
     [[widget.children.children]]
@@ -146,8 +146,8 @@ visible = true
 type = "panel"
 id = "round_end_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0.5]
 visible = false
 
@@ -155,7 +155,7 @@ visible = false
   type = "label"
   id = "round_end_title"
   text = "KNOCKOUT!"
-  font_size = 40
+  font_size = 30
   color = [1, 0.85, 0.3, 1]
   anchor = "center"
   y = -100
@@ -182,15 +182,15 @@ visible = false
 type = "panel"
 id = "game_over_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0.6]
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "FIGHT OVER"
-  font_size = 48
+  font_size = 30
   color = [1, 1, 1, 1]
   anchor = "center"
   y = -140
@@ -199,7 +199,7 @@ visible = false
   type = "label"
   id = "game_over_winner"
   text = "YOU WIN!"
-  font_size = 40
+  font_size = 30
   color = [0.15, 0.8, 0.25, 1]
   anchor = "center"
   y = -90

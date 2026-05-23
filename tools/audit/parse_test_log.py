@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
+"""tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
 
 Usage (pipe mode):
     cargo test --test lua_tests -- --nocapture 2>&1 | python tools/audit/parse_test_log.py
@@ -19,6 +18,23 @@ Output format:
 
 The tool understands both Rust test output ("test foo ... ok/FAILED") and the
 Lurek2D Lua BDD output ("FAIL [suite] test: message").
+
+Usage:
+```
+usage: parse_test_log.py [-h] [--file PATH] [--run ARGS] [--no-colour]
+                         [--verbose] [--json]
+
+Parse cargo test output into a structured summary.
+
+options:
+  -h, --help     show this help message and exit
+  --file PATH    Read from file instead of stdin
+  --run ARGS     Run `cargo test <ARGS>` and parse the output. Example: --run
+                 "--test lua_tests"
+  --no-colour    Disable ANSI colour output
+  --verbose, -v  Show all test names, not just failures
+  --json         Output JSON instead of human text
+```
 """
 
 from __future__ import annotations

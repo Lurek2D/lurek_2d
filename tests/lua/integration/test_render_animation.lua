@@ -1,5 +1,9 @@
 -- Integration: animation frame progression controlling sprite draw coordinates
 -- @describe animation + render integration
+-- @covers lurek.animation.new
+-- @covers lurek.render.rectangle
+-- @covers lurek.render.setColor
+
 describe("animation + render integration", function()
     -- @integration lurek.animation.new
     -- @integration LAnimation:addFramesFromGrid

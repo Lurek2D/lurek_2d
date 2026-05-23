@@ -1,34 +1,51 @@
 #!/usr/bin/env python3
 """Validate file-level and public-item Rust documentation under src/.
 
+This tool checks that all Rust files under src/ have correct file-level
+documentation and that all phase-1 public items have a summary line.
+
 Rules enforced:
 1. Every Rust file under src/**/*.rs must have a file-level //! header.
 2. Phase-1 public items must have a preceding /// summary line.
 3. The first summary line must contain at least 25 visible characters.
 
 Phase-1 public item scope:
-- pub fn
-- pub struct
-- pub enum
-- pub trait
-- pub type
-- pub const
-- pub static
-- pub mod
+- pub fn, pub struct, pub enum, pub trait, pub type, pub const, pub static, pub mod
 
 Out of scope for this validator:
-- private items
-- public struct fields
-- enum variants
-
-Usage:
-    python tools/validate/validate_rust_source_docs.py
-    python tools/validate/validate_rust_source_docs.py src/lib.rs
-    python tools/validate/validate_rust_source_docs.py src/math/
-    python tools/validate/validate_rust_source_docs.py --format json
+- private items, public struct fields, enum variants
 
 Exit codes:
     0 if all checks pass, 1 otherwise.
+
+Usage:
+```
+usage: validate_rust_source_docs.py [-h] [--format {text,json}] [targets ...]
+
+Validate Rust source documentation rules.
+Enforces file-level headers and public item summaries.
+
+positional arguments:
+  targets               Optional Rust file(s) or directories to scan (defaults
+                        to src/).
+
+options:
+  -h, --help            show this help message and exit
+  --format {text,json}  Output format.
+
+Examples:
+  # Scan all files in the src/ directory
+  python tools/validate/validate_rust_source_docs.py
+
+  # Scan a specific file
+  python tools/validate/validate_rust_source_docs.py src/lib.rs
+
+  # Scan a specific sub-directory
+  python tools/validate/validate_rust_source_docs.py src/math/
+
+  # Output results as JSON for pipeline integration
+  python tools/validate/validate_rust_source_docs.py --format json
+```
 """
 
 from __future__ import annotations
@@ -239,9 +256,28 @@ def _print_text(result: dict) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate Rust source documentation rules.")
-    parser.add_argument("targets", nargs="*", help="Optional Rust file(s) or directories to scan")
-    parser.add_argument("--format", choices=["text", "json"], default="text")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Scan all files in the src/ directory
+  python tools/validate/validate_rust_source_docs.py
+
+  # Scan a specific file
+  python tools/validate/validate_rust_source_docs.py src/lib.rs
+
+  # Scan a specific sub-directory
+  python tools/validate/validate_rust_source_docs.py src/math/
+
+  # Output results as JSON for pipeline integration
+  python tools/validate/validate_rust_source_docs.py --format json
+"""
+    parser = argparse.ArgumentParser(
+        description="Validate Rust source documentation rules.\nEnforces file-level headers and public item summaries.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
+    parser.add_argument("targets", nargs="*", help="Optional Rust file(s) or directories to scan (defaults to src/).")
+    parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format.")
     args = parser.parse_args()
 
     try:

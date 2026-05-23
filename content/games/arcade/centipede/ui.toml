@@ -2,14 +2,14 @@
 type = "panel"
 id = "title_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = true
 
   [[widget.children]]
   type = "label"
   text = "CENTIPEDE"
-  font_size = 48
+  font_size = 30
   color = [0.2, 0.9, 0.3, 1]
   anchor = "top_center"
   y = 160
@@ -43,8 +43,8 @@ visible = true
 type = "panel"
 id = "hud"
 anchor = "top_left"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -92,15 +92,15 @@ visible = false
 type = "panel"
 id = "game_over_screen"
 anchor = "center"
-width = 320
-height = 120
+w = 320
+h = 120
 bg_color = [0, 0, 0, 0.6]
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "GAME OVER"
-  font_size = 32
+  font_size = 30
   color = [0.9, 0.2, 0.2, 1]
   anchor = "top_center"
   y = 20

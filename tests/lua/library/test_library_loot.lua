@@ -1,5 +1,8 @@
 -- tests/lua/library/test_library_loot.lua
 -- BDD tests for library/loot/init.lua     alias sampler, drop DSL, pity, modifier.
+-- @covers lurek.filesystem.read
+-- @covers lurek.math.newRandomGenerator
+
 
 local loot = require("library.loot")
 

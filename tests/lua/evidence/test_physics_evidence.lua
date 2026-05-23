@@ -1,5 +1,24 @@
 -- test_physics_evidence.lua
 -- Clean evidence suite for physics module visual outputs.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.physics.attachShape
+-- @covers lurek.physics.destroyWorld
+-- @covers lurek.physics.getBody
+-- @covers lurek.physics.getCollisions
+-- @covers lurek.physics.isSleepingAllowed
+-- @covers lurek.physics.newBody
+-- @covers lurek.physics.newCircleShape
+-- @covers lurek.physics.newRectangleShape
+-- @covers lurek.physics.newWorld
+-- @covers lurek.physics.setBodyVelocity
+-- @covers lurek.physics.setSleepingAllowed
+-- @covers lurek.physics.step
+-- @covers lurek.physics.testAABB
+-- @covers lurek.physics.testCircleAABB
+-- @covers lurek.physics.testCircles
+-- @covers lurek.physics.testPoint
+
 
 local OUT = "tests/output/physics/"
 

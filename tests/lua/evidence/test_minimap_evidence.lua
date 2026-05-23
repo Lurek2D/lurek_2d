@@ -2,6 +2,10 @@
 -- Evidence tests: lurek.minimap API + PNG visualization
 -- Covers exactly 5 high-quality unique evidence files:
 -- minimap_terrain.png, minimap_fog.png, minimap_blips.png, minimap_bounds.png, minimap_waypoints.png
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.minimap.newMinimap
+
 
 local OUT = "tests/output/minimap/"
 
@@ -20,21 +24,19 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         local GRID = 16
         local CELL = 8
         local W, H = GRID * CELL, GRID * CELL
-        local img = lurek.image.newImageData(W, H)
-        img:fill(10, 10, 15, 255)
 
         local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
 
         -- Define terrain types
         local terrain_colors = {
-            [0] = {20, 80, 20},      -- grass (green)
-            [1] = {90, 60, 30},      -- dirt (brown)
-            [2] = {30, 60, 180},     -- water (blue)
-            [3] = {110, 110, 120},   -- stone (grey)
-            [4] = {0, 120, 0},       -- forest (dark green)
+            [0] = {20/255, 80/255, 20/255},      -- grass (green)
+            [1] = {90/255, 60/255, 30/255},      -- dirt (brown)
+            [2] = {30/255, 60/255, 180/255},     -- water (blue)
+            [3] = {110/255, 110/255, 120/255},   -- stone (grey)
+            [4] = {0/255, 120/255, 0/255},       -- forest (dark green)
         }
         for id, c in pairs(terrain_colors) do
-            mm:setTerrainColor(id, c[1]/255, c[2]/255, c[3]/255, 1.0)
+            mm:setTerrainColor(id, c[1], c[2], c[3], 1.0)
         end
 
         -- Paint a landscape pattern
@@ -49,15 +51,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
             end
         end
 
-        -- Render terrain cells natively
-        for gy = 1, GRID do
-            for gx = 1, GRID do
-                local t = mm:getTerrain(gx, gy)
-                local c = terrain_colors[t] or terrain_colors[0]
-                draw_rect_native(img, (gx - 1) * CELL, (gy - 1) * CELL, CELL, CELL, c[1], c[2], c[3])
-            end
-        end
-
+        local img = mm:drawToImage(CELL)
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
     end)
@@ -70,11 +64,10 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         local GRID = 16
         local CELL = 8
         local W, H = GRID * CELL, GRID * CELL
-        local img = lurek.image.newImageData(W, H)
-        img:fill(0, 0, 0, 255)
 
         local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
         mm:setFogEnabled(true)
+        mm:setTerrainColor(0, 60/255, 160/255, 60/255, 1.0) -- grass (green)
 
         -- Set terrain + fog levels
         for y = 1, GRID do
@@ -82,24 +75,18 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
                 mm:setTerrain(x, y, 0)
                 local cx, cy = GRID / 2, GRID / 2
                 local dist = math.sqrt((x - cx)^2 + (y - cy)^2)
-                local fog = math.min(255, math.floor(dist * 30))
+                -- 2 = Visible (center), 1 = Explored (mid), 0 = Hidden (outer edge)
+                local fog = 0
+                if dist < 4 then
+                    fog = 2
+                elseif dist < 7 then
+                    fog = 1
+                end
                 mm:setFogLevel(x, y, fog)
             end
         end
 
-        -- Render terrain with fog overlay natively
-        local base_color = {60, 160, 60}
-        for gy = 1, GRID do
-            for gx = 1, GRID do
-                local fog = mm:getFogLevel(gx, gy)
-                local darkness = 1.0 - (fog / 255)
-                local r = math.floor(base_color[1] * darkness)
-                local g = math.floor(base_color[2] * darkness)
-                local b = math.floor(base_color[3] * darkness)
-                draw_rect_native(img, (gx - 1) * CELL, (gy - 1) * CELL, CELL, CELL, r, g, b)
-            end
-        end
-
+        local img = mm:drawToImage(CELL)
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
     end)
@@ -112,28 +99,21 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         local GRID = 16
         local CELL = 8
         local W, H = GRID * CELL, GRID * CELL
-        local img = lurek.image.newImageData(W, H)
-        img:fill(15, 15, 20, 255)
 
         local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
 
-        -- Background grid
-        for gy = 1, GRID do
-            for gx = 1, GRID do
-                draw_rect_native(img, (gx - 1) * CELL, (gy - 1) * CELL, CELL - 1, CELL - 1, 30, 35, 45)
-            end
-        end
+        -- Add object types (Green, Red)
+        local t_player = mm:addObjectType("Player", 0.0, 1.0, 0.0, 1.0)
+        local t_enemy  = mm:addObjectType("Enemy", 1.0, 0.0, 0.0, 1.0)
 
-        -- Add dynamic markers logically
-        mm:addMarker(40.0, 40.0, "Player", 0.0, 1.0, 0.0, 1.0) -- Green player blip
-        mm:addMarker(80.0, 60.0, "Enemy", 1.0, 0.0, 0.0, 1.0)  -- Red enemy blip
-        mm:addMarker(20.0, 100.0, "Quest", 1.0, 0.9, 0.0, 1.0) -- Gold quest blip
+        -- Add objects at grid coordinates
+        mm:setObject(1, 5.0, 5.0, t_player, 1)   -- Player at (5, 5)
+        mm:setObject(2, 10.0, 7.5, t_enemy, 2)  -- Enemy at (10, 7.5)
 
-        -- Draw markers/blips natively onto image
-        img:drawCircle(40, 40, 4, 0, 255, 0, 255)   -- Green player
-        img:drawCircle(80, 60, 4, 255, 0, 0, 255)   -- Red enemy
-        img:drawCircle(20, 100, 3, 255, 220, 0, 255) -- Gold objective
+        -- Add persistent marker
+        mm:addMarker(2.5, 12.5, "Quest", 1.0, 0.9, 0.0, 1.0) -- Gold quest marker at (2.5, 12.5)
 
+        local img = mm:drawToImage(CELL)
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
     end)
@@ -146,20 +126,21 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         local GRID = 16
         local CELL = 8
         local W, H = GRID * CELL, GRID * CELL
-        local img = lurek.image.newImageData(W, H)
-        img:fill(10, 12, 16, 255)
 
         local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
         -- Viewport boundaries: x=30, y=30, w=60, h=40
         mm:setViewportRect(30.0, 30.0, 60.0, 40.0)
         mm:setViewportVisible(true)
 
-        -- Draw grid terrain natively
-        for gy = 1, GRID do
-            for gx = 1, GRID do
-                draw_rect_native(img, (gx - 1) * CELL, (gy - 1) * CELL, CELL - 1, CELL - 1, 20, 40, 60)
+        -- Set terrain natively
+        mm:setTerrainColor(0, 20/255, 40/255, 60/255, 1.0)
+        for y = 1, GRID do
+            for x = 1, GRID do
+                mm:setTerrain(x, y, 0)
             end
         end
+
+        local img = mm:drawToImage(CELL)
 
         -- Draw yellow viewport rectangle bounds outline natively
         local vx, vy, vw, vh = 30, 30, 60, 40
@@ -180,17 +161,18 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         local GRID = 16
         local CELL = 8
         local W, H = GRID * CELL, GRID * CELL
-        local img = lurek.image.newImageData(W, H)
-        img:fill(12, 12, 18, 255)
 
         local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
 
-        -- Draw terrain grid cells natively
-        for gy = 1, GRID do
-            for gx = 1, GRID do
-                draw_rect_native(img, (gx - 1) * CELL, (gy - 1) * CELL, CELL - 1, CELL - 1, 25, 25, 30)
+        -- Set terrain natively
+        mm:setTerrainColor(0, 25/255, 25/255, 30/255, 1.0)
+        for y = 1, GRID do
+            for x = 1, GRID do
+                mm:setTerrain(x, y, 0)
             end
         end
+
+        local img = mm:drawToImage(CELL)
 
         -- Define path points
         local path_pts = { {20.0, 20.0}, {60.0, 30.0}, {80.0, 80.0}, {110.0, 100.0} }

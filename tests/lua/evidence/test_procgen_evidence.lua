@@ -1,5 +1,24 @@
 -- test_procgen_evidence.lua
 -- Evidence test: procedural generation APIs visualized as PNG outputs
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.procgen.bspDungeon
+-- @covers lurek.procgen.cellularAutomata
+-- @covers lurek.procgen.floodFill
+-- @covers lurek.procgen.generateNames
+-- @covers lurek.procgen.heightmap
+-- @covers lurek.procgen.lsystemSegments
+-- @covers lurek.procgen.noiseMap
+-- @covers lurek.procgen.noiseMapParallel
+-- @covers lurek.procgen.perlinNoise
+-- @covers lurek.procgen.poissonDisk
+-- @covers lurek.procgen.roomsDungeon
+-- @covers lurek.procgen.simplex2d
+-- @covers lurek.procgen.simplex3d
+-- @covers lurek.procgen.voronoi
+-- @covers lurek.procgen.wfcGenerate
+-- @covers lurek.procgen.worldGraph
+
 
 local OUT = "tests/output/procgen/"
 

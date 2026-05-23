@@ -1,4 +1,10 @@
 -- Integration: audio state driven by scene enter/leave/resume hooks
+-- @covers lurek.audio.getMasterVolume
+-- @covers lurek.audio.setMasterVolume
+-- @covers lurek.scene.clear
+-- @covers lurek.scene.pop
+-- @covers lurek.scene.push
+
 
 local function reset_scene_audio_state()
     lurek.scene.clear()

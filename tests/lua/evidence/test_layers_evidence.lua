@@ -1,5 +1,8 @@
 -- Evidence tests: layers module
 -- Evidence is generated from lurek.image.newLayeredImage compositing APIs.
+-- @covers lurek.image.newLayeredImage
+-- @covers lurek.image.savePNG
+
 
 local OUT = "tests/output/layers/"
 

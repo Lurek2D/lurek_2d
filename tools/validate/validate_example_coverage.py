@@ -5,6 +5,12 @@ Runs tools/audit/example_coverage.py --report to ensure all API items
 have at least a generated stub in content/examples/.
 
 Exit code: 0 if all items covered/stubbed, 1 if any MISSING items found.
+
+Usage:
+```
+Usage:
+    python tools/validate/validate_example_coverage.py
+```
 """
 
 import sys

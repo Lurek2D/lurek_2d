@@ -587,7 +587,7 @@ function lurek.init()
     build_random_model_instances()
     apply_map_to_raycaster()
     reveal_from_rays()
-    
+
     lurek.ui.loadLayoutFile("content/games/retro/dungeon_crawler/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
@@ -643,14 +643,14 @@ function lurek.process(dt)
     end
     collect_orbs()
     reveal_from_rays()
-    
+
     -- Sync UI
     app_ui.score_label.text = "Score: " .. score
-    
+
     local collected=0
     for _, orb in ipairs(orbs) do if orb.collected then collected=collected+1 end end
     app_ui.orbs_label.text = "Orbs: " .. collected .. "/" .. total_orbs
-    
+
     local tl = player.torch and "[ON]" or "[OFF]"
     app_ui.torch_label.text = "Torch: " .. tl
     if player.torch then
@@ -658,7 +658,7 @@ function lurek.process(dt)
     else
         app_ui.torch_label.color = {0.4, 0.4, 0.4, 1.0}
     end
-    
+
     local dn = "[" .. mode_name() .. "]"
     app_ui.mode_label.text = "Mode: " .. dn
     if TIME_MODE == 1 then
@@ -668,13 +668,13 @@ function lurek.process(dt)
     else
         app_ui.mode_label.color = {0.4, 0.5, 0.9, 1.0}
     end
-    
+
     app_ui.crouch_label.visible = crouching
-    
+
     local facing=math.deg(player.angle)
     if facing < 0 then facing=facing+360 end
     app_ui.heading_label.text = string.format("Heading: %.0f deg", facing)
-    
+
     app_ui.complete_label.visible = (state == STATE.COMPLETE)
     app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
 end
@@ -708,6 +708,8 @@ local function draw_sky_gradient(horizon_y)
     lurek.render.drawGradientRect(0, 0, VIEW_W, split, {top[1], top[2], top[3], 1.0}, {mid[1], mid[2], mid[3], 1.0}, "vertical")
     lurek.render.drawGradientRect(0, split, VIEW_W, math.max(1, math.floor(horizon_y - split)), {mid[1], mid[2], mid[3], 1.0}, {bot[1], bot[2], bot[3], 1.0}, "vertical")
 end
+
+local draw_minimap
 
 function lurek.draw()
     if raycaster then
@@ -773,7 +775,7 @@ function lurek.draw()
     draw_minimap()
 end
 
-local function draw_minimap()
+draw_minimap = function()
     -- Smaller cells = larger tactical coverage.
     local MM_X=PANEL_X; local MM_Y=PANEL_Y+176
     local MM_CELL=5; local MM_R=16

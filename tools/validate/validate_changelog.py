@@ -133,8 +133,19 @@ def validate(strict: bool = False) -> list[dict]:
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/validate/validate_changelog.py
+
+  # Show all arguments
+  python tools/validate/validate_changelog.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Validate docs/CHANGELOG.md structure and content."
+        description="Validate docs/CHANGELOG.md structure and content.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument(
         "--strict", action="store_true",

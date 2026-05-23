@@ -1,5 +1,9 @@
 -- Evidence tests: additional tilemap cases
 -- Artifacts are generated through lurek.tilemap drawToImage and map APIs.
+-- @covers lurek.image.savePNG
+-- @covers lurek.tilemap.newTileMap
+-- @covers lurek.tilemap.newTileSet
+
 
 local OUT = "tests/output/tilemap/"
 

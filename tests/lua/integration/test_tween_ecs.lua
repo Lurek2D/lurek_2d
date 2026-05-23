@@ -1,5 +1,8 @@
 -- Integration: tween state animating entity component properties via ECS
 -- @describe integration: tween drives entity transform
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.tween.newState
+
 describe("integration: tween drives entity transform", function()
     -- @integration LTweenState:lerp
     -- @integration LTweenState:tick

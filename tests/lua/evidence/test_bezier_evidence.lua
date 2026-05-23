@@ -1,5 +1,9 @@
 -- Evidence tests: bezier module
 -- Artifacts are produced from lurek.math.newBezierCurve evaluation.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.math.newBezierCurve
+
 
 local OUT = "tests/output/bezier/"
 

@@ -2,6 +2,10 @@
 -- Evidence tests: advanced lurek.tilemap scenarios
 -- Covers exactly 5 high-quality unique evidence files:
 -- tilemap_layers.png, tilemap_collision.png, tilemap_isometric.png, tilemap_viewport.png, tilemap_autotile.png
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.tilemap.newTileMap
+
 
 local OUT = "tests/output/tilemap_advanced/"
 

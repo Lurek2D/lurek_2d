@@ -4,6 +4,30 @@
 All pages are generated. There are no manual scaffolds and no contributor/CAG
 pages. The generator writes flat GitHub Wiki-style Markdown files to docs/wiki
 by default, or to a local wiki clone with --output DIR.
+
+Usage:
+```
+usage: gen_wiki.py [-h] [--output OUTPUT] [--list] [--page PAGE] [--dry-run]
+                   [--check] [--validate]
+
+Generate Lurek2D GitHub Wiki pages.
+
+options:
+  -h, --help       show this help message and exit
+  --output OUTPUT
+  --list
+  --page PAGE
+  --dry-run
+  --check
+  --validate
+
+Examples:
+  # Default execution
+  python tools/docs/gen_wiki.py
+
+  # Show all arguments
+  python tools/docs/gen_wiki.py --help
+```
 """
 
 from __future__ import annotations
@@ -1460,7 +1484,20 @@ def _has_real_code(snippet: str) -> bool:
 
 
 def run(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Generate Lurek2D GitHub Wiki pages.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_wiki.py
+
+  # Show all arguments
+  python tools/docs/gen_wiki.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Generate Lurek2D GitHub Wiki pages.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--list", action="store_true")
     parser.add_argument("--page")

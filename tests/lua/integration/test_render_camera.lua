@@ -1,5 +1,11 @@
 -- Integration: render draw commands combined with camera transform state
 -- @describe graphics + camera integration
+-- @covers lurek.camera.newCamera
+-- @covers lurek.render.circle
+-- @covers lurek.render.line
+-- @covers lurek.render.rectangle
+-- @covers lurek.render.setColor
+
 describe("graphics + camera integration", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition

@@ -572,7 +572,7 @@ end
 
 ```lua
 --- Packs a supported Lua value into a binary network message string.
----@param value table Lua value to pack (table, number, string, or boolean).
+---@param value any Lua value to pack (table, number, string, or boolean).
 ---@return string Binary packed message.
 lurek.network.pack = function(value) end
 ```
@@ -583,7 +583,7 @@ Packs a supported Lua value into a binary network message string.
 
 Parameters:
 
-- `value` (`table`, required): Lua value to pack (table, number, string, or boolean).
+- `value` (`any`, required): Lua value to pack (table, number, string, or boolean).
 
 Returns: `string` - Binary packed message.
 

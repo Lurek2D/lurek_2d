@@ -1,5 +1,9 @@
 -- Integration: animation frame stepping + tween interpolation
 -- @describe animation + tween integration
+-- @covers lurek.animation.new
+-- @covers lurek.tween.tween
+-- @covers lurek.tween.update
+
 describe("animation + tween integration", function()
     -- @integration LAnimation:addClip
     -- @integration LAnimation:addFramesFromGrid

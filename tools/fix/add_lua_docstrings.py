@@ -1,5 +1,20 @@
 #!/usr/bin/env python3
-"""
+"""add_lua_docstrings.py - Auto-generate /// docstrings from inline comments.
+
+This script finds Lua function registrations (lurek.module.function( ... ))
+in inline comments and converts them to proper /// docstrings.
+
+Transformations:
+  // lurek.renders.setColor(r, g, b, a?)
+  ->
+  /// Sets the drawing color for subsequent draw commands.
+  ///
+  /// Parameters: r, g, b, a (float 0.0-1.0, alpha optional)
+  ///
+  /// Lua API: lurek.renders.setColor(r, g, b [, a])
+
+Usage:
+```
 add_lua_docstrings.py - Auto-generate /// docstrings from inline comments.
 
 This script finds Lua function registrations (lurek.module.function( ... ))
@@ -13,6 +28,13 @@ Transformations:
   /// Parameters: r, g, b, a (float 0.0-1.0, alpha optional)
   ///
   /// Lua API: lurek.renders.setColor(r, g, b [, a])
+
+
+Usage: python add_lua_docstrings.py
+
+Options:
+  -h, --help    Show this help message
+```
 """
 
 import re

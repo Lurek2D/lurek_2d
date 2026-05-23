@@ -1,5 +1,12 @@
 -- Integration: i18n text source serialized with data and consumed by UI layout.
 -- @describe integration: ui + i18n + data
+-- @covers lurek.data.pack
+-- @covers lurek.data.unpack
+-- @covers lurek.i18n.loadTable
+-- @covers lurek.i18n.setLanguage
+-- @covers lurek.i18n.t
+-- @covers lurek.ui.loadLayout
+
 describe("integration: ui + i18n + data", function()
     -- @integration lurek.data.pack
     -- @integration lurek.data.unpack

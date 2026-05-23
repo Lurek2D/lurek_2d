@@ -11102,6 +11102,12 @@ lurek.light.advanceFlickers = function(dt) end
 --- Removes all lights and occluders from the light world.
 lurek.light.clear = function() end
 
+--- Renders an approximate light-map preview of this world into an ImageData.
+---@param width number Image width.
+---@param height number Image height.
+---@return LImageData Rendered light map.
+lurek.light.drawToImage = function(width, height) end
+
 --- Returns global ambient light color.
 ---@return number a Red channel.
 ---@return number b Green channel.
@@ -20889,7 +20895,7 @@ lurek.scene.depth = function() end
 ---@param snapshot table A snapshot table as returned by `serializeScene` (must contain a `data` field).
 lurek.scene.deserializeScene = function(snapshot) end
 
---- Call `draw(self)` on every scene in the stack from bottom to top. This is the legacy draw callback — prefer `render` and `renderUi` for world-space and screen-space separation.
+--- Call `draw(self)` on render-active scenes ordered by layer (lowest first).
 lurek.scene.draw = function() end
 
 ---@class TransitionsFadeResult
@@ -20904,7 +20910,7 @@ lurek.scene.transitions.fade = function(duration) end
 ---@class SceneGetActiveScenesResult
 ---@field __index table Prototype table (the scene definition used to create this instance).
 
---- Returns a Lua array of all active scene tables ordered by their layer value (lowest layer first). Includes both regular scenes and overlays. Useful for iterating over all scenes for custom processing or debugging.
+--- Returns a Lua array of all process-active scene tables ordered by their layer value (lowest layer first). Includes regular scenes and overlays.
 ---@return SceneGetActiveScenesResult Lua array of active scene tables sorted by layer.
 lurek.scene.getActiveScenes = function() end
 
@@ -20933,6 +20939,10 @@ lurek.scene.getRegistered = function(name) end
 --- Returns an array of all currently registered scene name strings. Useful for debugging or building dynamic scene-selection UIs.
 ---@return string[] Lua array of registered name strings.
 lurek.scene.getRegisteredNames = function() end
+
+--- Returns the scene table(s) that are render-active this frame.
+---@return table Lua array of render-active scene tables.
+lurek.scene.getRenderActiveScenes = function() end
 
 --- Returns the total number of scenes currently on the stack, including overlays. Useful for asserting expected navigation depth or debugging scene flow.
 ---@return number The current stack depth (0 when empty).
@@ -20973,18 +20983,38 @@ lurek.scene.transitions.iris = function(duration) end
 ---@return boolean True when the stack is empty (depth == 0).
 lurek.scene.isEmpty = function() end
 
---- Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both to update and render simultaneously.
+--- Returns whether `process_late` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isLateEnabled = function(target) end
+
+--- Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both scenes to remain process-active unless explicitly frozen.
 ---@return boolean True if the top scene is an overlay, false otherwise.
 lurek.scene.isOverlay = function() end
+
+--- Returns whether `process_physics` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isPhysicsEnabled = function(target) end
 
 --- Returns true if the named preload loader has already been executed at least once. Once a loader runs, subsequent `pushPreloaded` calls skip the loader and push the already-registered scene directly.
 ---@param name string The preload name to check.
 ---@return boolean True if the loader has already executed.
 lurek.scene.isPreloaded = function(name) end
 
+--- Returns whether `process` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isProcessEnabled = function(target) end
+
 --- Returns true if a scene transition animation is currently playing. Use this to block input or skip certain logic during transitions.
 ---@return boolean True while a transition animation is in progress.
 lurek.scene.isTransitioning = function() end
+
+--- Returns whether `update` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isUpdateEnabled = function(target) end
 
 ---@class SceneNewResult
 ---@field __index table Prototype table (the def parameter).
@@ -21022,15 +21052,15 @@ lurek.scene.popTo = function(name) end
 ---@param loader function A zero-argument function that creates and registers the scene via `registerScene` when called.
 lurek.scene.preload = function(name, loader) end
 
---- Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first). Use this for deterministic game-logic ticks at a fixed time step. Scenes pushed as overlays and underlying scenes all receive this callback.
+--- Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every process-active scene ordered by layer (lowest first).
 ---@param dt number Fixed time-step delta in seconds (e.g. 1/60 for 60-tick logic).
 lurek.scene.process = function(dt) end
 
---- Call `process_late(self, dt)` on every active scene after all other processing. Ideal for camera follow logic, HUD synchronization, deferred cleanup, or any work that depends on the final positions of game objects.
+--- Call `process_late(self, dt)` on every process-active scene after all other processing.
 ---@param dt number Delta time in seconds (same value passed to `process`).
 lurek.scene.processLate = function(dt) end
 
---- Call `process_physics(self, dt)` on every active scene ordered by layer. Run this callback after your physics world step so scenes can react to collision results, apply forces, or synchronize sprite positions with physics bodies.
+--- Call `process_physics(self, dt)` on every process-active scene ordered by layer.
 ---@param dt number Physics time-step delta in seconds.
 lurek.scene.processPhysics = function(dt) end
 
@@ -21042,7 +21072,7 @@ lurek.scene.processPhysics = function(dt) end
 ---@param params? table Arbitrary data forwarded to the new scene's `enter(self, params)` callback for initialization.
 lurek.scene.push = function(scene, transition, duration, easing, params) end
 
---- Push a scene as a transparent overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it continues to receive `process`, `draw`, and `render` callbacks. Use overlays for pause menus, dialog boxes, inventory screens, or debug panels that should draw on top without stopping gameplay.
+--- Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
 ---@param scene table The overlay scene table.
 ---@param transition? string Transition type name. Defaults to `"none"`.
 ---@param duration? number Transition animation duration in seconds. Defaults to 0.
@@ -21073,10 +21103,10 @@ lurek.scene.registerScene = function(name, scene) end
 ---@param key string The data key to remove.
 lurek.scene.removeData = function(key) end
 
---- Call `render(self)` on every scene in the stack from bottom to top. This is the preferred world-space rendering callback — draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
+--- Call `render(self)` on render-active scenes ordered by layer (lowest first).
 lurek.scene.render = function() end
 
---- Call `render_ui(self)` on every scene in the stack from bottom to top. Use this for screen-space HUD elements, health bars, score displays, menus, and overlays that should draw on top of the world after `render`.
+--- Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
 lurek.scene.renderUi = function() end
 
 ---@class SceneSerializeSceneResult
@@ -21096,6 +21126,30 @@ lurek.scene.setCurrentLayer = function(layer) end
 ---@param key string The key to store data under (e.g. `"selectedLevel"`, `"playerName"`).
 ---@param value any Value to store under the scene data key.
 lurek.scene.setData = function(key, value) end
+
+--- Enable or disable `process_late(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run late callback, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setLateEnabled = function(target, enabled) end
+
+--- Enable or disable `process_physics(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run physics callback, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setPhysicsEnabled = function(target, enabled) end
+
+--- Enable or disable `process(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run process, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setProcessEnabled = function(target, enabled) end
+
+--- Enable or disable `update(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run update callback, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setUpdateEnabled = function(target, enabled) end
 
 ---@class TransitionsSlideResult
 ---@field type string Transition type name.
@@ -21119,7 +21173,7 @@ lurek.scene.switchTo = function(scene, transition, duration, easing, params) end
 ---@param name string The registered name to remove.
 lurek.scene.unregisterScene = function(name) end
 
---- Advance any active transition animation and call `update(self, dt)` on the current top scene. Call this once per frame from your main loop to drive scene logic and transition timing.
+--- Advance any active transition animation and call `update(self, dt)` on the current top scene.
 ---@param dt number Delta time in seconds since the last frame (e.g. from `lurek.timer.getDelta()`).
 lurek.scene.update = function(dt) end
 

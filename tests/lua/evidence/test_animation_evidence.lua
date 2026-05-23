@@ -1,5 +1,9 @@
 -- Evidence tests: animation module
 -- Artifacts are generated from lurek.animation APIs.
+-- @covers lurek.animation.new
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.savePNG
+
 
 local OUT = "tests/output/animation/"
 

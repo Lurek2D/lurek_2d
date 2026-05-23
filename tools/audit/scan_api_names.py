@@ -1,4 +1,11 @@
-"""Extract all registered function names from Rust API files."""
+"""Extract all registered function names from Rust API files.
+
+Usage:
+```
+Usage:
+    python tools/audit/scan_api_names.py
+```
+"""
 import re, os
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..'))

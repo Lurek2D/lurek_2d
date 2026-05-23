@@ -1,4 +1,11 @@
-"""Find exact function registrations for failing APIs in Rust source files."""
+"""Find exact function registrations for failing APIs in Rust source files.
+
+Usage:
+```
+Usage:
+    python tools/audit/scan_sigs.py
+```
+"""
 import re, os
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..'))

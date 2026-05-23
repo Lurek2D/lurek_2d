@@ -10,6 +10,34 @@ Two variants per size: regular (font_N.png) and bold (fontb_N.png).
 Atlas layout: 16 columns × 14 rows = 224 cells (chars 32..=255).
 Rendering is 1-bit (bilevel, no antialiasing).
 Cell dimensions: advance width from monospace 'M', height from ascent+descent+2×PADDING.
+
+Usage:
+```
+usage: gen_courier_new_bitmap_fonts.py [-h] [--font-path FONT_PATH]
+                                       [--bold-path BOLD_PATH]
+                                       [--sizes SIZES [SIZES ...]]
+                                       [--output-dir OUTPUT_DIR]
+                                       [--metadata METADATA]
+
+Lurek2D Tool
+
+options:
+  -h, --help            show this help message and exit
+  --font-path FONT_PATH
+                        Path to Courier New regular .ttf (cour.ttf)
+  --bold-path BOLD_PATH
+                        Path to Courier New Bold .ttf (courbd.ttf)
+  --sizes SIZES [SIZES ...]
+  --output-dir OUTPUT_DIR
+  --metadata METADATA
+
+Examples:
+  # Default execution
+  python tools/assets/gen_courier_new_bitmap_fonts.py
+
+  # Show all arguments
+  python tools/assets/gen_courier_new_bitmap_fonts.py --help
+```
 """
 from __future__ import annotations
 
@@ -145,7 +173,20 @@ def render_bitmap(font_path: Path, pt_size: int, output_path: Path, style: str =
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/assets/gen_courier_new_bitmap_fonts.py
+
+  # Show all arguments
+  python tools/assets/gen_courier_new_bitmap_fonts.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Lurek2D Tool",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--font-path", type=str, default=None,
                         help="Path to Courier New regular .ttf (cour.ttf)")
     parser.add_argument("--bold-path", type=str, default=None,

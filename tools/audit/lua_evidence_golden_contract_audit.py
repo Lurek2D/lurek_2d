@@ -9,6 +9,28 @@ Rules enforced:
 
 Safe autofix currently supports:
 - add missing -- @evidence file markers to it() blocks that clearly write files.
+
+Usage:
+```
+usage: lua_evidence_golden_contract_audit.py [-h] [--path PATH] [--fix]
+                                             [--json]
+
+Audit Lua evidence/golden contract compliance.
+
+options:
+  -h, --help   show this help message and exit
+  --path PATH  Optional file or directory relative to repo root.
+  --fix        Add missing -- @evidence file markers where file-writing logic
+               is obvious.
+  --json       Emit JSON findings.
+
+Examples:
+  # Default execution
+  python tools/audit/lua_evidence_golden_contract_audit.py
+
+  # Show all arguments
+  python tools/audit/lua_evidence_golden_contract_audit.py --help
+```
 """
 
 from __future__ import annotations
@@ -224,7 +246,20 @@ def strip_mixed_prechecks(path: Path, lines: List[str]) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit Lua evidence/golden contract compliance.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/lua_evidence_golden_contract_audit.py
+
+  # Show all arguments
+  python tools/audit/lua_evidence_golden_contract_audit.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Audit Lua evidence/golden contract compliance.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--path", help="Optional file or directory relative to repo root.")
     parser.add_argument("--fix", action="store_true", help="Add missing -- @evidence file markers where file-writing logic is obvious.")
     parser.add_argument("--json", action="store_true", help="Emit JSON findings.")

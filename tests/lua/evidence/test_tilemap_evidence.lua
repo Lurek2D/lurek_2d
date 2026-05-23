@@ -1,6 +1,10 @@
 -- test_evidence_tilemap.lua
 -- Evidence test: lurek.tilemap API + renders tile grid to PNG
 -- Produces: tilemap_grid.png, tilemap_checkerboard.png
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.tilemap.newTileMap
+
 
 local OUT = "tests/output/tilemap/"
 
@@ -37,12 +41,9 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     it("PNG: tilemap grid with 6 different tile GIDs", function()
         local TILE = 8  -- pixel size per tile in output
         local MAP_W, MAP_H = 16, 12
-        local W, H = MAP_W * TILE, MAP_H * TILE
-        local img = lurek.image.newImageData(W, H)
-        img:fill(0, 0, 0, 255)
 
-        local tm = lurek.tilemap.newTileMap(16, 16)
-        tm:addLayer("ground", MAP_W, MAP_H)
+        local tm = lurek.tilemap.newTileMap(TILE, TILE)
+        local ground = tm:addLayer("ground", MAP_W, MAP_H)
 
         -- Paint a pattern with 6 different GIDs
         for y = 1, MAP_H do
@@ -58,26 +59,11 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
                 if x == 1 or x == MAP_W or y == 1 or y == MAP_H then
                     gid = 6 -- border
                 end
-                -- Can't set individual tiles directly, use fill + override
-                -- We'll just track in a local grid since individual setTile might not exist
-            end
-        end
-        -- Use fill for each row segment via the tilemap API
-        tm:fill(1, 1) -- fill all with GID 1
-        -- Render from our local grid pattern
-        for y = 1, MAP_H do
-            for x = 1, MAP_W do
-                local gid = 1
-                if y <= 3 then gid = 3 end
-                if y >= 10 then gid = 2 end
-                if x >= 7 and x <= 10 and y >= 4 and y <= 9 then gid = 4 end
-                if y == 6 and (x < 7 or x > 10) then gid = 5 end
-                if x == 1 or x == MAP_W or y == 1 or y == MAP_H then gid = 6 end
-                local cr, cg, cb = gid_to_color(gid)
-                draw_rect(img, (x - 1) * TILE, (y - 1) * TILE, TILE, TILE, cr, cg, cb)
+                tm:setTile(ground, x, y, gid)
             end
         end
 
+        local img = tm:drawToImage(TILE)
         lurek.image.savePNG(img, OUT .. "tilemap_grid.png")
     end)
 
@@ -85,23 +71,19 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     it("PNG: checkerboard tilemap pattern", function()
         local TILE = 8
         local MAP_W, MAP_H = 16, 16
-        local W, H = MAP_W * TILE, MAP_H * TILE
-        local img = lurek.image.newImageData(W, H)
 
-        local tm = lurek.tilemap.newTileMap(16, 16)
-        tm:addLayer("checker", MAP_W, MAP_H)
+        local tm = lurek.tilemap.newTileMap(TILE, TILE)
+        local checker = tm:addLayer("checker", MAP_W, MAP_H)
 
         for y = 1, MAP_H do
             for x = 1, MAP_W do
                 local is_dark = ((x + y) % 2 == 0)
                 local gid = is_dark and 1 or 2
-                local cr, cg, cb = gid_to_color(gid)
-                draw_rect(img, (x - 1) * TILE, (y - 1) * TILE, TILE, TILE, cr, cg, cb)
+                tm:setTile(checker, x, y, gid)
             end
         end
 
-        -- Verify API: layer name and count work
-
+        local img = tm:drawToImage(TILE)
         lurek.image.savePNG(img, OUT .. "tilemap_checkerboard.png")
     end)
 
@@ -203,22 +185,28 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     -- 6. @evidence file
     it("PNG: multi-layer overlapping tiles", function()
         local TILE = 16
-        local W, H = TILE * 4, TILE * 4
-        local img = lurek.image.newImageData(W, H)
-        img:fill(0, 0, 0, 255)
+        local MAP_W, MAP_H = 4, 4
+        local tm = lurek.tilemap.newTileMap(TILE, TILE)
+        local ground = tm:addLayer("ground", MAP_W, MAP_H)
+        local path = tm:addLayer("path", MAP_W, MAP_H)
+        local objects = tm:addLayer("objects", MAP_W, MAP_H)
 
-        -- Layer 1: Ground (grass)
-        draw_rect(img, 0, 0, W, H, 40, 140, 40)
-        
-        -- Layer 2: Path (dirt)
-        draw_rect(img, TILE, 0, TILE, H, 130, 100, 60)
-        draw_rect(img, TILE * 2, TILE, TILE, TILE * 2, 130, 100, 60)
-        
-        -- Layer 3: Objects (trees and rocks)
-        img:drawCircle(TILE * 0.5, TILE * 1.5, 6, 20, 80, 20, 255) -- tree
-        img:drawCircle(TILE * 3.5, TILE * 0.5, 6, 20, 80, 20, 255) -- tree
-        img:drawRect(TILE * 3.2, TILE * 3.2, 6, 6, 120, 120, 120, 255) -- rock
+        -- Layer 1: Ground (grass - GID 1)
+        tm:fill(ground, 1)
 
+        -- Layer 2: Path (dirt - GID 3)
+        for y = 1, MAP_H do
+            tm:setTile(path, 2, y, 3)
+        end
+        tm:setTile(path, 3, 2, 3)
+        tm:setTile(path, 3, 3, 3)
+
+        -- Layer 3: Objects (trees - GID 10, rocks - GID 12)
+        tm:setTile(objects, 1, 2, 10)
+        tm:setTile(objects, 4, 1, 10)
+        tm:setTile(objects, 4, 4, 12)
+
+        local img = tm:drawToImage(TILE)
         lurek.image.savePNG(img, OUT .. "tilemap_multi_layer.png")
     end)
 

@@ -2,15 +2,15 @@
 type = "panel"
 id = "title_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 bg_color = [0, 0, 0, 0]
 
   [[widget.children]]
   type = "label"
   text = "TRAJECTORY SPORTS"
-  font_size = 32
+  font_size = 30
   color = [1, 0.9, 0.3, 1]
   anchor = "top_center"
   y = 160
@@ -27,7 +27,7 @@ bg_color = [0, 0, 0, 0]
   type = "button"
   id = "press_start"
   text = "Press SPACE to start"
-  font_size = 18
+  font_size = 16
   color = [0.7, 0.7, 0.7, 1]
   anchor = "top_center"
   y = 350
@@ -35,7 +35,7 @@ bg_color = [0, 0, 0, 0]
   [[widget.children]]
   type = "label"
   text = "W/S = Aim   A/D = Move   Space = Power"
-  font_size = 14
+  font_size = 12
   color = [0.5, 0.5, 0.5, 1]
   anchor = "top_center"
   y = 450
@@ -44,14 +44,14 @@ bg_color = [0, 0, 0, 0]
 type = "panel"
 id = "select_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "SELECT SPORT"
-  font_size = 28
+  font_size = 30
   color = [1, 0.9, 0.3, 1]
   anchor = "top_center"
   y = 80
@@ -105,15 +105,15 @@ visible = false
 type = "panel"
 id = "round_end_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
   id = "re_title"
   text = ""
-  font_size = 28
+  font_size = 30
   color = [1, 0.9, 0.3, 1]
   anchor = "top_center"
   y = 180
@@ -122,7 +122,7 @@ visible = false
   type = "label"
   id = "re_score"
   text = ""
-  font_size = 22
+  font_size = 20
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 250
@@ -131,7 +131,7 @@ visible = false
   type = "label"
   id = "re_medal"
   text = ""
-  font_size = 22
+  font_size = 20
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 300
@@ -140,14 +140,14 @@ visible = false
 type = "panel"
 id = "final_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "FINAL RESULTS"
-  font_size = 28
+  font_size = 30
   color = [1, 0.9, 0.3, 1]
   anchor = "top_center"
   y = 60
@@ -156,7 +156,7 @@ visible = false
   type = "label"
   id = "fs_1"
   text = ""
-  font_size = 18
+  font_size = 16
   color = [0.9, 0.9, 0.9, 1]
   x = 120
   y = 170
@@ -165,7 +165,7 @@ visible = false
   type = "label"
   id = "fs_2"
   text = ""
-  font_size = 18
+  font_size = 16
   color = [0.9, 0.9, 0.9, 1]
   x = 120
   y = 220
@@ -174,7 +174,7 @@ visible = false
   type = "label"
   id = "fs_3"
   text = ""
-  font_size = 18
+  font_size = 16
   color = [0.9, 0.9, 0.9, 1]
   x = 120
   y = 270
@@ -183,7 +183,7 @@ visible = false
   type = "label"
   id = "fs_4"
   text = ""
-  font_size = 18
+  font_size = 16
   color = [0.9, 0.9, 0.9, 1]
   x = 120
   y = 320
@@ -192,7 +192,7 @@ visible = false
   type = "label"
   id = "fs_rank"
   text = ""
-  font_size = 26
+  font_size = 24
   color = [1, 0.8, 0.2, 1]
   anchor = "top_center"
   y = 420
@@ -210,8 +210,8 @@ visible = false
 type = "panel"
 id = "hud_screen"
 anchor = "top_left"
-width = 800
-height = 150
+w = 800
+h = 150
 visible = false
 
   [[widget.children]]
@@ -228,8 +228,8 @@ visible = false
   id = "arch_panel"
   x = 10
   y = 40
-  width = 200
-  height = 100
+  w = 200
+  h = 100
   visible = false
 
     [[widget.children.children]]
@@ -251,7 +251,7 @@ visible = false
     type = "label"
     id = "arch_angle"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.8, 0.8, 0.8, 1]
     y = 40
 
@@ -259,22 +259,22 @@ visible = false
     type = "label"
     id = "arch_wind"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.6, 0.8, 1, 1]
     y = 60
 
     [[widget.children.children]]
     type = "panel"
-    width = 100
-    height = 10
+    w = 100
+    h = 10
     bg_color = [0.3, 0.3, 0.3, 1]
     y = 85
 
     [[widget.children.children]]
     type = "panel"
     id = "arch_power_fill"
-    width = 0
-    height = 10
+    w = 0
+    h = 10
     bg_color = [1, 1, 0.1, 1]
     y = 85
 
@@ -283,8 +283,8 @@ visible = false
   id = "bball_panel"
   x = 10
   y = 40
-  width = 200
-  height = 100
+  w = 200
+  h = 100
   visible = false
 
     [[widget.children.children]]
@@ -306,22 +306,22 @@ visible = false
     type = "label"
     id = "bball_angle"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.8, 0.8, 0.8, 1]
     y = 40
 
     [[widget.children.children]]
     type = "panel"
-    width = 100
-    height = 10
+    w = 100
+    h = 10
     bg_color = [0.3, 0.3, 0.3, 1]
     y = 65
 
     [[widget.children.children]]
     type = "panel"
     id = "bball_power_fill"
-    width = 0
-    height = 10
+    w = 0
+    h = 10
     bg_color = [1, 0.5, 0.1, 1]
     y = 65
 
@@ -330,8 +330,8 @@ visible = false
   id = "bowl_panel"
   x = 10
   y = 40
-  width = 200
-  height = 100
+  w = 200
+  h = 100
   visible = false
 
     [[widget.children.children]]
@@ -345,7 +345,7 @@ visible = false
     type = "label"
     id = "bowl_throw"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.8, 0.8, 0.8, 1]
     y = 20
 
@@ -353,7 +353,7 @@ visible = false
     type = "label"
     id = "bowl_pins"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.8, 0.8, 0.8, 1]
     y = 40
 
@@ -368,16 +368,16 @@ visible = false
     [[widget.children.children]]
     type = "panel"
     id = "bowl_power_bg"
-    width = 100
-    height = 10
+    w = 100
+    h = 10
     bg_color = [0.3, 0.3, 0.3, 1]
     y = 85
 
     [[widget.children.children]]
     type = "panel"
     id = "bowl_power_fill"
-    width = 0
-    height = 10
+    w = 0
+    h = 10
     bg_color = [0.2, 0.6, 1.0, 1]
     y = 85
 
@@ -386,22 +386,22 @@ visible = false
   id = "dart_panel"
   x = 10
   y = 40
-  width = 200
-  height = 100
+  w = 200
+  h = 100
   visible = false
 
     [[widget.children.children]]
     type = "label"
     id = "dart_remaining"
     text = ""
-    font_size = 18
+    font_size = 16
     color = [1, 1, 1, 1]
 
     [[widget.children.children]]
     type = "label"
     id = "dart_turn"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.8, 0.8, 0.8, 1]
     y = 25
 
@@ -409,7 +409,7 @@ visible = false
     type = "label"
     id = "dart_darts"
     text = ""
-    font_size = 14
+    font_size = 12
     color = [0.8, 0.8, 0.8, 1]
     y = 45
 
@@ -425,15 +425,15 @@ visible = false
 type = "panel"
 id = "fps_container"
 anchor = "bottom_right"
-width = 100
-height = 20
+w = 100
+h = 20
 visible = true
 
   [[widget.children]]
   type = "label"
   id = "fps_label"
   text = "FPS: 60"
-  font_size = 14
+  font_size = 12
   color = [0.6, 0.6, 0.6, 1]
   x = -80
   y = -30

@@ -32,13 +32,6 @@ fn create_test_vm() -> mlua::Lua {
     state.borrow_mut().load_default_fonts();
     let lua = create_lua_vm(state, &Config::default().modules).expect("Failed to create Lua VM");
 
-    // Load test framework
-    let framework = include_str!("init.lua");
-    lua.load(framework)
-        .set_name("test_framework")
-        .exec()
-        .expect("Failed to load test framework");
-
     // Expose a safe read-only file helper for static-analysis tests.
     // The sandbox removes io.open; this restores read-only access to workspace files.
     let read_file_fn = lua
@@ -50,6 +43,19 @@ fn create_test_vm() -> mlua::Lua {
     lua.globals()
         .set("read_file", read_file_fn)
         .expect("Failed to register read_file");
+
+    // Expose a write-only file helper for test evidence/reports to bypass GameFS save restriction.
+    let write_file_fn = lua
+        .create_function(|_, (path, data): (String, String)| {
+            if let Some(parent) = Path::new(&path).parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            std::fs::write(&path, &data).map_err(mlua::Error::external)
+        })
+        .expect("Failed to create write_file helper");
+    lua.globals()
+        .set("write_file", write_file_fn)
+        .expect("Failed to register write_file");
 
     // Some Lua tests load shared helpers via dofile().
     // The sandbox does not expose it by default, so provide a local test-only implementation.
@@ -66,6 +72,13 @@ fn create_test_vm() -> mlua::Lua {
     lua.globals()
         .set("dofile", dofile_fn)
         .expect("Failed to register dofile");
+
+    // Load test framework
+    let framework = include_str!("init.lua");
+    lua.load(framework)
+        .set_name("test_framework")
+        .exec()
+        .expect("Failed to load test framework");
 
     lua
 }

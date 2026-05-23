@@ -1,57 +1,14 @@
-# tools/fix — Code Fixers & Docstring Improvers
+# Lurek2D Fix Tools
 
-Scripts that **modify** source files to fix or improve code quality:
-adding missing docstrings, repairing malformed comments, and updating
-stale path references.
+> [!NOTE]
+> Ten plik jest generowany automatycznie przez `tools/tests/gen_tool_registry.py`.
 
-> **Caution**: These scripts modify files in-place. Always run with
-> `--dry-run` first (where supported) to preview changes.
-
-This folder is for reusable fixers only. One-off migrations and single-batch
-cleanup scripts belong under `work/<session>/scripts/`, not `tools/fix/`.
-
-## Scripts
-
-### Docstring fixers — add or repair `///` doc comments
-
-| Script | Purpose | Key args |
-|---|---|---|
-| `add_lua_docstrings.py` | Add missing `///` Lua docstring stubs interactively | `--dry-run`, file path |
-| `add_lua_docstrings_auto.py` | Auto-generate `///` Lua docstring stubs non-interactively | `--dry-run` |
-| `docstring_fix.py` | Apply docstring fixes from `logs/data/docstring_audit.json` | `--dry-run` |
-| `fix_docstrings.py` | Auto-fill missing `# Parameters`/`# Returns`/`# Fields`/`# Variants` | — |
-| `fix_param_types.py` | Auto-fix `number` vs `integer` mismatches in Lua binding `@param` tags | `--apply` |
-| `improve_lua_docstrings.py` | Upgrade low-quality stub `///` comments with richer descriptions | `--dry-run` |
-
-### Example/content fixers — modify content/ files
-
-| Script | Purpose | Key args |
-|---|---|---|
-| `expand_examples.py` | Expand `content/examples/` scripts with richer API usage | `--dry-run` |
-| `format_examples.py` | Format `content/examples/` scripts to coding standard | — |
-| `improve_examples.py` | Improve example quality with richer comments and edge cases | `--dry-run` |
-
-### Test helpers
-
-| Script | Purpose | Key args |
-|---|---|---|
-| `add_test_markers.py` | Add `@covers` annotation markers to Lua test files | — |
-
-## Common usage
-
-```powershell
-# --- Docstrings ---
-python tools/fix/add_lua_docstrings_auto.py --dry-run  # preview
-python tools/fix/add_lua_docstrings_auto.py             # apply
-
-python tools/fix/docstring_fix.py --dry-run              # preview audit fixes
-python tools/fix/docstring_fix.py                        # apply
-
-python tools/fix/fix_docstrings.py                       # auto-fill sections
-python tools/fix/fix_param_types.py                      # preview param-type fixes
-python tools/fix/fix_param_types.py --apply              # apply param-type fixes
-
-# --- Examples ---
-python tools/fix/format_examples.py                      # format all examples
-python tools/fix/expand_examples.py --dry-run            # preview example expansion
-```
+- **`add_lua_docstrings.py`**: add_lua_docstrings.py - Auto-generate /// docstrings from inline comments.
+- **`add_lua_docstrings_auto.py`**: add_lua_docstrings_auto.py — Automatically inject /// docstrings above every
+- **`add_test_markers.py`**: Add @covers / @stress / @golden / @security markers to Lurek2D Lua test files.
+- **`docstring_fix.py`**: docstring_fix.py -- Auto-inject missing @param/@return tags into Lua API docstrings.
+- **`expand_examples.py`**: tools/fix/expand_examples.py
+- **`fix_param_types.py`**: fix_param_types.py — Auto-fix @param type tags where documented ``number`` should be ``integer``.
+- **`format_examples.py`**: tools/fix/format_examples.py
+- **`improve_examples.py`**: tools/fix/improve_examples.py
+- **`improve_lua_docstrings.py`**: improve_lua_docstrings.py — Rewrites existing thin/incorrect /// docstrings in

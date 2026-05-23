@@ -1,4 +1,11 @@
-"""Scan specific Rust API files for exact function signatures."""
+"""Scan specific Rust API files for exact function signatures.
+
+Usage:
+```
+Usage:
+    python tools/audit/scan_exact.py
+```
+"""
 import re, os, sys
 
 ROOT = r'c:\Users\tombl\Documents\lurek2D'

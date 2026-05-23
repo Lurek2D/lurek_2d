@@ -7,6 +7,33 @@ This tool emits two machine-readable views of the Lua API surface:
 
 The snapshots share one normalized schema so they can be diffed without any
 engine/runtime support.
+
+Usage:
+```
+usage: gen_lua_binding_reports.py [-h] [--source-dir SOURCE_DIR]
+                                  [--mode {code,docstrings,all}]
+                                  [--code-output CODE_OUTPUT]
+                                  [--doc-output DOC_OUTPUT]
+                                  [--report-output REPORT_OUTPUT]
+
+Generate code/docstring Lua binding snapshots from src/lua_api.
+
+options:
+  -h, --help            show this help message and exit
+  --source-dir SOURCE_DIR
+                        Directory with *_api.rs files.
+  --mode {code,docstrings,all}
+  --code-output CODE_OUTPUT
+  --doc-output DOC_OUTPUT
+  --report-output REPORT_OUTPUT
+
+Examples:
+  # Default execution
+  python tools/docs/gen_lua_binding_reports.py
+
+  # Show all arguments
+  python tools/docs/gen_lua_binding_reports.py --help
+```
 """
 
 from __future__ import annotations
@@ -2129,7 +2156,20 @@ def _report_summary(report: BindingValidationReport) -> str:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Generate code/docstring Lua binding snapshots from src/lua_api.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_lua_binding_reports.py
+
+  # Show all arguments
+  python tools/docs/gen_lua_binding_reports.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Generate code/docstring Lua binding snapshots from src/lua_api.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--source-dir", default=str(SRC_LUA_API_DIR), help="Directory with *_api.rs files.")
     parser.add_argument("--mode", choices=["code", "docstrings", "all"], default="all")
     parser.add_argument("--code-output", default=CODE_SNAPSHOT_RELATIVE)

@@ -17,6 +17,24 @@ Auto-collected sections rebuilt from source code and Lua binding data:
 - Functions
 - Lua API Reference
 - References
+
+Usage:
+```
+usage: gen_module_specs.py [-h] [--module MODULE]
+
+Generate merged docs/specs/*.md files for top-level src modules.
+
+options:
+  -h, --help       show this help message and exit
+  --module MODULE  Only generate the named module (can be repeated).
+
+Examples:
+  # Default execution
+  python tools/docs/gen_module_specs.py
+
+  # Show all arguments
+  python tools/docs/gen_module_specs.py --help
+```
 """
 
 from __future__ import annotations
@@ -748,7 +766,20 @@ def rewrite_readme(modules: list[str]) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate merged docs/specs/*.md files for top-level src modules.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_module_specs.py
+
+  # Show all arguments
+  python tools/docs/gen_module_specs.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Generate merged docs/specs/*.md files for top-level src modules.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--module", action="append", help="Only generate the named module (can be repeated).")
     args = parser.parse_args()
 

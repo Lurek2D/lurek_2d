@@ -1,5 +1,7 @@
 -- Evidence tests: camera module
 -- Output-only evidence from direct lurek.camera API calls.
+-- @covers lurek.camera.newCamera
+
 
 local function write_text(path, text)
     local f = io and io.open and io.open(path, "w") or nil

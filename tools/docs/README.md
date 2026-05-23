@@ -1,82 +1,25 @@
-﻿# tools/docs â€” Documentation Generators
+# Lurek2D Docs Tools
 
-Scripts that **read** the Lurek2D source tree and **write** documentation
-output files under `docs/`, `logs/`, `docs/reports/`, and `wiki/`.
+> [!NOTE]
+> Ten plik jest generowany automatycznie przez `tools/tests/gen_tool_registry.py`.
 
-Run the full pipeline in one command:
-```powershell
-python tools/gen_all_docs.py
-```
-
-## Scripts
-
-### Data layer â€” machine-readable JSON from source
-
-| Script | Reads | Produces | Key args |
-|---|---|---|---|
-| `gen_rust_api_data.py` | `src/**/*.rs` | `logs/data/rust_api_data.json` | `--output` |
-| `gen_lua_api_data.py` | `src/lua_api/*.rs` | `logs/data/lua_api_data.json` | `--output`, `--verbose` |
-| `gen_lua_binding_reports.py` | `src/lua_api/*.rs` | `logs/data/lua_api_bindings_from_code.json`, `logs/data/lua_api_bindings_from_docstrings.json`, `logs/reports/lua_api_binding_validation.json` | `--mode`, `--code-output`, `--doc-output`, `--report-output` |
-| `gen_lua_docstring_skeletons.py` | `src/lua_api/*.rs` | `logs/data/lua_docstring_skeletons.json` or `logs/reports/lua_docstring_skeletons.md` | `--format json\|markdown`, `--output` |
-| `gen_extension_api.py` | `logs/data/lua_api_data.json` | `extensions/vscode/data/lurek-api.json` | `--input`, `--output`, `--verbose` |
-
-`gen_lua_binding_reports.py` now writes a primary categorized issue report alongside the legacy mismatch arrays. The JSON report includes `summary` counts, `issues` with structured code/doc evidence, and explicit classifications such as `CONFIRMED_DOC_BUG`, `EXTRACTION_UNCERTAIN`, `UNSUPPORTED_PATTERN`, and clean-entry counts.
-
-### Reference generators â€” human-readable docs from JSON
-
-| Script | Reads | Produces | Key args |
-|---|---|---|---|
-| `gen_docs_lua.py` | `lua_api_data.json` | `docs/api/lurek.md` | â€” |
-| `gen_docs_rust.py` | `rust_api_data.json` | `docs/api/rust.md` | â€” |
-| `gen_luadoc.py` | `lua_api_data.json` | `docs/lurek.lua` (LuaCATS IDE stubs) | â€” |
-| `gen_wiki_api.py` | `lua_api_data.json` | `wiki/API-Reference.md` | â€” |
-| `gen_lib_docs.py` | `library/` | `docs/reports/lib-api.md` | â€” |
-| `gen_engine_docs.py` | `src/` structure | `docs/reports/` engine docs | â€” |
-| `gen_lua_dev_docs.py` | `lua_api_data.json` | `docs/reports/` developer docs | â€” |
-| `gen_lua_library_api.py` | `library/` | LuaCATS stubs for Lureksome modules | â€” |
-| `gen_test_docs.py` | `tests/` | `docs/reports/test_docs_rust.md`, `docs/reports/test_docs_lua.md` | `--mode rust\|lua`, `--output` |
-| `gen_module_specs.py` | `src/<module>/` | `docs/specs/<module>.md` (merged module spec) | `--module NAME`, `--all`, `--scaffold`, `--write` |
-| `gen_wiki.py` | `src/`, `content/`, `docs/specs/` | All `wiki/*.md` pages | â€” |
-
-### Legacy / standalone reference
-
-| Script | Purpose | Key args |
-|---|---|---|
-| `gen_lua_api.py` | Original Lua API scanner (reads `@param`/`@return`) | `--check` (coverage check, exit 1 if stale) |
-| `collect_docs.py` | Rich Rust API doc collector with missing-doc report | `--report-missing`, `--suggest`, `--json`, `--output` |
-
-## Common usage
-
-```powershell
-# Full pipeline (all generators + coverage)
-python tools/gen_all_docs.py
-
-# Regenerate only the Lua API reference
-python tools/docs/gen_lua_api.py
-
-# Check Lua API coverage (exits 1 if stale)
-python tools/docs/gen_lua_api.py --check
-
-# Regenerate JSON intermediates
-python tools/docs/gen_lua_api_data.py
-python tools/docs/gen_rust_api_data.py
-
-# Snapshot what Rust registers vs what /// documents
-python tools/docs/gen_lua_binding_reports.py
-python tools/docs/gen_lua_binding_reports.py --mode code
-
-# Inspect categorized JSON output in logs/reports/lua_api_binding_validation.json
-python tools/validate/validate_lua_binding_reports.py --format json
-
-# Rebuild fresh docstring skeletons from Rust definitions only
-python tools/docs/gen_lua_docstring_skeletons.py
-python tools/docs/gen_lua_docstring_skeletons.py src/lua_api/timer_api.rs --format markdown
-
-# List items missing /// docs
-python tools/docs/collect_docs.py --report-missing
-```
-
-## Filename index
-
-`collect_docs.py`, `gen_docs_lua.py`, `gen_docs_rust.py`, `gen_engine_docs.py`, `gen_extension_api.py`, `gen_lib_docs.py`, `gen_luadoc.py`, `gen_lua_api.py`, `gen_lua_api_data.py`, `gen_lua_binding_reports.py`, `gen_lua_dev_docs.py`, `gen_lua_docstring_skeletons.py`, `gen_lua_library_api.py`, `gen_module_specs.py`, `gen_rust_api_data.py`, `gen_rust_docstrings.py`, `gen_test_docs.py`, `gen_wiki.py`, `gen_wiki_api.py`, `scan_missing_docs.py`
-
+- **`collect_docs.py`**: collect_docs.py — Lurek2D rich structured API documentation collector.
+- **`gen_docs_lua.py`**: gen_docs_lua.py -- Generate Lua API reference from logs/data/lua_api_data.json.
+- **`gen_docs_rust.py`**: gen_docs_rust.py — Generate compact inline Rust API reference from logs/data/rust_api_data.json.
+- **`gen_engine_docs.py`**: gen_engine_docs.py — Generate per-module documentation for Lurek2D Rust engine source.
+- **`gen_extension_api.py`**: gen_extension_api.py -- Convert logs/data/lua_api_data.json to
+- **`gen_lib_docs.py`**: gen_lib_docs.py — Generate API docs from Lurek2D library Lua files.
+- **`gen_lua_api.py`**: gen_lua_api.py â€” Lurek2D Lua API parser library.
+- **`gen_lua_api_data.py`**: gen_lua_api_data.py — Generate Lurek2D master API data file.
+- **`gen_lua_binding_reports.py`**: Generate source-derived Lua binding snapshots from src/lua_api/*.rs.
+- **`gen_lua_dev_docs.py`**: gen_lua_dev_docs.py — Generate Lua developer documentation from lua_api *.rs files.
+- **`gen_lua_docstring_skeletons.py`**: gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only.
+- **`gen_lua_library_api.py`**: gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files.
+- **`gen_luadoc.py`**: gen_luadoc.py â€” Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension.
+- **`gen_module_specs.py`**: Generate merged docs/specs/<module>.md files for top-level src modules.
+- **`gen_rust_api_data.py`**: gen_rust_api_data.py — Generate Lurek2D master API data file.
+- **`gen_rust_docstrings.py`**: gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).
+- **`gen_test_docs.py`**: gen_test_docs.py — Generate human-readable test documentation for Lurek2D.
+- **`gen_wiki.py`**: Generate the user-facing GitHub Wiki for Lurek2D.
+- **`gen_wiki_api.py`**: gen_wiki_api.py — Generate wiki/API-Reference.md from logs/data/lua_api_data.json.
+- **`scan_missing_docs.py`**: scan_missing_docs.py — detect Rust items without doc-comments in src/ (no lua_api).

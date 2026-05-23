@@ -1094,6 +1094,31 @@ describe("lurek.ai SteeringManager", function()
         expect_equal(1, idx)
         expect_equal(2, total)
     end)
+
+    -- @covers LSteeringManager:calculate
+    -- @covers LSteeringManager:getPathProgress
+    -- @covers LSteeringManager:setPath
+    -- @covers lurek.ai.newSteeringManager
+    it("calculate advances path progress", function()
+        local sm = lurek.ai.newSteeringManager()
+        sm:setPath({ { x = 0, y = 0 }, { x = 10, y = 0 } }, 1.0, 1.0)
+        sm:calculate(0, 0, 0, 0, 20, 100, 1/60)
+        local idx, total = sm:getPathProgress()
+        expect_equal(2, total)
+        expect_equal(2, idx)
+    end)
+
+    -- @covers LSteeringManager:calculate
+    -- @covers LSteeringManager:hasPath
+    -- @covers LSteeringManager:setPath
+    -- @covers lurek.ai.newSteeringManager
+    it("calculate completes path after last waypoint", function()
+        local sm = lurek.ai.newSteeringManager()
+        sm:setPath({ { x = 0, y = 0 }, { x = 1, y = 0 } }, 1.5, 1.0)
+        sm:calculate(0, 0, 0, 0, 20, 100, 1/60)
+        sm:calculate(1, 0, 0, 0, 20, 100, 1/60)
+        expect_false(sm:hasPath())
+    end)
 end)
 
 -- =========================================================================

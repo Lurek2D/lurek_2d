@@ -1,5 +1,8 @@
 -- Evidence tests: canvas module
 -- Output-only evidence from direct lurek.render canvas APIs.
+-- @covers lurek.render.newCanvas
+-- @covers lurek.render.setCanvas
+
 
 local function write_text(path, text)
     local f = io and io.open and io.open(path, "w") or nil

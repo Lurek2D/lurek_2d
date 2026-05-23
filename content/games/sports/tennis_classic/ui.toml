@@ -2,14 +2,14 @@
 type = "panel"
 id = "title_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "TENNIS CLASSIC"
-  font_size = 32
+  font_size = 30
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 240
@@ -17,7 +17,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "GAME  SET  MATCH"
-  font_size = 18
+  font_size = 16
   color = [0.8, 0.8, 0.8, 1]
   anchor = "top_center"
   y = 280
@@ -35,8 +35,8 @@ visible = false
 type = "panel"
 id = "hud_screen"
 anchor = "top_left"
-width = 800
-height = 28
+w = 800
+h = 28
 bg_color = [0, 0, 0, 0.6]
 visible = false
 
@@ -44,7 +44,7 @@ visible = false
   type = "label"
   id = "score_label"
   text = "Score: "
-  font_size = 14
+  font_size = 12
   color = [1, 1, 1, 1]
   x = 10
   y = 6
@@ -53,7 +53,7 @@ visible = false
   type = "label"
   id = "sets_label"
   text = ""
-  font_size = 14
+  font_size = 12
   color = [0.9, 0.9, 0.5, 1]
   anchor = "top_center"
   x = -60
@@ -63,7 +63,7 @@ visible = false
   type = "label"
   id = "rally_label"
   text = ""
-  font_size = 14
+  font_size = 12
   color = [0.5, 1.0, 0.5, 1]
   anchor = "top_right"
   x = -100
@@ -73,8 +73,8 @@ visible = false
 type = "panel"
 id = "msg_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -89,8 +89,8 @@ visible = false
 type = "panel"
 id = "popup_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -105,15 +105,15 @@ visible = false
 type = "panel"
 id = "serve_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
   id = "serve_label"
   text = ""
-  font_size = 14
+  font_size = 12
   color = [1, 1, 1, 0.8]
   anchor = "bottom_center"
   y = -30
@@ -122,8 +122,8 @@ visible = false
 type = "panel"
 id = "fps_container"
 anchor = "bottom_right"
-width = 100
-height = 20
+w = 100
+h = 20
 visible = true
 
   [[widget.children]]

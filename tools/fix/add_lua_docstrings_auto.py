@@ -368,7 +368,20 @@ def process_file(path: pathlib.Path, dry_run: bool = False) -> int:
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/fix/add_lua_docstrings_auto.py
+
+  # Show all arguments
+  python tools/fix/add_lua_docstrings_auto.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Lurek2D Tool",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument('--dry-run', action='store_true', help='Print counts only')
     parser.add_argument('--file', help='Process single file name (relative to src/lua_api/)')
     args = parser.parse_args()

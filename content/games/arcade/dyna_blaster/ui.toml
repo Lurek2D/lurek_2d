@@ -1,14 +1,14 @@
 [root]
 widget_type = "panel"
-width = 960
-height = 640
+w = 960
+h = 640
 
 [[root.children]]
 widget_type = "panel"
 id = "menu_panel"
 anchor = "center"
-width = 700
-height = 300
+w = 700
+h = 300
 visible = true
 
   [[root.children.children]]
@@ -16,7 +16,7 @@ visible = true
   text = "DYNA BLASTER"
   anchor = "top_center"
   y = 80
-  font_size = 56
+  font_size = 30
   color = [1.0, 0.95, 0.35, 1.0]
 
   [[root.children.children]]
@@ -32,8 +32,8 @@ visible = true
 widget_type = "panel"
 id = "hud_panel"
 anchor = "top_left"
-width = 960
-height = 640
+w = 960
+h = 640
 visible = false
 
   [[root.children.children]]
@@ -43,7 +43,7 @@ visible = false
   anchor = "top_left"
   x = 20
   y = 12
-  font_size = 22
+  font_size = 20
   color = [0.95, 0.95, 0.95, 1.0]
 
   [[root.children.children]]
@@ -53,7 +53,7 @@ visible = false
   anchor = "top_left"
   x = 180
   y = 12
-  font_size = 22
+  font_size = 20
   color = [0.95, 0.95, 0.95, 1.0]
 
   [[root.children.children]]
@@ -63,15 +63,15 @@ visible = false
   anchor = "top_right"
   x = -20
   y = 12
-  font_size = 18
+  font_size = 16
   color = [0.75, 0.8, 0.9, 1.0]
 
 [[root.children]]
 widget_type = "panel"
 id = "game_over_panel"
 anchor = "center"
-width = 700
-height = 260
+w = 700
+h = 260
 visible = false
 
   [[root.children.children]]
@@ -80,7 +80,7 @@ visible = false
   text = "GAME OVER"
   anchor = "top_center"
   y = 70
-  font_size = 56
+  font_size = 30
   color = [1.0, 0.35, 0.35, 1.0]
 
   [[root.children.children]]
@@ -97,5 +97,5 @@ visible = false
   text = "Press Enter to restart"
   anchor = "top_center"
   y = 190
-  font_size = 22
+  font_size = 20
   color = [0.85, 0.9, 1.0, 1.0]

@@ -1,4 +1,11 @@
-"""Find module-level constructors (registered on lurek.X table, not on UserData)."""
+"""Find module-level constructors (registered on lurek.X table, not on UserData).
+
+Usage:
+```
+Usage:
+    python tools/audit/scan_module_fns.py
+```
+"""
 import re, os
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..'))

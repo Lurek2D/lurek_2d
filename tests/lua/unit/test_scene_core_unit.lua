@@ -196,14 +196,18 @@ describe("Lifecycle callbacks", function()
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.draw
     -- @covers lurek.scene.push
-    it("draw dispatches to all scenes", function()
+    it("draw dispatches only to top render-active scene", function()
         lurek.scene.clear()
         local log = {}
         local s1 = { draw = function(self) table.insert(log, "s1:draw") end }
+        local s2 = { draw = function(self) table.insert(log, "s2:draw") end }
         lurek.scene.push(s1)
+        lurek.scene.push(s2)
 
         lurek.scene.draw()
-        expect_equal("s1:draw", log[1])
+        expect_equal(1, #log)
+        expect_equal("s2:draw", log[1])
+        lurek.scene.clear()
     end)
 
     -- @covers lurek.scene.clear
@@ -342,35 +346,146 @@ describe("lurek.scene new pipeline callbacks", function()
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.push
     -- @covers lurek.scene.render
-    it("render calls scene:render() for all scenes", function()
+    it("render calls scene:render() only for top render-active scene", function()
         local calls = {}
         local s1 = { render = function(self) table.insert(calls, "s1") end }
         local s2 = { render = function(self) table.insert(calls, "s2") end }
         lurek.scene.push(s1)
         lurek.scene.push(s2)
         lurek.scene.render()
-        expect_equal(2, #calls)
-        expect_equal("s1", calls[1])
-        expect_equal("s2", calls[2])
-        lurek.scene.pop()
-        lurek.scene.pop()
+        expect_equal(1, #calls)
+        expect_equal("s2", calls[1])
+        lurek.scene.clear()
     end)
 
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.push
     -- @covers lurek.scene.renderUi
-    it("renderUi calls scene:render_ui() for all scenes", function()
+    it("renderUi calls scene:render_ui() only for top render-active scene", function()
         local calls = {}
         local s1 = { render_ui = function(self) table.insert(calls, "s1") end }
         local s2 = { render_ui = function(self) table.insert(calls, "s2") end }
         lurek.scene.push(s1)
         lurek.scene.push(s2)
         lurek.scene.renderUi()
-        expect_equal(2, #calls)
-        expect_equal("s1", calls[1])
-        expect_equal("s2", calls[2])
-        lurek.scene.pop()
-        lurek.scene.pop()
+        expect_equal(1, #calls)
+        expect_equal("s2", calls[1])
+        lurek.scene.clear()
+    end)
+
+    -- @covers lurek.scene.clear
+    -- @covers lurek.scene.getRenderActiveScenes
+    -- @covers lurek.scene.push
+    -- @covers lurek.scene.pushOverlay
+    it("getRenderActiveScenes returns only top scene even with overlay stack", function()
+        lurek.scene.clear()
+        local base = { name = "base" }
+        local game = { name = "game" }
+        local overlay = { name = "overlay" }
+
+        lurek.scene.push(base)
+        lurek.scene.push(game)
+        lurek.scene.pushOverlay(overlay)
+
+        local rs = lurek.scene.getRenderActiveScenes()
+        expect_type("table", rs)
+        expect_equal(1, #rs)
+        expect_equal(overlay, rs[1])
+        lurek.scene.clear()
+    end)
+
+    -- @covers lurek.scene.clear
+    -- @covers lurek.scene.process
+    -- @covers lurek.scene.processPhysics
+    -- @covers lurek.scene.processLate
+    -- @covers lurek.scene.push
+    -- @covers lurek.scene.setLateEnabled
+    -- @covers lurek.scene.setPhysicsEnabled
+    -- @covers lurek.scene.setProcessEnabled
+    -- @covers lurek.scene.setUpdateEnabled
+    -- @covers lurek.scene.update
+    -- @covers lurek.scene.isLateEnabled
+    -- @covers lurek.scene.isPhysicsEnabled
+    -- @covers lurek.scene.isProcessEnabled
+    -- @covers lurek.scene.isUpdateEnabled
+    it("freeze flags control update/process/physics/late independently", function()
+        lurek.scene.clear()
+        local counts = { update = 0, process = 0, physics = 0, late = 0 }
+        local scene = {
+            update = function(self, dt) counts.update = counts.update + 1 end,
+            process = function(self, dt) counts.process = counts.process + 1 end,
+            process_physics = function(self, dt) counts.physics = counts.physics + 1 end,
+            process_late = function(self, dt) counts.late = counts.late + 1 end,
+        }
+
+        lurek.scene.push(scene)
+
+        expect_true(lurek.scene.isUpdateEnabled())
+        expect_true(lurek.scene.isProcessEnabled())
+        expect_true(lurek.scene.isPhysicsEnabled())
+        expect_true(lurek.scene.isLateEnabled())
+
+        lurek.scene.setUpdateEnabled(nil, false)
+        lurek.scene.setProcessEnabled(nil, false)
+        lurek.scene.setPhysicsEnabled(nil, false)
+        lurek.scene.setLateEnabled(nil, false)
+
+        expect_false(lurek.scene.isUpdateEnabled())
+        expect_false(lurek.scene.isProcessEnabled())
+        expect_false(lurek.scene.isPhysicsEnabled())
+        expect_false(lurek.scene.isLateEnabled())
+
+        lurek.scene.update(0.016)
+        lurek.scene.process(0.016)
+        lurek.scene.processPhysics(0.016)
+        lurek.scene.processLate(0.016)
+
+        expect_equal(0, counts.update)
+        expect_equal(0, counts.process)
+        expect_equal(0, counts.physics)
+        expect_equal(0, counts.late)
+
+        lurek.scene.setUpdateEnabled(nil, true)
+        lurek.scene.setProcessEnabled(nil, true)
+        lurek.scene.setPhysicsEnabled(nil, true)
+        lurek.scene.setLateEnabled(nil, true)
+
+        lurek.scene.update(0.016)
+        lurek.scene.process(0.016)
+        lurek.scene.processPhysics(0.016)
+        lurek.scene.processLate(0.016)
+
+        expect_equal(1, counts.update)
+        expect_equal(1, counts.process)
+        expect_equal(1, counts.physics)
+        expect_equal(1, counts.late)
+        lurek.scene.clear()
+    end)
+
+    -- @covers lurek.scene.clear
+    -- @covers lurek.scene.isProcessEnabled
+    -- @covers lurek.scene.push
+    -- @covers lurek.scene.registerScene
+    -- @covers lurek.scene.setProcessEnabled
+    it("freeze API target selector works for name and stack index", function()
+        lurek.scene.clear()
+        local menu = { name = "menu" }
+        local game = { name = "game" }
+
+        lurek.scene.registerScene("menu", menu)
+        lurek.scene.registerScene("game", game)
+        lurek.scene.push(menu)
+        lurek.scene.push(game)
+
+        -- by registered name
+        expect_true(lurek.scene.setProcessEnabled("menu", false))
+        expect_false(lurek.scene.isProcessEnabled("menu"))
+
+        -- by 1-based stack index (bottom scene is index 1)
+        expect_true(lurek.scene.setProcessEnabled(2, false))
+        expect_false(lurek.scene.isProcessEnabled(2))
+
+        lurek.scene.clear()
     end)
 
     -- @covers lurek.scene.pop
@@ -699,8 +814,10 @@ describe("Data store complex values", function()
         local data = { hp = 100, items = {"sword", "shield"} }
         lurek.scene.setData("player", data)
         local got = lurek.scene.getData("player")
-        expect_equal(100, got.hp)
-        expect_equal("sword", got.items[1])
+        expect_not_nil(got)
+        local got_tbl = got or { hp = nil, items = {} }
+        expect_equal(100, got_tbl.hp)
+        expect_equal("sword", got_tbl.items[1])
         lurek.scene.removeData("player")
     end)
 
@@ -1532,10 +1649,11 @@ describe("lurek.scene.newScene", function()
                 return "ok"
             end,
         })
+        local enter_fn = rawget(scene, "enter")
         expect_equal("table", type(scene))
-        expect_equal("function", type(scene.enter))
-        expect_equal("ok", scene:enter())
-        expect_equal(true, scene.entered)
+        expect_equal("function", type(enter_fn))
+        expect_equal("ok", enter_fn(scene))
+        expect_equal(true, rawget(scene, "entered"))
     end)
 end)
 

@@ -856,7 +856,20 @@ def build_html_report(report: Dict[str, Any]) -> str:
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Lurek2D test analytics")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/test_analytics.py
+
+  # Show all arguments
+  python tools/audit/test_analytics.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Lurek2D test analytics",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--json", action="store_true", help="Output JSON report")
     parser.add_argument("--html", action="store_true", help="Output HTML dashboard")
     parser.add_argument("--module", type=str, help="Filter to single module")

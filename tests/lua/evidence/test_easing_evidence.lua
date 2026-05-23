@@ -1,5 +1,16 @@
 -- Evidence tests: easing module
 -- Artifacts are generated from lurek.math easing functions.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.math.applyEasing
+-- @covers lurek.math.inCubic
+-- @covers lurek.math.inOutQuad
+-- @covers lurek.math.inQuad
+-- @covers lurek.math.linear
+-- @covers lurek.math.outBounce
+-- @covers lurek.math.outCubic
+-- @covers lurek.math.outQuad
+
 
 local OUT = "tests/output/easing/"
 

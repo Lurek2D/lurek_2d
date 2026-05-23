@@ -145,7 +145,7 @@ This module has no separate Lua-visible classes in the generated API data.
 
 ```lua
 --- Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
----@param value table The data table that may have missing fields.
+---@param value any The data value that may have missing fields.
 ---@param schema table A schema table containing `default` entries for fields.
 ---@return table A new table with defaults applied for any absent fields.
 lurek.serial.applyDefaults = function(value, schema) end
@@ -157,7 +157,7 @@ Merges a schema's default values into a data table, filling in any missing field
 
 Parameters:
 
-- `value` (`table`, required): The data table that may have missing fields.
+- `value` (`any`, required): The data value that may have missing fields.
 - `schema` (`table`, required): A schema table containing `default` entries for fields.
 
 Returns: `table` - A new table with defaults applied for any absent fields.
@@ -319,7 +319,7 @@ end
 
 ```lua
 --- Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
----@param value table The Lua value to encode.
+---@param value any The Lua value to encode.
 ---@param format string Target format: "json", "toml", "csv", or "msgpack".
 ---@param opts? table Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 ---@return string The encoded string (text or binary depending on format).
@@ -332,7 +332,7 @@ Universal encoder that serializes a Lua value into the specified format. Support
 
 Parameters:
 
-- `value` (`table`, required): The Lua value to encode.
+- `value` (`any`, required): The Lua value to encode.
 - `format` (`string`, required): Target format: "json", "toml", "csv", or "msgpack".
 - `opts` (`table`, optional): Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 
@@ -566,7 +566,7 @@ end
 
 ```lua
 --- Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
----@param value table The Lua value to serialize into JSON.
+---@param value any The Lua value to serialize into JSON.
 ---@param pretty? boolean When true, outputs indented human-readable JSON. Defaults to false (compact).
 ---@return string The JSON-encoded string representation of the value.
 lurek.serial.toJson = function(value, pretty) end
@@ -578,7 +578,7 @@ Serializes a Lua value (table, string, number, boolean, or nil) into a JSON stri
 
 Parameters:
 
-- `value` (`table`, required): The Lua value to serialize into JSON.
+- `value` (`any`, required): The Lua value to serialize into JSON.
 - `pretty` (`boolean`, optional): When true, outputs indented human-readable JSON. Defaults to false (compact).
 
 Returns: `string` - The JSON-encoded string representation of the value.
@@ -632,7 +632,7 @@ end
 
 ```lua
 --- Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
----@param value table The data to validate.
+---@param value any The data to validate.
 ---@param schema table A schema table defining the expected structure and constraints.
 ---@return boolean a True if validation passes, false otherwise.
 ---@return string b An error message describing the validation failure, or nil on success.
@@ -645,7 +645,7 @@ Validates a Lua value against a schema table. The schema defines expected types,
 
 Parameters:
 
-- `value` (`table`, required): The data to validate.
+- `value` (`any`, required): The data to validate.
 - `schema` (`table`, required): A schema table defining the expected structure and constraints.
 
 Returns: `boolean` - True if validation passes, false otherwise.

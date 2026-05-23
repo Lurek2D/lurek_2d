@@ -1,5 +1,16 @@
 -- Evidence tests: advanced UI
 -- Artifacts are generated through lurek.ui native rendering APIs.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.ui.clear
+-- @covers lurek.ui.loadLayoutFile
+-- @covers lurek.ui.newAreaChart
+-- @covers lurek.ui.newBarChart
+-- @covers lurek.ui.newLineChart
+-- @covers lurek.ui.newPieChart
+-- @covers lurek.ui.newScatterPlot
+-- @covers lurek.ui.renderToImage
+
 
 local OUT = "tests/output/ui_advanced/"
 

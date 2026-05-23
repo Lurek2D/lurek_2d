@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7239 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26540 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7250 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26601 lines)
 
 ## Coverage
 
 - 52 modules
-- 4869 functions and methods
+- 4880 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -52,7 +52,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.i18n](Module-i18n) | 36 | 0 | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
 | [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 80 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
-| [lurek.light](Module-light) | 19 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
+| [lurek.light](Module-light) | 20 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
 | [lurek.log](Module-log) | 18 | 0 | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
 | [lurek.math](Module-math) | 102 | 13 | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
 | [lurek.minimap](Module-minimap) | 1 | 1 | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay. |
@@ -70,7 +70,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.render](Module-render) | 116 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
 | [lurek.repl](Module-repl) | 1 | 1 | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [lurek.save](Module-save) | 1 | 1 | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
-| [lurek.scene](Module-scene) | 50 | 1 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
+| [lurek.scene](Module-scene) | 59 | 1 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
 | [lurek.serial](Module-serial) | 15 | 0 | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
 | [lurek.spine](Module-spine) | 3 | 2 | Hierarchical skeletal animation (own implementation; not the official Spine SDK — A-02 + licensing). |
 | [lurek.sprite](Module-sprite) | 5 | 2 | Sprite and sprite-batch rendering above the render command queue. |
@@ -80,7 +80,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.tilemap](Module-tilemap) | 28 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 | [lurek.tween](Module-tween) | 14 | 5 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
-| [lurek.ui](Module-ui) | 82 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
+| [lurek.ui](Module-ui) | 83 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [lurek.window](Module-window) | 55 | 0 | Window control via deferred WindowState writes; winit ops applied at frame start on the main thread. |
 
 One-page callable index: [API Reference](API-Reference).

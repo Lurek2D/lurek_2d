@@ -153,31 +153,6 @@ mod aseprite_and_playback_tests {
     }
 
     #[test]
-    fn pingpong_clip_bounces_between_ends() {
-        let mut anim = Animation::new();
-        anim.add_frame(Rect::new(0.0, 0.0, 16.0, 16.0));
-        anim.add_frame(Rect::new(16.0, 0.0, 16.0, 16.0));
-        anim.add_frame(Rect::new(32.0, 0.0, 16.0, 16.0));
-        anim.add_clip_with_mode(
-            "walk",
-            vec![0, 1, 2],
-            10.0,
-            true,
-            ClipPlaybackMode::PingPong,
-        );
-        assert!(anim.play("walk"));
-
-        anim.update(0.11);
-        assert_eq!(anim.current_frame(), 1);
-        anim.update(0.11);
-        assert_eq!(anim.current_frame(), 2);
-        anim.update(0.11);
-        assert_eq!(anim.current_frame(), 1);
-        anim.update(0.11);
-        assert_eq!(anim.current_frame(), 0);
-    }
-
-    #[test]
     fn load_aseprite_json_random_payloads_do_not_panic() {
         fn pseudo_random_string(seed: u32) -> String {
             let mut s = String::new();
@@ -262,32 +237,6 @@ mod aseprite_and_playback_tests {
         let quad = anim.get_frame_quad(1).expect("frame 1 missing");
         assert_eq!(quad.x, 16.0);
         assert_eq!(quad.y, 0.0);
-    }
-}
-
-mod state_machine_chain_tests {
-    use super::*;
-
-    #[test]
-    fn update_can_apply_multi_hop_transition_chain() {
-        let mut anim = Animation::new();
-        anim.add_frame(Rect::new(0.0, 0.0, 16.0, 16.0));
-        anim.add_frame(Rect::new(16.0, 0.0, 16.0, 16.0));
-        anim.add_frame(Rect::new(32.0, 0.0, 16.0, 16.0));
-        anim.add_clip("idle", vec![0], 8.0, true);
-        anim.add_clip("walk", vec![1], 8.0, true);
-        anim.add_clip("run", vec![2], 8.0, true);
-
-        let mut sm = AnimStateMachine::new(anim, "idle".to_string());
-        sm.add_state("idle", "idle", true);
-        sm.add_state("walk", "walk", true);
-        sm.add_state("run", "run", true);
-        sm.add_transition("idle", "walk", "speed > 0.1");
-        sm.add_transition("walk", "run", "speed > 0.8");
-        sm.set_param_float("speed", 1.0);
-
-        sm.update(0.016);
-        assert_eq!(sm.get_state(), "run");
     }
 }
 

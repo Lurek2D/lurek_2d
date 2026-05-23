@@ -2,6 +2,9 @@
 -- Produces PNG artifacts from ImageData shape drawing primitives.
 
 -- @describe evidence: shapes
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 describe("evidence: shapes", function()
     before_each(function()
         ensure_evidence_dir("shapes")

@@ -1074,7 +1074,7 @@ end
 
 ```lua
 --- Stores a Lua config value for this mod.
----@param value table Config value to store (table, number, string, or boolean).
+---@param value any Config value to store (table, number, string, or boolean).
 function LMod:setConfig(value) end
 ```
 
@@ -1084,7 +1084,7 @@ Stores a Lua config value for this mod.
 
 Parameters:
 
-- `value` (`table`, required): Config value to store (table, number, string, or boolean).
+- `value` (`any`, required): Config value to store (table, number, string, or boolean).
 
 #### Example
 

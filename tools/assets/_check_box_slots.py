@@ -1,4 +1,11 @@
-"""Quick check: verify that atlas slots 0x80-0x9F contain non-zero pixels."""
+"""Quick check: verify that atlas slots 0x80-0x9F contain non-zero pixels.
+
+Usage:
+```
+Usage:
+    python tools/assets/_check_box_slots.py
+```
+"""
 import json
 from PIL import Image
 

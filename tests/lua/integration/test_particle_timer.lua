@@ -1,5 +1,8 @@
 -- Integration: particle emitter controlled by timer bursts
 -- @describe integration: particle emitter driven by timer
+-- @covers lurek.particle.newSystem
+-- @covers lurek.timer.getTime
+
 describe("integration: particle emitter driven by timer", function()
 
     -- @integration LParticleSystem:emit

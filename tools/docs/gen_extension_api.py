@@ -252,8 +252,19 @@ def convert(data: dict, verbose: bool = False) -> dict:
 def main() -> int:
     repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_extension_api.py
+
+  # Show all arguments
+  python tools/docs/gen_extension_api.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Convert logs/data/lua_api_data.json -> extensions/vscode/data/lurek-api.json."
+        description="Convert logs/data/lua_api_data.json -> extensions/vscode/data/lurek-api.json.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--input",   default=os.path.join(repo_root, "logs", "data", "lua_api_data.json"))
     parser.add_argument("--output",  default=os.path.join(repo_root, "extensions", "vscode", "data", "lurek-api.json"))

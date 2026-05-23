@@ -32,6 +32,14 @@ pub struct SceneStack {
     next_id: u64,
     /// Set of scene IDs marked as overlays; affects get_active_ids visibility rules.
     overlay_ids: HashSet<SceneId>,
+    /// Per-scene execution toggle for `process`; defaults to true.
+    process_enabled: HashMap<SceneId, bool>,
+    /// Per-scene execution toggle for `process_physics`; defaults to true.
+    physics_enabled: HashMap<SceneId, bool>,
+    /// Per-scene execution toggle for `process_late`; defaults to true.
+    late_enabled: HashMap<SceneId, bool>,
+    /// Per-scene execution toggle for `update`; defaults to true.
+    update_enabled: HashMap<SceneId, bool>,
 }
 impl SceneStack {
     /// Create an empty SceneStack with no active scenes and no pending transitions.
@@ -46,6 +54,10 @@ impl SceneStack {
             scene_layers: HashMap::new(),
             next_id: 1,
             overlay_ids: HashSet::new(),
+            process_enabled: HashMap::new(),
+            physics_enabled: HashMap::new(),
+            late_enabled: HashMap::new(),
+            update_enabled: HashMap::new(),
         }
     }
     /// Allocate and return the next monotonically increasing SceneId.
@@ -53,6 +65,22 @@ impl SceneStack {
         let id = self.next_id;
         self.next_id += 1;
         id
+    }
+
+    /// Initialize execution flags for a newly added scene.
+    fn init_execution_flags(&mut self, scene_id: SceneId) {
+        self.process_enabled.entry(scene_id).or_insert(true);
+        self.physics_enabled.entry(scene_id).or_insert(true);
+        self.late_enabled.entry(scene_id).or_insert(true);
+        self.update_enabled.entry(scene_id).or_insert(true);
+    }
+
+    /// Remove execution flags for a scene removed from the stack.
+    fn remove_execution_flags(&mut self, scene_id: SceneId) {
+        self.process_enabled.remove(&scene_id);
+        self.physics_enabled.remove(&scene_id);
+        self.late_enabled.remove(&scene_id);
+        self.update_enabled.remove(&scene_id);
     }
     /// Start transition immediately if none is active; otherwise enqueue it for later.
     fn enqueue_or_start_transition(
@@ -101,6 +129,7 @@ impl SceneStack {
         self.enqueue_or_start_transition(transition_type, duration, easing);
         self.stack.push(scene_id);
         self.scene_layers.entry(scene_id).or_insert(0);
+        self.init_execution_flags(scene_id);
         prev
     }
     /// Pop the top scene, optionally starting a transition; returns (popped_id, newly_revealed_id) or Err when empty.
@@ -117,6 +146,7 @@ impl SceneStack {
         let popped = self.stack.pop().unwrap();
         self.overlay_ids.remove(&popped);
         self.scene_layers.remove(&popped);
+        self.remove_execution_flags(popped);
         let revealed = self.stack.last().copied();
         self.enqueue_or_start_transition(transition_type, duration, easing);
         Ok((popped, revealed))
@@ -133,6 +163,7 @@ impl SceneStack {
             let old_id = self.stack.pop().unwrap();
             self.overlay_ids.remove(&old_id);
             self.scene_layers.remove(&old_id);
+            self.remove_execution_flags(old_id);
             Some(old_id)
         } else {
             None
@@ -140,6 +171,7 @@ impl SceneStack {
         self.enqueue_or_start_transition(transition_type, duration, easing);
         self.stack.push(scene_id);
         self.scene_layers.entry(scene_id).or_insert(0);
+        self.init_execution_flags(scene_id);
         old
     }
     /// Clear all scenes, cancel transitions and queue, and return the drained scene IDs.
@@ -149,6 +181,10 @@ impl SceneStack {
         self.transition_queue.clear();
         self.overlay_ids.clear();
         self.scene_layers.clear();
+        self.process_enabled.clear();
+        self.physics_enabled.clear();
+        self.late_enabled.clear();
+        self.update_enabled.clear();
         std::mem::take(&mut self.stack)
     }
     /// Look up registered scene id by name; does not modify the stack.
@@ -165,6 +201,7 @@ impl SceneStack {
             let id = self.stack.pop().unwrap();
             self.overlay_ids.remove(&id);
             self.scene_layers.remove(&id);
+            self.remove_execution_flags(id);
             popped.push(id);
         }
         popped
@@ -242,6 +279,7 @@ impl SceneStack {
         self.enqueue_or_start_transition(transition_type, duration, easing);
         self.stack.push(scene_id);
         self.scene_layers.entry(scene_id).or_insert(100);
+        self.init_execution_flags(scene_id);
         prev
     }
     /// Return true when scene_id was pushed via push_overlay.
@@ -259,6 +297,15 @@ impl SceneStack {
             }
         }
     }
+
+    /// Return scene IDs selected for rendering.
+    /// Rendering is single-scene at engine level: only the current top scene is render-active.
+    pub fn get_render_ids(&self) -> &[SceneId] {
+        match self.stack.last() {
+            Some(_) => &self.stack[self.stack.len() - 1..],
+            None => &[],
+        }
+    }
     /// Set the draw layer priority for scene_id; higher values draw on top of lower values.
     pub fn set_scene_layer(&mut self, scene_id: SceneId, layer: i32) {
         self.scene_layers.insert(scene_id, layer);
@@ -273,6 +320,54 @@ impl SceneStack {
             self.get_active_ids().iter().copied().enumerate().collect();
         indexed.sort_by_key(|(idx, id)| (self.get_scene_layer(*id), *idx));
         indexed.into_iter().map(|(_, id)| id).collect()
+    }
+
+    /// Return render-active scene IDs sorted by (layer, insertion index) ascending.
+    pub fn get_render_ids_ordered_by_layer(&self) -> Vec<SceneId> {
+        let mut indexed: Vec<(usize, SceneId)> =
+            self.get_render_ids().iter().copied().enumerate().collect();
+        indexed.sort_by_key(|(idx, id)| (self.get_scene_layer(*id), *idx));
+        indexed.into_iter().map(|(_, id)| id).collect()
+    }
+
+    /// Enable/disable `process` execution for a scene id.
+    pub fn set_process_enabled(&mut self, scene_id: SceneId, enabled: bool) {
+        self.process_enabled.insert(scene_id, enabled);
+    }
+
+    /// Return whether `process` execution is enabled for scene id.
+    pub fn is_process_enabled(&self, scene_id: SceneId) -> bool {
+        self.process_enabled.get(&scene_id).copied().unwrap_or(true)
+    }
+
+    /// Enable/disable `process_physics` execution for a scene id.
+    pub fn set_physics_enabled(&mut self, scene_id: SceneId, enabled: bool) {
+        self.physics_enabled.insert(scene_id, enabled);
+    }
+
+    /// Return whether `process_physics` execution is enabled for scene id.
+    pub fn is_physics_enabled(&self, scene_id: SceneId) -> bool {
+        self.physics_enabled.get(&scene_id).copied().unwrap_or(true)
+    }
+
+    /// Enable/disable `process_late` execution for a scene id.
+    pub fn set_late_enabled(&mut self, scene_id: SceneId, enabled: bool) {
+        self.late_enabled.insert(scene_id, enabled);
+    }
+
+    /// Return whether `process_late` execution is enabled for scene id.
+    pub fn is_late_enabled(&self, scene_id: SceneId) -> bool {
+        self.late_enabled.get(&scene_id).copied().unwrap_or(true)
+    }
+
+    /// Enable/disable `update` execution for a scene id.
+    pub fn set_update_enabled(&mut self, scene_id: SceneId, enabled: bool) {
+        self.update_enabled.insert(scene_id, enabled);
+    }
+
+    /// Return whether `update` execution is enabled for scene id.
+    pub fn is_update_enabled(&self, scene_id: SceneId) -> bool {
+        self.update_enabled.get(&scene_id).copied().unwrap_or(true)
     }
     /// Associate a string name with a SceneId in the named registry.
     pub fn register_scene(&mut self, name: String, scene_id: SceneId) {
@@ -316,5 +411,50 @@ impl Default for SceneStack {
     /// Create an empty SceneStack via new().
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::SceneStack;
+    use crate::scene::transition::{EasingType, TransitionType};
+
+    #[test]
+    fn render_ids_only_include_top_scene_even_with_overlay() {
+        let mut stack = SceneStack::new();
+        let base = stack.next_scene_id();
+        let mid = stack.next_scene_id();
+        let overlay = stack.next_scene_id();
+
+        stack.push(base, TransitionType::None, 0.0, EasingType::Linear);
+        stack.push(mid, TransitionType::None, 0.0, EasingType::Linear);
+        stack.push_overlay(overlay, TransitionType::None, 0.0, EasingType::Linear);
+
+        assert_eq!(stack.get_active_ids().len(), 3);
+        let render_ids = stack.get_render_ids();
+        assert_eq!(render_ids.len(), 1);
+        assert_eq!(render_ids[0], overlay);
+    }
+
+    #[test]
+    fn per_scene_execution_flags_are_toggleable() {
+        let mut stack = SceneStack::new();
+        let id = stack.next_scene_id();
+        stack.push(id, TransitionType::None, 0.0, EasingType::Linear);
+
+        assert!(stack.is_process_enabled(id));
+        assert!(stack.is_physics_enabled(id));
+        assert!(stack.is_late_enabled(id));
+        assert!(stack.is_update_enabled(id));
+
+        stack.set_process_enabled(id, false);
+        stack.set_physics_enabled(id, false);
+        stack.set_late_enabled(id, false);
+        stack.set_update_enabled(id, false);
+
+        assert!(!stack.is_process_enabled(id));
+        assert!(!stack.is_physics_enabled(id));
+        assert!(!stack.is_late_enabled(id));
+        assert!(!stack.is_update_enabled(id));
     }
 }

@@ -2,8 +2,8 @@
 type = "panel"
 id = "fps_container"
 anchor = "bottom_left"
-width = 100
-height = 20
+w = 100
+h = 20
 visible = true
 
   [[widget.children]]
@@ -19,14 +19,14 @@ visible = true
 type = "panel"
 id = "title_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "SPORTS MANAGER"
-  font_size = 36
+  font_size = 30
   color = [0.1, 0.7, 0.3, 1]
   anchor = "top_center"
   y = 150
@@ -51,7 +51,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "R=Roster  T=Train  B=Buy  Space=Next Match"
-  font_size = 14
+  font_size = 12
   color = [0.6, 0.6, 0.6, 0.7]
   anchor = "top_center"
   y = 400
@@ -60,8 +60,8 @@ visible = false
 type = "panel"
 id = "office_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -129,8 +129,8 @@ visible = false
   id = "league_rows"
   x = 20
   y = 190
-  width = 760
-  height = 200
+  w = 760
+  h = 200
 
   [[widget.children]]
   type = "label"
@@ -145,13 +145,13 @@ visible = false
 type = "panel"
 id = "roster_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "label"
-  text = "ROSTER — Click to toggle starter/bench"
+  text = "ROSTER Ă˘â‚¬â€ť Click to toggle starter/bench"
   font_size = 20
   color = [0.1, 0.7, 0.3, 1]
   x = 20
@@ -170,8 +170,8 @@ visible = false
   id = "roster_rows"
   x = 40
   y = 80
-  width = 720
-  height = 400
+  w = 720
+  h = 400
 
   [[widget.children]]
   type = "button"
@@ -187,16 +187,16 @@ visible = false
 type = "panel"
 id = "match_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
   type = "panel"
   id = "scoreboard_bg"
   anchor = "top_center"
-  width = 400
-  height = 70
+  w = 400
+  h = 70
   y = 20
   bg_color = [0, 0, 0, 0.7]
 
@@ -230,8 +230,8 @@ visible = false
   type = "panel"
   id = "match_progress_bg"
   anchor = "top_center"
-  width = 400
-  height = 8
+  w = 400
+  h = 8
   y = 95
   bg_color = [0.3, 0.3, 0.3, 0.6]
 
@@ -239,16 +239,16 @@ visible = false
     type = "panel"
     id = "match_progress_fill"
     anchor = "left_center"
-    width = 0
-    height = 8
+    w = 0
+    h = 8
     bg_color = [0.4, 0.9, 0.4, 0.9]
 
   [[widget.children]]
   type = "panel"
   id = "match_events_bg"
   anchor = "bottom_center"
-  width = 700
-  height = 70
+  w = 700
+  h = 70
   y = -10
   bg_color = [0, 0, 0, 0.6]
 
@@ -283,8 +283,8 @@ visible = false
 type = "panel"
 id = "training_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -298,7 +298,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "Choose training focus:"
-  font_size = 18
+  font_size = 16
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 80
@@ -306,7 +306,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "[O] Offense - +2 skill to Forwards"
-  font_size = 18
+  font_size = 16
   color = [0.9, 0.4, 0.4, 1]
   x = 200
   y = 130
@@ -314,7 +314,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "[D] Defense - +2 skill to Defenders & GK"
-  font_size = 18
+  font_size = 16
   color = [0.4, 0.5, 0.9, 1]
   x = 200
   y = 160
@@ -322,7 +322,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "[F] Fitness - +5 stamina to all"
-  font_size = 18
+  font_size = 16
   color = [0.4, 0.9, 0.4, 1]
   x = 200
   y = 190
@@ -330,7 +330,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "[M] Morale - +10 morale to all"
-  font_size = 18
+  font_size = 16
   color = [0.9, 0.8, 0.3, 1]
   x = 200
   y = 220
@@ -348,8 +348,8 @@ visible = false
 type = "panel"
 id = "transfer_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -364,7 +364,7 @@ visible = false
   type = "label"
   id = "transfer_info"
   text = ""
-  font_size = 18
+  font_size = 16
   color = [1, 1, 1, 1]
   x = 20
   y = 50
@@ -372,7 +372,7 @@ visible = false
   [[widget.children]]
   type = "label"
   text = "#   Name                 Pos  Skill  Price"
-  font_size = 18
+  font_size = 16
   color = [0.7, 0.7, 0.7, 1]
   x = 40
   y = 90
@@ -382,8 +382,8 @@ visible = false
   id = "transfer_rows"
   x = 40
   y = 120
-  width = 720
-  height = 200
+  w = 720
+  h = 200
 
   [[widget.children]]
   type = "button"
@@ -399,8 +399,8 @@ visible = false
 type = "panel"
 id = "season_end_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -433,8 +433,8 @@ visible = false
   id = "season_league_rows"
   x = 80
   y = 215
-  width = 640
-  height = 200
+  w = 640
+  h = 200
 
   [[widget.children]]
   type = "button"

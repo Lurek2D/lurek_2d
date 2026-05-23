@@ -591,7 +591,7 @@ end
 ```lua
 --- Calls matching event-named functions on registered systems.
 ---@param event string Function name looked up on each system table.
----@param ... table Extra values forwarded after the system and universe arguments.
+---@param ... any Extra values forwarded after the system and universe arguments.
 function LUniverse:emit(event, ...) end
 ```
 
@@ -602,7 +602,7 @@ Calls matching event-named functions on registered systems.
 Parameters:
 
 - `event` (`string`, required): Function name looked up on each system table.
-- `...` (`table`, required): Extra values forwarded after the system and universe arguments.
+- `...` (`any`, required): Extra values forwarded after the system and universe arguments.
 
 #### Example
 
@@ -2063,7 +2063,7 @@ end
 --- Stores or replaces a component value on an entity.
 ---@param id number Entity id that receives the component.
 ---@param name string Component name.
----@param value table Lua value stored as the component payload.
+---@param value any Lua value stored as the component payload.
 function LUniverse:set(id, name, value) end
 ```
 
@@ -2075,7 +2075,7 @@ Parameters:
 
 - `id` (`integer`, required): Entity id that receives the component.
 - `name` (`string`, required): Component name.
-- `value` (`table`, required): Lua value stored as the component payload.
+- `value` (`any`, required): Lua value stored as the component payload.
 
 #### Example
 

@@ -1,21 +1,21 @@
 [root]
 widget_type = "panel"
 id = "root_ui"
-width = 960
-height = 540
+w = 960
+h = 540
 bg_color = [0, 0, 0, 0]
 
   [[root.children]]
   widget_type = "panel"
   id = "title_screen"
-  width = 960
-  height = 540
+  w = 960
+  h = 540
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "RAYCASTER FPS"
-    font_size = 40
+    font_size = 30
     color = [0.8, 0.15, 0.1, 1]
     anchor = "center"
     y = -110
@@ -31,7 +31,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "WASD = Move/Strafe   Q/E = Rotate   Space = Fire"
-    font_size = 14
+    font_size = 12
     color = [0.6, 0.6, 0.7, 1]
     anchor = "center"
     y = -10
@@ -39,7 +39,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "F1-F3 = Weather   Esc = Quit"
-    font_size = 14
+    font_size = 12
     color = [0.6, 0.6, 0.7, 1]
     anchor = "center"
     y = 15
@@ -48,7 +48,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "title_press_start"
     text = "PRESS ENTER"
-    font_size = 22
+    font_size = 20
     color = [1, 1, 1, 1]
     anchor = "center"
     y = 90
@@ -56,14 +56,14 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "game_over_screen"
-  width = 960
-  height = 540
+  w = 960
+  h = 540
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "GAME OVER"
-    font_size = 36
+    font_size = 30
     color = [0.8, 0.1, 0.1, 1]
     anchor = "center"
     y = -70
@@ -81,7 +81,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "go_press_start"
     text = "PRESS ENTER TO RESTART"
-    font_size = 18
+    font_size = 16
     color = [1, 1, 1, 1]
     anchor = "center"
     y = 60
@@ -89,14 +89,14 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "hud_screen"
-  width = 960
-  height = 540
+  w = 960
+  h = 540
   visible = false
 
     [[root.children.children]]
     widget_type = "panel"
-    width = 204
-    height = 24
+    w = 204
+    h = 24
     bg_color = [0.15, 0.15, 0.2, 0.8]
     x = 10
     y = 500
@@ -104,8 +104,8 @@ bg_color = [0, 0, 0, 0]
       [[root.children.children.children]]
       widget_type = "panel"
       id = "hud_hp_bar"
-      width = 200
-      height = 20
+      w = 200
+      h = 20
       bg_color = [0.2, 0.8, 0.1, 1]
       x = 2
       y = 2
@@ -114,7 +114,7 @@ bg_color = [0, 0, 0, 0]
       widget_type = "label"
       id = "hud_hp_text"
       text = "HP: 100"
-      font_size = 14
+      font_size = 12
       color = [1, 1, 1, 1]
       x = 5
       y = 2
@@ -123,7 +123,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "hud_ammo"
     text = "AMMO: 30"
-    font_size = 14
+    font_size = 12
     color = [1.0, 0.8, 0.1, 1]
     x = 230
     y = 502
@@ -132,7 +132,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "hud_score"
     text = "SCORE: 0"
-    font_size = 14
+    font_size = 12
     color = [1, 1, 1, 1]
     x = 380
     y = 502

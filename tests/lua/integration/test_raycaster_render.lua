@@ -1,5 +1,8 @@
 -- Integration: raycaster per-cell texture overrides and render image userdata
 -- @describe raycaster + render integration
+-- @covers lurek.raycaster.new
+-- @covers lurek.render.newImage
+
 describe("raycaster + render integration", function()
     -- @integration LImage:getId
     -- @integration LRaycaster:getFloorTextureCell

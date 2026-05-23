@@ -449,7 +449,20 @@ def build_extension(
 # ──────────────────────────────────────────────────────────────────────────── #
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/fix/expand_examples.py
+
+  # Show all arguments
+  python tools/fix/expand_examples.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Lurek2D Tool",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--dry-run", action="store_true",
                         help="print what would be written but don't modify files")
     parser.add_argument("--module", metavar="NAME",

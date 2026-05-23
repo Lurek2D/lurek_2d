@@ -1,5 +1,8 @@
 -- Evidence tests: scene module
 -- Evidence validates lurek.scene depth sorting behavior.
+-- @covers lurek.filesystem.write
+-- @covers lurek.scene.newDepthSorter
+
 
 local OUT = "tests/output/scene/"
 

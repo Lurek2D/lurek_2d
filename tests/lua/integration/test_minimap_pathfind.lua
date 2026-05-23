@@ -1,4 +1,8 @@
 -- Integration: pathfinding results reflected on minimap overlays
+-- @covers lurek.minimap.newMinimap
+-- @covers lurek.pathfind.newNavGrid
+-- @covers lurek.pathfind.newPathfinder
+
 
 local function path_to_points(path)
     local points = {}

@@ -1,10 +1,30 @@
 #!/usr/bin/env python3
-"""
-perf_regression_gate.py — lightweight perf/stress regression gate for CI.
+"""perf_regression_gate.py — lightweight perf/stress regression gate for CI.
 
 Reads logs/data/test_analytics.json and enforces:
 - minimum percentage of modules with stress coverage,
 - non-regression against a stored baseline.
+
+Usage:
+```
+usage: perf_regression_gate.py [-h] [--min-stress-pct MIN_STRESS_PCT]
+                               [--baseline BASELINE] [--update-baseline]
+
+Perf/stress regression gate
+
+options:
+  -h, --help            show this help message and exit
+  --min-stress-pct MIN_STRESS_PCT
+  --baseline BASELINE
+  --update-baseline
+
+Examples:
+  # Default execution
+  python tools/audit/perf_regression_gate.py
+
+  # Show all arguments
+  python tools/audit/perf_regression_gate.py --help
+```
 """
 
 from __future__ import annotations
@@ -51,7 +71,20 @@ def compute_avg_score(analytics: dict) -> float:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Perf/stress regression gate")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/perf_regression_gate.py
+
+  # Show all arguments
+  python tools/audit/perf_regression_gate.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Perf/stress regression gate",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--min-stress-pct", type=float, default=35.0)
     parser.add_argument("--baseline", default=str(BASELINE_PATH))
     parser.add_argument("--update-baseline", action="store_true")

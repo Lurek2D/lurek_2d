@@ -54,8 +54,19 @@ When a user gives you a request:
 
 
 def parse_args():
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/github/sync_agent_rules.py
+
+  # Show all arguments
+  python tools/github/sync_agent_rules.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Synchronize workspace rules files with .github/copilot-instructions.md"
+        description="Synchronize workspace rules files with .github/copilot-instructions.md",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument(
         "--check",

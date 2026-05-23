@@ -851,7 +851,20 @@ def collect_files(target: Path) -> List[Path]:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Rebuild Lua API docstring skeletons from Rust source only.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_lua_docstring_skeletons.py
+
+  # Show all arguments
+  python tools/docs/gen_lua_docstring_skeletons.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Rebuild Lua API docstring skeletons from Rust source only.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         "target",
         nargs="?",

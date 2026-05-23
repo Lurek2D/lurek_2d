@@ -1,5 +1,8 @@
 -- Integration: save manager collecting and restoring tilemap tile data
 -- @describe integration: savegame collects and restores tilemap state
+-- @covers lurek.save.newSaveManager
+-- @covers lurek.tilemap.newTileMap
+
 describe("integration: savegame collects and restores tilemap state", function()
     -- @integration LSaveManager:collect
     -- @integration LSaveManager:register

@@ -1,5 +1,12 @@
 -- Integration: ECS entity positions synced with physics body state
 -- @describe integration: entity + physics body lifecycle
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.physics.destroyWorld
+-- @covers lurek.physics.getBody
+-- @covers lurek.physics.newBody
+-- @covers lurek.physics.newWorld
+-- @covers lurek.physics.step
+
 describe("integration: entity + physics body lifecycle", function()
     -- @integration LUniverse:get
     -- @integration LUniverse:set

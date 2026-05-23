@@ -1,5 +1,12 @@
 -- Evidence tests: geometry module
 -- Output-only evidence from direct lurek.math API calls.
+-- @covers lurek.math.convexHull
+-- @covers lurek.math.lineIntersect
+-- @covers lurek.math.pointInPolygon
+-- @covers lurek.math.polygonArea
+-- @covers lurek.math.polygonCentroid
+-- @covers lurek.math.triangulate
+
 
 local function write_text(path, text)
     local f = io and io.open and io.open(path, "w") or nil

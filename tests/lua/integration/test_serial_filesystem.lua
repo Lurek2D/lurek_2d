@@ -1,5 +1,14 @@
 -- Integration: lurek.serial JSON/TOML/CSV round-trip via lurek.filesystem
 -- @describe serial + filesystem integration
+-- @covers lurek.filesystem.mkdir
+-- @covers lurek.filesystem.read
+-- @covers lurek.filesystem.write
+-- @covers lurek.serial.fromCsv
+-- @covers lurek.serial.fromJson
+-- @covers lurek.serial.fromToml
+-- @covers lurek.serial.toJson
+-- @covers lurek.serial.toToml
+
 describe("serial + filesystem integration", function()
     local tmp = "save/integration_serial_fs/"
 

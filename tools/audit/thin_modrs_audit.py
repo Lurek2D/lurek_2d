@@ -8,6 +8,21 @@ that are not allowed: ``mod`` declarations, ``use`` imports, attributes,
 doc comments, or blank lines.
 
 Exit code: 0 if no VIOLATION, 1 otherwise.
+
+Usage:
+```
+usage: thin_modrs_audit.py [-h] [--root ROOT] [--scope SCOPE]
+                           [--format {text,json}] [--output OUTPUT]
+
+thin_modrs_audit.py â€” Enforce TST-04 (thin `mod.rs`).
+
+options:
+  -h, --help            show this help message and exit
+  --root ROOT
+  --scope SCOPE         Restrict to one src/ subdirectory.
+  --format {text,json}
+  --output OUTPUT       Optional JSON output path.
+```
 """
 
 from __future__ import annotations

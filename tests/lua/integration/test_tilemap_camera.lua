@@ -1,5 +1,8 @@
 -- Integration: camera position determining which tilemap tiles are in view
 -- @describe integration: tilemap visibility through camera
+-- @covers lurek.camera.newCamera
+-- @covers lurek.tilemap.newTileMap
+
 describe("integration: tilemap visibility through camera", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition

@@ -1,5 +1,10 @@
 -- Integration: tilemap tile data converted to a pathfinding navgrid
 -- @describe integration: tilemap feeds into pathfinding grid
+-- @covers lurek.pathfind.newNavGrid
+-- @covers lurek.pathfind.newNavGridFromTileMap
+-- @covers lurek.pathfind.newPathfinder
+-- @covers lurek.tilemap.newTileMap
+
 describe("integration: tilemap feeds into pathfinding grid", function()
     -- @integration LNavGrid:setBlocked
     -- @integration LTileMap:addLayer

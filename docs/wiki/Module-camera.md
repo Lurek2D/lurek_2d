@@ -2928,7 +2928,6 @@ end
 - [asteroids](../tree/main/content/games/arcade/asteroids) (arcade)
 - [donkey_kong](../tree/main/content/games/arcade/donkey_kong) (arcade)
 - [frogger](../tree/main/content/games/arcade/frogger) (arcade)
-- [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 - [pac_man](../tree/main/content/games/arcade/pac_man) (arcade)
 - [snake](../tree/main/content/games/arcade/snake) (arcade)
 - [space_invaders](../tree/main/content/games/arcade/space_invaders) (arcade)
@@ -2937,6 +2936,7 @@ end
 - [raycaster_fps](../tree/main/content/games/retro/raycaster_fps) (retro)
 - [shadow_beast](../tree/main/content/games/retro/shadow_beast) (retro)
 - [turrican](../tree/main/content/games/retro/turrican) (retro)
+- [adventure](../tree/main/content/games/rpg/adventure) (rpg)
 
 [⬆ back to top](#table-of-contents)
 

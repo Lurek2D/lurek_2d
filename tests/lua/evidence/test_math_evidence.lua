@@ -1,5 +1,21 @@
 -- test_math_evidence.lua
 -- Clean evidence suite for lurek.math with PNG-only outputs.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.math.applyEasing
+-- @covers lurek.math.bresenham
+-- @covers lurek.math.clamp
+-- @covers lurek.math.distance
+-- @covers lurek.math.fbm
+-- @covers lurek.math.hslToRgb
+-- @covers lurek.math.perlin2d
+-- @covers lurek.math.pointInPolygon
+-- @covers lurek.math.polygonArea
+-- @covers lurek.math.polygonCentroid
+-- @covers lurek.math.segmentIntersectsSegment
+-- @covers lurek.math.simplex2d
+-- @covers lurek.math.vec2
+
 
 local OUT = "tests/output/math/"
 

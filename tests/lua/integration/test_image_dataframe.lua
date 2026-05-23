@@ -1,5 +1,8 @@
 -- Integration: image pixel data analyzed via dataframe columns
 -- @describe image + dataframe integration
+-- @covers lurek.dataframe.newDataFrame
+-- @covers lurek.image.newImageData
+
 describe("image + dataframe integration", function()
     -- @integration LDataFrame:addColumn
     -- @integration LDataFrame:addRow

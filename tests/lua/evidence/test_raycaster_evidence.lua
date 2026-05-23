@@ -4,6 +4,12 @@
 -- The raycaster casts rays through a 2D grid and returns hit data.
 -- Tests verify correctness of ray geometry and render results to a PNG
 -- "depth buffer" image so the output can be visually inspected.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.raycaster.distanceShade
+-- @covers lurek.raycaster.new
+-- @covers lurek.raycaster.projectColumn
+
 
 local OUT = "tests/output/raycaster/"
 

@@ -7449,7 +7449,7 @@ end
 - [asteroids](../tree/main/content/games/arcade/asteroids) (arcade)
 - [centipede](../tree/main/content/games/arcade/centipede) (arcade)
 - [donkey_kong](../tree/main/content/games/arcade/donkey_kong) (arcade)
-- [frogger](../tree/main/content/games/arcade/frogger) (arcade)
+- [dyna_blaster](../tree/main/content/games/arcade/dyna_blaster) (arcade)
 
 [⬆ back to top](#table-of-contents)
 

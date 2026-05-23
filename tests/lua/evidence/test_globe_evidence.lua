@@ -2,6 +2,12 @@
 -- Evidence tests: lurek.globe API
 -- Produces exactly 5 high-quality PNG artifacts proving globe rendering,
 -- projections, route paths, and political/terminator overlays.
+-- @covers lurek.globe.greatCirclePath
+-- @covers lurek.globe.new
+-- @covers lurek.globe.remove
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = "tests/output/globe/"
 

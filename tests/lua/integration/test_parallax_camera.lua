@@ -1,4 +1,9 @@
 -- Integration: camera position driving parallax layer rendering
+-- @covers lurek.camera.new
+-- @covers lurek.parallax.newLayer
+-- @covers lurek.parallax.newSet
+-- @covers lurek.render.newImage
+
 
 local function load_image()
     return lurek.render.newImage("assets/icon.png")

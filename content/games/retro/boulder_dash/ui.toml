@@ -1,21 +1,21 @@
 [root]
 widget_type = "panel"
 id = "root_ui"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0]
 
   [[root.children]]
   widget_type = "panel"
   id = "title_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "BOULDER DASH"
-    font_size = 48
+    font_size = 30
     color = [0.7, 0.5, 0.2, 1]
     anchor = "top_center"
     y = 180
@@ -32,7 +32,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "title_press_start"
     text = "PRESS ENTER"
-    font_size = 22
+    font_size = 20
     color = [1, 1, 1, 1]
     anchor = "top_center"
     y = 350
@@ -40,7 +40,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "Arrow keys to move | Collect diamonds | Avoid boulders"
-    font_size = 14
+    font_size = 12
     color = [0.5, 0.5, 0.4, 1]
     anchor = "top_center"
     y = 430
@@ -48,8 +48,8 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "hud_screen"
-  width = 800
-  height = 28
+  w = 800
+  h = 28
   bg_color = [0, 0, 0, 0.7]
   visible = false
 
@@ -101,8 +101,8 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "level_complete_screen"
-  width = 500
-  height = 120
+  w = 500
+  h = 120
   bg_color = [0, 0, 0, 0.85]
   anchor = "center"
   y = -50
@@ -112,7 +112,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "lc_title"
     text = "LEVEL COMPLETE!"
-    font_size = 32
+    font_size = 30
     color = [0.2, 1.0, 0.3, 1]
     anchor = "top_center"
     y = 20
@@ -121,7 +121,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "lc_subtitle"
     text = "Press ENTER for next level"
-    font_size = 18
+    font_size = 16
     color = [0.8, 0.8, 0.8, 1]
     anchor = "top_center"
     y = 70
@@ -129,15 +129,15 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "game_over_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0, 0, 0, 0]
 
     [[root.children.children]]
     widget_type = "label"
     text = "GAME OVER"
-    font_size = 48
+    font_size = 30
     color = [0.9, 0.2, 0.1, 1]
     anchor = "top_center"
     y = 200
@@ -146,7 +146,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "go_level"
     text = ""
-    font_size = 22
+    font_size = 20
     color = [0.7, 0.7, 0.6, 1]
     anchor = "top_center"
     y = 270
@@ -155,7 +155,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "go_diamonds"
     text = ""
-    font_size = 18
+    font_size = 16
     color = [0, 0.8, 1, 1]
     anchor = "top_center"
     y = 310
@@ -164,7 +164,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "go_press_start"
     text = "PRESS ENTER"
-    font_size = 22
+    font_size = 20
     color = [1, 1, 1, 1]
     anchor = "top_center"
     y = 400
@@ -172,8 +172,8 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "death_flash_panel"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   bg_color = [1, 0, 0, 0]
   visible = false
 

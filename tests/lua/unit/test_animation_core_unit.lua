@@ -1307,4 +1307,57 @@ end)
     end)
 end)
 
+-- @describe animation migrated from rust
+describe("animation migrated from rust", function()
+    -- @covers LAnimation:addClip
+    -- @covers LAnimation:addFrame
+    -- @covers LAnimation:getCurrentFrame
+    -- @covers LAnimation:play
+    -- @covers LAnimation:update
+    it("pingpong clip bounces between ends", function()
+        local anim = lurek.animation.new()
+        anim:addFrame(0, 0, 16, 16)
+        anim:addFrame(16, 0, 16, 16)
+        anim:addFrame(32, 0, 16, 16)
+        anim:addClip("walk", {0, 1, 2}, 10.0, true, "pingpong")
+        
+        expect_true(anim:play("walk"))
+
+        anim:update(0.11)
+        expect_equal(1, anim:getCurrentFrame())
+        anim:update(0.11)
+        expect_equal(2, anim:getCurrentFrame())
+        anim:update(0.11)
+        expect_equal(1, anim:getCurrentFrame())
+        anim:update(0.11)
+        expect_equal(0, anim:getCurrentFrame())
+    end)
+
+    -- @covers LAnimStateMachine:addState
+    -- @covers LAnimStateMachine:addTransition
+    -- @covers LAnimStateMachine:getState
+    -- @covers LAnimStateMachine:setParam
+    -- @covers LAnimStateMachine:update
+    it("update can apply multi hop transition chain", function()
+        local anim = lurek.animation.new()
+        anim:addFrame(0, 0, 16, 16)
+        anim:addFrame(16, 0, 16, 16)
+        anim:addFrame(32, 0, 16, 16)
+        anim:addClip("idle", {0}, 8.0, true)
+        anim:addClip("walk", {1}, 8.0, true)
+        anim:addClip("run", {2}, 8.0, true)
+
+        local sm = lurek.animation.newStateMachine(anim, "idle")
+        sm:addState("idle", "idle", true)
+        sm:addState("walk", "walk", true)
+        sm:addState("run", "run", true)
+        sm:addTransition("idle", "walk", "speed > 0.1")
+        sm:addTransition("walk", "run", "speed > 0.8")
+        sm:setParam("speed", 1.0)
+
+        sm:update(0.016)
+        expect_equal("run", sm:getState())
+    end)
+end)
+
 test_summary()

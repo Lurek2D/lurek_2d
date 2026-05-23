@@ -2,6 +2,9 @@
 
 -- Vec3 heuristic applied to pathfinding costs
 -- @describe vec3 + pathfinding heuristic integration
+-- @covers lurek.math.vec3
+-- @covers lurek.pathfind.newJpsGrid
+
 describe("vec3 + pathfinding heuristic integration", function()
 
     -- @integration LJpsGrid:findPath

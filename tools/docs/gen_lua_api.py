@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-gen_lua_api.py â€” Lurek2D Lua API parser library.
+"""gen_lua_api.py â€” Lurek2D Lua API parser library.
 
 Parses src/lua_api/*.rs files and extracts all registered Lua functions and
 userdata methods by scanning for .set() and add_method() patterns, associating
@@ -17,6 +16,12 @@ Key exports:
     collect_class_descriptions(api_file) -> Dict[str, str]
     extract_lua_functions(api_file) -> List[LuaFunction]
     LuaFunction (dataclass)
+
+Usage:
+```
+Usage:
+    python tools/docs/gen_lua_api.py
+```
 """
 import json
 import re

@@ -2,6 +2,14 @@
 -- Produces PNG artifacts for each chart type (line, bar, scatter, pie, area).
 
 -- @describe evidence: charts
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.ui.newAreaChart
+-- @covers lurek.ui.newBarChart
+-- @covers lurek.ui.newLineChart
+-- @covers lurek.ui.newPieChart
+-- @covers lurek.ui.newScatterPlot
+
 describe("evidence: charts", function()
     before_each(function()
         ensure_evidence_dir("charts")

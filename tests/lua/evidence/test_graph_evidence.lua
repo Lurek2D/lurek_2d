@@ -1,5 +1,7 @@
 -- Evidence tests: graph module
 -- Output-only evidence from direct lurek.graph API calls.
+-- @covers lurek.graph.newGraph
+
 
 local function write_text(path, text)
     local f = io and io.open and io.open(path, "w") or nil

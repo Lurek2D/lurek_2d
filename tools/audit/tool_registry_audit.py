@@ -93,8 +93,19 @@ def extract_readme_scripts(readme_path: Path) -> set[str]:
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/tool_registry_audit.py
+
+  # Show all arguments
+  python tools/audit/tool_registry_audit.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Audit the tools registry for internal consistency."
+        description="Audit the tools registry for internal consistency.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--format", choices=["text", "json"], default="text")

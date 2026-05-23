@@ -161,8 +161,19 @@ def generate_report(
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/integration_coverage.py
+
+  # Show all arguments
+  python tools/audit/integration_coverage.py --help
+"""
     parser = argparse.ArgumentParser(
         description="Lurek2D integration test coverage analysis",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--output", metavar="FILE")

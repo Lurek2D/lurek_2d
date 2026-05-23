@@ -33,6 +33,36 @@ Safe auto-fixes provided by --fix:
 
 This tool deliberately does NOT auto-generate missing descriptions. Those must
 be written by hand.
+
+Usage:
+```
+usage: lua_test_structure_audit.py [-h] [--path PATH] [--fix]
+                                   [--allow-legacy-describe-markers]
+                                   [--validate-cover-symbols] [--json]
+
+Audit and optionally fix Lua BDD test structure.
+
+options:
+  -h, --help            show this help message and exit
+  --path PATH           File or directory to audit relative to repo root.
+  --fix                 Apply safe structural fixes (category markers,
+                        description colon form, test_summary placement).
+  --allow-legacy-describe-markers
+                        Temporarily relax the default rule that describe()
+                        docstring blocks may contain only @describe.
+  --validate-cover-symbols
+                        Enable strict per-symbol @covers validation for unit
+                        tests only (may report false positives on dynamic
+                        calls).
+  --json                Print findings as JSON.
+
+Examples:
+  # Default execution
+  python tools/audit/lua_test_structure_audit.py
+
+  # Show all arguments
+  python tools/audit/lua_test_structure_audit.py --help
+```
 """
 
 from __future__ import annotations
@@ -843,7 +873,20 @@ def print_human(findings: List[Finding]) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit and optionally fix Lua BDD test structure.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/lua_test_structure_audit.py
+
+  # Show all arguments
+  python tools/audit/lua_test_structure_audit.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Audit and optionally fix Lua BDD test structure.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--path", help="File or directory to audit relative to repo root.")
     parser.add_argument("--fix", action="store_true", help="Apply safe structural fixes (category markers, description colon form, test_summary placement).")
     parser.add_argument("--allow-legacy-describe-markers", action="store_true", help="Temporarily relax the default rule that describe() docstring blocks may contain only @describe.")

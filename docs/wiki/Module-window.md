@@ -1725,11 +1725,11 @@ end
 - [soulslike](../tree/main/content/games/action/soulslike) (action)
 - [stealth](../tree/main/content/games/action/stealth) (action)
 - [vertical_climber](../tree/main/content/games/action/vertical_climber) (action)
+- [household_finance_lab](../tree/main/content/games/apps/household_finance_lab) (apps)
 - [asteroids](../tree/main/content/games/arcade/asteroids) (arcade)
 - [centipede](../tree/main/content/games/arcade/centipede) (arcade)
 - [donkey_kong](../tree/main/content/games/arcade/donkey_kong) (arcade)
-- [frogger](../tree/main/content/games/arcade/frogger) (arcade)
-- [galaga](../tree/main/content/games/arcade/galaga) (arcade)
+- [dyna_blaster](../tree/main/content/games/arcade/dyna_blaster) (arcade)
 
 [⬆ back to top](#table-of-contents)
 

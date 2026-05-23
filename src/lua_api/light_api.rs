@@ -1519,6 +1519,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(tbl)
         })?,
     )?;
+    let s = state.clone();
+    // -- drawToImage --
+    /// Renders an approximate light-map preview of this world into an ImageData.
+    /// @param | width | integer | Image width.
+    /// @param | height | integer | Image height.
+    /// @return | LImageData | Rendered light map.
+    tbl.set(
+        "drawToImage",
+        lua.create_function(move |lua, (width, height): (u32, u32)| {
+            let img = s.borrow().light_world.draw_to_image(width, height);
+            lua.create_userdata(img)
+        })?,
+    )?;
     /// Performs the 'light' operation.
     lurek.set("light", tbl)?;
     Ok(())

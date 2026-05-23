@@ -837,6 +837,19 @@ describe("Camera2D constraint + easing extensions", function()
         expect_near(2.0, maxz, 0.001)
     end)
 
+    -- @covers LCamera:getZoom
+    -- @covers LCamera:setZoom
+    -- @covers LCamera:setZoomConstraints
+    -- @covers LCamera:update
+    -- @covers lurek.camera.new
+    it("zoom constraints clamp zoom on update", function()
+        local cam = lurek.camera.new(320, 240)
+        cam:setZoomConstraints(0.5, 3.0)
+        cam:setZoom(5.0)
+        cam:update(0.016)
+        expect_true(cam:getZoom() <= 3.0)
+    end)
+
     -- @covers LCamera:setFollowEasing
     -- @covers LCamera:getFollowEasing
     -- @covers lurek.camera.new
@@ -1107,6 +1120,20 @@ describe("Camera2D accessor completeness", function()
         expect_true(has_max)
         expect_near(-0.5, min_r, 0.001)
         expect_near(0.5, max_r, 0.001)
+    end)
+
+    -- @covers LCamera:getRotation
+    -- @covers LCamera:setRotation
+    -- @covers LCamera:setRotationConstraints
+    -- @covers LCamera:update
+    -- @covers lurek.camera.new
+    it("rotation constraints clamp rotation on update", function()
+        local cam = lurek.camera.new(320, 240)
+        cam:setRotationConstraints(0.0, math.pi)
+        cam:setRotation(math.pi * 2.0)
+        cam:update(0.016)
+        local rot = cam:getRotation()
+        expect_true(rot <= math.pi + 0.001)
     end)
 end)
 

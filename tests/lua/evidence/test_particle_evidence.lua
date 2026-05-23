@@ -1,5 +1,10 @@
 -- Evidence tests: particle module
 -- Artifacts are generated via lurek.particle APIs (toImage/drawToImage).
+-- @covers lurek.image.savePNG
+-- @covers lurek.particle.newSystem
+-- @covers lurek.particle.newTrail
+-- @covers lurek.particle.release
+
 
 local OUT = "tests/output/particle/"
 

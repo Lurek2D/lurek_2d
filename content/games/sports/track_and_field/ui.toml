@@ -2,15 +2,15 @@
 type = "panel"
 id = "title_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 bg_color = [0.12, 0.12, 0.15, 1]
 
   [[widget.children]]
   type = "label"
   text = "TRACK & FIELD"
-  font_size = 36
+  font_size = 30
   color = [1.0, 0.84, 0.0, 1]
   anchor = "top_center"
   y = 160
@@ -44,15 +44,15 @@ bg_color = [0.12, 0.12, 0.15, 1]
 type = "panel"
 id = "final_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 bg_color = [0.12, 0.12, 0.15, 1]
 
   [[widget.children]]
   type = "label"
   text = "FINAL RESULTS"
-  font_size = 28
+  font_size = 30
   color = [1.0, 0.84, 0.0, 1]
   anchor = "top_center"
   y = 40
@@ -61,8 +61,8 @@ bg_color = [0.12, 0.12, 0.15, 1]
   type = "panel"
   id = "final_rows"
   anchor = "top_center"
-  width = 600
-  height = 200
+  w = 600
+  h = 200
   y = 110
 
   [[widget.children]]
@@ -114,8 +114,8 @@ bg_color = [0.12, 0.12, 0.15, 1]
 type = "panel"
 id = "intro_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 bg_color = [0, 0, 0, 0.6]
 
@@ -132,7 +132,7 @@ bg_color = [0, 0, 0, 0.6]
   type = "label"
   id = "intro_event_name"
   text = ""
-  font_size = 32
+  font_size = 30
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 250
@@ -141,7 +141,7 @@ bg_color = [0, 0, 0, 0.6]
   type = "label"
   id = "intro_countdown"
   text = ""
-  font_size = 48
+  font_size = 30
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 320
@@ -150,8 +150,8 @@ bg_color = [0, 0, 0, 0.6]
 type = "panel"
 id = "result_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 bg_color = [0, 0, 0, 0.5]
 
@@ -168,7 +168,7 @@ bg_color = [0, 0, 0, 0.5]
   type = "label"
   id = "result_medal"
   text = ""
-  font_size = 32
+  font_size = 30
   color = [1, 1, 1, 1]
   anchor = "top_center"
   y = 210
@@ -195,8 +195,8 @@ bg_color = [0, 0, 0, 0.5]
 type = "panel"
 id = "hud_screen"
 anchor = "top_left"
-width = 800
-height = 50
+w = 800
+h = 50
 visible = false
 bg_color = [0.08, 0.08, 0.10, 0.85]
 
@@ -211,8 +211,8 @@ bg_color = [0.08, 0.08, 0.10, 0.85]
 
   [[widget.children]]
   type = "panel"
-  width = 120
-  height = 14
+  w = 120
+  h = 14
   bg_color = [0.3, 0.3, 0.3, 1]
   x = 200
   y = 10
@@ -220,22 +220,22 @@ bg_color = [0.08, 0.08, 0.10, 0.85]
     [[widget.children.children]]
     type = "panel"
     id = "speed_bar_fill"
-    width = 0
-    height = 14
+    w = 0
+    h = 14
     bg_color = [1, 1, 0.2, 1]
 
   [[widget.children]]
   type = "label"
   text = "Speed"
-  font_size = 14
+  font_size = 12
   color = [1, 1, 1, 1]
   x = 200
   y = 26
 
   [[widget.children]]
   type = "panel"
-  width = 120
-  height = 8
+  w = 120
+  h = 8
   bg_color = [0.3, 0.3, 0.3, 1]
   x = 200
   y = 32
@@ -243,15 +243,15 @@ bg_color = [0.08, 0.08, 0.10, 0.85]
     [[widget.children.children]]
     type = "panel"
     id = "stamina_bar_fill"
-    width = 120
-    height = 8
+    w = 120
+    h = 8
     bg_color = [0.2, 0.7, 0.9, 1]
 
   [[widget.children]]
   type = "label"
   id = "hud_info_1"
   text = ""
-  font_size = 14
+  font_size = 12
   color = [1, 1, 1, 1]
   x = 350
   y = 10
@@ -260,7 +260,7 @@ bg_color = [0.08, 0.08, 0.10, 0.85]
   type = "label"
   id = "hud_info_2"
   text = ""
-  font_size = 14
+  font_size = 12
   color = [1, 1, 1, 1]
   x = 350
   y = 28
@@ -269,7 +269,7 @@ bg_color = [0.08, 0.08, 0.10, 0.85]
   type = "label"
   id = "hud_info_3"
   text = ""
-  font_size = 14
+  font_size = 12
   color = [0.7, 0.7, 0.9, 1]
   x = 550
   y = 10
@@ -278,7 +278,7 @@ bg_color = [0.08, 0.08, 0.10, 0.85]
   type = "label"
   id = "hud_medals"
   text = ""
-  font_size = 14
+  font_size = 12
   color = [1, 1, 1, 1]
   anchor = "top_right"
   x = -200
@@ -288,8 +288,8 @@ bg_color = [0.08, 0.08, 0.10, 0.85]
 type = "panel"
 id = "fps_container"
 anchor = "bottom_right"
-width = 100
-height = 20
+w = 100
+h = 20
 visible = true
 
   [[widget.children]]

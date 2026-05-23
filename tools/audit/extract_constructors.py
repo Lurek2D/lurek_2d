@@ -1,4 +1,11 @@
-"""Extract all lurek.module.function signatures from docs/api/lurek.lua"""
+"""Extract all lurek.module.function signatures from docs/api/lurek.lua
+
+Usage:
+```
+Usage:
+    python tools/audit/extract_constructors.py
+```
+"""
 import re, os
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..'))

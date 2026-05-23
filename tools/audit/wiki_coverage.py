@@ -102,8 +102,19 @@ def discover_wiki_pages() -> dict[str, Path]:
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/wiki_coverage.py
+
+  # Show all arguments
+  python tools/audit/wiki_coverage.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Audit wiki page coverage against engine modules."
+        description="Audit wiki page coverage against engine modules.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--strict", action="store_true",
                         help="Treat warnings as errors")

@@ -501,7 +501,20 @@ def generate_report(rust_data: dict, lua_data: dict) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate Lurek2D API coverage gap report.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/gen_coverage_gaps.py
+
+  # Show all arguments
+  python tools/audit/gen_coverage_gaps.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Generate Lurek2D API coverage gap report.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--rust-input", default=str(RUST_INPUT))
     parser.add_argument("--lua-input", default=str(LUA_INPUT))
     parser.add_argument("--output", default=str(OUTPUT_FILE))

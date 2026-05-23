@@ -1,8 +1,8 @@
 [root]
 widget_type = "panel"
 id = "root_ui"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0]
 
   [[root.children]]
@@ -10,8 +10,8 @@ bg_color = [0, 0, 0, 0]
   id = "title_panel"
   x = 0
   y = 0
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = true
   bg_color = [0.0, 0.0, 0.0, 0.6]
 
@@ -52,8 +52,8 @@ bg_color = [0, 0, 0, 0]
   id = "hud_panel"
   x = 0
   y = 0
-  width = 800
-  height = 24
+  w = 800
+  h = 24
   visible = false
   bg_color = [0.0, 0.0, 0.0, 0.6]
 
@@ -111,8 +111,8 @@ bg_color = [0, 0, 0, 0]
   id = "halftime_panel"
   x = 0
   y = 0
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0.0, 0.0, 0.0, 0.7]
 
@@ -137,8 +137,8 @@ bg_color = [0, 0, 0, 0]
   id = "fulltime_panel"
   x = 0
   y = 0
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
   bg_color = [0.0, 0.0, 0.0, 0.75]
 

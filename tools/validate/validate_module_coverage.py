@@ -24,7 +24,20 @@ SPECS = ROOT / "docs" / "specs"
 SPECS_README = SPECS / "README.md"
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate merged module spec coverage")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/validate/validate_module_coverage.py
+
+  # Show all arguments
+  python tools/validate/validate_module_coverage.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Validate merged module spec coverage",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--fix-readme", action="store_true",
                         help="Rewrite docs/specs/README.md to match actual src/ modules")
     args = parser.parse_args()

@@ -1,5 +1,9 @@
 -- Integration: AI FSM + ECS universe + scene (3-way)
 -- @describe ai + entity + scene integration
+-- @covers lurek.ai.newStateMachine
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.scene.newScene
+
 describe("ai + entity + scene integration", function()
     -- @integration LStateMachine:addState
     -- @integration LStateMachine:addTransition

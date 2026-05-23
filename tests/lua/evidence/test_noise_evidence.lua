@@ -1,5 +1,9 @@
 -- Evidence tests: noise module
 -- Output-only evidence from direct lurek.math noise APIs.
+-- @covers lurek.math.newNoiseGenerator
+-- @covers lurek.math.perlin2d
+-- @covers lurek.math.simplex2d
+
 
 local function write_text(path, text)
     local f = io and io.open and io.open(path, "w") or nil

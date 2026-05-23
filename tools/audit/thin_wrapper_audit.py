@@ -11,6 +11,21 @@ instead. The classifier flags:
 * `std::collections::*` imports (HashMap, BTreeMap, HashSet, VecDeque).
 
 Exit code: 0 if no VIOLATION, 1 otherwise.
+
+Usage:
+```
+usage: thin_wrapper_audit.py [-h] [--root ROOT] [--scope SCOPE]
+                             [--format {text,json}] [--output OUTPUT]
+
+thin_wrapper_audit.py â€” Enforce TST-03 (thin wrappers in src/lua_api/).
+
+options:
+  -h, --help            show this help message and exit
+  --root ROOT
+  --scope SCOPE         Restrict to one lua_api/<scope>_api.rs file.
+  --format {text,json}
+  --output OUTPUT       Optional JSON output path.
+```
 """
 
 from __future__ import annotations

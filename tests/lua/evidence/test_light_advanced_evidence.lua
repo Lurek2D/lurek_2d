@@ -2,6 +2,13 @@
 -- Evidence tests: advanced lurek.light scenarios
 -- Covers exactly 5 high-quality unique evidence files:
 -- light_falloff.png, light_cone_spotlight.png, light_shadow_occlusion.png, light_normal_map.png, light_color_mix.png
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.light.clear
+-- @covers lurek.light.newLight
+-- @covers lurek.light.newOccluder
+-- @covers lurek.light.setAmbient
+
 
 local OUT = "tests/output/light_advanced/"
 

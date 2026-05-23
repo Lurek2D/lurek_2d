@@ -145,7 +145,7 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/light.md](../blob/main/docs/specs/light.md)
-- Module-level functions: 19
+- Module-level functions: 20
 - Lua-visible types: 2
 - Total type methods: 79
 
@@ -211,6 +211,83 @@ do
     lurek.light.clear()
     print("after clear: lights = " .. lurek.light.getLightCount())
 end
+```
+
+#### lurek.light.drawToImage
+
+#### Definition
+
+```lua
+--- Renders an approximate light-map preview of this world into an ImageData.
+---@param width number Image width.
+---@param height number Image height.
+---@return LImageData Rendered light map.
+lurek.light.drawToImage = function(width, height) end
+```
+
+#### Description
+
+Renders an approximate light-map preview of this world into an ImageData.
+
+Parameters:
+
+- `width` (`integer`, required): Image width.
+- `height` (`integer`, required): Image height.
+
+Returns: `LImageData` - Rendered light map.
+
+#### Example
+
+Source: [light.lua](../blob/main/content/examples/light.lua)
+
+```lua
+--- Light Module Part 1: module functions and LLight class
+
+
+--@api-stub: lurek.light.newLight
+do
+    local light = lurek.light.newLight(400, 300, 200)
+    print("radius = " .. light:getRadius())
+end
+
+--@api-stub: lurek.light.setEnabled
+do
+    lurek.light.setEnabled(true)
+    print("light world enabled = " .. tostring(lurek.light.isEnabled()))
+end
+
+--@api-stub: lurek.light.setAmbient
+do
+    lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
+    local r, g, b, a = lurek.light.getAmbient()
+    print("ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+
+--@api-stub: lurek.light.getLightCount
+do
+    lurek.light.clear()
+    lurek.light.newLight(0, 0, 100)
+    lurek.light.newLight(50, 50, 80)
+    print("lights = " .. lurek.light.getLightCount())
+end
+
+--@api-stub: lurek.light.getMaxLights
+do
+    lurek.light.setMaxLights(128)
+    print("max lights = " .. lurek.light.getMaxLights())
+end
+
+--@api-stub: lurek.light.clear
+do
+    lurek.light.newLight(0, 0, 50)
+    lurek.light.clear()
+    print("after clear: lights = " .. lurek.light.getLightCount())
+end
+
+--@api-stub: lurek.light.advanceFlickers
+do
+    local light = lurek.light.newLight(200, 200, 100)
+    light:addFlicker(0.5, 1.0, 4.0)
 ```
 
 #### lurek.light.getAmbient

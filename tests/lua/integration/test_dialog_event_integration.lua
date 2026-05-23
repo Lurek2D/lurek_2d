@@ -3,6 +3,8 @@
 -- Verifies that dialog events ("line", "choice", "finished") can be forwarded
 -- through lurek.event.newSignal() so external observers receive them via the
 -- engine-level pub/sub primitive.
+-- @covers lurek.event.newSignal
+
 
 local dialog = require("library.dialog")
 

@@ -1,21 +1,21 @@
 [root]
 widget_type = "panel"
 id = "root_ui"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0]
 
   [[root.children]]
   widget_type = "panel"
   id = "title_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "COMMANDO"
-    font_size = 32
+    font_size = 30
     color = [0.2, 0.8, 0.15, 1]
     anchor = "center"
     y = -60
@@ -32,7 +32,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "WASD - Move   SPACE - Fire   G - Grenade"
-    font_size = 14
+    font_size = 12
     color = [0.6, 0.6, 0.5, 1]
     anchor = "center"
     y = 50
@@ -40,7 +40,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "Rescue POWs for bonus points!"
-    font_size = 14
+    font_size = 12
     color = [0.6, 0.6, 0.5, 1]
     anchor = "center"
     y = 75
@@ -48,14 +48,14 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "game_over_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "label"
     text = "GAME OVER"
-    font_size = 32
+    font_size = 30
     color = [1, 0.2, 0.15, 1]
     anchor = "center"
     y = -40
@@ -90,15 +90,15 @@ bg_color = [0, 0, 0, 0]
   [[root.children]]
   widget_type = "panel"
   id = "hud_screen"
-  width = 800
-  height = 600
+  w = 800
+  h = 600
   visible = false
 
     [[root.children.children]]
     widget_type = "panel"
     id = "hud_top_bar"
-    width = 800
-    height = 24
+    w = 800
+    h = 24
     bg_color = [0, 0, 0, 0.5]
 
       [[root.children.children.children]]

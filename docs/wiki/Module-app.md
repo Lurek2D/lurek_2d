@@ -41,9 +41,9 @@ The `app` module serves as the primary application lifecycle controller and inte
 
 During active execution, `LurekApp` drives the engine's frame lifecycle. Each frame, it advances the core `Clock` timing, polls hardware inputs (including keyboard, mouse, touch, and `gilrs`-driven gamepads), steps the physics simulation, and dispatches events to the active Lua environment via structured callbacks such as `load`, `update`, `draw`, and `keypressed`. The module implements safety boundaries around script execution using `lua_callbacks` wrappers, ensuring that unhandled Lua panics are caught and long-running scripts can be aborted via instruction-count timeouts before they freeze the application.
 
-Beyond the main loop, the `app` module owns several critical user-facing and developer-experience systems. When a fatal Lua error or unrecoverable engine fault occurs, the `ErrorScreen` subsystem intercepts the crash and replaces the game view with a structured diagnostic overlay. This screen cleanly formats error messages and stack traces, provides syntax-highlighted context, and supports one-click clipboard exports to aid rapid debugging. During startup, the `splash_screen` component decodes embedded branding assets and presents them while the engine waits for initial assets to load or prompts for a drag-and-drop game folder. For performance monitoring, the `DebugOverlay` subsystem renders a lightweight, configurable heads-up display showing current framerate, memory usage, and draw-call counts, while the `frame_profile` system logs detailed per-phase execution timings to the console.
+Beyond the main loop, the `app` module owns several critical user-facing and developer-experience systems. When a fatal Lua error or unrecoverable engine fault occurs, the `ErrorScreen` subsystem intercepts the crash and replaces the game view with a structured diagnostic overlay. This screen cleanly formats error messages and stack traces, provides syntax-highlighted context, and supports one-click clipboard exports to aid rapid debugging. Fatal-screen text now prefers the active/configured runtime font set, and only falls back to internal embedded fonts when runtime fonts are unavailable. During startup, the `splash_screen` component decodes embedded branding assets and presents them while the engine waits for initial assets to load or prompts for a drag-and-drop game folder. For performance monitoring, the `DebugOverlay` subsystem renders a lightweight, configurable heads-up display showing current framerate, memory usage, and draw-call counts, while the `frame_profile` system logs detailed per-phase execution timings to the console.
 
-Additionally, `app` seamlessly manages development workflows with built-in hot-reload capabilities. By integrating filesystem watchers, it detects changes to `conf.toml`, Lua scripts, and asset files, automatically restarting the execution context to instantly reflect modifications without requiring a manual reboot. By desig
+Additionally, `app` seamlessly manages development workflows with built-in hot-reload capabilities. By integrating filesystem watchers, it detects changes to `conf.toml`, Lu
 
 [⬆ back to top](#table-of-contents)
 
@@ -56,6 +56,7 @@ Additionally, `app` seamlessly manages development workflows with built-in hot-r
 - Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
 - Handles window events (keyboard, mouse, touch, gamepad, drag-drop, resize, focus).
 - Provides splash-screen and error-screen rendering paths when no game is loaded or a fatal occurs.
+- Renders fatal-screen text with runtime active/default fonts when available, with embedded-font fallback.
 - Owns hot-reload watchers for conf.toml, Lua scripts, and asset files with automatic restart.
 - Integrates gilrs for gamepad polling, force-feedback vibration, and axis/button callbacks.
 - Performs viewport letterbox/stretch/pixel scaling and automatic screenshot capture.

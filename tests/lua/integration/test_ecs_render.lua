@@ -1,5 +1,9 @@
 -- Integration: ECS entity positions used as draw coordinates
 -- @describe integration: entity position drives draw coordinates
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.render.rectangle
+-- @covers lurek.render.setColor
+
 describe("integration: entity position drives draw coordinates", function()
     -- @integration LUniverse:get
     -- @integration LUniverse:set

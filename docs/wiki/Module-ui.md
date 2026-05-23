@@ -271,7 +271,7 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/ui.md](../blob/main/docs/specs/ui.md)
-- Module-level functions: 82
+- Module-level functions: 83
 - Lua-visible types: 41
 - Total type methods: 338
 
@@ -807,7 +807,9 @@ end
 ```lua
 --- Returns the value of a named semantic style token from the active theme.
 ---@param name string The token name (e.g. "spacing_md", "color_primary").
----@return any The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+---@return number The token value for float tokens.
+---@overload fun(name: string): table # The token value as a table with r/g/b/a fields for color tokens.
+---@overload fun(name: string): nil # Nil when the token is not registered.
 lurek.ui.getStyleToken = function(name) end
 ```
 
@@ -819,7 +821,7 @@ Parameters:
 
 - `name` (`string`, required): The token name (e.g. "spacing_md", "color_primary").
 
-Returns: `any` - The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+Returns: `number` - The token value for float tokens.
 
 #### Example
 
@@ -1063,6 +1065,40 @@ do
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
     lurek.ui.textinput("a")
     print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
+end
+```
+
+#### lurek.ui.loadLayoutGameFile
+
+#### Definition
+
+```lua
+--- Loads a UI layout from a TOML file resolved through GameFS.
+---@param path string GameFS path to the TOML layout file.
+---@return number The root widget index.
+lurek.ui.loadLayoutGameFile = function(path) end
+```
+
+#### Description
+
+Loads a UI layout from a TOML file resolved through GameFS.
+
+Parameters:
+
+- `path` (`string`, required): GameFS path to the TOML layout file.
+
+Returns: `integer` - The root widget index.
+
+#### Example
+
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
+
+```lua
+do
+    local ok, result = pcall(function()
+        return lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+    end)
+    print("loadLayoutGameFile ok:", ok, "result:", tostring(result))
 end
 ```
 
@@ -14804,7 +14840,26 @@ end
 
 ## 🎮 Reference Games
 
+- [brick_breaker](../tree/main/content/games/action/brick_breaker) (action)
+- [bullet_hell](../tree/main/content/games/action/bullet_hell) (action)
+- [cannon_fodder](../tree/main/content/games/action/cannon_fodder) (action)
+- [endless_runner](../tree/main/content/games/action/endless_runner) (action)
+- [fighting_game](../tree/main/content/games/action/fighting_game) (action)
+- [horde_survivor](../tree/main/content/games/action/horde_survivor) (action)
+- [infiltration](../tree/main/content/games/action/infiltration) (action)
+- [metroidvania](../tree/main/content/games/action/metroidvania) (action)
+- [platform_fighter](../tree/main/content/games/action/platform_fighter) (action)
+- [platformer](../tree/main/content/games/action/platformer) (action)
+- [roguelite](../tree/main/content/games/action/roguelite) (action)
+- [sniper](../tree/main/content/games/action/sniper) (action)
+- [soulslike](../tree/main/content/games/action/soulslike) (action)
+- [stealth](../tree/main/content/games/action/stealth) (action)
+- [vertical_climber](../tree/main/content/games/action/vertical_climber) (action)
 - [household_finance_lab](../tree/main/content/games/apps/household_finance_lab) (apps)
+- [asteroids](../tree/main/content/games/arcade/asteroids) (arcade)
+- [centipede](../tree/main/content/games/arcade/centipede) (arcade)
+- [donkey_kong](../tree/main/content/games/arcade/donkey_kong) (arcade)
+- [dyna_blaster](../tree/main/content/games/arcade/dyna_blaster) (arcade)
 
 [⬆ back to top](#table-of-contents)
 

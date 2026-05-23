@@ -1,5 +1,27 @@
 -- test_light_evidence.lua
 -- Evidence test: lurek.light API + PNG visualisations
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.light.advanceFlickers
+-- @covers lurek.light.clear
+-- @covers lurek.light.getAmbient
+-- @covers lurek.light.getGodRayHints
+-- @covers lurek.light.getGroupCount
+-- @covers lurek.light.getLightCount
+-- @covers lurek.light.getMaxLights
+-- @covers lurek.light.getNormalMapHints
+-- @covers lurek.light.getOccluderCount
+-- @covers lurek.light.isEnabled
+-- @covers lurek.light.newLight
+-- @covers lurek.light.newOccluder
+-- @covers lurek.light.setAmbient
+-- @covers lurek.light.setEnabled
+-- @covers lurek.light.setGroupColor
+-- @covers lurek.light.setGroupEnabled
+-- @covers lurek.light.setGroupIntensity
+-- @covers lurek.light.setMaxLights
+-- @covers lurek.light.syncAmbient
+-- @covers lurek.light.drawToImage
 
 local OUT = "tests/output/light/"
 
@@ -17,29 +39,11 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.setAmbient(0.08, 0.08, 0.10, 1.0)
 
         local W, H = 160, 160
-        local img = lurek.image.newImageData(W, H)
-
         local light = lurek.light.newLight(80, 80, 70)
         light:setColor(1.0, 0.78, 0.26, 1.0)
         light:setIntensity(1.15)
 
-        local lx, ly = light:getPosition()
-        local lr = light:getRadius()
-        local cr, cg, cb = light:getColor()
-        local intensity = light:getIntensity()
-
-        for y = 0, H - 1 do
-            for x = 0, W - 1 do
-                local dx = x - lx
-                local dy = y - ly
-                local dist = math.sqrt(dx * dx + dy * dy)
-                local att = math.max(0.0, 1.0 - dist / lr)
-                local r = clamp255((0.08 + cr * att * intensity) * 255)
-                local g = clamp255((0.08 + cg * att * intensity) * 255)
-                local b = clamp255((0.10 + cb * att * intensity) * 255)
-                img:setPixel(x, y, r, g, b, 255)
-            end
-        end
+        local img = lurek.light.drawToImage(W, H)
 
         lurek.image.savePNG(img, OUT .. "light_single_falloff.png")
         expect_evidence_created(OUT .. "light_single_falloff.png")
@@ -56,8 +60,6 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.setAmbient(0.12, 0.10, 0.16, 0.95)
 
         local W, H = 320, 180
-        local img = lurek.image.newImageData(W, H)
-        img:drawRect(0, 0, W, H, 20, 22, 30, 255)
 
         local l1 = lurek.light.newLight(70, 70, 56, { intensity = 1.0 })
         local l2 = lurek.light.newLight(165, 72, 62, { intensity = 0.9 })
@@ -76,7 +78,6 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.advanceFlickers(0.16)
 
         local ambient_r, ambient_g, ambient_b, ambient_a = lurek.light.getAmbient()
-        local sync_r, sync_g, sync_b, sync_a = lurek.light.syncAmbient()
         local enabled = lurek.light.isEnabled()
         local max_lights = lurek.light.getMaxLights()
         local light_count = lurek.light.getLightCount()
@@ -86,7 +87,10 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         local god_hints = lurek.light.getGodRayHints()
         local normal_hints = lurek.light.getNormalMapHints()
 
-        -- top bars summarize world state
+        -- render native light world
+        local img = lurek.light.drawToImage(W, H)
+
+        -- top bars summarize world state (drawn on top of the native render)
         img:drawRect(10, 8, light_count * 18, 10, 80, 200, 255, 255)
         img:drawRect(10, 24, group1_count * 18, 10, 80, 140, 255, 255)
         img:drawRect(10, 40, group2_count * 18, 10, 255, 90, 90, 255)
@@ -103,35 +107,6 @@ describe("Evidence: lurek.light API + PNG visualization", function()
             clamp255(ambient_b * 255),
             255
         )
-
-        -- simple radial blend for active lights
-        local lights = { l1, l2 }
-        for y = 90, H - 1 do
-            for x = 0, W - 1 do
-                local tr = sync_r
-                local tg = sync_g
-                local tb = sync_b
-                for _, l in ipairs(lights) do
-                    local lx, ly = l:getPosition()
-                    local lr = l:getRadius()
-                    local cr, cg, cb = l:getColor()
-                    local dx = x - lx
-                    local dy = y - ly
-                    local dist = math.sqrt(dx * dx + dy * dy)
-                    local att = math.max(0.0, 1.0 - dist / lr)
-                    tr = tr + cr * att
-                    tg = tg + cg * att
-                    tb = tb + cb * att
-                end
-                img:setPixel(x, y, clamp255(tr * 255), clamp255(tg * 255), clamp255(tb * 255), 255)
-            end
-        end
-
-        -- draw an occluder polygon outline over the blend
-        img:drawLine(95, 44, 128, 30, 0, 0, 0, 255)
-        img:drawLine(128, 30, 150, 84, 0, 0, 0, 255)
-        img:drawLine(150, 84, 112, 104, 0, 0, 0, 255)
-        img:drawLine(112, 104, 95, 44, 0, 0, 0, 255)
 
         -- tiny diagnostics as bars (no text API required)
         img:drawRect(170, 8, enabled and 40 or 8, 6, 120, 220, 140, 255)
@@ -154,7 +129,6 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
         lurek.light.setEnabled(false)
         local W, H = 224, 160
-        local img = lurek.image.newImageData(W, H)
 
         local a = lurek.light.newLight(56, 70, 62)
         local b = lurek.light.newLight(112, 70, 62)
@@ -163,25 +137,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         b:setColor(0.25, 1.0, 0.25, 1.0)
         c:setColor(0.25, 0.25, 1.0, 1.0)
 
-        local lights = { a, b, c }
-        for y = 0, H - 1 do
-            for x = 0, W - 1 do
-                local tr, tg, tb = 0.06, 0.06, 0.08
-                for _, l in ipairs(lights) do
-                    local lx, ly = l:getPosition()
-                    local lr = l:getRadius()
-                    local cr, cg, cb = l:getColor()
-                    local dx = x - lx
-                    local dy = y - ly
-                    local dist = math.sqrt(dx * dx + dy * dy)
-                    local att = math.max(0.0, 1.0 - dist / lr)
-                    tr = tr + cr * att * 0.9
-                    tg = tg + cg * att * 0.9
-                    tb = tb + cb * att * 0.9
-                end
-                img:setPixel(x, y, clamp255(tr * 255), clamp255(tg * 255), clamp255(tb * 255), 255)
-            end
-        end
+        local img = lurek.light.drawToImage(W, H)
 
         img:drawRect(8, 8, lurek.light.isEnabled() and 32 or 10, 6, 220, 220, 230, 255)
 
@@ -201,8 +157,6 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.setAmbient(0.05, 0.05, 0.07, 1.0)
 
         local W, H = 360, 190
-        local img = lurek.image.newImageData(W, H)
-        img:drawRect(0, 0, W, H, 12, 14, 20, 255)
 
         local l1 = lurek.light.newLight(90, 95, 84, { intensity = 1.15 })
         local l2 = lurek.light.newLight(262, 95, 84, { intensity = 1.10 })
@@ -214,28 +168,8 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         local occ_a = lurek.light.newOccluder({ 150, 34, 178, 34, 178, 162, 150, 162 })
         local occ_b = lurek.light.newOccluder({ 206, 34, 234, 34, 234, 162, 206, 162 })
 
-        for y = 0, H - 1 do
-            for x = 0, W - 1 do
-                local tr, tg, tb = 0.05, 0.05, 0.07
-                local lights = { l1, l2 }
-                for _, l in ipairs(lights) do
-                    local lx, ly = l:getPosition()
-                    local lr = l:getRadius()
-                    local cr, cg, cb = l:getColor()
-                    local dx = x - lx
-                    local dy = y - ly
-                    local dist = math.sqrt(dx * dx + dy * dy)
-                    local att = math.max(0.0, 1.0 - dist / lr)
-                    tr = tr + cr * att
-                    tg = tg + cg * att
-                    tb = tb + cb * att
-                end
-                img:setPixel(x, y, clamp255(tr * 255), clamp255(tg * 255), clamp255(tb * 255), 255)
-            end
-        end
+        local img = lurek.light.drawToImage(W, H)
 
-        img:drawRect(150, 34, 28, 128, 16, 16, 18, 255)
-        img:drawRect(206, 34, 28, 128, 16, 16, 18, 255)
         img:drawRect(12, 10, lurek.light.getOccluderCount() * 18, 8, 235, 190, 110, 255)
 
         local path = OUT .. "occluder_corridor.png"
@@ -256,7 +190,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
 
         local W, H = 320, 120
         local img = lurek.image.newImageData(W, H)
-        img:drawRect(0, 0, W, H, 10, 12, 16, 255)
+        img:fill(10, 12, 16, 255)
 
         local torch = lurek.light.newLight(48, 60, 46)
         torch:setColor(1.0, 0.78, 0.33, 1.0)
@@ -285,11 +219,11 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         torch:remove()
         lurek.light.clear()
     end)
-    -- 6. @evidence file
+
+    -- @evidence file
     it("PNG: colored overlapping lights", function()
         lurek.light.clear()
         local W, H = 200, 200
-        local img = lurek.image.newImageData(W, H)
 
         local r_light = lurek.light.newLight(80, 80, 70)
         r_light:setColor(1.0, 0.0, 0.0, 1.0)
@@ -298,26 +232,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         local b_light = lurek.light.newLight(100, 114, 70)
         b_light:setColor(0.0, 0.0, 1.0, 1.0)
 
-        local lights = { r_light, g_light, b_light }
-
-        for y = 0, H - 1 do
-            for x = 0, W - 1 do
-                local tr, tg, tb = 0, 0, 0
-                for _, l in ipairs(lights) do
-                    local lx, ly = l:getPosition()
-                    local lr = l:getRadius()
-                    local cr, cg, cb = l:getColor()
-                    local dx = x - lx
-                    local dy = y - ly
-                    local dist = math.sqrt(dx * dx + dy * dy)
-                    local att = math.max(0.0, 1.0 - dist / lr)
-                    tr = tr + cr * att
-                    tg = tg + cg * att
-                    tb = tb + cb * att
-                end
-                img:setPixel(x, y, clamp255(tr * 255), clamp255(tg * 255), clamp255(tb * 255), 255)
-            end
-        end
+        local img = lurek.light.drawToImage(W, H)
 
         local path = OUT .. "light_colored_overlap.png"
         lurek.image.savePNG(img, path)
@@ -329,148 +244,89 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- 7. @evidence file
+    -- @evidence file
     it("PNG: spotlights with directional cones", function()
         lurek.light.clear()
         local W, H = 200, 200
-        local img = lurek.image.newImageData(W, H)
-        img:fill(10, 10, 15, 255)
 
-        local function draw_spotlight(lx, ly, dir_x, dir_y, lr, angle_deg, cr, cg, cb)
-            local angle_rad = math.rad(angle_deg / 2)
-            local min_dot = math.cos(angle_rad)
-            -- normalize dir
-            local dlen = math.sqrt(dir_x*dir_x + dir_y*dir_y)
-            dir_x, dir_y = dir_x / dlen, dir_y / dlen
+        local s1 = lurek.light.newLight(100, 20, 150)
+        s1:setLightType("spot")
+        s1:setDirection(math.pi / 2)
+        s1:setColor(1.0, 0.8, 0.6, 1.0)
 
-            for y = 0, H - 1 do
-                for x = 0, W - 1 do
-                    local dx = x - lx
-                    local dy = y - ly
-                    local dist = math.sqrt(dx * dx + dy * dy)
-                    if dist < lr and dist > 0 then
-                        local ndx, ndy = dx / dist, dy / dist
-                        local dot = ndx * dir_x + ndy * dir_y
-                        if dot > min_dot then
-                            local att = (1.0 - dist / lr) * ((dot - min_dot) / (1.0 - min_dot))
-                            local pr, pg, pb = img:getPixel(x, y)
-                            img:setPixel(x, y, 
-                                clamp255(pr + cr * att * 255),
-                                clamp255(pg + cg * att * 255),
-                                clamp255(pb + cb * att * 255), 255)
-                        end
-                    end
-                end
-            end
-        end
+        local s2 = lurek.light.newLight(20, 100, 120)
+        s2:setLightType("spot")
+        s2:setDirection(0)
+        s2:setColor(0.5, 0.8, 1.0, 1.0)
 
-        draw_spotlight(100, 20, 0, 1, 150, 60, 1.0, 0.8, 0.6)
-        draw_spotlight(20, 100, 1, 0, 120, 45, 0.5, 0.8, 1.0)
-        draw_spotlight(180, 100, -1, 0, 120, 45, 1.0, 0.4, 0.4)
+        local s3 = lurek.light.newLight(180, 100, 120)
+        s3:setLightType("spot")
+        s3:setDirection(math.pi)
+        s3:setColor(1.0, 0.4, 0.4, 1.0)
+
+        local img = lurek.light.drawToImage(W, H)
 
         local path = OUT .. "light_spotlights.png"
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
+
+        s1:remove()
+        s2:remove()
+        s3:remove()
+        lurek.light.clear()
     end)
 
-    -- 8. @evidence file
+    -- @evidence file
     it("PNG: moving light source streaks", function()
         lurek.light.clear()
         local W, H = 200, 100
-        local img = lurek.image.newImageData(W, H)
-        img:fill(5, 5, 10, 255)
 
-        -- render a light moving horizontally across 5 frames
-        local y = 50
-        local lr = 40
+        local lights = {}
         for i = 1, 5 do
             local x = 30 + (i - 1) * 35
-            for py = 0, H - 1 do
-                for px = 0, W - 1 do
-                    local dx = px - x
-                    local dy = py - y
-                    local dist = math.sqrt(dx * dx + dy * dy)
-                    if dist < lr then
-                        local att = (1.0 - dist / lr) * 0.4 -- faint streak
-                        local pr, pg, pb = img:getPixel(px, py)
-                        img:setPixel(px, py, 
-                            clamp255(pr + 1.0 * att * 255),
-                            clamp255(pg + 0.6 * att * 255),
-                            clamp255(pb + 0.2 * att * 255), 255)
-                    end
-                end
-            end
+            local l = lurek.light.newLight(x, 50, 40)
+            l:setColor(1.0, 0.6, 0.2, 1.0)
+            l:setIntensity(0.4)
+            table.insert(lights, l)
         end
+
+        local img = lurek.light.drawToImage(W, H)
 
         local path = OUT .. "light_streaks.png"
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
+
+        for _, l in ipairs(lights) do l:remove() end
+        lurek.light.clear()
     end)
 
-    -- 9. @evidence file
+    -- @evidence file
     it("PNG: hard shadows with occluders", function()
         lurek.light.clear()
         local W, H = 200, 200
-        local img = lurek.image.newImageData(W, H)
-        img:fill(20, 20, 25, 255)
 
-        local lx, ly = 100, 100
-        local lr = 90
-        
-        -- simple occluder rect
-        local ox, oy, ow, oh = 120, 60, 20, 80
-        img:drawRect(ox, oy, ow, oh, 10, 10, 10, 255)
+        local light = lurek.light.newLight(100, 100, 90)
+        light:setColor(1.0, 0.9, 0.8, 1.0)
 
-        local function ray_intersects_rect(rx, ry, rdx, rdy)
-            -- AABB intersection for ray
-            local tmin = (ox - rx) / rdx
-            local tmax = (ox + ow - rx) / rdx
-            if tmin > tmax then tmin, tmax = tmax, tmin end
+        local occ = lurek.light.newOccluder({ 120, 60, 140, 60, 140, 140, 120, 140 })
 
-            local tymin = (oy - ry) / rdy
-            local tymax = (oy + oh - ry) / rdy
-            if tymin > tymax then tymin, tymax = tymax, tymin end
-
-            if (tmin > tymax) or (tymin > tmax) then
-                return false
-            end
-            
-            local t = math.max(tmin, tymin)
-            return t > 0 and t < 1
-        end
-
-        for py = 0, H - 1 do
-            for px = 0, W - 1 do
-                if not (px >= ox and px <= ox + ow and py >= oy and py <= oy + oh) then
-                    local dx = px - lx
-                    local dy = py - ly
-                    local dist = math.sqrt(dx*dx + dy*dy)
-                    if dist < lr then
-                        -- Check occlusion
-                        if not ray_intersects_rect(lx, ly, dx, dy) then
-                            local att = 1.0 - dist / lr
-                            local pr, pg, pb = img:getPixel(px, py)
-                            img:setPixel(px, py, 
-                                clamp255(pr + 1.0 * att * 200),
-                                clamp255(pg + 0.9 * att * 200),
-                                clamp255(pb + 0.8 * att * 200), 255)
-                        end
-                    end
-                end
-            end
-        end
+        local img = lurek.light.drawToImage(W, H)
 
         local path = OUT .. "light_hard_shadows.png"
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
+
+        occ:remove()
+        light:remove()
+        lurek.light.clear()
     end)
 
-    -- 10. @evidence file
+    -- @evidence file
     it("PNG: light map masking", function()
         lurek.light.clear()
         local W, H = 200, 200
         local img = lurek.image.newImageData(W, H)
-        
+
         -- Checkerboard background
         for y = 0, H - 1 do
             for x = 0, W - 1 do
@@ -482,27 +338,24 @@ describe("Evidence: lurek.light API + PNG visualization", function()
             end
         end
 
-        local lx, ly, lr = 100, 100, 80
-        
+        local light = lurek.light.newLight(100, 100, 80)
+        light:setColor(1.5, 1.5, 2.0, 1.0)
+
+        local light_map = lurek.light.drawToImage(W, H)
+
         img:mapPixel(function(x, y, r, g, b, a)
-            local dx = x - lx
-            local dy = y - ly
-            local dist = math.sqrt(dx*dx + dy*dy)
-            if dist < lr then
-                local att = 1.0 - (dist / lr)^2 -- quadratic falloff
-                -- Apply light color and intensity
-                return clamp255(r * att * 1.5), clamp255(g * att * 1.5), clamp255(b * att * 2.0), 255
-            else
-                -- Masked out completely (ambient only)
-                return clamp255(r * 0.2), clamp255(g * 0.2), clamp255(b * 0.2), 255
-            end
+            local lr, lg, lb = light_map:getPixel(x, y)
+            -- Multiply blend with light map
+            return clamp255(r * (lr / 255)), clamp255(g * (lg / 255)), clamp255(b * (lb / 255)), 255
         end)
 
         local path = OUT .. "light_map_masking.png"
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
-    end)
 
+        light:remove()
+        lurek.light.clear()
+    end)
 end)
 
 test_summary()

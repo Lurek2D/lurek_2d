@@ -499,7 +499,20 @@ def write_readme(demos_dir: Path, moved: dict, dry_run: bool) -> None:
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/demos/organize_demos.py
+
+  # Show all arguments
+  python tools/demos/organize_demos.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Lurek2D Tool",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--no-move",   action="store_true", help="Skip reorganizing into subfolders")
     parser.add_argument("--no-png",    action="store_true", help="Skip placeholder PNG generation")
     parser.add_argument("--no-readme", action="store_true", help="Skip README rewrite")

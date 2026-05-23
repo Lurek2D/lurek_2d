@@ -140,6 +140,30 @@ local function ln(x1, y1, x2, y2, c)
     _gfx.line(x1, y1, x2, y2)
 end
 
+local function set_visible(widget, value)
+    if not widget then
+        return
+    end
+    local setter = widget["setVisible"]
+    if type(setter) == "function" then
+        setter(widget, value)
+    else
+        widget.visible = value
+    end
+end
+
+local function set_text(widget, value)
+    if not widget then
+        return
+    end
+    local setter = widget["setText"]
+    if type(setter) == "function" then
+        setter(widget, value)
+    else
+        widget.text = value
+    end
+end
+
 function lurek.init()
     lurek.window.setTitle("Cannon Fodder — Lurek2D")
     lurek.render.setBackgroundColor(0.18, 0.32, 0.12)
@@ -302,16 +326,14 @@ function lurek.process(dt)
 
     -- Update UI
     if app_ui.hud_panel then
-        app_ui.hud_panel.visible = (state == STATE.PLAY)
-        app_ui.win_panel.visible = (state == STATE.WIN)
-        app_ui.lose_panel.visible = (state == STATE.LOSE)
-        app_ui.hud_text.text = "Squad: " .. #soldiers .. "   Enemies: " .. #enemies .. "   Score: " .. score
+        set_visible(app_ui.hud_panel, state == STATE.PLAY)
+        set_visible(app_ui.win_panel, state == STATE.WIN)
+        set_visible(app_ui.lose_panel, state == STATE.LOSE)
+        set_text(app_ui.hud_text, "Squad: " .. #soldiers .. "   Enemies: " .. #enemies .. "   Score: " .. score)
         if state == STATE.WIN then
-            app_ui.win_text.text = "Score: " .. score .. "  (Esc to quit)"
+            set_text(app_ui.win_text, "Score: " .. score .. "  (Esc to quit)")
         end
     end
-end
-    lurek.update(dt)
 end
 
 -- ── Draw ──────────────────────────────────────────────────────────────────

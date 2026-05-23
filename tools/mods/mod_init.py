@@ -24,6 +24,30 @@ Exit codes
 ----------
     0   Success
     1   Argument error or file-system error
+
+Usage:
+```
+usage: mod_init.py [-h] [--dir OUTPUT_DIR] [--author AUTHOR]
+                   [--version VERSION] [--api API_VERSION]
+                   [--capabilities CAP1,CAP2]
+                   mod_name
+
+Scaffold a minimal Lurek2D mod project.
+
+positional arguments:
+  mod_name              Mod identifier (letters, digits, underscores).
+
+options:
+  -h, --help            show this help message and exit
+  --dir OUTPUT_DIR      Parent directory for the new mod folder (default:
+                        mods/).
+  --author AUTHOR       Author name.
+  --version VERSION     Initial version (default: 1.0.0).
+  --api API_VERSION     Minimum engine api_version required (default: 0.5).
+  --capabilities CAP1,CAP2
+                        Comma-separated list of capabilities (e.g.
+                        filesystem,network).
+```
 """
 
 import argparse

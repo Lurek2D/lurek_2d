@@ -2,6 +2,17 @@
 -- Evidence test: multi-color lights + occluders produce realistic shadows.
 -- Proves the system can generate the "vending machine glow" effect:
 -- dark ambient, colored point lights, rectangle occluders blocking light.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.light.clear
+-- @covers lurek.light.getLightCount
+-- @covers lurek.light.getOccluderCount
+-- @covers lurek.light.isEnabled
+-- @covers lurek.light.newLight
+-- @covers lurek.light.newOccluder
+-- @covers lurek.light.setAmbient
+-- @covers lurek.light.setEnabled
+
 
 local OUT = "tests/output/light/"
 

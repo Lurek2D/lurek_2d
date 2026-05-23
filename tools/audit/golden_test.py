@@ -221,8 +221,19 @@ def ensure_dirs():
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/golden_test.py
+
+  # Show all arguments
+  python tools/audit/golden_test.py --help
+"""
     parser = argparse.ArgumentParser(
         description="Lurek2D golden file comparison tests",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--update", action="store_true",
                         help="Update expected files from actual")

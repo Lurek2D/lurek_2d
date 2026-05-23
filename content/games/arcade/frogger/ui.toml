@@ -2,15 +2,15 @@
 type = "panel"
 id = "title_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0.05, 0.15, 0.45, 1]
 visible = true
 
   [[widget.children]]
   type = "label"
   text = "F R O G G E R"
-  font_size = 32
+  font_size = 30
   color = [0.1, 0.9, 0.1, 1]
   anchor = "top_center"
   y = 100
@@ -18,7 +18,7 @@ visible = true
   [[widget.children]]
   type = "label"
   text = "    @..@    \n   (----)   \n  ( >  < )  \n  ^^ /\\ ^^  \n    ~~~~    "
-  font_size = 22
+  font_size = 20
   color = [0.2, 0.8, 0.2, 1]
   anchor = "top_center"
   y = 180
@@ -33,7 +33,7 @@ visible = true
 
   [[widget.children]]
   type = "label"
-  text = "Ride logs and turtles — don't fall in!"
+  text = "Ride logs and turtles Ă˘â‚¬â€ť don't fall in!"
   font_size = 16
   color = [1, 1, 1, 0.9]
   anchor = "top_center"
@@ -69,8 +69,8 @@ visible = true
 type = "panel"
 id = "hud"
 anchor = "top_left"
-width = 800
-height = 600
+w = 800
+h = 600
 visible = false
 
   [[widget.children]]
@@ -124,15 +124,15 @@ visible = false
 type = "panel"
 id = "game_over_screen"
 anchor = "center"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0.7]
 visible = false
 
   [[widget.children]]
   type = "label"
   text = "GAME OVER"
-  font_size = 40
+  font_size = 30
   color = [1, 0.2, 0.2, 1]
   anchor = "top_center"
   y = 200

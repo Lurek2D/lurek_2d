@@ -406,7 +406,20 @@ def patch_file(
 # ── CLI ──────────────────────────────────────────────────────────────────────
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Auto-inject missing @param/@return docstring tags.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/fix/docstring_fix.py
+
+  # Show all arguments
+  python tools/fix/docstring_fix.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Auto-inject missing @param/@return docstring tags.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--dry-run", action="store_true", help="Show what would be injected without writing files")
     parser.add_argument("--file", metavar="RS_FILE", help="Patch only this .rs file")
     parser.add_argument("--no-description", action="store_true", help="Skip injecting description lines")

@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""scan_missing_docs.py — detect Rust items without doc-comments in src/ (no lua_api)."""
+"""scan_missing_docs.py — detect Rust items without doc-comments in src/ (no lua_api).
+
+Usage:
+```
+Usage:
+    python tools/docs/scan_missing_docs.py
+```
+"""
 import re, os, sys
 from pathlib import Path
 

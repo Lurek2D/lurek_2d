@@ -347,7 +347,20 @@ def generate_wiki(data: dict) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate Lurek2D wiki API Reference.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_wiki_api.py
+
+  # Show all arguments
+  python tools/docs/gen_wiki_api.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Generate Lurek2D wiki API Reference.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--input", default=str(INPUT_FILE))
     parser.add_argument("--output", default=str(OUTPUT_FILE))
     args = parser.parse_args()

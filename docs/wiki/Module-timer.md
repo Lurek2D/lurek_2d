@@ -1771,9 +1771,9 @@ end
 - [centipede](../tree/main/content/games/arcade/centipede) (arcade)
 - [donkey_kong](../tree/main/content/games/arcade/donkey_kong) (arcade)
 - [frogger](../tree/main/content/games/arcade/frogger) (arcade)
-- [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 - [pac_man](../tree/main/content/games/arcade/pac_man) (arcade)
 - [pong](../tree/main/content/games/arcade/pong) (arcade)
+- [snake](../tree/main/content/games/arcade/snake) (arcade)
 
 [⬆ back to top](#table-of-contents)
 

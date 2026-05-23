@@ -1,5 +1,8 @@
 -- Evidence tests: image module
 -- Artifacts are generated from lurek.image drawing/effects APIs.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = "tests/output/image/"
 

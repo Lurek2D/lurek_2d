@@ -352,7 +352,20 @@ def process_file(path: Path, method_table: dict, dry_run: bool = False) -> bool:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Improve stub quality in content/examples/*.lua")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/fix/improve_examples.py
+
+  # Show all arguments
+  python tools/fix/improve_examples.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Improve stub quality in content/examples/*.lua",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--module", help="Only process the example for this module name")
     args = parser.parse_args()

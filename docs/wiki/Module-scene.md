@@ -42,11 +42,11 @@ Named, stackable scenes with transitions for menu / gameplay / pause / cutscene 
 
 ## 📋 Summary
 
-The `scene` module is a versatile Feature Systems tier component that manages the active game state hierarchy using a robust stack-based architecture. It provides the structural backbone for Lurek2D games by coordinating transitions between distinct game states, such as main menus, gameplay levels, and pause screens. The core `SceneStack` maintains the active scene hierarchy. Pushing a new scene pauses the underlying scene, while popping it resumes the previous one. The module seamlessly supports overlay scenes—such as HUDs or debug panels—which render on top without pausing the scene beneath them.
+The `scene` module is a versatile Feature Systems tier component that manages the active game state hierarchy using a robust stack-based architecture. It provides the structural backbone for Lurek2D games by coordinating transitions between distinct game states, such as main menus, gameplay levels, and pause screens. The core `SceneStack` maintains the active scene hierarchy. Pushing a new scene pauses the underlying scene, while popping it resumes the previous one. The module supports overlay scenes for logic flow, but rendering now follows a strict engine-level rule: **only the top scene is render-active**.
 
 Visual polish is heavily emphasized through built-in transition effects. When switching scenes, developers can apply animated transitions (including fade, wipe, slide, dissolve, pixelate, and iris effects) with configurable durations and mathematical easing curves (like bounce or back-overshoot). To ensure correct visual layering, the module features a highly optimized `DepthSorter`. This component adaptively selects the most efficient sorting strategy (unstable, stable, radix, or even multi-threaded rayon parallel sorting for 10k+ entries) based on the number of draw calls, ensuring that sprites and UI elements are rendered strictly front-to-back according to their assigned depth values.
 
-The `scene` module also acts as a central registry and shared data bus. Scenes can be registered by string names, allowing for direct navigation (e.g., `popTo` a specific scene) or deferred loading via `pushPreloaded`, which is ideal for breaking up heavy asset initialization. Furthermore, the stack provides shared data slots, enabling scenes to pass state variables (like selected level indices or player choices) between each other without relying on fragile global variables. Game logic is driven by a deterministic callback lifecycle (`enter`, `leave`, `pause`, `resume`, `process`, `processPhysics`, `processLate`), while rendering is separated into world-space (`render`) and screen-space (`renderUi`) passes. Exposed via the `lurek.scene.*` API, this module offers a complete solution for structuring complex, multi-state game flows.
+The `scene` module also acts as a central registry and shared data bus. Scenes can be registered by string names, allowing for direct navigation (e.g., `popTo` a specific scene) or deferred loading via `pushPreloaded`, which is ideal for breaking up heavy asset initialization. Furthermore, the stack provides shared data slots, enabling scenes to pass state variables (like selected level indices or player choices) between each other without relying on fragile global variables. Game logic is driven by a deterministic callback lifecycle (`enter`, `leave`, `pause`, `resume`, `update`, `process`, `processPhysics`, `processLate`), and each callback family can be frozen/unfrozen per scene via `set*Enabled` APIs. Rendering remains separated into world-space (`render`) and screen-space (`renderUi`) passes, but both passes render only the current top scene. Exposed via the `lurek.scene.*` API, this module offers a complete solution for structuring complex, multi-state game flows.
 
 [⬆ back to top](#table-of-contents)
 
@@ -103,7 +103,7 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 ## 📖 API Overview
 
 - Source spec: [docs/specs/scene.md](../blob/main/docs/specs/scene.md)
-- Module-level functions: 50
+- Module-level functions: 59
 - Lua-visible types: 1
 - Total type methods: 10
 
@@ -266,13 +266,13 @@ end
 #### Definition
 
 ```lua
---- Call `draw(self)` on every scene in the stack from bottom to top. This is the legacy draw callback — prefer `render` and `renderUi` for world-space and screen-space separation.
+--- Call `draw(self)` on render-active scenes ordered by layer (lowest first).
 lurek.scene.draw = function() end
 ```
 
 #### Description
 
-Call `draw(self)` on every scene in the stack from bottom to top. This is the legacy draw callback — prefer `render` and `renderUi` for world-space and screen-space separation.
+Call `draw(self)` on render-active scenes ordered by layer (lowest first).
 
 #### Example
 
@@ -325,14 +325,14 @@ end
 #### Definition
 
 ```lua
---- Returns a Lua array of all active scene tables ordered by their layer value (lowest layer first). Includes both regular scenes and overlays. Useful for iterating over all scenes for custom processing or debugging.
+--- Returns a Lua array of all process-active scene tables ordered by their layer value (lowest layer first). Includes regular scenes and overlays.
 ---@return SceneGetActiveScenesResult Lua array of active scene tables sorted by layer.
 lurek.scene.getActiveScenes = function() end
 ```
 
 #### Description
 
-Returns a Lua array of all active scene tables ordered by their layer value (lowest layer first). Includes both regular scenes and overlays. Useful for iterating over all scenes for custom processing or debugging.
+Returns a Lua array of all process-active scene tables ordered by their layer value (lowest layer first). Includes regular scenes and overlays.
 
 Returns: `table` - Lua array of active scene tables sorted by layer.
 
@@ -528,6 +528,76 @@ do
     local names = lurek.scene.getRegisteredNames()
     print("registered names = " .. #names)
     lurek.scene.clear()
+end
+```
+
+#### lurek.scene.getRenderActiveScenes
+
+#### Definition
+
+```lua
+--- Returns the scene table(s) that are render-active this frame.
+---@return table Lua array of render-active scene tables.
+lurek.scene.getRenderActiveScenes = function() end
+```
+
+#### Description
+
+Returns the scene table(s) that are render-active this frame.
+
+Returns: `table` - Lua array of render-active scene tables.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
 end
 ```
 
@@ -770,19 +840,94 @@ do
 end
 ```
 
+#### lurek.scene.isLateEnabled
+
+#### Definition
+
+```lua
+--- Returns whether `process_late` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isLateEnabled = function(target) end
+```
+
+#### Description
+
+Returns whether `process_late` is enabled for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+
+Returns: `boolean` - True when enabled, false when frozen or target not found.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
+end
+```
+
 #### lurek.scene.isOverlay
 
 #### Definition
 
 ```lua
---- Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both to update and render simultaneously.
+--- Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both scenes to remain process-active unless explicitly frozen.
 ---@return boolean True if the top scene is an overlay, false otherwise.
 lurek.scene.isOverlay = function() end
 ```
 
 #### Description
 
-Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both to update and render simultaneously.
+Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both scenes to remain process-active unless explicitly frozen.
 
 Returns: `boolean` - True if the top scene is an overlay, false otherwise.
 
@@ -795,6 +940,81 @@ do
     lurek.scene.clear(); lurek.scene.push(lurek.scene.new({ name = "main_scene", update = function() end, draw = function() end, enter = function() print("enter_main_scene") end, leave = function() print("leave_main_scene") end })); lurek.scene.pushOverlay(lurek.scene.new({ name = "pause_overlay", update = function() end, draw = function() end, enter = function() print("enter_pause_overlay") end, leave = function() print("leave_pause_overlay") end }), "fade", 0.2)
     print("top scene is overlay = " .. tostring(lurek.scene.isOverlay()))
     lurek.scene.clear()
+end
+```
+
+#### lurek.scene.isPhysicsEnabled
+
+#### Definition
+
+```lua
+--- Returns whether `process_physics` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isPhysicsEnabled = function(target) end
+```
+
+#### Description
+
+Returns whether `process_physics` is enabled for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+
+Returns: `boolean` - True when enabled, false when frozen or target not found.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
 end
 ```
 
@@ -831,6 +1051,81 @@ do
 end
 ```
 
+#### lurek.scene.isProcessEnabled
+
+#### Definition
+
+```lua
+--- Returns whether `process` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isProcessEnabled = function(target) end
+```
+
+#### Description
+
+Returns whether `process` is enabled for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+
+Returns: `boolean` - True when enabled, false when frozen or target not found.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
+end
+```
+
 #### lurek.scene.isTransitioning
 
 #### Definition
@@ -856,6 +1151,81 @@ do
     lurek.scene.clear(); lurek.scene.push(lurek.scene.new({ name = "base_scene", update = function() end, draw = function() end, enter = function() print("enter_base_scene") end, leave = function() print("leave_base_scene") end })); lurek.scene.switchTo(lurek.scene.new({ name = "next_scene", update = function() end, draw = function() end, enter = function() print("enter_next_scene") end, leave = function() print("leave_next_scene") end }), "fade", 0.25, "linear")
     print("is transitioning = " .. tostring(lurek.scene.isTransitioning()))
     lurek.scene.clear()
+end
+```
+
+#### lurek.scene.isUpdateEnabled
+
+#### Definition
+
+```lua
+--- Returns whether `update` is enabled for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@return boolean True when enabled, false when frozen or target not found.
+lurek.scene.isUpdateEnabled = function(target) end
+```
+
+#### Description
+
+Returns whether `update` is enabled for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+
+Returns: `boolean` - True when enabled, false when frozen or target not found.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
 end
 ```
 
@@ -1066,14 +1436,14 @@ end
 #### Definition
 
 ```lua
---- Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first). Use this for deterministic game-logic ticks at a fixed time step. Scenes pushed as overlays and underlying scenes all receive this callback.
+--- Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every process-active scene ordered by layer (lowest first).
 ---@param dt number Fixed time-step delta in seconds (e.g. 1/60 for 60-tick logic).
 lurek.scene.process = function(dt) end
 ```
 
 #### Description
 
-Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first). Use this for deterministic game-logic ticks at a fixed time step. Scenes pushed as overlays and underlying scenes all receive this callback.
+Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every process-active scene ordered by layer (lowest first).
 
 Parameters:
 
@@ -1098,14 +1468,14 @@ end
 #### Definition
 
 ```lua
---- Call `process_late(self, dt)` on every active scene after all other processing. Ideal for camera follow logic, HUD synchronization, deferred cleanup, or any work that depends on the final positions of game objects.
+--- Call `process_late(self, dt)` on every process-active scene after all other processing.
 ---@param dt number Delta time in seconds (same value passed to `process`).
 lurek.scene.processLate = function(dt) end
 ```
 
 #### Description
 
-Call `process_late(self, dt)` on every active scene after all other processing. Ideal for camera follow logic, HUD synchronization, deferred cleanup, or any work that depends on the final positions of game objects.
+Call `process_late(self, dt)` on every process-active scene after all other processing.
 
 Parameters:
 
@@ -1130,14 +1500,14 @@ end
 #### Definition
 
 ```lua
---- Call `process_physics(self, dt)` on every active scene ordered by layer. Run this callback after your physics world step so scenes can react to collision results, apply forces, or synchronize sprite positions with physics bodies.
+--- Call `process_physics(self, dt)` on every process-active scene ordered by layer.
 ---@param dt number Physics time-step delta in seconds.
 lurek.scene.processPhysics = function(dt) end
 ```
 
 #### Description
 
-Call `process_physics(self, dt)` on every active scene ordered by layer. Run this callback after your physics world step so scenes can react to collision results, apply forces, or synchronize sprite positions with physics bodies.
+Call `process_physics(self, dt)` on every process-active scene ordered by layer.
 
 Parameters:
 
@@ -1201,7 +1571,7 @@ end
 #### Definition
 
 ```lua
---- Push a scene as a transparent overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it continues to receive `process`, `draw`, and `render` callbacks. Use overlays for pause menus, dialog boxes, inventory screens, or debug panels that should draw on top without stopping gameplay.
+--- Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
 ---@param scene table The overlay scene table.
 ---@param transition? string Transition type name. Defaults to `"none"`.
 ---@param duration? number Transition animation duration in seconds. Defaults to 0.
@@ -1212,7 +1582,7 @@ lurek.scene.pushOverlay = function(scene, transition, duration, easing, params) 
 
 #### Description
 
-Push a scene as a transparent overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it continues to receive `process`, `draw`, and `render` callbacks. Use overlays for pause menus, dialog boxes, inventory screens, or debug panels that should draw on top without stopping gameplay.
+Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
 
 Parameters:
 
@@ -1380,13 +1750,13 @@ end
 #### Definition
 
 ```lua
---- Call `render(self)` on every scene in the stack from bottom to top. This is the preferred world-space rendering callback — draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
+--- Call `render(self)` on render-active scenes ordered by layer (lowest first).
 lurek.scene.render = function() end
 ```
 
 #### Description
 
-Call `render(self)` on every scene in the stack from bottom to top. This is the preferred world-space rendering callback — draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
+Call `render(self)` on render-active scenes ordered by layer (lowest first).
 
 #### Example
 
@@ -1407,13 +1777,13 @@ end
 #### Definition
 
 ```lua
---- Call `render_ui(self)` on every scene in the stack from bottom to top. Use this for screen-space HUD elements, health bars, score displays, menus, and overlays that should draw on top of the world after `render`.
+--- Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
 lurek.scene.renderUi = function() end
 ```
 
 #### Description
 
-Call `render_ui(self)` on every scene in the stack from bottom to top. Use this for screen-space HUD elements, health bars, score displays, menus, and overlays that should draw on top of the world after `render`.
+Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
 
 #### Example
 
@@ -1519,6 +1889,314 @@ Parameters:
 Source: [scene.lua](../blob/main/content/examples/scene.lua)
 
 ```lua
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
+end
+```
+
+#### lurek.scene.setLateEnabled
+
+#### Definition
+
+```lua
+--- Enable or disable `process_late(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run late callback, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setLateEnabled = function(target, enabled) end
+```
+
+#### Description
+
+Enable or disable `process_late(self, dt)` execution for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+- `enabled` (`boolean`, required): True to run late callback, false to freeze it.
+
+Returns: `boolean` - True when target scene was resolved and updated.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
+end
+```
+
+#### lurek.scene.setPhysicsEnabled
+
+#### Definition
+
+```lua
+--- Enable or disable `process_physics(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run physics callback, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setPhysicsEnabled = function(target, enabled) end
+```
+
+#### Description
+
+Enable or disable `process_physics(self, dt)` execution for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+- `enabled` (`boolean`, required): True to run physics callback, false to freeze it.
+
+Returns: `boolean` - True when target scene was resolved and updated.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
+end
+```
+
+#### lurek.scene.setProcessEnabled
+
+#### Definition
+
+```lua
+--- Enable or disable `process(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run process, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setProcessEnabled = function(target, enabled) end
+```
+
+#### Description
+
+Enable or disable `process(self, dt)` execution for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+- `enabled` (`boolean`, required): True to run process, false to freeze it.
+
+Returns: `boolean` - True when target scene was resolved and updated.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
+do
+    lurek.scene.setData("selectedLevel", 5)
+    print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
+    print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
+end
+```
+
+#### lurek.scene.setUpdateEnabled
+
+#### Definition
+
+```lua
+--- Enable or disable `update(self, dt)` execution for a selected scene.
+---@param target? any nil/current, registered scene name, or 1-based stack index.
+---@param enabled boolean True to run update callback, false to freeze it.
+---@return boolean True when target scene was resolved and updated.
+lurek.scene.setUpdateEnabled = function(target, enabled) end
+```
+
+#### Description
+
+Enable or disable `update(self, dt)` execution for a selected scene.
+
+Parameters:
+
+- `target` (`any`, optional): nil/current, registered scene name, or 1-based stack index.
+- `enabled` (`boolean`, required): True to run update callback, false to freeze it.
+
+Returns: `boolean` - True when target scene was resolved and updated.
+
+#### Example
+
+Source: [scene.lua](../blob/main/content/examples/scene.lua)
+
+```lua
+--- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
+
+
+--@api-stub: lurek.scene.new
+do
+    local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
+    print("scene created")
+end
+
+--@api-stub: lurek.scene.define
+do
+    local GameplayFactory = lurek.scene.define({ name = "gameplay", level = 0, enter = function(self, params) self.level = params and (params.level or 1) or self.level; print("gameplay enter level " .. self.level) end, leave = function() print("gameplay leave") end, update = function() end, draw = function() end })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print("two instances: " .. tostring(instance1 ~= instance2))
+end
+
+--@api-stub: lurek.scene.push
+do
+    local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
+    lurek.scene.push(scene1)
+    print("after push depth = " .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.switchTo
+do
+    local sceneA = lurek.scene.new({ name = "level1", enter = function() print("level1 enter") end, leave = function() print("level1 leave") end }); local sceneB = lurek.scene.new({ name = "level2", enter = function(_, params) print("level2 enter, from=" .. (params and params.from or "none")) end, leave = function() print("level2 leave") end })
+    lurek.scene.push(sceneA)
+    print("before switch: depth=" .. lurek.scene.getStackSize()); lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" }); print("after switch: depth=" .. lurek.scene.getStackSize())
+    print("current = " .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end
+
+--@api-stub: lurek.scene.registerScene
+do
+    local menuScene = lurek.scene.new({ name = "mainMenu" })
+    lurek.scene.registerScene("mainMenu", menuScene)
+    print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
+end
+
+--@api-stub: lurek.scene.setData
 do
     lurek.scene.setData("selectedLevel", 5)
     print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
@@ -1635,14 +2313,14 @@ end
 #### Definition
 
 ```lua
---- Advance any active transition animation and call `update(self, dt)` on the current top scene. Call this once per frame from your main loop to drive scene logic and transition timing.
+--- Advance any active transition animation and call `update(self, dt)` on the current top scene.
 ---@param dt number Delta time in seconds since the last frame (e.g. from `lurek.timer.getDelta()`).
 lurek.scene.update = function(dt) end
 ```
 
 #### Description
 
-Advance any active transition animation and call `update(self, dt)` on the current top scene. Call this once per frame from your main loop to drive scene logic and transition timing.
+Advance any active transition animation and call `update(self, dt)` on the current top scene.
 
 Parameters:
 
@@ -2038,7 +2716,8 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [dyna_blaster](../tree/main/content/games/arcade/dyna_blaster) (arcade)
+- [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 
 [⬆ back to top](#table-of-contents)
 

@@ -100,8 +100,19 @@ def validate_one(lib_dir: Path, strict: bool = False) -> list[dict]:
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/validate/validate_library.py
+
+  # Show all arguments
+  python tools/validate/validate_library.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Validate Lureksome libraries under content/library/."
+        description="Validate Lureksome libraries under content/library/.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--library", help="Validate only this library")
     parser.add_argument("--strict", action="store_true",

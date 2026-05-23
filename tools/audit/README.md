@@ -1,130 +1,45 @@
-# tools/audit â€” Quality Auditing & Coverage Analytics
+# Lurek2D Audit Tools
 
-Scripts that **measure** code quality, documentation coverage, and test
-coverage â€” producing reports that tell you what still needs work.
+> [!NOTE]
+> Ten plik jest generowany automatycznie przez `tools/tests/gen_tool_registry.py`.
 
-## Scripts
-
-### Master dashboards â€” aggregate multiple sub-tools
-
-| Script              | Purpose                                   | Sub-tools called                                              | Output        |
-| ------------------- | ----------------------------------------- | ------------------------------------------------------------- | ------------- |
-| `quality_report.py` | Overall quality dashboard (PASS/FAIL)     | `doc_audit`, `test_coverage`, `module_audit`, `validate_game` | stdout / JSON |
-| `doc_audit.py`      | Documentation audit (Rust + Lua combined) | `collect_docs`, `gen_lua_api_data`                            | stdout / JSON |
-
-### Docstring coverage â€” measure and report docstring completeness
-
-| Script               | Purpose                                      | Output                           |
-| -------------------- | -------------------------------------------- | -------------------------------- |
-| `doc_coverage.py`    | Rust + Lua `///` docstring coverage metrics  | `logs/reports/doc_coverage.json`    |
-| `docstring_audit.py` | Per-file Lua API docstring quality audit     | `logs/data/docstring_audit.json` |
-| `count_gaps.py`      | Count missing-doc items per `lurek.*` module | stdout                           |
-
-### Test coverage â€” measure test completeness
-
-| Script                                  | Purpose                                                                                             | Output                                 |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| `test_coverage.py`                      | Cross-reference `pub` items vs test files                                                           | `logs/reports/test_coverage.json`         |
-| `lua_api_test_coverage.py`              | Lua API test coverage (via `@covers` markers)                                                       | `logs/reports/lua_api_test_coverage.json` |
-| `lua_test_structure_audit.py`           | Lua test structure audit: `@description` placement, legacy markers, and `test_summary()` ending     | stdout / JSON                          |
-| `lua_evidence_golden_contract_audit.py` | Evidence/golden contract audit: mixed prechecks, missing `@evidence`, and golden generation logic   | stdout / JSON                          |
-| `unit_test_api_coverage.py`             | Unit test API coverage metrics                                                                      | stdout                                 |
-| `example_coverage.py`                   | Cross-reference `content/examples/` vs Lua API; exits 1 if any gaps (`--report` for CI)             | stdout / JSON                          |
-| `example_add_missing.py`                | Append stub blocks for uncovered API items to example files; use with `flesh-out-example.prompt.md` | patches `.lua` files                   |
-| `integration_coverage.py`               | Integration test module-pair heat map                                                               | stdout / JSON                          |
-
-### Module quality â€” end-to-end module audits
-
-| Script                 | Purpose                                                           | Output                            |
-| ---------------------- | ----------------------------------------------------------------- | --------------------------------- |
-| `audit_module.py`      | 12-phase module quality audit (PASS/WARN/ERROR)                   | `logs/quality/<module>.md` / JSON |
-
-### Specialised audits
-
-| Script                     | Purpose                                         | Output                      |
-| -------------------------- | ----------------------------------------------- | --------------------------- |
-| `gen_coverage_gaps.py`     | Rustâ†’Lua API coverage gap report                | `logs/reports/coverage_gaps.md` |
-| `golden_test.py`           | Deterministic output diff tests                 | stdout / JSON               |
-| `stress_report.py`         | Stress test timing report                       | stdout / JSON               |
-| `test_analytics.py`        | Test execution trend analysis                   | stdout                      |
-| `strict_api_check.py`      | Validate all `lurek.*` API stubs in examples    | stdout                      |
-| `strict_api_check_math.py` | Validate math-module API stubs in examples      | stdout                      |
-
-### Testing constraints (TST-02/03/04)
-
-| Script                   | Purpose                                                                                    | Output        |
-| ------------------------ | ------------------------------------------------------------------------------------------ | ------------- |
-| `inline_test_audit.py`   | Find every inline `#[cfg(test)]` block in `src/**/*.rs` (TST-02) and suggest migration target. | stdout / JSON |
-| `thin_wrapper_audit.py`  | Score `src/lua_api/*_api.rs` for business logic outside Lua closures (TST-03).             | stdout / JSON |
-| `thin_modrs_audit.py`    | Flag `src/**/mod.rs` containing definitions or stray code (TST-04).                        | stdout / JSON |
-
-### CAG layer audits
-
-| Script                    | Purpose                                                                                                                | Output                  |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `cag_link_check.py`       | Walk every `.github/**/*.md`, extract markdown links + backtick paths, and report broken targets by category.          | stdout / JSON (`--report`) |
-| `cag_coverage.py`         | Required-section + frontmatter-field coverage matrix for every CAG file type.                                          | stdout / markdown / JSON |
-| `cag_persona_matrix.py`   | 6 Ă— N persona â†” agent matrix from frontmatter; flags 0-persona agents and 0-agent personas.                            | stdout / markdown / JSON |
-
-### Self-audits & meta-tools
-
-| Script                    | Purpose                                                                                     | Output        |
-| ------------------------- | ------------------------------------------------------------------------------------------- | ------------- |
-| `tool_registry_audit.py`  | Self-audit: verify every tools/ script is registered, has a docstring, and uses valid paths  | stdout / JSON |
-| `wiki_coverage.py`        | Cross-reference wiki/ pages against src/ modules and library/ entries            | stdout / JSON |
-
-Companion validator: `tools/validate/cag_validate.py` (rule engine for the
-same files; the audit tools above are read-only analytics).
-
-### Internal helpers
-
-| Script                                  | Purpose                                                  |
-| --------------------------------------- | -------------------------------------------------------- |
-| `lua_test_structure_audit.py`           | Audit/fix Lua BDD comment and `test_summary()` structure |
-| `lua_evidence_golden_contract_audit.py` | Audit/fix Lua evidence and golden contract markers       |
-| `parse_test_log.py`                     | Parse Rust test execution logs                           |
-
-## Common usage
-
-```powershell
-# --- Master dashboards ---
-python tools/audit/quality_report.py            # overall quality PASS/FAIL
-python tools/audit/doc_audit.py                  # combined Rust+Lua docs audit
-
-# --- Docstring coverage ---
-python tools/audit/doc_coverage.py               # docstring coverage %
-python tools/audit/doc_coverage.py --report-missing  # list missing items
-python tools/audit/docstring_audit.py            # per-file Lua API quality
-
-# --- Test coverage ---
-python tools/audit/test_coverage.py              # Rust test coverage
-python tools/audit/test_coverage.py --suggest    # suggest new tests
-python tools/audit/lua_api_test_coverage.py --report  # Lua test coverage
-python tools/audit/lua_test_structure_audit.py   # Lua test structure audit
-python tools/audit/lua_test_structure_audit.py --fix  # normalize legacy syntax + test_summary placement
-python tools/audit/lua_evidence_golden_contract_audit.py        # evidence/golden contract audit
-python tools/audit/lua_evidence_golden_contract_audit.py --fix  # add obvious missing @evidence markers
-python tools/audit/example_coverage.py           # content/examples/ coverage
-python tools/audit/integration_coverage.py       # integration test heatmap
-
-# --- Module audits ---
-python tools/audit/audit_module.py physics       # one module
-python tools/audit/audit_module.py --all         # all modules
-python tools/audit/audit_module.py --all --docs-quality  # all + docs quality
-
-# --- CAG layer audits ---
-python tools/audit/cag_link_check.py                              # broken-link report
-python tools/audit/cag_link_check.py --strict                     # exit 1 on any broken link
-python tools/audit/cag_coverage.py --type agent --format markdown # per-type coverage matrix
-python tools/audit/cag_persona_matrix.py --format markdown        # persona x agent matrix
-
-# --- Self-audits & meta-tools ---
-python tools/audit/tool_registry_audit.py                         # tools registry self-check
-python tools/audit/wiki_coverage.py                               # wiki coverage vs modules
-python tools/audit/wiki_coverage.py --strict --format json        # strict mode, JSON output
-```
-
-## Filename index
-
-`audit_module.py`, `cag_coverage.py`, `cag_link_check.py`, `cag_persona_matrix.py`, `count_gaps.py`, `docstring_audit.py`, `doc_audit.py`, `doc_coverage.py`, `example_add_missing.py`, `example_coverage.py`, `extract_constructors.py`, `gen_coverage_gaps.py`, `gen_lua_contract_tests.py`, `get_api_sigs.py`, `golden_test.py`, `inline_test_audit.py`, `integration_coverage.py`, `library_coverage.py`, `lua_api_test_coverage.py`, `lua_covers_lurek_api_audit.py`, `lua_evidence_golden_contract_audit.py`, `lua_spec_coverage.py`, `lua_test_structure_audit.py`, `mutation_report.py`, `parse_test_log.py`, `perf_regression_gate.py`, `quality_report.py`, `scan_api_names.py`, `scan_exact.py`, `scan_module_fns.py`, `scan_sigs.py`, `stress_report.py`, `strict_api_check.py`, `strict_api_check_math.py`, `test_analytics.py`, `test_coverage.py`, `thin_modrs_audit.py`, `thin_wrapper_audit.py`, `tool_registry_audit.py`, `unit_test_api_coverage.py`, `wiki_coverage.py`
-
+- **`audit_module.py`**: audit_module.py — Lurek2D module quality audit tool.
+- **`cag_coverage.py`**: cag_coverage.py — required-section coverage analytics for CAG files.
+- **`cag_link_check.py`**: cag_link_check.py — broken-link checker for the CAG layer.
+- **`cag_persona_matrix.py`**: cag_persona_matrix.py — persona ↔ agent value matrix.
+- **`count_gaps.py`**: count_gaps.py — Count undocumented public API items per lurek.* module.
+- **`doc_audit.py`**: doc_audit.py — Lurek2D unified documentation audit.
+- **`doc_coverage.py`**: doc_coverage.py — Lurek2D documentation coverage analytics.
+- **`docstring_audit.py`**: docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content.
+- **`example_add_missing.py`**: Append stub sections to content/examples/ for uncovered lurek.* API items.
+- **`example_coverage.py`**: Cross-reference Lua example scripts against the lurek.* Lua API.
+- **`extract_constructors.py`**: Extract all lurek.module.function signatures from docs/api/lurek.lua
+- **`gen_coverage_gaps.py`**: gen_coverage_gaps.py — Generate an API gap report for Lurek2D.
+- **`get_api_sigs.py`**: Extract all lurek.* namespace-level function signatures from docs/api/lurek.lua
+- **`golden_test.py`**: golden_test.py — Lurek2D golden file comparison tests.
+- **`inline_test_audit.py`**: inline_test_audit.py — Enforce TST-02 (no inline `#[cfg(test)]` in src/).
+- **`integration_coverage.py`**: integration_coverage.py — Lurek2D integration test coverage analysis.
+- **`library_coverage.py`**: library_coverage.py — Audit Lureksome library coverage across three dimensions.
+- **`lua_api_test_coverage.py`**: lua_api_test_coverage.py — Precise Lua API test coverage analysis.
+- **`lua_covers_lurek_api_audit.py`**: Audit @covers markers against docs/api/lurek.lua.
+- **`lua_evidence_golden_contract_audit.py`**: Audit Lua evidence and golden test contract compliance.
+- **`lua_spec_coverage.py`**: lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
+- **`lua_test_structure_audit.py`**: Audit and normalize Lua BDD test structure under tests/lua.
+- **`mutation_report.py`**: mutation_report.py — run cargo-mutants for selected priority modules.
+- **`parse_test_log.py`**: tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
+- **`perf_regression_gate.py`**: perf_regression_gate.py — lightweight perf/stress regression gate for CI.
+- **`quality_report.py`**: quality_report.py — Lurek2D master quality report.
+- **`scan_api_names.py`**: Extract all registered function names from Rust API files.
+- **`scan_exact.py`**: Scan specific Rust API files for exact function signatures.
+- **`scan_module_fns.py`**: Find module-level constructors (registered on lurek.X table, not on UserData).
+- **`scan_sigs.py`**: Find exact function registrations for failing APIs in Rust source files.
+- **`stress_report.py`**: stress_report.py — Lurek2D stress test runner and reporter.
+- **`strict_api_check.py`**: Validate all lurek.* API stubs in content/examples/ against the master API data.
+- **`strict_api_check_math.py`**: Validate math-module API stubs in content/examples/math.lua.
+- **`test_analytics.py`**: test_analytics.py — Lurek2D comprehensive test analytics.
+- **`test_coverage.py`**: test_coverage.py — Lurek2D test coverage analysis.
+- **`thin_modrs_audit.py`**: thin_modrs_audit.py — Enforce TST-04 (thin `mod.rs`).
+- **`thin_wrapper_audit.py`**: thin_wrapper_audit.py — Enforce TST-03 (thin wrappers in src/lua_api/).
+- **`tool_registry_audit.py`**: Audit the tools registry for internal consistency.
+- **`unit_test_api_coverage.py`**: unit_test_api_coverage.py — Lurek2D unit-test API coverage analysis.
+- **`wiki_coverage.py`**: Audit wiki page coverage against engine modules and Lua API.

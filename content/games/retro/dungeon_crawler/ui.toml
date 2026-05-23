@@ -1,15 +1,15 @@
 [root]
 widget_type = "panel"
 id = "root_ui"
-width = 800
-height = 600
+w = 800
+h = 600
 bg_color = [0, 0, 0, 0]
 
   [[root.children]]
   widget_type = "panel"
   id = "side_panel"
-  width = 225
-  height = 590
+  w = 225
+  h = 590
   bg_color = [0.08, 0.08, 0.12, 0.92]
   x = 565
   y = 10
@@ -43,7 +43,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "WSAD move, Q/E turn"
-    font_size = 14
+    font_size = 12
     color = [0.7, 0.7, 0.78, 1]
     x = 10
     y = 80
@@ -51,7 +51,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "T=torch  N=day/night"
-    font_size = 14
+    font_size = 12
     color = [0.7, 0.7, 0.78, 1]
     x = 10
     y = 96
@@ -59,7 +59,7 @@ bg_color = [0, 0, 0, 0]
     [[root.children.children]]
     widget_type = "label"
     text = "Ctrl=crouch"
-    font_size = 14
+    font_size = 12
     color = [0.7, 0.7, 0.78, 1]
     x = 10
     y = 112
@@ -115,7 +115,7 @@ bg_color = [0, 0, 0, 0]
     widget_type = "label"
     id = "fps_label"
     text = "FPS: 60"
-    font_size = 14
+    font_size = 12
     color = [0.45, 0.45, 0.5, 1]
     x = 10
     y = 565

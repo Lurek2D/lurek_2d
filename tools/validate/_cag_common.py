@@ -8,6 +8,12 @@ Provides:
     * The closed persona vocabulary and CAG type constants.
 
 No external dependencies; Python 3.11+ stdlib only.
+
+Usage:
+```
+Usage:
+    python tools/validate/_cag_common.py
+```
 """
 
 from __future__ import annotations

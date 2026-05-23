@@ -6088,7 +6088,7 @@ end
 ```lua
 --- Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
 ---@param id number The body ID.
----@param value table Lua value to associate with this body (table, number, string, etc.).
+---@param value any Lua value to associate with this body (table, number, string, etc.).
 function LWorld:setBodyData(id, value) end
 ```
 
@@ -6099,7 +6099,7 @@ Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity refere
 Parameters:
 
 - `id` (`integer`, required): The body ID.
-- `value` (`table`, required): Lua value to associate with this body (table, number, string, etc.).
+- `value` (`any`, required): Lua value to associate with this body (table, number, string, etc.).
 
 #### Example
 

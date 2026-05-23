@@ -697,8 +697,19 @@ def _render_module(info: ModuleInfo) -> str:
 # ---------------------------------------------------------------------------
 
 def main():
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_lua_library_api.py
+
+  # Show all arguments
+  python tools/docs/gen_lua_library_api.py --help
+"""
     parser = argparse.ArgumentParser(
-        description='Generate API reference docs from Lurek2D Lua library files.'
+        description="Generate API reference docs from Lurek2D Lua library files.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument(
         '--output', default='logs/reports/lua_library_api_reference.md',

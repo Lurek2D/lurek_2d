@@ -1,5 +1,7 @@
 -- Evidence tests: html module
 -- Output-only evidence from direct lurek.html API calls.
+-- @covers lurek.html.newDocument
+
 
 local function write_text(path, text)
     local f = io and io.open and io.open(path, "w") or nil

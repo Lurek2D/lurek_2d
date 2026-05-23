@@ -1,5 +1,8 @@
 -- Integration: ECS entities emitting and receiving event signals
 -- @describe integration: entity events via signal
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.event.newSignal
+
 describe("integration: entity events via signal", function()
     -- @integration LSignal:connect
     -- @integration LSignal:emit

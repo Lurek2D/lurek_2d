@@ -1,5 +1,8 @@
 -- Evidence tests: imagedata module
 -- Artifacts are generated from low-level LImageData operations.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = "tests/output/imagedata/"
 

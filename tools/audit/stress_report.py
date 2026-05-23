@@ -124,8 +124,19 @@ def generate_report(results: list) -> str:
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/audit/stress_report.py
+
+  # Show all arguments
+  python tools/audit/stress_report.py --help
+"""
     parser = argparse.ArgumentParser(
         description="Lurek2D stress test runner and reporter",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--output", metavar="FILE")

@@ -602,8 +602,19 @@ def _print_text_report(result: dict) -> None:
 
 
 def main() -> int:
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/validate/validate_generated_lua_stubs.py
+
+  # Show all arguments
+  python tools/validate/validate_generated_lua_stubs.py --help
+"""
     parser = argparse.ArgumentParser(
-        description="Validate committed generated Lua API artifacts against fresh generator output."
+        description="Validate committed generated Lua API artifacts against fresh generator output.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--format", choices=["text", "json"], default="text")
     args = parser.parse_args()

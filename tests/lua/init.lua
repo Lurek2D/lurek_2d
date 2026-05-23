@@ -374,6 +374,9 @@ end
 --- @param category string
 function ensure_evidence_dir(category)
     local dir = evidence_output_dir(category)
+    if lurek and lurek.filesystem and lurek.filesystem.mkdir then
+        pcall(function() lurek.filesystem.mkdir(dir) end)
+    end
     -- os.execute is sandboxed (nil) in the test VM; output dirs are pre-created on disk.
     if not os.execute then return end
     -- Use os.execute for cross-platform directory creation
@@ -500,3 +503,12 @@ function test_summary()
         r.total, r.passed, r.failed))
     return r.failed == 0
 end
+
+-- Override lurek.filesystem.write to use the write_file helper when running in the testVM
+local wf = rawget(_G, "write_file")
+if wf and lurek and lurek.filesystem then
+    lurek.filesystem.write = wf
+end
+
+
+

@@ -188,7 +188,20 @@ def generate_rust_docs(data: dict) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate Lurek2D compact inline Rust API docs.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/docs/gen_docs_rust.py
+
+  # Show all arguments
+  python tools/docs/gen_docs_rust.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Generate Lurek2D compact inline Rust API docs.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--input", default=str(INPUT_FILE))
     parser.add_argument("--output", default=str(OUTPUT_FILE))
     args = parser.parse_args()

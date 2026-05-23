@@ -1,5 +1,9 @@
 -- Evidence tests: effect module
 -- Output-only evidence from direct lurek.effect APIs.
+-- @covers lurek.effect.newOverlay
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local function write_text(path, text)
     local f = io and io.open and io.open(path, "w") or nil

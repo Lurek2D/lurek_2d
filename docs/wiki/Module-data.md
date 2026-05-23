@@ -817,7 +817,7 @@ end
 
 ```lua
 --- Encodes a Lua value into the current structured binary interchange payload.
----@param value table Lua value to encode through the serial table converter.
+---@param value any Lua value to encode through the serial table converter.
 ---@return string Encoded binary payload.
 lurek.data.toMsgPack = function(value) end
 ```
@@ -828,7 +828,7 @@ Encodes a Lua value into the current structured binary interchange payload.
 
 Parameters:
 
-- `value` (`table`, required): Lua value to encode through the serial table converter.
+- `value` (`any`, required): Lua value to encode through the serial table converter.
 
 Returns: `string` - Encoded binary payload.
 

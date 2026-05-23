@@ -1,5 +1,32 @@
 #!/usr/bin/env python3
-"""Validate docstring bindings against code-derived Lua registration snapshots."""
+"""Validate docstring bindings against code-derived Lua registration snapshots.
+
+Usage:
+```
+usage: validate_lua_binding_reports.py [-h] [--source-dir SOURCE_DIR]
+                                       [--code-output CODE_OUTPUT]
+                                       [--doc-output DOC_OUTPUT]
+                                       [--report-output REPORT_OUTPUT]
+                                       [--format {text,json}]
+
+Validate /// Lua binding docs against code-derived registration snapshots.
+
+options:
+  -h, --help            show this help message and exit
+  --source-dir SOURCE_DIR
+  --code-output CODE_OUTPUT
+  --doc-output DOC_OUTPUT
+  --report-output REPORT_OUTPUT
+  --format {text,json}
+
+Examples:
+  # Default execution
+  python tools/validate/validate_lua_binding_reports.py
+
+  # Show all arguments
+  python tools/validate/validate_lua_binding_reports.py --help
+```
+"""
 
 from __future__ import annotations
 
@@ -68,7 +95,20 @@ def _print_text(report) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate /// Lua binding docs against code-derived registration snapshots.")
+    from argparse import RawDescriptionHelpFormatter
+    epilog = """
+Examples:
+  # Default execution
+  python tools/validate/validate_lua_binding_reports.py
+
+  # Show all arguments
+  python tools/validate/validate_lua_binding_reports.py --help
+"""
+    parser = argparse.ArgumentParser(
+        description="Validate /// Lua binding docs against code-derived registration snapshots.",
+        epilog=epilog,
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument("--source-dir", default=str(GEN.SRC_LUA_API_DIR))
     parser.add_argument("--code-output", default=GEN.default_binding_code_snapshot_path())
     parser.add_argument("--doc-output", default=GEN.default_binding_docstring_snapshot_path())
