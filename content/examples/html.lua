@@ -225,7 +225,7 @@ end
 --@api-stub: LHtmlDocument:typeOf
 do
     local doc = lurek.html.newDocument()
-    print("is HtmlDocument = " .. tostring(doc:typeOf("HtmlDocument")))
+    print("is HtmlDocument = " .. tostring(doc:typeOf("LHtmlDocument")))
 end
 
 --- HTML Module Part 2: LHtmlElement methods
@@ -447,7 +447,7 @@ end
 do
     local doc = lurek.html.newDocument("<div>X</div>")
     local el = doc:getRoot()
-    print("is HtmlElement = " .. tostring(el:typeOf("HtmlElement")))
+    print("is HtmlElement = " .. tostring(el:typeOf("LHtmlElement")))
 end
 
 print("content/examples/html.lua")

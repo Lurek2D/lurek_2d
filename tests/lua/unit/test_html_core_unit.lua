@@ -634,7 +634,7 @@ describe("html strict: LHtmlDocument methods", function()
     it("LHtmlDocument type and typeOf are callable", function()
         local doc = lurek.html.newDocument("<p>t</p>")
         expect_type("string", doc:type())
-        expect_type("boolean", doc:typeOf("Object"))
+        expect_type("boolean", doc:typeOf("LObject"))
     end)
 
     -- @covers LHtmlDocument:on
@@ -694,7 +694,7 @@ describe("html strict: LHtmlElement methods", function()
         local el = doc:getElementById("sp")
         if el ~= nil then
             expect_type("string", el:type())
-            expect_type("boolean", el:typeOf("Object"))
+            expect_type("boolean", el:typeOf("LObject"))
         else
             expect_nil(el)
         end

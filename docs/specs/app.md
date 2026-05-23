@@ -129,3 +129,4 @@ Additionally, `app` seamlessly manages development workflows with built-in hot-r
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
 - This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.
 - `app` owns only window-backed runtime execution. `--headless` is intentionally handled in `runtime::headless` before any `App::run()` call.
+- The frame loop consumes `SharedState::restart_requested` (set by `lurek.event.restart()`) and triggers `restart_game()`, which tears down and rebuilds the Lua VM for GUI, TUI, and CLI under the same `App::run()` path.

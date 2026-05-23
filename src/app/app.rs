@@ -2621,11 +2621,24 @@ impl ApplicationHandler for LurekApp {
                     self.restart_game();
                     return;
                 }
+                let mut restart_requested = false;
+                let mut quit_requested = false;
                 if let Some(state) = &self.state {
-                    if state.borrow().quit_requested {
-                        event_loop.exit();
-                        return;
+                    let mut st = state.borrow_mut();
+                    if st.restart_requested {
+                        st.restart_requested = false;
+                        restart_requested = true;
                     }
+                    quit_requested = st.quit_requested;
+                }
+                if restart_requested {
+                    self.run_state = RunState::Restarting;
+                    self.restart_game();
+                    return;
+                }
+                if quit_requested {
+                    event_loop.exit();
+                    return;
                 }
                 let tick_start = Instant::now();
                 self.poll_gamepads();

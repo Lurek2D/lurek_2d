@@ -481,7 +481,7 @@ describe("LUiWidget geometry and visibility", function()
     it("typeOf returns true for LWidget and Object", function()
         local w = make_basic_widget()
         expect_equal(true, w:typeOf("LWidget"))
-        expect_equal(true, w:typeOf("Object"))
+        expect_equal(true, w:typeOf("LObject"))
     end)
 
     -- @covers LUiWidget.typeOf
@@ -3882,7 +3882,7 @@ describe("lurek.ui theme API", function()
     it("newTheme typeOf LTheme and Object", function()
         local t = lurek.ui.newTheme()
         expect_equal(true, t:typeOf("LTheme"))
-        expect_equal(true, t:typeOf("Object"))
+        expect_equal(true, t:typeOf("LObject"))
     end)
 
     -- @covers lurek.ui.newTheme

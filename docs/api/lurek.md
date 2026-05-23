@@ -6005,12 +6005,12 @@ LProvinceRegistry:setAttr( id : integer, key : string, value : string ) -> boole
 LProvinceRegistry:setBorderClass( a : integer, b : integer, class : string )  -- Sets the border classification between two adjacent provinces. Used to control border rendering style (e.g. rivers drawn as blue lines)
 LProvinceRegistry:setBorderStyle( id : integer, border_style : integer ) -> boolean  -- Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn
 LProvinceRegistry:setCapital( id : integer, x : number, y : number ) -> boolean  -- Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled
-LProvinceRegistry:setFogState( id : integer, fog_state : integer ) -> boolean  -- Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay
+LProvinceRegistry:setFogState( id : integer, fog_state : integer ) -> boolean  -- Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes
 LProvinceRegistry:setLabelLine( id : integer, ax : number, ay : number, bx : number, by : number ) -> boolean  -- Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names
 LProvinceRegistry:setLabelText( id : integer, text : string ) -> boolean  -- Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options
 LProvinceRegistry:setPoliticalColor( id : integer, r : number, g : number, b : number, a : number? ) -> boolean  -- Sets the political map color for a province. Used in political map mode rendering and change tracking
 LProvinceRegistry:setTerrainType( id : integer, terrain_type : integer ) -> boolean  -- Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode
-LProvinceRegistry:setVisibilityState( id : integer, visibility_state : integer ) -> boolean  -- Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted)
+LProvinceRegistry:setVisibilityState( id : integer, visibility_state : integer ) -> boolean  -- Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible
 LProvinceRegistry:type() -> string  -- Returns the type name string for this userdata object
 LProvinceRegistry:typeOf( name : string ) -> boolean  -- Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object"
 ```

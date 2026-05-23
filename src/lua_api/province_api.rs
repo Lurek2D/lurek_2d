@@ -5,8 +5,10 @@ use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::ProvinceMapMode;
 use crate::province::registry::ProvinceRegistry;
-use crate::province::render::{generate_render_commands, ProvinceRenderOptions};
-use crate::province::types::BorderClass;
+use crate::province::render::{
+    generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
+};
+use crate::province::types::{BorderClass, BorderPairFlags, BorderPairStyle};
 use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
 use crate::province::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
@@ -47,6 +49,66 @@ fn marker_options_from_lua(opts: Option<&LuaTable>) -> MarkerSanitizeOptions {
         }
     }
     out
+}
+
+fn parse_border_pair_flags_from_lua(value: LuaValue) -> LuaResult<BorderPairFlags> {
+    match value {
+        LuaValue::Nil => Ok(BorderPairFlags::empty()),
+        LuaValue::String(s) => {
+            let token = s.to_str()?.to_lowercase();
+            let bit = BorderPairFlags::parse_token(token.as_str()).ok_or_else(|| {
+                LuaError::RuntimeError(format!("invalid border flag '{}'", token))
+            })?;
+            Ok(BorderPairFlags::from_bits(bit))
+        }
+        LuaValue::Table(t) => {
+            let mut flags = BorderPairFlags::empty();
+            for value in t.sequence_values::<String>() {
+                let token = value?.to_lowercase();
+                let bit = BorderPairFlags::parse_token(token.as_str()).ok_or_else(|| {
+                    LuaError::RuntimeError(format!("invalid border flag '{}'", token))
+                })?;
+                flags.insert_bits(bit);
+            }
+            Ok(flags)
+        }
+        _ => Err(LuaError::RuntimeError(
+            "flags must be a string or array of strings".to_string(),
+        )),
+    }
+}
+
+fn parse_border_pair_style_from_lua(style: &LuaTable) -> LuaResult<BorderPairStyle> {
+    let thickness = style
+        .get::<_, Option<f32>>("thickness")?
+        .unwrap_or(1.0)
+        .max(1.0);
+    let color = if let Some(color_tbl) = style.get::<_, Option<LuaTable>>("color")? {
+        Some([
+            color_tbl.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+            color_tbl.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+            color_tbl.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
+            color_tbl.get::<_, Option<f32>>(4)?.unwrap_or(1.0),
+        ])
+    } else {
+        None
+    };
+    let flags_value = style.get::<_, Option<LuaValue>>("flags")?.unwrap_or(LuaValue::Nil);
+    let flags = parse_border_pair_flags_from_lua(flags_value)?;
+    Ok(BorderPairStyle {
+        color,
+        thickness,
+        flags,
+    })
+}
+
+fn parse_zoom_mode_from_lua(value: Option<String>) -> Option<ProvinceZoomMode> {
+    match value.as_deref() {
+        Some("auto") => Some(ProvinceZoomMode::Auto),
+        Some("strategic") => Some(ProvinceZoomMode::Strategic),
+        Some("tactical") => Some(ProvinceZoomMode::Tactical),
+        _ => None,
+    }
 }
 /// Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 #[derive(Clone)]
@@ -374,6 +436,47 @@ impl LuaUserData for LuaProvinceRegistry {
                 Ok(())
             },
         );
+        // -- setBorderPairStyle --
+        /// Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
+        /// @param | a | integer | First province ID.
+        /// @param | b | integer | Second province ID.
+        /// @param | style | table | Style table with optional fields: color={r,g,b,a}, thickness=number, flags=string|string[].
+        /// @return | boolean | True when style was applied.
+        methods.add_method_mut(
+            "setBorderPairStyle",
+            |_, this, (a, b, style): (u32, u32, LuaTable)| {
+                let parsed = parse_border_pair_style_from_lua(&style)?;
+                this.with_registry_mut(|r| r.set_border_pair_style(a, b, parsed))?;
+                Ok(true)
+            },
+        );
+        // -- getBorderPairStyle --
+        /// Returns the style override for a specific adjacency pair, or nil when unset.
+        /// @param | a | integer | First province ID.
+        /// @param | b | integer | Second province ID.
+        /// @return | table | Style table or nil.
+        methods.add_method("getBorderPairStyle", |lua, this, (a, b): (u32, u32)| {
+            let style = this.with_registry(|r| r.get_border_pair_style(a, b))?;
+            let Some(style) = style else {
+                return Ok(LuaValue::Nil);
+            };
+            let out = lua.create_table()?;
+            out.set("thickness", style.thickness)?;
+            if let Some(color) = style.color {
+                let c = lua.create_table()?;
+                c.set(1, color[0])?;
+                c.set(2, color[1])?;
+                c.set(3, color[2])?;
+                c.set(4, color[3])?;
+                out.set("color", c)?;
+            }
+            let flags = lua.create_table()?;
+            for (i, token) in style.flags.to_tokens().into_iter().enumerate() {
+                flags.set(i + 1, token)?;
+            }
+            out.set("flags", flags)?;
+            Ok(LuaValue::Table(out))
+        });
         // -- setPoliticalColor --
         /// Sets the political map color for a province. Used in political map mode rendering and change tracking.
         /// @param | id | integer | Province ID.
@@ -413,7 +516,7 @@ impl LuaUserData for LuaProvinceRegistry {
             },
         );
         // -- setFogState --
-        /// Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
+        /// Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.
         /// @param | id | integer | Province ID.
         /// @param | fog_state | integer | Fog state value (game-defined meaning).
         /// @return | boolean | True if the province ID exists.
@@ -421,9 +524,9 @@ impl LuaUserData for LuaProvinceRegistry {
             this.with_registry_mut(|reg| reg.set_fog_state(id, fog_state))
         });
         // -- setVisibilityState --
-        /// Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
+        /// Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
         /// @param | id | integer | Province ID.
-        /// @param | visibility_state | integer | Visibility state value (game-defined meaning).
+        /// @param | visibility_state | integer | Visibility state byte.
         /// @return | boolean | True if the province ID exists.
         methods.add_method_mut(
             "setVisibilityState",
@@ -556,7 +659,7 @@ impl LuaUserData for LuaProvinceRegistry {
         });
         // -- render --
         /// Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
-        /// @param | opts | table? | Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals (boolean?), border_width (number?), hovered_id/selected_id (integer?).
+        /// @param | opts | table? | Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"|"tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
         methods.add_method("render", |_, this, opts: Option<LuaTable>| {
             let opts = opts;
             let mode = if let Some(ref t) = opts {
@@ -613,6 +716,22 @@ impl LuaUserData for LuaProvinceRegistry {
                     .as_ref()
                     .and_then(|t| t.get::<_, Option<f32>>("border_width").ok().flatten())
                     .unwrap_or(1.0),
+                zoom_mode: parse_zoom_mode_from_lua(
+                    opts.as_ref()
+                        .and_then(|t| t.get::<_, Option<String>>("zoom_mode").ok().flatten()),
+                ),
+                tactical_zoom_threshold: opts
+                    .as_ref()
+                    .and_then(|t| {
+                        t.get::<_, Option<f32>>("tactical_zoom_threshold")
+                            .ok()
+                            .flatten()
+                    })
+                    .unwrap_or(3.0),
+                draw_roads: opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<bool>>("draw_roads").ok().flatten())
+                    .unwrap_or(true),
                 hovered_id: opts
                     .as_ref()
                     .and_then(|t| t.get::<_, Option<u32>>("hovered_id").ok().flatten()),
@@ -715,6 +834,33 @@ impl LuaUserData for LuaProvinceRegistry {
                         /// Performs the 'class' operation.
                         row.set("class", class.as_str())?;
                     }
+                    ProvinceChange::BorderPairStyle {
+                        province_a,
+                        province_b,
+                        color,
+                        thickness,
+                        flags,
+                    } => {
+                        /// Performs the 'kind' operation.
+                        row.set("kind", "border_pair_style")?;
+                        /// Performs the 'province_a' operation.
+                        row.set("province_a", province_a)?;
+                        /// Performs the 'province_b' operation.
+                        row.set("province_b", province_b)?;
+                        /// Performs the 'thickness' operation.
+                        row.set("thickness", thickness)?;
+                        /// Performs the 'flags' operation.
+                        row.set("flags", flags)?;
+                        if let Some(color) = color {
+                            let c = lua.create_table()?;
+                            c.set(1, color[0])?;
+                            c.set(2, color[1])?;
+                            c.set(3, color[2])?;
+                            c.set(4, color[3])?;
+                            /// Performs the 'color' operation.
+                            row.set("color", c)?;
+                        }
+                    }
                 }
                 out.set(i + 1, row)?;
             }
@@ -729,7 +875,7 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LProvinceRegistry" || name == "Object")
+            Ok(name == "LProvinceRegistry" || name == "LObject")
         });
     }
 }

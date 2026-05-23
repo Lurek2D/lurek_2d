@@ -331,7 +331,7 @@ end
 --@api-stub: LGraph:typeOf
 do
     local g = lurek.graph.newGraph()
-    print("is Graph = " .. tostring(g:typeOf("Graph")))
+    print("is Graph = " .. tostring(g:typeOf("LGraph")))
 end
 
 --- Graph Module Part 2: LGraphNode methods
@@ -707,7 +707,7 @@ end
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    print("is GraphNode = " .. tostring(n:typeOf("GraphNode")))
+    print("is GraphNode = " .. tostring(n:typeOf("LGraphNode")))
 end
 
 --- Graph Module Part 3: LGraphEdge and LGraphItem methods
@@ -962,7 +962,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("is GraphEdge = " .. tostring(e:typeOf("GraphEdge")))
+    print("is GraphEdge = " .. tostring(e:typeOf("LGraphEdge")))
 end
 
 --@api-stub: LGraphItem:getType
@@ -1050,7 +1050,7 @@ end
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
-    print("is GraphItem = " .. tostring(item:typeOf("GraphItem")))
+    print("is GraphItem = " .. tostring(item:typeOf("LGraphItem")))
 end
 
 print("content/examples/graph.lua")

@@ -4,6 +4,7 @@ local R = lurek.render
 local MAP_W = 1000
 local MAP_H = 450
 local PIXEL_SIZE = 8
+local TACTICAL_ZOOM_THRESHOLD = 3.0
 local SANITIZED_MAP_PATH = "save/eu2/map2.png"
 
 local reg = nil
@@ -37,6 +38,24 @@ local function reg_call(method, ...)
         return nil
     end
     return a, b, c, d, e
+end
+
+local function seed_country_borders(limit)
+    if not reg or not reg.adjacencies or not reg.setBorderPairStyle then
+        return
+    end
+    local pairs = reg:adjacencies() or {}
+    local n = math.min(#pairs, limit or 48)
+    for i = 1, n do
+        local p = pairs[i]
+        if p and p.province_a and p.province_b then
+            reg:setBorderPairStyle(p.province_a, p.province_b, {
+                color = { 0.85, 0.18, 0.18, 1.0 },
+                thickness = 3.0,
+                flags = { "country" },
+            })
+        end
+    end
 end
 
 local function clamp(v, lo, hi)
@@ -103,6 +122,7 @@ function lurek.init()
         set_capitals = true,
         set_label_lines = true,
     })
+    seed_country_borders(64)
     fit_camera()
 end
 
@@ -245,10 +265,13 @@ local function render_frame()
             screen_w = ww,
             screen_h = hh,
             map_mode = map_mode,
+            zoom_mode = "auto",
+            tactical_zoom_threshold = TACTICAL_ZOOM_THRESHOLD,
             draw_fills = true,
             draw_borders = true,
             draw_labels = draw_labels,
             draw_capitals = true,
+            draw_roads = true,
             border_width = 1.0,
             hovered_id = nil,
             selected_id = nil,
@@ -271,10 +294,13 @@ local function render_frame()
             screen_w = ww,
             screen_h = hh,
             map_mode = map_mode,
+            zoom_mode = "auto",
+            tactical_zoom_threshold = TACTICAL_ZOOM_THRESHOLD,
             draw_fills = false,
             draw_borders = false,
             draw_labels = false,
             draw_capitals = false,
+            draw_roads = false,
             border_width = 1.0,
             hovered_id = nil,
             selected_id = selected_gid,
@@ -289,10 +315,13 @@ local function render_frame()
             screen_w = ww,
             screen_h = hh,
             map_mode = map_mode,
+            zoom_mode = "auto",
+            tactical_zoom_threshold = TACTICAL_ZOOM_THRESHOLD,
             draw_fills = false,
             draw_borders = false,
             draw_labels = false,
             draw_capitals = false,
+            draw_roads = false,
             border_width = 1.0,
             hovered_id = hovered_gid,
             selected_id = nil,

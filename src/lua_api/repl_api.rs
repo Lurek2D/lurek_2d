@@ -67,7 +67,7 @@ impl LuaUserData for LReplSession {
         /// @param | name | string | Type name to compare against `LReplSession` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LReplSession" || name == "Object")
+            Ok(name == "LReplSession" || name == "LObject")
         });
     }
 }

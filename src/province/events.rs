@@ -51,6 +51,19 @@ pub enum ProvinceChange {
         /// New border classification.
         class: BorderClass,
     },
+    /// Shared border pair style between two provinces was updated.
+    BorderPairStyle {
+        /// Lower-id province of the pair (normalised).
+        province_a: ProvinceId,
+        /// Higher-id province of the pair (normalised).
+        province_b: ProvinceId,
+        /// Optional RGBA color override.
+        color: Option<[f32; 4]>,
+        /// New line thickness.
+        thickness: f32,
+        /// Semantic style flag bits.
+        flags: u8,
+    },
 }
 
 /// High-level map signal emitted to Lua callbacks after province mutations are batched.

@@ -198,7 +198,7 @@ end
 --@api-stub: LPipeline:typeOf
 do
     local pipe = lurek.pipeline.newPipeline("typed")
-    print("is LPipeline = " .. tostring(pipe:typeOf("LPipeline")) .. ", is Object = " .. tostring(pipe:typeOf("Object")))
+    print("is LPipeline = " .. tostring(pipe:typeOf("LPipeline")) .. ", is Object = " .. tostring(pipe:typeOf("LObject")))
 end
 
 --- Pipeline Module Part 2: step config, async execution, callbacks, sub-pipelines, branching, tags
@@ -495,7 +495,7 @@ end
 --@api-stub: LPipelineStep:typeOf
 do
     local step = lurek.pipeline.newStep("typed", function() end)
-    print("is LPipelineStep = " .. tostring(step:typeOf("LPipelineStep")) .. ", is Object = " .. tostring(step:typeOf("Object")))
+    print("is LPipelineStep = " .. tostring(step:typeOf("LPipelineStep")) .. ", is Object = " .. tostring(step:typeOf("LObject")))
 end
 
 --- Pipeline Module Part 2: pipeline run, getContext, fromTable

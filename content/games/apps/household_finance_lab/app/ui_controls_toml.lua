@@ -1,6 +1,7 @@
 local Controls = {}
 
 local LAYOUT_PATH = "layouts/household_finance_lab_ui.toml"
+local LAYOUT_PATH_FALLBACK = "content/games/apps/household_finance_lab/layouts/household_finance_lab_ui.toml"
 
 local function clamp(value, min_value, max_value)
     value = tonumber(value) or min_value
@@ -77,7 +78,12 @@ end
 
 local function load_layout(ctx)
     lurek.ui.clear()
-    lurek.ui.loadLayoutGameFile(LAYOUT_PATH)
+    local ok = pcall(function()
+        lurek.ui.loadLayoutGameFile(LAYOUT_PATH)
+    end)
+    if not ok then
+        lurek.ui.loadLayoutGameFile(LAYOUT_PATH_FALLBACK)
+    end
 end
 
 local function ensure_tabs(tabs, names)
@@ -278,8 +284,22 @@ function Controls.apply_snapshot(ctx, snapshot)
         w.tabs:setActiveTab(clamped_tab)
         ctx.ui_active_tab = clamped_tab
     end
-    if snapshot.member and w.member then w.member:setSelectedIndex(index_of(ctx.C.MEMBERS, snapshot.member)) end
-    if snapshot.category and w.category then w.category:setSelectedIndex(index_of(ctx.C.CATEGORIES, snapshot.category)) end
+    if snapshot.member and w.member then
+        local idx = index_of(ctx.C.MEMBERS, snapshot.member)
+        w.member:setSelectedIndex(idx)
+        local selected = tostring(w.member:getSelectedItem() or "")
+        if selected ~= tostring(snapshot.member) then
+            w.member:setSelectedIndex(math.max(0, idx - 1))
+        end
+    end
+    if snapshot.category and w.category then
+        local idx = index_of(ctx.C.CATEGORIES, snapshot.category)
+        w.category:setSelectedIndex(idx)
+        local selected = tostring(w.category:getSelectedItem() or "")
+        if selected ~= tostring(snapshot.category) then
+            w.category:setSelectedIndex(math.max(0, idx - 1))
+        end
+    end
     if snapshot.start_year and w.start_year then w.start_year:setValue(clamp(snapshot.start_year, ctx.C.YEAR_MIN, ctx.C.YEAR_MAX)) end
     if snapshot.end_year and w.end_year then w.end_year:setValue(clamp(snapshot.end_year, ctx.C.YEAR_MIN, ctx.C.YEAR_MAX)) end
     if snapshot.use_cleaned ~= nil and w.cleaned then w.cleaned:setOn(snapshot.use_cleaned == true) end

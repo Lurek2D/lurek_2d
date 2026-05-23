@@ -10,6 +10,7 @@ use lurek2d::runtime::config::Config;
 use lurek2d::runtime::error::{EngineError, ErrorCategory};
 use lurek2d::runtime::log_messages::*;
 use lurek2d::runtime::{RuntimeMode, SharedState};
+use lurek2d::build_builtin_cli_script;
 use std::path::PathBuf;
 
 // ── log_messages ─────────────────────────────────────────────────────────────
@@ -451,6 +452,39 @@ default_font_bold = true
         assert_eq!(st.default_font, st.default_bold_fonts[1]);
         assert_eq!(st.active_font, st.default_bold_fonts[1]);
         assert!(st.active_bold);
+    }
+
+    #[test]
+    fn cli_builtin_script_contains_multiline_completion_logic() {
+        let cfg = Config::default();
+        let script = build_builtin_cli_script(&cfg, None);
+
+        assert!(script.contains("local multiline = false"));
+        assert!(script.contains("local function is_complete_input(text)"));
+        assert!(script.contains("elseif ch == \"{\" then"));
+        assert!(script.contains("elseif ch == \"}\" then"));
+        assert!(script.contains("if key == \"return\" or key == \"kpenter\" then submit(); return end"));
+        assert!(script.contains("prompt_prefix() .. input:gsub(\"\\n\", \"\\\\n\")"));
+    }
+
+    #[test]
+    fn cli_builtin_script_contains_reset_restart_hook() {
+        let cfg = Config::default();
+        let script = build_builtin_cli_script(&cfg, None);
+
+        assert!(script.contains("if result == \"(reset)\" then"));
+        assert!(script.contains("lurek.event.restart()"));
+    }
+
+    #[test]
+    fn cli_builtin_script_autoloads_startup_main_with_repl_load() {
+        let cfg = Config::default();
+        let startup = PathBuf::from("C:/tmp/test_game/main.lua");
+        let script = build_builtin_cli_script(&cfg, Some(startup.as_path()));
+
+        assert!(script.contains("Autoloading startup main.lua:"));
+        assert!(script.contains("local load_result = repl:eval(\":load \" .. startup)"));
+        assert!(script.contains("C:/tmp/test_game/main.lua"));
     }
 }
 

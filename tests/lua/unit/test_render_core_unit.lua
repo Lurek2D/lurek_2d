@@ -283,7 +283,7 @@ describe("lurek.render nine-slice", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 5, 5, 5, 5)
         expect_true(ns:typeOf("LNineSlice"), "should be LNineSlice type")
-        expect_true(ns:typeOf("Object"), "should be Object type")
+        expect_true(ns:typeOf("LObject"), "should be Object type")
     end)
 
     -- @covers lurek.render.newImage
@@ -1075,7 +1075,7 @@ describe("render strict: LImageData methods", function()
         end
         if ok and img ~= nil then
             expect_equal(img:type(), "LImageData")
-            expect_true(img:typeOf("ImageData"))
+            expect_true(img:typeOf("LImageData"))
         else
             expect_true(fn == nil or not ok or img == nil)
         end
@@ -1327,7 +1327,7 @@ describe("render strict: LShape methods", function()
     it("LShape type and typeOf return correct strings", function()
         local shape = lurek.render.newShape()
         expect_equal(shape:type(), "LShape")
-        expect_true(shape:typeOf("Object"))
+        expect_true(shape:typeOf("LObject"))
     end)
 end)
 

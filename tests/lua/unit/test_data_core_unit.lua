@@ -1439,7 +1439,7 @@ describe("data strict: LRingBuffer / LDataView / LDataWriter type/typeOf", funct
     it("LRingBuffer type and typeOf are callable", function()
         local rb = lurek.data.newRingBuffer(8)
         expect_type("string", rb:type())
-        expect_type("boolean", rb:typeOf("Object"))
+        expect_type("boolean", rb:typeOf("LObject"))
     end)
 
     -- @covers LDataView:type
@@ -1448,7 +1448,7 @@ describe("data strict: LRingBuffer / LDataView / LDataWriter type/typeOf", funct
     it("LDataView type and typeOf are callable", function()
         local dv = lurek.data.newDataView("hello")
         expect_type("string", dv:type())
-        expect_type("boolean", dv:typeOf("Object"))
+        expect_type("boolean", dv:typeOf("LObject"))
     end)
 
     -- @covers LDataWriter:type
@@ -1457,7 +1457,7 @@ describe("data strict: LRingBuffer / LDataView / LDataWriter type/typeOf", funct
     it("LDataWriter type and typeOf are callable", function()
         local dw = lurek.data.newWriter()
         expect_type("string", dw:type())
-        expect_type("boolean", dw:typeOf("Object"))
+        expect_type("boolean", dw:typeOf("LObject"))
     end)
 end)
 

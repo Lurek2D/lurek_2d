@@ -239,7 +239,7 @@ impl LuaUserData for LuaSignal {
         /// @param | name | string | Type name to compare against `LSignal`, `Signal`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSignal" || name == "LSignal" || name == "Signal" || name == "Object")
+            Ok(name == "LSignal" || name == "LObject")
         });
     }
 }

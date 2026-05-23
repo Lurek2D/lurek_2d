@@ -124,7 +124,7 @@ fn create_widget_table<'a>(
     t.set(
         "typeOf",
         lua.create_function(move |_, (_self, name): (LuaValue, String)| {
-            Ok(name == type_name || name == "LWidget" || name == "Object")
+            Ok(name == type_name || name == "LWidget" || name == "LObject")
         })?,
     )?;
     let c = ctx.clone();
@@ -5519,7 +5519,7 @@ impl LuaUserData for LuaTheme {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTheme" || name == "Object")
+            Ok(name == "LTheme" || name == "LObject")
         });
     }
 }
@@ -7170,7 +7170,7 @@ impl LuaUserData for LuaLineChart {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LLineChart" || name == "Object")
+            Ok(name == "LLineChart" || name == "LObject")
         });
     }
 }
@@ -7251,7 +7251,7 @@ impl LuaUserData for LuaBarChart {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBarChart" || name == "Object")
+            Ok(name == "LBarChart" || name == "LObject")
         });
     }
 }
@@ -7355,7 +7355,7 @@ impl LuaUserData for LuaScatterPlot {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LScatterPlot" || name == "Object")
+            Ok(name == "LScatterPlot" || name == "LObject")
         });
     }
 }
@@ -7421,7 +7421,7 @@ impl LuaUserData for LuaPieChart {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPieChart" || name == "Object")
+            Ok(name == "LPieChart" || name == "LObject")
         });
     }
 }
@@ -7510,7 +7510,7 @@ impl LuaUserData for LuaAreaChart {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAreaChart" || name == "Object")
+            Ok(name == "LAreaChart" || name == "LObject")
         });
     }
 }

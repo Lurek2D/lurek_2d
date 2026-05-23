@@ -791,7 +791,7 @@ describe("camera strict: newCamera / apply / reset / attach / detach / type / ty
     it("LCamera type and typeOf are callable", function()
         local cam = lurek.camera.newCamera(800, 600)
         expect_type("string", cam:type())
-        expect_type("boolean", cam:typeOf("Object"))
+        expect_type("boolean", cam:typeOf("LObject"))
     end)
 
     -- @covers LCamera:apply

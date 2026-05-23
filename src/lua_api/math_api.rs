@@ -193,7 +193,7 @@ impl LuaUserData for LuaVec2 {
         /// @param | name | string | Type name to compare against `LVec2` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LVec2" || name == "Object")
+            Ok(name == "LVec2" || name == "LObject")
         });
     }
 }
@@ -328,7 +328,7 @@ impl LuaUserData for LuaVec3 {
         /// @param | name | string | Type name to compare against `LVec3` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LVec3" || name == "Object")
+            Ok(name == "LVec3" || name == "LObject")
         });
     }
 }
@@ -392,7 +392,7 @@ impl LuaUserData for LuaCatmullRom {
         /// @param | name | string | Type name to compare against `LCatmullRom` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCatmullRom" || name == "Object")
+            Ok(name == "LCatmullRom" || name == "LObject")
         });
     }
 }
@@ -422,7 +422,7 @@ impl LuaUserData for LuaHermite {
         /// @param | name | string | Type name to compare against `LHermite` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LHermite" || name == "Object")
+            Ok(name == "LHermite" || name == "LObject")
         });
     }
 }
@@ -498,7 +498,7 @@ impl LuaUserData for LuaRandomGenerator {
         /// @param | name | string | Type name to compare against `LRandomGenerator` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LRandomGenerator" || name == "Object")
+            Ok(name == "LRandomGenerator" || name == "LObject")
         });
     }
 }
@@ -652,7 +652,7 @@ impl LuaUserData for LuaTransform {
         /// @param | name | string | Type name to compare against `LTransform` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTransform" || name == "Object")
+            Ok(name == "LTransform" || name == "LObject")
         });
     }
 }
@@ -807,7 +807,7 @@ impl LuaUserData for LuaBezierCurve {
         /// @param | name | string | Type name to compare against `LBezierCurve` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBezierCurve" || name == "Object")
+            Ok(name == "LBezierCurve" || name == "LObject")
         });
     }
 }
@@ -918,7 +918,7 @@ impl LuaUserData for LuaTween {
         /// @param | name | string | Type name to compare against `LTween` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTween" || name == "Object")
+            Ok(name == "LTween" || name == "LObject")
         });
     }
 }
@@ -1041,7 +1041,7 @@ impl LuaUserData for LuaSpatialHash {
         /// @param | name | string | Type name to compare against `LSpatialHash` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSpatialHash" || name == "Object")
+            Ok(name == "LSpatialHash" || name == "LObject")
         });
     }
 }
@@ -1388,7 +1388,7 @@ impl LuaUserData for LuaNoiseGenerator {
         /// @param | name | string | Type name to compare against `LNoiseGenerator` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNoiseGenerator" || name == "Object")
+            Ok(name == "LNoiseGenerator" || name == "LObject")
         });
     }
 }
@@ -1455,7 +1455,7 @@ impl LuaUserData for LuaCircle {
         /// @param | name | string | Type name to compare against `LCircle` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCircle" || name == "Object")
+            Ok(name == "LCircle" || name == "LObject")
         });
     }
 }
@@ -1621,7 +1621,7 @@ impl LuaUserData for LuaAabbTree {
         /// @param | name | string | Type name to compare against `LAabbTree` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAabbTree" || name == "Object")
+            Ok(name == "LAabbTree" || name == "LObject")
         });
     }
 }

@@ -274,7 +274,7 @@ impl LuaUserData for LuaTileSet {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LTileSet"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTileSet" || name == "Object")
+            Ok(name == "LTileSet" || name == "LObject")
         });
     }
 }
@@ -915,7 +915,7 @@ impl LuaUserData for LuaTileMap {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LTileMap"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTileMap" || name == "Object")
+            Ok(name == "LTileMap" || name == "LObject")
         });
     }
 }
@@ -1020,7 +1020,7 @@ impl LuaUserData for LuaAutoTileSheet {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LAutoTileSheet"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAutoTileSheet" || name == "Object")
+            Ok(name == "LAutoTileSheet" || name == "LObject")
         });
     }
 }
@@ -1157,7 +1157,7 @@ impl LuaUserData for LuaChunkMap {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LChunkMap"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LChunkMap" || name == "Object")
+            Ok(name == "LChunkMap" || name == "LObject")
         });
     }
 }
@@ -1311,7 +1311,7 @@ impl LuaUserData for LuaLargeMapRenderer {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LLargeMapRenderer"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LLargeMapRenderer" || name == "Object")
+            Ok(name == "LLargeMapRenderer" || name == "LObject")
         });
     }
 }
@@ -1483,7 +1483,7 @@ impl LuaUserData for LuaIsoMap {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LIsoMap"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LIsoMap" || name == "Object")
+            Ok(name == "LIsoMap" || name == "LObject")
         });
     }
 }
@@ -1621,7 +1621,7 @@ impl LuaUserData for LuaMapBlock {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LMapBlock"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMapBlock" || name == "Object")
+            Ok(name == "LMapBlock" || name == "LObject")
         });
     }
 }
@@ -1686,7 +1686,7 @@ impl LuaUserData for LuaMapGroup {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LMapGroup"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMapGroup" || name == "Object")
+            Ok(name == "LMapGroup" || name == "LObject")
         });
     }
 }
@@ -1783,7 +1783,7 @@ impl LuaUserData for LuaMapScript {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LMapScript"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMapScript" || name == "Object")
+            Ok(name == "LMapScript" || name == "LObject")
         });
     }
 }
@@ -1829,7 +1829,7 @@ impl LuaUserData for LuaMapGen {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if `name` is `"LMapGen"` or `"Object"`.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMapGen" || name == "Object")
+            Ok(name == "LMapGen" || name == "LObject")
         });
     }
 }

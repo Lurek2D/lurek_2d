@@ -786,7 +786,7 @@ impl LuaUserData for LuaUniverse {
         /// @param | name | string | Type name to compare against `LUniverse` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LUniverse" || name == "Object")
+            Ok(name == "LUniverse" || name == "LObject")
         });
     }
 }

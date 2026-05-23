@@ -720,7 +720,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     print(mm:type())
     print(mm:typeOf("LMinimap"))
-    print(mm:typeOf("Object"))
+    print(mm:typeOf("LObject"))
 end
 
 --@api-stub: LMinimap:typeOf
@@ -729,7 +729,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     print(mm:type())
     print(mm:typeOf("LMinimap"))
-    print(mm:typeOf("Object"))
+    print(mm:typeOf("LObject"))
 end
 
 print("content/examples/minimap.lua")

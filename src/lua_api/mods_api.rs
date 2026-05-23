@@ -365,7 +365,7 @@ impl LuaUserData for LuaMod {
         /// @param | name | string | Type name to compare against `LMod` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMod" || name == "Object")
+            Ok(name == "LMod" || name == "LObject")
         });
     }
 }
@@ -549,7 +549,7 @@ impl LuaUserData for LuaModManager {
         /// @param | name | string | Type name to compare against `LModManager` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LModManager" || name == "Object")
+            Ok(name == "LModManager" || name == "LObject")
         });
     }
 }
@@ -652,7 +652,7 @@ impl LuaUserData for LuaContentRegistry {
         /// @param | name | string | Type name to compare against `LContentRegistry` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LContentRegistry" || name == "Object")
+            Ok(name == "LContentRegistry" || name == "LObject")
         });
     }
 }

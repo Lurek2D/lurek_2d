@@ -357,7 +357,7 @@ describe("lurek.effect.newEffect", function()
     -- @covers lurek.effect.newEffect
     it("effect:typeOf('PostFxEffect') returns true", function()
         local eff = lurek.effect.newEffect("blur")
-        expect_equal(true, eff:typeOf("PostFxEffect"))
+        expect_equal(true, eff:typeOf("LPostFxEffect"))
     end)
 end)
 
@@ -1299,21 +1299,21 @@ describe("overlay type", function()
     -- @covers lurek.effect.newOverlay
     it("typeOf Object returns true", function()
         local ov = lurek.effect.newOverlay()
-        expect_equal(ov:typeOf("Object"), true)
+        expect_equal(ov:typeOf("LObject"), true)
     end)
 
     -- @covers LOverlay:typeOf
     -- @covers lurek.effect.newOverlay
     it("typeOf Overlay returns true", function()
         local ov = lurek.effect.newOverlay()
-        expect_equal(ov:typeOf("Overlay"), true)
+        expect_equal(ov:typeOf("LOverlay"), true)
     end)
 
     -- @covers LOverlay:typeOf
     -- @covers lurek.effect.newOverlay
     it("typeOf unrelated returns false", function()
         local ov = lurek.effect.newOverlay()
-        expect_equal(ov:typeOf("PostFxEffect"), false)
+        expect_equal(ov:typeOf("LPostFxEffect"), false)
     end)
 end)
 
@@ -2147,7 +2147,7 @@ describe("effect strict: LPostFxStack typeOf", function()
     -- @covers lurek.effect.newStack
     it("LPostFxStack typeOf returns boolean", function()
         local stack = lurek.effect.newStack(320, 240)
-        expect_type("boolean", stack:typeOf("Object"))
+        expect_type("boolean", stack:typeOf("LObject"))
     end)
 end)
 
@@ -2182,7 +2182,7 @@ describe("effect strict: LImageEffect methods", function()
     it("LImageEffect type/typeOf/clear/getEffectCount/save are callable", function()
         local ie = lurek.effect.newImageEffect()
         expect_type("string", ie:type())
-        expect_type("boolean", ie:typeOf("Object"))
+        expect_type("boolean", ie:typeOf("LObject"))
         expect_type("number", ie:getEffectCount())
         ie:clear()
         local ok = pcall(function() ie:save() end)
@@ -2223,7 +2223,7 @@ describe("effect strict: LScreenTransition color/setColor/type/typeOf", function
         local ok = pcall(function() tr:setColor({r=1,g=1,b=1,a=1}) end)
         expect_type("boolean", ok)
         expect_type("string", tr:type())
-        expect_type("boolean", tr:typeOf("Object"))
+        expect_type("boolean", tr:typeOf("LObject"))
     end)
 end)
 

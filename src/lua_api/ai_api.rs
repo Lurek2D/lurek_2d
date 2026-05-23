@@ -132,7 +132,7 @@ impl LuaUserData for LuaAIWorld {
         /// @param | name | string | Type name to compare against `AIWorld` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAIWorld" || name == "AIWorld" || name == "Object")
+            Ok(name == "LAIWorld" || name == "LObject")
         });
     }
 }
@@ -335,7 +335,7 @@ impl LuaUserData for LuaAgent {
         /// @param | name | string | Type name to compare against `Agent` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAgent" || name == "Agent" || name == "Object")
+            Ok(name == "LAgent" || name == "LObject")
         });
     }
 }
@@ -449,7 +449,7 @@ impl LuaUserData for LuaAIBlackboard {
         /// @param | name | string | Type name to compare against `AIBlackboard`, `Blackboard`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAIBlackboard" || name == "AIBlackboard" || name == "LBlackboard" || name == "Blackboard" || name == "Object")
+            Ok(name == "LAIBlackboard" || name == "LBlackboard" || name == "LObject")
         });
     }
 }
@@ -532,7 +532,7 @@ impl LuaUserData for LuaStateMachine {
         /// @param | name | string | Type name to compare against `StateMachine` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LStateMachine" || name == "StateMachine" || name == "Object")
+            Ok(name == "LStateMachine" || name == "LObject")
         });
     }
 }
@@ -588,7 +588,7 @@ impl LuaUserData for LuaBehaviorTree {
         /// @param | name | string | Type name to compare against `BehaviorTree` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBehaviorTree" || name == "BehaviorTree" || name == "Object")
+            Ok(name == "LBehaviorTree" || name == "LObject")
         });
     }
 }
@@ -740,7 +740,7 @@ impl LuaUserData for LuaBTNode {
         /// @param | name | string | Type name to compare against `BTNode` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBTNode" || name == "BTNode" || name == "Object")
+            Ok(name == "LBTNode" || name == "LObject")
         });
     }
 }
@@ -989,7 +989,7 @@ impl LuaUserData for LuaSteeringManager {
         /// @param | name | string | Type name to compare against `SteeringManager` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSteeringManager" || name == "SteeringManager" || name == "Object")
+            Ok(name == "LSteeringManager" || name == "LObject")
         });
         // -- setSpatialHashCellSize --
         /// Sets the cell size used by the steering manager spatial hash.
@@ -1200,7 +1200,7 @@ impl LuaUserData for LuaDialogueAI {
         /// @param | name | string | Type name to compare against `DialogueAI` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDialogueAI" || name == "DialogueAI" || name == "Object")
+            Ok(name == "LDialogueAI" || name == "LObject")
         });
     }
 }
@@ -1372,7 +1372,7 @@ impl LuaUserData for LuaQLearner {
         /// @param | name | string | Type name to compare against `QLearner` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LQLearner" || name == "QLearner" || name == "Object")
+            Ok(name == "LQLearner" || name == "LObject")
         });
     }
 }
@@ -1509,7 +1509,7 @@ impl LuaUserData for LuaUtilityAI {
         /// @param | name | string | Type name to compare against `UtilityAI` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LUtilityAI" || name == "UtilityAI" || name == "Object")
+            Ok(name == "LUtilityAI" || name == "LObject")
         });
     }
 }
@@ -1656,7 +1656,7 @@ impl LuaUserData for LuaGOAPPlanner {
         /// @param | name | string | Type name to compare against `GOAPPlanner` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGOAPPlanner" || name == "GOAPPlanner" || name == "Object")
+            Ok(name == "LGOAPPlanner" || name == "LObject")
         });
     }
 }
@@ -1833,7 +1833,7 @@ impl LuaUserData for LuaInfluenceMap {
         /// @param | name | string | Type name to compare against `InfluenceMap` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LInfluenceMap" || name == "InfluenceMap" || name == "Object")
+            Ok(name == "LInfluenceMap" || name == "LObject")
         });
     }
 }
@@ -1955,7 +1955,7 @@ impl LuaUserData for LuaSquad {
         /// @param | name | string | Type name to compare against `Squad` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSquad" || name == "Squad" || name == "Object")
+            Ok(name == "LSquad" || name == "LObject")
         });
     }
 }
@@ -2069,7 +2069,7 @@ impl LuaUserData for LuaCommandQueue {
         /// @param | name | string | Type name to compare against `CommandQueue` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCommandQueue" || name == "CommandQueue" || name == "Object")
+            Ok(name == "LCommandQueue" || name == "LObject")
         });
     }
 }
@@ -2160,7 +2160,7 @@ impl LuaUserData for LuaTraitProfile {
         /// @param | name | string | Type name to compare against `LTraitProfile` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTraitProfile" || name == "Object")
+            Ok(name == "LTraitProfile" || name == "LObject")
         });
     }
 }
@@ -2253,7 +2253,7 @@ impl LuaUserData for LuaStimulusWorld {
         /// @param | name | string | Type name to compare against `LStimulusWorld` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LStimulusWorld" || name == "Object")
+            Ok(name == "LStimulusWorld" || name == "LObject")
         });
     }
 }
@@ -2353,7 +2353,7 @@ impl LuaUserData for LuaContextSteering {
         /// @param | name | string | Type name to compare against `LContextSteering` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LContextSteering" || name == "Object")
+            Ok(name == "LContextSteering" || name == "LObject")
         });
     }
 }
@@ -2412,7 +2412,7 @@ impl LuaUserData for LuaNeedSystem {
         /// @param | name | string | Type name to compare against `LNeedSystem` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNeedSystem" || name == "Object")
+            Ok(name == "LNeedSystem" || name == "LObject")
         });
     }
 }
@@ -2488,7 +2488,7 @@ impl LuaUserData for LuaAIDirector {
         /// @param | name | string | Type name to compare against `LAIDirector` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAIDirector" || name == "Object")
+            Ok(name == "LAIDirector" || name == "LObject")
         });
     }
 }
@@ -2583,7 +2583,7 @@ impl LuaUserData for LuaHTNDomain {
         /// @param | name | string | Type name to compare against `LHTNDomain` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LHTNDomain" || name == "Object")
+            Ok(name == "LHTNDomain" || name == "LObject")
         });
     }
 }
@@ -2638,7 +2638,7 @@ impl LuaUserData for LuaMCTSEngine {
         /// @param | name | string | Type name to compare against `LMCTSEngine` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMCTSEngine" || name == "Object")
+            Ok(name == "LMCTSEngine" || name == "LObject")
         });
     }
 }
@@ -2715,7 +2715,7 @@ impl LuaUserData for LuaEmotionModel {
         /// @param | name | string | Type name to compare against `LEmotionModel` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LEmotionModel" || name == "Object")
+            Ok(name == "LEmotionModel" || name == "LObject")
         });
     }
 }
@@ -2803,7 +2803,7 @@ impl LuaUserData for LuaORCASolver {
         /// @param | name | string | Type name to compare against `LORCASolver` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LORCASolver" || name == "Object")
+            Ok(name == "LORCASolver" || name == "LObject")
         });
     }
 }
@@ -2879,7 +2879,7 @@ impl LuaUserData for LuaNeuralNet {
         /// @param | name | string | Type name to compare against `LNeuralNet` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNeuralNet" || name == "Object")
+            Ok(name == "LNeuralNet" || name == "LObject")
         });
     }
 }
@@ -2955,7 +2955,7 @@ impl LuaUserData for LuaGeneticAlgorithm {
         /// @param | name | string | Type name to compare against `LGeneticAlgorithm` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGeneticAlgorithm" || name == "Object")
+            Ok(name == "LGeneticAlgorithm" || name == "LObject")
         });
     }
 }
@@ -3014,7 +3014,7 @@ impl LuaUserData for LuaBandit {
         /// @param | name | string | Type name to compare against `LBandit` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBandit" || name == "Object")
+            Ok(name == "LBandit" || name == "LObject")
         });
     }
 }
@@ -3086,7 +3086,7 @@ impl LuaUserData for LuaNeuroevolution {
         /// @param | name | string | Type name to compare against `LNeuroevolution` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNeuroevolution" || name == "Object")
+            Ok(name == "LNeuroevolution" || name == "LObject")
         });
     }
 }
@@ -3159,7 +3159,7 @@ impl LuaUserData for LuaStrategyAI {
         /// @param | name | string | Type name to compare against `LStrategyAI` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LStrategyAI" || name == "Object")
+            Ok(name == "LStrategyAI" || name == "LObject")
         });
     }
 }
@@ -3214,7 +3214,7 @@ impl LuaUserData for LuaAILod {
         /// @param | name | string | Type name to compare against `LAILod` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAILod" || name == "Object")
+            Ok(name == "LAILod" || name == "LObject")
         });
     }
 }

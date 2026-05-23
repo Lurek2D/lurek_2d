@@ -1906,7 +1906,7 @@ describe("image strict: LLayeredImage type/typeOf/save", function()
     it("LLayeredImage type and typeOf are callable", function()
         local li = lurek.image.newLayeredImage(4, 4)
         expect_type("string", li:type())
-        expect_type("boolean", li:typeOf("Object"))
+        expect_type("boolean", li:typeOf("LObject"))
     end)
 
     -- @covers LLayeredImage:save
@@ -1936,7 +1936,7 @@ describe("image strict: LPaletteLUT type/typeOf", function()
     it("LPaletteLUT type and typeOf are callable", function()
         local lut = lurek.image.newPaletteLut()
         expect_type("string", lut:type())
-        expect_type("boolean", lut:typeOf("Object"))
+        expect_type("boolean", lut:typeOf("LObject"))
     end)
 end)
 
@@ -1949,7 +1949,7 @@ describe("image strict: LProvinceGrid type/typeOf", function()
         local ok, pg = pcall(function() return lurek.image.newProvinceGrid("nonexistent.png") end)
         if ok then
             expect_type("string", pg:type())
-            expect_type("boolean", pg:typeOf("Object"))
+            expect_type("boolean", pg:typeOf("LObject"))
         else
             expect_false(ok and pg ~= nil)
         end

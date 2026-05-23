@@ -274,9 +274,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LParticleSystem"
-                || name == "LParticleSystem" || name == "ParticleSystem"
-                || name == "LDrawable" || name == "Drawable"
-                || name == "Object")
+                || name == "LDrawable"
+                || name == "LObject")
         });
         // -- setPosition --
         /// Sets emitter position. This method is available to Lua scripts.
@@ -1369,7 +1368,7 @@ impl LuaUserData for LuaTrail {
         /// @param | name | string | Type name to compare against `LTrail` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTrail" || name == "Object")
+            Ok(name == "LTrail" || name == "LObject")
         });
     }
 }

@@ -132,7 +132,7 @@ impl LuaUserData for LuaFileWatcher {
         /// @param | name | string | Type name to compare against `LFileWatcher` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LFileWatcher" || name == "Object")
+            Ok(name == "LFileWatcher" || name == "LObject")
         });
     }
 }
@@ -1071,7 +1071,7 @@ impl LuaUserData for LuaReplConsole {
         /// @param | name | string | Type name to compare against `LReplConsole` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LReplConsole" || name == "Object")
+            Ok(name == "LReplConsole" || name == "LObject")
         });
     }
 }

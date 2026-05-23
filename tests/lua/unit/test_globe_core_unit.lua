@@ -944,7 +944,7 @@ describe("globe strict: LGlobe pick / isVisible / type / typeOf", function()
     it("LGlobe type and typeOf are callable", function()
         local g = lurek.globe.new("strict_type_globe")
         expect_type("string", g:type())
-        expect_type("boolean", g:typeOf("Object"))
+        expect_type("boolean", g:typeOf("LObject"))
     end)
 end)
 

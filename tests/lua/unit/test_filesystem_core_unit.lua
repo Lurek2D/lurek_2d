@@ -1064,7 +1064,7 @@ describe("filesystem strict: LFileHandle type / typeOf", function()
         local ok, fh = pcall(function() return lurek.filesystem.openFile("save/score.txt", "r") end)
         if ok and fh ~= nil then
             expect_type("string", fh:type())
-            expect_type("boolean", fh:typeOf("Object"))
+            expect_type("boolean", fh:typeOf("LObject"))
         else
             expect_not_nil(fh)
         end
@@ -1092,7 +1092,7 @@ describe("filesystem strict: LZipMount contains / prefix / type / typeOf", funct
         local ok, zm = pcall(function() return lurek.filesystem.mountZip("nonexistent.zip", "pkg") end)
         if ok and zm ~= nil then
             expect_type("string", zm:type())
-            expect_type("boolean", zm:typeOf("Object"))
+            expect_type("boolean", zm:typeOf("LObject"))
             expect_type("boolean", zm:contains("anything"))
             expect_type("string", zm:prefix())
         else

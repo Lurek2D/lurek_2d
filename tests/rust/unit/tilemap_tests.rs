@@ -1,12 +1,14 @@
-//! INTERNAL ONLY: public `lurek.tilemap.*` behavior is covered primarily by
+﻿//! INTERNAL ONLY: public `lurek.tilemap.*` behavior is covered primarily by
 //! `tests/lua/unit/test_tilemap_unit.lua` plus matching evidence/golden and
 //! integration suites.
 //!
 //! The Rust coverage that remains here focuses on helper-level rendering,
-//! TileWalker internals, and tileset/mapgen behavior not yet asserted as
-//! strongly through Lua.
+//! TileWalker internals, mapgen/LDTK/coords/chunk internals, and tilemap helpers
+//! not exposed one-to-one through `lurek.tilemap.*`.
+//!
+//! `LTileMap` / `LTileSet` CRUD (layers, tiles, viewport, sweep, autotile) lives in
+//! `tests/lua/unit/test_tilemap_core_unit.lua`.
 
-use lurek2d::math::rect::Rect;
 use lurek2d::math::Color;
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::tilemap::ldtk::load_ldtk;
@@ -16,11 +18,11 @@ use lurek2d::tilemap::tilemap::TileMap;
 use lurek2d::tilemap::tileset::TileSet;
 use lurek2d::tilemap::*;
 
-// ── tmx ───────────────────────────────────────────────────────────────────────
+// â”€â”€ tmx â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // Public TMX loader behavior is covered in `tests/lua/unit/test_tilemap_unit.lua`.
 
-// ── tile_walker ───────────────────────────────────────────────────────────────
+// â”€â”€ tile_walker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod tile_walker_tests {
     use super::*;
@@ -86,52 +88,9 @@ mod tile_walker_tests {
     }
 }
 
-// ── tileset ───────────────────────────────────────────────────────────────────
+// TileSet animation/autotile behavior is covered in `tests/lua/unit/test_tilemap_core_unit.lua`.
 
-mod tileset_tests {
-    use super::*;
-
-    #[test]
-    fn animation_get_set() {
-        let mut ts = TileSet::new(1, 16, 4, 32, 32, 0, 0);
-        assert!(ts.get_animation(0).is_none());
-
-        let frames = vec![
-            TileAnimFrame {
-                tile_id: 0,
-                duration_ms: 100.0,
-            },
-            TileAnimFrame {
-                tile_id: 1,
-                duration_ms: 200.0,
-            },
-        ];
-        ts.set_animation(0, frames);
-        let anim = ts.get_animation(0).expect("animation 0 exists");
-        assert_eq!(anim.len(), 2);
-        assert_eq!(anim[0].tile_id, 0);
-        assert!((anim[1].duration_ms - 200.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn autotile_rule_4bit() {
-        let mut ts = TileSet::new(1, 16, 4, 32, 32, 0, 0);
-        ts.set_auto_tile_rule("wall", 0b0101, 3);
-        assert_eq!(ts.get_auto_tile_id("wall", 0b0101), Some(3));
-        assert_eq!(ts.get_auto_tile_id("wall", 0b0000), None);
-        assert_eq!(ts.get_auto_tile_id("floor", 0b0101), None);
-    }
-
-    #[test]
-    fn autotile_rule_8bit() {
-        let mut ts = TileSet::new(1, 16, 4, 32, 32, 0, 0);
-        ts.set_auto_tile_rule_8("wall", 0b10101010, 7);
-        assert_eq!(ts.get_auto_tile_id_8("wall", 0b10101010), Some(7));
-        assert_eq!(ts.get_auto_tile_id_8("wall", 0b00000000), None);
-    }
-}
-
-// ── render ────────────────────────────────────────────────────────────────────
+// â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
     use super::*;
@@ -200,7 +159,7 @@ mod render_tests {
     }
 }
 
-// ── mapgen ────────────────────────────────────────────────────────────────────
+// â”€â”€ mapgen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod mapgen_tests {
     use super::*;
@@ -422,7 +381,7 @@ mod mapgen_tests {
     }
 }
 
-// ── ldtk ──────────────────────────────────────────────────────────────────────
+// â”€â”€ ldtk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod ldtk_tests {
     use super::*;
@@ -473,7 +432,7 @@ mod ldtk_tests {
     }
 }
 
-// ── isomap ────────────────────────────────────────────────────────────────────
+// â”€â”€ isomap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod isomap_tests {
     use super::*;
@@ -606,7 +565,7 @@ mod isomap_tests {
     }
 }
 
-// ── coords ────────────────────────────────────────────────────────────────────
+// â”€â”€ coords â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod coords_tests {
     use super::*;
@@ -748,7 +707,7 @@ mod coords_tests {
     }
 }
 
-// ── chunk ─────────────────────────────────────────────────────────────────────
+// â”€â”€ chunk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod chunk_tests {
     use super::*;
@@ -851,7 +810,7 @@ mod chunk_tests {
     }
 }
 
-// ── autotile_sheet ────────────────────────────────────────────────────────────
+// â”€â”€ autotile_sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod autotile_sheet_tests {
     use super::*;
@@ -985,7 +944,7 @@ mod autotile_sheet_tests {
     }
 }
 
-// ── polygon_map ───────────────────────────────────────────────────────────────
+// â”€â”€ polygon_map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod polygon_map_tests {
     use super::*;
@@ -1104,222 +1063,4 @@ mod polygon_map_tests {
     }
 }
 
-// ── tilemap (from sibling) ────────────────────────────────────────────────────
-
-mod tilemap_core_tests {
-    use super::*;
-
-    fn make_test_tileset() -> TileSet {
-        let mut ts = TileSet::new(1, 16, 4, 32, 32, 0, 0);
-        ts.set_solid(0, true);
-        ts
-    }
-
-    fn make_test_map() -> TileMap {
-        let mut map = TileMap::new(32, 32, 8);
-        map.add_tileset(make_test_tileset());
-        map.add_layer("ground", 10, 10);
-        map
-    }
-
-    #[test]
-    fn layer_add_and_get() {
-        let mut map = TileMap::new(32, 32, 8);
-        let idx = map.add_layer("bg", 20, 15);
-        assert_eq!(idx, 0);
-        assert_eq!(map.get_layer_count(), 1);
-        assert_eq!(map.get_layer_name(0), Some("bg"));
-        assert!(map.get_layer_visible(0));
-    }
-
-    #[test]
-    fn tile_set_get() {
-        let mut map = make_test_map();
-        map.set_tile(0, 3, 4, 5);
-        assert_eq!(map.get_tile(0, 3, 4), 5);
-        assert_eq!(map.get_tile(0, 0, 0), 0);
-        assert_eq!(map.get_tile(0, 100, 100), 0);
-    }
-
-    #[test]
-    fn fill_layer() {
-        let mut map = make_test_map();
-        map.fill(0, 3);
-        for y in 0..10 {
-            for x in 0..10 {
-                assert_eq!(map.get_tile(0, x, y), 3);
-            }
-        }
-    }
-
-    #[test]
-    fn clear_tile_sets_zero() {
-        let mut map = make_test_map();
-        map.set_tile(0, 2, 2, 7);
-        assert_eq!(map.get_tile(0, 2, 2), 7);
-        map.clear_tile(0, 2, 2);
-        assert_eq!(map.get_tile(0, 2, 2), 0);
-    }
-
-    #[test]
-    fn viewport_set_get() {
-        let mut map = make_test_map();
-        assert!(map.get_viewport().is_none());
-        map.set_viewport(10.0, 20.0, 640.0, 480.0);
-        let vp = map.get_viewport().expect("viewport set before use");
-        assert!((vp.0 - 10.0).abs() < 1e-5);
-        assert!((vp.1 - 20.0).abs() < 1e-5);
-        assert!((vp.2 - 640.0).abs() < 1e-5);
-        assert!((vp.3 - 480.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn world_to_tile_roundtrip() {
-        let map = make_test_map();
-        let (wx, wy) = map.tile_to_world(3, 5);
-        assert!((wx - 96.0).abs() < 1e-5);
-        assert!((wy - 160.0).abs() < 1e-5);
-        let (tx, ty) = map.world_to_tile(wx, wy);
-        assert_eq!(tx, 3);
-        assert_eq!(ty, 5);
-    }
-
-    #[test]
-    fn autotile_4bit_basic() {
-        let mut ts = TileSet::new(1, 256, 16, 32, 32, 0, 0);
-        ts.set_auto_tile_rule("wall", 15, 42);
-        ts.set_auto_tile_rule("wall", 5, 10);
-
-        let mut map = TileMap::new(32, 32, 8);
-        map.add_tileset(ts);
-        map.add_layer("ground", 3, 3);
-        map.fill(0, 1);
-        map.apply_autotile(0, "wall");
-        assert_eq!(map.get_tile(0, 1, 1), 43);
-    }
-
-    #[test]
-    fn is_solid_with_tileset() {
-        let mut map = make_test_map();
-        map.set_tile(0, 5, 5, 1);
-        assert!(map.is_solid(0, 5, 5));
-        map.set_tile(0, 6, 6, 2);
-        assert!(!map.is_solid(0, 6, 6));
-        assert!(!map.is_solid(0, 0, 0));
-    }
-
-    #[test]
-    fn rect_overlaps_solid_test() {
-        let mut map = make_test_map();
-        map.set_tile(0, 3, 3, 1);
-        assert!(map.rect_overlaps_solid(0, Rect::new(90.0, 90.0, 20.0, 20.0)));
-        assert!(!map.rect_overlaps_solid(0, Rect::new(0.0, 0.0, 10.0, 10.0)));
-    }
-
-    #[test]
-    fn sweep_rect_basic() {
-        let mut map = make_test_map();
-        map.set_tile(0, 5, 0, 1);
-        let result = map.sweep_rect(0, Rect::new(0.0, 0.0, 16.0, 16.0), 200.0, 0.0);
-        assert!(result.is_some());
-        let r = result.expect("sweep result is Some");
-        assert!(r.t > 0.0 && r.t < 1.0);
-        assert!((r.normal.x - (-1.0)).abs() < 1e-5);
-        assert_eq!(r.tile_x, 5);
-    }
-
-    #[test]
-    fn sweep_rect_no_collision() {
-        let map = make_test_map();
-        let result = map.sweep_rect(0, Rect::new(0.0, 0.0, 16.0, 16.0), 100.0, 0.0);
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn layer_color_offset_parallax() {
-        let mut map = make_test_map();
-        map.set_layer_color(0, 1.0, 0.5, 0.25, 0.8);
-        let c = map.get_layer_color(0);
-        assert!((c[0] - 1.0).abs() < 1e-5);
-        assert!((c[1] - 0.5).abs() < 1e-5);
-        assert!((c[2] - 0.25).abs() < 1e-5);
-        assert!((c[3] - 0.8).abs() < 1e-5);
-
-        map.set_layer_offset(0, 10.0, 20.0);
-        let o = map.get_layer_offset(0);
-        assert!((o.x - 10.0).abs() < 1e-5);
-        assert!((o.y - 20.0).abs() < 1e-5);
-
-        map.set_layer_parallax(0, 0.5, 0.75);
-        let p = map.get_layer_parallax(0);
-        assert!((p.x - 0.5).abs() < 1e-5);
-        assert!((p.y - 0.75).abs() < 1e-5);
-    }
-
-    #[test]
-    fn tileset_management() {
-        let mut map = TileMap::new(32, 32, 8);
-        assert_eq!(map.get_tileset_count(), 0);
-        map.add_tileset(TileSet::new(1, 16, 4, 32, 32, 0, 0));
-        assert_eq!(map.get_tileset_count(), 1);
-        assert!(map.get_tileset(0).is_some());
-        assert!(map.get_tileset(1).is_none());
-    }
-
-    #[test]
-    fn dimensions() {
-        let map = TileMap::new(16, 24, 4);
-        assert_eq!(map.get_tile_width(), 16);
-        assert_eq!(map.get_tile_height(), 24);
-        assert_eq!(map.get_tile_dimensions(), (16, 24));
-        assert_eq!(map.get_chunk_size(), 4);
-    }
-
-    #[test]
-    fn layer_visibility() {
-        let mut map = make_test_map();
-        assert!(map.get_layer_visible(0));
-        map.set_layer_visible(0, false);
-        assert!(!map.get_layer_visible(0));
-    }
-
-    #[test]
-    fn world_to_tile_negative_clamps() {
-        let map = make_test_map();
-        let (tx, ty) = map.world_to_tile(-10.0, -5.0);
-        assert_eq!(tx, 0);
-        assert_eq!(ty, 0);
-    }
-
-    #[test]
-    fn tile_type_index_updates_on_set_and_clear() {
-        let mut map = TileMap::new(16, 16, 4);
-        map.add_layer("ground", 4, 4);
-
-        map.set_tile(0, 1, 1, 7);
-        map.set_tile(0, 2, 2, 7);
-        let idx = map.tile_type_index(0);
-        assert_eq!(idx.get(&7).map(|v| v.len()), Some(2));
-
-        map.clear_tile(0, 1, 1);
-        let idx2 = map.tile_type_index(0);
-        let positions = idx2.get(&7).cloned().unwrap_or_default();
-        assert_eq!(positions, vec![(2, 2)]);
-    }
-
-    #[test]
-    fn tile_type_index_updates_on_fill() {
-        let mut map = TileMap::new(16, 16, 4);
-        map.add_layer("ground", 3, 2);
-        map.fill(0, 9);
-
-        let by_gid = map.find_tiles_by_gid(0, 9);
-        assert_eq!(by_gid.len(), 6);
-        assert!(by_gid.contains(&(0, 0)));
-        assert!(by_gid.contains(&(2, 1)));
-
-        map.fill(0, 0);
-        assert!(map.find_tiles_by_gid(0, 9).is_empty());
-        assert!(map.tile_type_index(0).is_empty());
-    }
-}
+// TileMap layer/tile/viewport/sweep/index behavior: `tests/lua/unit/test_tilemap_core_unit.lua`.

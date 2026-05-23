@@ -299,7 +299,7 @@ end
 --@api-stub: LFileHandle:typeOf
 do
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    print("is FileHandle = " .. tostring(fh:typeOf("FileHandle")))
+    print("is FileHandle = " .. tostring(fh:typeOf("LFileHandle")))
     fh:close()
 end
 
@@ -337,7 +337,7 @@ end
 --@api-stub: LFileData:typeOf
 do
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    print("is FileData = " .. tostring(fd:typeOf("FileData")))
+    print("is FileData = " .. tostring(fd:typeOf("LFileData")))
 end
 
 --@api-stub: lurek.filesystem.readBytes
@@ -431,7 +431,7 @@ end
 --@api-stub: LZipMount:typeOf
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("is ZipMount = " .. tostring(zip:typeOf("ZipMount")))
+    print("is ZipMount = " .. tostring(zip:typeOf("LZipMount")))
 end
 
 --@api-stub: lurek.filesystem.load

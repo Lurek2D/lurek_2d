@@ -1063,6 +1063,8 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 
 **Category:** Sports
 
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
 ### [pinball](../tree/main/content/games/sports/pinball)
 
 ![pinball screenshot](../raw/main/content/games/sports/pinball/screen.png)

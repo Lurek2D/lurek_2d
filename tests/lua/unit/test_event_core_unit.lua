@@ -219,14 +219,14 @@ describe("lurek.event.newSignal", function()
   -- @covers lurek.event.newSignal
   it("typeOf returns true for Object base type", function()
     local sig = lurek.event.newSignal()
-    expect_true(sig:typeOf("Object"))
+    expect_true(sig:typeOf("LObject"))
   end)
 
   -- @covers LSignal:typeOf
   -- @covers lurek.event.newSignal
   it("typeOf returns false for unrelated type name", function()
     local sig = lurek.event.newSignal()
-    expect_equal(sig:typeOf("unknown"), false)
+    expect_equal(sig:typeOf("LUnknown"), false)
   end)
 end)
 
@@ -449,8 +449,8 @@ describe("lurek.event.newSignal", function()
     it("should support typeOf check", function()
         local sig = lurek.event.newSignal()
         expect_true(sig:typeOf("LSignal"), "typeOf('LSignal') should be true")
-        expect_true(sig:typeOf("Object"), "typeOf('Object') should be true")
-        expect_false(sig:typeOf("Entity"), "typeOf('Entity') should be false")
+        expect_true(sig:typeOf("LObject"), "typeOf('LObject') should be true")
+        expect_false(sig:typeOf("LEntity"), "typeOf('Entity') should be false")
     end)
 end)
 
@@ -836,8 +836,8 @@ end)
       local sig = lurek.event.newSignal()
       expect_equal("LSignal", sig:type())
       expect_true(sig:typeOf("LSignal"))
-      expect_true(sig:typeOf("Object"))
-      expect_false(sig:typeOf("Entity"))
+      expect_true(sig:typeOf("LObject"))
+      expect_false(sig:typeOf("LEntity"))
     end)
   end)
 -- @describe event migrated from integration/audio_event

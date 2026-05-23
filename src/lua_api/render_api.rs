@@ -110,7 +110,7 @@ impl LuaUserData for LuaImageData {
         /// @param | name | string | Type name to check ("ImageData" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LImageData" || name == "ImageData" || name == "Object")
+            Ok(name == "LImageData" || name == "LObject")
         });
     }
 }
@@ -152,7 +152,7 @@ impl LuaUserData for LuaNineSlice {
         /// @param | name | string | Type name to check ("NineSlice" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNineSlice" || name == "NineSlice" || name == "Object")
+            Ok(name == "LNineSlice" || name == "LObject")
         });
     }
 }
@@ -209,7 +209,7 @@ impl LuaUserData for LuaImage {
         /// @param | name | string | Type name to check ("Image" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LImage" || name == "Image" || name == "Object")
+            Ok(name == "LImage" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this image object.
@@ -330,7 +330,7 @@ impl LuaUserData for LuaFont {
         /// @param | name | string | Type name to check ("Font" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LFont" || name == "Font" || name == "Object")
+            Ok(name == "LFont" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this font object.
@@ -483,7 +483,7 @@ impl LuaUserData for LuaCanvas {
         /// @param | name | string | Type name to check ("Canvas" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCanvas" || name == "Canvas" || name == "Object")
+            Ok(name == "LCanvas" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this canvas object.
@@ -584,7 +584,7 @@ impl LuaUserData for LuaSpriteBatch {
         /// @param | name | string | Type name to check ("SpriteBatch" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSpriteBatch" || name == "SpriteBatch" || name == "Object")
+            Ok(name == "LSpriteBatch" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this sprite batch.
@@ -681,7 +681,7 @@ impl LuaUserData for LuaMesh {
         /// @param | name | string | Type name to check ("Mesh" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMesh" || name == "Mesh" || name == "Object")
+            Ok(name == "LMesh" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this mesh object.
@@ -740,7 +740,7 @@ impl LuaUserData for LuaShader {
         /// @param | name | string | Type name to check ("Shader" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LShader" || name == "Shader" || name == "Object")
+            Ok(name == "LShader" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this shader object.
@@ -791,7 +791,7 @@ impl LuaUserData for LuaQuad {
         /// @param | name | string | Type name to check ("Quad" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LQuad" || name == "Quad" || name == "Object")
+            Ok(name == "LQuad" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this quad object.
@@ -1192,7 +1192,7 @@ impl LuaUserData for LuaShape {
         /// @param | name | string | Type name to check ("Shape" or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LShape" || name == "Shape" || name == "Object")
+            Ok(name == "LShape" || name == "LObject")
         });
         // -- type --
         /// Returns the type name string for this shape object.
@@ -1249,7 +1249,7 @@ impl LuaUserData for LuaDrawLayer {
         /// @param | name | string | Type name to check ("LDrawLayer", "DrawLayer", or "Object").
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDrawLayer" || name == "LDrawLayer" || name == "DrawLayer" || name == "Object")
+            Ok(name == "LDrawLayer" || name == "LObject")
         });
     }
 }
@@ -3581,7 +3581,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "captureScreenshot",
         lua.create_function(|lua, callback: LuaFunction| {
             let img = ImageData::new(1, 1);
-            let ud = lua.create_userdata(LuaImageData { inner: img })?;
+            let ud = lua.create_userdata(img)?;
             callback.call::<_, ()>(ud)?;
             Ok(())
         })?,

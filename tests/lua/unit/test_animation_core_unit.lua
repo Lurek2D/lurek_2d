@@ -1146,7 +1146,7 @@ describe("animation strict: type / typeOf coverage", function()
     it("LAnimation type and typeOf are callable", function()
         local a = lurek.animation.new()
         expect_type("string", a:type())
-        expect_type("boolean", a:typeOf("Object"))
+        expect_type("boolean", a:typeOf("LObject"))
     end)
 
     -- @covers LAnimStateMachine:type
@@ -1156,7 +1156,7 @@ describe("animation strict: type / typeOf coverage", function()
         a:addFrame(0, 0, 32, 32)
         local sm = lurek.animation.newStateMachine(a, "idle")
         expect_type("string", sm:type())
-        expect_type("boolean", sm:typeOf("Object"))
+        expect_type("boolean", sm:typeOf("LObject"))
     end)
 
     -- @covers LBlendLayerSet:type
@@ -1164,7 +1164,7 @@ describe("animation strict: type / typeOf coverage", function()
     it("LBlendLayerSet type and typeOf are callable", function()
         local bls = lurek.animation.newBlendLayerSet()
         expect_type("string", bls:type())
-        expect_type("boolean", bls:typeOf("Object"))
+        expect_type("boolean", bls:typeOf("LObject"))
     end)
 
     -- @covers LAnimCurve:type
@@ -1173,7 +1173,7 @@ describe("animation strict: type / typeOf coverage", function()
         local ok, ac = pcall(function() return lurek.animation.newCurve() end)
         if ok then
             expect_type("string", ac:type())
-            expect_type("boolean", ac:typeOf("Object"))
+            expect_type("boolean", ac:typeOf("LObject"))
         else
             expect_not_nil(ac)
         end
@@ -1184,7 +1184,7 @@ describe("animation strict: type / typeOf coverage", function()
     it("LAnimSyncGroup type and typeOf are callable", function()
         local sg = lurek.animation.newSyncGroup()
         expect_type("string", sg:type())
-        expect_type("boolean", sg:typeOf("Object"))
+        expect_type("boolean", sg:typeOf("LObject"))
     end)
 end)
 

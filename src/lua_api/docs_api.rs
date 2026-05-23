@@ -126,7 +126,7 @@ impl LuaUserData for LuaSchema {
         /// @param | name | string | Type name to compare against `LSchema` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSchema" || name == "Object")
+            Ok(name == "LSchema" || name == "LObject")
         });
     }
 }
@@ -255,7 +255,7 @@ impl LuaUserData for DocEntry {
         /// @param | name | string | Type name to compare against `LDocEntry` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDocEntry" || name == "Object")
+            Ok(name == "LDocEntry" || name == "LObject")
         });
     }
 }
@@ -497,7 +497,7 @@ impl LuaUserData for ApiCatalog {
         /// @param | name | string | Type name to compare against `LApiCatalog` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LApiCatalog" || name == "Object")
+            Ok(name == "LApiCatalog" || name == "LObject")
         });
     }
 }
@@ -616,7 +616,7 @@ impl LuaUserData for ValidationReport {
         /// @param | name | string | Type name to compare against `LValidationReport` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LValidationReport" || name == "Object")
+            Ok(name == "LValidationReport" || name == "LObject")
         });
     }
 }
@@ -755,7 +755,7 @@ impl LuaUserData for QualityReport {
         /// @param | name | string | Type name to compare against `LQualityReport` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LQualityReport" || name == "Object")
+            Ok(name == "LQualityReport" || name == "LObject")
         });
     }
 }

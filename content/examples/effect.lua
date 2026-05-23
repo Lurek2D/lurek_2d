@@ -230,7 +230,7 @@ end
 --@api-stub: LPostFxEffect:typeOf
 do
     local fx = lurek.effect.newEffect("blur")
-    print("is PostFxEffect = " .. tostring(fx:typeOf("PostFxEffect")))
+    print("is PostFxEffect = " .. tostring(fx:typeOf("LPostFxEffect")))
 end
 
 --@api-stub: LPostFxStack:add
@@ -421,7 +421,7 @@ end
 --@api-stub: LPostFxStack:typeOf
 do
     local stack = lurek.effect.newStack(800, 600)
-    print("is PostFxStack = " .. tostring(stack:typeOf("PostFxStack")))
+    print("is PostFxStack = " .. tostring(stack:typeOf("LPostFxStack")))
 end
 
 --@api-stub: LImageEffect:addEffect
@@ -518,7 +518,7 @@ end
 --@api-stub: LImageEffect:typeOf
 do
     local ie = lurek.effect.newImageEffect()
-    print("is ImageEffect = " .. tostring(ie:typeOf("ImageEffect")))
+    print("is ImageEffect = " .. tostring(ie:typeOf("LImageEffect")))
 end
 
 --@api-stub: LOverlay:update
@@ -971,7 +971,7 @@ end
 --@api-stub: LOverlay:typeOf
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    print("is Overlay = " .. tostring(ov:typeOf("Overlay")))
+    print("is Overlay = " .. tostring(ov:typeOf("LOverlay")))
 end
 
 --- Effect Module Part 4: LScreenTransition
@@ -1053,7 +1053,7 @@ end
 --@api-stub: LScreenTransition:typeOf
 do
     local tr = lurek.effect.newTransition()
-    print("is ScreenTransition = " .. tostring(tr:typeOf("ScreenTransition")))
+    print("is ScreenTransition = " .. tostring(tr:typeOf("LScreenTransition")))
 end
 
 --- Effect Module: LOverlay extended methods

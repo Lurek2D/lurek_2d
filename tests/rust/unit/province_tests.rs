@@ -8,8 +8,20 @@ use lurek2d::province::import::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
 };
+use lurek2d::province::{
+    border_index::{
+        build_border_index_from_registry, dilate_border_index_with_styles,
+    },
+    distance_field::compute_distance_field_from_registry,
+    gpu_bridge::build_border_style_gpu_records,
+    gpu_upload::{pack_u16_pixels_le, pack_u32_pixels_le},
+};
+use lurek2d::province::render::{
+    generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
+};
 use lurek2d::province::registry::ProvinceRegistry;
-use lurek2d::province::types::BorderClass;
+use lurek2d::province::types::{BorderClass, BorderPairFlags, BorderPairStyle};
+use lurek2d::render::renderer::{DrawMode, RenderCommand};
 
 fn sample_grid() -> ProvinceGrid {
     let mut img = ImageData::new(4, 2);
@@ -85,6 +97,26 @@ fn test_registry_border_class_roundtrip() {
     reg.set_border_class(1, 2, BorderClass::Coast);
     assert_eq!(reg.get_border_class(1, 2), Some(BorderClass::Coast));
     assert_eq!(reg.get_border_class(2, 1), Some(BorderClass::Coast));
+}
+
+#[test]
+fn test_registry_border_pair_style_roundtrip() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+
+    let mut flags = BorderPairFlags::empty();
+    flags.insert_bits(BorderPairFlags::COUNTRY);
+    let style = BorderPairStyle {
+        color: Some([0.9, 0.1, 0.1, 1.0]),
+        thickness: 3.0,
+        flags,
+    };
+    reg.set_border_pair_style(1, 2, style);
+    let got = reg.get_border_pair_style(2, 1).expect("style should exist");
+
+    assert_eq!(got.color, style.color);
+    assert_eq!(got.thickness, style.thickness);
+    assert!(got.flags.contains_bits(BorderPairFlags::COUNTRY));
 }
 
 #[test]
@@ -246,4 +278,275 @@ fn test_province_polygons_staircase_produces_fewer_points_and_diagonal() {
         dx == dy && dx > 0
     });
     assert!(has_diagonal);
+}
+
+#[test]
+fn test_fow_render_hidden_and_discovered_fill_rules() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(1, 0));
+    assert!(reg.set_visibility_state(2, 1));
+
+    let opts = ProvinceRenderOptions {
+        draw_fills: true,
+        draw_borders: false,
+        draw_labels: false,
+        draw_capitals: false,
+        ..ProvinceRenderOptions::default()
+    };
+    let cmds = generate_render_commands(&reg, &opts, None);
+
+    let fill_rect_count = cmds
+        .iter()
+        .filter(|cmd| {
+            matches!(
+                cmd,
+                RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    ..
+                }
+            )
+        })
+        .count();
+    assert_eq!(fill_rect_count, 1, "only discovered province should fill");
+
+    let has_discovered_gray = cmds.iter().any(|cmd| {
+        matches!(
+            cmd,
+            RenderCommand::SetColor(r, g, b, a)
+                if (*r, *g, *b, *a) == (0.2_f32, 0.2_f32, 0.2_f32, 1.0_f32)
+        )
+    });
+    assert!(has_discovered_gray, "discovered province should render gray fill");
+}
+
+#[test]
+fn test_fow_borders_require_both_provinces_fully_visible() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(1, 2));
+    assert!(reg.set_visibility_state(2, 2));
+
+    let opts = ProvinceRenderOptions {
+        draw_fills: false,
+        draw_borders: true,
+        draw_labels: false,
+        draw_capitals: false,
+        ..ProvinceRenderOptions::default()
+    };
+    let visible_cmds = generate_render_commands(&reg, &opts, None);
+    let visible_lines = visible_cmds
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
+        .count();
+    assert!(visible_lines > 0, "expected border lines when both provinces are visible");
+
+    assert!(reg.set_visibility_state(2, 1));
+    let discovered_cmds = generate_render_commands(&reg, &opts, None);
+    let discovered_lines = discovered_cmds
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
+        .count();
+    assert_eq!(
+        discovered_lines, 0,
+        "no border lines should render when one province is only discovered"
+    );
+}
+
+#[test]
+fn test_fow_capitals_render_only_for_fully_visible_provinces() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_capital(1, 1.0, 1.0));
+    assert!(reg.set_visibility_state(1, 1));
+
+    let opts = ProvinceRenderOptions {
+        draw_fills: false,
+        draw_borders: false,
+        draw_labels: false,
+        draw_capitals: true,
+        ..ProvinceRenderOptions::default()
+    };
+    let discovered_cmds = generate_render_commands(&reg, &opts, None);
+    let discovered_circles = discovered_cmds
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Circle { .. }))
+        .count();
+    assert_eq!(
+        discovered_circles, 0,
+        "capital markers should not render for discovered provinces"
+    );
+
+    assert!(reg.set_visibility_state(1, 2));
+    let visible_cmds = generate_render_commands(&reg, &opts, None);
+    let visible_circles = visible_cmds
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Circle { .. }))
+        .count();
+    assert!(
+        visible_circles >= 2,
+        "fully visible capital should render marker circles"
+    );
+}
+
+#[test]
+fn test_strategic_mode_renders_country_overrides_but_skips_land_land() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(1, 2));
+    assert!(reg.set_visibility_state(2, 2));
+
+    let tactical_opts = ProvinceRenderOptions {
+        draw_fills: false,
+        draw_borders: true,
+        draw_labels: false,
+        draw_capitals: false,
+        draw_roads: false,
+        zoom_mode: Some(ProvinceZoomMode::Tactical),
+        ..ProvinceRenderOptions::default()
+    };
+    let tactical_lines = generate_render_commands(&reg, &tactical_opts, None)
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
+        .count();
+    assert!(tactical_lines > 0, "tactical mode should draw default land-land borders");
+
+    let strategic_opts = ProvinceRenderOptions {
+        draw_fills: false,
+        draw_borders: true,
+        draw_labels: false,
+        draw_capitals: false,
+        draw_roads: false,
+        zoom_mode: Some(ProvinceZoomMode::Strategic),
+        ..ProvinceRenderOptions::default()
+    };
+    let strategic_lines_without_override = generate_render_commands(&reg, &strategic_opts, None)
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
+        .count();
+    assert_eq!(
+        strategic_lines_without_override, 0,
+        "strategic mode should skip plain land-land borders"
+    );
+
+    let mut flags = BorderPairFlags::empty();
+    flags.insert_bits(BorderPairFlags::COUNTRY);
+    reg.set_border_pair_style(
+        1,
+        2,
+        BorderPairStyle {
+            color: Some([1.0, 0.0, 0.0, 1.0]),
+            thickness: 3.0,
+            flags,
+        },
+    );
+    let strategic_lines_with_country = generate_render_commands(&reg, &strategic_opts, None)
+        .iter()
+        .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
+        .count();
+    assert!(
+        strategic_lines_with_country > 0,
+        "strategic mode should draw country border overrides"
+    );
+}
+
+#[test]
+fn test_distance_field_has_zero_on_border_and_greater_inside() {
+    let mut img = ImageData::new(5, 5);
+    for y in 0..5 {
+        for x in 0..5 {
+            if x >= 1 && x <= 3 && y >= 1 && y <= 3 {
+                img.set_pixel(x, y, 255, 0, 0, 255);
+            } else {
+                img.set_pixel(x, y, 0, 255, 0, 255);
+            }
+        }
+    }
+
+    let grid = ProvinceGrid::from_image(&img);
+    let reg = ProvinceRegistry::from_grid(&grid);
+    let field = compute_distance_field_from_registry(&reg, 25);
+
+    let center = field.at(2, 2).expect("center exists");
+    let border = field.at(1, 2).expect("border exists");
+
+    assert_eq!(border, 0, "border pixel distance must be zero");
+    assert!(center > 0, "interior pixel distance must be greater than zero");
+}
+
+#[test]
+fn test_border_index_builds_pair_ids_and_dilation_expands_coverage() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+
+    let mut index = build_border_index_from_registry(&reg);
+    assert_eq!(index.pair_count(), 1, "sample grid should have one border pair");
+
+    let border_pixels_before = index.data.iter().filter(|&&v| v != 0).count();
+    assert!(border_pixels_before > 0, "border index should mark border pixels");
+
+    let mut flags = BorderPairFlags::empty();
+    flags.insert_bits(BorderPairFlags::COUNTRY);
+    reg.set_border_pair_style(
+        1,
+        2,
+        BorderPairStyle {
+            color: Some([1.0, 0.0, 0.0, 1.0]),
+            thickness: 4.0,
+            flags,
+        },
+    );
+
+    let mut styles = std::collections::HashMap::new();
+    let style = reg
+        .get_border_pair_style(1, 2)
+        .expect("pair style should be present");
+    styles.insert((1, 2), style);
+    dilate_border_index_with_styles(&mut index, &styles);
+
+    let border_pixels_after = index.data.iter().filter(|&&v| v != 0).count();
+    assert!(
+        border_pixels_after >= border_pixels_before,
+        "dilation should not reduce border coverage"
+    );
+}
+
+#[test]
+fn test_gpu_upload_pack_u32_pixels_le_is_little_endian_and_dense() {
+    let bytes = pack_u32_pixels_le(&[0x1122_3344, 0xAABB_CCDD]);
+    assert_eq!(bytes.len(), 8);
+    assert_eq!(bytes, vec![0x44, 0x33, 0x22, 0x11, 0xDD, 0xCC, 0xBB, 0xAA]);
+}
+
+#[test]
+fn test_gpu_upload_pack_u16_pixels_le_is_little_endian_and_dense() {
+    let bytes = pack_u16_pixels_le(&[0x1122, 0xAABB, 0x00FF]);
+    assert_eq!(bytes.len(), 6);
+    assert_eq!(bytes, vec![0x22, 0x11, 0xBB, 0xAA, 0xFF, 0x00]);
+}
+
+#[test]
+fn test_gpu_bridge_border_style_records_follow_border_index_pairs() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    let index = build_border_index_from_registry(&reg);
+
+    let mut flags = BorderPairFlags::empty();
+    flags.insert_bits(BorderPairFlags::COUNTRY);
+    reg.set_border_pair_style(
+        1,
+        2,
+        BorderPairStyle {
+            color: Some([1.0, 0.0, 0.0, 1.0]),
+            thickness: 4.0,
+            flags,
+        },
+    );
+
+    let records = build_border_style_gpu_records(&reg, &index);
+    assert_eq!(records.len(), index.id_to_pair.len());
+    assert_eq!(records[0].flags, 0, "slot 0 should stay empty");
+    assert_eq!(records[1].flags & 0x01, 0x01, "country flag should be propagated");
+    assert_eq!(records[1].thickness, 4.0);
+    assert_eq!(records[1].color, [1.0, 0.0, 0.0, 1.0]);
 }

@@ -28,7 +28,7 @@ impl LuaUserData for LuaThreadHandle {
         /// @param | name | string | Type name to test against (`"LThread"`, `"Thread"`, or `"Object"`).
         /// @return | boolean | `true` if the name matches one of the accepted type names.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LThread" || name == "LThread" || name == "Thread" || name == "Object")
+            Ok(name == "LThread" || name == "LObject")
         });
         // -- start --
         /// Launches the worker thread, executing the Lua code string supplied at creation time.
@@ -81,7 +81,7 @@ impl LuaUserData for LuaThreadPool {
         /// @param | name | string | Type name to test against (`"ThreadPool"` or `"Object"`).
         /// @return | boolean | `true` if the name matches one of the accepted type names.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LThreadPool" || name == "ThreadPool" || name == "Object")
+            Ok(name == "LThreadPool" || name == "LObject")
         });
         // -- submit --
         /// Pushes a value into the pool's input channel for processing by a worker thread.
@@ -154,7 +154,7 @@ impl LuaUserData for LuaPromise {
         /// @param | name | string | Type name to test against (`"Promise"` or `"Object"`).
         /// @return | boolean | `true` if the name matches one of the accepted type names.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPromise" || name == "Promise" || name == "Object")
+            Ok(name == "LPromise" || name == "LObject")
         });
         // -- isDone --
         /// Checks whether the asynchronous computation has completed.
@@ -366,7 +366,7 @@ impl LuaUserData for LuaChannel {
         /// @param | name | string | Type name to test against (`"LChannel"`, `"Channel"`, or `"Object"`).
         /// @return | boolean | `true` if the name matches one of the accepted type names.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LChannel" || name == "LChannel" || name == "Channel" || name == "Object")
+            Ok(name == "LChannel" || name == "LObject")
         });
         // -- push --
         /// Pushes a value onto the channel. Blocks on bounded channels if the channel is full.

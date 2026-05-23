@@ -472,14 +472,14 @@ end
 do
     local combo = lurek.input.newCombo({"a"})
     print("type = " .. combo:type())
-    print("is Combo = " .. tostring(combo:typeOf("Combo")))
+    print("is Combo = " .. tostring(combo:typeOf("LCombo")))
 end
 
 --@api-stub: LCombo:typeOf
 do
     local combo = lurek.input.newCombo({"a"})
     print("type = " .. combo:type())
-    print("is Combo = " .. tostring(combo:typeOf("Combo")))
+    print("is Combo = " .. tostring(combo:typeOf("LCombo")))
 end
 
 --@api-stub: lurek.input.startRecording

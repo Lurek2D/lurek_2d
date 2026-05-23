@@ -20,6 +20,7 @@
 - **`inline_test_audit.py`**: inline_test_audit.py — Enforce TST-02 (no inline `#[cfg(test)]` in src/).
 - **`integration_coverage.py`**: integration_coverage.py — Lurek2D integration test coverage analysis.
 - **`library_coverage.py`**: library_coverage.py — Audit Lureksome library coverage across three dimensions.
+- **`gen_demo_lua_tests.py`**: Generate `tests/lua/demos/test_*.lua` from the screenshot-smoke demo list.
 - **`lua_api_test_coverage.py`**: lua_api_test_coverage.py — Precise Lua API test coverage analysis.
 - **`lua_covers_lurek_api_audit.py`**: Audit @covers markers against docs/api/lurek.lua.
 - **`lua_evidence_golden_contract_audit.py`**: Audit Lua evidence and golden test contract compliance.

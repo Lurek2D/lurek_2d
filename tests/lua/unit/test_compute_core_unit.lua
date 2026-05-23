@@ -1191,21 +1191,21 @@ describe("type system", function()
     -- @covers lurek.compute.zeros
     it("typeOf Array is true", function()
         local a = lurek.compute.zeros({2})
-        expect_true(a:typeOf("Array"))
+        expect_true(a:typeOf("LArray"))
     end)
 
     -- @covers LArray:typeOf
     -- @covers lurek.compute.zeros
     it("typeOf Object is true", function()
         local a = lurek.compute.zeros({2})
-        expect_true(a:typeOf("Object"))
+        expect_true(a:typeOf("LObject"))
     end)
 
     -- @covers LArray:typeOf
     -- @covers lurek.compute.zeros
     it("typeOf Source is false", function()
         local a = lurek.compute.zeros({2})
-        expect_false(a:typeOf("Source"))
+        expect_false(a:typeOf("LSource"))
     end)
 end)
 

@@ -1074,7 +1074,7 @@ describe("mods strict: LMod / LModManager / LContentRegistry type/typeOf", funct
     it("LMod type and typeOf are callable", function()
         local m = lurek.mods.newMod({id="strict_mod", name="Strict Mod", version="1.0"})
         expect_type("string", m:type())
-        expect_type("boolean", m:typeOf("Object"))
+        expect_type("boolean", m:typeOf("LObject"))
     end)
 
     -- @covers LModManager:type
@@ -1083,7 +1083,7 @@ describe("mods strict: LMod / LModManager / LContentRegistry type/typeOf", funct
     it("LModManager type and typeOf are callable", function()
         local mm = lurek.mods.newModManager()
         expect_type("string", mm:type())
-        expect_type("boolean", mm:typeOf("Object"))
+        expect_type("boolean", mm:typeOf("LObject"))
     end)
 
     -- @covers LContentRegistry:type
@@ -1092,7 +1092,7 @@ describe("mods strict: LMod / LModManager / LContentRegistry type/typeOf", funct
     it("LContentRegistry type and typeOf are callable", function()
         local cr = lurek.mods.newRegistry()
         expect_type("string", cr:type())
-        expect_type("boolean", cr:typeOf("Object"))
+        expect_type("boolean", cr:typeOf("LObject"))
     end)
 end)
 

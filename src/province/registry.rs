@@ -11,7 +11,9 @@
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;
 use crate::province::topology::ProvinceGraph;
-use crate::province::types::{BorderClass, ProvinceId, ProvinceSnapshot, ProvinceStyle};
+use crate::province::types::{
+    BorderClass, BorderPairStyle, ProvinceId, ProvinceSnapshot, ProvinceStyle,
+};
 use std::collections::HashMap;
 
 /// Full mutable record for a single province stored inside ProvinceRegistry.
@@ -54,6 +56,8 @@ pub struct ProvinceRegistry {
     provinces: HashMap<ProvinceId, ProvinceRecord>,
     /// Manually overridden border classes keyed by normalised (lo, hi) pair.
     border_classes: HashMap<(ProvinceId, ProvinceId), BorderClass>,
+    /// Per-pair border style overrides keyed by normalised (lo, hi) pair.
+    border_pair_styles: HashMap<(ProvinceId, ProvinceId), BorderPairStyle>,
     /// Monotonically increasing change counter; incremented on every mutation.
     revision: u64,
     /// Ordered change log entries as (revision, change) pairs.
@@ -74,6 +78,7 @@ impl ProvinceRegistry {
             graph: ProvinceGraph::new(),
             provinces: HashMap::new(),
             border_classes: HashMap::new(),
+            border_pair_styles: HashMap::new(),
             revision: 0,
             changes: Vec::new(),
         }
@@ -156,6 +161,7 @@ impl ProvinceRegistry {
             graph,
             provinces,
             border_classes: HashMap::new(),
+            border_pair_styles: HashMap::new(),
             revision: 0,
             changes: Vec::new(),
         }
@@ -380,6 +386,22 @@ impl ProvinceRegistry {
     /// Return the stored border class for the (a, b) pair, or None if not explicitly set.
     pub fn get_border_class(&self, a: ProvinceId, b: ProvinceId) -> Option<BorderClass> {
         self.border_classes.get(&Self::norm_pair(a, b)).copied()
+    }
+    /// Set the border pair style for (a, b) and record a BorderPairStyle change.
+    pub fn set_border_pair_style(&mut self, a: ProvinceId, b: ProvinceId, style: BorderPairStyle) {
+        let key = Self::norm_pair(a, b);
+        self.border_pair_styles.insert(key, style);
+        self.bump_change(ProvinceChange::BorderPairStyle {
+            province_a: key.0,
+            province_b: key.1,
+            color: style.color,
+            thickness: style.thickness,
+            flags: style.flags.bits(),
+        });
+    }
+    /// Return the stored border pair style for (a, b), or None if not explicitly set.
+    pub fn get_border_pair_style(&self, a: ProvinceId, b: ProvinceId) -> Option<BorderPairStyle> {
+        self.border_pair_styles.get(&Self::norm_pair(a, b)).copied()
     }
     /// Insert a key-value string attribute for id; return false if id is unknown.
     pub fn set_attr(&mut self, id: ProvinceId, key: String, value: String) -> bool {

@@ -10,6 +10,12 @@ lurek = {}
 ---@class LSpacer : LUiWidget
 LSpacer = {}
 
+---@class Render
+Render = {}
+
+---@class Style
+Style = {}
+
 ---@alias AlignMode "left"|"center"|"right"|"justify"
 
 ---@alias ArcType "pie"|"open"|"closed"
@@ -15441,8 +15447,8 @@ function LUnitPathfinder:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LUnitPathfinder:typeOf(name) end
 
---- Returns the pathfinding thread count.
----@return number Thread count, currently 0.
+--- Returns the configured pathfinding thread count.
+---@return number Thread count (minimum 1).
 lurek.pathfind.getThreadCount = function() end
 
 --- Creates a flow field for a navigation grid.
@@ -15507,7 +15513,7 @@ lurek.pathfind.newPathfinder = function(grid_ud) end
 ---@return PathfindRangeMapResult Range map result with `cells`, `width`, and `height` fields.
 lurek.pathfind.rangeMap = function(opts) end
 
---- Sets pathfinding thread count (not yet implemented; logs a warning).
+--- Sets the configured pathfinding worker-thread count.
 ---@param count number Desired thread count.
 lurek.pathfind.setThreadCount = function(count) end
 
@@ -18563,6 +18569,12 @@ function LProvinceRegistry:getAt(x, y) end
 ---@return string Border class name, or nil.
 function LProvinceRegistry:getBorderClass(a, b) end
 
+--- Returns the style override for a specific adjacency pair, or nil when unset.
+---@param a number First province ID.
+---@param b number Second province ID.
+---@return table Style table or nil.
+function LProvinceRegistry:getBorderPairStyle(a, b) end
+
 ---@class LProvinceRegistryGetChangesSinceResult
 ---@field revision number Change revision number.
 ---@field kind string Change kind (political_color, terrain_type, etc.).
@@ -18636,7 +18648,7 @@ function LProvinceRegistry:provinceIds() end
 function LProvinceRegistry:provinceSpans() end
 
 --- Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
----@param opts? table Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals (boolean?), border_width (number?), hovered_id/selected_id (integer?).
+---@param opts? table?|Render options: map_mode(string?),x/y/zoom/pixel_size/screen_w/screen_h(number?),draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads(boolean?),border_width(number?),zoom_mode("strategic" "tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
 function LProvinceRegistry:render(opts) end
 
 --- Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
@@ -18673,6 +18685,13 @@ function LProvinceRegistry:setAttr(id, key, value) end
 ---@param class string Border class name (e.g. "river", "mountain", "sea").
 function LProvinceRegistry:setBorderClass(a, b, class) end
 
+--- Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
+---@param a number First province ID.
+---@param b number Second province ID.
+---@param style table|Style table with optional fields: color={r,g,b,a},thickness=number,flags=string string[].
+---@return boolean True when style was applied.
+function LProvinceRegistry:setBorderPairStyle(a, b, style) end
+
 --- Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.
 ---@param id number Province ID.
 ---@param border_style number Border style index (game-defined meaning).
@@ -18686,7 +18705,7 @@ function LProvinceRegistry:setBorderStyle(id, border_style) end
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setCapital(id, x, y) end
 
---- Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
+--- Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.
 ---@param id number Province ID.
 ---@param fog_state number Fog state value (game-defined meaning).
 ---@return boolean True if the province ID exists.
@@ -18722,9 +18741,9 @@ function LProvinceRegistry:setPoliticalColor(id, r, g, b, a) end
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setTerrainType(id, terrain_type) end
 
---- Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
+--- Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
 ---@param id number Province ID.
----@param visibility_state number Visibility state value (game-defined meaning).
+---@param visibility_state number Visibility state byte.
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setVisibilityState(id, visibility_state) end
 

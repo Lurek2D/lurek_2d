@@ -264,7 +264,7 @@ impl LuaUserData for LuaProvinceGrid {
         /// @param | name | string | Type name to compare against `LProvinceGrid` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LProvinceGrid" || name == "Object")
+            Ok(name == "LProvinceGrid" || name == "LObject")
         });
         // -- serializeShapeData --
         /// Serializes province span and border shape data into a binary Lua string.
@@ -509,7 +509,7 @@ impl LuaUserData for LuaLayeredImage {
         /// @param | name | string | Type name to compare against `LLayeredImage` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LLayeredImage" || name == "Object")
+            Ok(name == "LLayeredImage" || name == "LObject")
         });
     }
 }
@@ -557,7 +557,7 @@ impl LuaUserData for LuaCompressedImageData {
         /// @param | name | string | Type name to compare against `LCompressedImageData` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCompressedImageData" || name == "Object")
+            Ok(name == "LCompressedImageData" || name == "LObject")
         });
     }
 }
@@ -1322,7 +1322,7 @@ impl mlua::UserData for ImageData {
         /// @param | name | string | Type name to compare against `LImageData` or `Object`.
         /// @return | boolean | True when the supplied type name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LImageData" || name == "Object")
+            Ok(name == "LImageData" || name == "LObject")
         });
     }
 }
@@ -1393,7 +1393,7 @@ impl LuaUserData for LuaPaletteLUT {
         /// @param | name | string | Type name to compare against `LPaletteLUT` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPaletteLUT" || name == "Object")
+            Ok(name == "LPaletteLUT" || name == "LObject")
         });
     }
 }

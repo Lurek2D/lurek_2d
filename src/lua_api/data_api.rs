@@ -109,7 +109,7 @@ pub struct LuaRingBuffer {
 }
 impl LurekType for LuaRingBuffer {
     const TYPE_NAME: &'static str = "LRingBuffer";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LRingBuffer", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LRingBuffer", "LObject"];
 }
 impl LuaUserData for LuaRingBuffer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -200,7 +200,7 @@ impl LuaUserData for LuaRingBuffer {
         /// @param | name | string | Type name to compare against `LRingBuffer` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LRingBuffer" || name == "Object")
+            Ok(name == "LRingBuffer" || name == "LObject")
         });
     }
 }
@@ -736,7 +736,7 @@ impl LuaUserData for LuaDataView {
         /// @param | name | string | Type name to compare against `LDataView` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDataView" || name == "Object")
+            Ok(name == "LDataView" || name == "LObject")
         });
     }
 }
@@ -854,7 +854,7 @@ impl LuaUserData for LuaDataWriter {
         /// @param | name | string | Type name to compare against `LDataWriter` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDataWriter" || name == "Object")
+            Ok(name == "LDataWriter" || name == "LObject")
         });
     }
 }
@@ -999,10 +999,10 @@ impl mlua::UserData for ByteData {
         methods.add_method("type", |_, _, ()| Ok("LByteData"));
         // -- typeOf --
         /// Checks whether this object matches the given type name.
-        /// @param | name | string | Type name to check (e.g. "LByteData" or "Object").
+        /// @param | name | string | Type name to check (e.g. "LByteData" or "LObject").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LByteData" || name == "Object")
+            Ok(name == "LByteData" || name == "LObject")
         });
     }
 }

@@ -67,7 +67,7 @@ impl LuaUserData for LuaTweenState {
         /// @param | name | string | Type name to check against (`"LTweenState"` or `"Object"`).
         /// @return | boolean | `true` if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTweenState" || name == "Object")
+            Ok(name == "LTweenState" || name == "LObject")
         });
     }
 }
@@ -669,7 +669,7 @@ impl LuaUserData for LuaTween {
         /// @param | name | string | Type name to check against (`"LTween"` or `"Object"`).
         /// @return | boolean | `true` if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTween" || name == "Object")
+            Ok(name == "LTween" || name == "LObject")
         });
     }
 }
@@ -834,7 +834,7 @@ impl LuaUserData for LuaTweenSequence {
         /// @param | name | string | Type name to check against (`"LTweenSequence"` or `"Object"`).
         /// @return | boolean | `true` if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTweenSequence" || name == "Object")
+            Ok(name == "LTweenSequence" || name == "LObject")
         });
     }
 }
@@ -960,7 +960,7 @@ impl LuaUserData for LuaTweenParallel {
         /// @param | name | string | Type name to check against (`"LTweenParallel"` or `"Object"`).
         /// @return | boolean | `true` if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTweenParallel" || name == "Object")
+            Ok(name == "LTweenParallel" || name == "LObject")
         });
     }
 }
@@ -1051,7 +1051,7 @@ impl LuaUserData for LuaSpring {
         /// @param | name | string | Type name to check against (`"LSpring"` or `"Object"`).
         /// @return | boolean | `true` if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSpring" || name == "Object")
+            Ok(name == "LSpring" || name == "LObject")
         });
     }
 }

@@ -1420,13 +1420,13 @@ describe("type", function()
     -- @covers lurek.dataframe
     it("DataFrame typeOf DataFrame is true", function()
         local df = make_test_df()
-        expect_true(df:typeOf("DataFrame"))
+        expect_true(df:typeOf("LDataFrame"))
     end)
 
     -- @covers lurek.dataframe
     it("DataFrame typeOf wrong type is false", function()
         local df = make_test_df()
-        expect_false(df:typeOf("Database"))
+        expect_false(df:typeOf("LDatabase"))
     end)
 end)
 
@@ -1560,14 +1560,14 @@ describe("Database", function()
     -- @covers lurek.dataframe.newDatabase
     it("Database typeOf Database is true", function()
         local db = lurek.dataframe.newDatabase()
-        expect_true(db:typeOf("Database"))
+        expect_true(db:typeOf("LDatabase"))
     end)
 
     -- @covers LDatabase:typeOf
     -- @covers lurek.dataframe.newDatabase
     it("Database typeOf wrong type is false", function()
         local db = lurek.dataframe.newDatabase()
-        expect_false(db:typeOf("DataFrame"))
+        expect_false(db:typeOf("LDataFrame"))
     end)
 end)
 
@@ -3783,7 +3783,7 @@ describe("dataframe strict: LVecFrame type/typeOf", function()
         local df = lurek.dataframe.newDataFrame()
         local vf = lurek.dataframe.toVec(df)
         expect_type("string", vf:type())
-        expect_type("boolean", vf:typeOf("Object"))
+        expect_type("boolean", vf:typeOf("LObject"))
     end)
 end)
 
@@ -3800,7 +3800,7 @@ describe("dataframe strict: LGroupedFrame type/typeOf", function()
         if ok and gf ~= nil and type(gf) == "userdata" then
             local ok2, t = pcall(function() return gf:type() end)
             if ok2 then expect_type("string", t) end
-            local ok3, b = pcall(function() return gf:typeOf("Object") end)
+            local ok3, b = pcall(function() return gf:typeOf("LObject") end)
             if ok3 then expect_type("boolean", b) end
         else
             expect_false(ok and gf ~= nil and type(gf) == "userdata")
@@ -4049,7 +4049,7 @@ describe("lazy evaluation pipeline", function()
         local df = lurek.dataframe.fromCSV("x\n1")
         local lq = df:lazy()
         expect_true(lq:typeOf("LLazyQuery"), "typeOf LLazyQuery")
-        expect_true(lq:typeOf("Object"), "typeOf Object")
+        expect_true(lq:typeOf("LObject"), "typeOf Object")
         expect_false(lq:typeOf("LDataFrame"), "typeOf LDataFrame is false")
     end)
 

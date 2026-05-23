@@ -177,7 +177,7 @@ end
 --@api-stub: LBiomeClassifier:typeOf
 do
     local bc = lurek.procgen.newBiomeClassifier({ biomes = { { name = "ocean", h_max = 1.0, m_min = 0.0, t_min = 0.0 } } })
-    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+    print("typeOf=" .. tostring(bc:typeOf("LBiomeClassifier")))
 end
 
 --@api-stub: lurek.procgen.generateNames

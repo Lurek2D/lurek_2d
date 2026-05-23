@@ -204,7 +204,7 @@ end
 --@api-stub: LSignal:typeOf
 do
     local sig = lurek.event.newSignal()
-    print("is Signal = " .. tostring(sig:typeOf("Signal")))
+    print("is Signal = " .. tostring(sig:typeOf("LSignal")))
 end
 
 print("content/examples/event.lua")

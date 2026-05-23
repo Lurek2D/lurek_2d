@@ -1050,7 +1050,7 @@ impl LuaUserData for LuaLight {
         /// @param | name | string | Type name to compare against `LLight` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LLight" || name == "Object")
+            Ok(name == "LLight" || name == "LObject")
         });
     }
 }
@@ -1226,7 +1226,7 @@ impl LuaUserData for LuaOccluder {
         /// @param | name | string | Type name to compare against `LOccluder` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LOccluder" || name == "Object")
+            Ok(name == "LOccluder" || name == "LObject")
         });
     }
 }

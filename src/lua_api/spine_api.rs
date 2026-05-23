@@ -285,7 +285,7 @@ impl LuaUserData for LuaSkeleton {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSkeleton" || name == "Object")
+            Ok(name == "LSkeleton" || name == "LObject")
         });
     }
 }
@@ -431,7 +431,7 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSkeletonAnimation" || name == "Object")
+            Ok(name == "LSkeletonAnimation" || name == "LObject")
         });
     }
 }

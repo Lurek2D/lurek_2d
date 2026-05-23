@@ -345,7 +345,7 @@ impl LuaUserData for LuaSource {
         /// @param | name | string | Type name to check (e.g. "LSource" or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSource" || name == "Object")
+            Ok(name == "LSource" || name == "LObject")
         });
     }
 }
@@ -437,7 +437,7 @@ impl LuaUserData for LuaBus {
         /// @param | name | string | Type name to check (e.g. "LBus", "Bus", or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBus" || name == "LBus" || name == "Bus" || name == "Object")
+            Ok(name == "LBus" || name == "LObject")
         });
         // -- setDuckTarget --
         /// Configures ducking so this bus lowers the volume of a target bus when active.
@@ -866,7 +866,7 @@ impl LuaUserData for LuaMidiPlayer {
         /// @param | name | string | Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMidiPlayer" || name == "LMidiPlayer" || name == "MidiPlayer" || name == "Object")
+            Ok(name == "LMidiPlayer" || name == "LObject")
         });
     }
 }
@@ -944,7 +944,7 @@ impl LuaUserData for LuaSoundPool {
         /// @param | name | string | Type name to check (e.g. "LSoundPool" or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSoundPool" || name == "LSoundPool" || name == "SoundPool" || name == "Object")
+            Ok(name == "LSoundPool" || name == "LObject")
         });
     }
 }
@@ -1017,7 +1017,7 @@ impl LuaUserData for LuaDecoder {
         /// @param | name | string | Type name to check (e.g. "LDecoder" or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDecoder" || name == "Object")
+            Ok(name == "LDecoder" || name == "LObject")
         });
     }
 }
@@ -2663,7 +2663,7 @@ impl mlua::UserData for SoundData {
         /// @param | name | string | Type name to check (e.g. "LSoundData" or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSoundData" || name == "Object")
+            Ok(name == "LSoundData" || name == "LObject")
         });
     }
 }

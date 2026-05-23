@@ -1,6 +1,5 @@
 ---
 description: "Run a full feature-development workflow with explicit owners, gates, and sync steps."
-agent: "Manager"
 ---
 # Workflow Feature Development
 

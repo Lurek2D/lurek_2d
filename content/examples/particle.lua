@@ -406,8 +406,8 @@ do
     local ps = lurek.particle.newSystem()
     print("type = " .. ps:type())
     print("is PS = " .. tostring(ps:typeOf("LParticleSystem")))
-    print("is Drawable = " .. tostring(ps:typeOf("Drawable")))
-    print("is Object = " .. tostring(ps:typeOf("Object")))
+    print("is Drawable = " .. tostring(ps:typeOf("LDrawable")))
+    print("is Object = " .. tostring(ps:typeOf("LObject")))
 end
 
 --@api-stub: LParticleSystem:typeOf
@@ -415,8 +415,8 @@ do
     local ps = lurek.particle.newSystem()
     print("type = " .. ps:type())
     print("is PS = " .. tostring(ps:typeOf("LParticleSystem")))
-    print("is Drawable = " .. tostring(ps:typeOf("Drawable")))
-    print("is Object = " .. tostring(ps:typeOf("Object")))
+    print("is Drawable = " .. tostring(ps:typeOf("LDrawable")))
+    print("is Object = " .. tostring(ps:typeOf("LObject")))
 end
 
 --@api-stub: LParticleSystem:setLinearAcceleration
@@ -874,7 +874,7 @@ do
     trail:pushPoint(50, 25) ; local img = trail:drawToImage(64, 64)
     print("trail image type = " .. img:type())
     print("is LTrail = " .. tostring(trail:typeOf("LTrail")))
-    print("is Object = " .. tostring(trail:typeOf("Object")))
+    print("is Object = " .. tostring(trail:typeOf("LObject")))
 end
 
 --@api-stub: LTrail:typeOf
@@ -883,7 +883,7 @@ do
     trail:pushPoint(50, 25) ; local img = trail:drawToImage(64, 64)
     print("trail image type = " .. img:type())
     print("is LTrail = " .. tostring(trail:typeOf("LTrail")))
-    print("is Object = " .. tostring(trail:typeOf("Object")))
+    print("is Object = " .. tostring(trail:typeOf("LObject")))
 end
 
 --- Particle Module Part 3: physics collision, trail type

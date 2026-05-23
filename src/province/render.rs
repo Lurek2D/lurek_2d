@@ -8,9 +8,20 @@
 use crate::province::borders::classify_border;
 use crate::province::map_modes::{resolve_color, ProvinceMapMode};
 use crate::province::registry::ProvinceRegistry;
-use crate::province::types::{BorderClass, ProvinceId};
+use crate::province::types::{BorderClass, BorderPairFlags, ProvinceId};
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::resource_keys::FontKey;
+
+/// Strategic/tactical map rendering mode.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProvinceZoomMode {
+    /// Derive mode from zoom threshold.
+    Auto,
+    /// Minimal detail mode intended for world-scale view.
+    Strategic,
+    /// Full detail mode intended for close map view.
+    Tactical,
+}
 
 /// Options controlling what gets rendered and how the province map is projected onto the screen.
 #[derive(Debug, Clone)]
@@ -39,6 +50,12 @@ pub struct ProvinceRenderOptions {
     pub draw_capitals: bool,
     /// Line width in screen pixels for border segments.
     pub border_width: f32,
+    /// Optional explicit zoom mode override.
+    pub zoom_mode: Option<ProvinceZoomMode>,
+    /// Auto mode threshold: zoom >= threshold enters tactical mode.
+    pub tactical_zoom_threshold: f32,
+    /// When true and tactical mode is active, draw adjacency roads between visible capitals.
+    pub draw_roads: bool,
     /// Province to highlight with a white hover outline, or None.
     pub hovered_id: Option<ProvinceId>,
     /// Province to highlight with a yellow selection outline, or None.
@@ -61,6 +78,9 @@ impl Default for ProvinceRenderOptions {
             draw_labels: false,
             draw_capitals: true,
             border_width: 1.0,
+            zoom_mode: None,
+            tactical_zoom_threshold: 3.0,
+            draw_roads: true,
             hovered_id: None,
             selected_id: None,
         }
@@ -86,6 +106,52 @@ fn viewport_bounds(opts: &ProvinceRenderOptions) -> (f32, f32, f32, f32) {
     let bottom = (opts.screen_h - opts.y) / zoom_ps;
     (left, top, right, bottom)
 }
+
+const VISIBILITY_HIDDEN: u8 = 0;
+const VISIBILITY_DISCOVERED: u8 = 1;
+const VISIBILITY_VISIBLE_MIN: u8 = 2;
+
+fn discovered_fill_color() -> [f32; 4] {
+    [0.2, 0.2, 0.2, 1.0]
+}
+
+fn is_hidden(visibility_state: u8) -> bool {
+    visibility_state == VISIBILITY_HIDDEN
+}
+
+fn is_discovered(visibility_state: u8) -> bool {
+    visibility_state == VISIBILITY_DISCOVERED
+}
+
+fn is_fully_visible(visibility_state: u8) -> bool {
+    visibility_state >= VISIBILITY_VISIBLE_MIN
+}
+
+fn resolve_zoom_mode(opts: &ProvinceRenderOptions) -> ProvinceZoomMode {
+    if let Some(mode) = opts.zoom_mode {
+        if mode == ProvinceZoomMode::Auto {
+            if opts.zoom >= opts.tactical_zoom_threshold {
+                return ProvinceZoomMode::Tactical;
+            }
+            return ProvinceZoomMode::Strategic;
+        }
+        return mode;
+    }
+    // Preserve historic behavior: if no explicit mode is supplied, render full detail.
+    ProvinceZoomMode::Tactical
+}
+
+fn should_render_border_in_mode(
+    mode: ProvinceZoomMode,
+    seg_class: BorderClass,
+    is_country: bool,
+) -> bool {
+    match mode {
+        ProvinceZoomMode::Tactical => true,
+        ProvinceZoomMode::Strategic => is_country || seg_class == BorderClass::Coast,
+        ProvinceZoomMode::Auto => is_country || seg_class == BorderClass::Coast,
+    }
+}
 /// Generate a RenderCommand Vec for the province map: fills, borders, capitals, and labels with viewport culling.
 pub fn generate_render_commands(
     registry: &ProvinceRegistry,
@@ -94,6 +160,7 @@ pub fn generate_render_commands(
 ) -> Vec<RenderCommand> {
     let mut cmds: Vec<RenderCommand> = Vec::new();
     let (left, top, right, bottom) = viewport_bounds(opts);
+    let zoom_mode = resolve_zoom_mode(opts);
     cmds.push(RenderCommand::PushTransform);
     cmds.push(RenderCommand::Translate {
         x: opts.x,
@@ -123,7 +190,14 @@ pub fn generate_render_commands(
             let Some(style) = registry.style_for(id) else {
                 continue;
             };
-            let c = resolve_color(opts.map_mode, style);
+            if is_hidden(style.visibility_state) {
+                continue;
+            }
+            let c = if is_discovered(style.visibility_state) {
+                discovered_fill_color()
+            } else {
+                resolve_color(opts.map_mode, style)
+            };
             cmds.push(RenderCommand::SetColor(c[0], c[1], c[2], c[3]));
             if let Some(spans) = registry.spans_for(id) {
                 // Merge vertically-adjacent spans with same x0,x1 into taller rectangles
@@ -167,56 +241,97 @@ pub fn generate_render_commands(
         let effective_scale = opts.zoom * opts.pixel_size;
         // LOD: skip all borders when they'd be sub-pixel
         if effective_scale >= 0.5 {
-            cmds.push(RenderCommand::SetLineWidth(opts.border_width.max(1.0)));
-            // Group border segments by class to minimize SetColor calls.
-            // At low zoom, skip LandLand borders (invisible at sub-2px scale).
-            let skip_land_land = effective_scale < 2.0;
-            let classes = if skip_land_land {
-                &[
-                    BorderClass::Coast,
-                    BorderClass::SeaSea,
-                    BorderClass::Special,
-                ][..]
-            } else {
-                &[
-                    BorderClass::LandLand,
-                    BorderClass::Coast,
-                    BorderClass::SeaSea,
-                    BorderClass::Special,
-                ][..]
-            };
-            for &class in classes {
-                let c = border_color(class);
-                cmds.push(RenderCommand::SetColor(c[0], c[1], c[2], c[3]));
-                for &(a, b, x0, y0, x1, y1) in registry.border_segments() {
-                    let min_x = x0.min(x1) as f32;
-                    let max_x = x0.max(x1) as f32;
-                    let min_y = y0.min(y1) as f32;
-                    let max_y = y0.max(y1) as f32;
-                    if max_x < left || min_x > right || max_y < top || min_y > bottom {
-                        continue;
-                    }
-                    let seg_class = if let Some(c) = registry.get_border_class(a, b) {
-                        c
-                    } else {
-                        let sa = registry.style_for(a);
-                        let sb = registry.style_for(b);
-                        match (sa, sb) {
-                            (Some(sa), Some(sb)) => classify_border(sa, sb),
-                            _ => BorderClass::LandLand,
-                        }
-                    };
-                    if seg_class != class {
-                        continue;
-                    }
-                    cmds.push(RenderCommand::Line {
-                        x1: x0 as f32 * opts.pixel_size,
-                        y1: y0 as f32 * opts.pixel_size,
-                        x2: x1 as f32 * opts.pixel_size,
-                        y2: y1 as f32 * opts.pixel_size,
-                    });
+            let mut active_width: Option<f32> = None;
+            let mut active_color: Option<[f32; 4]> = None;
+            for &(a, b, x0, y0, x1, y1) in registry.border_segments() {
+                let min_x = x0.min(x1) as f32;
+                let max_x = x0.max(x1) as f32;
+                let min_y = y0.min(y1) as f32;
+                let max_y = y0.max(y1) as f32;
+                if max_x < left || min_x > right || max_y < top || min_y > bottom {
+                    continue;
                 }
+                let Some(sa) = registry.style_for(a) else {
+                    continue;
+                };
+                let Some(sb) = registry.style_for(b) else {
+                    continue;
+                };
+                if !is_fully_visible(sa.visibility_state) || !is_fully_visible(sb.visibility_state) {
+                    continue;
+                }
+                let seg_class = registry
+                    .get_border_class(a, b)
+                    .unwrap_or_else(|| classify_border(sa, sb));
+                let pair_style_override = registry.get_border_pair_style(a, b);
+                let pair_style = pair_style_override.unwrap_or_default();
+                let is_country = pair_style.flags.contains_bits(BorderPairFlags::COUNTRY);
+                if !should_render_border_in_mode(zoom_mode, seg_class, is_country) {
+                    continue;
+                }
+
+                let width = if pair_style_override.is_some() {
+                    pair_style.thickness.max(1.0)
+                } else {
+                    opts.border_width.max(1.0)
+                };
+                if active_width != Some(width) {
+                    cmds.push(RenderCommand::SetLineWidth(width));
+                    active_width = Some(width);
+                }
+
+                let color = pair_style.color.unwrap_or_else(|| border_color(seg_class));
+                if active_color != Some(color) {
+                    cmds.push(RenderCommand::SetColor(color[0], color[1], color[2], color[3]));
+                    active_color = Some(color);
+                }
+
+                cmds.push(RenderCommand::Line {
+                    x1: x0 as f32 * opts.pixel_size,
+                    y1: y0 as f32 * opts.pixel_size,
+                    x2: x1 as f32 * opts.pixel_size,
+                    y2: y1 as f32 * opts.pixel_size,
+                });
             }
+        }
+    }
+    if opts.draw_roads && zoom_mode == ProvinceZoomMode::Tactical {
+        cmds.push(RenderCommand::SetLineWidth((opts.border_width * 1.25).max(1.0)));
+        cmds.push(RenderCommand::SetColor(
+            140.0 / 255.0,
+            100.0 / 255.0,
+            62.0 / 255.0,
+            0.85,
+        ));
+        for (a, b) in registry.adjacency_pairs() {
+            let Some(sa) = registry.style_for(a) else {
+                continue;
+            };
+            let Some(sb) = registry.style_for(b) else {
+                continue;
+            };
+            if !is_fully_visible(sa.visibility_state) || !is_fully_visible(sb.visibility_state) {
+                continue;
+            }
+            let Some((ax, ay)) = registry.capital_for(a) else {
+                continue;
+            };
+            let Some((bx, by)) = registry.capital_for(b) else {
+                continue;
+            };
+            let min_x = ax.min(bx);
+            let max_x = ax.max(bx);
+            let min_y = ay.min(by);
+            let max_y = ay.max(by);
+            if max_x < left || min_x > right || max_y < top || min_y > bottom {
+                continue;
+            }
+            cmds.push(RenderCommand::Line {
+                x1: ax * opts.pixel_size,
+                y1: ay * opts.pixel_size,
+                x2: bx * opts.pixel_size,
+                y2: by * opts.pixel_size,
+            });
         }
     }
     if opts.draw_capitals {
@@ -236,10 +351,13 @@ pub fn generate_render_commands(
             if (bb.1 as f32) > bottom {
                 continue;
             }
-            let marker = registry
-                .capital_for(id)
-                .or_else(|| registry.get_province(id).and_then(|p| p.centroid));
-            let Some((cx, cy)) = marker else {
+            let Some(style) = registry.style_for(id) else {
+                continue;
+            };
+            if !is_fully_visible(style.visibility_state) {
+                continue;
+            }
+            let Some((cx, cy)) = registry.capital_for(id) else {
                 continue;
             };
             cmds.push(RenderCommand::SetColor(
@@ -286,6 +404,12 @@ pub fn generate_render_commands(
                 if (bb.1 as f32) > bottom {
                     continue;
                 }
+                let Some(style) = registry.style_for(id) else {
+                    continue;
+                };
+                if !is_fully_visible(style.visibility_state) {
+                    continue;
+                }
                 let text = registry
                     .label_text_for(id)
                     .map(|s| s.to_string())
@@ -315,6 +439,11 @@ pub fn generate_render_commands(
         }
     }
     if let Some(id) = opts.hovered_id {
+        let can_draw_hover = registry
+            .style_for(id)
+            .map(|style| is_fully_visible(style.visibility_state))
+            .unwrap_or(false);
+        if can_draw_hover {
         if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
             cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 0.35));
             cmds.push(RenderCommand::SetLineWidth(2.0));
@@ -326,8 +455,14 @@ pub fn generate_render_commands(
                 h: (max_y.saturating_sub(min_y) + 1) as f32 * opts.pixel_size,
             });
         }
+        }
     }
     if let Some(id) = opts.selected_id {
+        let can_draw_selected = registry
+            .style_for(id)
+            .map(|style| is_fully_visible(style.visibility_state))
+            .unwrap_or(false);
+        if can_draw_selected {
         if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
             cmds.push(RenderCommand::SetColor(1.0, 0.9, 0.1, 0.9));
             cmds.push(RenderCommand::SetLineWidth(3.0));
@@ -338,6 +473,7 @@ pub fn generate_render_commands(
                 w: (max_x.saturating_sub(min_x) + 1) as f32 * opts.pixel_size,
                 h: (max_y.saturating_sub(min_y) + 1) as f32 * opts.pixel_size,
             });
+        }
         }
     }
     cmds.push(RenderCommand::PopTransform);

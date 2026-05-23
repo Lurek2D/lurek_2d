@@ -483,7 +483,7 @@ impl LuaUserData for LuaNetworkHost {
         /// @param | name | string | Type name to compare against `LNetworkHost` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNetworkHost" || name == "Object")
+            Ok(name == "LNetworkHost" || name == "LObject")
         });
     }
 }
@@ -764,7 +764,7 @@ impl LuaUserData for LuaNetworkRuntime {
         /// @param | name | string | Type name to compare against `LNetworkRuntime` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNetworkRuntime" || name == "Object")
+            Ok(name == "LNetworkRuntime" || name == "LObject")
         });
     }
 }

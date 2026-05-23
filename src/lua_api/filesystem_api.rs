@@ -12,6 +12,16 @@ pub struct LuaFileData {
     /// File path and loaded byte buffer.
     inner: FileData,
 }
+
+fn ensure_save_write_path(path: &str) -> LuaResult<()> {
+    if !path.starts_with("save/") {
+        return Err(LuaError::RuntimeError(
+            "Write access restricted to save/ directory".into(),
+        ));
+    }
+    Ok(())
+}
+
 /// Provides Lua methods for inspecting loaded file data.
 impl LuaUserData for LuaFileData {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -38,7 +48,7 @@ impl LuaUserData for LuaFileData {
         /// @param | name | string | Type name to compare against `LFileData` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LFileData" || name == "Object")
+            Ok(name == "LFileData" || name == "LObject")
         });
     }
 }
@@ -130,7 +140,7 @@ impl LuaUserData for LuaFileHandle {
         /// @param | name | string | Type name to compare against `LFileHandle` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LFileHandle" || name == "Object")
+            Ok(name == "LFileHandle" || name == "LObject")
         });
     }
 }
@@ -184,7 +194,7 @@ impl LuaUserData for LuaZipMount {
         /// @param | name | string | Type name to compare against `LZipMount` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LZipMount" || name == "Object")
+            Ok(name == "LZipMount" || name == "LObject")
         });
     }
 }
@@ -260,6 +270,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "write",
         lua.create_function(move |_, (path, data): (String, String)| {
+            ensure_save_write_path(&path)?;
             s.borrow()
                 .fs
                 .write_string(&path, &data)
@@ -285,6 +296,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "writeJson",
         lua.create_function(move |_, (path, json): (String, String)| {
+            ensure_save_write_path(&path)?;
             s.borrow()
                 .fs
                 .write_json(&path, &json)
@@ -330,6 +342,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "writeBytes",
         lua.create_function(move |_, (path, data): (String, LuaString)| {
+            ensure_save_write_path(&path)?;
             s.borrow()
                 .fs
                 .write_bytes(&path, data.as_bytes().as_ref())
@@ -353,6 +366,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "append",
         lua.create_function(move |_, (path, data): (String, String)| {
+            ensure_save_write_path(&path)?;
             s.borrow()
                 .fs
                 .append_string(&path, &data)
@@ -568,6 +582,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "writeAsync",
         lua.create_function(move |_, (path, data): (String, LuaString)| {
+            ensure_save_write_path(&path)?;
             s.borrow_mut()
                 .request_async_write(&path, data.as_bytes().to_vec())
                 .map_err(LuaError::external)

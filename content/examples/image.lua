@@ -221,7 +221,7 @@ end
 --@api-stub: LImageData:typeOf
 do
     local img = lurek.image.newImageData(1, 1)
-    print("is ImageData = " .. tostring(img:typeOf("ImageData")))
+    print("is ImageData = " .. tostring(img:typeOf("LImageData")))
 end
 
 --- Image Module Part 2: LImageData transforms and filters
@@ -613,14 +613,14 @@ end
 do
     local lut = lurek.image.newPaletteLut()
     print("type = " .. lut:type())
-    print("is PaletteLUT = " .. tostring(lut:typeOf("PaletteLUT")))
+    print("is PaletteLUT = " .. tostring(lut:typeOf("LPaletteLUT")))
 end
 
 --@api-stub: LPaletteLUT:typeOf
 do
     local lut = lurek.image.newPaletteLut()
     print("type = " .. lut:type())
-    print("is PaletteLUT = " .. tostring(lut:typeOf("PaletteLUT")))
+    print("is PaletteLUT = " .. tostring(lut:typeOf("LPaletteLUT")))
 end
 
 --@api-stub: LCompressedImageData:getDimensions
@@ -646,14 +646,14 @@ end
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
-    print("is CompressedImageData = " .. tostring(cdata:typeOf("CompressedImageData")))
+    print("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
 end
 
 --@api-stub: LCompressedImageData:typeOf
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
-    print("is CompressedImageData = " .. tostring(cdata:typeOf("CompressedImageData")))
+    print("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
 end
 
 --@api-stub: LProvinceGrid:getAt
@@ -745,14 +745,14 @@ end
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("type = " .. grid:type())
-    print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
+    print("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 
 --@api-stub: LProvinceGrid:typeOf
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("type = " .. grid:type())
-    print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
+    print("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 
 --- Image Module: LCompressedImageData and additional newImageData

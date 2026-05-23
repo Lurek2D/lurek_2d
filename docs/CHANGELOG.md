@@ -3,6 +3,21 @@
 ## Unreleased
 
 
+ - feat(province): added `src/province/economy.rs` with a local-only province economy model (`population`/`food_stockpile`/`gold_stockpile`), monthly economy resolution helpers (food need, tax, growth, migration pressure), and daily physical shipment flow (upstream gold/downstream food) with in-transit delivery and origin-cargo launch validation; added focused coverage in `tests/rust/unit/province_economy_tests.rs`.
+
+
+ - feat(province): added per-pair border style overrides (`setBorderPairStyle`/`getBorderPairStyle`) with optional color, thickness, and semantic flags; extended province render options with strategic/tactical zoom mode controls and tactical road rendering between visible adjacent capitals.
+ - feat(province): added province precompute modules `distance_field` (BFS distance-to-border map) and `border_index` (stable u16 border-pair index with optional thickness dilation), with rust unit coverage for border/inner distance and pair-id expansion behavior.
+ - feat(province): added `gpu_upload` helpers for province map texture creation and upload (`R32Uint` id map, `R16Uint` border index, `R8Unorm` distance field), including tested little-endian packers for integer texture payloads.
+ - feat(province): extended `gpu_bridge` with border-style storage-buffer records aligned to border-index pair ids, so per-pair style flags/thickness/color can be uploaded directly for province shader passes.
+ - feat(render): added `province_map_pipeline` + `assets/shaders/province_map.wgsl` scaffold for fullscreen province shader rendering with bind groups for id/border-distance textures and storage buffers, plus uniform mapping for viewport and strategic/tactical mode.
+
+ - feat(province): completed visibility-driven province rendering contract: `visibility_state=0` now skips fill/border/capital/label, `visibility_state=1` renders gray discovered fill only, and borders render only when both adjacent provinces are fully visible (`>=2`).
+
+ - fix(quality): removed redundant duplicate `typeOf` comparisons across Lua API userdata bindings and replaced one manual increment pattern with `+=` so `cargo clippy -- -D warnings` passes cleanly.
+
+ - feat(runtime): upgraded built-in CLI mode with true runtime hard reset (`:reset` now routes to `lurek.event.restart()` and app loop VM rebuild), multiline command continuation with readable continuation prompt, and automatic startup load of explicit `game_dir/main.lua` via REPL `:load` (including surfaced load errors in terminal output).
+
  - fix(quality): closed Lua/docs/example coverage gaps by documenting missing Rust functions (`translate_gender`, `translate_plural`, `get_processor_count`), adding UI example coverage for `lurek.ui.loadLayoutGameFile`, covering remaining UI unit-test APIs (`focusNeighbor`, `getStyleToken`, `loadLayoutGameFile`, and `LUiWidget` text/focus/accessibility setters), and tightening `lurek.ui.getStyleToken` docs from `@return any` to typed overloads.
 
  - fix(lua): dropped `RefCell` callback-store borrows before invoking Lua in `LDepthSorter:flush`, `LSignal:emit`, and `lurek.timer.tickRealTimers`, preventing `L060` panics when callbacks mutate the same dispatcher during execution.

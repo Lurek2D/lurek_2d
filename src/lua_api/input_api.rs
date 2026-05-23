@@ -80,7 +80,7 @@ impl LuaUserData for LuaCursor {
         /// @param | name | string | Type name to compare against `LCursor` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCursor" || name == "Object")
+            Ok(name == "LCursor" || name == "LObject")
         });
     }
 }
@@ -175,7 +175,7 @@ impl LuaUserData for LuaCombo {
         /// @param | name | string | Type name to compare against `LCombo` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCombo" || name == "Object")
+            Ok(name == "LCombo" || name == "LObject")
         });
     }
 }
@@ -214,7 +214,7 @@ impl LuaUserData for LuaInputRecording {
         /// @param | name | string | Type name to compare against `LInputRecording` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LInputRecording" || name == "Object")
+            Ok(name == "LInputRecording" || name == "LObject")
         });
     }
 }

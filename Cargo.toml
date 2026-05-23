@@ -379,6 +379,10 @@ name = "procgen_tests"
 path = "tests/rust/unit/procgen_tests.rs"
 
 [[test]]
+name = "province_economy_tests"
+path = "tests/rust/unit/province_economy_tests.rs"
+
+[[test]]
 name = "province_tests"
 path = "tests/rust/unit/province_tests.rs"
 

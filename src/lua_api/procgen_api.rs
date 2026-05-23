@@ -67,7 +67,7 @@ impl LuaUserData for LuaBiomeClassifier {
         /// @param | name | string | Type name to test (e.g. "LBiomeClassifier" or "Object").
         /// @return | boolean | True if the object is of the specified type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBiomeClassifier" || name == "Object")
+            Ok(name == "LBiomeClassifier" || name == "LObject")
         });
     }
 }

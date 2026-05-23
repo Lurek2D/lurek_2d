@@ -20,7 +20,9 @@ This file is a short contributor guide. The architecture source of truth is docs
 | Analytics HTML | python tools/audit/test_analytics.py --html |
 | Perf Regression Gate | python tools/audit/perf_regression_gate.py --min-stress-pct 35 |
 | Generate Contract Tests | python tools/audit/gen_lua_contract_tests.py |
+| Generate Demo Lua Tests | python tools/audit/gen_demo_lua_tests.py |
 | Mutation Report | python tools/audit/mutation_report.py |
+| Headless demo suite | cargo test --test lua_tests lua_demos_headless_all -- --test-threads=1 |
 
 ## Directory Layout
 
@@ -39,7 +41,8 @@ This file is a short contributor guide. The architecture source of truth is docs
 - tests/lua/evidence/: runtime evidence production.
 - tests/lua/golden/: deterministic comparison against baselines.
 - tests/lua/config/: Lua config tests.
-- tests/lua/demos/: one test per content/games demo.
+- tests/lua/demos/: headless contract tests for screenshot-smoke demos (see demos/README.md).
+- tests/lua/fixtures/: shared helpers (e.g. world_helpers.lua via dofile).
 
 ## Marker Rules
 
@@ -69,8 +72,21 @@ Do not mix production and comparison in one it() case.
 
 ## Harness and Registration
 
-Lua tests are not auto-discovered. Every new Lua file must be registered in tests/lua/harness.rs.
-An unregistered file will not run under cargo test.
+Most Lua suites use explicit `#[test]` entries in `tests/lua/harness.rs`. Exceptions:
+
+- `lua_demos_headless_all` — runs every `tests/lua/demos/test_*.lua`.
+- `lua_demo_colocated_games` — runs every `content/games/**/test.lua`.
+
+All other new Lua files need a harness entry or they will not run under `cargo test`.
+
+## Roadmap gaps (ideas/tests)
+
+Still open after the demo scaffold:
+
+- Describe-coverage gate and orphaned `@covers` cleanup (batch per `testing-rust` skill).
+- Phase 3: dedicated error-handling blocks, nil-argument audit, float `expect_near` sweep.
+- Full `content/games/**` demo coverage (27 headless tests today; ~100+ game folders remain).
+- Visual regression pipeline and evidence CI minimum gate.
 
 ## CI and Artifacts
 

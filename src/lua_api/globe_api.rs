@@ -772,7 +772,7 @@ impl LuaUserData for LuaGlobe {
         /// @param | name | string | Type name to compare against `LGlobe` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGlobe" || name == "Object")
+            Ok(name == "LGlobe" || name == "LObject")
         });
     }
 }
@@ -865,7 +865,7 @@ impl LuaUserData for LuaGlobeRegistry {
         /// @param | name | string | Type name to compare against `LGlobeRegistry` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGlobeRegistry" || name == "Object")
+            Ok(name == "LGlobeRegistry" || name == "LObject")
         });
     }
 }

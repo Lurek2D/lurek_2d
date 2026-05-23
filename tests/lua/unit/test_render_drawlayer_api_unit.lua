@@ -224,21 +224,21 @@ describe("DrawLayer type system", function()
     -- @covers lurek.render.newDrawLayer
     it("typeOf Object returns true", function()
         local layer = lurek.render.newDrawLayer()
-        expect_true(layer:typeOf("Object"))
+        expect_true(layer:typeOf("LObject"))
     end)
 
     -- @covers LDrawLayer:typeOf
     -- @covers lurek.render.newDrawLayer
     it("typeOf DrawLayer returns true", function()
         local layer = lurek.render.newDrawLayer()
-        expect_true(layer:typeOf("DrawLayer"))
+        expect_true(layer:typeOf("LDrawLayer"))
     end)
 
     -- @covers LDrawLayer:typeOf
     -- @covers lurek.render.newDrawLayer
     it("typeOf wrong type returns false", function()
         local layer = lurek.render.newDrawLayer()
-        expect_false(layer:typeOf("Image"))
+        expect_false(layer:typeOf("LImage"))
     end)
 end)
 

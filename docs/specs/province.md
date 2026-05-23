@@ -6,16 +6,44 @@
 - Source path: `src/province/`
 - Lua API path(s): `src/lua_api/province_api.rs`
 - Primary Lua namespace: `lurek.province`
-- Rust test path(s): None found in the workspace
+ Rust test path(s): tests/rust/unit/province_tests.rs and tests/rust/unit/province_economy_tests.rs
 - Lua test path(s): None found in the workspace
+
+The module now also includes a local-only province economy domain model in `economy.rs`. It models `population`, `food_stockpile`, and `gold_stockpile` per province, resolves monthly consumption/growth/tax locally, and plans daily physical shipments for upstream gold and downstream food. Shipment launch requires real origin cargo; there is no empire-wide hidden shared pool.
 
 ## Summary
 
 The `province` module is an advanced Edge/Integration tier subsystem that provides a complete, engine-native province map runtime, tailor-made for grand strategy and map-painting games in Lurek2D. Operating independently of tilemaps, it manages irregular, pixel-perfect regions using a `ProvinceRegistry`. This registry acts as the central source of truth, storing metadata for each province—including ownership, terrain type, border styles, capital coordinates, label anchors, and arbitrary string attributes. At its core, the registry maintains a `ProvinceGraph` that tracks undirected adjacencies, allowing for rapid topological queries (e.g., neighbor enumeration) and sophisticated border classification (e.g., distinguishing land-land borders from coastlines or sea-sea boundaries).
 
+### `economy.rs`
+- Province economy state model with local stockpiles for population, food, and gold.
+- Monthly tick helpers for food demand, tax generation, growth, happiness pressure, and migration pressure.
+- Local-only monthly resolution that consumes and spends only provincial stockpiles.
+- Daily logistics planning for upstream gold and downstream food using adjacency shortest paths.
+- In-transit shipment model with day-by-day delivery to destination stockpiles.
+
 A standout feature of the module is its highly optimized rendering pipeline. To avoid the overhead of per-pixel evaluation at runtime, a `ProvinceGeometryCache` pre-computes horizontal cell spans, bounding boxes, and border line segments. These structures are packed into a `ProvinceGpuRecord` (a std430-friendly 32-byte payload) for direct GPU upload. Rendering is driven by customizable `ProvinceMapMode`s (such as Political, Terrain, or Visibility), mapping a `ProvinceStyle` to specific fill colors. The module handles viewport culling, screen-to-map transformations, and zoom-to-anchor logic, seamlessly generating render commands for solid fills, border strokes, capital icons, and shadowed text labels.
 
+### Economy Loop Contract
+
+- `population`, `food_stockpile`, and `gold_stockpile` are province-local state.
+- Monthly economy resolution and daily shipment transport are separate operations.
+- Upkeep and construction spending consume only local gold.
+- Food consumption consumes only local food.
+- Shipment launch is valid only when the origin node physically holds the requested cargo.
+- Gold flow is planned upstream (province/hub -> parent), food flow downstream (parent -> province in deficit).
+- No empire-wide shared hidden pool is used by the economy model.
+
+Border rendering also supports per-adjacency overrides through `setBorderPairStyle(a, b, style)`. A style can define an optional RGBA override color, a custom line thickness, and semantic flags (`country`, `alliance`, `war`, `truce`). Strategic view can filter to coastlines and country-marked borders, while tactical view draws full detail. Tactical mode can also emit road segments between capitals of visible adjacent provinces.
+
 The import pipeline is equally robust, automatically converting color-coded PNG maps and RGB CSV metadata into structured registry data. It includes a marker sanitization step that strips out capital (near-white) and label (magenta) pixels, reassigning them to the correct province while computing optimal label line vectors via expanding-ring neighbor searches. To support game logic, the registry employs a monotonic revision counter and change-stream (`get_changes_since`), emitting fine-grained deltas whenever a province's color, terrain, or fog state mutates. Exposed entirely through the `lurek.province.*` API, this module provides the complex topological, visual, and event-driven infrastructure required for high-performance interactive cartography.
+
+### Visibility Rendering Contract
+
+- `visibility_state = 0`: hidden. The renderer skips province fill, border, capital marker, and label.
+- `visibility_state = 1`: discovered. The renderer emits only a gray fill (no border, capital, or label).
+- `visibility_state >= 2`: fully visible. The renderer emits normal map-mode fill and full details.
+- Border segments render only when both adjacent provinces are fully visible (`>= 2`).
 
 ## Source Documentation
 
@@ -24,10 +52,20 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Map land/water combinations to discrete border classes (land-land, coast, sea-sea).
 - Provide a single pure function with no side effects for pipeline integration.
 
+### `border_index.rs`
+- Precompute a dense border-pair index map from the province id grid.
+- Assign stable `u16` pair ids to border pixels for shader-friendly lookup.
+- Optional dilation pass expands borders according to per-pair thickness styles.
+
 ### `cache.rs`
 - Serialisable geometry cache for province spans and border segments.
 - Binary encode/decode with versioned little-endian format.
 - Built from a ProvinceRegistry snapshot for fast load without re-scanning.
+
+### `distance_field.rs`
+- Multi-source BFS precompute of per-pixel distance-to-nearest-border.
+- Stores compact `u8` distance field with configurable max propagation radius.
+- Provides registry-based helper for direct map precompute without external grid wiring.
 
 ### `events.rs`
 - Change-log entries for single-field province mutations (colour, terrain, border, fog, visibility).
@@ -38,6 +76,12 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - GPU-uploadable province data bridge between registry and render pipeline.
 - Packs province style fields into a repr(C) record for direct buffer upload.
 - Builds sorted record arrays from the province registry for deterministic GPU ordering.
+- Builds border-style GPU records aligned to border-index pair ids for storage-buffer uploads.
+
+### `gpu_upload.rs`
+- Creates and uploads province map textures for GPU pipelines.
+- Supports `R32Uint` province ids, `R16Uint` border-pair index, and `R8Unorm` distance field maps.
+- Provides deterministic little-endian byte packing helpers for integer texture uploads.
 
 ### `import.rs`
 - Province metadata import pipeline: colour-map PNG + RGB CSV + optional TOML → registry.
@@ -74,13 +118,16 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
 - Maintains a monotonic revision counter and ordered change log for incremental sync.
 - Supports border class overrides keyed by normalised province pair.
+- Supports per-pair border style overrides (optional color, thickness, semantic flags).
 - Stores arbitrary string key-value attributes per province via set_attr.
 
 ### `render.rs`
 - Province map rendering: convert registry data into a flat RenderCommand list.
 - Viewport culling based on screen bounds and zoom/pan transform.
 - Fill rendering via per-province span rectangles coloured by the active map mode.
-- Border rendering with colour classification (land-land, coast, sea-sea, special).
+- Border rendering with class defaults plus per-pair style overrides (color/thickness/flags).
+- Strategic vs tactical zoom modes with mode-based border filtering.
+- Tactical road rendering between visible adjacent province capitals.
 - Capital dot markers and text labels with shadow offset.
 - Hover and selection highlight outlines for interactive feedback.
 
@@ -92,7 +139,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ### `types.rs`
 - Core type definitions for the province map system.
-- ProvinceId alias, BorderClass enum for adjacency classification, and ProvinceStyle for per-province visuals.
+- ProvinceId alias, BorderClass enum, BorderPairFlags/BorderPairStyle overrides, and ProvinceStyle for per-province visuals.
 - ProvinceSnapshot provides an immutable point-in-time view of province state.
 
 ### `view_transform.rs`

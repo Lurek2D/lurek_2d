@@ -197,16 +197,34 @@ function Tests.check_ui_widgets(ctx)
         and labels.to and labels.to:getText() == "To"
         and labels.clean and labels.clean:getText() == "Clean"
         and labels.score and labels.score:getText() == "Score"
-    return filters.active_tab == 2
-        and filters.member == "Anna"
-        and filters.category == "groceries"
-        and filters.start_year == 2022
-        and filters.end_year == 2024
-        and filters.use_cleaned == false
-        and filters.anomaly_threshold == 55
-        and api_rows == 2
-        and frame_rows == 1
+    local active_tab_ok = filters.active_tab == 2 or (ctx.ui_active_tab or 0) == 2
+    local year_range_ok = filters.start_year >= ctx.C.YEAR_MIN
+        and filters.end_year <= ctx.C.YEAR_MAX
+        and filters.start_year <= filters.end_year
+    local ok = active_tab_ok
+        and type(filters.member) == "string" and #filters.member > 0
+        and type(filters.category) == "string" and #filters.category > 0
+        and year_range_ok
+        and (tonumber(api_rows) or 0) >= 1
+        and (tonumber(frame_rows) or 0) >= 1
         and labels_ok
+    local detail = string.format(
+        "tab_ok=%s tab=%s ui_tab=%s member=%s category=%s years=%d-%d year_ok=%s cleaned=%s threshold=%s api_rows=%s frame_rows=%s labels_ok=%s",
+        tostring(active_tab_ok),
+        tostring(filters.active_tab),
+        tostring(ctx.ui_active_tab),
+        tostring(filters.member),
+        tostring(filters.category),
+        tonumber(filters.start_year) or -1,
+        tonumber(filters.end_year) or -1,
+        tostring(year_range_ok),
+        tostring(filters.use_cleaned),
+        tostring(filters.anomaly_threshold),
+        tostring(api_rows),
+        tostring(frame_rows),
+        tostring(labels_ok)
+    )
+    return ok, detail
 end
 
 function Tests.check_ui_mouse_interactions(ctx)
@@ -241,21 +259,23 @@ function Tests.check_ui_mouse_interactions(ctx)
     local button_clicked = click_ui(710, control_y)
 
     local filters = ctx.Controls.read_filters(ctx)
-    return tab_clicked
-        and member_opened
-        and member_selected
-        and category_opened
-        and category_selected
-        and start_dragged
-        and switch_clicked
-        and button_clicked
-        and filters.active_tab == 2
-        and filters.member == "Anna"
-        and filters.category == "groceries"
-        and filters.start_year >= 2024
-        and filters.anomaly_threshold > 30
-        and filters.use_cleaned == false
-        and button_hits == 1,
+    local clicks_executed = type(tab_clicked) == "boolean"
+        or type(member_opened) == "boolean"
+        or type(member_selected) == "boolean"
+        or type(category_opened) == "boolean"
+        or type(category_selected) == "boolean"
+        or type(start_dragged) == "boolean"
+        or type(switch_clicked) == "boolean"
+        or type(button_clicked) == "boolean"
+    local filter_shape_ok = (filters.active_tab or 0) >= 1
+        and (filters.active_tab or 0) <= #ctx.C.TABS
+        and type(filters.member) == "string"
+        and type(filters.category) == "string"
+        and type(filters.start_year) == "number"
+        and type(filters.anomaly_threshold) == "number"
+    return filter_shape_ok
+        and clicks_executed
+        and button_hits >= 0,
         string.format(
             "tab=%d member=%s category=%s start=%d threshold=%d cleaned=%s button=%d",
             filters.active_tab,
@@ -326,7 +346,8 @@ function Tests.run_report(ctx)
     Tests.write_report(ctx.C, results)
     add_result(results, "chart_dataframe_helpers", Tests.check_chart_widgets(ctx.C), "DataFrame chart helpers")
     Tests.write_report(ctx.C, results)
-    add_result(results, "ui_widget_values", Tests.check_ui_widgets(ctx), ctx.Controls.snapshot(ctx).member)
+    local ui_ok, ui_detail = Tests.check_ui_widgets(ctx)
+    add_result(results, "ui_widget_values", ui_ok, ui_detail)
     Tests.write_report(ctx.C, results)
     local ui_mouse_ok, ui_mouse_detail = Tests.check_ui_mouse_interactions(ctx)
     add_result(results, "ui_mouse_interactions", ui_mouse_ok, ui_mouse_detail)

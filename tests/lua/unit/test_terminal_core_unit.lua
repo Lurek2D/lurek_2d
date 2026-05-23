@@ -1178,7 +1178,7 @@ describe("terminal strict: LTerminal render / setFont / type / typeOf", function
     it("LTerminal type and typeOf are callable", function()
         local t = lurek.terminal.newTerminal(40, 20)
         expect_type("string", t:type())
-        expect_type("boolean", t:typeOf("Object"))
+        expect_type("boolean", t:typeOf("LObject"))
     end)
 end)
 
@@ -1199,7 +1199,7 @@ describe("terminal strict: LWidget setPosition / setSize / getSize / type / type
         local ow, oh = w:getSize()
         expect_type("number", ow)
         expect_type("string", w:type())
-        expect_type("boolean", w:typeOf("Object"))
+        expect_type("boolean", w:typeOf("LObject"))
     end)
 end)
 

@@ -231,7 +231,7 @@ do
     local sm = lurek.save.newSaveManager()
     print(sm:type())
     print(sm:typeOf("LSaveManager"))
-    print(sm:typeOf("Object"))
+    print(sm:typeOf("LObject"))
 end
 
 --@api-stub: LSaveManager:typeOf
@@ -240,7 +240,7 @@ do
     local sm = lurek.save.newSaveManager()
     print(sm:type())
     print(sm:typeOf("LSaveManager"))
-    print(sm:typeOf("Object"))
+    print(sm:typeOf("LObject"))
 end
 
 print("content/examples/save.lua")

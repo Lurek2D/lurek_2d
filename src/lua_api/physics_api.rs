@@ -1145,7 +1145,7 @@ impl LuaUserData for LuaWorld {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the object matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LWorld" || name == "Object")
+            Ok(name == "LWorld" || name == "LObject")
         });
     }
 }
@@ -1291,7 +1291,7 @@ impl LuaUserData for LuaZone {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the object matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LZone" || name == "Object")
+            Ok(name == "LZone" || name == "LObject")
         });
     }
 }
@@ -1462,7 +1462,7 @@ impl LuaUserData for LuaTerrain {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the object matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTerrain" || name == "Object")
+            Ok(name == "LTerrain" || name == "LObject")
         });
     }
 }
@@ -1618,7 +1618,7 @@ impl LuaUserData for LuaCellular {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the object matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCellular" || name == "Object")
+            Ok(name == "LCellular" || name == "LObject")
         });
     }
 }
@@ -1987,7 +1987,7 @@ impl LuaUserData for LuaBody {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the object matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBody" || name == "Object")
+            Ok(name == "LBody" || name == "LObject")
         });
     }
 }
@@ -2122,7 +2122,7 @@ impl LuaUserData for LuaPhysicsShape {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the object matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPhysicsShape" || name == "Object")
+            Ok(name == "LPhysicsShape" || name == "LObject")
         });
     }
 }

@@ -5,12 +5,20 @@
 
 /// Border classification: derive BorderClass from two adjacent province styles.
 pub mod borders;
+/// Precomputed border-pair index map for shader and thick-border pipelines.
+pub mod border_index;
 /// Binary-format geometry cache for province spans and border segments.
 pub mod cache;
+/// Province economy domain model and logistics shipment simulation.
+pub mod economy;
+/// Distance-to-border field precompute for province shading.
+pub mod distance_field;
 /// Change and event enums emitted by ProvinceRegistry mutations.
 pub mod events;
 /// GPU record builder: packs province styles into upload-ready structs.
 pub mod gpu_bridge;
+/// GPU texture upload helpers for province id, border index, and distance field maps.
+pub mod gpu_upload;
 /// Metadata import pipeline: colour-map PNG + CSV/TOML → ProvinceRegistry.
 pub mod import;
 /// Label centroid computation from province span runs.
@@ -29,10 +37,19 @@ pub mod types;
 pub mod view_transform;
 
 pub use events::{ProvinceChange, ProvinceEvent};
+pub use economy::{
+    advance_shipments_one_day, assign_logistics_parents, base_tax_gold, dispatchable_gold,
+    effective_tax_gold, food_deficit, launch_daily_shipments, monthly_food_need,
+    population_food_need, resolve_monthly_for_all, resolve_monthly_tick, to_active_shipments,
+    ActiveShipment, LogisticsConfig, LogisticsRole, MonthlyEconomyConfig, MonthlyEconomyReport,
+    ProvinceEconomyState, ShipmentOrder, ShipmentResource,
+};
 pub use import::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions, MarkerSanitizeSummary,
     ProvinceMetadataImportOptions, ProvinceMetadataImportSummary,
 };
 pub use registry::ProvinceRegistry;
-pub use types::{BorderClass, ProvinceId, ProvinceSnapshot, ProvinceStyle};
+pub use types::{
+    BorderClass, BorderPairFlags, BorderPairStyle, ProvinceId, ProvinceSnapshot, ProvinceStyle,
+};
 pub use view_transform::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};

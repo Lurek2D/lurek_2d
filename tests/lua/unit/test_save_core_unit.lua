@@ -404,7 +404,7 @@ describe("save strict: LSaveManager addMigration/type/typeOf", function()
     it("LSaveManager type and typeOf are callable", function()
         local sm = lurek.save.newSaveManager()
         expect_type("string", sm:type())
-        expect_type("boolean", sm:typeOf("Object"))
+        expect_type("boolean", sm:typeOf("LObject"))
     end)
 
     -- @covers LSaveManager:addMigration

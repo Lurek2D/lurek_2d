@@ -53,7 +53,13 @@ The `province` module is an advanced Edge/Integration tier subsystem that provid
 
 A standout feature of the module is its highly optimized rendering pipeline. To avoid the overhead of per-pixel evaluation at runtime, a `ProvinceGeometryCache` pre-computes horizontal cell spans, bounding boxes, and border line segments. These structures are packed into a `ProvinceGpuRecord` (a std430-friendly 32-byte payload) for direct GPU upload. Rendering is driven by customizable `ProvinceMapMode`s (such as Political, Terrain, or Visibility), mapping a `ProvinceStyle` to specific fill colors. The module handles viewport culling, screen-to-map transformations, and zoom-to-anchor logic, seamlessly generating render commands for solid fills, border strokes, capital icons, and shadowed text labels.
 
+The border pipeline now supports per-adjacency pair style overrides with optional color, custom thickness, and semantic flags (`country`, `alliance`, `war`, `truce`). Rendering can run in strategic or tactical mode (auto-selected by zoom threshold or set explicitly), and tactical mode can emit roads between capitals of visible adjacent provinces.
+
 The import pipeline is equally robust, automatically converting color-coded PNG maps and RGB CSV metadata into structured registry data. It includes a marker sanitization step that strips out capital (near-white) and label (magenta) pixels, reassigning them to the correct province while computing optimal label line vectors via expanding-ring neighbor searches. To support game logic, the registry employs a monotonic revision counter and change-stream (`get_changes_since`), emitting fine-grained deltas whenever a province's color, terrain, or fog state mutates. Exposed entirely through the `lurek.province.*` API, this module provides the complex topological, visual, and event-driven infrastructure required for high-performance interactive cartography.
+
+### Visibility Rendering Contract
+
+`visibility_state = 0`: hidden. The renderer skips province fill, border, capital marker, and label. - 
 
 [⬆ back to top](#table-of-contents)
 
@@ -65,11 +71,23 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Map land/water combinations to discrete border classes (land-land, coast, sea-sea).
 - Provide a single pure function with no side effects for pipeline integration.
 
+### `border_index.rs`
+
+- Precompute a dense border-pair index map from province id pixels.
+- Assign stable `u16` pair ids for per-border pair lookup during rendering.
+- Optional dilation pass expands border coverage for thick per-pair styles.
+
 ### `cache.rs`
 
 - Serialisable geometry cache for province spans and border segments.
 - Binary encode/decode with versioned little-endian format.
 - Built from a ProvinceRegistry snapshot for fast load without re-scanning.
+
+### `distance_field.rs`
+
+- Multi-source BFS precompute of per-pixel distance to nearest province border.
+- Produces compact `u8` field for border shading or LOD logic.
+- Provides helper to build directly from `ProvinceRegistry` grid data.
 
 ### `events.rs`
 
@@ -82,6 +100,13 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - GPU-uploadable province data bridge between registry and render pipeline.
 - Packs province style fields into a repr(C) record for direct buffer upload.
 - Builds sorted record arrays from the province registry for deterministic GPU ordering.
+- Builds border-style GPU records aligned to border-index pair ids for storage-buffer uploads.
+
+### `gpu_upload.rs`
+
+- Creates and uploads province GPU textures for map id, border index, and distance field data.
+- Uses `R32Uint`, `R16Uint`, and `R8Unorm` formats for shader-friendly sampling paths.
+- Includes deterministic little-endian packers for integer texture upload buffers.
 
 ### `import.rs`
 
@@ -123,6 +148,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
 - Maintains a monotonic revision counter and ordered change log for incremental sync.
 - Supports border class overrides keyed by normalised province pair.
+- Supports per-pair border style overrides (optional color, thickness, semantic flags).
 - Stores arbitrary string key-value attributes per province via set_attr.
 
 ### `render.rs`
@@ -130,7 +156,9 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Province map rendering: convert registry data into a flat RenderCommand list.
 - Viewport culling based on screen bounds and zoom/pan transform.
 - Fill rendering via per-province span rectangles coloured by the active map mode.
-- Border rendering with colour classification (land-land, coast, sea-sea, special).
+- Border rendering with class defaults plus per-pair style overrides.
+- Strategic vs tactical mode filtering for border detail.
+- Tactical road rendering between capitals of visible adjacent provinces.
 - Capital dot markers and text labels with shadow offset.
 - Hover and selection highlight outlines for interactive feedback.
 
@@ -144,7 +172,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 ### `types.rs`
 
 - Core type definitions for the province map system.
-- ProvinceId alias, BorderClass enum for adjacency classification, and ProvinceStyle for per-province visuals.
+- ProvinceId alias, BorderClass enum, BorderPairFlags/BorderPairStyle overrides, and ProvinceStyle for per-province visuals.
 - ProvinceSnapshot provides an immutable point-in-time view of province state.
 
 ### `view_transform.rs`
@@ -1261,7 +1289,7 @@ end
 #### Definition
 
 ```lua
---- Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
+--- Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.
 ---@param id number Province ID.
 ---@param fog_state number Fog state value (game-defined meaning).
 ---@return boolean True if the province ID exists.
@@ -1270,7 +1298,7 @@ function LProvinceRegistry:setFogState(id, fog_state) end
 
 #### Description
 
-Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
+Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.
 
 Parameters:
 
@@ -1453,21 +1481,21 @@ end
 #### Definition
 
 ```lua
---- Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
+--- Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
 ---@param id number Province ID.
----@param visibility_state number Visibility state value (game-defined meaning).
+---@param visibility_state number Visibility state byte.
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setVisibilityState(id, visibility_state) end
 ```
 
 #### Description
 
-Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
+Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
 
 Parameters:
 
 - `id` (`integer`, required): Province ID.
-- `visibility_state` (`integer`, required): Visibility state value (game-defined meaning).
+- `visibility_state` (`integer`, required): Visibility state byte.
 
 Returns: `boolean` - True if the province ID exists.
 

@@ -535,21 +535,21 @@ describe("lurek.particle object-method syntax", function()
     -- @covers lurek.particle.newSystem
     it("ps:typeOf('Drawable') returns true", function()
         local ps = lurek.particle.newSystem()
-        expect_true(ps:typeOf("Drawable"), "typeOf Drawable")
+        expect_true(ps:typeOf("LDrawable"), "typeOf Drawable")
     end)
 
     -- @covers LParticleSystem:typeOf
     -- @covers lurek.particle.newSystem
     it("ps:typeOf('Object') returns true", function()
         local ps = lurek.particle.newSystem()
-        expect_true(ps:typeOf("Object"), "typeOf Object")
+        expect_true(ps:typeOf("LObject"), "typeOf Object")
     end)
 
     -- @covers LParticleSystem:typeOf
     -- @covers lurek.particle.newSystem
     it("ps:typeOf('NonExistent') returns false", function()
         local ps = lurek.particle.newSystem()
-        expect_true(not ps:typeOf("NonExistent"), "typeOf NonExistent false")
+        expect_true(not ps:typeOf("LNonExistent"), "typeOf NonExistent false")
     end)
 end)
 
@@ -941,7 +941,7 @@ describe("lurek.particle trail", function()
         expect_type("userdata", trail)
         expect_equal(trail:type(), "LTrail")
         expect_equal(trail:typeOf("LTrail"), true)
-        expect_equal(trail:typeOf("Object"), true)
+        expect_equal(trail:typeOf("LObject"), true)
     end)
 
     -- @covers LTrail:clear

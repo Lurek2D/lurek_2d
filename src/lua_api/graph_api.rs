@@ -258,7 +258,7 @@ impl LuaUserData for LuaGraphItem {
         /// @param | name | string | Type name to compare against `LGraphItem`, `GraphItem`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGraphItem" || name == "LGraphItem" || name == "GraphItem" || name == "Object")
+            Ok(name == "LGraphItem" || name == "LObject")
         });
     }
 }
@@ -498,7 +498,7 @@ impl LuaUserData for LuaEdge {
         /// @param | name | string | Type name to compare against `LGraphEdge`, `GraphEdge`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGraphEdge" || name == "LGraphEdge" || name == "GraphEdge" || name == "Object")
+            Ok(name == "LGraphEdge" || name == "LObject")
         });
     }
 }
@@ -934,7 +934,7 @@ impl LuaUserData for LuaNode {
         /// @param | name | string | Type name to compare against `LGraphNode`, `GraphNode`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGraphNode" || name == "LGraphNode" || name == "GraphNode" || name == "Object")
+            Ok(name == "LGraphNode" || name == "LObject")
         });
     }
 }
@@ -1495,7 +1495,7 @@ impl LuaUserData for LuaGraph {
         /// @param | name | string | Type name to compare against `LGraph`, `Graph`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LGraph" || name == "LGraph" || name == "Graph" || name == "Object")
+            Ok(name == "LGraph" || name == "LObject")
         });
     }
 }

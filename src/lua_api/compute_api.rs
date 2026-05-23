@@ -891,7 +891,7 @@ impl LuaUserData for LuaArray {
         /// @param | name | string | Type name to compare against `LArray`, `Array`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LArray" || name == "LArray" || name == "Array" || name == "Object")
+            Ok(name == "LArray" || name == "LObject")
         });
     }
 }

@@ -169,6 +169,12 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Identity copy pass used as fallback when no effects are enabled.
 - Pass sequencing respects insertion order; final result written directly to the surface target.
 
+### `province_map_pipeline.rs`
+
+- Fullscreen province-map shader pipeline for strategic/tactical map rendering.
+- Data bind group includes province id, border index, distance field, and storage buffers.
+- Uniform helper maps viewport and zoom-mode state to GPU shader inputs.
+
 ### `renderer.rs`
 
 - Defines the `RenderCommand` enum — the complete vocabulary of draw, state, and control operations submitted each frame.

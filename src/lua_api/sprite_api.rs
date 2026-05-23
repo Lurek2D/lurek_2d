@@ -136,7 +136,7 @@ impl LuaUserData for LuaSpriteSheet {
         /// @param | name | string | Type name to check (e.g. `"LSpriteSheet"` or `"Object"`).
         /// @return | boolean | True if the object is the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSpriteSheet" || name == "Object")
+            Ok(name == "LSpriteSheet" || name == "LObject")
         });
     }
 }
@@ -280,7 +280,7 @@ impl LuaUserData for LuaSpriteAtlas {
         /// @param | name | string | Type name to check (e.g. `"LSpriteAtlas"` or `"Object"`).
         /// @return | boolean | True if the object is the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSpriteAtlas" || name == "Object")
+            Ok(name == "LSpriteAtlas" || name == "LObject")
         });
     }
 }

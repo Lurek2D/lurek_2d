@@ -21,6 +21,8 @@ pub mod mesh;
 pub mod obj_loader;
 /// Post-effect pipeline: chain of `ShaderPassDescriptor`s applied after the main pass.
 pub mod postfx_pipeline;
+/// Fullscreen province map shader pipeline and bind-group setup.
+pub mod province_map_pipeline;
 /// `RenderCommand` enum and all draw-state types consumed by `GpuRenderer`.
 pub mod renderer;
 /// User-uploaded WGSL shader wrappers and `UniformValue` binding types.
@@ -35,6 +37,7 @@ pub use gpu_renderer::GpuRenderer;
 pub use image_effect::ShaderPassDescriptor;
 pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
 pub use postfx_pipeline::PostFxPipeline;
+pub use province_map_pipeline::ProvinceMapPipeline;
 pub use renderer::{
     BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand, StencilAction,
     StencilMode, TextAlign, TextureData,

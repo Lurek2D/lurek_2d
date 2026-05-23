@@ -945,7 +945,7 @@ impl LuaUserData for LuaMinimap {
         /// @param | name | string | Type name to compare against `LMinimap`, `Minimap`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMinimap" || name == "LMinimap" || name == "Minimap" || name == "Object")
+            Ok(name == "LMinimap" || name == "LObject")
         });
         // -- render --
         /// Enqueues minimap render commands at an optional screen position.

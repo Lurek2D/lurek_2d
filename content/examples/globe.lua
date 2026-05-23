@@ -569,7 +569,7 @@ end
 --@api-stub: LGlobe:typeOf
 do
     local g = lurek.globe.new("typeof_globe")
-    print("is Globe = " .. tostring(g:typeOf("Globe")))
+    print("is Globe = " .. tostring(g:typeOf("LGlobe")))
 end
 
 --- Globe Module: LGlobeRegistry methods

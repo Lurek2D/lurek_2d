@@ -2001,7 +2001,7 @@ describe("light strict: LLight type/typeOf", function()
     it("LLight type and typeOf are callable", function()
         local l = lurek.light.newLight(0, 0, 50)
         expect_type("string", l:type())
-        expect_type("boolean", l:typeOf("Object"))
+        expect_type("boolean", l:typeOf("LObject"))
         l:remove()
     end)
 
@@ -2018,7 +2018,7 @@ describe("light strict: LOccluder type/typeOf", function()
         end)
         if ok and oc ~= nil then
             expect_type("string", oc:type())
-            expect_type("boolean", oc:typeOf("Object"))
+            expect_type("boolean", oc:typeOf("LObject"))
         else
             expect_false(ok and oc ~= nil)
         end

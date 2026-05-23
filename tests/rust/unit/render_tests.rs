@@ -1,6 +1,6 @@
 //! INTERNAL ONLY: Public `lurek.render.*` behavior is covered primarily by the Lua-first suites
-//! in `tests/lua/unit/test_render_unit.lua` and focused module suites such as
-//! `tests/lua/unit/test_drawlayer_unit.lua` and `tests/lua/unit/test_font_unit.lua`.
+//! in `tests/lua/unit/test_render_core_unit.lua` and focused module suites such as
+//! `tests/lua/unit/test_render_drawlayer_unit.lua` and `tests/lua/unit/test_font_unit.lua`.
 //!
 //! This Rust file keeps internal helper coverage for pure data structures and
 //! renderer-side value types that are either not exposed one-to-one through Lua
@@ -10,16 +10,29 @@ use std::collections::HashMap;
 
 use lurek2d::render::canvas::Canvas;
 use lurek2d::render::decal_surface::DecalSurface;
-use lurek2d::render::draw_layer::DrawLayer;
 use lurek2d::render::font::{Font, AVAILABLE_CELL_SIZES, AVAILABLE_HEIGHTS};
 use lurek2d::render::image_effect::ShaderPassDescriptor;
 use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use lurek2d::render::postfx_pipeline::params_to_uniform;
+use lurek2d::render::province_map_pipeline::ProvinceMapUniforms;
 use lurek2d::render::renderer::{
     BlendMode, DepthMode, PhysicsDebugConfig, StencilAction, StencilMode, TextSpan, TextureData,
 };
 use lurek2d::render::shape::{CompoundShape, ShapeCommand};
 use lurek2d::render::DrawMode;
+
+mod province_map_pipeline_tests {
+    use super::*;
+
+    #[test]
+    fn full_map_uniforms_cover_whole_map_and_default_to_tactical() {
+        let u = ProvinceMapUniforms::full_map(2000, 900, 1920.0, 1080.0);
+        assert_eq!(u.viewport, [0.0, 0.0, 2000.0, 900.0]);
+        assert_eq!(u.map_size, [2000.0, 900.0]);
+        assert_eq!(u.screen_size, [1920.0, 1080.0]);
+        assert_eq!(u.zoom_mode, 1);
+    }
+}
 
 // ── canvas tests ────────────────────────────────────────────────────────────
 
@@ -81,85 +94,7 @@ mod decal_surface_tests {
     }
 }
 
-// ── draw_layer tests ────────────────────────────────────────────────────────
-
-mod draw_layer_tests {
-    use super::*;
-
-    #[test]
-    fn new_starts_empty() {
-        let dl = DrawLayer::new();
-        assert_eq!(dl.get_count(), 0);
-    }
-
-    #[test]
-    fn queue_returns_incrementing_ids() {
-        let mut dl = DrawLayer::new();
-        let id0 = dl.queue(0.0);
-        let id1 = dl.queue(1.0);
-        let id2 = dl.queue(2.0);
-        assert_eq!(id0, 0);
-        assert_eq!(id1, 1);
-        assert_eq!(id2, 2);
-        assert_eq!(dl.get_count(), 3);
-    }
-
-    #[test]
-    fn flush_sorts_by_z_order_ascending() {
-        let mut dl = DrawLayer::new();
-        dl.queue(3.0);
-        dl.queue(1.0);
-        dl.queue(2.0);
-        let entries = dl.flush();
-        let z_values: Vec<f64> = entries.iter().map(|e| e.z_order).collect();
-        assert_eq!(z_values, vec![1.0, 2.0, 3.0]);
-    }
-
-    #[test]
-    fn flush_drains_entries() {
-        let mut dl = DrawLayer::new();
-        dl.queue(1.0);
-        dl.queue(2.0);
-        let _ = dl.flush();
-        assert_eq!(dl.get_count(), 0);
-    }
-
-    #[test]
-    fn clear_empties_queue() {
-        let mut dl = DrawLayer::new();
-        dl.queue(1.0);
-        dl.queue(2.0);
-        dl.clear();
-        assert_eq!(dl.get_count(), 0);
-    }
-
-    #[test]
-    fn flush_preserves_callback_ids() {
-        let mut dl = DrawLayer::new();
-        let id_high = dl.queue(10.0);
-        let id_low = dl.queue(1.0);
-        let entries = dl.flush();
-        // After sorting, the low-z entry (id_low) comes first.
-        assert_eq!(entries[0].callback_id, id_low);
-        assert_eq!(entries[1].callback_id, id_high);
-    }
-
-    #[test]
-    fn default_is_same_as_new() {
-        let dl = DrawLayer::default();
-        assert_eq!(dl.get_count(), 0);
-    }
-
-    #[test]
-    fn flush_handles_nan_gracefully() {
-        let mut dl = DrawLayer::new();
-        dl.queue(f64::NAN);
-        dl.queue(1.0);
-        // Should not panic; NaN comparison falls back to Equal.
-        let entries = dl.flush();
-        assert_eq!(entries.len(), 2);
-    }
-}
+// DrawLayer queue/flush/z-order behavior: `tests/lua/unit/test_render_drawlayer_unit.lua`.
 
 // ── font tests ──────────────────────────────────────────────────────────────
 

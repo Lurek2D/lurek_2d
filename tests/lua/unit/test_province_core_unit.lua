@@ -193,4 +193,38 @@ describe("province strict uncovered symbols", function()
     end)
 end)
 
+-- @describe province border pair style and zoom render options
+describe("province border pair style and zoom render options", function()
+    -- @covers LProvinceRegistry:setBorderPairStyle
+    -- @covers LProvinceRegistry:getBorderPairStyle
+    -- @covers LProvinceRegistry:render
+    -- @covers lurek.province.newFromPng
+    it("stores pair style and accepts tactical render options", function()
+        local reg = lurek.province.newFromPng("test-province-border-pair", "content/games/strategy/eu2/map.png")
+
+        local ok = reg:setBorderPairStyle(1, 2, {
+            color = { 1.0, 0.0, 0.0, 1.0 },
+            thickness = 3.0,
+            flags = { "country" },
+        })
+        expect_true(ok)
+
+        local style = reg:getBorderPairStyle(1, 2)
+        expect_type("table", style)
+        expect_equal(3.0, style.thickness)
+        expect_type("table", style.flags)
+
+        local render_ok = pcall(function()
+            reg:render({
+                zoom_mode = "tactical",
+                tactical_zoom_threshold = 3.0,
+                draw_roads = true,
+                draw_borders = true,
+                draw_capitals = true,
+            })
+        end)
+        expect_true(render_ok)
+    end)
+end)
+
 test_summary()

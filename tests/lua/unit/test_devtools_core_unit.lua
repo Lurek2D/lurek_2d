@@ -821,7 +821,7 @@ describe("devtools strict: LFileWatcher type / typeOf", function()
         local ok, fw = pcall(function() return lurek.devtools.newFileWatcher("save") end)
         if ok and fw ~= nil then
             expect_type("string", fw:type())
-            expect_type("boolean", fw:typeOf("Object"))
+            expect_type("boolean", fw:typeOf("LObject"))
         else
             expect_false(ok and fw ~= nil)
         end
@@ -837,7 +837,7 @@ describe("devtools strict: LReplConsole type / typeOf", function()
         local ok, repl = pcall(function() return lurek.devtools.newRepl(10) end)
         if ok and repl ~= nil then
             expect_type("string", repl:type())
-            expect_type("boolean", repl:typeOf("Object"))
+            expect_type("boolean", repl:typeOf("LObject"))
         else
             expect_false(ok and repl ~= nil)
         end

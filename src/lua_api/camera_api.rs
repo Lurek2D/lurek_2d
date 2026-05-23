@@ -679,7 +679,7 @@ impl LuaUserData for LuaCamera2D {
         /// @param | name | string | Type name to compare against `LCamera` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCamera" || name == "Object")
+            Ok(name == "LCamera" || name == "LObject")
         });
     }
 }
@@ -843,7 +843,7 @@ impl LuaUserData for LuaCameraRig {
         /// @param | name | string | Type name to compare against `LCameraRig` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCameraRig" || name == "Object")
+            Ok(name == "LCameraRig" || name == "LObject")
         });
     }
 }

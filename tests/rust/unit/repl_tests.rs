@@ -46,6 +46,10 @@ fn commands_return_internal_command_variants() {
         session.eval_line(":clear", &lua),
         ReplResult::Command(ReplCommand::Clear)
     );
+    assert_eq!(
+        session.eval_line(":reset", &lua),
+        ReplResult::Command(ReplCommand::Reset)
+    );
     assert!(session.is_empty());
 }
 

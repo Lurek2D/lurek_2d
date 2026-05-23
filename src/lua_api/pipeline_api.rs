@@ -343,7 +343,7 @@ impl LuaUserData for LuaStep {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if the type matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPipelineStep" || name == "LPipelineStep" || name == "PipelineStep" || name == "Object")
+            Ok(name == "LPipelineStep" || name == "LObject")
         });
     }
 }
@@ -1449,7 +1449,7 @@ impl LuaUserData for LuaPipeline {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if the type matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPipeline" || name == "LPipeline" || name == "Pipeline" || name == "Object")
+            Ok(name == "LPipeline" || name == "LObject")
         });
     }
 }

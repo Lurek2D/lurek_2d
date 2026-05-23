@@ -742,7 +742,7 @@ describe("timer strict: LScheduler type/typeOf", function()
     it("LScheduler type and typeOf are callable", function()
         local s = lurek.timer.newScheduler()
         expect_type("string", s:type())
-        expect_type("boolean", s:typeOf("Object"))
+        expect_type("boolean", s:typeOf("LObject"))
     end)
 end)
 

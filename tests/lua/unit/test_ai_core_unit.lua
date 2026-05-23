@@ -2016,7 +2016,7 @@ describe("lurek.ai type system", function()
     -- @covers LAIWorld:typeOf
     -- @covers lurek.ai.newWorld
     it("AIWorld:typeOf Object returns true", function()
-        expect_true(lurek.ai.newWorld():typeOf("Object"))
+        expect_true(lurek.ai.newWorld():typeOf("LObject"))
     end)
 
     -- @covers LAIWorld:addAgent
@@ -2024,19 +2024,19 @@ describe("lurek.ai type system", function()
     it("Agent:typeOf Object returns true", function()
         local w = lurek.ai.newWorld()
         local a = w:addAgent("x")
-        expect_true(a:typeOf("Object"))
+        expect_true(a:typeOf("LObject"))
     end)
 
     -- @covers LAIBlackboard:typeOf
     -- @covers lurek.ai.newBlackboard
     it("Blackboard:typeOf Object returns true", function()
-        expect_true(lurek.ai.newBlackboard():typeOf("Object"))
+        expect_true(lurek.ai.newBlackboard():typeOf("LObject"))
     end)
 
     -- @covers LBTNode:typeOf
     -- @covers lurek.ai.newSelector
     it("BTNode:typeOf Object returns true", function()
-        expect_true(lurek.ai.newSelector():typeOf("Object"))
+        expect_true(lurek.ai.newSelector():typeOf("LObject"))
     end)
 end)
 
@@ -3770,7 +3770,7 @@ describe("Missing explicit test for AIWorld:typeOf", function()
     -- @covers LAIWorld:typeOf
     -- @covers lurek.ai.newWorld
     it("AIWorld:typeOf works", function()
-        expect_equal(true, lurek.ai.newWorld():typeOf("AIWorld"))
+        expect_equal(true, lurek.ai.newWorld():typeOf("LAIWorld"))
     end)
 end)
 
@@ -4018,7 +4018,7 @@ describe("Missing explicit test for Agent:typeOf", function()
     it("Agent:typeOf works", function()
         local w = lurek.ai.newWorld()
         local a = w:addAgent("agent_typeof")
-        expect_equal(true, a:typeOf("Agent"))
+        expect_equal(true, a:typeOf("LAgent"))
     end)
 end)
 
@@ -4131,7 +4131,7 @@ describe("Missing explicit test for Blackboard:typeOf", function()
     -- @covers LAIBlackboard:typeOf
     -- @covers lurek.ai.newBlackboard
     it("Blackboard:typeOf works", function()
-        expect_equal(true, lurek.ai.newBlackboard():typeOf("Blackboard"))
+        expect_equal(true, lurek.ai.newBlackboard():typeOf("LBlackboard"))
     end)
 end)
 
@@ -4220,7 +4220,7 @@ describe("Missing explicit test for StateMachine:typeOf", function()
     -- @covers LStateMachine:typeOf
     -- @covers lurek.ai.newStateMachine
     it("StateMachine:typeOf works", function()
-        expect_true(lurek.ai.newStateMachine():typeOf("StateMachine"))
+        expect_true(lurek.ai.newStateMachine():typeOf("LStateMachine"))
     end)
 end)
 
@@ -4261,7 +4261,7 @@ describe("Missing explicit test for BehaviorTree:typeOf", function()
     -- @covers LBehaviorTree:typeOf
     -- @covers lurek.ai.newBehaviorTree
     it("BehaviorTree:typeOf works", function()
-        expect_true(lurek.ai.newBehaviorTree():typeOf("BehaviorTree"))
+        expect_true(lurek.ai.newBehaviorTree():typeOf("LBehaviorTree"))
     end)
 end)
 
@@ -4388,7 +4388,7 @@ describe("Missing explicit test for BTNode:typeOf", function()
     -- @covers LBTNode:typeOf
     -- @covers lurek.ai.newSelector
     it("BTNode:typeOf works", function()
-        expect_true(lurek.ai.newSelector():typeOf("BTNode"))
+        expect_true(lurek.ai.newSelector():typeOf("LBTNode"))
     end)
 end)
 
@@ -4459,7 +4459,7 @@ describe("Missing explicit test for SteeringManager:typeOf", function()
     -- @covers LSteeringManager:typeOf
     -- @covers lurek.ai.newSteeringManager
     it("SteeringManager:typeOf works", function()
-        expect_true(lurek.ai.newSteeringManager():typeOf("SteeringManager"))
+        expect_true(lurek.ai.newSteeringManager():typeOf("LSteeringManager"))
     end)
 end)
 
@@ -4683,7 +4683,7 @@ describe("Missing explicit test for QLearner:typeOf", function()
     -- @covers LQLearner:typeOf
     -- @covers lurek.ai.newQLearner
     it("QLearner:typeOf works", function()
-        expect_true(lurek.ai.newQLearner(2, 2):typeOf("QLearner"))
+        expect_true(lurek.ai.newQLearner(2, 2):typeOf("LQLearner"))
     end)
 end)
 
@@ -4741,7 +4741,7 @@ describe("Missing explicit test for UtilityAI:typeOf", function()
     -- @covers LUtilityAI:typeOf
     -- @covers lurek.ai.newUtilityAI
     it("UtilityAI:typeOf works", function()
-        expect_true(lurek.ai.newUtilityAI():typeOf("UtilityAI"))
+        expect_true(lurek.ai.newUtilityAI():typeOf("LUtilityAI"))
     end)
 end)
 
@@ -4785,7 +4785,7 @@ describe("Missing explicit test for GOAPPlanner:typeOf", function()
     -- @covers LGOAPPlanner:typeOf
     -- @covers lurek.ai.newGOAPPlanner
     it("GOAPPlanner:typeOf works", function()
-        expect_true(lurek.ai.newGOAPPlanner():typeOf("GOAPPlanner"))
+        expect_true(lurek.ai.newGOAPPlanner():typeOf("LGOAPPlanner"))
     end)
 end)
 
@@ -4940,7 +4940,7 @@ describe("Missing explicit test for InfluenceMap:typeOf", function()
     -- @covers LInfluenceMap:typeOf
     -- @covers lurek.ai.newInfluenceMap
     it("InfluenceMap:typeOf works", function()
-        expect_true(lurek.ai.newInfluenceMap(4, 4, 1.0):typeOf("InfluenceMap"))
+        expect_true(lurek.ai.newInfluenceMap(4, 4, 1.0):typeOf("LInfluenceMap"))
     end)
 end)
 
@@ -5083,7 +5083,7 @@ describe("Missing explicit test for Squad:typeOf", function()
     -- @covers LSquad:typeOf
     -- @covers lurek.ai.newSquad
     it("Squad:typeOf works", function()
-        expect_true(lurek.ai.newSquad("t"):typeOf("Squad"))
+        expect_true(lurek.ai.newSquad("t"):typeOf("LSquad"))
     end)
 end)
 
@@ -5170,7 +5170,7 @@ describe("Missing explicit test for CommandQueue:typeOf", function()
     -- @covers LCommandQueue:typeOf
     -- @covers lurek.ai.newCommandQueue
     it("CommandQueue:typeOf works", function()
-        expect_true(lurek.ai.newCommandQueue():typeOf("CommandQueue"))
+        expect_true(lurek.ai.newCommandQueue():typeOf("LCommandQueue"))
     end)
 end)
 
@@ -6348,7 +6348,7 @@ describe("ai strict: LAgent missing methods", function()
         local w = lurek.ai.newWorld()
         local a = w:addAgent("strict_type")
         expect_type("string", a:type())
-        expect_type("boolean", a:typeOf("Object"))
+        expect_type("boolean", a:typeOf("LObject"))
     end)
 end)
 
@@ -6360,7 +6360,7 @@ describe("ai strict: missing type methods", function()
     it("LTraitProfile type and typeOf are callable", function()
         local t = lurek.ai.newTraitProfile()
         expect_type("string", t:type())
-        expect_type("boolean", t:typeOf("Object"))
+        expect_type("boolean", t:typeOf("LObject"))
     end)
 
     -- @covers LStimulusWorld:type
@@ -6369,7 +6369,7 @@ describe("ai strict: missing type methods", function()
     it("LStimulusWorld type and typeOf are callable", function()
         local s = lurek.ai.newStimulusWorld()
         expect_type("string", s:type())
-        expect_type("boolean", s:typeOf("Object"))
+        expect_type("boolean", s:typeOf("LObject"))
     end)
 
     -- @covers LContextSteering:type
@@ -6378,7 +6378,7 @@ describe("ai strict: missing type methods", function()
     it("LContextSteering type and typeOf are callable", function()
         local c = lurek.ai.newContextSteering(8)
         expect_type("string", c:type())
-        expect_type("boolean", c:typeOf("Object"))
+        expect_type("boolean", c:typeOf("LObject"))
     end)
 
     -- @covers LNeedSystem:type
@@ -6387,7 +6387,7 @@ describe("ai strict: missing type methods", function()
     it("LNeedSystem type and typeOf are callable", function()
         local n = lurek.ai.newNeedSystem()
         expect_type("string", n:type())
-        expect_type("boolean", n:typeOf("Object"))
+        expect_type("boolean", n:typeOf("LObject"))
     end)
 
     -- @covers LAIDirector:type
@@ -6396,7 +6396,7 @@ describe("ai strict: missing type methods", function()
     it("LAIDirector type and typeOf are callable", function()
         local d = lurek.ai.newAIDirector()
         expect_type("string", d:type())
-        expect_type("boolean", d:typeOf("Object"))
+        expect_type("boolean", d:typeOf("LObject"))
     end)
 
     -- @covers LHTNDomain:type
@@ -6405,7 +6405,7 @@ describe("ai strict: missing type methods", function()
     it("LHTNDomain type and typeOf are callable", function()
         local h = lurek.ai.newHTNDomain()
         expect_type("string", h:type())
-        expect_type("boolean", h:typeOf("Object"))
+        expect_type("boolean", h:typeOf("LObject"))
     end)
 
     -- @covers LMCTSEngine:type
@@ -6414,7 +6414,7 @@ describe("ai strict: missing type methods", function()
     it("LMCTSEngine type and typeOf are callable", function()
         local m = lurek.ai.newMCTSEngine(20, 1.41, 4, 42)
         expect_type("string", m:type())
-        expect_type("boolean", m:typeOf("Object"))
+        expect_type("boolean", m:typeOf("LObject"))
     end)
 
     -- @covers LEmotionModel:type
@@ -6423,7 +6423,7 @@ describe("ai strict: missing type methods", function()
     it("LEmotionModel type and typeOf are callable", function()
         local e = lurek.ai.newEmotionModel()
         expect_type("string", e:type())
-        expect_type("boolean", e:typeOf("Object"))
+        expect_type("boolean", e:typeOf("LObject"))
     end)
 
     -- @covers LORCASolver:type
@@ -6432,7 +6432,7 @@ describe("ai strict: missing type methods", function()
     it("LORCASolver type and typeOf are callable", function()
         local o = lurek.ai.newORCASolver(1.5)
         expect_type("string", o:type())
-        expect_type("boolean", o:typeOf("Object"))
+        expect_type("boolean", o:typeOf("LObject"))
     end)
 
     -- @covers LNeuralNet:type
@@ -6441,7 +6441,7 @@ describe("ai strict: missing type methods", function()
     it("LNeuralNet type and typeOf are callable", function()
         local nn = lurek.ai.newNeuralNet()
         expect_type("string", nn:type())
-        expect_type("boolean", nn:typeOf("Object"))
+        expect_type("boolean", nn:typeOf("LObject"))
     end)
 
     -- @covers LGeneticAlgorithm:type
@@ -6450,7 +6450,7 @@ describe("ai strict: missing type methods", function()
     it("LGeneticAlgorithm type and typeOf are callable", function()
         local ga = lurek.ai.newGeneticAlgorithm(6, 4, 7)
         expect_type("string", ga:type())
-        expect_type("boolean", ga:typeOf("Object"))
+        expect_type("boolean", ga:typeOf("LObject"))
     end)
 
     -- @covers LBandit:type
@@ -6459,7 +6459,7 @@ describe("ai strict: missing type methods", function()
     it("LBandit type and typeOf are callable", function()
         local b = lurek.ai.newBandit(3, "ucb1", 0.0, 9)
         expect_type("string", b:type())
-        expect_type("boolean", b:typeOf("Object"))
+        expect_type("boolean", b:typeOf("LObject"))
     end)
 
     -- @covers LNeuroevolution:type
@@ -6468,7 +6468,7 @@ describe("ai strict: missing type methods", function()
     it("LNeuroevolution type and typeOf are callable", function()
         local ne = lurek.ai.newNeuroevolution({{inputs=1, outputs=1, activation="linear"}}, 4, 42)
         expect_type("string", ne:type())
-        expect_type("boolean", ne:typeOf("Object"))
+        expect_type("boolean", ne:typeOf("LObject"))
     end)
 
     -- @covers LStrategyAI:type
@@ -6477,7 +6477,7 @@ describe("ai strict: missing type methods", function()
     it("LStrategyAI type and typeOf are callable", function()
         local s = lurek.ai.newStrategyAI(5.0)
         expect_type("string", s:type())
-        expect_type("boolean", s:typeOf("Object"))
+        expect_type("boolean", s:typeOf("LObject"))
     end)
 
     -- @covers LAILod:type
@@ -6486,7 +6486,7 @@ describe("ai strict: missing type methods", function()
     it("LAILod type and typeOf are callable", function()
         local l = lurek.ai.newAILod()
         expect_type("string", l:type())
-        expect_type("boolean", l:typeOf("Object"))
+        expect_type("boolean", l:typeOf("LObject"))
     end)
 end)
 

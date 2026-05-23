@@ -966,7 +966,7 @@ describe("ecs strict: LUniverse release/spawnBulk/type/typeOf", function()
     it("LUniverse type and typeOf are callable", function()
         local u = lurek.ecs.newUniverse()
         expect_type("string", u:type())
-        expect_type("boolean", u:typeOf("Object"))
+        expect_type("boolean", u:typeOf("LObject"))
     end)
 
     -- @covers LUniverse:release

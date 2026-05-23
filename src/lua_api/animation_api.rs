@@ -339,7 +339,7 @@ impl LuaUserData for LuaAnimation {
         /// @param | name | string | Type name to compare against `LAnimation` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAnimation" || name == "Object")
+            Ok(name == "LAnimation" || name == "LObject")
         });
     }
 }
@@ -446,7 +446,7 @@ impl LuaUserData for LuaAnimStateMachine {
         /// @param | name | string | Type name to compare against `LAnimStateMachine` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAnimStateMachine" || name == "Object")
+            Ok(name == "LAnimStateMachine" || name == "LObject")
         });
     }
 }
@@ -568,7 +568,7 @@ impl LuaUserData for LuaBlendLayerSet {
         /// @param | name | string | Type name to compare against `LBlendLayerSet` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBlendLayerSet" || name == "Object")
+            Ok(name == "LBlendLayerSet" || name == "LObject")
         });
     }
 }
@@ -834,7 +834,7 @@ impl LuaUserData for LuaAnimCurve {
         /// @param | name | string | Type name to compare against `LAnimCurve` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAnimCurve" || name == "Object")
+            Ok(name == "LAnimCurve" || name == "LObject")
         });
     }
 }
@@ -872,7 +872,7 @@ impl LuaUserData for LuaAnimSyncGroup {
         /// @param | name | string | Type name to compare against `LAnimSyncGroup` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAnimSyncGroup" || name == "Object")
+            Ok(name == "LAnimSyncGroup" || name == "LObject")
         });
     }
 }

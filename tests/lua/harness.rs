@@ -165,6 +165,26 @@ fn collect_colocated_game_tests(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
+/// Collect `tests/lua/demos/test_*.lua` headless demo contract tests.
+fn collect_headless_demo_tests(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+
+    for entry in entries.filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if !path.is_file() {
+            continue;
+        }
+        let Some(name) = path.file_name().and_then(|n| n.to_str()) else {
+            continue;
+        };
+        if name.starts_with("test_") && name.ends_with(".lua") {
+            out.push(path);
+        }
+    }
+}
+
 // === lurek.log tests ===// === lurek.render.newShape / CompoundShape tests ===
 // === Stress Tests ===
 // === lurek.ui tests ===
@@ -1165,6 +1185,28 @@ fn lua_security_render() {
 #[test]
 fn lua_security_runtime() {
     run_lua_test("security/test_runtime.lua");
+}
+
+// ─── demo layer: headless contract tests (tests/lua/demos/test_*.lua) ───────
+
+#[test]
+fn lua_demos_headless_all() {
+    let dir = Path::new("tests/lua/demos");
+    let mut paths = Vec::new();
+    collect_headless_demo_tests(dir, &mut paths);
+    paths.sort();
+
+    assert!(
+        !paths.is_empty(),
+        "No headless demo tests found under tests/lua/demos/test_*.lua"
+    );
+
+    for path in paths {
+        let display = path
+            .to_str()
+            .unwrap_or_else(|| panic!("Non-UTF8 path in demo tests: {:?}", path));
+        run_lua_test_at_path(display, display);
+    }
 }
 
 // ─── demo layer: colocated game tests (content/games/**/test.lua) ───────────

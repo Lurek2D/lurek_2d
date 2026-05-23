@@ -1652,14 +1652,14 @@ describe("Type system", function()
     -- @covers lurek.graph.newGraph
     it("Graph typeOf Graph", function()
         local g = lurek.graph.newGraph()
-        expect_true(g:typeOf("Graph"))
+        expect_true(g:typeOf("LGraph"))
     end)
 
     -- @covers LGraph:typeOf
     -- @covers lurek.graph.newGraph
     it("Graph typeOf Object", function()
         local g = lurek.graph.newGraph()
-        expect_true(g:typeOf("Object"))
+        expect_true(g:typeOf("LObject"))
     end)
 
     -- @covers LGraph:addNode
@@ -1675,7 +1675,7 @@ describe("Type system", function()
     it("Node typeOf GraphNode", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
-        expect_true(n:typeOf("GraphNode"))
+        expect_true(n:typeOf("LGraphNode"))
     end)
 
     -- @covers lurek.graph
@@ -1687,7 +1687,7 @@ describe("Type system", function()
     -- @covers lurek.graph
     it("Edge typeOf GraphEdge", function()
         local g, n1, n2, e = make_simple_graph()
-        expect_true(e:typeOf("GraphEdge"))
+        expect_true(e:typeOf("LGraphEdge"))
     end)
 
     -- @covers LGraph:createItem
@@ -1703,7 +1703,7 @@ describe("Type system", function()
     it("Item typeOf GraphItem", function()
         local g = lurek.graph.newGraph()
         local item = g:createItem()
-        expect_true(item:typeOf("GraphItem"))
+        expect_true(item:typeOf("LGraphItem"))
     end)
 
     -- @covers LGraph:createItem
@@ -1711,7 +1711,7 @@ describe("Type system", function()
     it("Item typeOf Object", function()
         local g = lurek.graph.newGraph()
         local item = g:createItem()
-        expect_true(item:typeOf("Object"))
+        expect_true(item:typeOf("LObject"))
     end)
 
     -- @covers LGraph:addNode
@@ -1719,7 +1719,7 @@ describe("Type system", function()
     it("Node typeOf returns false for wrong type", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
-        expect_false(n:typeOf("GraphEdge"))
+        expect_false(n:typeOf("LGraphEdge"))
     end)
 end)
 
@@ -1995,7 +1995,7 @@ describe("graph strict: LGraphItem methods", function()
         local g = lurek.graph.newGraph()
         local item = g:createItem("coin", -1)
         expect_type("string", item:type())
-        expect_type("boolean", item:typeOf("Object"))
+        expect_type("boolean", item:typeOf("LObject"))
     end)
 end)
 
@@ -2048,7 +2048,7 @@ describe("graph strict: LGraphEdge methods", function()
         local b = g:addNode("dst")
         local e = g:addEdge(a, b)
         expect_type("string", e:type())
-        expect_type("boolean", e:typeOf("Object"))
+        expect_type("boolean", e:typeOf("LObject"))
     end)
 end)
 
@@ -2142,7 +2142,7 @@ describe("graph strict: LGraphNode methods", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode("task", 0)
         expect_type("string", n:type())
-        expect_type("boolean", n:typeOf("Object"))
+        expect_type("boolean", n:typeOf("LObject"))
     end)
 end)
 

@@ -716,7 +716,7 @@ do
   -- typeOf checks against "LDataFrame", "DataFrame", or "Object".
   -- Useful for generic functions that accept multiple handle types.
   local df = lurek.dataframe.newDataFrame()
-  if df:typeOf("Object") then
+  if df:typeOf("LObject") then
     lurek.log.info("DataFrame is an Object (all handles are)")
   end
 end

@@ -675,7 +675,7 @@ impl LuaUserData for LuaTerminal {
         /// @param | name | string | Type name to test against.
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LTerminal" || name == "Object")
+            Ok(name == "LTerminal" || name == "LObject")
         });
     }
 }
@@ -1177,7 +1177,7 @@ impl LuaUserData for LuaWidget {
         /// @param | name | string | Type name to test against.
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LWidget" || name == "Object")
+            Ok(name == "LWidget" || name == "LObject")
         });
     }
 }

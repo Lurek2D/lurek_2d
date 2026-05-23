@@ -584,8 +584,8 @@ describe("Bus UserData", function()
     -- @covers lurek.audio.newBus
     it("Bus:typeOf checks identity against a type name", function()
         local bus = lurek.audio.newBus("typeof_bus")
-        expect_true(bus:typeOf("Bus"))
-        expect_false(bus:typeOf("Source"))
+        expect_true(bus:typeOf("LBus"))
+        expect_false(bus:typeOf("LSource"))
     end)
 end)
 
@@ -908,8 +908,8 @@ describe("Bus type system", function()
     -- @covers lurek.audio.newBus
     it("typeOf returns true for Bus and Object", function()
         local bus = lurek.audio.newBus("test")
-        expect_true(bus:typeOf("Bus"))
-        expect_true(bus:typeOf("Object"))
+        expect_true(bus:typeOf("LBus"))
+        expect_true(bus:typeOf("LObject"))
     end)
 end)
 
@@ -1159,8 +1159,8 @@ describe("MidiPlayer type system", function()
     -- @covers lurek.audio.newMidiPlayer
     it("typeOf returns true for MidiPlayer and Object", function()
         local midi = lurek.audio.newMidiPlayer()
-        expect_true(midi:typeOf("MidiPlayer"))
-        expect_true(midi:typeOf("Object"))
+        expect_true(midi:typeOf("LMidiPlayer"))
+        expect_true(midi:typeOf("LObject"))
     end)
 end)
 
@@ -2419,7 +2419,7 @@ describe("audio strict: LSoundPool type and typeOf", function()
         local ok, pool = pcall(lurek.audio.newPool, FIXTURE, 2)
         if ok then
             expect_equal(pool:type(), "LSoundPool")
-            expect_true(pool:typeOf("SoundPool"))
+            expect_true(pool:typeOf("LSoundPool"))
         else
             expect_true(true)
         end

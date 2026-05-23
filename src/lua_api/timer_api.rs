@@ -334,7 +334,7 @@ impl LuaUserData for LuaScheduler {
         /// @param | name | string | Type name to check against.
         /// @return | boolean | True if the name matches.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LScheduler" || name == "Object")
+            Ok(name == "LScheduler" || name == "LObject")
         });
     }
 }

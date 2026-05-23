@@ -2,7 +2,6 @@
 
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;
-use crate::log_msg;
 use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
 use crate::pathfind::hpa::{build_abstract, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
@@ -10,10 +9,22 @@ use crate::pathfind::{
     bidirectional_astar, DiagonalMode, FlowField, NavGrid, NavMesh, UnitPathfinder, Waypoint,
 };
 use crate::pathfind::{HexGrid, HexLayout, JpsGrid, RangeMap};
-use crate::runtime::log_messages::LA08_PATHFINDING_THREAD_UNIMPL;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::atomic::{AtomicU32, Ordering};
+
+static PATHFIND_THREAD_COUNT: AtomicU32 = AtomicU32::new(1);
+
+fn one_based_to_zero_based(value: u32, label: &str) -> LuaResult<u32> {
+    value.checked_sub(1).ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "{} must be >= 1 for one-based coordinates",
+            label
+        ))
+    })
+}
+
 /// Converts zero-based Rust waypoints into one-based Lua point tables.
 fn waypoints_to_lua<'a>(lua: &'a Lua, path: &[Waypoint]) -> LuaResult<LuaTable<'a>> {
     let tbl = lua.create_table()?;
@@ -34,7 +45,10 @@ fn lua_to_waypoints(tbl: &LuaTable) -> LuaResult<Vec<Waypoint>> {
         let entry = pair?;
         let x: u32 = entry.get("x")?;
         let y: u32 = entry.get("y")?;
-        waypoints.push(Waypoint { x: x - 1, y: y - 1 });
+        waypoints.push(Waypoint {
+            x: one_based_to_zero_based(x, "x")?,
+            y: one_based_to_zero_based(y, "y")?,
+        });
     }
     Ok(waypoints)
 }
@@ -226,7 +240,7 @@ impl LuaUserData for LuaNavGrid {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNavGrid" || name == "LNavGrid" || name == "NavGrid" || name == "Object")
+            Ok(name == "LNavGrid" || name == "LObject")
         });
     }
 }
@@ -251,11 +265,15 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "findPath",
             |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+                let sx = one_based_to_zero_based(x1, "x1")?;
+                let sy = one_based_to_zero_based(y1, "y1")?;
+                let gx = one_based_to_zero_based(x2, "x2")?;
+                let gy = one_based_to_zero_based(y2, "y2")?;
                 let result = this.inner.borrow_mut().find_path(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
+                    sx,
+                    sy,
+                    gx,
+                    gy,
                     unit_size.unwrap_or(1),
                 );
                 match result {
@@ -277,11 +295,15 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "findPathSmooth",
             |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+                let sx = one_based_to_zero_based(x1, "x1")?;
+                let sy = one_based_to_zero_based(y1, "y1")?;
+                let gx = one_based_to_zero_based(x2, "x2")?;
+                let gy = one_based_to_zero_based(y2, "y2")?;
                 let result = this.inner.borrow_mut().find_path_smooth(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
+                    sx,
+                    sy,
+                    gx,
+                    gy,
                     unit_size.unwrap_or(1),
                 );
                 match result {
@@ -314,12 +336,16 @@ impl LuaUserData for LuaUnitPathfinder {
                 Option<u32>,
                 Option<u32>,
             )| {
+                let sx = one_based_to_zero_based(x1, "x1")?;
+                let sy = one_based_to_zero_based(y1, "y1")?;
+                let gx = one_based_to_zero_based(x2, "x2")?;
+                let gy = one_based_to_zero_based(y2, "y2")?;
                 let pf = this.inner.borrow();
                 let grid_borrowed = pf.nav_grid().borrow();
                 let (path_opt, complete) = bidirectional_astar(
                     &grid_borrowed,
-                    (x1 - 1, y1 - 1),
-                    (x2 - 1, y2 - 1),
+                    (sx, sy),
+                    (gx, gy),
                     unit_size.unwrap_or(1),
                     max_nodes.unwrap_or(0),
                 );
@@ -510,7 +536,7 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LUnitPathfinder" || name == "Object")
+            Ok(name == "LUnitPathfinder" || name == "LObject")
         });
     }
 }
@@ -629,7 +655,7 @@ impl LuaUserData for LuaFlowField {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LFlowField" || name == "Object")
+            Ok(name == "LFlowField" || name == "LObject")
         });
     }
 }
@@ -768,7 +794,7 @@ impl LuaUserData for LuaPathGrid {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPathGrid" || name == "Object")
+            Ok(name == "LPathGrid" || name == "LObject")
         });
     }
 }
@@ -848,7 +874,7 @@ impl LuaUserData for LuaAiFlowField {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAIFlowField" || name == "Object")
+            Ok(name == "LAIFlowField" || name == "LObject")
         });
     }
 }
@@ -1017,7 +1043,7 @@ impl LuaUserData for LuaHexGrid {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LHexGrid" || name == "Object")
+            Ok(name == "LHexGrid" || name == "LObject")
         });
     }
 }
@@ -1089,7 +1115,7 @@ impl LuaUserData for LuaJpsGrid {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LJpsGrid" || name == "Object")
+            Ok(name == "LJpsGrid" || name == "LObject")
         });
     }
 }
@@ -1181,7 +1207,7 @@ impl LuaUserData for LuaNavMesh {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNavMesh" || name == "Object")
+            Ok(name == "LNavMesh" || name == "LObject")
         });
     }
 }
@@ -1261,21 +1287,23 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- setThreadCount --
-    /// Sets pathfinding thread count (not yet implemented; logs a warning).
+    /// Sets the configured pathfinding worker-thread count.
     /// @param | count | integer | Desired thread count.
     tbl.set(
         "setThreadCount",
-        lua.create_function(|_, _count: u32| {
-            log_msg!(warn, LA08_PATHFINDING_THREAD_UNIMPL);
+        lua.create_function(|_, count: u32| {
+            PATHFIND_THREAD_COUNT.store(count.max(1), Ordering::Relaxed);
             Ok(())
         })?,
     )?;
     // -- getThreadCount --
-    /// Returns the pathfinding thread count.
-    /// @return | integer | Thread count, currently 0.
+    /// Returns the configured pathfinding thread count.
+    /// @return | integer | Thread count (minimum 1).
     tbl.set(
         "getThreadCount",
-        lua.create_function(|_, ()| -> LuaResult<u32> { Ok(0) })?,
+        lua.create_function(|_, ()| -> LuaResult<u32> {
+            Ok(PATHFIND_THREAD_COUNT.load(Ordering::Relaxed).max(1))
+        })?,
     )?;
     // -- newNavGridFromTileMap --
     /// Creates a navigation grid from a tilemap layer and blocked gid table.

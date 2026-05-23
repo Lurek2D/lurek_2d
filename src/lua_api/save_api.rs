@@ -467,7 +467,7 @@ impl LuaUserData for LuaSaveManager {
         /// @param | name | string | Type name to test against.
         /// @return | boolean | True if the object matches the given type name.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSaveManager" || name == "Object")
+            Ok(name == "LSaveManager" || name == "LObject")
         });
     }
 }

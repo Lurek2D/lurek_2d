@@ -655,7 +655,7 @@ end
 do
     local a = lurek.compute.ones({2, 2})
     print("is LArray = " .. tostring(a:typeOf("LArray")))
-    print("is Object = " .. tostring(a:typeOf("Object")))
+    print("is Object = " .. tostring(a:typeOf("LObject")))
 end
 
 print("content/examples/compute.lua")

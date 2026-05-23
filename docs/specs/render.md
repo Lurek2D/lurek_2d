@@ -97,6 +97,11 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Identity copy pass used as fallback when no effects are enabled.
 - Pass sequencing respects insertion order; final result written directly to the surface target.
 
+### `province_map_pipeline.rs`
+- Fullscreen province-map render pipeline using a dedicated WGSL shader.
+- Bind-group wiring for province id texture, border index texture, distance field texture, and storage buffers.
+- Uniform block for viewport mapping, screen/map sizes, and strategic/tactical mode selection.
+
 ### `renderer.rs`
 - Defines the `RenderCommand` enum — the complete vocabulary of draw, state, and control operations submitted each frame.
 - Provides blend, stencil, and depth mode enums for compositing and test configuration.

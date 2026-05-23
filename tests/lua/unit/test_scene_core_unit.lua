@@ -1842,7 +1842,7 @@ describe("scene strict: LDepthSorter type/typeOf", function()
     it("LDepthSorter type and typeOf are callable", function()
         local ds = lurek.scene.newDepthSorter()
         expect_type("string", ds:type())
-        expect_type("boolean", ds:typeOf("Object"))
+        expect_type("boolean", ds:typeOf("LObject"))
     end)
 end)
 

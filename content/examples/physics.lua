@@ -503,7 +503,7 @@ do
     local body = world:newBody(0, 0, "dynamic")
     print("type = " .. body:type())
     print("is LBody = " .. tostring(body:typeOf("LBody")))
-    print("is Object = " .. tostring(body:typeOf("Object")))
+    print("is Object = " .. tostring(body:typeOf("LObject")))
 end
 
 --@api-stub: LBody:typeOf
@@ -512,7 +512,7 @@ do
     local body = world:newBody(0, 0, "dynamic")
     print("type = " .. body:type())
     print("is LBody = " .. tostring(body:typeOf("LBody")))
-    print("is Object = " .. tostring(body:typeOf("Object")))
+    print("is Object = " .. tostring(body:typeOf("LObject")))
 end
 
 --@api-stub: LWorld:type

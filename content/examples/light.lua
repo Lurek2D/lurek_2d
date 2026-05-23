@@ -680,14 +680,14 @@ end
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     print("type = " .. occ:type())
-    print("is Occluder = " .. tostring(occ:typeOf("Occluder")))
+    print("is Occluder = " .. tostring(occ:typeOf("LOccluder")))
 end
 
 --@api-stub: LOccluder:typeOf
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     print("type = " .. occ:type())
-    print("is Occluder = " .. tostring(occ:typeOf("Occluder")))
+    print("is Occluder = " .. tostring(occ:typeOf("LOccluder")))
 end
 
 --@api-stub: lurek.light.getOccluderCount

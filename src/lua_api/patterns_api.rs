@@ -15,7 +15,7 @@ struct LuaEventBus {
 }
 impl LurekType for LuaEventBus {
     const TYPE_NAME: &'static str = "LEventBus";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LEventBus", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LEventBus", "LObject"];
 }
 impl LuaUserData for LuaEventBus {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -127,7 +127,7 @@ struct LuaObjectPool {
 }
 impl LurekType for LuaObjectPool {
     const TYPE_NAME: &'static str = "LObjectPool";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LObjectPool", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LObjectPool", "LObject"];
 }
 impl LuaUserData for LuaObjectPool {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -214,7 +214,7 @@ struct LuaCommandStack {
 }
 impl LurekType for LuaCommandStack {
     const TYPE_NAME: &'static str = "LCommandStack";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LCommandStack", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LCommandStack", "LObject"];
 }
 impl LuaUserData for LuaCommandStack {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -380,7 +380,7 @@ struct LuaServiceLocator {
 }
 impl LurekType for LuaServiceLocator {
     const TYPE_NAME: &'static str = "LServiceLocator";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LServiceLocator", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LServiceLocator", "LObject"];
 }
 impl LuaUserData for LuaServiceLocator {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -464,7 +464,7 @@ struct LuaFactory {
 }
 impl LurekType for LuaFactory {
     const TYPE_NAME: &'static str = "LFactory";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LFactory", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LFactory", "LObject"];
 }
 impl LuaUserData for LuaFactory {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -574,7 +574,7 @@ struct LuaSimpleState {
 }
 impl LurekType for LuaSimpleState {
     const TYPE_NAME: &'static str = "LSimpleState";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LSimpleState", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LSimpleState", "LObject"];
 }
 impl LuaUserData for LuaSimpleState {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -725,7 +725,7 @@ struct LuaBlackboard {
 }
 impl LurekType for LuaBlackboard {
     const TYPE_NAME: &'static str = "LBlackboard";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LBlackboard", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LBlackboard", "LObject"];
 }
 impl LuaUserData for LuaBlackboard {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -884,7 +884,7 @@ struct LuaObserver {
 }
 impl LurekType for LuaObserver {
     const TYPE_NAME: &'static str = "LObserver";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LObserver", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LObserver", "LObject"];
 }
 impl LuaUserData for LuaObserver {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -964,7 +964,7 @@ struct LuaThrottle {
 }
 impl LurekType for LuaThrottle {
     const TYPE_NAME: &'static str = "LThrottle";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LThrottle", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LThrottle", "LObject"];
 }
 impl LuaUserData for LuaThrottle {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1028,7 +1028,7 @@ struct LuaDebounce {
 }
 impl LurekType for LuaDebounce {
     const TYPE_NAME: &'static str = "LDebounce";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LDebounce", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LDebounce", "LObject"];
 }
 impl LuaUserData for LuaDebounce {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1091,7 +1091,7 @@ struct LuaPriorityQueue {
 }
 impl LurekType for LuaPriorityQueue {
     const TYPE_NAME: &'static str = "LPriorityQueue";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LPriorityQueue", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LPriorityQueue", "LObject"];
 }
 impl LuaUserData for LuaPriorityQueue {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1173,7 +1173,7 @@ struct LuaRing {
 }
 impl LurekType for LuaRing {
     const TYPE_NAME: &'static str = "LRing";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LRing", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LRing", "LObject"];
 }
 impl LuaUserData for LuaRing {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1290,7 +1290,7 @@ struct LuaFunnel {
 }
 impl LurekType for LuaFunnel {
     const TYPE_NAME: &'static str = "LFunnel";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LFunnel", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LFunnel", "LObject"];
 }
 impl LuaUserData for LuaFunnel {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1380,7 +1380,7 @@ struct LuaRelationshipManager {
 }
 impl LurekType for LuaRelationshipManager {
     const TYPE_NAME: &'static str = "LRelationshipManager";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LRelationshipManager", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LRelationshipManager", "LObject"];
 }
 impl LuaUserData for LuaRelationshipManager {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1490,7 +1490,7 @@ struct LuaMediator {
 }
 impl LurekType for LuaMediator {
     const TYPE_NAME: &'static str = "LMediator";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LMediator", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LMediator", "LObject"];
 }
 impl LuaUserData for LuaMediator {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1608,7 +1608,7 @@ struct LuaStrategy {
 }
 impl LurekType for LuaStrategy {
     const TYPE_NAME: &'static str = "LStrategy";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LStrategy", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LStrategy", "LObject"];
 }
 impl LuaUserData for LuaStrategy {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1711,7 +1711,7 @@ struct LuaStack {
 }
 impl LurekType for LuaStack {
     const TYPE_NAME: &'static str = "LStack";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LStack", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LStack", "LObject"];
 }
 impl LuaUserData for LuaStack {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1915,7 +1915,7 @@ struct LuaQueue {
 }
 impl LurekType for LuaQueue {
     const TYPE_NAME: &'static str = "LQueue";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LQueue", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LQueue", "LObject"];
 }
 impl LuaUserData for LuaQueue {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -2090,7 +2090,7 @@ struct LuaList {
 }
 impl LurekType for LuaList {
     const TYPE_NAME: &'static str = "LList";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LList", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LList", "LObject"];
 }
 impl LuaUserData for LuaList {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -2277,7 +2277,7 @@ struct LuaSet {
 }
 impl LurekType for LuaSet {
     const TYPE_NAME: &'static str = "LSet";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LSet", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LSet", "LObject"];
 }
 impl LuaUserData for LuaSet {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -2363,7 +2363,7 @@ struct LuaMap {
 }
 impl LurekType for LuaMap {
     const TYPE_NAME: &'static str = "LMap";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LMap", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LMap", "LObject"];
 }
 impl LuaUserData for LuaMap {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -2491,7 +2491,7 @@ struct LuaWeightedRandom {
 }
 impl LurekType for LuaWeightedRandom {
     const TYPE_NAME: &'static str = "LWeightedRandom";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LWeightedRandom", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LWeightedRandom", "LObject"];
 }
 impl LuaUserData for LuaWeightedRandom {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -2610,7 +2610,7 @@ struct LuaBehaviorTree {
 }
 impl LurekType for LuaBehaviorTree {
     const TYPE_NAME: &'static str = "LBehaviorTree";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LBehaviorTree", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LBehaviorTree", "LObject"];
 }
 impl LuaUserData for LuaBehaviorTree {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -2863,7 +2863,7 @@ struct LuaPatternGraph {
 }
 impl LurekType for LuaPatternGraph {
     const TYPE_NAME: &'static str = "LPatternGraph";
-    const TYPE_HIERARCHY: &'static [&'static str] = &["LPatternGraph", "Object"];
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LPatternGraph", "LObject"];
 }
 impl LuaUserData for LuaPatternGraph {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {

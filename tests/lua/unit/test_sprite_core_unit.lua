@@ -516,7 +516,7 @@ describe("sprite strict: LSpriteSheet type/typeOf", function()
     it("LSpriteSheet type and typeOf are callable", function()
         local s = lurek.sprite.newSheet(64, 64, 16, 16)
         expect_type("string", s:type())
-        expect_type("boolean", s:typeOf("Object"))
+        expect_type("boolean", s:typeOf("LObject"))
     end)
 
 end)
@@ -532,7 +532,7 @@ describe("sprite strict: LSpriteAtlas type/typeOf", function()
         end)
         if ok and atlas ~= nil then
             expect_type("string", atlas:type())
-            expect_type("boolean", atlas:typeOf("Object"))
+            expect_type("boolean", atlas:typeOf("LObject"))
         else
             expect_false(ok and atlas ~= nil)
         end

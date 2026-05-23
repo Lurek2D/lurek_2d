@@ -117,6 +117,9 @@ PRIMARY_MARKERS_BY_FOLDER = {
 
 FAMILY_MARKERS = set(PRIMARY_MARKERS_BY_FOLDER.values())
 
+# Optional engine surfaces not listed in lua_api_data.json (no @covers without orphans).
+UNIT_COVER_EXEMPT_FILES = frozenset({"test_battle_core_unit.lua"})
+
 
 def parse_api_stub() -> tuple[set[str], dict[str, str], set[str]]:
     """Load canonical lurek symbols from docs/api/lurek.lua.
@@ -643,7 +646,12 @@ def audit_file(
                 )
             )
 
-        if kind == "it" and primary_marker and not has_marker_before(lines, index, primary_marker):
+        if (
+            kind == "it"
+            and primary_marker
+            and path.name not in UNIT_COVER_EXEMPT_FILES
+            and not has_marker_before(lines, index, primary_marker)
+        ):
             findings.append(
                 Finding(
                     path,

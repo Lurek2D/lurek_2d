@@ -344,7 +344,7 @@ impl LuaUserData for LuaHtmlDocument {
         /// @param | name | string | Type name to compare against `LHtmlDocument` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LHtmlDocument" || name == "Object")
+            Ok(name == "LHtmlDocument" || name == "LObject")
         });
     }
 }
@@ -668,7 +668,7 @@ impl LuaUserData for LuaHtmlElement {
         /// @param | name | string | Type name to compare against `LHtmlElement` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LHtmlElement" || name == "Object")
+            Ok(name == "LHtmlElement" || name == "LObject")
         });
     }
 }

@@ -418,11 +418,12 @@ pub fn lurek_run() -> std::process::ExitCode {
             config.modules.terminal = true;
             config.modules.validate_and_fix();
             let startup_main = if explicit_game_dir {
-                Some(game_dir.join("main.lua"))
+                let main = game_dir.join("main.lua");
+                if main.exists() { Some(main) } else { None }
             } else {
                 None
             };
-            let script = builtin_cli_script(&config, startup_main.as_deref());
+            let script = build_builtin_cli_script(&config, startup_main.as_deref());
             let (mode_dir, temp_dir) = match create_builtin_game_dir("cli", script) {
                 Ok((dir, temp)) => (dir, temp),
                 Err(error) => {
@@ -469,7 +470,11 @@ fn lua_string_literal(value: &str) -> String {
     format!("{:?}", value)
 }
 
-fn builtin_cli_script(config: &runtime::Config, startup_main: Option<&std::path::Path>) -> String {
+/// Builds the built-in CLI runtime script used for `RuntimeMode::Cli` startup.
+pub fn build_builtin_cli_script(
+    config: &runtime::Config,
+    startup_main: Option<&std::path::Path>,
+) -> String {
     let startup = startup_main
         .map(|path| lua_string_literal(&path.to_string_lossy().replace('\\', "/")))
         .unwrap_or_else(|| "nil".to_string());
@@ -480,6 +485,7 @@ local cell_w, cell_h = {cell_w}, {cell_h}
 local term, repl
 local lines = {{}}
 local input = ""
+local multiline = false
 local history = {{}}
 local history_index = nil
 
@@ -498,16 +504,81 @@ local function install_print_sink()
     end
 end
 
+local function prompt_prefix()
+    return multiline and "...> " or "lurek> "
+end
+
+local function has_unclosed_brackets(text)
+    local round, square, curly = 0, 0, 0
+    for i = 1, #text do
+        local ch = text:sub(i, i)
+        if ch == "(" then
+            round = round + 1
+        elseif ch == ")" then
+            round = math.max(0, round - 1)
+        elseif ch == "[" then
+            square = square + 1
+        elseif ch == "]" then
+            square = math.max(0, square - 1)
+        elseif ch == "{{" then
+            curly = curly + 1
+        elseif ch == "}}" then
+            curly = math.max(0, curly - 1)
+        end
+    end
+    return round > 0 or square > 0 or curly > 0
+end
+
+local function has_unclosed_blocks(text)
+    local balance = 0
+    for word in text:gmatch("[_%a][_%w]*") do
+        if word == "function" or word == "then" or word == "do" or word == "repeat" then
+            balance = balance + 1
+        elseif word == "end" or word == "until" then
+            balance = math.max(0, balance - 1)
+        end
+    end
+    return balance > 0
+end
+
+local function is_complete_input(text)
+    local trimmed = text:match("^%s*(.-)%s*$")
+    if trimmed == "" then return false end
+    if has_unclosed_brackets(trimmed) or has_unclosed_blocks(trimmed) then
+        return false
+    end
+    if type(load) == "function" then
+        local chunk, err = load(trimmed, "=(cli)", "t")
+        if chunk then
+            return true
+        end
+        if type(err) == "string" and err:find("<eof>", 1, true) then
+            return false
+        end
+    end
+    return true
+end
+
 local function submit()
+    if input == "" then return end
+    if not is_complete_input(input) then
+        input = input .. "\n"
+        multiline = true
+        return
+    end
     local command = input
-    if command == "" then return end
-    push("lurek> " .. command)
+    push(prompt_prefix() .. command:gsub("\n", "\\n"))
     history[#history + 1] = command
     history_index = nil
     input = ""
+    multiline = false
     local result = repl:eval(command)
     if result and result ~= "" and result ~= "(ok)" then push(result) end
     if result == "(quit)" then lurek.event.quit() end
+    if result == "(reset)" then
+        push("Restart requested. Rebuilding VM...")
+        lurek.event.restart()
+    end
 end
 
 function lurek.init()
@@ -519,11 +590,17 @@ function lurek.init()
     push("Lurek2D Interactive CLI")
     push("Type Lua code. :help for commands. :quit exits.")
     local startup = {startup}
-    if startup then push("Startup main.lua available: " .. startup) end
+    if startup then
+        push("Autoloading startup main.lua: " .. startup)
+        local load_result = repl:eval(":load " .. startup)
+        if load_result and load_result ~= "" and load_result ~= "(ok)" then
+            push(load_result)
+        end
+    end
 end
 
 function lurek.keypressed(key)
-    if key == "return" then submit(); return end
+    if key == "return" or key == "kpenter" then submit(); return end
     if key == "backspace" then input = input:sub(1, math.max(0, #input - 1)); return end
     if key == "escape" then lurek.event.quit(); return end
     if key == "tab" then
@@ -549,7 +626,7 @@ end
 function lurek.draw()
     term:clear()
     for i, line in ipairs(lines) do term:print(1, i, line) end
-    term:print(1, rows, "lurek> " .. input .. "_")
+    term:print(1, rows, prompt_prefix() .. input:gsub("\n", "\\n") .. "_")
     term:render(0, 0)
 end
 "##,

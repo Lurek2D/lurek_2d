@@ -2392,7 +2392,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LTileSet type and typeOf", function()
         local ts = lurek.tilemap.newTileSet(1, 4, 2, 16, 16)
         expect_type("string", ts:type())
-        expect_type("boolean", ts:typeOf("Object"))
+        expect_type("boolean", ts:typeOf("LObject"))
     end)
 
     -- @covers LTileMap:type
@@ -2401,7 +2401,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LTileMap type and typeOf", function()
         local tm = lurek.tilemap.newTileMap(16, 16)
         expect_type("string", tm:type())
-        expect_type("boolean", tm:typeOf("Object"))
+        expect_type("boolean", tm:typeOf("LObject"))
     end)
 
     -- @covers LAutoTileSheet:type
@@ -2410,7 +2410,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LAutoTileSheet type and typeOf", function()
         local a = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
         expect_type("string", a:type())
-        expect_type("boolean", a:typeOf("Object"))
+        expect_type("boolean", a:typeOf("LObject"))
     end)
 
     -- @covers LChunkMap:type
@@ -2419,7 +2419,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LChunkMap type and typeOf", function()
         local c = lurek.tilemap.newChunkMap(16)
         expect_type("string", c:type())
-        expect_type("boolean", c:typeOf("Object"))
+        expect_type("boolean", c:typeOf("LObject"))
     end)
 
     -- @covers LLargeMapRenderer:type
@@ -2428,7 +2428,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LLargeMapRenderer type and typeOf", function()
         local r = lurek.tilemap.newLargeMapRenderer(16, 16)
         expect_type("string", r:type())
-        expect_type("boolean", r:typeOf("Object"))
+        expect_type("boolean", r:typeOf("LObject"))
     end)
 
     -- @covers LIsoMap:type
@@ -2437,7 +2437,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LIsoMap type and typeOf", function()
         local im = lurek.tilemap.newIsoMap(4, 4, 32, 16, 8)
         expect_type("string", im:type())
-        expect_type("boolean", im:typeOf("Object"))
+        expect_type("boolean", im:typeOf("LObject"))
     end)
 
     -- @covers LMapBlock:type
@@ -2446,7 +2446,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LMapBlock type and typeOf", function()
         local b = lurek.tilemap.newMapBlock(4, 4)
         expect_type("string", b:type())
-        expect_type("boolean", b:typeOf("Object"))
+        expect_type("boolean", b:typeOf("LObject"))
     end)
 
     -- @covers LMapGroup:type
@@ -2455,7 +2455,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LMapGroup type and typeOf", function()
         local g = lurek.tilemap.newMapGroup("strict_group")
         expect_type("string", g:type())
-        expect_type("boolean", g:typeOf("Object"))
+        expect_type("boolean", g:typeOf("LObject"))
     end)
 
     -- @covers LMapScript:type
@@ -2464,7 +2464,7 @@ describe("tilemap strict: type / typeOf coverage", function()
     it("LMapScript type and typeOf", function()
         local s = lurek.tilemap.newMapScript()
         expect_type("string", s:type())
-        expect_type("boolean", s:typeOf("Object"))
+        expect_type("boolean", s:typeOf("LObject"))
     end)
 
     -- @covers LMapGen:type
@@ -2475,7 +2475,7 @@ describe("tilemap strict: type / typeOf coverage", function()
         local grp = lurek.tilemap.newMapGroup("strict_gen")
         local gen = lurek.tilemap.newMapGen(grp, "small", 8)
         expect_type("string", gen:type())
-        expect_type("boolean", gen:typeOf("Object"))
+        expect_type("boolean", gen:typeOf("LObject"))
     end)
 end)
 

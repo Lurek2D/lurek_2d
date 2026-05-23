@@ -58,6 +58,16 @@ describe("NavGrid creation", function()
         expect_false(grid:isWalkable(1, 1))
     end)
 
+    -- @covers LNavGrid:isWalkable
+    -- @covers LNavGrid:setBlocked
+    -- @covers lurek.pathfind.newNavGrid
+    it("isWalkable with unit size rejects blocked footprint", function()
+        local grid = lurek.pathfind.newNavGrid(5, 5)
+        expect_true(grid:isWalkable(1, 1, 2))
+        grid:setBlocked(2, 1, true)
+        expect_false(grid:isWalkable(1, 1, 2))
+    end)
+
     -- @covers LNavGrid:fillRect
     -- @covers LNavGrid:isBlocked
     -- @covers lurek.pathfind.newNavGrid
@@ -144,6 +154,23 @@ describe("Pathfinder", function()
         expect_true(pf:isCacheEnabled())
         pf:clearCache()
         expect_equal(0, pf:getCacheSize())
+    end)
+
+    -- @covers LUnitPathfinder:findPath
+    -- @covers lurek.pathfind.newNavGrid
+    -- @covers lurek.pathfind.newPathfinder
+    it("findPath cache returns the same route on repeat query", function()
+        local grid = lurek.pathfind.newNavGrid(5, 5)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        local first = pf:findPath(1, 1, 5, 5)
+        local second = pf:findPath(1, 1, 5, 5)
+        expect_not_nil(first)
+        expect_not_nil(second)
+        expect_equal(#first, #second)
+        for i = 1, #first do
+            expect_equal(first[i].x, second[i].x)
+            expect_equal(first[i].y, second[i].y)
+        end
     end)
 end)
 
@@ -354,7 +381,7 @@ describe("NavGrid.type / typeOf", function()
     it("typeOf() checks identity against a type name", function()
         local g = lurek.pathfind.newNavGrid(4, 4)
         expect_true(g:typeOf("LNavGrid"))
-        expect_false(g:typeOf("FlowField"))
+        expect_false(g:typeOf("LFlowField"))
     end)
 end)
 
@@ -935,7 +962,7 @@ describe("pathfind strict: newHexGrid / LHexGrid methods", function()
     it("LHexGrid type and typeOf are callable", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         expect_type("string", g:type())
-        expect_type("boolean", g:typeOf("Object"))
+        expect_type("boolean", g:typeOf("LObject"))
     end)
 end)
 
@@ -962,7 +989,7 @@ describe("pathfind strict: newJpsGrid / LJpsGrid methods", function()
     it("LJpsGrid type and typeOf are callable", function()
         local g = lurek.pathfind.newJpsGrid(8, 8)
         expect_type("string", g:type())
-        expect_type("boolean", g:typeOf("Object"))
+        expect_type("boolean", g:typeOf("LObject"))
     end)
 end)
 
@@ -990,7 +1017,7 @@ describe("pathfind strict: UnitPathfinder / FlowField / AIFlowField typeOf", fun
         local grid = lurek.pathfind.newNavGrid(8, 8)
         local pf = lurek.pathfind.newPathfinder(grid)
         expect_type("string", pf:type())
-        expect_type("boolean", pf:typeOf("Object"))
+        expect_type("boolean", pf:typeOf("LObject"))
     end)
 
     -- @covers LFlowField:type
@@ -1001,14 +1028,14 @@ describe("pathfind strict: UnitPathfinder / FlowField / AIFlowField typeOf", fun
         local grid = lurek.pathfind.newNavGrid(8, 8)
         local ff = lurek.pathfind.newFlowField(grid)
         expect_type("string", ff:type())
-        expect_type("boolean", ff:typeOf("Object"))
+        expect_type("boolean", ff:typeOf("LObject"))
     end)
 
     -- @covers LPathGrid:typeOf
     -- @covers lurek.pathfind.newPathGrid
     it("LPathGrid typeOf is callable", function()
         local pg = lurek.pathfind.newPathGrid(8, 8, 1.0)
-        expect_type("boolean", pg:typeOf("Object"))
+        expect_type("boolean", pg:typeOf("LObject"))
     end)
 
     -- @covers LAIFlowField:typeOf
@@ -1017,7 +1044,7 @@ describe("pathfind strict: UnitPathfinder / FlowField / AIFlowField typeOf", fun
     it("LAIFlowField typeOf is callable", function()
         local pg = lurek.pathfind.newPathGrid(8, 8, 1.0)
         local aiff = lurek.pathfind.newPathFlowField(pg)
-        expect_type("boolean", aiff:typeOf("Object"))
+        expect_type("boolean", aiff:typeOf("LObject"))
     end)
 end)
 
@@ -1585,6 +1612,26 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
 
         -- @covers LJpsGrid:findPath
         -- @covers lurek.pathfind.newJpsGrid
+        it("findPath from a cell to itself returns a single-step path", function()
+            local g = lurek.pathfind.newJpsGrid(5, 5)
+            local path = g:findPath(2, 2, 2, 2)
+            expect_not_nil(path)
+            expect_equal(1, #path)
+        end)
+
+        -- @covers LJpsGrid:findPath
+        -- @covers LJpsGrid:setBlocked
+        -- @covers lurek.pathfind.newJpsGrid
+        it("findPath returns nil when a solid wall blocks the route", function()
+            local g = lurek.pathfind.newJpsGrid(5, 5)
+            for y = 1, 5 do
+                g:setBlocked(3, y, true)
+            end
+            expect_nil(g:findPath(1, 3, 5, 3))
+        end)
+
+        -- @covers LJpsGrid:findPath
+        -- @covers lurek.pathfind.newJpsGrid
         it("path cells have x and y fields", function()
             local g = lurek.pathfind.newJpsGrid(8, 8)
             local path = g:findPath(1, 1, 6, 6)
@@ -1859,7 +1906,7 @@ describe("NavMesh", function()
         local mesh = lurek.pathfind.newNavMesh()
         expect_type("userdata", mesh)
         expect_type("string", mesh:type())
-        expect_type("boolean", mesh:typeOf("Object"))
+        expect_type("boolean", mesh:typeOf("LObject"))
     end)
 
     -- @covers LNavMesh:addPolygon
