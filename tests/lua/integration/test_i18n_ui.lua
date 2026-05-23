@@ -1,4 +1,5 @@
 -- Integration: localized strings flowing into UI labels
+-- @describe integration: localized strings in UI labels
 describe("integration: localized strings in UI labels", function()
     -- @integration lurek.i18n.loadTable
     -- @integration lurek.i18n.setLanguage

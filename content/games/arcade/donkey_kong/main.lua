@@ -42,6 +42,7 @@ local ladders   = {}
 local hammer_spawn = nil
 
 -- ── Game state ────────────────────────────────────────────────────────────
+local app_ui = {}
 local player = { x = 0, y = 0, w = 16, h = 24, vx = 0, vy = 0,
                  on_ground = false, climbing = false, facing = 1,
                  jumping = false }
@@ -306,6 +307,39 @@ function lurek.init()
     lurek.input.bind("jump",  {"space"})
     lurek.input.bind("quit",  {"escape"})
 
+    lurek.ui.loadLayoutFile("content/games/arcade/donkey_kong/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.fps_panel = ui_root:findById("fps_panel")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.win_screen = ui_root:findById("win_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.wave_label = ui_root:findById("wave_label")
+    app_ui.hammer_label = ui_root:findById("hammer_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.final_score = ui_root:findById("final_score")
+    app_ui.win_score = ui_root:findById("win_score")
+    app_ui.press_space = ui_root:findById("press_space")
+    app_ui.game_over_press_space = ui_root:findById("game_over_press_space")
+    app_ui.win_press_space = ui_root:findById("win_press_space")
+    
+    local function transition_from_space()
+        if state == STATE.TITLE then
+            reset_game()
+            state = STATE.PLAYING
+        elseif state == STATE.GAME_OVER then
+            state = STATE.TITLE
+        elseif state == STATE.WIN then
+            state = STATE.TITLE
+        end
+    end
+    
+    if app_ui.press_space then app_ui.press_space:setOnClick(transition_from_space) end
+    if app_ui.game_over_press_space then app_ui.game_over_press_space:setOnClick(transition_from_space) end
+    if app_ui.win_press_space then app_ui.win_press_space:setOnClick(transition_from_space) end
+
     -- Camera (static, full screen)
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
     cam:setPosition(SCREEN_W / 2, SCREEN_H / 2)
@@ -350,6 +384,30 @@ function lurek.process(dt)
     lurek.tween.update(dt)
     sparks:update(dt)
     dust:update(dt)
+
+    -- Update UI
+    app_ui.title_screen.visible = (state == STATE.TITLE)
+    app_ui.hud.visible = (state == STATE.PLAYING)
+    app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+    app_ui.win_screen.visible = (state == STATE.WIN_ANIM)
+    app_ui.fps_label.text = "FPS: " .. tostring(lurek.timer.getFPS())
+
+    if state == STATE.TITLE then
+        if math.floor(title_blink * 2) % 2 == 0 then
+            app_ui.press_space.color = {1, 1, 1, 0.9}
+        else
+            app_ui.press_space.color = {1, 1, 1, 0}
+        end
+    elseif state == STATE.PLAYING then
+        app_ui.score_label.text = "SCORE: " .. tostring(score)
+        app_ui.lives_label.text = "LIVES: " .. tostring(lives)
+        app_ui.wave_label.text = "WAVE " .. tostring(wave)
+        app_ui.hammer_label.visible = hammer.active
+    elseif state == STATE.GAME_OVER then
+        app_ui.final_score.text = "Score: " .. tostring(score)
+    elseif state == STATE.WIN_ANIM then
+        app_ui.win_score.text = "Score: " .. tostring(score) .. "   Wave: " .. tostring(wave)
+    end
 
     -- Quit
     if lurek.input.wasActionPressed("quit") then
@@ -890,75 +948,5 @@ end
 --  lurek.render_ui — HUD overlay (screen space)
 -- ═══════════════════════════════════════════════════════════════════════════
 function lurek.draw_ui()
-    if state == STATE.TITLE then
-        -- Title text
-        lurek.render.setColor(1, 0.85, 0.2, 1)
-        text_("DONKEY KONG", SCREEN_W / 2 - 110, 40, 3)
-
-        -- Blink prompt
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1, 0.9)
-            text_("Press SPACE to start", SCREEN_W / 2 - 100, 340, 1.5)
-        end
-
-        -- Controls
-        lurek.render.setColor(0.6, 0.6, 0.7, 1)
-        text_("A/D or Arrows: Move   W/S: Climb   Space: Jump", SCREEN_W / 2 - 200, 400, 1)
-
-        -- FPS
-        lurek.render.setColor(0.4, 0.4, 0.5, 1)
-        text_("FPS: " .. lurek.timer.getFPS(), 4, 4, 1)
-        return
-    end
-
-    if state == STATE.GAME_OVER then
-        lurek.render.setColor(0.9, 0.15, 0.1, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 90, SCREEN_H / 2 - 30, 3)
-        lurek.render.setColor(1, 1, 1, 0.8)
-        text_("Score: " .. score, SCREEN_W / 2 - 50, SCREEN_H / 2 + 20, 1.5)
-        text_("Press SPACE", SCREEN_W / 2 - 55, SCREEN_H / 2 + 50, 1)
-
-        lurek.render.setColor(0.4, 0.4, 0.5, 1)
-        text_("FPS: " .. lurek.timer.getFPS(), 4, 4, 1)
-        return
-    end
-
-    if state == STATE.WIN_ANIM then
-        lurek.render.setColor(1, 0.85, 0.3, 1)
-        text_("RESCUED!", SCREEN_W / 2 - 70, 20, 2.5)
-        lurek.render.setColor(1, 1, 1, 0.8)
-        text_("Score: " .. score .. "   Wave: " .. wave, SCREEN_W / 2 - 80, 60, 1.2)
-
-        lurek.render.setColor(0.4, 0.4, 0.5, 1)
-        text_("FPS: " .. lurek.timer.getFPS(), 4, 4, 1)
-        return
-    end
-
-    -- ── Playing HUD ───────────────────────────────────────────────────
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. score, 10, 6, 1.2)
-
-    -- Lives
-    lurek.render.setColor(0.9, 0.15, 0.1, 1)
-    for i = 1, lives do
-        rect("fill", SCREEN_W - 30 * i, 6, 20, 12)
-    end
-
-    -- Wave
-    lurek.render.setColor(0.7, 0.7, 0.8, 1)
-    text_("WAVE " .. wave, SCREEN_W / 2 - 30, 6, 1.2)
-
-    -- Hammer timer
-    if hammer.active then
-        lurek.render.setColor(1, 0.9, 0.2, 1)
-        local bar_w = 80 * (hammer.timer / HAMMER_DURATION)
-        rect("fill", SCREEN_W / 2 - 40, 24, bar_w, 6)
-        lurek.render.setColor(1, 1, 1, 0.8)
-        text_("HAMMER!", SCREEN_W / 2 - 28, 20, 1)
-    end
-
-    -- FPS
-    lurek.render.setColor(0.4, 0.4, 0.5, 1)
-    text_("FPS: " .. lurek.timer.getFPS(), 4, SCREEN_H - 16, 1)
+    -- Rendered via TOML layout system
 end

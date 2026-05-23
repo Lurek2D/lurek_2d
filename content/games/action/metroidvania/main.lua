@@ -17,7 +17,8 @@
 -- ── Constants ─────────────────────────────────────────────────────────────
 
 local SCREEN_W, SCREEN_H = 800, 600
-local TILE    = 16
+local app_ui = {}
+local TILE = 16
 local ROOM_W  = 20  -- tiles
 local ROOM_H  = 15  -- tiles
 local LOGICAL_W = ROOM_W * TILE  -- 320
@@ -438,6 +439,20 @@ end
 function lurek.init()
     lurek.window.setTitle("Metroidvania — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.03, 0.08)
+    
+    lurek.ui.loadLayoutFile("content/games/action/metroidvania/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.app_ui.dash_label = ui_root:findById("app_ui.dash_label")
+    app_ui.app_ui.fps_label = ui_root:findById("app_ui.fps_label")
+    app_ui.app_ui.game_over_panel = ui_root:findById("app_ui.game_over_panel")
+    app_ui.app_ui.hp_label = ui_root:findById("app_ui.hp_label")
+    app_ui.app_ui.hud_panel = ui_root:findById("app_ui.hud_panel")
+    app_ui.app_ui.jump_label = ui_root:findById("app_ui.jump_label")
+    app_ui.app_ui.minimap_label = ui_root:findById("app_ui.minimap_label")
+    app_ui.app_ui.room_label = ui_root:findById("app_ui.room_label")
+    app_ui.app_ui.title_panel = ui_root:findById("app_ui.title_panel")
+    app_ui.app_ui.title_space = ui_root:findById("app_ui.title_space")
+
 
     -- Input actions
     lurek.input.bind("left",  "a");    lurek.input.bind("left",  "left")
@@ -688,6 +703,74 @@ function lurek.process(dt)
     if dash_particles   then dash_particles:update(dt)   end
     if land_particles   then land_particles:update(dt)   end
     if pickup_particles then pickup_particles:update(dt) end
+
+    -- ── UI Update ─────────────────────────────────────────────────────────────
+    
+    
+    
+
+    if current_state == STATE.TITLE then
+        app_ui.title_panel.visible = true
+        app_ui.game_over_panel.visible = false
+        app_ui.hud_panel.visible = false
+        
+        
+        local pulse = math.abs(math.sin(title_blink * 2))
+        app_ui.title_space.color = { 0.7, 0.7, 0.7, (math.floor(title_blink * 2) % 2 == 0) and pulse or 0 }
+    elseif current_state == STATE.GAME_OVER then
+        app_ui.title_panel.visible = false
+        app_ui.game_over_panel.visible = true
+        app_ui.hud_panel.visible = false
+    elseif current_state == STATE.PLAYING then
+        app_ui.title_panel.visible = false
+        app_ui.game_over_panel.visible = false
+        app_ui.hud_panel.visible = true
+
+        
+        local hp_bar = "HP: "
+        for i = 1, MAX_HP do
+            if i <= player.hp then hp_bar = hp_bar .. "█" else hp_bar = hp_bar .. "░" end
+        end
+        app_ui.hp_label.text = hp_bar
+
+        
+        if player.has_dash then
+            app_ui.dash_label.color = {0.3, 0.8, 1, 1}
+        else
+            app_ui.dash_label.color = {0.3, 0.3, 0.3, 0.5}
+        end
+
+        
+        if player.has_double then
+            app_ui.jump_label.color = {1, 1, 0.3, 1}
+        else
+            app_ui.jump_label.color = {0.3, 0.3, 0.3, 0.5}
+        end
+
+        
+        app_ui.room_label.text = "Room " .. room_x .. "," .. room_y
+
+        
+        local map_text = ""
+        for ry = 0, 2 do
+            for rx = 0, 2 do
+                if rx == room_x and ry == room_y then
+                    map_text = map_text .. "[X]"
+                elseif visited[rx .. "," .. ry] then
+                    map_text = map_text .. "[·]"
+                elseif rooms[rx .. "," .. ry] then
+                    map_text = map_text .. "[?]"
+                else
+                    map_text = map_text .. "   "
+                end
+            end
+            if ry < 2 then map_text = map_text .. "\n" end
+        end
+        app_ui.minimap_label.text = map_text
+
+        
+        app_ui.fps_label.text = tostring(lurek.timer.getFPS()) .. " FPS"
+    end
 end
 
 -- ── Tile colors ───────────────────────────────────────────────────────────
@@ -824,70 +907,4 @@ end
 
 -- ── HUD (render_ui) ──────────────────────────────────────────────────────
 function lurek.draw_ui()
-    if current_state ~= STATE.PLAYING then return end
-
-    -- HP bar
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect(8, 8, MAX_HP * 22 + 4, 18)
-    for i = 1, MAX_HP do
-        if i <= player.hp then
-            lurek.render.setColor(0.2, 0.9, 0.3, 1)
-        else
-            lurek.render.setColor(0.3, 0.1, 0.1, 1)
-        end
-        rect(10 + (i - 1) * 22, 10, 18, 14)
-    end
-
-    -- Ability icons
-    local ax = SCREEN_W - 90
-    lurek.render.setColor(0.15, 0.15, 0.2, 0.8)
-    rect(ax - 4, 6, 88, 22)
-    -- Dash
-    if player.has_dash then
-        lurek.render.setColor(0.3, 0.8, 1, 1)
-    else
-        lurek.render.setColor(0.3, 0.3, 0.3, 0.5)
-    end
-    text_("DASH", ax, 10, nil)
-    -- Double jump
-    if player.has_double then
-        lurek.render.setColor(1, 1, 0.3, 1)
-    else
-        lurek.render.setColor(0.3, 0.3, 0.3, 0.5)
-    end
-    text_("2xJMP", ax + 45, 10, nil)
-
-    -- Minimap (3x3 grid)
-    local mm_x = SCREEN_W - 70
-    local mm_y = SCREEN_H - 70
-    local mm_cell = 16
-    lurek.render.setColor(0.1, 0.1, 0.15, 0.8)
-    rect(mm_x - 4, mm_y - 4, 3 * mm_cell + 8, 3 * mm_cell + 8)
-
-    for ry = 0, 2 do
-        for rx = 0, 2 do
-            local key = rx .. "," .. ry
-            local cx = mm_x + rx * mm_cell
-            local cy = mm_y + ry * mm_cell
-            if rooms[key] then
-                if rx == room_x and ry == room_y then
-                    lurek.render.setColor(0.3, 0.7, 1, 1)
-                elseif visited[key] then
-                    lurek.render.setColor(0.35, 0.35, 0.45, 1)
-                else
-                    lurek.render.setColor(0.15, 0.15, 0.2, 0.6)
-                end
-                rect(cx + 1, cy + 1, mm_cell - 2, mm_cell - 2)
-            end
-        end
-    end
-
-    -- Room label
-    lurek.render.setColor(0.5, 0.5, 0.6, 0.7)
-    text_("Room " .. room_x .. "," .. room_y, mm_x - 4, mm_y - 18, nil)
-
-    -- FPS
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.5, 0.5, 0.5, 0.5)
-    text_(tostring(fps) .. " FPS", SCREEN_W - 60, SCREEN_H - 18, nil)
 end

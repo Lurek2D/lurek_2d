@@ -11,6 +11,7 @@ local function expect_cam_xy(cam, x, y, msg)
 end
 
 
+-- @describe camera + parallax integration
 describe("camera + parallax integration", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition

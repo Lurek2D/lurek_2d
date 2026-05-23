@@ -506,6 +506,86 @@ function lurek.init()
   init_league()
   init_schedule()
   refresh_market()
+  
+  local ui_root = lurek.ui.loadLayoutFile("content/games/sports/sports_manager/ui.toml")
+  app_ui = {}
+  app_ui.fps_label = ui_root:findById("fps_label")
+  
+  app_ui.title_screen = ui_root:findById("title_screen")
+  app_ui.press_start = ui_root:findById("press_start")
+  
+  app_ui.office_screen = ui_root:findById("office_screen")
+  app_ui.office_title = ui_root:findById("office_title")
+  app_ui.office_info_1 = ui_root:findById("office_info_1")
+  app_ui.office_info_2 = ui_root:findById("office_info_2")
+  app_ui.office_train = ui_root:findById("office_train")
+  app_ui.league_rows = ui_root:findById("league_rows")
+  app_ui.office_next_match = ui_root:findById("office_next_match")
+  
+  app_ui.roster_screen = ui_root:findById("roster_screen")
+  app_ui.roster_rows = ui_root:findById("roster_rows")
+  app_ui.roster_return = ui_root:findById("roster_return")
+  
+  app_ui.match_screen = ui_root:findById("match_screen")
+  app_ui.match_home_team = ui_root:findById("match_home_team")
+  app_ui.match_away_team = ui_root:findById("match_away_team")
+  app_ui.match_score = ui_root:findById("match_score")
+  app_ui.match_progress_fill = ui_root:findById("match_progress_fill")
+  app_ui.match_events = {
+      ui_root:findById("match_event_1"),
+      ui_root:findById("match_event_2"),
+      ui_root:findById("match_event_3")
+  }
+  
+  app_ui.training_screen = ui_root:findById("training_screen")
+  app_ui.train_return = ui_root:findById("train_return")
+  
+  app_ui.transfer_screen = ui_root:findById("transfer_screen")
+  app_ui.transfer_info = ui_root:findById("transfer_info")
+  app_ui.transfer_rows = ui_root:findById("transfer_rows")
+  app_ui.transfer_return = ui_root:findById("transfer_return")
+  
+  app_ui.season_end_screen = ui_root:findById("season_end_screen")
+  app_ui.season_result_label = ui_root:findById("season_result_label")
+  app_ui.season_league_rows = ui_root:findById("season_league_rows")
+  app_ui.season_restart = ui_root:findById("season_restart")
+  
+  local function click_to_start()
+      if state == STATE_TITLE then state = STATE_OFFICE end
+  end
+  local function click_roster_return()
+      if state == STATE_ROSTER then state = STATE_OFFICE end
+  end
+  local function click_train_return()
+      if state == STATE_TRAINING then state = STATE_OFFICE end
+  end
+  local function click_transfer_return()
+      if state == STATE_TRANSFER then state = STATE_OFFICE end
+  end
+  local function click_season_restart()
+      if state == STATE_SEASON_END then
+          state = STATE_TITLE
+          week = 1
+          budget = START_BUDGET
+          roster = {}
+          for i = 1, ROSTER_SIZE do
+            local pos = POSITIONS[((i - 1) % #POSITIONS) + 1]
+            local p = gen_player(pos)
+            if i <= TEAM_SIZE then p.starter = true end
+            roster[i] = p
+          end
+          init_league()
+          init_schedule()
+          refresh_market()
+          training_done = false
+      end
+  end
+  
+  if app_ui.press_start then app_ui.press_start:setOnClick(click_to_start) end
+  if app_ui.roster_return then app_ui.roster_return:setOnClick(click_roster_return) end
+  if app_ui.train_return then app_ui.train_return:setOnClick(click_train_return) end
+  if app_ui.transfer_return then app_ui.transfer_return:setOnClick(click_transfer_return) end
+  if app_ui.season_restart then app_ui.season_restart:setOnClick(click_season_restart) end
 end
 
 -- Process
@@ -694,6 +774,244 @@ function lurek.process(delta)
       training_done = false
     end
   end
+  
+  -- Sync UI
+  app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+  app_ui.title_screen.visible = (state == STATE_TITLE)
+  app_ui.office_screen.visible = (state == STATE_OFFICE)
+  app_ui.roster_screen.visible = (state == STATE_ROSTER)
+  app_ui.match_screen.visible = (state == STATE_MATCH)
+  app_ui.training_screen.visible = (state == STATE_TRAINING)
+  app_ui.transfer_screen.visible = (state == STATE_TRANSFER)
+  app_ui.season_end_screen.visible = (state == STATE_SEASON_END)
+  
+  if state == STATE_TITLE then
+      local blink_a = 0.5 + 0.5 * math.sin(title_blink * 3)
+      app_ui.press_start.color = {1, 1, 1, blink_a}
+  elseif state == STATE_OFFICE then
+      app_ui.office_title.text = "OFFICE - " .. TEAM_NAMES[my_team_index]
+      app_ui.office_info_1.text = "Week " .. week .. " / " .. SEASON_WEEKS .. "    Budget: " .. budget .. "g"
+      local starters = count_starters()
+      app_ui.office_info_2.text = "Starters: " .. starters .. "/" .. TEAM_SIZE .. "    Roster: " .. #roster
+      if training_done then
+          app_ui.office_train.text = "[T] Train (done this week)"
+          app_ui.office_train.color = {0.5, 0.5, 0.5, 0.7}
+      else
+          app_ui.office_train.text = "[T] Train"
+          app_ui.office_train.color = {0.8, 1, 0.8, 1}
+      end
+      
+      -- Render league table into the panel
+      app_ui.league_rows.children = {}
+      sort_league()
+      for i, t in ipairs(league) do
+          local is_me = (t.name == TEAM_NAMES[my_team_index])
+          local y_offset = (i - 1) * 22
+          local text_color = {0.8, 0.8, 0.8, 1}
+          if i <= 3 then text_color = {0.3, 1, 0.5, 1} end
+          
+          local pts_show = math.floor((t.display_pts or t.pts) + 0.5)
+          local line = string.format("%-3d %-16s %3d %3d %3d %3d %3d  %3d", i, t.name, t.w, t.d, t.l, t.gf, t.ga, pts_show)
+          
+          if is_me then
+              table.insert(app_ui.league_rows.children, {
+                  type = "panel",
+                  width = 550,
+                  height = 20,
+                  bg_color = {0.2, 0.4, 0.2, 0.5},
+                  x = -2,
+                  y = y_offset - 2
+              })
+          end
+          
+          table.insert(app_ui.league_rows.children, {
+              type = "label",
+              text = line,
+              font_size = 16,
+              color = text_color,
+              x = 0,
+              y = y_offset
+          })
+      end
+      
+      if week <= SEASON_WEEKS then
+          local round = schedule[week]
+          if round then
+              for _, m in ipairs(round) do
+                  if m.home == my_team_index or m.away == my_team_index then
+                      local opp_idx = m.home == my_team_index and m.away or m.home
+                      local venue = m.home == my_team_index and "HOME" or "AWAY"
+                      app_ui.office_next_match.text = "Next: vs " .. TEAM_NAMES[opp_idx] .. " (" .. venue .. ")"
+                      app_ui.office_next_match.color = {1, 0.9, 0.4, 1}
+                  end
+              end
+          end
+      else
+          app_ui.office_next_match.text = "Season complete! Press SPACE to see results."
+          app_ui.office_next_match.color = {1, 0.6, 0.2, 1}
+      end
+  elseif state == STATE_ROSTER then
+      app_ui.roster_rows.children = {}
+      for i, p in ipairs(roster) do
+          local y_offset = (i - 1) * 26
+          if p.starter then
+              table.insert(app_ui.roster_rows.children, {
+                  type = "panel",
+                  width = 680,
+                  height = 24,
+                  bg_color = {0.15, 0.3, 0.15, 0.5},
+                  x = -2,
+                  y = y_offset - 2
+              })
+          end
+          
+          local text_color = {0.5, 0.5, 0.5, 1}
+          if p.injured > 0 then
+              text_color = {0.8, 0.3, 0.3, 1}
+          elseif p.starter then
+              local c = POS_COLORS[p.pos] or {1, 1, 1}
+              text_color = {c[1], c[2], c[3], 1}
+          end
+          
+          local status = p.starter and "START" or "BENCH"
+          if p.injured > 0 then status = "INJ(" .. p.injured .. "w)" end
+          
+          local line = string.format("%-20s %-4s %3d    %3d    %3d     %s", p.name, p.pos, p.skill, p.stamina, p.morale, status)
+          
+          table.insert(app_ui.roster_rows.children, {
+              type = "label",
+              text = line,
+              font_size = 16,
+              color = text_color,
+              x = 0,
+              y = y_offset
+          })
+          
+          local bar_x = 560
+          local bar_w = 80
+          local bar_h = 10
+          local fill = p.morale / 100
+          table.insert(app_ui.roster_rows.children, {
+              type = "panel",
+              width = bar_w,
+              height = bar_h,
+              bg_color = {0.3, 0.3, 0.3, 0.5},
+              x = bar_x,
+              y = y_offset + 4
+          })
+          
+          local morale_color = {0.8, 0.2, 0.2, 0.8}
+          if p.morale > 70 then
+              morale_color = {0.2, 0.8, 0.3, 0.8}
+          elseif p.morale > 40 then
+              morale_color = {0.8, 0.7, 0.2, 0.8}
+          end
+          table.insert(app_ui.roster_rows.children, {
+              type = "panel",
+              width = bar_w * fill,
+              height = bar_h,
+              bg_color = morale_color,
+              x = bar_x,
+              y = y_offset + 4
+          })
+      end
+  elseif state == STATE_MATCH then
+      app_ui.match_home_team.text = TEAM_NAMES[my_team_index]
+      app_ui.match_away_team.text = match_opponent
+      local h_disp = math.floor(score_display.home + 0.5)
+      local a_disp = math.floor(score_display.away + 0.5)
+      app_ui.match_score.text = h_disp .. " - " .. a_disp
+      
+      local progress = clamp(match_timer / MATCH_DURATION, 0, 1)
+      app_ui.match_progress_fill.width = 400 * progress
+      
+      for i = 1, 3 do app_ui.match_events[i].text = "" end
+      local ev_idx = 1
+      for i = math.max(1, match_event_index - 2), match_event_index do
+          if match_events[i] then
+              local ev = match_events[i]
+              local color = {0.8, 0.8, 0.8, 1}
+              if ev.type == "goal_home" then color = {0.3, 1, 0.5, 1}
+              elseif ev.type == "goal_away" then color = {1, 0.4, 0.4, 1}
+              elseif ev.type == "injury" then color = {1, 0.6, 0.2, 1}
+              elseif ev.type == "red_card" then color = {1, 0.2, 0.2, 1} end
+              
+              app_ui.match_events[ev_idx].text = ev.time .. "' - " .. ev.text
+              app_ui.match_events[ev_idx].color = color
+              ev_idx = ev_idx + 1
+          end
+      end
+  elseif state == STATE_TRANSFER then
+      app_ui.transfer_info.text = "Budget: " .. budget .. "g    Roster: " .. #roster .. "/24"
+      app_ui.transfer_rows.children = {}
+      for i, p in ipairs(market) do
+          local y_offset = (i - 1) * 60
+          if p then
+              local can_buy = budget >= p.price and #roster < 24
+              local text_color = {0.5, 0.4, 0.4, 1}
+              if can_buy then
+                  local c = POS_COLORS[p.pos] or {1, 1, 1}
+                  text_color = {c[1], c[2], c[3], 1}
+              end
+              local line = string.format("[%d] %-20s %-4s %3d    %dg", i, p.name, p.pos, p.skill, p.price)
+              table.insert(app_ui.transfer_rows.children, {
+                  type = "label",
+                  text = line,
+                  font_size = 18,
+                  color = text_color,
+                  x = 0,
+                  y = y_offset
+              })
+          else
+              table.insert(app_ui.transfer_rows.children, {
+                  type = "label",
+                  text = "[" .. i .. "] - SOLD -",
+                  font_size = 18,
+                  color = {0.4, 0.4, 0.4, 0.5},
+                  x = 0,
+                  y = y_offset
+              })
+          end
+      end
+  elseif state == STATE_SEASON_END then
+      local pos = get_my_position()
+      if pos <= 3 then
+          app_ui.season_result_label.color = {1, 0.85, 0.0, 1}
+      else
+          app_ui.season_result_label.color = {0.8, 0.3, 0.3, 1}
+      end
+      app_ui.season_result_label.text = season_result
+      
+      sort_league()
+      app_ui.season_league_rows.children = {}
+      for i, t in ipairs(league) do
+          local y_offset = (i - 1) * 24
+          local is_me = (t.name == TEAM_NAMES[my_team_index])
+          if is_me then
+              table.insert(app_ui.season_league_rows.children, {
+                  type = "panel",
+                  width = 500,
+                  height = 22,
+                  bg_color = {0.2, 0.4, 0.2, 0.6},
+                  x = -2,
+                  y = y_offset - 2
+              })
+          end
+          local text_color = {0.8, 0.8, 0.8, 1}
+          if i <= 3 then text_color = {0.3, 1, 0.5, 1} end
+          local line = string.format("%-3d %-16s %3d %3d %3d %3d %3d  %3d", i, t.name, t.w, t.d, t.l, t.gf, t.ga, t.pts)
+          table.insert(app_ui.season_league_rows.children, {
+              type = "label",
+              text = line,
+              font_size = 16,
+              color = text_color,
+              x = 0,
+              y = y_offset
+          })
+      end
+      
+      app_ui.season_restart.color = {1, 1, 1, 0.5 + 0.5 * math.sin(title_blink * 3)}
+  end
 end
 
 -- Render: pitch / match visuals
@@ -759,288 +1077,4 @@ end
 
 -- Render UI: menus, tables, stats
 function lurek.draw_ui()
-  lurek.render.setColor(1, 1, 1, 1)
-
-  -- FPS
-  lurek.render.setColor(0.5, 0.5, 0.5, 0.6)
-  text_("FPS: " .. tostring(lurek.timer.getFPS()), 10, SCREEN_H - 20)
-  lurek.render.setColor(1, 1, 1, 1)
-
-  -- TITLE
-  if state == STATE_TITLE then
-    lurek.render.setColor(0.1, 0.7, 0.3, 1)
-    text_("SPORTS MANAGER", SCREEN_W / 2 - 100, 150)
-    lurek.render.setColor(0.8, 0.9, 0.8, 1)
-    text_("LEAD YOUR TEAM", SCREEN_W / 2 - 80, 200)
-    local blink_a = 0.5 + 0.5 * math.sin(title_blink * 3)
-    lurek.render.setColor(1, 1, 1, blink_a)
-    text_("Press ENTER to start", SCREEN_W / 2 - 90, 320)
-
-    lurek.render.setColor(0.6, 0.6, 0.6, 0.7)
-    text_("R=Roster  T=Train  B=Buy  Space=Next Match", SCREEN_W / 2 - 180, 400)
-    return
-  end
-
-  -- OFFICE
-  if state == STATE_OFFICE then
-    lurek.render.setColor(0.1, 0.7, 0.3, 1)
-    text_("OFFICE — " .. TEAM_NAMES[my_team_index], 20, 15)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("Week " .. week .. " / " .. SEASON_WEEKS .. "    Budget: " .. budget .. "g", 20, 40)
-
-    local starters = count_starters()
-    text_("Starters: " .. starters .. "/" .. TEAM_SIZE .. "    Roster: " .. #roster, 20, 60)
-
-    if training_done then
-      lurek.render.setColor(0.5, 0.5, 0.5, 0.7)
-      text_("[T] Train (done this week)", 20, 90)
-    else
-      lurek.render.setColor(0.8, 1, 0.8, 1)
-      text_("[T] Train", 20, 90)
-    end
-    lurek.render.setColor(0.8, 1, 0.8, 1)
-    text_("[R] Roster    [B] Transfer Market    [Space] Next Match", 20, 110)
-
-    -- Mini league table
-    sort_league()
-    lurek.render.setColor(0.2, 0.6, 0.2, 1)
-    text_("LEAGUE TABLE", 20, 150)
-    lurek.render.setColor(0.7, 0.7, 0.7, 1)
-    text_("#   Team             W   D   L   GF  GA  Pts", 20, 170)
-    for i, t in ipairs(league) do
-      local y = 190 + (i - 1) * 22
-      local is_me = (t.name == TEAM_NAMES[my_team_index])
-      if is_me then
-        lurek.render.setColor(0.2, 0.4, 0.2, 0.5)
-        rect("fill", 18, y - 2, 550, 20)
-      end
-      if i <= 3 then
-        lurek.render.setColor(0.3, 1, 0.5, 1)
-      else
-        lurek.render.setColor(0.8, 0.8, 0.8, 1)
-      end
-      local pts_show = math.floor((t.display_pts or t.pts) + 0.5)
-      local line = string.format("%-3d %-16s %3d %3d %3d %3d %3d  %3d",
-        i, t.name, t.w, t.d, t.l, t.gf, t.ga, pts_show)
-      text_(line, 20, y)
-    end
-
-    -- next opponent
-    if week <= SEASON_WEEKS then
-      local round = schedule[week]
-      if round then
-        for _, m in ipairs(round) do
-          if m.home == my_team_index or m.away == my_team_index then
-            local opp_idx = m.home == my_team_index and m.away or m.home
-            local venue = m.home == my_team_index and "HOME" or "AWAY"
-            lurek.render.setColor(1, 0.9, 0.4, 1)
-            text_("Next: vs " .. TEAM_NAMES[opp_idx] .. " (" .. venue .. ")", 20, 390 + 20)
-          end
-        end
-      end
-    else
-      lurek.render.setColor(1, 0.6, 0.2, 1)
-      text_("Season complete! Press SPACE to see results.", 20, 410)
-    end
-    return
-  end
-
-  -- ROSTER
-  if state == STATE_ROSTER then
-    lurek.render.setColor(0.1, 0.7, 0.3, 1)
-    text_("ROSTER — Click to toggle starter/bench", 20, 15)
-    lurek.render.setColor(0.7, 0.7, 0.7, 1)
-    text_("Name                 Pos  Skill  Stam  Morale  Status", 40, 55)
-
-    for i, p in ipairs(roster) do
-      local y = 80 + (i - 1) * 30
-      -- highlight starters
-      if p.starter then
-        lurek.render.setColor(0.15, 0.3, 0.15, 0.5)
-        rect("fill", "fill", 38, y - 2, 720, 26)
-      end
-
-      if p.injured > 0 then
-        lurek.render.setColor(0.8, 0.3, 0.3, 1)
-      elseif p.starter then
-        local c = POS_COLORS[p.pos] or {1, 1, 1}
-        lurek.render.setColor(c[1], c[2], c[3], 1)
-      else
-        lurek.render.setColor(0.5, 0.5, 0.5, 1)
-      end
-
-      local status = p.starter and "START" or "BENCH"
-      if p.injured > 0 then status = "INJ(" .. p.injured .. "w)" end
-
-      -- morale bar
-      local bar_x = 600
-      local bar_w = 80
-      local bar_h = 10
-      local fill = p.morale / 100
-      lurek.render.setColor(0.3, 0.3, 0.3, 0.5)
-      rect("fill", "fill", bar_x, y + 4, bar_w, bar_h)
-      if p.morale > 70 then
-        lurek.render.setColor(0.2, 0.8, 0.3, 0.8)
-      elseif p.morale > 40 then
-        lurek.render.setColor(0.8, 0.7, 0.2, 0.8)
-      else
-        lurek.render.setColor(0.8, 0.2, 0.2, 0.8)
-      end
-      rect("fill", "fill", bar_x, y + 4, bar_w * fill, bar_h)
-
-      local c = POS_COLORS[p.pos] or {1, 1, 1}
-      if p.injured > 0 then
-        lurek.render.setColor(0.8, 0.3, 0.3, 1)
-      elseif p.starter then
-        lurek.render.setColor(c[1], c[2], c[3], 1)
-      else
-        lurek.render.setColor(0.5, 0.5, 0.5, 1)
-      end
-
-      local line = string.format("%-20s %-4s %3d    %3d    %3d     %s",
-        p.name, p.pos, p.skill, p.stamina, p.morale, status)
-      text_(line, 40, y)
-    end
-
-    lurek.render.setColor(0.6, 0.6, 0.6, 0.7)
-    text_("Press R or ENTER to return to office", 20, SCREEN_H - 30)
-    return
-  end
-
-  -- MATCH
-  if state == STATE_MATCH then
-    -- scoreboard
-    lurek.render.setColor(0, 0, 0, 0.7)
-    rect("fill", "fill", 200, 20, 400, 70)
-    lurek.render.setColor(0.3, 0.6, 1, 1)
-    text_(TEAM_NAMES[my_team_index], 220, 30)
-    lurek.render.setColor(1, 0.3, 0.3, 1)
-    text_(match_opponent, 480, 30)
-    lurek.render.setColor(1, 1, 1, 1)
-    local h_disp = math.floor(score_display.home + 0.5)
-    local a_disp = math.floor(score_display.away + 0.5)
-    text_(h_disp .. " — " .. a_disp, 370, 50)
-
-    -- match time bar
-    local progress = clamp(match_timer / MATCH_DURATION, 0, 1)
-    lurek.render.setColor(0.3, 0.3, 0.3, 0.6)
-    rect("fill", "fill", 200, 95, 400, 8)
-    lurek.render.setColor(0.4, 0.9, 0.4, 0.9)
-    rect("fill", "fill", 200, 95, 400 * progress, 8)
-
-    -- event feed
-    lurek.render.setColor(0, 0, 0, 0.6)
-    rect("fill", "fill", 50, 520, 700, 70)
-    for i = math.max(1, match_event_index - 2), match_event_index do
-      if match_events[i] then
-        local ey = 525 + (i - math.max(1, match_event_index - 2)) * 20
-        local ev = match_events[i]
-        if ev.type == "goal_home" then
-          lurek.render.setColor(0.3, 1, 0.5, 1)
-        elseif ev.type == "goal_away" then
-          lurek.render.setColor(1, 0.4, 0.4, 1)
-        elseif ev.type == "injury" then
-          lurek.render.setColor(1, 0.6, 0.2, 1)
-        elseif ev.type == "red_card" then
-          lurek.render.setColor(1, 0.2, 0.2, 1)
-        else
-          lurek.render.setColor(0.8, 0.8, 0.8, 1)
-        end
-        text_(ev.time .. "' — " .. ev.text, 60, ey)
-      end
-    end
-    return
-  end
-
-  -- TRAINING
-  if state == STATE_TRAINING then
-    lurek.render.setColor(0.1, 0.7, 0.3, 1)
-    text_("TRAINING SESSION", SCREEN_W / 2 - 80, 30)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("Choose training focus:", SCREEN_W / 2 - 90, 80)
-
-    lurek.render.setColor(0.9, 0.4, 0.4, 1)
-    text_("[O] Offense — +2 skill to Forwards", 200, 130)
-    lurek.render.setColor(0.4, 0.5, 0.9, 1)
-    text_("[D] Defense — +2 skill to Defenders & GK", 200, 160)
-    lurek.render.setColor(0.4, 0.9, 0.4, 1)
-    text_("[F] Fitness — +5 stamina to all", 200, 190)
-    lurek.render.setColor(0.9, 0.8, 0.3, 1)
-    text_("[M] Morale — +10 morale to all", 200, 220)
-
-    lurek.render.setColor(0.6, 0.6, 0.6, 0.7)
-    text_("Press ENTER to cancel", SCREEN_W / 2 - 70, SCREEN_H - 40)
-    return
-  end
-
-  -- TRANSFER
-  if state == STATE_TRANSFER then
-    lurek.render.setColor(0.1, 0.7, 0.3, 1)
-    text_("TRANSFER MARKET", SCREEN_W / 2 - 80, 20)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("Budget: " .. budget .. "g    Roster: " .. #roster .. "/24", 20, 50)
-
-    lurek.render.setColor(0.7, 0.7, 0.7, 1)
-    text_("#   Name                 Pos  Skill  Price", 40, 90)
-
-    for i, p in ipairs(market) do
-      if p then
-        local y = 120 + (i - 1) * 60
-        local can_buy = budget >= p.price and #roster < 24
-        if can_buy then
-          lurek.render.setColor(1, 1, 1, 1)
-        else
-          lurek.render.setColor(0.5, 0.4, 0.4, 1)
-        end
-        local c = POS_COLORS[p.pos] or {1, 1, 1}
-        lurek.render.setColor(c[1], c[2], c[3], can_buy and 1 or 0.5)
-        local line = string.format("[%d] %-20s %-4s %3d    %dg",
-          i, p.name, p.pos, p.skill, p.price)
-        text_(line, 40, y)
-      else
-        local y = 120 + (i - 1) * 60
-        lurek.render.setColor(0.4, 0.4, 0.4, 0.5)
-        text_("[" .. i .. "] — SOLD —", 40, y)
-      end
-    end
-
-    lurek.render.setColor(0.6, 0.6, 0.6, 0.7)
-    text_("Press 1-3 to buy, B or ENTER to return", 20, SCREEN_H - 30)
-    return
-  end
-
-  -- SEASON END
-  if state == STATE_SEASON_END then
-    local pos = get_my_position()
-    if pos <= 3 then
-      lurek.render.setColor(1, 0.85, 0.0, 1)
-    else
-      lurek.render.setColor(0.8, 0.3, 0.3, 1)
-    end
-    text_(season_result, SCREEN_W / 2 - 140, 100)
-
-    sort_league()
-    lurek.render.setColor(0.7, 0.7, 0.7, 1)
-    text_("FINAL STANDINGS", SCREEN_W / 2 - 70, 160)
-    text_("#   Team             W   D   L   GF  GA  Pts", 80, 190)
-    for i, t in ipairs(league) do
-      local y = 215 + (i - 1) * 24
-      local is_me = (t.name == TEAM_NAMES[my_team_index])
-      if is_me then
-        lurek.render.setColor(0.2, 0.4, 0.2, 0.6)
-        rect("fill", "fill", 78, y - 2, 500, 22)
-      end
-      if i <= 3 then
-        lurek.render.setColor(0.3, 1, 0.5, 1)
-      else
-        lurek.render.setColor(0.8, 0.8, 0.8, 1)
-      end
-      local line = string.format("%-3d %-16s %3d %3d %3d %3d %3d  %3d",
-        i, t.name, t.w, t.d, t.l, t.gf, t.ga, t.pts)
-      text_(line, 80, y)
-    end
-
-    lurek.render.setColor(1, 1, 1, 0.5 + 0.5 * math.sin(title_blink * 3))
-    text_("Press ENTER to play again", SCREEN_W / 2 - 100, SCREEN_H - 50)
-  end
 end

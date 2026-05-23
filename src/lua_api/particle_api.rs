@@ -274,8 +274,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LParticleSystem"
-                || name == "ParticleSystem"
-                || name == "Drawable"
+                || name == "LParticleSystem" || name == "ParticleSystem"
+                || name == "LDrawable" || name == "Drawable"
                 || name == "Object")
         });
         // -- setPosition --

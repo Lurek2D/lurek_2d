@@ -16,7 +16,8 @@
 
 -- ── Constants ─────────────────────────────────────────────────────────────
 local W, H            = 800, 600
-local PADDLE_W        = 100
+local app_ui = {}
+local PADDLE_W = 100
 local PADDLE_WIDE_W   = 160
 local PADDLE_H        = 14
 local PADDLE_Y        = H - 40
@@ -180,6 +181,26 @@ function lurek.init()
     lurek.window.setTitle("Brick Breaker — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.05, 0.1)
 
+    lurek.ui.loadLayoutFile("content/games/action/brick_breaker/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.app_ui.fps_label = ui_root:findById("app_ui.fps_label")
+    app_ui.game_over_panel = ui_root:findById("game_over_panel")
+    app_ui.app_ui.go_restart = ui_root:findById("app_ui.go_restart")
+    app_ui.app_ui.go_score = ui_root:findById("app_ui.go_score")
+    app_ui.app_ui.hud_panel = ui_root:findById("app_ui.hud_panel")
+    app_ui.app_ui.launch_text = ui_root:findById("app_ui.launch_text")
+    app_ui.app_ui.lc_cont = ui_root:findById("app_ui.lc_cont")
+    app_ui.app_ui.lc_title = ui_root:findById("app_ui.lc_title")
+    app_ui.level_complete_panel = ui_root:findById("level_complete_panel")
+    app_ui.app_ui.level_text = ui_root:findById("app_ui.level_text")
+    app_ui.app_ui.lives_text = ui_root:findById("app_ui.lives_text")
+    app_ui.app_ui.score_text = ui_root:findById("app_ui.score_text")
+    app_ui.app_ui.slow_pu_text = ui_root:findById("app_ui.slow_pu_text")
+    app_ui.app_ui.start_label = ui_root:findById("app_ui.start_label")
+    app_ui.app_ui.title_panel = ui_root:findById("app_ui.title_panel")
+    app_ui.app_ui.wide_pu_text = ui_root:findById("app_ui.wide_pu_text")
+
+
     lurek.input.bind("left",   "a");     lurek.input.bind("left",   "left")
     lurek.input.bind("right",  "d");     lurek.input.bind("right",  "right")
     lurek.input.bind("launch", "space")
@@ -321,6 +342,73 @@ function lurek.process(dt)
         elseif pu.y > H then pr[#pr+1]=i end
     end
     for i=#pr,1,-1 do table.remove(powerups, pr[i]) end
+
+    -- ── UI Update ─────────────────────────────────────────────
+    
+    
+    
+    
+    
+
+    app_ui.title_panel.visible = (state == STATE.TITLE)
+    app_ui.hud_panel.visible = (state == STATE.PLAYING)
+    app_ui.game_over_panel.visible = (state == STATE.GAME_OVER)
+    app_ui.level_complete_panel.visible = (state == STATE.LEVEL_COMPLETE)
+
+    app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+    
+    local a = math.sin(blink*3)*0.5+0.5
+
+    if state == STATE.TITLE then
+        
+        app_ui.start_label.color = {1,1,1,a}
+    elseif state == STATE.PLAYING then
+        
+        
+        
+        app_ui.score_text.text = "SCORE: " .. score
+        app_ui.level_text.text = "LEVEL: " .. level
+        app_ui.lives_text.text = "LIVES: " .. lives
+
+        
+        
+        local iy = 30
+        if wide_tmr > 0 then
+            app_ui.wide_pu_text.visible = true
+            app_ui.wide_pu_text.y = iy
+            app_ui.wide_pu_text.text = string.format("[W] Wide: %.0fs", wide_tmr)
+            iy = iy + 16
+        else
+            app_ui.wide_pu_text.visible = false
+        end
+
+        if slow_tmr > 0 then
+            app_ui.slow_pu_text.visible = true
+            app_ui.slow_pu_text.y = iy
+            app_ui.slow_pu_text.text = string.format("[S] Slow: %.0fs", slow_tmr)
+        else
+            app_ui.slow_pu_text.visible = false
+        end
+
+        
+        if on_paddle then
+            app_ui.launch_text.visible = true
+            app_ui.launch_text.color = {1,1,1,a}
+            app_ui.launch_text.y = PADDLE_Y + 20
+        else
+            app_ui.launch_text.visible = false
+        end
+    elseif state == STATE.GAME_OVER then
+        
+        app_ui.go_score.text = "Final Score: " .. score
+        
+        app_ui.go_restart.color = {1,1,1,a}
+    elseif state == STATE.LEVEL_COMPLETE then
+        
+        app_ui.lc_title.text = "LEVEL " .. level .. " COMPLETE!"
+        
+        app_ui.lc_cont.color = {1,1,1,a}
+    end
 end
 
 -- ── Render (world) ────────────────────────────────────────────────────────
@@ -369,47 +457,4 @@ end
 
 -- ── Render UI ─────────────────────────────────────────────────────────────
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-    local a = math.sin(blink*3)*0.5+0.5
-
-    if state == STATE.TITLE then
-        text_("BRICK BREAKER", W/2-130, H/2-60, 36, 0.2,0.6,1.0)
-        text_("PRESS ENTER", W/2-75, H/2+10, 20, 1,1,1,a)
-        text_("A/D or Arrows = Move  |  Space = Launch  |  Esc = Quit",
-            W/2-220, H/2+60, 14, 0.6,0.6,0.6)
-        text_(string.format("FPS: %d", fps), 10, H-20, 12, 0.4,0.4,0.4)
-        return
-    end
-
-    -- HUD
-    text_(string.format("SCORE: %d", score), 10, 8, 18, 1,1,1)
-    text_(string.format("LEVEL: %d", level), W/2-40, 8, 18, 0.6,0.9,1)
-    text_(string.format("LIVES: %d", lives), W-110, 8, 18, 1,0.4,0.4)
-    text_(string.format("FPS: %d", fps), W-80, H-20, 12, 0.4,0.4,0.4)
-
-    local iy = 30
-    if wide_tmr>0 then
-        text_(string.format("[W] Wide: %.0fs",wide_tmr), W-150,iy, 12, 1,0.6,0.1)
-        iy = iy + 16
-    end
-    if slow_tmr>0 then
-        text_(string.format("[S] Slow: %.0fs",slow_tmr), W-150,iy, 12, 0.4,1,0.4)
-    end
-
-    if state == STATE.GAME_OVER then
-        rect("fill", 0,0, W,H, 0,0,0,0.6)
-        text_("GAME OVER", W/2-100, H/2-40, 36, 1,0.3,0.3)
-        text_(string.format("Final Score: %d", score), W/2-80, H/2+10, 20, 1,1,1)
-        text_("PRESS ENTER TO RESTART", W/2-120, H/2+50, 16, 1,1,1,a)
-    end
-
-    if state == STATE.LEVEL_COMPLETE then
-        rect("fill", 0,0, W,H, 0,0,0,0.5)
-        text_(string.format("LEVEL %d COMPLETE!", level), W/2-120, H/2-30, 30, 0.2,1,0.5)
-        text_("PRESS ENTER FOR NEXT LEVEL", W/2-140, H/2+20, 16, 1,1,1,a)
-    end
-
-    if state == STATE.PLAYING and on_paddle then
-        text_("PRESS SPACE TO LAUNCH", W/2-105, PADDLE_Y+30, 16, 1,1,1,a)
-    end
 end

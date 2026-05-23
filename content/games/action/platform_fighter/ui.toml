@@ -1,0 +1,166 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "title_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "title_text"
+    widget_type = "label"
+    x = 260
+    y = 180
+    text = "PLATFORM FIGHTER"
+
+    [[root.children.children]]
+    id = "subtitle_text"
+    widget_type = "label"
+    x = 340
+    y = 230
+    text = "2 PLAYERS"
+
+    [[root.children.children]]
+    id = "press_start"
+    widget_type = "label"
+    x = 325
+    y = 320
+    text = "PRESS ENTER"
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "p1_dmg_text"
+    widget_type = "label"
+    x = 80
+    y = 540
+    text = "0%"
+
+    [[root.children.children]]
+    id = "p1_label"
+    widget_type = "label"
+    x = 80
+    y = 518
+    text = "P1"
+
+    [[root.children.children]]
+    id = "p1_stocks_text"
+    widget_type = "label"
+    x = 80
+    y = 564
+    text = "O O O"
+
+    [[root.children.children]]
+    id = "p1_cd_bg"
+    widget_type = "panel"
+    x = 80
+    y = 582
+    w = 50
+    h = 4
+
+    [[root.children.children]]
+    id = "p1_cd_fill"
+    widget_type = "panel"
+    x = 80
+    y = 582
+    w = 50
+    h = 4
+
+    [[root.children.children]]
+    id = "p2_dmg_text"
+    widget_type = "label"
+    x = 660
+    y = 540
+    text = "0%"
+
+    [[root.children.children]]
+    id = "p2_label"
+    widget_type = "label"
+    x = 660
+    y = 518
+    text = "P2"
+
+    [[root.children.children]]
+    id = "p2_stocks_text"
+    widget_type = "label"
+    x = 660
+    y = 564
+    text = "O O O"
+
+    [[root.children.children]]
+    id = "p2_cd_bg"
+    widget_type = "panel"
+    x = 660
+    y = 582
+    w = 50
+    h = 4
+
+    [[root.children.children]]
+    id = "p2_cd_fill"
+    widget_type = "panel"
+    x = 660
+    y = 582
+    w = 50
+    h = 4
+
+[[root.children]]
+id = "ko_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "ko_text"
+    widget_type = "label"
+    x = 360
+    y = 260
+    text = "KO!"
+
+    [[root.children.children]]
+    id = "ko_who_text"
+    widget_type = "label"
+    x = 300
+    y = 330
+    text = "PLAYER 2 SCORES!"
+
+[[root.children]]
+id = "match_over_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "winner_text"
+    widget_type = "label"
+    x = 280
+    y = 280
+    text = "PLAYER 1 WINS!"
+
+    [[root.children.children]]
+    id = "return_text"
+    widget_type = "label"
+    x = 280
+    y = 330
+    text = "PRESS ENTER TO RETURN"

@@ -331,6 +331,38 @@ function lurek.init()
     net_particles:setSpeed(10, 40)
     net_particles:setColors({1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 0.0})
     net_particles:setSizes(2, 1)
+    
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/tennis_classic/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.sets_label = ui_root:findById("sets_label")
+    app_ui.rally_label = ui_root:findById("rally_label")
+    app_ui.msg_screen = ui_root:findById("msg_screen")
+    app_ui.point_msg_label = ui_root:findById("point_msg_label")
+    app_ui.popup_screen = ui_root:findById("popup_screen")
+    app_ui.popup_label = ui_root:findById("popup_label")
+    app_ui.serve_screen = ui_root:findById("serve_screen")
+    app_ui.serve_label = ui_root:findById("serve_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    if app_ui.press_start then
+        app_ui.press_start:setOnClick(function()
+            if state == ST.TITLE then
+                pts = { 0, 0 }
+                games = { { 0, 0 }, { 0, 0 }, { 0, 0 } }
+                sets_won = { 0, 0 }
+                current_set = 1
+                server = 1
+                serve_count = 0
+                deuce = false
+                advantage = 0
+                start_serve()
+            end
+        end)
+    end
 end
 
 -- ── Process ───────────────────────────────────────────────────────
@@ -674,6 +706,68 @@ function lurek.process(dt)
             ai_react_timer = 0
         end
     end
+    
+    -- Sync UI
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    app_ui.title_screen.visible = (state == ST.TITLE)
+    app_ui.hud_screen.visible = (state ~= ST.TITLE)
+    app_ui.msg_screen.visible = (state == ST.POINT or state == ST.SET_END or state == ST.MATCH_END)
+    app_ui.serve_screen.visible = (state == ST.SERVING and server == 1)
+    
+    if state == ST.TITLE then
+        local blink_a = 0.5 + 0.5 * math.sin(title_timer * 2)
+        app_ui.press_start.color = {1, 1, 1, blink_a}
+    end
+    
+    if state ~= ST.TITLE then
+        local score_str
+        if deuce then
+            if advantage == 0 then score_str = "Deuce"
+            elseif advantage == 1 then score_str = "Ad-Player"
+            else score_str = "Ad-Opponent" end
+        else
+            score_str = score_display(pts[1]) .. " - " .. score_display(pts[2])
+        end
+        local server_str = (server == 1) and " [P serve]" or " [O serve]"
+        app_ui.score_label.text = "Score: " .. score_str .. server_str
+        
+        local sets_str = ""
+        for i = 1, current_set do
+            local g = games[i]
+            if g then
+                if i > 1 then sets_str = sets_str .. "  " end
+                sets_str = sets_str .. "S" .. i .. ": " .. g[1] .. "-" .. g[2]
+            end
+        end
+        app_ui.sets_label.text = sets_str
+        
+        if rally_count > 0 and state == ST.PLAYING then
+            app_ui.rally_label.visible = true
+            app_ui.rally_label.text = "Rally: " .. rally_count
+        else
+            app_ui.rally_label.visible = false
+        end
+    end
+    
+    if state == ST.POINT or state == ST.SET_END or state == ST.MATCH_END then
+        app_ui.point_msg_label.text = point_msg
+    end
+    
+    if score_popup.alpha > 0 then
+        app_ui.popup_screen.visible = true
+        app_ui.popup_label.text = score_popup.text
+        -- Note: simplified popup Y handling in UI tree due to TOML positioning limitations.
+        -- We will just use the alpha and let TOML handle layout.
+        app_ui.popup_label.color = {1, 1, 0.2, score_popup.alpha}
+    else
+        app_ui.popup_screen.visible = false
+    end
+    
+    if state == ST.SERVING and server == 1 then
+        local msg = (serve_phase == 0) and "Press SPACE to toss" or "Press SPACE to hit!"
+        if serve_count == 1 then msg = "Second serve - " .. msg end
+        app_ui.serve_label.text = msg
+    end
 end
 
 -- ── Render (world-space: court, players, ball) ────────────────────
@@ -745,73 +839,4 @@ end
 
 -- ── Render UI (screen-space: score, messages) ─────────────────────
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-
-    if state == ST.TITLE then
-        -- Title screen
-        local blink = math.abs(math.sin(title_timer * 2))
-        text_("TENNIS CLASSIC", W / 2 - 120, H / 2 - 60, 32, 1, 1, 1, 1)
-        text_("GAME  SET  MATCH", W / 2 - 100, H / 2 - 20, 18, 0.8, 0.8, 0.8, 1)
-        text_("Press SPACE to start", W / 2 - 80, H / 2 + 40, 16, 1, 1, 1, blink)
-        text_("FPS: " .. fps, 10, H - 20, 12, 0.5, 0.5, 0.5, 1)
-        return
-    end
-
-    -- Scoreboard background
-    rect(0, 0, W, 28, 0, 0, 0, 0.6)
-
-    -- Score display
-    local score_str
-    if deuce then
-        if advantage == 0 then
-            score_str = "Deuce"
-        elseif advantage == 1 then
-            score_str = "Ad-Player"
-        else
-            score_str = "Ad-Opponent"
-        end
-    else
-        score_str = score_display(pts[1]) .. " - " .. score_display(pts[2])
-    end
-
-    -- Sets
-    local sets_str = ""
-    for i = 1, current_set do
-        local g = games[i]
-        if g then
-            if i > 1 then sets_str = sets_str .. "  " end
-            sets_str = sets_str .. "S" .. i .. ": " .. g[1] .. "-" .. g[2]
-        end
-    end
-
-    local server_str = (server == 1) and " [P serve]" or " [O serve]"
-
-    text_("Score: " .. score_str .. server_str, 10, 6, 14, 1, 1, 1, 1)
-    text_(sets_str, W / 2 - 60, 6, 14, 0.9, 0.9, 0.5, 1)
-
-    -- Rally counter
-    if rally_count > 0 and state == ST.PLAYING then
-        text_("Rally: " .. rally_count, W - 100, 6, 14, 0.5, 1.0, 0.5, 1)
-    end
-
-    -- Point / set / match messages
-    if state == ST.POINT or state == ST.SET_END or state == ST.MATCH_END then
-        text_(point_msg, W / 2 - 80, H / 2, 24, 1, 1, 0.3, 1)
-    end
-
-    -- Score popup (tween-like fade)
-    if score_popup.alpha > 0 then
-        text_(score_popup.text, W / 2 - 60, score_popup.y, 20,
-            1, 1, 0.2, score_popup.alpha)
-    end
-
-    -- Serve instruction
-    if state == ST.SERVING and server == 1 then
-        local msg = (serve_phase == 0) and "Press SPACE to toss" or "Press SPACE to hit!"
-        if serve_count == 1 then msg = "Second serve — " .. msg end
-        text_(msg, W / 2 - 90, H - 30, 14, 1, 1, 1, 0.8)
-    end
-
-    -- FPS
-    text_("FPS: " .. fps, W - 70, H - 20, 12, 0.5, 0.5, 0.5, 1)
 end

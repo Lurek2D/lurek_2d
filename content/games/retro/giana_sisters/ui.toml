@@ -1,0 +1,217 @@
+[root]
+widget_type = "panel"
+id = "root_ui"
+width = 800
+height = 600
+bg_color = [0, 0, 0, 0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "title_screen"
+  width = 800
+  height = 600
+  bg_color = [0.05, 0.05, 0.2, 1]
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    width = 600
+    height = 60
+    bg_color = [0.2, 0.1, 0.4, 0.8]
+    anchor = "center"
+    y = -100
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      text = "THE GREAT GIANA SISTERS"
+      font_size = 28
+      color = [1.0, 0.85, 0.2, 1]
+      anchor = "center"
+      y = -10
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      text = "A Lurek2D Retro Tribute"
+      font_size = 16
+      color = [0.7, 0.7, 0.7, 1]
+      anchor = "center"
+      y = 15
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "A/D or Arrows - Move"
+    font_size = 16
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = 0
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Space/W/Up - Jump"
+    font_size = 16
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = 25
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Stomp monsters from above!"
+    font_size = 16
+    color = [1.0, 0.5, 0.3, 1]
+    anchor = "center"
+    y = 65
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "title_press_start"
+    text = "PRESS ENTER TO START"
+    font_size = 22
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = 140
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "game_over_screen"
+  width = 800
+  height = 600
+  bg_color = [0.1, 0.0, 0.0, 0.85]
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "GAME OVER"
+    font_size = 36
+    color = [1.0, 0.2, 0.2, 1]
+    anchor = "center"
+    y = -100
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_score"
+    text = "Final Score: 0"
+    font_size = 22
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = -20
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_level"
+    text = "Levels Cleared: 0 / 3"
+    font_size = 18
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = 20
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_press_start"
+    text = "PRESS ENTER"
+    font_size = 22
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = 120
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "level_complete_screen"
+  width = 400
+  height = 120
+  bg_color = [0.1, 0.3, 0.1, 0.9]
+  anchor = "center"
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "lc_title"
+    text = "LEVEL 1 COMPLETE!"
+    font_size = 26
+    color = [0.2, 1.0, 0.3, 1]
+    anchor = "center"
+    y = -20
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "lc_score"
+    text = "Score: 0"
+    font_size = 20
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = 20
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "hud_screen"
+  width = 800
+  height = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    width = 800
+    height = 28
+    bg_color = [0, 0, 0, 0.6]
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_score"
+      text = "SCORE: 0"
+      font_size = 18
+      color = [1, 1, 1, 1]
+      x = 10
+      y = 5
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_gems"
+      text = "GEMS: 0"
+      font_size = 18
+      color = [1.0, 0.85, 0.1, 1]
+      x = 200
+      y = 5
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_level"
+      text = "LEVEL: 1/3"
+      font_size = 18
+      color = [0.6, 0.8, 1.0, 1]
+      x = 400
+      y = 5
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_lives"
+      text = "LIVES: 3"
+      font_size = 18
+      color = [1, 1, 1, 1]
+      x = 580
+      y = 5
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "fps_label"
+      text = "FPS: 60"
+      font_size = 14
+      color = [0.5, 0.5, 0.5, 1]
+      x = 730
+      y = 5
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "star_power_panel"
+    width = 200
+    height = 20
+    bg_color = [0.2, 0.2, 0.0, 0.7]
+    x = 300
+    y = 35
+    visible = false
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "star_power_label"
+      text = "STAR POWER 5s"
+      font_size = 14
+      color = [1, 1, 1, 1]
+      anchor = "center"

@@ -110,7 +110,7 @@ impl LuaUserData for LuaPostFxEffect {
         /// @param | name | string | Type name to compare against `PostFxEffect` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "PostFxEffect" || name == "Object")
+            Ok(name == "LPostFxEffect" || name == "PostFxEffect" || name == "Object")
         });
         // -- setThreshold --
         /// Sets the `threshold` shader parameter.
@@ -439,7 +439,7 @@ impl LuaUserData for LuaPostFxStack {
         /// @param | name | string | Type name to compare against `PostFxStack` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "PostFxStack" || name == "Object")
+            Ok(name == "LPostFxStack" || name == "PostFxStack" || name == "Object")
         });
         // -- setFeedback --
         /// Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
@@ -558,7 +558,7 @@ impl LuaUserData for LuaImageEffect {
         /// @param | name | string | Type name to compare against `ImageEffect` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "ImageEffect" || name == "Object")
+            Ok(name == "LImageEffect" || name == "ImageEffect" || name == "Object")
         });
         // -- removeByIndex --
         /// Removes an image effect by zero-based internal index.
@@ -1193,7 +1193,7 @@ impl LuaUserData for LuaOverlay {
         /// @param | name | string | Type name to compare against `Overlay` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _this, name: String| {
-            Ok(name == "Object" || name == "Overlay")
+            Ok(name == "Object" || name == "LOverlay" || name == "Overlay")
         });
     }
 }
@@ -1269,7 +1269,7 @@ impl mlua::UserData for LuaScreenTransition {
         /// @param | name | string | Type name to compare against `ScreenTransition` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "ScreenTransition" || name == "Object")
+            Ok(name == "LScreenTransition" || name == "ScreenTransition" || name == "Object")
         });
     }
 }

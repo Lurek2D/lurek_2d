@@ -523,6 +523,30 @@ function lurek.init()
         speed = 80, spread = math.pi, colors = {{0.8,0.1,0.1,1},{0.3,0,0,0}} })
 
     start_combat()
+    
+    lurek.ui.loadLayoutFile("content/games/action/soulslike/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.hp_fill = ui_root:findById("hp_fill")
+    app_ui.stam_fill = ui_root:findById("stam_fill")
+    app_ui.estus_icons = {}
+    for i=1, 3 do app_ui.estus_icons[i] = ui_root:findById("estus_" .. i) end
+    app_ui.exhaust_warn = ui_root:findById("exhaust_warn")
+    app_ui.boss_hp_fill = ui_root:findById("boss_hp_fill")
+    app_ui.boss_phase_label = ui_root:findById("boss_phase_label")
+    
+    app_ui.death_screen = ui_root:findById("death_screen")
+    app_ui.death_text = ui_root:findById("death_text")
+    app_ui.death_retry = ui_root:findById("death_retry")
+    
+    app_ui.victory_screen = ui_root:findById("victory_screen")
+    app_ui.victory_text = ui_root:findById("victory_text")
+    app_ui.victory_sub = ui_root:findById("victory_sub")
+    app_ui.victory_enter = ui_root:findById("victory_enter")
 end
 
 function lurek.process(dt)
@@ -604,19 +628,86 @@ function lurek.process(dt)
                 boss.y + math.random() * BOSS_H, 2)
         end
     end
+    
+    -- UI Sync
+    if app_ui then
+        app_ui.title_screen.visible = (game_state == STATE.TITLE)
+        if game_state == STATE.TITLE then
+            local a = math.abs(math.sin(title_blink * 2))
+            app_ui.press_start.color = {0.9, 0.85, 0.7, a}
+        end
+        
+        app_ui.hud.visible = (game_state ~= STATE.TITLE)
+        if app_ui.hud.visible then
+            local hp_frac = (player.hp_disp or player.hp) / PLAYER_MAX_HP
+            app_ui.hp_fill.width = 160 * hp_frac
+            
+            local st_frac = (player.stam_disp or player.stamina) / PLAYER_MAX_STAM
+            app_ui.stam_fill.width = 160 * st_frac
+            if player.exhausted > 0 then
+                app_ui.stam_fill.background = {0.6, 0.3, 0.15, 1.0}
+                app_ui.exhaust_warn.visible = true
+                local wa = math.abs(math.sin(player.exhausted * 10))
+                app_ui.exhaust_warn.color = {1.0, 0.3, 0.1, wa}
+            else
+                app_ui.stam_fill.background = {0.1, 0.7, 0.15, 1.0}
+                app_ui.exhaust_warn.visible = false
+            end
+            
+            for i=1, 3 do
+                if i <= player.estus then
+                    app_ui.estus_icons[i].background = {0.9, 0.6, 0.1, 1.0}
+                else
+                    app_ui.estus_icons[i].background = {0.3, 0.2, 0.1, 0.5}
+                end
+            end
+            
+            local boss_frac = (boss.hp_disp or boss.hp) / BOSS_MAX_HP
+            app_ui.boss_hp_fill.width = 200 * boss_frac
+            local bossR = boss.enraged and 0.9 or 0.6
+            app_ui.boss_hp_fill.background = {bossR, 0.08, 0.12, 1.0}
+            app_ui.boss_phase_label.text = "BOSS  P" .. boss.phase
+        end
+        
+        app_ui.death_screen.visible = (game_state == STATE.PLAYER_DIED)
+        if game_state == STATE.PLAYER_DIED then
+            if death_timer > 1.0 then
+                local ta = math.min(1, (death_timer - 1.0) / 0.8)
+                app_ui.death_text.color = {0.7, 0.1, 0.05, ta}
+                if death_timer > 2.5 then
+                    local ra = math.abs(math.sin(death_timer * 2))
+                    app_ui.death_retry.color = {0.8, 0.7, 0.6, ra}
+                else
+                    app_ui.death_retry.color = {0.8, 0.7, 0.6, 0.0}
+                end
+            else
+                app_ui.death_text.color = {0.7, 0.1, 0.05, 0.0}
+                app_ui.death_retry.color = {0.8, 0.7, 0.6, 0.0}
+            end
+        end
+        
+        app_ui.victory_screen.visible = (game_state == STATE.VICTORY)
+        if game_state == STATE.VICTORY then
+            local va = math.min(1, victory_timer / 1.0)
+            app_ui.victory_text.color = {1.0, 0.85, 0.2, va}
+            if victory_timer > 1.5 then
+                app_ui.victory_sub.color = {0.9, 0.8, 0.6, va}
+            else
+                app_ui.victory_sub.color = {0.9, 0.8, 0.6, 0.0}
+            end
+            if victory_timer > 3.0 then
+                local ra = math.abs(math.sin(victory_timer * 2))
+                app_ui.victory_enter.color = {0.8, 0.7, 0.6, ra}
+            else
+                app_ui.victory_enter.color = {0.8, 0.7, 0.6, 0.0}
+            end
+        end
+    end
 end
 
 -- ── Render: arena, fighters, effects ──────────────────────────────────────
 function lurek.draw()
-    if game_state == STATE.TITLE then
-        -- Title screen
-        local cx = SCREEN_W * 0.5
-        text_("SOULSLIKE", cx - 90, 180, 40, {0.8, 0.15, 0.1, 1})
-        text_("PREPARE TO DIE", cx - 100, 240, 20, {0.6, 0.1, 0.1, 1})
-        local a = math.abs(math.sin(title_blink * 2))
-        text_("PRESS ENTER", cx - 70, 360, 16, {0.9, 0.85, 0.7, a})
-        return
-    end
+    if game_state == STATE.TITLE then return end
 
     -- Arena background — stone
     lurek.render.setColor(0.18, 0.16, 0.14, 1)
@@ -692,7 +783,7 @@ function lurek.draw()
         rect("fill", sx, player.y + 2, 4, PLAYER_H - 4)
     end
 
-    -- Death fade
+    -- Death fade is done with death_screen.background in process
     if game_state == STATE.PLAYER_DIED then
         lurek.render.setColor(0, 0, 0, death_alpha * 0.7)
         rect("fill", 0, 0, SCREEN_W, SCREEN_H)
@@ -701,86 +792,5 @@ end
 
 -- ── Render UI: HP bars, stamina, estus, boss phase ────────────────────────
 function lurek.draw_ui()
-    if game_state == STATE.TITLE then return end
-
-    -- Player HP bar
-    local php = SCREEN_W * 0.05
-    local bar_w = 160
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", php, 16, bar_w, 14)
-    local hp_frac = (player.hp_disp or player.hp) / PLAYER_MAX_HP
-    lurek.render.setColor(0.8, 0.15, 0.1, 1)
-    rect("fill", php, 16, bar_w * hp_frac, 14)
-    lurek.render.setColor(1, 1, 1, 0.9)
-    text_("HP", php + 2, 17, 11, {1,1,1,0.9})
-
-    -- Player stamina bar
-    lurek.render.setColor(0.15, 0.15, 0.15, 0.8)
-    rect("fill", php, 34, bar_w, 10)
-    local st_frac = (player.stam_disp or player.stamina) / PLAYER_MAX_STAM
-    local st_r, st_g = 0.1, 0.7
-    if player.exhausted > 0 then st_r, st_g = 0.6, 0.3 end
-    lurek.render.setColor(st_r, st_g, 0.15, 1)
-    rect("fill", php, 34, bar_w * st_frac, 10)
-    lurek.render.setColor(1, 1, 1, 0.7)
-    text_("STA", php + 2, 34, 9, {1,1,1,0.7})
-
-    -- Estus charges
-    for i = 1, ESTUS_MAX do
-        local ex = php + (i - 1) * 18
-        local ey = 50
-        if i <= player.estus then
-            lurek.render.setColor(0.9, 0.6, 0.1, 1)
-        else
-            lurek.render.setColor(0.3, 0.2, 0.1, 0.5)
-        end
-        rect("fill", ex, ey, 12, 16)
-    end
-
-    -- Exhausted warning
-    if player.exhausted > 0 then
-        local wa = math.abs(math.sin(player.exhausted * 10))
-        text_("EXHAUSTED", php, 70, 12, {1, 0.3, 0.1, wa})
-    end
-
-    -- Boss HP bar (top right)
-    local bhp_x = SCREEN_W - 220
-    local bhp_w = 200
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", bhp_x, 16, bhp_w, 18)
-    local boss_frac = (boss.hp_disp or boss.hp) / BOSS_MAX_HP
-    local bossR = boss.enraged and 0.9 or 0.6
-    lurek.render.setColor(bossR, 0.08, 0.12, 1)
-    rect("fill", bhp_x, 16, bhp_w * boss_frac, 18)
-    -- Phase markers
-    lurek.render.setColor(1, 1, 1, 0.3)
-    rect("fill", bhp_x + bhp_w * 0.66, 16, 1, 18)
-    rect("fill", bhp_x + bhp_w * 0.33, 16, 1, 18)
-    -- Phase label
-    text_("BOSS  P" .. boss.phase, bhp_x + 4, 18, 12, {1,1,1,0.9})
-
-    -- Death overlay
-    if game_state == STATE.PLAYER_DIED then
-        if death_timer > 1.0 then
-            local ta = math.min(1, (death_timer - 1.0) / 0.8)
-            text_("YOU DIED", SCREEN_W * 0.5 - 80, SCREEN_H * 0.4, 36, {0.7, 0.1, 0.05, ta})
-            if death_timer > 2.5 then
-                local ra = math.abs(math.sin(death_timer * 2))
-                text_("Press ENTER to retry", SCREEN_W * 0.5 - 90, SCREEN_H * 0.55, 14, {0.8, 0.7, 0.6, ra})
-            end
-        end
-    end
-
-    -- Victory overlay
-    if game_state == STATE.VICTORY then
-        local va = math.min(1, victory_timer / 1.0)
-        text_("VICTORY", SCREEN_W * 0.5 - 70, SCREEN_H * 0.4, 36, {1, 0.85, 0.2, va})
-        if victory_timer > 1.5 then
-            text_("HEIR OF FIRE DESTROYED", SCREEN_W * 0.5 - 110, SCREEN_H * 0.5, 16, {0.9, 0.8, 0.6, va})
-        end
-        if victory_timer > 3.0 then
-            local ra = math.abs(math.sin(victory_timer * 2))
-            text_("Press ENTER", SCREEN_W * 0.5 - 55, SCREEN_H * 0.6, 14, {0.8, 0.7, 0.6, ra})
-        end
-    end
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
 end

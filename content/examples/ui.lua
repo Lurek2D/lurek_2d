@@ -5121,6 +5121,14 @@ do
     print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
 end
 
+--@api-stub: lurek.ui.loadLayoutGameFile
+do
+    local ok, result = pcall(function()
+        return lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+    end)
+    print("loadLayoutGameFile ok:", ok, "result:", tostring(result))
+end
+
 --@api-stub: lurek.ui.mousemoved
 do
     local slider = lurek.ui.newSlider(0, 100); slider:setPosition(20, 520); slider:setSize(200, 20); slider:setZOrder(2200)

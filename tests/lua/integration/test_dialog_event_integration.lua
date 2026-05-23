@@ -6,6 +6,7 @@
 
 local dialog = require("library.dialog")
 
+-- @describe integration: library.dialog + lurek.event
 describe("integration: library.dialog + lurek.event", function()
 
     local function bridge(seq, sig, events)

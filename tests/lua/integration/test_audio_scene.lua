@@ -5,6 +5,7 @@ local function reset_scene_audio_state()
     lurek.audio.setMasterVolume(1.0)
 end
 
+-- @describe audio + scene integration
 describe("audio + scene integration", function()
     -- @integration lurek.audio.getMasterVolume
     -- @integration lurek.audio.setMasterVolume

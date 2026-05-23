@@ -1,6 +1,7 @@
 -- Integration: graph MST and A* combined with pathfinding
 
 -- Graph MST (Minimum Spanning Tree)
+-- @describe graph.mst
 describe("graph.mst", function()
 
     local function build_simple_graph()
@@ -44,6 +45,7 @@ describe("graph.mst", function()
 end)
 
 -- Graph A* (astar)
+-- @describe graph.astar
 describe("graph.astar", function()
 
     local function build_chain(n)
@@ -77,6 +79,7 @@ describe("graph.astar", function()
 end)
 
 -- Graph + pathfinding integration
+-- @describe graph + JPS integration
 describe("graph + JPS integration", function()
 
     -- @integration LGraph:addEdge

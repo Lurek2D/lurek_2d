@@ -7,6 +7,7 @@ Features:
 - Generates deterministic 2021-2025 CSV transactions with `lurek.math.newRandomGenerator`; only domain row assembly remains in Lua because there is no public household-finance generator.
 - Loads generated CSV from GameFS with `lurek.dataframe.fromCSVFileAsync`, builds an `LDatabase`, and executes readable SQL files from `sql/` with `LDatabase:query` and filtered views with `LDatabase:queryParams`.
 - Uses SQL arithmetic aliases for presentation metrics, including ratios and runway months returned directly by `LDatabase:queryParams`.
+- All dashboard refresh queries are externalized to `sql/*.sql` files; Lua only supplies filter parameters to `LDatabase:queryParams`.
 - Uses `LDataFrame` methods for z-score, outliers, grouped totals, samples, rolling mean, rolling sum, and percent change.
 - Saves and restores the tabular cache through `LDatabase:save` and `lurek.dataframe.loadDatabase`; the small manifest is written with `lurek.serial.toJson`.
 - Uses `lurek.ui` widgets for tabs, filters, buttons, tables, status, and chart generation. Tables use `LGuiTable:setDataFrame`/`setRows`, and charts use DataFrame helper APIs before rendering to images.
@@ -19,7 +20,7 @@ Layout:
 - `app/data_generation.lua` contains Lurek RNG-backed domain row assembly.
 - `app/data_pipeline.lua` contains CSV file loading, database cache glue, parameterized SQL refresh queries, and DataFrame outputs for charts/tables.
 - `app/ui_controls.lua` and `app/ui_render.lua` use `lurek.ui` widgets, bulk table setters, status bar, DataFrame chart helpers, and chart image output.
-- The app requests the smaller built-in bitmap font from `lurek.render.getDefaultFont` and keeps dashboard scaling on integer factors when possible so text is not blurred by fractional whole-scene scaling.
+- The app pins built-in bitmap UI fonts to native, non-scaled sizes (`font_size = 20`, `title_font_size = 24`, bold default font) and runs with `scale_mode = "none"` so text remains readable and avoids fractional whole-scene scaling blur.
 - `sql/*.sql` contains the formatted database queries executed through `LDatabase:query`.
 - `test.lua` is the colocated Lua harness entry point and writes `save/household_finance_lab/test_report.json`.
 

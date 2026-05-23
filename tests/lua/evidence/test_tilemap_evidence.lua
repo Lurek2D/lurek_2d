@@ -130,7 +130,7 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
                 img:drawLine(iso_x - TILE_W/2, iso_y + TILE_H/2, iso_x, iso_y, r, g, b, 255)
                 
                 -- fill diamond (procedural pixel test)
-                for py = math.floor(iso_y); py <= math.floor(iso_y + TILE_H); py++ do
+                for py = math.floor(iso_y), math.floor(iso_y + TILE_H) do
                     -- simplified fill for isometric testing
                 end
             end

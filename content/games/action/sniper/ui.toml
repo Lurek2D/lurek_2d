@@ -1,0 +1,184 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "title_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "title_text"
+    widget_type = "label"
+    x = 320
+    y = 240
+    text = "SNIPER"
+
+    [[root.children.children]]
+    id = "subtitle_text"
+    widget_type = "label"
+    x = 330
+    y = 300
+    text = "Ballistics Puzzle"
+
+    [[root.children.children]]
+    id = "press_start"
+    widget_type = "label"
+    x = 345
+    y = 360
+    text = "PRESS ENTER"
+
+[[root.children]]
+id = "game_over_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "go_score"
+    widget_type = "label"
+    x = 310
+    y = 220
+    text = "FINAL SCORE: 0"
+
+    [[root.children.children]]
+    id = "go_rating"
+    widget_type = "label"
+    x = 320
+    y = 270
+    text = "Rating: RECRUIT"
+
+    [[root.children.children]]
+    id = "go_acc"
+    widget_type = "label"
+    x = 350
+    y = 310
+    text = "Accuracy: 0%"
+
+    [[root.children.children]]
+    id = "go_stats"
+    widget_type = "label"
+    x = 330
+    y = 340
+    text = "Shots: 0  Hits: 0"
+
+    [[root.children.children]]
+    id = "go_restart"
+    widget_type = "label"
+    x = 305
+    y = 390
+    text = "PRESS ENTER TO RESTART"
+
+[[root.children]]
+id = "round_end_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "re_title"
+    widget_type = "label"
+    x = 300
+    y = 240
+    text = "Round 1 Complete!"
+
+    [[root.children.children]]
+    id = "re_score"
+    widget_type = "label"
+    x = 335
+    y = 280
+    text = "Round Score: 0"
+
+    [[root.children.children]]
+    id = "re_acc"
+    widget_type = "label"
+    x = 350
+    y = 315
+    text = "Accuracy: 0%"
+
+    [[root.children.children]]
+    id = "re_next"
+    widget_type = "label"
+    x = 290
+    y = 360
+    text = "PRESS ENTER FOR NEXT ROUND"
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "hud_round"
+    widget_type = "label"
+    x = 10
+    y = 10
+    text = "Round 1"
+
+    [[root.children.children]]
+    id = "hud_shots"
+    widget_type = "label"
+    x = 10
+    y = 32
+    text = "Shots: 5"
+
+    [[root.children.children]]
+    id = "hud_score"
+    widget_type = "label"
+    x = 10
+    y = 50
+    text = "Score: 0"
+
+    [[root.children.children]]
+    id = "hud_total"
+    widget_type = "label"
+    x = 10
+    y = 68
+    text = "Total: 0"
+
+    [[root.children.children]]
+    id = "hud_wind"
+    widget_type = "label"
+    x = 340
+    y = 10
+    text = "Calm"
+
+    [[root.children.children]]
+    id = "breath_bg"
+    widget_type = "panel"
+    x = 680
+    y = 10
+    w = 0
+    h = 10
+
+    [[root.children.children]]
+    id = "breath_text"
+    widget_type = "label"
+    x = 670
+    y = 10
+    text = "[Shift] Hold Breath"
+
+    [[root.children.children]]
+    id = "hud_range"
+    widget_type = "label"
+    x = 670
+    y = 570
+    text = "Range: 200px"

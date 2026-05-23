@@ -70,6 +70,8 @@ local flash_alpha = 0
 local mission_complete_timer = 0
 local title_blink_timer = 0
 
+local app_ui = {}
+
 -- ============================================================================
 -- Helpers
 -- ============================================================================
@@ -264,6 +266,34 @@ function lurek.init()
     lurek.input.bind("quit",    {"escape"})
 
     start_mission(1)
+    
+    lurek.ui.loadLayoutFile("content/games/retro/cannon_fodder/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_press_start = ui_root:findById("title_press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_press_start = ui_root:findById("go_press_start")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_score = ui_root:findById("hud_score")
+    app_ui.hud_mission = ui_root:findById("hud_mission")
+    app_ui.hud_grenades = ui_root:findById("hud_grenades")
+    app_ui.hud_enemies = ui_root:findById("hud_enemies")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    app_ui.soldiers = {}
+    for i=1, 3 do
+        app_ui.soldiers[i] = {
+            panel = ui_root:findById("soldier_" .. i),
+            cross = ui_root:findById("soldier_" .. i .. "_x")
+        }
+    end
+    
+    app_ui.mission_complete_banner = ui_root:findById("mission_complete_banner")
+    app_ui.mc_title = ui_root:findById("mc_title")
 end
 
 local function _ready_setup()
@@ -610,6 +640,60 @@ function lurek.process(dt)
             mission_banner_alpha = 1
         end
     end
+    
+    -- Sync UI
+    app_ui.title_screen.visible = (state == STATE.TITLE)
+    app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+    app_ui.hud_screen.visible = (state == STATE.PLAYING or state == STATE.MISSION_COMPLETE)
+    
+    if state == STATE.TITLE then
+        if math.floor(title_blink_timer * 2) % 2 == 0 then
+            app_ui.title_press_start.color = {0.9, 0.9, 0.9, 1}
+        else
+            app_ui.title_press_start.color = {0.9, 0.9, 0.9, 0}
+        end
+    end
+    
+    if state == STATE.GAME_OVER then
+        app_ui.go_score.text = "Final Score: " .. score
+        if math.floor(title_blink_timer * 2) % 2 == 0 then
+            app_ui.go_press_start.color = {0.8, 0.8, 0.8, 1}
+        else
+            app_ui.go_press_start.color = {0.8, 0.8, 0.8, 0}
+        end
+    end
+    
+    if app_ui.hud_screen.visible then
+        app_ui.hud_score.text = "SCORE: " .. score
+        app_ui.hud_mission.text = "MISSION " .. current_mission .. "/" .. #missions
+        app_ui.hud_grenades.text = "GRENADES: " .. grenade_count
+        app_ui.hud_enemies.text = "ENEMIES: " .. enemies_remaining
+        
+        local alive = 0
+        for _, s in ipairs(soldiers) do
+            if s.alive then alive = alive + 1 end
+        end
+        
+        for i=1, 3 do
+            if i <= alive then
+                app_ui.soldiers[i].panel.bg_color = {0.15, 0.6, 0.15, 1}
+                app_ui.soldiers[i].cross.visible = false
+            else
+                app_ui.soldiers[i].panel.bg_color = {0.3, 0.1, 0.1, 1}
+                app_ui.soldiers[i].cross.visible = true
+            end
+        end
+        
+        local fps = lurek.timer.getFPS()
+        app_ui.fps_label.text = "FPS: " .. fps
+    end
+    
+    if state == STATE.MISSION_COMPLETE then
+        app_ui.mission_complete_banner.visible = true
+        app_ui.mc_title.text = "MISSION " .. current_mission .. " COMPLETE!"
+    else
+        app_ui.mission_complete_banner.visible = false
+    end
 end
 
 -- ============================================================================
@@ -703,70 +787,4 @@ end
 -- Render UI — HUD overlay (score, grenades, mission, soldier count)
 -- ============================================================================
 function lurek.draw_ui()
-    if state == STATE.TITLE then
-        -- Title screen
-        rect("fill", 0, 0, 800, 600, 0.05, 0.08, 0.02)
-        text_("CANNON FODDER", 170, 180, 48, 0.9, 0.8, 0.2)
-        text_("WAR HAS NEVER BEEN SO MUCH FUN", 180, 260, 18, 0.7, 0.7, 0.6)
-
-        -- Blinking prompt
-        if math.floor(title_blink_timer * 2) % 2 == 0 then
-            text_("Press SPACE to start", 280, 400, 20, 0.9, 0.9, 0.9)
-        end
-
-        text_("WASD = Move   SPACE = Fire   G = Grenade", 180, 500, 14, 0.5, 0.5, 0.5)
-        return
-    end
-
-    if state == STATE.GAME_OVER then
-        rect("fill", 0, 0, 800, 600, 0.05, 0.02, 0.02, 0.85)
-        text_("GAME OVER", 260, 220, 48, 0.9, 0.2, 0.15)
-        text_("Final Score: " .. score, 300, 300, 24, 0.9, 0.9, 0.9)
-        if math.floor(title_blink_timer * 2) % 2 == 0 then
-            text_("Press SPACE", 330, 400, 20, 0.8, 0.8, 0.8)
-        end
-        return
-    end
-
-    -- HUD background bar
-    rect("fill", 0, 0, 800, 32, 0.0, 0.0, 0.0, 0.6)
-
-    -- Score
-    text_("SCORE: " .. score, 10, 6, 18, 0.9, 0.85, 0.3)
-
-    -- Mission
-    text_("MISSION " .. current_mission .. "/" .. #missions, 300, 6, 18, 0.9, 0.9, 0.9)
-
-    -- Grenades
-    text_("GRENADES: " .. grenade_count, 530, 6, 18, 0.6, 0.9, 0.4)
-
-    -- Enemies remaining
-    text_("ENEMIES: " .. enemies_remaining, 680, 6, 14, 0.9, 0.4, 0.3)
-
-    -- Soldiers alive indicator (bottom left)
-    local alive = 0
-    for _, s in ipairs(soldiers) do
-        if s.alive then alive = alive + 1 end
-    end
-    for i = 1, 3 do
-        local sx = 20 + (i - 1) * 22
-        local sy = 575
-        if i <= alive then
-            circ(sx, sy, 7, 0.15, 0.6, 0.15)
-        else
-            circ(sx, sy, 7, 0.3, 0.1, 0.1)
-            text_("X", sx - 4, sy - 7, 14, 0.6, 0.2, 0.2)
-        end
-    end
-
-    -- FPS
-    local fps = lurek.timer.getFPS()
-    text_("FPS: " .. fps, 730, 580, 12, 0.5, 0.5, 0.5)
-
-    -- Mission complete banner
-    if state == STATE.MISSION_COMPLETE then
-        rect("fill", 0, 230, 800, 80, 0.0, 0.0, 0.0, 0.75)
-        text_("MISSION " .. current_mission .. " COMPLETE!", 220, 250, 32, 0.2, 0.9, 0.3)
-        text_("+500 BONUS", 340, 290, 18, 0.9, 0.85, 0.3)
-    end
 end

@@ -43,6 +43,7 @@ local player_dead = false
 local death_timer = 0
 local particles = {}
 local cam_x, cam_y = 0, 0
+local app_ui = {}
 
 -- Level definitions: {diamonds_needed, time_limit, boulder_chance, diamond_chance, earth_chance}
 local LEVELS = {
@@ -268,6 +269,31 @@ function lurek.init()
     lurek.input.bind("left", { "a", "left" })
     lurek.input.bind("right", { "d", "right" })
     math.randomseed(os.time())
+    
+    lurek.ui.loadLayoutFile("content/games/retro/boulder_dash/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_press_start = ui_root:findById("title_press_start")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.diamonds_label = ui_root:findById("diamonds_label")
+    app_ui.exit_label = ui_root:findById("exit_label")
+    app_ui.time_label = ui_root:findById("time_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.level_label = ui_root:findById("level_label")
+    
+    app_ui.level_complete_screen = ui_root:findById("level_complete_screen")
+    app_ui.lc_title = ui_root:findById("lc_title")
+    app_ui.lc_subtitle = ui_root:findById("lc_subtitle")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_level = ui_root:findById("go_level")
+    app_ui.go_diamonds = ui_root:findById("go_diamonds")
+    app_ui.go_press_start = ui_root:findById("go_press_start")
+    
+    app_ui.death_flash_panel = ui_root:findById("death_flash_panel")
+    app_ui.fps_label = ui_root:findById("fps_label")
 end
 
 local function _ready_setup()
@@ -436,6 +462,69 @@ function lurek.process(dt)
             lurek.event.push("quit")
         end
     end
+    
+    -- Sync UI
+    local fps = lurek.timer.getFPS()
+    app_ui.fps_label.text = string.format("FPS: %d", fps)
+    
+    app_ui.title_screen.visible = (state == TITLE)
+    app_ui.hud_screen.visible = (state == PLAYING or state == LEVEL_COMPLETE)
+    app_ui.level_complete_screen.visible = (state == LEVEL_COMPLETE)
+    app_ui.game_over_screen.visible = (state == GAME_OVER)
+    
+    if state == TITLE then
+        local blink = math.sin(lurek.timer.getTime() * 3) * 0.4 + 0.6
+        app_ui.title_press_start.color = {1, 1, 1, blink}
+    end
+    
+    if state == PLAYING or state == LEVEL_COMPLETE then
+        local pulse_scale = 1.0 + diamond_pulse * 0.3
+        local dc_color_g = 0.8 + diamond_pulse * 0.2
+        app_ui.diamonds_label.text = string.format("Diamonds: %d / %d", diamonds_collected, diamonds_needed)
+        app_ui.diamonds_label.color = {0.0, dc_color_g, 1.0, 1}
+        app_ui.diamonds_label.font_size = math.floor(16 * pulse_scale)
+        
+        app_ui.exit_label.visible = exit_open
+        
+        local t_minutes = math.floor(timer_left / 60)
+        local t_seconds = math.floor(timer_left % 60)
+        local timer_r = timer_left < 20 and 1.0 or 0.9
+        local timer_g = timer_left < 20 and 0.3 or 0.9
+        app_ui.time_label.text = string.format("Time: %d:%02d", t_minutes, t_seconds)
+        app_ui.time_label.color = {timer_r, timer_g, 0.8, 1}
+        
+        app_ui.lives_label.text = string.format("Lives: %d", lives)
+        app_ui.level_label.text = string.format("Lv %d", level)
+        
+        if player_dead then
+            app_ui.death_flash_panel.visible = true
+            local flash = math.sin(death_timer * 12) * 0.3 + 0.3
+            app_ui.death_flash_panel.bg_color = {1.0, 0.0, 0.0, flash}
+        else
+            app_ui.death_flash_panel.visible = false
+        end
+    else
+        app_ui.death_flash_panel.visible = false
+    end
+    
+    if state == LEVEL_COMPLETE then
+        if level < #LEVELS then
+            app_ui.lc_title.text = "LEVEL COMPLETE!"
+            app_ui.lc_title.color = {0.2, 1.0, 0.3, 1}
+            app_ui.lc_subtitle.text = "Press ENTER for next level"
+        else
+            app_ui.lc_title.text = "YOU WIN!"
+            app_ui.lc_title.color = {1.0, 0.9, 0.2, 1}
+            app_ui.lc_subtitle.text = "All caves cleared! Press ENTER"
+        end
+    end
+    
+    if state == GAME_OVER then
+        app_ui.go_level.text = string.format("Reached Level %d", level)
+        app_ui.go_diamonds.text = string.format("Diamonds: %d", diamonds_collected)
+        local blink = math.sin(lurek.timer.getTime() * 3) * 0.4 + 0.6
+        app_ui.go_press_start.color = {1, 1, 1, blink}
+    end
 end
 
 -- ============================================================================
@@ -521,75 +610,4 @@ end
 -- ============================================================================
 
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-
-    if state == TITLE then
-        text_("BOULDER DASH", 200, 180, 48, 0.7, 0.5, 0.2, 1)
-        text_("Dig. Collect. Escape.", 255, 240, 20, 0.6, 0.6, 0.5, 1)
-
-        local blink = math.sin(lurek.timer.getTime() * 3) * 0.4 + 0.6
-        text_("PRESS ENTER", 305, 350, 22, 1, 1, 1, blink)
-
-        text_("Arrow keys to move | Collect diamonds | Avoid boulders", 135, 430, 14, 0.5, 0.5, 0.4, 1)
-        text_(string.format("FPS: %d", fps), 10, 580, 12, 0.3, 0.3, 0.3, 1)
-
-    elseif state == PLAYING or state == LEVEL_COMPLETE then
-        -- HUD background bar
-        rect(0, 0, 800, 28, 0.0, 0.0, 0.0, 0.7)
-
-        -- Diamond count with pulse
-        local pulse_scale = 1.0 + diamond_pulse * 0.3
-        local dc_color_g = 0.8 + diamond_pulse * 0.2
-        local diamond_text = string.format("Diamonds: %d / %d", diamonds_collected, diamonds_needed)
-        text_(diamond_text, 10, 5,
-            math.floor(16 * pulse_scale), 0.0, dc_color_g, 1.0, 1)
-
-        -- Exit status
-        if exit_open then
-            text_("EXIT OPEN!", 300, 5, 16, 0.2, 1.0, 0.3, 1)
-        end
-
-        -- Timer
-        local t_minutes = math.floor(timer_left / 60)
-        local t_seconds = math.floor(timer_left % 60)
-        local timer_r = timer_left < 20 and 1.0 or 0.9
-        local timer_g = timer_left < 20 and 0.3 or 0.9
-        text_(string.format("Time: %d:%02d", t_minutes, t_seconds),
-            500, 5, 16, timer_r, timer_g, 0.8, 1)
-
-        -- Lives
-        text_(string.format("Lives: %d", lives), 650, 5, 16, 1, 0.9, 0.2, 1)
-
-        -- Level
-        text_(string.format("Lv %d", level), 750, 5, 16, 0.7, 0.7, 0.7, 1)
-
-        -- FPS
-        text_(string.format("FPS: %d", fps), 10, 580, 12, 0.3, 0.3, 0.3, 1)
-
-        if state == LEVEL_COMPLETE then
-            rect(150, 200, 500, 120, 0.0, 0.0, 0.0, 0.85)
-            if level < #LEVELS then
-                text_("LEVEL COMPLETE!", 260, 220, 32, 0.2, 1.0, 0.3, 1)
-                text_("Press ENTER for next level", 275, 270, 18, 0.8, 0.8, 0.8, 1)
-            else
-                text_("YOU WIN!", 310, 220, 36, 1.0, 0.9, 0.2, 1)
-                text_("All caves cleared! Press ENTER", 255, 270, 18, 0.8, 0.8, 0.8, 1)
-            end
-        end
-
-        if player_dead then
-            local flash = math.sin(death_timer * 12) * 0.3 + 0.3
-            rect(0, 0, 800, 600, 1.0, 0.0, 0.0, flash)
-        end
-
-    elseif state == GAME_OVER then
-        text_("GAME OVER", 250, 200, 48, 0.9, 0.2, 0.1, 1)
-        text_(string.format("Reached Level %d", level), 300, 270, 22, 0.7, 0.7, 0.6, 1)
-        text_(string.format("Diamonds: %d", diamonds_collected), 310, 310, 18, 0.0, 0.8, 1.0, 1)
-
-        local blink = math.sin(lurek.timer.getTime() * 3) * 0.4 + 0.6
-        text_("PRESS ENTER", 310, 400, 22, 1, 1, 1, blink)
-
-        text_(string.format("FPS: %d", fps), 10, 580, 12, 0.3, 0.3, 0.3, 1)
-    end
 end

@@ -282,6 +282,52 @@ end
 function lurek.init()
     lurek.window.setTitle("Courtroom Drama — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.1, 0.08)
+    
+    lurek.ui.loadLayoutFile("content/games/rpg/courtroom/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_start = ui_root:findById("title_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_title = ui_root:findById("go_title")
+    app_ui.go_desc = ui_root:findById("go_desc")
+    app_ui.go_hint = ui_root:findById("go_hint")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.case_info_text = ui_root:findById("case_info_text")
+    app_ui.jury_fill = ui_root:findById("jury_fill")
+    app_ui.jury_text = ui_root:findById("jury_text")
+    app_ui.cred_fill = ui_root:findById("cred_fill")
+    app_ui.cred_text = ui_root:findById("cred_text")
+    app_ui.stmt_text = ui_root:findById("stmt_text")
+    
+    app_ui.speaker_text = ui_root:findById("speaker_text")
+    app_ui.typewriter_text = ui_root:findById("typewriter_text")
+    app_ui.advance_prompt = ui_root:findById("advance_prompt")
+    app_ui.controls_hint = ui_root:findById("controls_hint")
+    
+    app_ui.question_panel = ui_root:findById("question_panel")
+    app_ui.qp_opts = {}
+    for i=1, 3 do app_ui.qp_opts[i] = ui_root:findById("qp_opt_" .. i) end
+    
+    app_ui.objection_panel = ui_root:findById("objection_panel")
+    app_ui.op_ev_n = {}
+    app_ui.op_ev_d = {}
+    for i=1, 3 do 
+        app_ui.op_ev_n[i] = ui_root:findById("op_ev_n_" .. i)
+        app_ui.op_ev_d[i] = ui_root:findById("op_ev_d_" .. i)
+    end
+    
+    app_ui.evidence_panel = ui_root:findById("evidence_panel")
+    app_ui.ep_ev_n = {}
+    app_ui.ep_ev_d = {}
+    for i=1, 3 do 
+        app_ui.ep_ev_n[i] = ui_root:findById("ep_ev_n_" .. i)
+        app_ui.ep_ev_d[i] = ui_root:findById("ep_ev_d_" .. i)
+    end
+    
+    app_ui.verdict_text = ui_root:findById("verdict_text")
 end
 
 local function _ready_setup() end
@@ -477,10 +523,132 @@ function lurek.process(dt)
         end
 
     elseif state == "GAME_OVER" then
-        if lurek.input.keyboard.isDown(actions.advance) then
-            state = "TITLE"
-            verdict_confetti = {}
-            gavel_sparks = {}
+        -- state transitions handled by UI click callbacks
+    end
+    
+    -- UI Sync
+    if app_ui then
+        app_ui.title_screen.visible = (state == "TITLE")
+        if app_ui.title_screen.visible then
+            app_ui.title_start.color = {0.6, 0.5, 0.3, 0.6 + math.sin(lurek.timer.getTime() * 3) * 0.4}
+        end
+        
+        app_ui.game_over_screen.visible = (state == "GAME_OVER")
+        if app_ui.game_over_screen.visible then
+            if game_result == "WIN" then
+                app_ui.go_title.text = "CASE CLOSED!"
+                app_ui.go_title.color = {1, 0.85, 0.2, 1}
+                app_ui.go_title.x = 270
+            else
+                app_ui.go_title.text = "CASE LOST"
+                app_ui.go_title.color = {0.8, 0.2, 0.15, 1}
+                app_ui.go_title.x = 290
+            end
+            app_ui.go_desc.text = typewriter_text
+            app_ui.go_hint.color = {0.6, 0.5, 0.3, 0.6 + math.sin(lurek.timer.getTime() * 3) * 0.4}
+        end
+        
+        app_ui.hud.visible = (state ~= "TITLE" and state ~= "GAME_OVER")
+        if app_ui.hud.visible then
+            app_ui.case_info_text.text = "Case " .. current_case .. ": " .. cases[current_case].name
+            
+            local jury_w = 180
+            local fill_w = (jury_display / 100) * jury_w
+            app_ui.jury_fill.width = fill_w
+            local jr = 0.2 + 0.6 * (1 - jury_display / 100)
+            local jg = 0.3 + 0.7 * (jury_display / 100)
+            app_ui.jury_fill.background = {jr, jg, 0.2, 1}
+            app_ui.jury_text.text = "Jury: " .. math.floor(jury_display) .. "%"
+            
+            local cr_w = 95
+            local cr_fill = (cred_display / 100) * cr_w
+            app_ui.cred_fill.width = cr_fill
+            local cr_r = 0.2 + 0.8 * (1 - cred_display / 100)
+            local cr_g = 0.8 * (cred_display / 100)
+            app_ui.cred_fill.background = {cr_r, cr_g, 0.15, 1}
+            app_ui.cred_text.text = "Cred:" .. math.floor(cred_display)
+            
+            app_ui.stmt_text.visible = (state == "TESTIMONY")
+            if app_ui.stmt_text.visible then
+                app_ui.stmt_text.text = "Statement " .. testimony_line .. "/" .. #cases[current_case].testimony
+            end
+            
+            if state == "TESTIMONY" and not question_mode and not objection_mode and objection_result == "" then
+                app_ui.speaker_text.text = cases[current_case].witness .. ":"
+                app_ui.speaker_text.color = {1, 0.85, 0.3, 1}
+            elseif state == "CASE_INTRO" then
+                app_ui.speaker_text.text = "Judge:"
+                app_ui.speaker_text.color = {0.8, 0.6, 0.2, 1}
+            else
+                app_ui.speaker_text.text = ""
+            end
+            
+            app_ui.typewriter_text.text = typewriter_text
+            
+            app_ui.advance_prompt.visible = (#typewriter_text >= #typewriter_target and not question_mode and not objection_mode and objection_result == "")
+            if app_ui.advance_prompt.visible then
+                app_ui.advance_prompt.color = {0.5, 0.4, 0.3, 0.5 + math.sin(lurek.timer.getTime() * 4) * 0.3}
+            end
+            
+            app_ui.controls_hint.visible = (state == "TESTIMONY" and not question_mode and not objection_mode and objection_result == "")
+            
+            app_ui.question_panel.visible = question_mode
+            if question_mode then
+                local questions = cases[current_case].questions
+                for i=1, 3 do
+                    if questions[i] then
+                        app_ui.qp_opts[i].text = i .. ". " .. questions[i].text
+                        app_ui.qp_opts[i].visible = true
+                    else
+                        app_ui.qp_opts[i].visible = false
+                    end
+                end
+            end
+            
+            app_ui.objection_panel.visible = objection_mode
+            if objection_mode then
+                local ev = cases[current_case].evidence
+                for i=1, 3 do
+                    if ev[i] then
+                        app_ui.op_ev_n[i].text = i .. ". " .. ev[i].name
+                        app_ui.op_ev_d[i].text = "   " .. ev[i].desc
+                        app_ui.op_ev_n[i].visible = true
+                        app_ui.op_ev_d[i].visible = true
+                    else
+                        app_ui.op_ev_n[i].visible = false
+                        app_ui.op_ev_d[i].visible = false
+                    end
+                end
+            end
+            
+            app_ui.evidence_panel.visible = (show_evidence and not objection_mode)
+            if app_ui.evidence_panel.visible then
+                local ev = cases[current_case].evidence
+                for i=1, 3 do
+                    if ev[i] then
+                        app_ui.ep_ev_n[i].text = i .. ". " .. ev[i].name
+                        app_ui.ep_ev_d[i].text = ev[i].desc
+                        app_ui.ep_ev_n[i].visible = true
+                        app_ui.ep_ev_d[i].visible = true
+                    else
+                        app_ui.ep_ev_n[i].visible = false
+                        app_ui.ep_ev_d[i].visible = false
+                    end
+                end
+            end
+            
+            app_ui.verdict_text.visible = (state == "VERDICT")
+            if app_ui.verdict_text.visible then
+                if case_won then
+                    app_ui.verdict_text.text = "NOT GUILTY"
+                    app_ui.verdict_text.color = {0.2, 0.8, 0.3, 1}
+                    app_ui.verdict_text.x = 270
+                else
+                    app_ui.verdict_text.text = "GUILTY"
+                    app_ui.verdict_text.color = {0.9, 0.2, 0.15, 1}
+                    app_ui.verdict_text.x = 310
+                end
+            end
         end
     end
 end
@@ -569,169 +737,22 @@ end
 
 -- Draw UI elements
 function lurek.draw_ui()
-    if state == "TITLE" then
-        -- Title screen
-        lurek.render.setColor(0.9, 0.75, 0.3, 1)
-        text_("COURTROOM DRAMA", 200, 160, 0, 2.5, 2.5)
-
-        lurek.render.setColor(0.7, 0.55, 0.25, 1)
-        text_("ORDER IN THE COURT!", 260, 230, 0, 1.3, 1.3)
-
-        lurek.render.setColor(0.8, 0.7, 0.5, 1)
-        text_("Present evidence. Question witnesses.", 220, 310, 0, 1, 1)
-        text_("Expose contradictions. Win the case.", 225, 335, 0, 1, 1)
-
-        lurek.render.setColor(0.6, 0.5, 0.3, 0.6 + math.sin(lurek.timer.getTime() * 3) * 0.4)
-        text_("Press SPACE to begin", 300, 420, 0, 1, 1)
-
-        lurek.render.setColor(0.5, 0.4, 0.3, 0.5)
-        text_("O=Objection  E=Evidence  Q=Question  1/2/3=Choose", 155, 520, 0, 0.85, 0.85)
-        return
-    end
-
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
+    -- We still need to draw the particles and dynamic text that are drawn over UI in draw_ui.
     if state == "GAME_OVER" then
-        if game_result == "WIN" then
-            lurek.render.setColor(1, 0.85, 0.2, 1)
-            text_("CASE CLOSED!", 270, 150, 0, 2.2, 2.2)
-        else
-            lurek.render.setColor(0.8, 0.2, 0.15, 1)
-            text_("CASE LOST", 290, 150, 0, 2.2, 2.2)
-        end
-
-        lurek.render.setColor(0.8, 0.7, 0.5, 1)
-        text_(typewriter_text, 140, 260, 0, 1, 1)
-
-        lurek.render.setColor(0.6, 0.5, 0.3, 0.6 + math.sin(lurek.timer.getTime() * 3) * 0.4)
-        text_("Press SPACE to return to title", 260, 420, 0, 1, 1)
-
         -- Confetti (particles)
         for _, c in ipairs(verdict_confetti) do
             lurek.render.setColor(c.r, c.g, c.b, 0.9)
             rect("fill", c.x, c.y, c.size, c.size)
         end
-        return
     end
-
-    -- Case info bar (top)
-    lurek.render.setColor(0.1, 0.07, 0.05, 0.85)
-    rect("fill", 0, 0, 800, 32)
-    lurek.render.setColor(0.9, 0.75, 0.3, 1)
-    text_("Case " .. current_case .. ": " .. cases[current_case].name, 10, 8, 0, 0.9, 0.9)
-
-    -- Jury meter bar (top right)
-    local jury_x, jury_y, jury_w = 500, 6, 180
-    lurek.render.setColor(0.3, 0.3, 0.3, 0.8)
-    rect("fill", jury_x, jury_y, jury_w, 18)
-    local fill_w = (jury_display / 100) * jury_w
-    local jr = 0.2 + 0.6 * (1 - jury_display / 100)
-    local jg = 0.3 + 0.7 * (jury_display / 100)
-    lurek.render.setColor(jr, jg, 0.2, 1)
-    rect("fill", jury_x, jury_y, fill_w, 18)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("Jury: " .. math.floor(jury_display) .. "%", jury_x + 5, jury_y + 2, 0, 0.75, 0.75)
-
-    -- Credibility bar (below jury)
-    local cr_x, cr_y, cr_w = 695, 6, 95
-    lurek.render.setColor(0.3, 0.3, 0.3, 0.8)
-    rect("fill", cr_x, cr_y, cr_w, 18)
-    local cr_fill = (cred_display / 100) * cr_w
-    local cr_r = 0.2 + 0.8 * (1 - cred_display / 100)
-    local cr_g = 0.8 * (cred_display / 100)
-    lurek.render.setColor(cr_r, cr_g, 0.15, 1)
-    rect("fill", cr_x, cr_y, cr_fill, 18)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("Cred:" .. math.floor(cred_display), cr_x + 3, cr_y + 2, 0, 0.7, 0.7)
-
-    -- Testimony line indicator
-    if state == "TESTIMONY" then
-        lurek.render.setColor(0.6, 0.5, 0.3, 0.7)
-        text_("Statement " .. testimony_line .. "/" .. #cases[current_case].testimony, 10, 580, 0, 0.75, 0.75)
-    end
-
-    -- Main text box
-    lurek.render.setColor(0.08, 0.06, 0.04, 0.92)
-    rect("fill", 40, 460, 720, 110)
-    lurek.render.setColor(0.6, 0.45, 0.2, 0.8)
-    rect("line", 40, 460, 720, 110)
-
-    -- Speaker label
-    if state == "TESTIMONY" and not question_mode and not objection_mode and objection_result == "" then
-        lurek.render.setColor(1, 0.85, 0.3, 1)
-        text_(cases[current_case].witness .. ":", 55, 468, 0, 0.85, 0.85)
-    elseif state == "CASE_INTRO" then
-        lurek.render.setColor(0.8, 0.6, 0.2, 1)
-        text_("Judge:", 55, 468, 0, 0.85, 0.85)
-    end
-
-    -- Typewriter text
-    lurek.render.setColor(0.9, 0.85, 0.75, 1)
-    text_(typewriter_text, 55, 490, 0, 0.9, 0.9)
-
-    -- Advance prompt
-    if #typewriter_text >= #typewriter_target and not question_mode and not objection_mode and objection_result == "" then
-        lurek.render.setColor(0.5, 0.4, 0.3, 0.5 + math.sin(lurek.timer.getTime() * 4) * 0.3)
-        text_("▼", 730, 548, 0, 1, 1)
-    end
-
-    -- Question mode choices
-    if question_mode then
-        lurek.render.setColor(0.1, 0.08, 0.05, 0.9)
-        rect("fill", 260, 300, 320, 140)
-        lurek.render.setColor(0.7, 0.55, 0.25, 0.9)
-        rect("line", 260, 300, 320, 140)
-
-        lurek.render.setColor(1, 0.85, 0.3, 1)
-        text_("QUESTION WITNESS", 310, 308, 0, 1, 1)
-
-        local questions = cases[current_case].questions
-        for i = 1, math.min(3, #questions) do
-            lurek.render.setColor(0.85, 0.75, 0.55, 1)
-            text_(i .. ". " .. questions[i].text, 275, 325 + (i - 1) * 28, 0, 0.7, 0.7)
+    
+    if state == "VERDICT" then
+        -- Confetti (particles)
+        for _, c in ipairs(verdict_confetti) do
+            lurek.render.setColor(c.r, c.g, c.b, 0.9)
+            rect("fill", c.x, c.y, c.size, c.size)
         end
-    end
-
-    -- Objection mode evidence selection
-    if objection_mode then
-        lurek.render.setColor(0.15, 0.05, 0.02, 0.92)
-        rect("fill", 180, 180, 440, 180)
-        lurek.render.setColor(1, 0.4, 0.1, 0.9)
-        rect("line", 180, 180, 440, 180)
-
-        lurek.render.setColor(1, 0.5, 0.15, 1)
-        text_("PRESENT EVIDENCE", 310, 188, 0, 1.1, 1.1)
-
-        local ev = cases[current_case].evidence
-        for i = 1, math.min(3, #ev) do
-            lurek.render.setColor(1, 0.9, 0.6, 1)
-            text_(i .. ". " .. ev[i].name, 200, 215 + (i - 1) * 42, 0, 0.9, 0.9)
-            lurek.render.setColor(0.7, 0.6, 0.4, 0.8)
-            text_("   " .. ev[i].desc, 200, 233 + (i - 1) * 42, 0, 0.65, 0.65)
-        end
-    end
-
-    -- Evidence panel (toggle)
-    if show_evidence and not objection_mode then
-        lurek.render.setColor(0.08, 0.06, 0.04, 0.92)
-        rect("fill", 500, 40, 280, 200)
-        lurek.render.setColor(0.6, 0.45, 0.2, 0.8)
-        rect("line", 500, 40, 280, 200)
-
-        lurek.render.setColor(1, 0.85, 0.3, 1)
-        text_("EVIDENCE", 590, 48, 0, 1, 1)
-
-        local ev = cases[current_case].evidence
-        for i = 1, #ev do
-            lurek.render.setColor(0.9, 0.8, 0.5, 1)
-            text_(i .. ". " .. ev[i].name, 515, 68 + (i - 1) * 50, 0, 0.85, 0.85)
-            lurek.render.setColor(0.65, 0.55, 0.35, 0.8)
-            text_(ev[i].desc, 525, 86 + (i - 1) * 50, 0, 0.6, 0.6)
-        end
-    end
-
-    -- Controls hint
-    if state == "TESTIMONY" and not question_mode and not objection_mode and objection_result == "" then
-        lurek.render.setColor(0.5, 0.4, 0.3, 0.5)
-        text_("O=Object  E=Evidence  Q=Question  Space=Next", 210, 580, 0, 0.7, 0.7)
     end
 
     -- OBJECTION! text overlay (tweened)
@@ -740,22 +761,5 @@ function lurek.draw_ui()
         local os_x = 400 - 80 * objection_scale
         local os_y = 200 - 15 * objection_scale
         text_("OBJECTION!", os_x, os_y, 0, objection_scale * 1.5, objection_scale * 1.5)
-    end
-
-    -- Verdict state
-    if state == "VERDICT" then
-        if case_won then
-            lurek.render.setColor(0.2, 0.8, 0.3, 1)
-            text_("NOT GUILTY", 270, 200, 0, 2, 2)
-        else
-            lurek.render.setColor(0.9, 0.2, 0.15, 1)
-            text_("GUILTY", 310, 200, 0, 2, 2)
-        end
-
-        -- Confetti (particles)
-        for _, c in ipairs(verdict_confetti) do
-            lurek.render.setColor(c.r, c.g, c.b, 0.9)
-            rect("fill", c.x, c.y, c.size, c.size)
-        end
     end
 end

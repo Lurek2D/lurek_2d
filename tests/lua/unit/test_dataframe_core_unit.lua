@@ -3964,7 +3964,7 @@ describe("lazy evaluation pipeline", function()
     -- @covers LLazyQuery:collect
     it("lazy slice keeps the requested row window", function()
         local df = lurek.dataframe.fromCSV("x\n10\n20\n30")
-        local out = df:lazy():slice(2, 2):collect()
+        local out = df:lazy():slice(2, 3):collect()
         expect_equal(2, out:nrows(), "slice keeps two rows")
         expect_equal(20, out:getValue(1, "x"), "slice starts at requested row")
     end)

@@ -6939,7 +6939,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Returns the value of a named semantic style token from the active theme.
     /// @summary | Returns a style token value by name. Float tokens return a number; Color tokens return a table {r, g, b, a}. Returns nil if not found.
     /// @param | name | string | The token name (e.g. "spacing_md", "color_primary").
-    /// @return | any | The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+    /// @return | number | The token value for float tokens.
+    /// @overload | name | string | table | The token value as a table with r/g/b/a fields for color tokens.
+    /// @overload | name | string | nil | Nil when the token is not registered.
     tbl.set(
         "getStyleToken",
         lua.create_function(move |lua, name: String| {

@@ -1,4 +1,5 @@
 -- Integration: ECS entities driven by AI state machines
+-- @describe integration: entity with AI state machine
 describe("integration: entity with AI state machine", function()
     -- @integration LStateMachine:addState
     -- @integration LStateMachine:addTransition

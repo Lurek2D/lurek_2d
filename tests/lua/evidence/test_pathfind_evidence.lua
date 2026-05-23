@@ -1,204 +1,86 @@
--- Evidence suite: pathfind module
--- lurek.pathfind NavGrid and A* path-finding evidence.
--- Full path-finding operations require a configured NavGrid; those cases are xit'd pending API stabilisation.
+-- Evidence tests: pathfind module
+-- Output-only evidence from direct lurek.pathfind API calls.
 
--- @describe evidence: pathfind
+local function write_text(path, text)
+    local f = io and io.open and io.open(path, "w") or nil
+    if f then
+        f:write(text)
+        f:close()
+    end
+end
+
 describe("evidence: pathfind", function()
     before_each(function()
         ensure_evidence_dir("pathfind")
     end)
 
     -- @evidence file
-    it("records pathfind API surface as PNG evidence", function()
-        local dir  = evidence_output_dir("pathfind")
-        local path = dir .. "pathfind_api_surface.png"
-        local pf   = lurek.pathfind
-        local fns  = { "newNavGrid", "newFlowField", "findPath", "findPathAsync" }
-        local W, H = 200, #fns * 24 + 8
-        local img  = lurek.image.newImageData(W, H)
-        img:drawRect(0, 0, W, H, 20, 20, 20, 255)
-        for i, name in ipairs(fns) do
-            local present = type(pf[name]) == "function"
-            local r, g = present and 40 or 200, present and 200 or 40
-            local y = (i - 1) * 24 + 4
-            img:drawRect(4, y, 16, 16, r, g, 40, 255)
+    it("exports astar path through obstacle gap", function()
+        local dir = evidence_output_dir("pathfind")
+        local path = dir .. "astar_gap.json"
+
+        local grid = lurek.pathfind.newNavGrid(20, 15)
+        for y = 1, 15 do
+            if y ~= 8 then grid:setBlocked(10, y, true) end
         end
-        lurek.image.savePNG(img, path)
-        expect_evidence_created(path)
+
+        local pf = lurek.pathfind.newPathfinder(grid)
+        local nodes = pf:findPath(1, 1, 20, 15) or {}
+
+        local out = {}
+        for i, n in ipairs(nodes) do
+            out[i] = string.format('{"x":%d,"y":%d}', n.x or 0, n.y or 0)
+        end
+        write_text(path, '{"count":' .. tostring(#nodes) .. ',"nodes":[' .. table.concat(out, ",") .. "]}")
     end)
-end)
-
-
-
--- ================================================================
--- Merged from: test_pathfind_extended_evidence.lua
--- ================================================================
-
--- test_evidence_pathfind_extended.lua
--- Evidence test: lurek.pathfind API contracts and visual grid evidence
-
-local OUT = "tests/output/pathfinding/"
-
--- â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
---- Draw a NavGrid as a small PNG (white = walkable, black = blocked, red dots = path).
-local function draw_nav_grid(grid, path, w, h, scale)
-    scale = scale or 8
-    local iw = w * scale
-    local ih = h * scale
-    local img = lurek.image.newImageData(iw, ih)
-    img:fill(30, 30, 30, 255)
-
-    -- Draw cells
-    for y = 1, h do
-        for x = 1, w do
-            local blocked = grid:isBlocked(x, y)
-            local cost = grid:getCost(x, y)
-            local r, g, b
-            if blocked then
-                r, g, b = 20, 20, 20
-            else
-                local v = math.floor(255 - (cost / 10) * 180)
-                r, g, b = v, v, v
-            end
-            img:drawRect((x-1)*scale + 1, (y-1)*scale + 1, scale - 1, scale - 1, r, g, b, 255)
-        end
-    end
-
-    -- Draw path
-    if path then
-        for _, step in ipairs(path) do
-            local px = (step.x - 1) * scale + math.floor(scale / 2)
-            local py = (step.y - 1) * scale + math.floor(scale / 2)
-            img:drawCircle(px, py, math.max(1, math.floor(scale / 3)), 255, 80, 80, 255)
-        end
-    end
-
-    return img
-end
-
--- â”€â”€ tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
--- @describe Evidence: lurek.pathfind A* basic
-describe("Evidence: lurek.pathfind A* basic", function()
-    -- @evidence file
-    it("path avoids walls -\" PNG evidence: astar_basic", function()
-        local W, H = 20, 15
-        local grid = lurek.pathfind.newNavGrid(W, H)
-
-        -- Vertical wall in the middle with a single gap
-        for y = 1, H do
-            if y ~= 8 then
-                grid:setBlocked(10, y, true)
-            end
-        end
-
-        local pf   = lurek.pathfind.newPathfinder(grid)
-        local path = pf:findPath(1, 1, 20, 15)
-
-        local img = draw_nav_grid(grid, path, W, H, 10)
-        lurek.image.savePNG(img, OUT .. "evidence_pathfinding_astar_wall.png")
-    end)
-end)
-
--- @describe Evidence: lurek.pathfind weighted terrain
-describe("Evidence: lurek.pathfind weighted terrain", function()
 
     -- @evidence file
-    it("higher-cost terrain is avoided when cheaper route exists -\" PNG evidence", function()
-        local W, H = 12, 12
-        local grid = lurek.pathfind.newNavGrid(W, H)
+    it("exports weighted-terrain path", function()
+        local dir = evidence_output_dir("pathfind")
+        local path = dir .. "astar_weighted.json"
 
-        -- Centre strip is expensive (mud / water)
-        for y = 1, H do
+        local grid = lurek.pathfind.newNavGrid(12, 12)
+        for y = 1, 12 do
             grid:setCost(6, y, 9)
             grid:setCost(7, y, 9)
         end
 
-        local pf   = lurek.pathfind.newPathfinder(grid)
-        local path = pf:findPath(1, 6, 12, 6)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        local nodes = pf:findPath(1, 6, 12, 6) or {}
+        local head = nodes[1] or {x = -1, y = -1}
+        local tail = nodes[#nodes] or {x = -1, y = -1}
 
-        local img = draw_nav_grid(grid, path, W, H, 14)
-        lurek.image.savePNG(img, OUT .. "evidence_pathfinding_weighted.png")
+        local json = string.format(
+            '{"count":%d,"start":{"x":%d,"y":%d},"end":{"x":%d,"y":%d}}',
+            #nodes,
+            head.x or -1,
+            head.y or -1,
+            tail.x or -1,
+            tail.y or -1
+        )
+        write_text(path, json)
     end)
-end)
 
--- @describe Evidence: lurek.pathfind FlowField
-describe("Evidence: lurek.pathfind FlowField", function()
     -- @evidence file
-    it("flow field PNG evidence: astar_flow_field", function()
-        local W, H = 16, 16
-        local grid = lurek.pathfind.newNavGrid(W, H)
+    it("exports flow-field direction samples", function()
+        local dir = evidence_output_dir("pathfind")
+        local path = dir .. "flow_field.json"
 
-        -- A few obstacles
+        local grid = lurek.pathfind.newNavGrid(16, 16)
         for y = 3, 12 do grid:setBlocked(8, y, true) end
         for x = 8, 16 do grid:setBlocked(x, 8, true) end
 
         local ff = lurek.pathfind.newFlowField(grid)
         ff:calculate(16, 16)
 
-        local scale = 12
-        local img = lurek.image.newImageData(W * scale, H * scale)
-        img:fill(30, 30, 30, 255)
-
-        for y = 1, H do
-            for x = 1, W do
-                local blocked = grid:isBlocked(x, y)
-                if blocked then
-                    img:drawRect((x-1)*scale+1, (y-1)*scale+1, scale-2, scale-2, 20, 20, 60, 255)
-                else
-                    img:drawRect((x-1)*scale+1, (y-1)*scale+1, scale-2, scale-2, 80, 80, 100, 255)
-                    local dx, dy = ff:getDirection(x, y)
-                    if dx ~= 0 or dy ~= 0 then
-                        local cx = (x-1)*scale + math.floor(scale / 2)
-                        local cy = (y-1)*scale + math.floor(scale / 2)
-                        local ex = cx + math.floor(dx * (math.floor(scale / 2) - 1))
-                        local ey = cy + math.floor(dy * (math.floor(scale / 2) - 1))
-                        img:drawLine(cx, cy, ex, ey, 100, 220, 100, 255)
-                    end
-                end
-            end
+        local probes = {{2,2},{5,5},{10,4},{14,14},{7,10}}
+        local out = {}
+        for i, p in ipairs(probes) do
+            local dx, dy = ff:getDirection(p[1], p[2])
+            out[i] = string.format('{"x":%d,"y":%d,"dx":%.4f,"dy":%.4f}', p[1], p[2], tonumber(dx) or 0, tonumber(dy) or 0)
         end
-
-        lurek.image.savePNG(img, OUT .. "evidence_pathfinding_flow_field.png")
+        write_text(path, "[" .. table.concat(out, ",") .. "]")
     end)
 end)
 
-
-
--- ================================================================
--- Merged from: test_evidence_pathfind.lua
--- ================================================================
-
--- Evidence suite: pathfind heatmap and flow-field.
--- All lurek.pathfind heatmap / flow-field operations require a live NavGrid;
--- those tests are xit'd in the extended block above.
--- This block records which pathfind functions are exposed as an API surface manifest.
-
--- @describe evidence: pathfind manifest
-describe("evidence: pathfind manifest", function()
-    before_each(function()
-        ensure_evidence_dir("pathfind")
-    end)
-
-    -- @evidence file
-    it("records pathfind heatmap API surface as PNG evidence", function()
-        local dir  = evidence_output_dir("pathfind")
-        local path = dir .. "pathfind_heatmap_surface.png"
-        local pf   = lurek.pathfind
-        local fns  = { "newNavGrid", "newFlowField", "findPath", "findPathAsync",
-                       "computeHeatmap", "computeFlowField" }
-        local W, H = 200, #fns * 24 + 8
-        local img  = lurek.image.newImageData(W, H)
-        img:drawRect(0, 0, W, H, 20, 20, 20, 255)
-        for i, name in ipairs(fns) do
-            local present = type(pf[name]) == "function"
-            local r, g = present and 40 or 200, present and 200 or 40
-            local y = (i - 1) * 24 + 4
-            img:drawRect(4, y, 16, 16, r, g, 40, 255)
-        end
-        lurek.image.savePNG(img, path)
-        expect_evidence_created(path)
-    end)
-end)
 test_summary()

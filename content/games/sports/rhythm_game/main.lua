@@ -333,6 +333,56 @@ function lurek.init()
         combo_particles:setSizes(6, 2)
         combo_particles:setSpread(math.pi * 2)
     end
+    
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/rhythm_game/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_feel = ui_root:findById("title_feel")
+    app_ui.song_select_screen = ui_root:findById("song_select_screen")
+    app_ui.results_screen = ui_root:findById("results_screen")
+    app_ui.hud = ui_root:findById("hud")
+    
+    app_ui.song_labels = {
+        ui_root:findById("song_1"),
+        ui_root:findById("song_2"),
+        ui_root:findById("song_3")
+    }
+    app_ui.song_stats = {
+        ui_root:findById("song_1_stats"),
+        ui_root:findById("song_2_stats"),
+        ui_root:findById("song_3_stats")
+    }
+    
+    app_ui.grade_label = ui_root:findById("grade_label")
+    app_ui.score_result_label = ui_root:findById("score_result_label")
+    app_ui.max_combo_label = ui_root:findById("max_combo_label")
+    app_ui.hits_label = ui_root:findById("hits_label")
+    app_ui.best_mult_label = ui_root:findById("best_mult_label")
+    
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.combo_label = ui_root:findById("combo_label")
+    app_ui.combo_mult_label = ui_root:findById("combo_mult_label")
+    app_ui.life_fill = ui_root:findById("life_fill")
+    app_ui.progress_fill = ui_root:findById("progress_fill")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_select = ui_root:findById("press_select")
+    app_ui.press_results = ui_root:findById("press_results")
+    
+    local function handle_action_click()
+        if current_state == STATE_TITLE then
+            current_state = STATE_SONG_SELECT
+        elseif current_state == STATE_SONG_SELECT then
+            start_song(selected_song)
+        elseif current_state == STATE_RESULTS then
+            current_state = STATE_SONG_SELECT
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
+    if app_ui.press_select then app_ui.press_select:setOnClick(handle_action_click) end
+    if app_ui.press_results then app_ui.press_results:setOnClick(handle_action_click) end
 
     start_song(selected_song)
 end
@@ -368,7 +418,6 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("confirm") then
             current_state = STATE_SONG_SELECT
         end
-        return
     end
 
     -- -----------------------------------------------------------------------
@@ -386,7 +435,6 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("confirm") then
             start_song(selected_song)
         end
-        return
     end
 
     -- -----------------------------------------------------------------------
@@ -396,8 +444,85 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("confirm") then
             current_state = STATE_SONG_SELECT
         end
-        return
     end
+
+    -- UI Sync
+    app_ui.title_screen.visible = (current_state == STATE_TITLE)
+    app_ui.song_select_screen.visible = (current_state == STATE_SONG_SELECT)
+    app_ui.results_screen.visible = (current_state == STATE_RESULTS)
+    app_ui.hud.visible = (current_state == STATE_PLAYING)
+    
+    if current_state == STATE_TITLE then
+        local alpha = clamp(math.sin(title_timer * 1.5) * 0.3 + 0.7, 0.4, 1)
+        app_ui.title_feel.color = {0.7, 0.5, 0.9, alpha}
+    elseif current_state == STATE_SONG_SELECT then
+        for i, song in ipairs(SONGS) do
+            local sel = (i == selected_song)
+            local r, g, b = 0.5, 0.5, 0.5
+            if sel then r, g, b = 1, 0.85, 0.2 end
+            local arrow = sel and "> " or "  "
+            app_ui.song_labels[i].text = arrow .. song.name
+            app_ui.song_labels[i].color = {r, g, b, 1}
+            app_ui.song_stats[i].text = string.format("  %d notes  |  %dpx/s", #song.chart_fn(), song.speed)
+        end
+    elseif current_state == STATE_RESULTS then
+        local grade_colors = {
+            S = { 1, 0.85, 0.2 }, A = { 0.3, 0.9, 0.3 }, B = { 0.3, 0.6, 1 },
+            C = { 0.7, 0.5, 0.2 }, F = { 0.8, 0.2, 0.2 },
+        }
+        local gc = grade_colors[result_grade] or { 1, 1, 1 }
+        app_ui.grade_label.text = result_grade
+        app_ui.grade_label.color = {gc[1], gc[2], gc[3], 1}
+        
+        app_ui.score_result_label.text = string.format("Score: %d", score)
+        app_ui.max_combo_label.text = string.format("Max Combo: %d", max_combo)
+        app_ui.hits_label.text = string.format("Perfect: %d  Good: %d  Miss: %d", perfects, goods, misses)
+        
+        local mult_text = string.format("Best Multiplier: %dx", (max_combo >= 50 and 4) or (max_combo >= 25 and 3) or (max_combo >= 10 and 2) or 1)
+        app_ui.best_mult_label.text = mult_text
+    elseif current_state == STATE_PLAYING then
+        app_ui.score_label.text = string.format("SCORE: %d", math.floor(display_score))
+        
+        if combo > 0 then
+            local mult = get_multiplier()
+            local combo_alpha = clamp(0.6 + combo * 0.01, 0.6, 1)
+            local cr, cg, cb = 1, 1, 1
+            if mult >= 4 then cr, cg, cb = 1, 0.85, 0.2
+            elseif mult >= 3 then cr, cg, cb = 0.9, 0.5, 1
+            elseif mult >= 2 then cr, cg, cb = 0.3, 0.9, 1 end
+            
+            app_ui.combo_label.visible = true
+            app_ui.combo_label.text = string.format("%d COMBO", combo)
+            app_ui.combo_label.color = {cr, cg, cb, combo_alpha}
+            
+            if mult > 1 then
+                app_ui.combo_mult_label.visible = true
+                app_ui.combo_mult_label.text = string.format("%dx", mult)
+                app_ui.combo_mult_label.color = {cr, cg, cb, 0.8}
+            else
+                app_ui.combo_mult_label.visible = false
+            end
+        else
+            app_ui.combo_label.visible = false
+            app_ui.combo_mult_label.visible = false
+        end
+        
+        local life_pct = clamp(display_life / LIFE_MAX, 0, 1)
+        local lr, lg, lb = 0.2, 0.8, 0.3
+        if life_pct < 0.3 then lr, lg, lb = 0.9, 0.2, 0.2
+        elseif life_pct < 0.6 then lr, lg, lb = 0.9, 0.7, 0.2 end
+        app_ui.life_fill.width = 200 * life_pct
+        app_ui.life_fill.bg_color = {lr, lg, lb, 0.9}
+        
+        local progress = 0
+        if total_notes_in_song > 0 then
+            progress = clamp((perfects + goods + misses) / total_notes_in_song, 0, 1)
+        end
+        app_ui.progress_fill.width = 780 * progress
+        app_ui.fps_label.text = string.format("FPS: %d", fps)
+    end
+
+    if current_state ~= STATE_PLAYING then return end
 
     -- -----------------------------------------------------------------------
     -- PLAYING
@@ -522,27 +647,10 @@ function lurek.draw()
         -- Pulsing background
         local pulse = math.sin(title_timer * 2) * 0.05 + 0.1
         lurek.render.setBackgroundColor(0.05 + pulse, 0.02, 0.08 + pulse * 0.5)
-        local cx = W / 2
-        -- Title text
-        local alpha = clamp(math.sin(title_timer * 1.5) * 0.3 + 0.7, 0.4, 1)
-        text_("RHYTHM GAME", cx - 120, 180, 48, 1, alpha, 0.3, alpha)
-        text_("FEEL THE BEAT", cx - 90, 250, 24, 0.7, 0.5, 0.9, alpha)
-        text_("Press ENTER to start", cx - 90, 400, 18, 0.6, 0.6, 0.6, 0.5 + math.sin(title_timer * 3) * 0.3)
         return
     end
 
     if current_state == STATE_SONG_SELECT then
-        text_("SELECT A SONG", W / 2 - 100, 80, 36, 0.9, 0.8, 1, 1)
-        for i, song in ipairs(SONGS) do
-            local yy = 180 + (i - 1) * 80
-            local sel = (i == selected_song)
-            local r, g, b = 0.5, 0.5, 0.5
-            if sel then r, g, b = 1, 0.85, 0.2 end
-            local arrow = sel and "> " or "  "
-            text_(arrow .. song.name, W / 2 - 120, yy, 28, r, g, b, 1)
-            text_(string.format("  %d notes  |  %dpx/s", #song.chart_fn(), song.speed), W / 2 - 100, yy + 32, 16, 0.5, 0.5, 0.6, 0.8)
-        end
-        text_("Up/Down to select, Enter to play", W / 2 - 140, H - 60, 16, 0.4, 0.4, 0.5, 0.7)
         return
     end
 
@@ -610,68 +718,4 @@ end
 -- Render UI: score, combo, life, grade
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    if current_state == STATE_RESULTS then
-        -- Results screen
-        local grade_colors = {
-            S = { 1, 0.85, 0.2 }, A = { 0.3, 0.9, 0.3 }, B = { 0.3, 0.6, 1 },
-            C = { 0.7, 0.5, 0.2 }, F = { 0.8, 0.2, 0.2 },
-        }
-        local gc = grade_colors[result_grade] or { 1, 1, 1 }
-        text_("RESULTS", W / 2 - 60, 60, 40, 0.9, 0.9, 1, 1)
-        text_(result_grade, W / 2 - 30, 120, 72, gc[1], gc[2], gc[3], 1)
-        text_(string.format("Score: %d", score), W / 2 - 80, 220, 24, 1, 1, 1, 0.9)
-        text_(string.format("Max Combo: %d", max_combo), W / 2 - 80, 260, 20, 0.8, 0.8, 0.8, 0.8)
-        text_(string.format("Perfect: %d  Good: %d  Miss: %d", perfects, goods, misses), W / 2 - 140, 300, 18, 0.7, 0.7, 0.7, 0.8)
-        local mult_text = string.format("Best Multiplier: %dx", (max_combo >= 50 and 4) or (max_combo >= 25 and 3) or (max_combo >= 10 and 2) or 1)
-        text_(mult_text, W / 2 - 90, 340, 18, 0.6, 0.6, 0.7, 0.7)
-        text_("Press ENTER to continue", W / 2 - 100, H - 60, 16, 0.5, 0.5, 0.6, 0.6 + math.sin(title_timer * 3) * 0.3)
-        return
-    end
-
-    if current_state ~= STATE_PLAYING then return end
-
-    -- Score
-    text_(string.format("SCORE: %d", math.floor(display_score)), 10, 10, 24, 1, 1, 1, 0.9)
-
-    -- Combo
-    if combo > 0 then
-        local mult = get_multiplier()
-        local combo_alpha = clamp(0.6 + combo * 0.01, 0.6, 1)
-        local cr, cg, cb = 1, 1, 1
-        if mult >= 4 then cr, cg, cb = 1, 0.85, 0.2
-        elseif mult >= 3 then cr, cg, cb = 0.9, 0.5, 1
-        elseif mult >= 2 then cr, cg, cb = 0.3, 0.9, 1 end
-        text_(string.format("%d COMBO", combo), W / 2 - 50, 20, 28, cr, cg, cb, combo_alpha)
-        if mult > 1 then
-            text_(string.format("%dx", mult), W / 2 + 50, 24, 20, cr, cg, cb, 0.8)
-        end
-    end
-
-    -- Life bar
-    local bar_w = 200
-    local bar_h = 14
-    local bar_x = W - bar_w - 20
-    local bar_y = 12
-    local life_pct = clamp(display_life / LIFE_MAX, 0, 1)
-    -- Background
-    rect("fill", bar_x, bar_y, bar_w, bar_h, 0.2, 0.2, 0.2, 0.7)
-    -- Fill
-    local lr, lg, lb = 0.2, 0.8, 0.3
-    if life_pct < 0.3 then lr, lg, lb = 0.9, 0.2, 0.2
-    elseif life_pct < 0.6 then lr, lg, lb = 0.9, 0.7, 0.2 end
-    rect("fill", bar_x, bar_y, bar_w * life_pct, bar_h, lr, lg, lb, 0.9)
-    -- Border
-    rect("line", bar_x, bar_y, bar_w, bar_h, 1, 1, 1, 0.3)
-    text_("LIFE", bar_x - 40, bar_y, 14, 0.8, 0.8, 0.8, 0.7)
-
-    -- Song progress
-    local progress = 0
-    if total_notes_in_song > 0 then
-        progress = clamp((perfects + goods + misses) / total_notes_in_song, 0, 1)
-    end
-    rect("fill", 10, H - 20, (W - 20) * progress, 6, 0.4, 0.4, 0.8, 0.5)
-
-    -- FPS
-    local fps = lurek.timer.getFPS()
-    text_(string.format("FPS: %d", fps), W - 80, H - 20, 12, 0.4, 0.4, 0.4, 0.5)
 end

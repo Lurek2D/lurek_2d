@@ -226,7 +226,7 @@ impl LuaUserData for LuaNavGrid {
         /// @param | name | string | String value for `name`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LNavGrid" || name == "NavGrid" || name == "Object")
+            Ok(name == "LNavGrid" || name == "LNavGrid" || name == "NavGrid" || name == "Object")
         });
     }
 }

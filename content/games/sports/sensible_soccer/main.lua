@@ -154,6 +154,18 @@ function lurek.init()
     lurek.input.bind("down",  { "s", "down" })
     lurek.input.bind("kick",  "space")
     reset_positions(1)
+    
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/sensible_soccer/ui.toml")
+    app_ui = {}
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.score_1_label = ui_root:findById("score_1_label")
+    app_ui.score_2_label = ui_root:findById("score_2_label")
+    app_ui.clock_label = ui_root:findById("clock_label")
+    
+    app_ui.kickoff_overlay = ui_root:findById("kickoff_overlay")
+    app_ui.goal_overlay = ui_root:findById("goal_overlay")
+    app_ui.ft_overlay = ui_root:findById("ft_overlay")
+    app_ui.ft_score_label = ui_root:findById("ft_score_label")
 end
 
 -- ── Update ────────────────────────────────────────────────────────────────
@@ -286,6 +298,21 @@ function lurek.update(dt)
     if state == STATE.KICKOFF and lurek.input.wasActionPressed("kick") then
         state = STATE.PLAY
     end
+    
+    -- UI Sync
+    app_ui.score_1_label.text = tostring(score[1])
+    app_ui.score_2_label.text = tostring(score[2])
+    
+    local remaining = math.max(0, MATCH_LEN - match_time)
+    app_ui.clock_label.text = string.format("%d'", math.floor(remaining))
+    
+    app_ui.kickoff_overlay.visible = (state == STATE.KICKOFF)
+    app_ui.goal_overlay.visible = (state == STATE.GOAL)
+    app_ui.ft_overlay.visible = (state == STATE.FT)
+    
+    if state == STATE.FT then
+        app_ui.ft_score_label.text = string.format("Final: %d - %d  (Esc to quit)", score[1], score[2])
+    end
 end
 
 function lurek.process(dt)
@@ -333,35 +360,9 @@ function lurek.draw()
     circ("fill", ball.x, ball.y, BALL_R)
     lurek.render.setColor(0, 0, 0, 0.5)
     circ("line", ball.x, ball.y, BALL_R)
+end
 
-    -- HUD
-    lurek.render.setColor(0, 0, 0, 0.55)
-    rect("fill", W/2 - 90, 4, 180, 30)
-    lurek.render.setColor(0.9, 0.15, 0.15)
-    text_(tostring(score[1]), W/2 - 65, 8, 0, 1.4)
-    lurek.render.setColor(1, 1, 1)
-    text_("–", W/2 - 9, 8, 0, 1.4)
-    lurek.render.setColor(0.15, 0.3, 0.9)
-    text_(tostring(score[2]), W/2 + 30, 8, 0, 1.4)
-    -- Clock
-    local remaining = math.max(0, MATCH_LEN - match_time)
-    lurek.render.setColor(1, 1, 1)
-    text_(string.format("%d'", math.floor(remaining)), W/2 - 10, H - 24)
-
-    if state == STATE.KICKOFF then
-        lurek.render.setColor(1, 1, 0, 0.9)
-        text_("KICK OFF — press Space", W/2 - 100, H/2 - 15)
-    elseif state == STATE.GOAL then
-        lurek.render.setColor(1, 0.9, 0, 0.95)
-        text_("G O A L !", W/2 - 45, H/2 - 14, 0, 1.8)
-    elseif state == STATE.FT then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", W/2 - 130, H/2 - 30, 260, 60)
-        lurek.render.setColor(1, 1, 0)
-        text_("FULL TIME", W/2 - 50, H/2 - 22, 0, 1.4)
-        lurek.render.setColor(1,1,1)
-        text_(string.format("Final: %d – %d  (Esc to quit)", score[1], score[2]), W/2 - 110, H/2 + 8)
-    end
+function lurek.draw_ui()
 end
 
 -- ── Keypressed ────────────────────────────────────────────────────────────

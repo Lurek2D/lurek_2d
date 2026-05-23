@@ -60,14 +60,11 @@ local function screen_to_virtual(ctx, x, y)
 end
 
 local function apply_window_defaults()
-    pcall(function()
-        lurek.window.windowConfig({
-            width = 1200,
-            height = 800,
-            scaleMode = "letterbox",
-        })
-    end)
-    pcall(function() lurek.window.maximize() end)
+    lurek.window.windowConfig({
+        width = 1200,
+        height = 800,
+        scaleMode = "none",
+    })
 end
 
 local function save_state(ctx)
@@ -203,7 +200,12 @@ function lurek.keypressed(key)
     local w = ctx.widgets or {}
     local n = tonumber(key)
     if n and n >= 1 and n <= #ctx.C.TABS then
-        if w.tabs then w.tabs:setActiveTab(n) end
+        if w.tabs then
+            w.tabs:setActiveTab(n)
+            ctx.ui_active_tab = n
+        else
+            ctx.ui_active_tab = n
+        end
         ctx.needs_refresh = true
         return true
     end

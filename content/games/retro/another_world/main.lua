@@ -108,6 +108,7 @@ local fade_dir = 0
 local fade_target_scene = nil
 local intro_timer = 0
 local intro_line = 1
+local app_ui = {}
 
 local aliens = {}
 local alien_projectiles = {}
@@ -668,6 +669,40 @@ function lurek.init()
     build_scenes()
     load_scene(1)
     current_state = STATE.PLAYING
+    
+    lurek.ui.loadLayoutFile("content/games/retro/another_world/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.intro_screen = ui_root:findById("intro_screen")
+    app_ui.intro_lines = {}
+    for i=1, 10 do
+        app_ui.intro_lines[i] = ui_root:findById("intro_line_" .. i)
+    end
+    app_ui.press_skip = ui_root:findById("press_skip")
+    
+    app_ui.dead_screen = ui_root:findById("dead_screen")
+    app_ui.dead_lives = ui_root:findById("dead_lives")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.caption = ui_root:findById("caption")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.scene_indicator = ui_root:findById("scene_indicator")
+    app_ui.shields_remaining = ui_root:findById("shields_remaining")
+    app_ui.charge_bar_bg = ui_root:findById("charge_bar_bg")
+    app_ui.charge_bar_fill = ui_root:findById("charge_bar_fill")
+    app_ui.lives = {
+        ui_root:findById("life_1"),
+        ui_root:findById("life_2"),
+        ui_root:findById("life_3"),
+    }
+    
+    app_ui.fade_panel = ui_root:findById("fade_panel")
 end
 
 -- ---------------------------------------------------------------------------
@@ -732,6 +767,72 @@ function lurek.process(dt)
     update_shields(dt)
     update_aliens(dt)
     update_alien_projectiles(dt)
+    
+    -- Sync UI
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    app_ui.intro_screen.visible = (current_state == STATE.INTRO)
+    app_ui.dead_screen.visible = (current_state == STATE.DEAD)
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    app_ui.hud_screen.visible = (current_state == STATE.PLAYING)
+    
+    if current_state == STATE.TITLE then
+        local blink_a = 0.6 + 0.3 * math.sin(lurek.timer.getTime() * 3)
+        app_ui.press_start.color = {0.6, 0.55, 0.75, blink_a}
+    end
+    
+    if current_state == STATE.INTRO then
+        for idx, line in ipairs(intro_lines) do
+            local line_time = (idx - 1) * 1.2
+            local alpha = clamp((intro_timer - line_time) / 0.8, 0, 1)
+            app_ui.intro_lines[idx].text = line
+            app_ui.intro_lines[idx].color = {0.7, 0.65, 0.85, alpha}
+        end
+        local skip_a = 0.4 + 0.3 * math.sin(lurek.timer.getTime() * 2)
+        app_ui.press_skip.color = {0.4, 0.35, 0.5, skip_a}
+    end
+    
+    if current_state == STATE.DEAD then
+        app_ui.dead_lives.text = string.format("Lives remaining: %d", lives)
+    end
+    
+    if current_state == STATE.GAME_OVER then
+        local restart_a = 0.6 + 0.3 * math.sin(lurek.timer.getTime() * 3)
+        app_ui.press_restart.color = {0.7, 0.5, 0.5, restart_a}
+    end
+    
+    if current_state == STATE.PLAYING then
+        local s = scenes[current_scene]
+        app_ui.caption.text = s and s.caption or ""
+        app_ui.fps_label.text = string.format("FPS: %d", lurek.timer.getFPS())
+        app_ui.scene_indicator.text = string.format("Scene %d / %d", current_scene, #scenes)
+        app_ui.shields_remaining.text = string.format("Shields: %d / %d", MAX_SHIELDS - #shields, MAX_SHIELDS)
+        
+        for i=1, 3 do
+            app_ui.lives[i].visible = (i <= lives)
+        end
+        
+        if charging and charge_timer > 0.1 then
+            app_ui.charge_bar_bg.visible = true
+            local pct = clamp(charge_timer / CHARGE_SUPER, 0, 1)
+            app_ui.charge_bar_fill.width = 60 * pct
+            if pct < CHARGE_SHIELD / CHARGE_SUPER then
+                app_ui.charge_bar_fill.bg_color = {1.0, 0.9, 0.3, 0.9}
+            elseif pct < 1 then
+                app_ui.charge_bar_fill.bg_color = {0.3, 0.6, 1.0, 0.9}
+            else
+                app_ui.charge_bar_fill.bg_color = {1.0, 0.3, 0.1, 0.9}
+            end
+        else
+            app_ui.charge_bar_bg.visible = false
+        end
+    end
+    
+    if fade_alpha > 0 then
+        app_ui.fade_panel.visible = true
+        app_ui.fade_panel.bg_color = {0, 0, 0, fade_alpha}
+    else
+        app_ui.fade_panel.visible = false
+    end
 end
 
 -- ---------------------------------------------------------------------------
@@ -865,117 +966,4 @@ end
 -- Render UI — HUD overlay
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    -- ── TITLE screen ───────────────────────────────────────────
-    if current_state == STATE.TITLE then
-        lurek.render.setColor(0.0, 0.0, 0.0, 0.5)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(0.85, 0.75, 0.95, 1)
-        text_("A N O T H E R   W O R L D", SCREEN_W / 2 - 140, 180)
-
-        lurek.render.setColor(0.5, 0.45, 0.65, 0.8)
-        text_("A Cinematic Platformer", SCREEN_W / 2 - 90, 220)
-
-        lurek.render.setColor(0.6, 0.55, 0.75, 0.6 + 0.3 * math.sin(lurek.timer.getTime() * 3))
-        text_("Press ENTER to begin", SCREEN_W / 2 - 82, 340)
-
-        lurek.render.setColor(0.4, 0.35, 0.5, 0.5)
-        text_("F = shoot | hold F = shield | hold longer = super-shot", SCREEN_W / 2 - 210, 420)
-        text_("A/D = move  |  Space = jump  |  Escape = quit", SCREEN_W / 2 - 180, 445)
-        return
-    end
-
-    -- ── INTRO sequence ─────────────────────────────────────────
-    if current_state == STATE.INTRO then
-        lurek.render.setColor(0.0, 0.0, 0.0, 1)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        for idx, line in ipairs(intro_lines) do
-            local line_time = (idx - 1) * 1.2
-            local alpha = clamp((intro_timer - line_time) / 0.8, 0, 1)
-            if alpha > 0 then
-                lurek.render.setColor(0.7, 0.65, 0.85, alpha)
-                text_(line, 180, 140 + idx * 30)
-            end
-        end
-
-        lurek.render.setColor(0.4, 0.35, 0.5, 0.4 + 0.3 * math.sin(lurek.timer.getTime() * 2))
-        text_("Press ENTER to skip", SCREEN_W / 2 - 72, SCREEN_H - 60)
-        return
-    end
-
-    -- ── DEAD screen ────────────────────────────────────────────
-    if current_state == STATE.DEAD then
-        lurek.render.setColor(0.6, 0.1, 0.1, 0.4)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(1, 0.3, 0.3, 1)
-        text_("YOU DIED", SCREEN_W / 2 - 36, SCREEN_H / 2 - 20)
-
-        lurek.render.setColor(0.8, 0.6, 0.6, 0.7)
-        local remaining = string.format("Lives remaining: %d", lives)
-        text_(remaining, SCREEN_W / 2 - 60, SCREEN_H / 2 + 10)
-        return
-    end
-
-    -- ── GAME OVER ──────────────────────────────────────────────
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(0.0, 0.0, 0.0, 0.7)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(0.9, 0.2, 0.2, 1)
-        text_("G A M E   O V E R", SCREEN_W / 2 - 80, SCREEN_H / 2 - 30)
-
-        lurek.render.setColor(0.7, 0.5, 0.5, 0.6 + 0.3 * math.sin(lurek.timer.getTime() * 3))
-        text_("Press ENTER to restart", SCREEN_W / 2 - 85, SCREEN_H / 2 + 20)
-        return
-    end
-
-    -- ── HUD (PLAYING) ──────────────────────────────────────────
-    -- Scene caption
-    local s = scenes[current_scene]
-    if s and s.caption then
-        lurek.render.setColor(0.7, 0.65, 0.85, 0.6)
-        text_(s.caption, 20, 12)
-    end
-
-    -- Lives
-    lurek.render.setColor(0.9, 0.3, 0.3, 0.9)
-    for i = 1, lives do
-        circ("fill", SCREEN_W - 30 * i, 20, 8)
-    end
-
-    -- Scene indicator
-    lurek.render.setColor(0.5, 0.5, 0.7, 0.6)
-    text_(string.format("Scene %d / %d", current_scene, #scenes), SCREEN_W - 100, SCREEN_H - 25)
-
-    -- Shields remaining
-    lurek.render.setColor(0.3, 0.6, 1.0, 0.7)
-    text_(string.format("Shields: %d / %d", MAX_SHIELDS - #shields, MAX_SHIELDS), 20, SCREEN_H - 25)
-
-    -- Charge bar
-    if charging and charge_timer > 0.1 then
-        local bar_w = 60
-        local pct = clamp(charge_timer / CHARGE_SUPER, 0, 1)
-        lurek.render.setColor(0.2, 0.2, 0.3, 0.7)
-        rect("fill", 20, SCREEN_H - 50, bar_w, 8)
-        if pct < CHARGE_SHIELD / CHARGE_SUPER then
-            lurek.render.setColor(1.0, 0.9, 0.3, 0.9)
-        elseif pct < 1 then
-            lurek.render.setColor(0.3, 0.6, 1.0, 0.9)
-        else
-            lurek.render.setColor(1.0, 0.3, 0.1, 0.9)
-        end
-        rect("fill", 20, SCREEN_H - 50, bar_w * pct, 8)
-    end
-
-    -- FPS
-    lurek.render.setColor(0.4, 0.4, 0.5, 0.4)
-    text_(string.format("FPS: %d", lurek.timer.getFPS()), 10, 36)
-
-    -- ── Fade overlay ───────────────────────────────────────────
-    if fade_alpha > 0 then
-        lurek.render.setColor(0, 0, 0, fade_alpha)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-    end
 end

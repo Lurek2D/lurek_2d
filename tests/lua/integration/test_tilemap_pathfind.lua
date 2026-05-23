@@ -1,4 +1,5 @@
 -- Integration: tilemap tile data converted to a pathfinding navgrid
+-- @describe integration: tilemap feeds into pathfinding grid
 describe("integration: tilemap feeds into pathfinding grid", function()
     -- @integration LNavGrid:setBlocked
     -- @integration LTileMap:addLayer

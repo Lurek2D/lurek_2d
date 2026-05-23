@@ -1,4 +1,5 @@
 -- Integration: save manager tracking entity state and TOML config blueprints
+-- @describe integration: save entity world state
 describe("integration: save entity world state", function()
 
     -- @integration LSaveManager:isDirty
@@ -25,6 +26,7 @@ describe("integration: save entity world state", function()
 end)
 
 
+-- @describe integration: TOML config for entities
 describe("integration: TOML config for entities", function()
     -- @integration LUniverse:get
     -- @integration LUniverse:getEntityCount

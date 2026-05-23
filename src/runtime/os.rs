@@ -3,7 +3,7 @@
 use crate::log_msg;
 use crate::runtime::log_messages::{LA03_OPEN_URL_REJECTED};
 
-/// Returns the number of logical processors available on the host system.
+/// Returns the current operating system name.
 pub fn get_os_name() -> &'static str {
     if cfg!(target_os = "windows") {
         "Windows"
@@ -20,6 +20,7 @@ pub fn get_os_name() -> &'static str {
     }
 }
 
+/// Returns the number of logical processors available on the host system.
 pub fn get_processor_count() -> usize {
     std::thread::available_parallelism()
         .map(|n| n.get())

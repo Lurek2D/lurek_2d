@@ -1,4 +1,5 @@
 -- Integration: render draw commands combined with camera transform state
+-- @describe graphics + camera integration
 describe("graphics + camera integration", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition

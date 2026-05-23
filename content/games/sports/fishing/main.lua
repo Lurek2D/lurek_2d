@@ -243,6 +243,56 @@ end
 
 function lurek.init()
   math.randomseed(os.time())
+  
+  local ui_root = lurek.ui.loadLayoutFile("content/games/sports/fishing/ui.toml")
+  app_ui = {}
+  app_ui.title_screen = ui_root:findById("title_screen")
+  app_ui.game_over_screen = ui_root:findById("game_over_screen")
+  app_ui.bucket_screen = ui_root:findById("bucket_screen")
+  app_ui.hud = ui_root:findById("hud")
+  
+  app_ui.game_over_title = ui_root:findById("game_over_title")
+  app_ui.game_over_reason = ui_root:findById("game_over_reason")
+  app_ui.game_over_stats = ui_root:findById("game_over_stats")
+  app_ui.game_over_bucket = ui_root:findById("game_over_bucket")
+  
+  app_ui.bucket_stats = ui_root:findById("bucket_stats")
+  app_ui.bucket_list = ui_root:findById("bucket_list")
+  
+  app_ui.fps_label = ui_root:findById("fps_label")
+  app_ui.bait_label = ui_root:findById("bait_label")
+  app_ui.bucket_label = ui_root:findById("bucket_label")
+  app_ui.points_label = ui_root:findById("points_label")
+  app_ui.day_night_label = ui_root:findById("day_night_label")
+  app_ui.weather_label = ui_root:findById("weather_label")
+  app_ui.message_label = ui_root:findById("message_label")
+  
+  app_ui.power_panel = ui_root:findById("power_panel")
+  app_ui.power_fill = ui_root:findById("power_fill")
+  
+  app_ui.tension_panel = ui_root:findById("tension_panel")
+  app_ui.tension_fill = ui_root:findById("tension_fill")
+  app_ui.fish_name_label = ui_root:findById("fish_name_label")
+  app_ui.strain_warning = ui_root:findById("strain_warning")
+  
+  app_ui.press_start = ui_root:findById("press_start")
+  app_ui.press_title = ui_root:findById("press_title")
+  app_ui.press_resume = ui_root:findById("press_resume")
+  
+  local function handle_action_click()
+    if state == STATES.TITLE then
+      start_game()
+    elseif state == STATES.GAMEOVER then
+      state = STATES.TITLE
+    elseif state == STATES.BUCKET then
+      state = STATES.FISHING
+      reset_cast()
+    end
+  end
+  
+  if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
+  if app_ui.press_title then app_ui.press_title:setOnClick(handle_action_click) end
+  if app_ui.press_resume then app_ui.press_resume:setOnClick(handle_action_click) end
 end
 
 local function _ready_setup()
@@ -309,28 +359,102 @@ function lurek.process(delta)
 
   -- TITLE
   if state == STATES.TITLE then
-    if lurek.input.isActionDown("cast_reel") then
+    if lurek.input.wasActionPressed("cast_reel") then
       start_game()
     end
-    return
   end
 
   -- GAME OVER
   if state == STATES.GAMEOVER then
-    if lurek.input.isActionDown("cast_reel") then
+    if lurek.input.wasActionPressed("cast_reel") then
       state = STATES.TITLE
     end
-    return
   end
 
   -- BUCKET VIEW
   if state == STATES.BUCKET then
-    if lurek.input.isActionDown("cast_reel") then
+    if lurek.input.wasActionPressed("cast_reel") then
       state = STATES.FISHING
       reset_cast()
     end
-    return
   end
+
+  -- UI Sync
+  app_ui.title_screen.visible = (state == STATES.TITLE)
+  app_ui.game_over_screen.visible = (state == STATES.GAMEOVER)
+  app_ui.bucket_screen.visible = (state == STATES.BUCKET)
+  app_ui.hud.visible = (state == STATES.FISHING or state == STATES.CATCHING)
+  
+  if state == STATES.GAMEOVER then
+    if game_won then
+      app_ui.game_over_title.text = "YOU WIN!"
+      app_ui.game_over_title.color = {1.0, 0.9, 0.2, 1.0}
+      app_ui.game_over_reason.visible = true
+      app_ui.game_over_reason.text = win_reason
+    else
+      app_ui.game_over_title.text = "GAME OVER"
+      app_ui.game_over_title.color = {1.0, 0.3, 0.3, 1.0}
+      app_ui.game_over_reason.visible = false
+    end
+    app_ui.game_over_stats.text = "Fish caught: " .. #bucket .. "\nTotal points: " .. total_points
+    
+    local blist = ""
+    for i, f in ipairs(bucket) do
+      if i <= 8 then
+        blist = blist .. f.name .. " (" .. f.points .. "pts)\n"
+      end
+    end
+    if #bucket > 8 then
+      blist = blist .. "...and " .. (#bucket - 8) .. " more\n"
+    end
+    app_ui.game_over_bucket.text = blist
+  end
+  
+  if state == STATES.BUCKET then
+    app_ui.bucket_stats.text = "Fish: " .. #bucket .. "/" .. C.WIN_COUNT .. "  Points: " .. total_points
+    local blist = ""
+    for i, f in ipairs(bucket) do
+      blist = blist .. i .. ". " .. f.name .. "  +" .. f.points .. "\n"
+      if i >= 12 then
+        blist = blist .. "..." .. (#bucket - i) .. " more\n"
+        break
+      end
+    end
+    app_ui.bucket_list.text = blist
+  end
+  
+  if state == STATES.FISHING or state == STATES.CATCHING then
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    app_ui.bait_label.text = "Bait: " .. BAITS[bait_index].name
+    app_ui.bucket_label.text = "Bucket: " .. #bucket .. "/" .. C.WIN_COUNT
+    app_ui.points_label.text = "Points: " .. total_points
+    app_ui.day_night_label.text = is_night and "Night" or "Day"
+    app_ui.weather_label.visible = raining
+    
+    app_ui.message_label.text = message
+    
+    app_ui.power_panel.visible = charging
+    if charging then
+      local pr = power / 100
+      app_ui.power_fill.width = pr * 196
+      app_ui.power_fill.bg_color = {pr, 1.0 - pr * 0.5, 0.1, 0.9}
+    end
+    
+    app_ui.tension_panel.visible = (state == STATES.CATCHING)
+    if state == STATES.CATCHING then
+      app_ui.tension_fill.width = tension * 196
+      app_ui.tension_fill.bg_color = {tension, 1.0 - tension, 0.1, 0.9}
+      
+      if hooked_fish then
+        app_ui.fish_name_label.text = hooked_fish.name
+        app_ui.fish_name_label.color = {hooked_fish.color[1], hooked_fish.color[2], hooked_fish.color[3], 1.0}
+      end
+      
+      app_ui.strain_warning.visible = (tension > C.TENSION_SNAP and math.sin(day_timer * 10) > 0)
+    end
+  end
+  
+  if state ~= STATES.FISHING and state ~= STATES.CATCHING then return end
 
   -- Day/night cycle
   day_timer = day_timer + dt
@@ -590,115 +714,4 @@ function lurek.draw()
 end
 
 function lurek.draw_ui()
-  local fps = lurek.timer.getFPS()
-  text_("FPS: " .. fps, C.SCREEN_W - 80, 10, 1, 1, 1, 0.5)
-
-  -- TITLE
-  if state == STATES.TITLE then
-    rect(150, 150, 500, 250, 0.0, 0.1, 0.3, 0.85)
-    text_("FISHING", 300, 200, 1.0, 1.0, 1.0, 1.0)
-    text_("PATIENCE REWARDED", 275, 250, 0.7, 0.85, 1.0, 0.9)
-    text_("Press SPACE to start", 290, 320, 0.8, 0.8, 0.8, 0.7)
-    return
-  end
-
-  -- GAME OVER
-  if state == STATES.GAMEOVER then
-    rect(100, 120, 600, 350, 0.0, 0.05, 0.15, 0.9)
-    if game_won then
-      text_("YOU WIN!", 320, 150, 1.0, 0.9, 0.2, 1.0)
-      text_(win_reason, 200, 200, 0.9, 0.9, 0.9, 1.0)
-    else
-      text_("GAME OVER", 310, 150, 1.0, 0.3, 0.3, 1.0)
-    end
-    text_("Fish caught: " .. #bucket, 300, 260, 0.8, 0.8, 0.8, 1.0)
-    text_("Total points: " .. total_points, 290, 290, 0.8, 0.8, 0.8, 1.0)
-    -- Show bucket summary
-    local y_off = 320
-    for i, f in ipairs(bucket) do
-      if i <= 8 then
-        text_(f.name .. " (" .. f.points .. "pts)", 280, y_off, f.color[1], f.color[2], f.color[3], 0.9)
-        y_off = y_off + 20
-      end
-    end
-    if #bucket > 8 then
-      text_("...and " .. (#bucket - 8) .. " more", 300, y_off, 0.6, 0.6, 0.6, 0.7)
-    end
-    text_("Press SPACE to return", 285, y_off + 30, 0.6, 0.6, 0.6, 0.6)
-    return
-  end
-
-  -- BUCKET VIEW
-  if state == STATES.BUCKET then
-    rect(150, 80, 500, 440, 0.1, 0.08, 0.2, 0.9)
-    text_("BUCKET", 340, 100, 1.0, 1.0, 1.0, 1.0)
-    text_("Fish: " .. #bucket .. "/" .. C.WIN_COUNT .. "  Points: " .. total_points, 250, 135, 0.8, 0.8, 0.8, 1.0)
-    local y_off = 170
-    for i, f in ipairs(bucket) do
-      text_(i .. ". " .. f.name .. "  +" .. f.points, 200, y_off, f.color[1], f.color[2], f.color[3], 0.9)
-      y_off = y_off + 22
-      if y_off > 490 then
-        text_("..." .. (#bucket - i) .. " more", 200, y_off, 0.5, 0.5, 0.5, 0.7)
-        break
-      end
-    end
-    text_("Press SPACE to continue", 275, 500, 0.6, 0.6, 0.6, 0.6)
-    return
-  end
-
-  -- HUD during FISHING / CATCHING
-  -- Bait indicator
-  text_("Bait: " .. BAITS[bait_index].name, 10, 10, 1, 1, 1, 0.8)
-  -- Bucket count
-  text_("Bucket: " .. #bucket .. "/" .. C.WIN_COUNT, 10, 30, 1, 1, 1, 0.8)
-  -- Points
-  text_("Points: " .. total_points, 10, 50, 1, 1, 0.5, 0.8)
-  -- Day/night
-  local dn = is_night and "Night" or "Day"
-  text_(dn, C.SCREEN_W - 60, 30, 0.8, 0.8, 0.4, 0.7)
-  -- Weather
-  if raining then
-    text_("Rain", C.SCREEN_W - 60, 50, 0.5, 0.6, 0.9, 0.7)
-  end
-
-  -- Power bar (while charging)
-  if charging then
-    rect(C.SCREEN_W / 2 - 100, C.SCREEN_H - 50, 200, 20, 0.2, 0.2, 0.2, 0.7)
-    local pw = (power / 100) * 196
-    local pr = power / 100
-    rect(C.SCREEN_W / 2 - 98, C.SCREEN_H - 48, pw, 16, pr, 1.0 - pr * 0.5, 0.1, 0.9)
-    text_("POWER", C.SCREEN_W / 2 - 22, C.SCREEN_H - 48, 1, 1, 1, 0.9)
-  end
-
-  -- Tension bar (while catching)
-  if state == STATES.CATCHING then
-    local bar_x = C.SCREEN_W / 2 - 100
-    local bar_y = C.SCREEN_H - 60
-    rect(bar_x, bar_y, 200, 24, 0.15, 0.15, 0.15, 0.8)
-    local tw = tension * 196
-    local tr = tension
-    local tg = 1.0 - tension
-    rect(bar_x + 2, bar_y + 2, tw, 20, tr, tg, 0.1, 0.9)
-    -- Snap danger zone
-    rect(bar_x + 2 + C.TENSION_SNAP * 196, bar_y + 2, (1.0 - C.TENSION_SNAP) * 196, 20, 1.0, 0.0, 0.0, 0.2)
-    text_("TENSION", bar_x + 70, bar_y + 3, 1, 1, 1, 0.9)
-
-    -- Fish name
-    if hooked_fish then
-      text_(hooked_fish.name, bar_x + 60, bar_y - 20, hooked_fish.color[1], hooked_fish.color[2], hooked_fish.color[3], 1.0)
-    end
-
-    -- Warning
-    if tension > C.TENSION_SNAP then
-      local blink = math.sin(day_timer * 10) > 0
-      if blink then
-        text_("!! LINE STRAIN !!", C.SCREEN_W / 2 - 60, bar_y - 40, 1.0, 0.2, 0.1, 1.0)
-      end
-    end
-  end
-
-  -- Message
-  if message ~= "" then
-    text_(message, C.SCREEN_W / 2 - #message * 3.5, C.SCREEN_H / 2 - 80, 1.0, 1.0, 0.6, 0.9)
-  end
 end

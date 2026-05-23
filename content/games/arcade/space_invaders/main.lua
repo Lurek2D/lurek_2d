@@ -128,6 +128,7 @@ local wave = 1
 local cam = nil
 local particles = {}
 local score_pops = {}        -- { x, y, text, alpha, dy }
+local app_ui = {}
 
 -- ---------------------------------------------------------------------------
 -- Helpers
@@ -313,6 +314,33 @@ function lurek.init()
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
 
     math.randomseed(os.time())
+    
+    lurek.ui.loadLayoutFile("content/games/arcade/space_invaders/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.hi_score_label = ui_root:findById("hi_score_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.wave_label = ui_root:findById("wave_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    local function handle_start_click()
+        if current_state == STATE.TITLE then
+            reset_game()
+            current_state = STATE.PLAYING
+        elseif current_state == STATE.GAME_OVER then
+            reset_game()
+            current_state = STATE.PLAYING
+        end
+    end
+
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_start_click) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_start_click) end
+    
     reset_game()
 end
 
@@ -339,7 +367,6 @@ function lurek.process(dt)
             reset_game()
             current_state = STATE.PLAYING
         end
-        return
     end
 
     -- -----------------------------------------------------------------------
@@ -350,8 +377,20 @@ function lurek.process(dt)
             reset_game()
             current_state = STATE.PLAYING
         end
-        return
     end
+
+    -- UI sync
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    app_ui.hud.visible = (current_state == STATE.PLAYING or current_state == STATE.GAME_OVER)
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    
+    app_ui.score_label.text = "SCORE: " .. tostring(score)
+    app_ui.hi_score_label.text = "HI: " .. tostring(high_score)
+    app_ui.lives_label.text = "LIVES: " .. tostring(lives)
+    app_ui.wave_label.text = "WAVE " .. tostring(wave)
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    
+    if current_state ~= STATE.PLAYING then return end
 
     -- -----------------------------------------------------------------------
     -- PLAYING
@@ -605,19 +644,8 @@ function lurek.draw()
     cam:apply()
 
     if current_state == STATE.TITLE then
-        -- Title screen
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("SPACE INVADERS", SCREEN_W / 2 - 70, 120)
-
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("PRESS ENTER TO START", SCREEN_W / 2 - 90, 200)
-
         -- Point value table
         local ty = 280
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("--- SCORE TABLE ---", SCREEN_W / 2 - 80, ty)
-        ty = ty + 30
-
         lurek.render.setColor(1, 0, 0, 1)
         rect("fill", SCREEN_W / 2 - 80, ty, UFO_W, UFO_H)
         lurek.render.setColor(1, 1, 1, 1)
@@ -697,14 +725,6 @@ function lurek.draw()
     -- Score pops
     draw_score_pops()
 
-    -- Game-over overlay (in world space)
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(1, 0.2, 0.2, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 50, SCREEN_H / 2 - 30)
-        lurek.render.setColor(0.8, 0.8, 0.8, 1)
-        text_("PRESS R OR ENTER TO RESTART", SCREEN_W / 2 - 120, SCREEN_H / 2 + 10)
-    end
-
     cam:reset()
 end
 
@@ -712,25 +732,6 @@ end
 -- Render UI (HUD overlay — screen space)
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. tostring(score), 10, 8)
-
-    -- High score
-    text_("HI: " .. tostring(high_score), SCREEN_W / 2 - 40, 8)
-
-    -- Lives
-    text_("LIVES: " .. tostring(lives), SCREEN_W - 100, 8)
-
-    -- Wave
-    lurek.render.setColor(0.6, 0.6, 0.6, 1)
-    text_("WAVE " .. tostring(wave), SCREEN_W - 100, 28)
-
-    -- FPS counter
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    text_("FPS: " .. tostring(math.floor(fps)), 10, SCREEN_H - 20)
-
     -- Ground line
     lurek.render.setColor(0.2, 0.8, 0.2, 1)
     rect("fill", 0, SCREEN_H - 24, SCREEN_W, 2)

@@ -1,4 +1,5 @@
 -- Universal render helpers (handles all legacy and current call signatures)
+local app_ui = {}
 local _gfx = lurek.render
 local function _sc(c)
     if type(c) == "table" then
@@ -407,11 +408,27 @@ end
 
 function lurek.init()
     lurek.window.setTitle("Bullet Hell — Lurek2D")
-    lurek.render.setBackgroundColor(0.05, 0.02, 0.1)
+    lurek.render.setBackgroundColor(0.05, 0.05, 0.1)
 
-    -- Action-based input
-    lurek.input.bind("up",      { "w", "up", "gamepad:0:10" })
-    lurek.input.bind("down",    { "s", "down", "gamepad:0:11" })
+    lurek.ui.loadLayoutFile("content/games/action/bullet_hell/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.app_ui.bombs_label = ui_root:findById("app_ui.bombs_label")
+    app_ui.app_ui.fps_label = ui_root:findById("app_ui.fps_label")
+    app_ui.game_over_panel = ui_root:findById("game_over_panel")
+    app_ui.app_ui.go_score = ui_root:findById("app_ui.go_score")
+    app_ui.app_ui.go_wave = ui_root:findById("app_ui.go_wave")
+    app_ui.app_ui.graze_label = ui_root:findById("app_ui.graze_label")
+    app_ui.app_ui.hi_label = ui_root:findById("app_ui.hi_label")
+    app_ui.app_ui.hud_panel = ui_root:findById("app_ui.hud_panel")
+    app_ui.app_ui.lives_label = ui_root:findById("app_ui.lives_label")
+    app_ui.app_ui.mult_label = ui_root:findById("app_ui.mult_label")
+    app_ui.app_ui.score_label = ui_root:findById("app_ui.score_label")
+    app_ui.app_ui.title_panel = ui_root:findById("app_ui.title_panel")
+    app_ui.app_ui.wave_label = ui_root:findById("app_ui.wave_label")
+
+
+    lurek.input.bind("up",    { "w", "up" })
+    lurek.input.bind("down",  { "s", "down", "gamepad:0:11" })
     lurek.input.bind("left",    { "a", "left", "gamepad:0:12" })
     lurek.input.bind("right",   { "d", "right", "gamepad:0:13" })
     lurek.input.bind("fire",    { "space", "gamepad:0:2" })
@@ -671,37 +688,66 @@ function lurek.process(dt)
             start_wave()
         end
     end
+
+    -- -----------------------------------------------------------------------
+    -- UI Update
+    -- -----------------------------------------------------------------------
+    
+    
+    
+
+    app_ui.title_panel.visible = (current_state == STATE.TITLE)
+    app_ui.hud_panel.visible = (current_state == STATE.PLAYING)
+    app_ui.game_over_panel.visible = (current_state == STATE.GAME_OVER)
+
+    if current_state == STATE.PLAYING then
+        
+        
+        
+        
+        
+        
+        
+        
+
+        app_ui.score_label.text = "SCORE: " .. score
+        app_ui.hi_label.text = "HI: " .. high_score
+        app_ui.wave_label.text = "WAVE " .. wave
+        app_ui.lives_label.text = string.rep("███ ", lives)
+        app_ui.bombs_label.text = string.rep("● ", bombs)
+
+        local mult_text = string.format("x%.1f", multiplier)
+        app_ui.mult_label.text = mult_text
+        if mult_pop_timer > 0 then
+            app_ui.mult_label.color = {1.0, 1.0, 0.0, clamp(mult_pop_timer / 0.3, 0, 1)}
+            app_ui.mult_label.x = 8
+            app_ui.mult_label.y = 66
+        else
+            app_ui.mult_label.color = {1.0, 1.0, 0.3, 1.0}
+            app_ui.mult_label.x = 10
+            app_ui.mult_label.y = 68
+        end
+
+        app_ui.graze_label.text = "Graze: " .. graze_count
+        app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+    elseif current_state == STATE.GAME_OVER then
+        
+        
+        app_ui.go_score.text = "Score: " .. score
+        app_ui.go_wave.text = "Wave: " .. wave
+    end
 end
 
 -- ---------------------------------------------------------------------------
 -- Render (game world)
 -- ---------------------------------------------------------------------------
 function lurek.draw()
-    cam:apply()
-
-    -- -----------------------------------------------------------------------
-    -- TITLE
-    -- -----------------------------------------------------------------------
     if current_state == STATE.TITLE then
-        lurek.render.setColor(1, 0.2, 0.3, 1)
-        text_("BULLET HELL", SCREEN_W / 2 - 55, 120)
-
-        lurek.render.setColor(0.8, 0.8, 0.2, 1)
-        text_("WARNING: INTENSE BULLET PATTERNS", SCREEN_W / 2 - 140, 180)
-
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("WASD — Move    Space — Fire    Shift — Focus", SCREEN_W / 2 - 180, 260)
-        text_("X — Bomb       ESC — Quit", SCREEN_W / 2 - 110, 290)
-
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("PRESS ENTER TO START", SCREEN_W / 2 - 90, 380)
-
-        lurek.render.setColor(0.5, 0.5, 0.5, 1)
-        text_("Graze bullets for bonus points!", SCREEN_W / 2 - 120, 440)
-
         draw_particles()
         return
     end
+
+    cam:apply()
 
     -- -----------------------------------------------------------------------
     -- Bomb flash overlay
@@ -797,68 +843,10 @@ function lurek.draw()
     -- -----------------------------------------------------------------------
     draw_particles()
     draw_score_pops()
-
-    -- -----------------------------------------------------------------------
-    -- GAME OVER overlay
-    -- -----------------------------------------------------------------------
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-        lurek.render.setColor(1, 0.2, 0.2, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 45, SCREEN_H / 2 - 40)
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("Score: " .. score, SCREEN_W / 2 - 40, SCREEN_H / 2)
-        text_("Wave: " .. wave, SCREEN_W / 2 - 30, SCREEN_H / 2 + 20)
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("PRESS ENTER TO RESTART", SCREEN_W / 2 - 100, SCREEN_H / 2 + 60)
-    end
 end
 
 -- ---------------------------------------------------------------------------
 -- Render UI (HUD — not affected by camera)
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    if current_state ~= STATE.PLAYING then return end
-
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. score, 10, 10)
-
-    -- High score
-    lurek.render.setColor(0.7, 0.7, 0.7, 1)
-    text_("HI: " .. high_score, SCREEN_W / 2 - 30, 10)
-
-    -- Wave
-    lurek.render.setColor(0.6, 0.8, 1, 1)
-    text_("WAVE " .. wave, SCREEN_W - 90, 10)
-
-    -- Lives
-    lurek.render.setColor(0.3, 0.5, 1, 1)
-    for l = 1, lives do
-        rect("fill", 10 + (l - 1) * 18, 30, 12, 12)
-    end
-
-    -- Bombs
-    lurek.render.setColor(1, 0.8, 0, 1)
-    for b = 1, bombs do
-        circ("fill", 10 + (b - 1) * 18 + 6, 55, 5)
-    end
-
-    -- Multiplier
-    lurek.render.setColor(1, 1, 0.3, 1)
-    local mult_text = string.format("x%.1f", multiplier)
-    text_(mult_text, 10, 68)
-    if mult_pop_timer > 0 then
-        lurek.render.setColor(1, 1, 0, clamp(mult_pop_timer / 0.3, 0, 1))
-        text_(mult_text, 8, 66)
-    end
-
-    -- Graze count
-    lurek.render.setColor(0.8, 0.8, 0.8, 0.6)
-    text_("Graze: " .. graze_count, 10, 86)
-
-    -- FPS
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.5, 0.5, 0.5, 0.7)
-    text_("FPS: " .. fps, SCREEN_W - 80, SCREEN_H - 20)
 end

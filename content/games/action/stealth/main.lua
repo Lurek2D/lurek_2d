@@ -399,10 +399,26 @@ function lurek.init()
     })
 
     load_level(1)
-end
-
-local function _ready_setup()
-    game_state = STATE.TITLE
+    
+    lurek.ui.loadLayoutFile("content/games/action/stealth/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.keys_text = ui_root:findById("keys_text")
+    app_ui.level_text = ui_root:findById("level_text")
+    app_ui.suspicion_bg = ui_root:findById("suspicion_bg")
+    app_ui.suspicion_fill = ui_root:findById("suspicion_fill")
+    app_ui.suspicion_text = ui_root:findById("suspicion_text")
+    app_ui.crouch_text = ui_root:findById("crouch_text")
+    app_ui.hidden_text = ui_root:findById("hidden_text")
+    app_ui.message_text = ui_root:findById("message_text")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.level_complete_screen = ui_root:findById("level_complete_screen")
+    app_ui.lc_text = ui_root:findById("lc_text")
 end
 
 -- ── Process ───────────────────────────────────────────────────────────────
@@ -669,6 +685,60 @@ function lurek.process(dt)
     -- FPS in title
     local fps = lurek.timer.getFPS()
     lurek.window.setTitle("Stealth — Lurek2D [FPS: " .. fps .. "]")
+
+    -- UI Sync
+    if app_ui then
+        app_ui.title_screen.visible = (game_state == STATE.TITLE)
+        if game_state == STATE.TITLE then
+            local show = math.floor(title_blink * 2) % 2 == 0
+            app_ui.press_start.visible = show
+        end
+        
+        app_ui.hud.visible = (game_state == STATE.PLAYING)
+        if app_ui.hud.visible then
+            app_ui.keys_text.text = "KEYS: " .. player.keys_collected .. "/3"
+            app_ui.level_text.text = "LEVEL " .. current_level
+            
+            if susp_bar.value > 0 then
+                app_ui.suspicion_bg.visible = true
+                app_ui.suspicion_fill.visible = true
+                app_ui.suspicion_text.visible = true
+                
+                local fill = (susp_bar.value / SUSPICION_ALERT) * 100
+                app_ui.suspicion_fill.width = fill
+                if susp_bar.value >= SUSPICION_ALERT then
+                    app_ui.suspicion_fill.background = {1, 0.1, 0.1, 1}
+                elseif susp_bar.value >= SUSPICION_INVESTIGATE then
+                    app_ui.suspicion_fill.background = {1, 0.8, 0.1, 1}
+                else
+                    app_ui.suspicion_fill.background = {0.2, 0.8, 0.2, 1}
+                end
+            else
+                app_ui.suspicion_bg.visible = false
+                app_ui.suspicion_fill.visible = false
+                app_ui.suspicion_text.visible = false
+            end
+            
+            app_ui.crouch_text.visible = (player.crouching and not player.hidden)
+            app_ui.hidden_text.visible = player.hidden
+            
+            app_ui.message_text.text = message.text
+            app_ui.message_text.color = {1, 1, 1, message.alpha}
+        end
+        
+        app_ui.game_over_screen.visible = (game_state == STATE.GAME_OVER)
+        
+        app_ui.level_complete_screen.visible = (game_state == STATE.LEVEL_COMPLETE)
+        if game_state == STATE.LEVEL_COMPLETE then
+            if current_level >= #LEVELS then
+                app_ui.lc_text.text = "ALL LEVELS COMPLETE!"
+                app_ui.lc_text.x = 325
+            else
+                app_ui.lc_text.text = "LEVEL " .. current_level .. " COMPLETE!"
+                app_ui.lc_text.x = 335
+            end
+        end
+    end
 end
 
 -- ── Render (world) ────────────────────────────────────────────────────────
@@ -834,90 +904,5 @@ end
 
 -- ── Render UI ─────────────────────────────────────────────────────────────
 function lurek.draw_ui()
-    if game_state == STATE.TITLE then
-        -- Title screen
-        lurek.render.setColor(0.2, 0.9, 0.3, 1)
-        text_("STEALTH", SCREEN_W / 2 - 50, SCREEN_H / 2 - 60)
-
-        local show = math.floor(title_blink * 2) % 2 == 0
-        if show then
-            lurek.render.setColor(0.7, 0.9, 0.7, 0.8)
-            text_("PRESS ENTER", SCREEN_W / 2 - 55, SCREEN_H / 2 + 10)
-        end
-
-        lurek.render.setColor(0.5, 0.6, 0.5, 0.6)
-        text_("Sneak past guards. Collect keycards. Reach the exit.", 175, SCREEN_H / 2 + 60)
-        return
-    end
-
-    -- HUD — keycards
-    lurek.render.setColor(1, 0.9, 0.2, 1)
-    text_("KEYS: " .. player.keys_collected .. "/3", 10, 10)
-
-    -- Level indicator
-    lurek.render.setColor(0.7, 0.8, 0.7, 0.8)
-    text_("LEVEL " .. current_level, SCREEN_W / 2 - 25, 10)
-
-    -- Suspicion bar (top-right)
-    if susp_bar.value > 0 then
-        local bw = 100
-        local bh = 8
-        local bx = SCREEN_W - bw - 10
-        local by = 10
-        lurek.render.setColor(0.3, 0.3, 0.3, 0.7)
-        rect(bx, by, bw, bh)
-        local fill = (susp_bar.value / SUSPICION_ALERT) * bw
-        if susp_bar.value >= SUSPICION_ALERT then
-            lurek.render.setColor(1, 0.1, 0.1, 1)
-        elseif susp_bar.value >= SUSPICION_INVESTIGATE then
-            lurek.render.setColor(1, 0.8, 0.1, 1)
-        else
-            lurek.render.setColor(0.2, 0.8, 0.2, 1)
-        end
-        rect(bx, by, fill, bh)
-        lurek.render.setColor(0.8, 0.8, 0.8, 0.7)
-        text_("SUSPICION", bx, by + 12)
-    end
-
-    -- Crouch indicator
-    if player.crouching and not player.hidden then
-        lurek.render.setColor(0.5, 0.8, 0.5, 0.6)
-        text_("CROUCHING", 10, SCREEN_H - 25)
-    end
-
-    -- Hidden indicator
-    if player.hidden then
-        lurek.render.setColor(0.4, 0.7, 0.9, 0.7)
-        text_("HIDDEN", 10, SCREEN_H - 25)
-    end
-
-    -- Message overlay
-    if message.alpha > 0 then
-        lurek.render.setColor(1, 1, 1, message.alpha)
-        text_(message.text, SCREEN_W / 2 - 60, SCREEN_H / 2 - 10)
-    end
-
-    -- Game over screen
-    if game_state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect(0, 0, SCREEN_W, SCREEN_H)
-        lurek.render.setColor(1, 0.2, 0.15, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 45, SCREEN_H / 2 - 30)
-        lurek.render.setColor(0.8, 0.8, 0.8, 0.8)
-        text_("Press ENTER to return to title", SCREEN_W / 2 - 100, SCREEN_H / 2 + 10)
-    end
-
-    -- Level complete screen
-    if game_state == STATE.LEVEL_COMPLETE then
-        lurek.render.setColor(0, 0, 0, 0.5)
-        rect(0, 0, SCREEN_W, SCREEN_H)
-        lurek.render.setColor(0.2, 0.9, 0.3, 1)
-        if current_level >= #LEVELS then
-            text_("ALL LEVELS COMPLETE!", SCREEN_W / 2 - 75, SCREEN_H / 2 - 30)
-        else
-            text_("LEVEL " .. current_level .. " COMPLETE!", SCREEN_W / 2 - 65, SCREEN_H / 2 - 30)
-        end
-        lurek.render.setColor(0.8, 0.8, 0.8, 0.8)
-        text_("Press ENTER to continue", SCREEN_W / 2 - 80, SCREEN_H / 2 + 10)
-    end
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
 end

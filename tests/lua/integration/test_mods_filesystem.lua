@@ -1,4 +1,5 @@
 -- Integration: mod discovery via ModManager combined with filesystem operations
+-- @describe mods + filesystem integration
 describe("mods + filesystem integration", function()
     -- @integration LModManager:hasMod
     -- @integration LModManager:scanFolder

@@ -59,6 +59,8 @@ local goal_flash = 0
 local goal_text_scale = 0
 local halftime_alpha = 0
 
+local app_ui = {}
+
 -- particles
 local particles = {}
 
@@ -236,6 +238,25 @@ end
 function lurek.init()
     lurek.window.setTitle("Sensible Soccer — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.4, 0.1)
+
+    lurek.ui.loadLayoutFile("content/games/retro/sensible_soccer/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_panel = ui_root:findById("title_panel")
+    app_ui.hud_panel = ui_root:findById("hud_panel")
+    app_ui.halftime_panel = ui_root:findById("halftime_panel")
+    app_ui.fulltime_panel = ui_root:findById("fulltime_panel")
+    app_ui.kickoff_label = ui_root:findById("kickoff_label")
+    app_ui.green_score_label = ui_root:findById("green_score_label")
+    app_ui.red_score_label = ui_root:findById("red_score_label")
+    app_ui.timer_label = ui_root:findById("timer_label")
+    app_ui.half_label = ui_root:findById("half_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.goal_label = ui_root:findById("goal_label")
+    app_ui.ht_score = ui_root:findById("ht_score")
+    app_ui.ht_title = ui_root:findById("ht_title")
+    app_ui.ft_score = ui_root:findById("ft_score")
+    app_ui.ft_result = ui_root:findById("ft_result")
 
     players_green = init_team(green_formation, "green")
     players_red   = init_team(red_formation, "red")
@@ -495,6 +516,51 @@ function lurek.process(dt)
             end
         end
     end
+
+    app_ui.title_panel.visible = (state == STATE.TITLE)
+    app_ui.hud_panel.visible = (state ~= STATE.TITLE)
+    app_ui.halftime_panel.visible = (state == STATE.HALFTIME)
+    app_ui.fulltime_panel.visible = (state == STATE.FULL_TIME)
+
+    if state == STATE.TITLE then
+        if math.floor(title_blink * 2) % 2 == 0 then
+            app_ui.kickoff_label.color = {1.0, 1.0, 0.0, 1.0}
+        else
+            app_ui.kickoff_label.color = {1.0, 1.0, 0.0, 0.0}
+        end
+    elseif state ~= STATE.TITLE then
+        app_ui.green_score_label.text = "GREEN " .. score_green
+        app_ui.red_score_label.text = score_red .. " RED"
+
+        local remaining = math.max(0, MATCH_TIME - match_timer)
+        local mins = math.floor(remaining / 60)
+        local secs = math.floor(remaining % 60)
+        app_ui.timer_label.text = string.format("%d:%02d", mins, secs)
+
+        app_ui.half_label.text = match_timer < HALF_TIME and "1st HALF" or "2nd HALF"
+
+        app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+
+        if goal_text_scale > 0.1 then
+            app_ui.goal_label.visible = true
+            app_ui.goal_label.color = {1.0, 1.0, 0.0, clamp(goal_text_scale / 2, 0, 1)}
+        else
+            app_ui.goal_label.visible = false
+        end
+
+        if state == STATE.HALFTIME then
+            app_ui.ht_score.text = score_green .. " - " .. score_red
+            app_ui.halftime_panel.bg_color = {0.0, 0.0, 0.0, halftime_alpha * 0.7}
+            app_ui.ht_title.color = {1.0, 1.0, 1.0, halftime_alpha}
+            app_ui.ht_score.color = {1.0, 1.0, 1.0, halftime_alpha}
+        elseif state == STATE.FULL_TIME then
+            app_ui.ft_score.text = score_green .. " - " .. score_red
+            local result = "DRAW"
+            if score_green > score_red then result = "GREEN WINS!" end
+            if score_red > score_green then result = "RED WINS!" end
+            app_ui.ft_result.text = result
+        end
+    end
 end
 
 -- ── draw ──────────────────────────────────────────────────────
@@ -562,81 +628,11 @@ end
 
 -- ── UI ────────────────────────────────────────────────────────
 function lurek.draw_ui()
-    -- TITLE state
-    if state == STATE.TITLE then
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("SENSIBLE SOCCER", SCR_W / 2 - 100, SCR_H / 2 - 60)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 0, 1)
-            text_("KICK OFF!", SCR_W / 2 - 55, SCR_H / 2)
-        end
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("Press SPACE to start", SCR_W / 2 - 90, SCR_H / 2 + 50)
-        text_("WASD=Move  SPACE=Kick  F=Pass  T=Tackle", SCR_W / 2 - 165, SCR_H / 2 + 80)
-        return
-    end
-
-    -- score bar
-    lurek.render.setColor(0, 0, 0, 0.6)
-    rect("fill", 0, 0, SCR_W, 24)
-
-    -- team labels + score
-    lurek.render.setColor(0.3, 1, 0.3, 1)
-    text_("GREEN " .. score_green, 10, 4)
-    lurek.render.setColor(1, 0.3, 0.3, 1)
-    text_(score_red .. " RED", SCR_W - 75, 4)
-
-    -- timer
-    local remaining = math.max(0, MATCH_TIME - match_timer)
-    local mins = math.floor(remaining / 60)
-    local secs = math.floor(remaining % 60)
-    local timer_str = string.format("%d:%02d", mins, secs)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_(timer_str, SCR_W / 2 - 18, 4)
-
-    -- half indicator
-    local half_str = match_timer < HALF_TIME and "1st HALF" or "2nd HALF"
-    lurek.render.setColor(0.8, 0.8, 0.8, 0.7)
-    text_(half_str, SCR_W / 2 - 28, SCR_H - 20)
-
-    -- goal flash + text
-    if goal_flash > 0 then
+    -- Flash handled by rendering a white rect
+    if state ~= STATE.TITLE and goal_flash > 0 then
         lurek.render.setColor(1, 1, 1, goal_flash * 0.3)
         rect("fill", 0, 0, SCR_W, SCR_H)
     end
-    if goal_text_scale > 0.1 then
-        lurek.render.setColor(1, 1, 0, clamp(goal_text_scale / 2, 0, 1))
-        text_("GOAL!", SCR_W / 2 - 30, SCR_H / 2 - 20)
-    end
-
-    -- HALFTIME overlay
-    if state == STATE.HALFTIME then
-        lurek.render.setColor(0, 0, 0, halftime_alpha * 0.7)
-        rect("fill", 0, 0, SCR_W, SCR_H)
-        lurek.render.setColor(1, 1, 1, halftime_alpha)
-        text_("HALF TIME", SCR_W / 2 - 55, SCR_H / 2 - 20)
-        text_(score_green .. " - " .. score_red, SCR_W / 2 - 20, SCR_H / 2 + 10)
-    end
-
-    -- FULL TIME overlay
-    if state == STATE.FULL_TIME then
-        lurek.render.setColor(0, 0, 0, 0.75)
-        rect("fill", 0, 0, SCR_W, SCR_H)
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("FULL TIME", SCR_W / 2 - 55, SCR_H / 2 - 40)
-        text_(score_green .. " - " .. score_red, SCR_W / 2 - 20, SCR_H / 2)
-        local result = "DRAW"
-        if score_green > score_red then result = "GREEN WINS!" end
-        if score_red > score_green then result = "RED WINS!" end
-        lurek.render.setColor(1, 1, 0, 1)
-        text_(result, SCR_W / 2 - 45, SCR_H / 2 + 30)
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("Press SPACE for rematch", SCR_W / 2 - 95, SCR_H / 2 + 70)
-    end
-
-    -- FPS
-    lurek.render.setColor(1, 1, 1, 0.4)
-    text_("FPS: " .. lurek.timer.getFPS(), SCR_W - 80, SCR_H - 20)
 end
 
 -- ── keypressed ────────────────────────────────────────────────

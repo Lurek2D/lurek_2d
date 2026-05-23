@@ -1,0 +1,128 @@
+[root]
+widget_type = "panel"
+width = 800
+height = 600
+
+[[root.children]]
+widget_type = "panel"
+id = "title_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = true
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "PONG"
+  font_size = 64
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 150
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_start"
+  text = "PRESS ENTER TO START"
+  font_size = 24
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 300
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "P1: W / S       P2: Up / Down"
+  font_size = 20
+  color = [0.4, 0.4, 0.4, 1]
+  anchor = "top_center"
+  y = 420
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "First to 7 wins"
+  font_size = 20
+  color = [0.4, 0.4, 0.4, 1]
+  anchor = "top_center"
+  y = 450
+
+[[root.children]]
+widget_type = "panel"
+id = "hud"
+anchor = "top_left"
+width = 800
+height = 600
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "p1_score"
+  text = "0"
+  font_size = 48
+  anchor = "top_center"
+  x = -70
+  y = 18
+  color = [1, 1, 1, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "p2_score"
+  text = "0"
+  font_size = 48
+  anchor = "top_center"
+  x = 38
+  y = 18
+  color = [1, 1, 1, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "P1: W/S"
+  font_size = 16
+  anchor = "bottom_left"
+  x = 8
+  y = -18
+  color = [0.4, 0.4, 0.4, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "P2: Up/Down"
+  font_size = 16
+  anchor = "bottom_right"
+  x = -112
+  y = -18
+  color = [0.4, 0.4, 0.4, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 16
+  anchor = "top_right"
+  x = -80
+  y = 4
+  color = [0.3, 0.3, 0.3, 1]
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_screen"
+anchor = "center"
+width = 800
+height = 600
+bg_color = [0, 0, 0, 0.6]
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "winner_label"
+  text = "Player 1 Wins!"
+  font_size = 48
+  color = [1.0, 0.9, 0.1, 1]
+  anchor = "center"
+  y = -30
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_restart"
+  text = "Press R to restart"
+  font_size = 24
+  color = [0.7, 0.7, 0.7, 1]
+  anchor = "center"
+  y = 20

@@ -1,4 +1,5 @@
 -- Integration: camera viewport tracking entity positions via ECS
+-- @describe integration: scene camera viewport operations
 describe("integration: scene camera viewport operations", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition

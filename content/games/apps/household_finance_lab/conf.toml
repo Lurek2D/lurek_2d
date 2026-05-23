@@ -1,0 +1,14 @@
+[window]
+title = "Household Finance Lab - Lurek2D"
+width = 1200
+height = 800
+resizable = false
+vsync = true
+scale_mode = "none"
+
+[render]
+default_font_size = 20
+default_font_bold = true
+
+[engine]
+target_fps = 60

@@ -1,0 +1,154 @@
+[root]
+widget_type = "panel"
+width = 640
+height = 600
+
+[[root.children]]
+widget_type = "panel"
+id = "hud"
+anchor = "top_left"
+width = 640
+height = 600
+visible = true
+
+  [[root.children.children]]
+  widget_type = "panel"
+  anchor = "top_left"
+  width = 640
+  height = 40
+  bg_color = [0.08, 0.12, 0.08, 1]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    text = "SNAKE"
+    font_size = 24
+    color = [0.4, 0.9, 0.4, 1]
+    anchor = "top_left"
+    x = 8
+    y = 8
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "score_label"
+    text = "Score: 0"
+    font_size = 22
+    color = [1, 1, 1, 1]
+    anchor = "top_center"
+    x = -50
+    y = 10
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "high_score_label"
+    text = "Best: 0"
+    font_size = 18
+    color = [0.6, 0.8, 0.6, 1]
+    anchor = "top_right"
+    x = -130
+    y = 10
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 16
+  color = [0.4, 0.4, 0.4, 1]
+  anchor = "bottom_left"
+  x = 4
+  y = -18
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "WASD / Arrows  |  ESC quit"
+  font_size = 16
+  color = [0.35, 0.35, 0.35, 1]
+  anchor = "bottom_right"
+  x = -230
+  y = -18
+
+[[root.children]]
+widget_type = "panel"
+id = "title_screen"
+anchor = "center"
+width = 640
+height = 600
+bg_color = [0, 0, 0, 0.75]
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "SNAKE"
+  font_size = 64
+  color = [0.4, 1.0, 0.4, 1]
+  anchor = "center"
+  y = -60
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "Eat, grow, avoid yourself"
+  font_size = 24
+  color = [0.7, 0.9, 0.7, 1]
+  anchor = "center"
+  y = -10
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_start"
+  text = "Press ENTER to start"
+  font_size = 24
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 30
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "WASD or Arrow Keys to steer"
+  font_size = 18
+  color = [0.5, 0.5, 0.5, 1]
+  anchor = "center"
+  y = 65
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_screen"
+anchor = "center"
+width = 640
+height = 600
+bg_color = [0, 0, 0, 0.7]
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "GAME OVER"
+  font_size = 48
+  color = [1, 0.3, 0.3, 1]
+  anchor = "center"
+  y = -40
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "final_score"
+  text = "Score: 0"
+  font_size = 24
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 5
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "new_best"
+  text = "NEW BEST!"
+  font_size = 24
+  color = [1, 1, 0.3, 1]
+  anchor = "center"
+  y = 35
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_restart"
+  text = "Press ENTER to restart"
+  font_size = 24
+  color = [0.7, 0.7, 0.7, 1]
+  anchor = "center"
+  y = 65

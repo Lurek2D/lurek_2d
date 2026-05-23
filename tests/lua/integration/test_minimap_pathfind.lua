@@ -37,6 +37,7 @@ local function assert_path_valid(path, sx, sy, ex, ey)
 end
 
 
+-- @describe minimap + pathfind integration
 describe("minimap + pathfind integration", function()
     -- @integration LUnitPathfinder:findPath
     -- @integration LMinimap:showPath

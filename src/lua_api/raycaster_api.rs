@@ -208,7 +208,7 @@ impl LuaUserData for LuaDoorManager {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDoorManager" || name == "DoorManager" || name == "Object")
+            Ok(name == "LDoorManager" || name == "LDoorManager" || name == "DoorManager" || name == "Object")
         });
     }
 }
@@ -261,7 +261,7 @@ impl LuaUserData for LuaHeightMap {
         /// @param | name | string | Type name to check.
         /// @return | boolean | True if the name matches this userdata type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LHeightMap" || name == "HeightMap" || name == "Object")
+            Ok(name == "LHeightMap" || name == "LHeightMap" || name == "HeightMap" || name == "Object")
         });
     }
 }
@@ -329,7 +329,7 @@ impl LuaUserData for LuaPointLight {
         /// @param | name | string | Type name to test against.
         /// @return | boolean | True if this object is of the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPointLight" || name == "PointLight" || name == "Object")
+            Ok(name == "LPointLight" || name == "LPointLight" || name == "PointLight" || name == "Object")
         });
     }
 }
@@ -1488,7 +1488,7 @@ impl LuaUserData for LuaSpriteManager {
         /// @param | name | string | Type name to test against.
         /// @return | boolean | True if this object is of the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSpriteManager" || name == "SpriteManager" || name == "Object")
+            Ok(name == "LSpriteManager" || name == "LSpriteManager" || name == "SpriteManager" || name == "Object")
         });
     }
 }

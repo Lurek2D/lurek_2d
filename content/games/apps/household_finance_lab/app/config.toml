@@ -1,8 +1,8 @@
 [window]
 width = 1200
 height = 800
-font_size = 10
-title_font_size = 12
+font_size = 20
+title_font_size = 24
 
 [paths]
 save_dir = "save/household_finance_lab"

@@ -1,0 +1,118 @@
+[root]
+widget_type = "panel"
+width = 800
+height = 600
+
+[[root.children]]
+widget_type = "panel"
+id = "title_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "SPACE INVADERS"
+  font_size = 48
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 120
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_start"
+  text = "PRESS ENTER TO START"
+  font_size = 24
+  color = [0.7, 0.7, 0.7, 1]
+  anchor = "top_center"
+  y = 200
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "--- SCORE TABLE ---"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 280
+
+[[root.children]]
+widget_type = "panel"
+id = "hud"
+anchor = "top_left"
+width = 800
+height = 600
+visible = true
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "SCORE: 0"
+  font_size = 18
+  x = 10
+  y = 8
+  color = [1, 1, 1, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hi_score_label"
+  text = "HI: 0"
+  font_size = 18
+  anchor = "top_center"
+  y = 8
+  color = [1, 1, 1, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lives_label"
+  text = "LIVES: 3"
+  font_size = 18
+  anchor = "top_right"
+  x = -100
+  y = 8
+  color = [1, 1, 1, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "wave_label"
+  text = "WAVE 1"
+  font_size = 16
+  anchor = "top_right"
+  x = -100
+  y = 28
+  color = [0.6, 0.6, 0.6, 1]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 16
+  anchor = "bottom_left"
+  x = 10
+  y = -20
+  color = [0.4, 0.4, 0.4, 1]
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "GAME OVER"
+  font_size = 48
+  color = [1, 0.2, 0.2, 1]
+  anchor = "center"
+  y = -30
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_restart"
+  text = "PRESS R OR ENTER TO RESTART"
+  font_size = 24
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "center"
+  y = 10

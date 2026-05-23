@@ -398,6 +398,43 @@ function lurek.init()
         colorStart = {0.6, 0.5, 0.4, 0.6},
         colorEnd   = {0.5, 0.4, 0.3, 0.0},
     })
+    
+    lurek.ui.loadLayoutFile("content/games/rpg/adventure/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.room_banner = ui_root:findById("room_banner")
+    app_ui.room_name = ui_root:findById("room_name")
+    
+    app_ui.hotspot_desc_panel = ui_root:findById("hotspot_desc_panel")
+    app_ui.hotspot_desc = ui_root:findById("hotspot_desc")
+    
+    app_ui.inv_bar = ui_root:findById("inv_bar")
+    app_ui.combine_mode_text = ui_root:findById("combine_mode_text")
+    app_ui.inv_slots = {}
+    app_ui.inv_sels = {}
+    app_ui.inv_txts = {}
+    for i=1, 6 do
+        app_ui.inv_slots[i] = ui_root:findById("inv_slot_" .. i)
+        app_ui.inv_sels[i] = ui_root:findById("inv_sel_" .. i)
+        app_ui.inv_txts[i] = ui_root:findById("inv_txt_" .. i)
+    end
+    
+    app_ui.dialog_box = ui_root:findById("dialog_box")
+    app_ui.dialog_text = ui_root:findById("dialog_text")
+    app_ui.dialog_continue = ui_root:findById("dialog_continue")
+    
+    app_ui.inv_screen = ui_root:findById("inv_screen")
+    app_ui.inv_screen_no_items = ui_root:findById("inv_screen_no_items")
+    app_ui.full_slots = {}
+    app_ui.full_sels = {}
+    app_ui.full_txts = {}
+    for i=1, 6 do
+        app_ui.full_slots[i] = ui_root:findById("full_slot_" .. i)
+        app_ui.full_sels[i] = ui_root:findById("full_sel_" .. i)
+        app_ui.full_txts[i] = ui_root:findById("full_txt_" .. i)
+    end
+    
+    app_ui.controls_hint = ui_root:findById("controls_hint")
 end
 
 local function _ready_setup()
@@ -555,6 +592,65 @@ function lurek.process(dt)
     lurek.render.setBackgroundColor(pal.bg[1], pal.bg[2], pal.bg[3])
     local fps = lurek.timer.getFPS()
     lurek.window.setTitle("The Lost Egg — Lurek2D [FPS: " .. fps .. "]")
+
+    -- UI Sync
+    if app_ui then
+        local in_game = (game_state ~= STATE.TITLE and game_state ~= STATE.WIN)
+        local room = get_room()
+        
+        app_ui.room_banner.visible = in_game
+        if in_game then
+            app_ui.room_name.text = room.name
+        end
+        
+        app_ui.hotspot_desc_panel.visible = (game_state == STATE.EXPLORING and selected_idx >= 1 and selected_idx <= #(room.hotspots))
+        if app_ui.hotspot_desc_panel.visible then
+            local hs = room.hotspots[selected_idx]
+            app_ui.hotspot_desc.text = "[" .. selected_idx .. "] " .. hs.id .. ": " .. hs.desc
+        end
+        
+        app_ui.inv_bar.visible = in_game
+        if in_game then
+            app_ui.combine_mode_text.visible = combine_mode
+            for i=1, 6 do
+                if i <= #inventory then
+                    app_ui.inv_slots[i].visible = true
+                    app_ui.inv_sels[i].visible = (i == inv_selected)
+                    local display_name = inventory[i]:gsub("_", " ")
+                    app_ui.inv_txts[i].text = display_name
+                else
+                    app_ui.inv_slots[i].visible = false
+                end
+            end
+        end
+        
+        app_ui.dialog_box.visible = (game_state == STATE.DIALOG and dialog.active)
+        if app_ui.dialog_box.visible then
+            app_ui.dialog_text.text = dialog.shown
+            local show_cont = false
+            if dialog.char_idx >= #dialog.full then
+                show_cont = (math.sin(title_blink * 4) > 0)
+            end
+            app_ui.dialog_continue.visible = show_cont
+        end
+        
+        app_ui.inv_screen.visible = (game_state == STATE.INVENTORY)
+        if app_ui.inv_screen.visible then
+            app_ui.inv_screen_no_items.visible = (#inventory == 0)
+            for i=1, 6 do
+                if i <= #inventory then
+                    app_ui.full_slots[i].visible = true
+                    app_ui.full_sels[i].visible = (i == inv_selected)
+                    local display_name = inventory[i]:gsub("_", " ")
+                    app_ui.full_txts[i].text = display_name
+                else
+                    app_ui.full_slots[i].visible = false
+                end
+            end
+        end
+        
+        app_ui.controls_hint.visible = (game_state == STATE.EXPLORING)
+    end
 end
 
 ------------------------------------------------------------------------
@@ -752,123 +848,5 @@ end
 -- Render UI
 ------------------------------------------------------------------------
 function lurek.draw_ui()
-    if game_state == STATE.TITLE or game_state == STATE.WIN then return end
-
-    -- Room name banner
-    local room = get_room()
-    lurek.render.setColor(0, 0, 0, 0.7)
-    rect(0, 0, SCREEN_W, 28)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_(room.name, 10, 6, 16)
-
-    -- Selected hotspot description
-    if game_state == STATE.EXPLORING and selected_idx >= 1 and selected_idx <= #room.hotspots then
-        local hs = room.hotspots[selected_idx]
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect(0, 28, SCREEN_W, 22)
-        lurek.render.setColor(0.9, 0.85, 0.6, 1)
-        text_("[" .. selected_idx .. "] " .. hs.id .. ": " .. hs.desc, 10, 32, 12)
-    end
-
-    -- Inventory bar
-    lurek.render.setColor(0, 0, 0, 0.8)
-    rect(0, INV_Y, SCREEN_W, 60)
-    lurek.render.setColor(0.4, 0.35, 0.2, 1)
-    ln(0, INV_Y, SCREEN_W, INV_Y, 2)
-
-    -- Inventory label
-    lurek.render.setColor(0.8, 0.75, 0.5, 1)
-    text_("Inventory [C]", 10, INV_Y + 4, 11)
-
-    -- Items
-    for i, item in ipairs(inventory) do
-        local sx = 10 + (i - 1) * (INV_SLOT_W + 4)
-        local sy = INV_Y + 18
-
-        if i == inv_selected then
-            lurek.render.setColor(0.8, 0.7, 0.2, 0.8)
-            rect("line", sx - 2, sy - 2, INV_SLOT_W + 4, INV_SLOT_H - 14, 2)
-        end
-
-        -- Item background
-        lurek.render.setColor(0.15, 0.12, 0.08, 0.9)
-        rect(sx, sy, INV_SLOT_W, INV_SLOT_H - 16)
-
-        -- Item name
-        lurek.render.setColor(1, 0.95, 0.7, 1)
-        local display_name = item:gsub("_", " ")
-        text_(display_name, sx + 3, sy + 6, 10)
-    end
-
-    -- Combine mode indicator
-    if combine_mode then
-        lurek.render.setColor(1, 0.6, 0.1, 0.9)
-        text_("COMBINE MODE — select second item", SCREEN_W / 2 - 130, INV_Y - 18, 12)
-    end
-
-    -- Dialog box
-    if game_state == STATE.DIALOG and dialog.active then
-        -- Background
-        lurek.render.setColor(0, 0, 0, 0.85)
-        rect(40, SCREEN_H / 2 - 50, SCREEN_W - 80, 100)
-        -- Border
-        lurek.render.setColor(0.6, 0.5, 0.2, 1)
-        rect("line", 40, SCREEN_H / 2 - 50, SCREEN_W - 80, 100, 2)
-        -- Text (typewriter)
-        lurek.render.setColor(0.95, 0.9, 0.8, 1)
-        text_(dialog.shown, 60, SCREEN_H / 2 - 30, 14)
-        -- Continue hint
-        if dialog.char_idx >= #dialog.full then
-            local blink = math.sin(title_blink * 4) > 0
-            if blink then
-                lurek.render.setColor(0.7, 0.65, 0.4, 0.8)
-                text_("[E] continue", SCREEN_W - 180, SCREEN_H / 2 + 30, 11)
-            end
-        end
-    end
-
-    -- Inventory screen overlay
-    if game_state == STATE.INVENTORY then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect(0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(0.08, 0.06, 0.12, 0.95)
-        rect(100, 100, SCREEN_W - 200, SCREEN_H - 260)
-        lurek.render.setColor(0.6, 0.5, 0.2, 1)
-        rect("line", 100, 100, SCREEN_W - 200, SCREEN_H - 260, 2)
-
-        lurek.render.setColor(0.95, 0.85, 0.4, 1)
-        text_("INVENTORY", 320, 115, 20)
-
-        lurek.render.setColor(0.7, 0.65, 0.5, 0.8)
-        text_("[Left/Right] Select   [C] Combine   [E] Close", 180, 140, 11)
-
-        for i, item in ipairs(inventory) do
-            local ix = 140 + ((i - 1) % 4) * 150
-            local iy = 175 + math.floor((i - 1) / 4) * 60
-
-            if i == inv_selected then
-                lurek.render.setColor(0.8, 0.7, 0.2, 0.9)
-                rect("line", ix - 4, iy - 4, 140, 50, 2)
-            end
-
-            lurek.render.setColor(0.15, 0.12, 0.08, 0.9)
-            rect(ix, iy, 132, 42)
-
-            lurek.render.setColor(1, 0.95, 0.7, 1)
-            local display_name = item:gsub("_", " ")
-            text_(display_name, ix + 8, iy + 14, 13)
-        end
-
-        if #inventory == 0 then
-            lurek.render.setColor(0.5, 0.5, 0.5, 0.7)
-            text_("No items yet.", 320, 220, 14)
-        end
-    end
-
-    -- Controls hint
-    if game_state == STATE.EXPLORING then
-        lurek.render.setColor(0.5, 0.5, 0.5, 0.5)
-        text_("[Tab] Cycle   [E] Interact   [C] Inventory   [Arrows] Move", 140, SCREEN_H - 14, 10)
-    end
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
 end

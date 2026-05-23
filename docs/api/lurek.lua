@@ -25961,7 +25961,9 @@ lurek.ui.getRoot = function() end
 
 --- Returns the value of a named semantic style token from the active theme.
 ---@param name string The token name (e.g. "spacing_md", "color_primary").
----@return any The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+---@return number The token value for float tokens.
+---@overload fun(name: string): table # The token value as a table with r/g/b/a fields for color tokens.
+---@overload fun(name: string): nil # Nil when the token is not registered.
 lurek.ui.getStyleToken = function(name) end
 
 --- Returns whether a theme is currently set.

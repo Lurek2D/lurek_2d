@@ -394,6 +394,24 @@ function lurek.init()
     -- [removed: lurek.timer.setTargetFPS has no equivalent]
     _cam = lurek.camera.new()
     reset_fighters()
+    
+    lurek.ui.loadLayoutFile("content/games/action/fighting_game/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.p1_hp_text = ui_root:findById("p1_hp_text")
+    app_ui.p2_hp_text = ui_root:findById("p2_hp_text")
+    app_ui.p1_super_text = ui_root:findById("p1_super_text")
+    app_ui.p2_super_text = ui_root:findById("p2_super_text")
+    app_ui.round_label = ui_root:findById("round_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.round_overlay = ui_root:findById("round_overlay")
+    app_ui.round_text_overlay = ui_root:findById("round_text_overlay")
+    app_ui.match_over_screen = ui_root:findById("match_over_screen")
+    app_ui.match_winner = ui_root:findById("match_winner")
+    app_ui.p1_combo_text = ui_root:findById("p1_combo_text")
+    app_ui.p2_combo_text = ui_root:findById("p2_combo_text")
 end
 
 -- ── lurek.process ─────────────────────────────────────────────────────────
@@ -421,11 +439,10 @@ function lurek.process(dt)
 
     -- ── TITLE ─────────────────────────────────────────────────────────
     if state == STATE.TITLE then
-        if lurek.input.wasActionPressed("return") then
+        if lurek.input.wasActionPressed("return") or lurek.input.wasActionPressed("punch") or lurek.input.wasActionPressed("kick") then
             round_num = 1
             start_round()
         end
-        return
     end
 
     -- ── MATCH OVER ────────────────────────────────────────────────────
@@ -494,10 +511,66 @@ function lurek.process(dt)
     try_hit(p1, p2)
     try_hit(p2, p1)
 
-    -- Particles update
+    -- Update hitsparks
     hit_sparks:update(dt)
     block_sparks:update(dt)
     super_flash:update(dt)
+
+    -- UI Sync
+    if app_ui then
+        app_ui.fps_label.text = "FPS: " .. math.floor(lurek.timer.getFPS())
+
+        app_ui.title_screen.visible = (state == STATE.TITLE)
+        app_ui.hud.visible = (state ~= STATE.TITLE)
+        app_ui.round_overlay.visible = (round_text_alpha > 0.01)
+        app_ui.match_over_screen.visible = (state == STATE.MATCH_OVER)
+
+        if state ~= STATE.TITLE then
+            app_ui.p1_hp_text.text = math.floor(p1.hp) .. " HP"
+            app_ui.p2_hp_text.text = math.floor(p2.hp) .. " HP"
+
+            if p1.meter >= METER_MAX then
+                app_ui.p1_super_text.color = {1.0, 0.9, 0.1, 1.0}
+            else
+                app_ui.p1_super_text.color = {0.7, 0.7, 0.7, 1.0}
+            end
+
+            if p2.meter >= METER_MAX then
+                app_ui.p2_super_text.color = {1.0, 0.9, 0.1, 1.0}
+            else
+                app_ui.p2_super_text.color = {0.7, 0.7, 0.7, 1.0}
+            end
+
+            app_ui.round_label.text = "ROUND " .. round_num
+
+            if p1.combo > 1 then
+                app_ui.p1_combo_text.visible = true
+                app_ui.p1_combo_text.text = p1.combo .. " HIT COMBO!"
+                app_ui.p1_combo_text.x = p1.x - 20
+                app_ui.p1_combo_text.y = p1.y - 30
+            else
+                app_ui.p1_combo_text.visible = false
+            end
+
+            if p2.combo > 1 then
+                app_ui.p2_combo_text.visible = true
+                app_ui.p2_combo_text.text = p2.combo .. " HIT COMBO!"
+                app_ui.p2_combo_text.x = p2.x - 20
+                app_ui.p2_combo_text.y = p2.y - 30
+            else
+                app_ui.p2_combo_text.visible = false
+            end
+        end
+
+        if round_text_alpha > 0.01 then
+            app_ui.round_text_overlay.text = round_text
+            app_ui.round_text_overlay.color = {1, 1, 1, round_text_alpha}
+        end
+
+        if state == STATE.MATCH_OVER then
+            app_ui.match_winner.text = match_winner
+        end
+    end
 
     -- Check KO
     if p2.hp <= 0 then
@@ -612,141 +685,62 @@ end
 
 -- ── lurek.render_ui ──────────────────────────────────────────────────────
 function lurek.draw_ui()
-    lurek.render.setColor(1, 1, 1, 1)
-
-    -- ── TITLE SCREEN ─────────────────────────────────────────────────
-    if state == STATE.TITLE then
-        lurek.render.setColor(0.3, 0.6, 1.0, 1)
-        text_("FIGHTING GAME", SCREEN_W * 0.5 - 130, 200, 0, 3, 3)
-        lurek.render.setColor(0.9, 0.4, 0.2, 1)
-        text_("Player vs AI — Best of 3 Rounds", SCREEN_W * 0.5 - 145, 260, 0, 1.2, 1.2)
-
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1, 0.9)
-            text_("PRESS ENTER", SCREEN_W * 0.5 - 75, 340, 0, 1.5, 1.5)
-        end
-
-        -- Controls
-        lurek.render.setColor(0.6, 0.6, 0.6, 1)
-        text_("A/D = Move   W = Jump   F = Punch   G = Kick", 160, 430)
-        text_("H = Block   Q = Super   ESC = Quit", 200, 455)
-
-        lurek.render.setColor(0.4, 0.4, 0.4, 1)
-        text_("FPS: " .. lurek.timer.getFPS(), 4, SCREEN_H - 18)
-        return
-    end
-
-    -- ── HP BARS ──────────────────────────────────────────────────────
+    -- Rendering is now handled by UI layout + draw shapes
     local bar_w = 300
     local bar_h = 20
     local bar_y = 20
 
-    -- P1 HP bar (left side)
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", 20, bar_y, bar_w, bar_h)
-    local p1_frac = clamp(p1.hp_display / p1.max_hp, 0, 1)
-    local p1r = 0.2 + (1 - p1_frac) * 0.8
-    local p1g = p1_frac * 0.8
-    lurek.render.setColor(p1r, p1g, 0.1, 1)
-    rect("fill", 20, bar_y, bar_w * p1_frac, bar_h)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("P1", 24, bar_y + 2)
-    text_(math.floor(p1.hp) .. " HP", 20 + bar_w - 50, bar_y + 2)
+    if state ~= STATE.TITLE then
+        -- HP BARS
+        local p1_frac = clamp(p1.hp_display / p1.max_hp, 0, 1)
+        local p1r = 0.2 + (1 - p1_frac) * 0.8
+        local p1g = p1_frac * 0.8
+        lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
+        rect("fill", 20, bar_y, bar_w, bar_h)
+        lurek.render.setColor(p1r, p1g, 0.1, 1)
+        rect("fill", 20, bar_y, bar_w * p1_frac, bar_h)
 
-    -- P2 HP bar (right side)
-    local p2_bar_x = SCREEN_W - 20 - bar_w
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", p2_bar_x, bar_y, bar_w, bar_h)
-    local p2_frac = clamp(p2.hp_display / p2.max_hp, 0, 1)
-    local p2r = 0.2 + (1 - p2_frac) * 0.8
-    local p2g = p2_frac * 0.8
-    lurek.render.setColor(p2r, p2g, 0.1, 1)
-    rect("fill", p2_bar_x + bar_w * (1 - p2_frac), bar_y, bar_w * p2_frac, bar_h)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("AI", p2_bar_x + bar_w - 24, bar_y + 2)
-    text_(math.floor(p2.hp) .. " HP", p2_bar_x + 4, bar_y + 2)
+        local p2_bar_x = SCREEN_W - 20 - bar_w
+        local p2_frac = clamp(p2.hp_display / p2.max_hp, 0, 1)
+        local p2r = 0.2 + (1 - p2_frac) * 0.8
+        local p2g = p2_frac * 0.8
+        lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
+        rect("fill", p2_bar_x, bar_y, bar_w, bar_h)
+        lurek.render.setColor(p2r, p2g, 0.1, 1)
+        rect("fill", p2_bar_x + bar_w * (1 - p2_frac), bar_y, bar_w * p2_frac, bar_h)
 
-    -- ── SUPER METER ─────────────────────────────────────────────────
-    local meter_w = 120
-    local meter_h = 8
-    local meter_y = bar_y + bar_h + 6
+        -- SUPER METER
+        local meter_w = 120
+        local meter_h = 8
+        local meter_y = bar_y + bar_h + 6
 
-    -- P1 meter
-    lurek.render.setColor(0.15, 0.15, 0.15, 0.7)
-    rect("fill", 20, meter_y, meter_w, meter_h)
-    local m1_frac = clamp(p1.meter_display / METER_MAX, 0, 1)
-    if p1.meter >= METER_MAX then
-        lurek.render.setColor(1.0, 0.9, 0.1, 1)
-    else
-        lurek.render.setColor(0.2, 0.5, 0.9, 0.9)
-    end
-    rect("fill", 20, meter_y, meter_w * m1_frac, meter_h)
-    lurek.render.setColor(0.7, 0.7, 0.7, 1)
-    text_("SUPER", 20 + meter_w + 6, meter_y - 2, 0, 0.8, 0.8)
+        local m1_frac = clamp(p1.meter_display / METER_MAX, 0, 1)
+        lurek.render.setColor(0.15, 0.15, 0.15, 0.7)
+        rect("fill", 20, meter_y, meter_w, meter_h)
+        if p1.meter >= METER_MAX then lurek.render.setColor(1.0, 0.9, 0.1, 1) else lurek.render.setColor(0.2, 0.5, 0.9, 0.9) end
+        rect("fill", 20, meter_y, meter_w * m1_frac, meter_h)
 
-    -- P2 meter
-    local m2_x = SCREEN_W - 20 - meter_w
-    lurek.render.setColor(0.15, 0.15, 0.15, 0.7)
-    rect("fill", m2_x, meter_y, meter_w, meter_h)
-    local m2_frac = clamp(p2.meter_display / METER_MAX, 0, 1)
-    if p2.meter >= METER_MAX then
-        lurek.render.setColor(1.0, 0.9, 0.1, 1)
-    else
-        lurek.render.setColor(0.9, 0.3, 0.2, 0.9)
-    end
-    rect("fill", m2_x + meter_w * (1 - m2_frac), meter_y, meter_w * m2_frac, meter_h)
-    lurek.render.setColor(0.7, 0.7, 0.7, 1)
-    text_("SUPER", m2_x - 50, meter_y - 2, 0, 0.8, 0.8)
+        local m2_x = SCREEN_W - 20 - meter_w
+        local m2_frac = clamp(p2.meter_display / METER_MAX, 0, 1)
+        lurek.render.setColor(0.15, 0.15, 0.15, 0.7)
+        rect("fill", m2_x, meter_y, meter_w, meter_h)
+        if p2.meter >= METER_MAX then lurek.render.setColor(1.0, 0.9, 0.1, 1) else lurek.render.setColor(0.9, 0.3, 0.2, 0.9) end
+        rect("fill", m2_x + meter_w * (1 - m2_frac), meter_y, meter_w * m2_frac, meter_h)
 
-    -- ── ROUND SCORE ─────────────────────────────────────────────────
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("ROUND " .. round_num, SCREEN_W * 0.5 - 30, 8)
-
-    -- Win dots
-    for i = 1, ROUNDS_TO_WIN do
-        local dot_r = i <= p1.wins and 0.3 or 0.2
-        local dot_g = i <= p1.wins and 0.8 or 0.2
-        local dot_b = i <= p1.wins and 1.0 or 0.2
-        lurek.render.setColor(dot_r, dot_g, dot_b, 1)
-        rect("fill", 20 + (i - 1) * 18, 8, 12, 12)
-    end
-    for i = 1, ROUNDS_TO_WIN do
-        local dot_r = i <= p2.wins and 1.0 or 0.2
-        local dot_g = i <= p2.wins and 0.3 or 0.2
-        local dot_b = 0.2
-        lurek.render.setColor(dot_r, dot_g, dot_b, 1)
-        rect("fill", SCREEN_W - 20 - i * 18, 8, 12, 12)
-    end
-
-    -- ── COMBO COUNTER ───────────────────────────────────────────────
-    if p1.combo > 1 then
-        lurek.render.setColor(1.0, 0.8, 0.1, 1)
-        text_(p1.combo .. " HIT COMBO!", p1.x - 20, p1.y - 30, 0, 1.2, 1.2)
-    end
-    if p2.combo > 1 then
-        lurek.render.setColor(1.0, 0.4, 0.1, 1)
-        text_(p2.combo .. " HIT COMBO!", p2.x - 20, p2.y - 30, 0, 1.2, 1.2)
-    end
-
-    -- ── ROUND TEXT OVERLAY ──────────────────────────────────────────
-    if round_text_alpha > 0.01 then
-        lurek.render.setColor(1, 1, 1, round_text_alpha)
-        text_(round_text, SCREEN_W * 0.5 - 100, SCREEN_H * 0.4, 0, 2, 2)
-    end
-
-    -- ── MATCH OVER ──────────────────────────────────────────────────
-    if state == STATE.MATCH_OVER then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect("fill", 0, SCREEN_H * 0.3, SCREEN_W, 120)
-        lurek.render.setColor(1, 0.9, 0.2, 1)
-        text_(match_winner, SCREEN_W * 0.5 - 120, SCREEN_H * 0.35, 0, 3, 3)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1, 0.8)
-            text_("PRESS ENTER", SCREEN_W * 0.5 - 75, SCREEN_H * 0.35 + 60, 0, 1.5, 1.5)
+        -- Win dots
+        for i = 1, ROUNDS_TO_WIN do
+            local dot_r = i <= p1.wins and 0.3 or 0.2
+            local dot_g = i <= p1.wins and 0.8 or 0.2
+            local dot_b = i <= p1.wins and 1.0 or 0.2
+            lurek.render.setColor(dot_r, dot_g, dot_b, 1)
+            rect("fill", 20 + (i - 1) * 18, 8, 12, 12)
+        end
+        for i = 1, ROUNDS_TO_WIN do
+            local dot_r = i <= p2.wins and 1.0 or 0.2
+            local dot_g = i <= p2.wins and 0.3 or 0.2
+            local dot_b = 0.2
+            lurek.render.setColor(dot_r, dot_g, dot_b, 1)
+            rect("fill", SCREEN_W - 20 - i * 18, 8, 12, 12)
         end
     end
-
-    -- FPS
-    lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    text_("FPS: " .. lurek.timer.getFPS(), 4, SCREEN_H - 18)
 end

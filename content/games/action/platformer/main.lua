@@ -15,7 +15,8 @@
 
 -- ── Constants ─────────────────────────────────────────────────────────────
 local SCREEN_W, SCREEN_H = 800, 600
-local TILE               = 16
+local app_ui = {}
+local TILE = 16
 local LEVEL_COLS         = 40
 local LEVEL_ROWS         = 15
 local LEVEL_W            = LEVEL_COLS * TILE  -- 640
@@ -278,6 +279,24 @@ function lurek.init()
     lurek.window.setTitle("Platformer — Lurek2D")
     lurek.render.setBackgroundColor(0.3, 0.5, 0.8)
 
+    lurek.ui.loadLayoutFile("content/games/action/platformer/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.banner_enter = ui_root:findById("banner_enter")
+    app_ui.banner_label = ui_root:findById("banner_label")
+    app_ui.banner_panel = ui_root:findById("banner_panel")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.game_over_panel = ui_root:findById("game_over_panel")
+    app_ui.go_enter = ui_root:findById("go_enter")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.hud_panel = ui_root:findById("hud_panel")
+    app_ui.level_label = ui_root:findById("level_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.score_pop_label = ui_root:findById("score_pop_label")
+    app_ui.start_label = ui_root:findById("start_label")
+    app_ui.title_panel = ui_root:findById("title_panel")
+
+
     -- Input actions
     lurek.input.bind("left",  "a");    lurek.input.bind("left",  "left")
     lurek.input.bind("right", "d");    lurek.input.bind("right", "right")
@@ -313,9 +332,7 @@ function lurek.init()
         colorStart = {1.0, 0.2, 0.2, 1.0},
         colorEnd   = {0.5, 0.0, 0.0, 0.0},
     })
-end
-
-local function _ready_setup()
+    
     load_level(1)
 end
 
@@ -599,6 +616,74 @@ function lurek.process(dt)
     coin_ps:update(dt)
     stomp_ps:update(dt)
     death_ps:update(dt)
+
+    -- ── UI Update ─────────────────────────────────────────────────────────────
+    
+    
+    
+    
+
+    app_ui.title_panel.visible = (game_state == STATE.TITLE)
+    app_ui.hud_panel.visible = (game_state == STATE.PLAYING)
+    app_ui.banner_panel.visible = (game_state == STATE.LEVEL_COMPLETE)
+    app_ui.game_over_panel.visible = (game_state == STATE.GAME_OVER)
+
+    if game_state == STATE.TITLE then
+        
+        if math.floor(title_blink * 2) % 2 == 0 then
+            app_ui.start_label.visible = true
+        else
+            app_ui.start_label.visible = false
+        end
+    elseif game_state == STATE.PLAYING then
+        
+        
+        
+        
+        
+
+        app_ui.score_label.text = "SCORE: " .. score
+        app_ui.lives_label.text = "LIVES: " .. lives
+        app_ui.level_label.text = "LEVEL: " .. current_lvl .. "/" .. #LEVELS
+        app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+
+        if score_pop.alpha > 0.01 then
+            app_ui.score_pop_label.visible = true
+            app_ui.score_pop_label.text = score_pop.text
+            app_ui.score_pop_label.color = {1.0, 1.0, 0.2, score_pop.alpha}
+            app_ui.score_pop_label.y = score_pop.y
+        else
+            app_ui.score_pop_label.visible = false
+        end
+    elseif game_state == STATE.LEVEL_COMPLETE then
+        
+        
+
+        app_ui.banner_panel.color = {0.0, 0.0, 0.0, 0.5 * banner.alpha}
+        app_ui.banner_label.text = banner.text
+        app_ui.banner_label.color = {1.0, 1.0, 1.0, banner.alpha}
+        
+        -- scale imitation by modifying x, though standard doesn't have scale
+        app_ui.banner_label.x = SCREEN_W / 2 - (string.len(banner.text) * 8)
+
+        if math.floor(title_blink * 2) % 2 == 0 then
+            app_ui.banner_enter.visible = true
+            app_ui.banner_enter.color = {0.8, 0.8, 0.8, banner.alpha}
+        else
+            app_ui.banner_enter.visible = false
+        end
+    elseif game_state == STATE.GAME_OVER then
+        
+        
+
+        app_ui.go_score.text = "FINAL SCORE: " .. score
+
+        if math.floor(title_blink * 2) % 2 == 0 then
+            app_ui.go_enter.visible = true
+        else
+            app_ui.go_enter.visible = false
+        end
+    end
 end
 
 -- ── Render (world space) ──────────────────────────────────────────────────
@@ -697,58 +782,4 @@ end
 
 -- ── Render UI (screen space) ──────────────────────────────────────────────
 function lurek.draw_ui()
-    -- ── Title screen ──────────────────────────────────────────────────────
-    if game_state == STATE.TITLE then
-        lurek.render.setColor(0.2, 0.4, 0.9, 1)
-        text_("CLASSIC PLATFORMER", SCREEN_W / 2 - 140, SCREEN_H / 2 - 60, 32)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1, 1)
-            text_("PRESS ENTER", SCREEN_W / 2 - 80, SCREEN_H / 2 + 20, 20)
-        end
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("A/D or Arrows: Move  |  Space/W: Jump", SCREEN_W / 2 - 170, SCREEN_H / 2 + 70, 14)
-        return
-    end
-
-    -- ── HUD ───────────────────────────────────────────────────────────────
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. score, 10, 10, 18)
-    text_("LIVES: " .. lives, 10, 34, 18)
-    text_("LEVEL: " .. current_lvl .. "/" .. #LEVELS, 10, 58, 18)
-
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.7, 0.7, 0.7, 0.7)
-    text_("FPS: " .. fps, SCREEN_W - 90, 10, 14)
-
-    -- Score popup
-    if score_pop.alpha > 0.01 then
-        lurek.render.setColor(1, 1, 0.2, score_pop.alpha)
-        text_(score_pop.text, SCREEN_W / 2 - 20, score_pop.y, 20)
-    end
-
-    -- ── Level complete banner ─────────────────────────────────────────────
-    if game_state == STATE.LEVEL_COMPLETE then
-        lurek.render.setColor(0, 0, 0, 0.5)
-        rect(0, SCREEN_H / 2 - 50, SCREEN_W, 100)
-        lurek.render.setColor(1, 1, 1, banner.alpha)
-        text_(banner.text, SCREEN_W / 2 - 100, SCREEN_H / 2 - 20, 28)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(0.8, 0.8, 0.8, banner.alpha)
-            text_("PRESS ENTER", SCREEN_W / 2 - 70, SCREEN_H / 2 + 20, 18)
-        end
-    end
-
-    -- ── Game over ─────────────────────────────────────────────────────────
-    if game_state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect(0, 0, SCREEN_W, SCREEN_H)
-        lurek.render.setColor(0.9, 0.2, 0.2, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 90, SCREEN_H / 2 - 40, 32)
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("FINAL SCORE: " .. score, SCREEN_W / 2 - 80, SCREEN_H / 2 + 10, 20)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(0.8, 0.8, 0.8, 1)
-            text_("PRESS ENTER", SCREEN_W / 2 - 70, SCREEN_H / 2 + 50, 18)
-        end
-    end
 end

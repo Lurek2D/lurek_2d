@@ -330,6 +330,35 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.3, 0.35, 0.25)
 
     math.randomseed(os.time())
+    
+    lurek.ui.loadLayoutFile("content/games/action/sniper/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_rating = ui_root:findById("go_rating")
+    app_ui.go_acc = ui_root:findById("go_acc")
+    app_ui.go_stats = ui_root:findById("go_stats")
+    app_ui.go_restart = ui_root:findById("go_restart")
+    
+    app_ui.round_end_screen = ui_root:findById("round_end_screen")
+    app_ui.re_title = ui_root:findById("re_title")
+    app_ui.re_score = ui_root:findById("re_score")
+    app_ui.re_acc = ui_root:findById("re_acc")
+    app_ui.re_next = ui_root:findById("re_next")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.hud_round = ui_root:findById("hud_round")
+    app_ui.hud_shots = ui_root:findById("hud_shots")
+    app_ui.hud_score = ui_root:findById("hud_score")
+    app_ui.hud_total = ui_root:findById("hud_total")
+    app_ui.hud_wind = ui_root:findById("hud_wind")
+    app_ui.breath_bg = ui_root:findById("breath_bg")
+    app_ui.breath_text = ui_root:findById("breath_text")
+    app_ui.hud_range = ui_root:findById("hud_range")
 end
 
 local function _ready_setup()
@@ -492,6 +521,80 @@ function lurek.process(dt)
             state = STATE_TITLE
         end
     end
+    
+    -- UI Sync
+    if app_ui then
+        app_ui.title_screen.visible = (state == STATE_TITLE)
+        if state == STATE_TITLE then
+            local blink = math.abs(math.sin(sway_time * 2))
+            app_ui.press_start.color = {1, 1, 1, blink}
+        end
+        
+        app_ui.game_over_screen.visible = (state == STATE_GAME_OVER)
+        if state == STATE_GAME_OVER then
+            app_ui.go_score.text = "FINAL SCORE: " .. total_score
+            app_ui.go_rating.text = "Rating: " .. get_rating(total_score)
+            local acc = 0
+            if total_shots_fired > 0 then acc = math.floor(total_hits / total_shots_fired * 100) end
+            app_ui.go_acc.text = "Accuracy: " .. acc .. "%"
+            app_ui.go_stats.text = "Shots: " .. total_shots_fired .. "  Hits: " .. total_hits
+            local blink = math.abs(math.sin(sway_time * 2))
+            app_ui.go_restart.color = {1, 1, 1, blink}
+        end
+        
+        app_ui.round_end_screen.visible = (state == STATE_ROUND_END)
+        if state == STATE_ROUND_END then
+            local rdef = round_defs[current_round]
+            app_ui.re_title.text = rdef.name .. " Complete!"
+            app_ui.re_score.text = "Round Score: " .. round_score
+            local acc = 0
+            local fired = 5 - shots_left
+            if fired > 0 then acc = math.floor(round_hits / fired * 100) end
+            app_ui.re_acc.text = "Accuracy: " .. acc .. "%"
+            if current_round < 3 then
+                app_ui.re_next.text = "PRESS ENTER FOR NEXT ROUND"
+            else
+                app_ui.re_next.text = "PRESS ENTER FOR RESULTS"
+            end
+        end
+        
+        app_ui.hud.visible = (state == STATE_AIMING or state == STATE_BULLET_FLIGHT)
+        if app_ui.hud.visible then
+            local rdef = round_defs[current_round]
+            app_ui.hud_round.text = rdef.name
+            app_ui.hud_shots.text = "Shots: " .. shots_left
+            app_ui.hud_score.text = "Score: " .. round_score
+            app_ui.hud_total.text = "Total: " .. total_score
+            app_ui.hud_wind.text = wind_display
+            
+            if breath_held then
+                local pct = 1.0 - (breath_timer / BREATH_DURATION)
+                app_ui.breath_bg.visible = true
+                app_ui.breath_bg.width = 100 * pct
+                app_ui.breath_text.text = "HOLDING BREATH"
+                app_ui.breath_text.color = {0.3, 0.9, 0.4, 1.0}
+                app_ui.breath_text.y = 24
+            elseif not breath_available then
+                app_ui.breath_bg.visible = false
+                app_ui.breath_text.text = "Recovering..."
+                app_ui.breath_text.color = {0.8, 0.4, 0.3, 1.0}
+                app_ui.breath_text.y = 10
+            else
+                app_ui.breath_bg.visible = false
+                app_ui.breath_text.text = "[Shift] Hold Breath"
+                app_ui.breath_text.color = {0.7, 0.7, 0.6, 0.7}
+                app_ui.breath_text.y = 10
+            end
+            
+            local ct = targets[current_target_idx]
+            if ct and ct.alive then
+                app_ui.hud_range.text = "Range: " .. math.floor(ct.x) .. "px"
+                app_ui.hud_range.visible = true
+            else
+                app_ui.hud_range.visible = false
+            end
+        end
+    end
 end
 
 --------------------------------------------------------------
@@ -555,99 +658,32 @@ function lurek.draw()
         -- Center dot
         circ(scope_x, scope_y, 2, {1, 0.2, 0.2, 0.9})
     end
+
+    if state == STATE_AIMING or state == STATE_BULLET_FLIGHT then
+        -- Wind arrow
+        local arrow_cx = W / 2
+        local arrow_cy = 38
+        local arrow_len = math.min(math.abs(wind), 80)
+        if math.abs(wind) > 2 then
+            local dir = wind > 0 and 1 or -1
+            local ax = arrow_cx + dir * arrow_len
+            ln(arrow_cx - dir * arrow_len, arrow_cy, ax, arrow_cy, {0.6, 0.85, 1, 0.9})
+            -- Arrowhead
+            ln(ax, arrow_cy, ax - dir * 8, arrow_cy - 5, {0.6, 0.85, 1, 0.9})
+            ln(ax, arrow_cy, ax - dir * 8, arrow_cy + 5, {0.6, 0.85, 1, 0.9})
+        end
+
+        -- Score popup
+        if score_popup then
+            local c = {1, 1, 0.5, score_popup.alpha}
+            text_(score_popup.text, score_popup.x - 30, score_popup.y, 18, c)
+        end
+    end
 end
 
 --------------------------------------------------------------
 -- Render UI: HUD, wind, score, round info, title/game over
 --------------------------------------------------------------
 function lurek.draw_ui()
-    if state == STATE_TITLE then
-        text_("SNIPER", W / 2 - 80, H / 2 - 60, 48, {0.9, 0.85, 0.7, 1})
-        text_("Ballistics Puzzle", W / 2 - 70, H / 2, 18, {0.7, 0.7, 0.6, 1})
-        local blink = math.abs(math.sin(sway_time * 2))
-        text_("PRESS ENTER", W / 2 - 55, H / 2 + 60, 16, {1, 1, 1, blink})
-        return
-    end
-
-    if state == STATE_GAME_OVER then
-        text_("FINAL SCORE: " .. total_score, W / 2 - 90, H / 2 - 80, 28, {1, 0.9, 0.3, 1})
-        local rating = get_rating(total_score)
-        text_("Rating: " .. rating, W / 2 - 80, H / 2 - 30, 22, {1, 1, 1, 1})
-        local acc = 0
-        if total_shots_fired > 0 then
-            acc = math.floor(total_hits / total_shots_fired * 100)
-        end
-        text_("Accuracy: " .. acc .. "%", W / 2 - 50, H / 2 + 10, 18, {0.8, 0.8, 0.8, 1})
-        text_("Shots: " .. total_shots_fired .. "  Hits: " .. total_hits,
-            W / 2 - 70, H / 2 + 40, 16, {0.7, 0.7, 0.7, 1})
-        local blink = math.abs(math.sin(sway_time * 2))
-        text_("PRESS ENTER TO RESTART", W / 2 - 95, H / 2 + 90, 16, {1, 1, 1, blink})
-        return
-    end
-
-    if state == STATE_ROUND_END then
-        local rdef = round_defs[current_round]
-        text_(rdef.name .. " Complete!", W / 2 - 100, H / 2 - 60, 22, {1, 0.9, 0.4, 1})
-        text_("Round Score: " .. round_score, W / 2 - 65, H / 2 - 20, 20, {1, 1, 1, 1})
-        local acc = 0
-        local fired = 5 - shots_left
-        if fired > 0 then
-            acc = math.floor(round_hits / fired * 100)
-        end
-        text_("Accuracy: " .. acc .. "%", W / 2 - 50, H / 2 + 15, 18, {0.8, 0.8, 0.8, 1})
-        if current_round < 3 then
-            text_("PRESS ENTER FOR NEXT ROUND", W / 2 - 110, H / 2 + 60, 16, {1, 1, 1, 1})
-        else
-            text_("PRESS ENTER FOR RESULTS", W / 2 - 100, H / 2 + 60, 16, {1, 1, 1, 1})
-        end
-        return
-    end
-
-    -- HUD — Aiming / Bullet Flight
-    local rdef = round_defs[current_round]
-
-    -- Round & shots
-    text_(rdef.name, 10, 10, 16, {1, 1, 1, 0.9})
-    text_("Shots: " .. shots_left, 10, 32, 14, {0.9, 0.9, 0.8, 1})
-    text_("Score: " .. round_score, 10, 50, 14, {1, 0.9, 0.3, 1})
-    text_("Total: " .. total_score, 10, 68, 14, {0.8, 0.8, 0.7, 1})
-
-    -- Wind indicator
-    text_(wind_display, W / 2 - 60, 10, 16, {0.6, 0.85, 1, 1})
-    -- Wind arrow
-    local arrow_cx = W / 2
-    local arrow_cy = 38
-    local arrow_len = math.min(math.abs(wind), 80)
-    if math.abs(wind) > 2 then
-        local dir = wind > 0 and 1 or -1
-        local ax = arrow_cx + dir * arrow_len
-        ln(arrow_cx - dir * arrow_len, arrow_cy, ax, arrow_cy, {0.6, 0.85, 1, 0.9})
-        -- Arrowhead
-        ln(ax, arrow_cy, ax - dir * 8, arrow_cy - 5, {0.6, 0.85, 1, 0.9})
-        ln(ax, arrow_cy, ax - dir * 8, arrow_cy + 5, {0.6, 0.85, 1, 0.9})
-    end
-
-    -- Breath indicator
-    if breath_held then
-        local pct = 1.0 - (breath_timer / BREATH_DURATION)
-        rect(W - 120, 10, 100 * pct, 10, {0.3, 0.9, 0.4, 0.8})
-        text_("HOLDING BREATH", W - 120, 24, 12, {0.3, 0.9, 0.4, 1})
-    elseif not breath_available then
-        text_("Recovering...", W - 110, 10, 12, {0.8, 0.4, 0.3, 1})
-    else
-        text_("[Shift] Hold Breath", W - 130, 10, 12, {0.7, 0.7, 0.6, 0.7})
-    end
-
-    -- Target distance hint
-    local ct = targets[current_target_idx]
-    if ct and ct.alive then
-        local d = math.floor(ct.x)
-        text_("Range: " .. d .. "px", W - 130, H - 30, 14, {0.8, 0.8, 0.7, 0.8})
-    end
-
-    -- Score popup
-    if score_popup then
-        local c = {1, 1, 0.5, score_popup.alpha}
-        text_(score_popup.text, score_popup.x - 30, score_popup.y, 18, c)
-    end
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
 end

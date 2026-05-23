@@ -1,0 +1,101 @@
+[root]
+widget_type = "panel"
+width = 960
+height = 640
+
+[[root.children]]
+widget_type = "panel"
+id = "menu_panel"
+anchor = "center"
+width = 700
+height = 300
+visible = true
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "DYNA BLASTER"
+  anchor = "top_center"
+  y = 80
+  font_size = 56
+  color = [1.0, 0.95, 0.35, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "menu_hint"
+  text = "Press Enter to start"
+  anchor = "top_center"
+  y = 170
+  font_size = 24
+  color = [0.85, 0.9, 1.0, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+anchor = "top_left"
+width = 960
+height = 640
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "Score: 0"
+  anchor = "top_left"
+  x = 20
+  y = 12
+  font_size = 22
+  color = [0.95, 0.95, 0.95, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lives_label"
+  text = "Lives: 3"
+  anchor = "top_left"
+  x = 180
+  y = 12
+  font_size = 22
+  color = [0.95, 0.95, 0.95, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "status_label"
+  text = "Arrows/WASD move, Space bombs, Esc quit"
+  anchor = "top_right"
+  x = -20
+  y = 12
+  font_size = 18
+  color = [0.75, 0.8, 0.9, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_panel"
+anchor = "center"
+width = 700
+height = 260
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "game_over_title"
+  text = "GAME OVER"
+  anchor = "top_center"
+  y = 70
+  font_size = 56
+  color = [1.0, 0.35, 0.35, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "game_over_score"
+  text = "Final score: 0"
+  anchor = "top_center"
+  y = 150
+  font_size = 24
+  color = [0.95, 0.95, 0.95, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "Press Enter to restart"
+  anchor = "top_center"
+  y = 190
+  font_size = 22
+  color = [0.85, 0.9, 1.0, 1.0]

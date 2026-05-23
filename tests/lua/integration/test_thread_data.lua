@@ -1,4 +1,5 @@
 -- Integration: typed Channel passing JSON-serialized data between thread contexts
+-- @describe integration: thread channel with serialized data
 describe("integration: thread channel with serialized data", function()
 
     -- @integration LChannel:pop

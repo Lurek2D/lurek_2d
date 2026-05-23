@@ -59,18 +59,6 @@ local function run_all(ctx, db, files)
     return out
 end
 
-local function query(ctx, name, sql)
-    local frame = ctx.db:query(sql)
-    ctx.api_status[#ctx.api_status + 1] = {
-        name = name,
-        ok = true,
-        rows = frame:nrows(),
-        table = "query",
-        api = "LDatabase:query",
-    }
-    return frame
-end
-
 local function query_params(ctx, name, sql, params)
     local frame = ctx.db:queryParams(sql, params or {})
     ctx.api_status[#ctx.api_status + 1] = {
@@ -81,10 +69,6 @@ local function query_params(ctx, name, sql, params)
         api = "LDatabase:queryParams",
     }
     return frame
-end
-
-local function sql_lines(lines)
-    return table.concat(lines, "\n")
 end
 
 local function write_manifest(C, names)
@@ -322,12 +306,18 @@ local function filter_where(C, filters, include_anomalies)
         clauses[#clauses + 1] = "anomaly_issue != NULL"
         clauses[#clauses + 1] = "anomaly_score >= ?"
         params[#params + 1] = filters.anomaly_threshold or 0
-    elseif current_table(filters) == "transactions" then
-        return table.concat(clauses, " AND "), params
-    else
+    elseif current_table(filters) ~= "transactions" then
         clauses[#clauses + 1] = "anomaly_issue = NULL"
     end
     return table.concat(clauses, " AND "), params
+end
+
+local function render_sql_template(ctx, file_name, replacements)
+    local sql = read_sql(ctx, file_name)
+    for token, value in pairs(replacements or {}) do
+        sql = sql:gsub(token, value)
+    end
+    return sql
 end
 
 local function filter_months(ctx)
@@ -353,31 +343,14 @@ local function metric_view_from_aliases(row)
     }
 end
 
-local function metric_alias_sql(table_name, where)
-    return sql_lines({
-        "SELECT",
-        "    COUNT(*) AS row_count,",
-        "    SUM(income_amount) AS income,",
-        "    SUM(expense_amount) AS expense,",
-        "    SUM(savings_amount) AS savings,",
-        "    SUM(debt_amount) AS debt,",
-        "    SUM(essential_amount) AS essential,",
-        "    SUM(asset_amount) AS assets,",
-        "    SUM(income_amount) - SUM(expense_amount) - SUM(savings_amount) AS net_amount,",
-        "    SUM(savings_amount) / SUM(income_amount) AS savings_rate,",
-        "    SUM(debt_amount) / SUM(income_amount) AS debt_ratio,",
-        "    SUM(essential_amount) / SUM(expense_amount) AS essential_ratio,",
-        "    SUM(expense_amount) / ? AS avg_expense,",
-        "    (50000 + SUM(asset_amount) * 0.08) / (SUM(expense_amount) / ?) AS runway_months",
-        "FROM " .. table_name,
-        "WHERE " .. where,
-    })
-end
-
 local function query_metrics(ctx, table_name, where, params)
     local months = filter_months(ctx)
     local alias_params = append_params({ months, months }, params)
-    local frame = query_params(ctx, "summary metric aliases", metric_alias_sql(table_name, where), alias_params)
+    local sql = render_sql_template(ctx, "50_refresh_metrics.sql", {
+        ["__SOURCE_TABLE__"] = table_name,
+        ["__WHERE__"] = where,
+    })
+    local frame = query_params(ctx, "summary metric aliases", sql, alias_params)
     local row = first_row(frame)
     ctx.sql_metric_aliases = row.income ~= nil and row.savings_rate ~= nil
     ctx.sql_metric_alias_reason = ctx.sql_metric_aliases and "arithmetic aliases available" or "arithmetic aliases did not return named columns"
@@ -391,101 +364,41 @@ function Pipeline.refresh(ctx, filters)
     local anomaly_where, anomaly_params = filter_where(ctx.C, ctx.filters, true)
     local A = ctx.C.AGG
 
-    local monthly_frame = query_params(ctx, "monthly filtered", sql_lines({
-        "SELECT",
-        "    month_index,",
-        "    year,",
-        "    month,",
-        "    SUM(income_amount),",
-        "    SUM(expense_amount),",
-        "    SUM(savings_amount),",
-        "    SUM(debt_amount),",
-        "    SUM(essential_amount),",
-        "    SUM(signed_amount)",
-        "FROM " .. table_name,
-        "WHERE " .. where,
-        "GROUP BY month_index",
-        "ORDER BY month_index ASC",
-    }), where_params)
-    local categories_frame = query_params(ctx, "categories filtered", sql_lines({
-        "SELECT",
-        "    category_clean,",
-        "    SUM(expense_amount),",
-        "    COUNT(*)",
-        "FROM " .. table_name,
-        "WHERE " .. where .. " AND expense_amount > ?",
-        "GROUP BY category_clean",
-        "ORDER BY category_clean ASC",
-        "LIMIT 12",
-    }), append_params(where_params, { 0 }))
-    local members_frame = query_params(ctx, "members filtered", sql_lines({
-        "SELECT",
-        "    member_clean,",
-        "    SUM(income_amount),",
-        "    SUM(expense_amount),",
-        "    SUM(savings_amount),",
-        "    SUM(debt_amount),",
-        "    COUNT(*)",
-        "FROM " .. table_name,
-        "WHERE " .. where,
-        "GROUP BY member_clean",
-        "ORDER BY member_clean ASC",
-    }), where_params)
-    local payment_frame = query_params(ctx, "payment filtered", sql_lines({
-        "SELECT",
-        "    payment_method,",
-        "    SUM(expense_amount),",
-        "    COUNT(*)",
-        "FROM " .. table_name,
-        "WHERE " .. where .. " AND expense_amount > ?",
-        "GROUP BY payment_method",
-        "ORDER BY payment_method ASC",
-    }), append_params(where_params, { 0 }))
-    local recurring_frame = query_params(ctx, "recurring filtered", sql_lines({
-        "SELECT",
-        "    merchant,",
-        "    SUM(expense_amount),",
-        "    AVG(expense_amount),",
-        "    COUNT(*)",
-        "FROM " .. table_name,
-        "WHERE " .. where .. " AND recurring_value = ?",
-        "GROUP BY merchant",
-        "ORDER BY merchant ASC",
-        "LIMIT 8",
-    }), append_params(where_params, { 1 }))
-    local anomalies_frame = query_params(ctx, "anomalies filtered", sql_lines({
-        "SELECT",
-        "    txn_id,",
-        "    date,",
-        "    year,",
-        "    month,",
-        "    month_index,",
-        "    member_clean,",
-        "    category_clean,",
-        "    merchant,",
-        "    amount_abs,",
-        "    anomaly_issue,",
-        "    anomaly_severity,",
-        "    anomaly_score",
-        "FROM transactions",
-        "WHERE " .. anomaly_where,
-        "ORDER BY anomaly_score DESC",
-        "LIMIT 40",
-    }), anomaly_params)
-    local recent_frame = query_params(ctx, "recent filtered", sql_lines({
-        "SELECT",
-        "    date,",
-        "    member_clean,",
-        "    category_clean,",
-        "    merchant,",
-        "    payment_method,",
-        "    signed_amount,",
-        "    anomaly_issue",
-        "FROM " .. table_name,
-        "WHERE " .. where,
-        "ORDER BY date DESC",
-        "LIMIT 44",
-    }), where_params)
+    local monthly_sql = render_sql_template(ctx, "51_refresh_monthly.sql", {
+        ["__SOURCE_TABLE__"] = table_name,
+        ["__WHERE__"] = where,
+    })
+    local categories_sql = render_sql_template(ctx, "52_refresh_categories.sql", {
+        ["__SOURCE_TABLE__"] = table_name,
+        ["__WHERE__"] = where,
+    })
+    local members_sql = render_sql_template(ctx, "53_refresh_members.sql", {
+        ["__SOURCE_TABLE__"] = table_name,
+        ["__WHERE__"] = where,
+    })
+    local payment_sql = render_sql_template(ctx, "54_refresh_payment.sql", {
+        ["__SOURCE_TABLE__"] = table_name,
+        ["__WHERE__"] = where,
+    })
+    local recurring_sql = render_sql_template(ctx, "55_refresh_recurring.sql", {
+        ["__SOURCE_TABLE__"] = table_name,
+        ["__WHERE__"] = where,
+    })
+    local anomalies_sql = render_sql_template(ctx, "56_refresh_anomalies.sql", {
+        ["__ANOMALY_WHERE__"] = anomaly_where,
+    })
+    local recent_sql = render_sql_template(ctx, "57_refresh_recent.sql", {
+        ["__SOURCE_TABLE__"] = table_name,
+        ["__WHERE__"] = where,
+    })
+
+    local monthly_frame = query_params(ctx, "monthly filtered", monthly_sql, where_params)
+    local categories_frame = query_params(ctx, "categories filtered", categories_sql, append_params(where_params, { 0 }))
+    local members_frame = query_params(ctx, "members filtered", members_sql, where_params)
+    local payment_frame = query_params(ctx, "payment filtered", payment_sql, append_params(where_params, { 0 }))
+    local recurring_frame = query_params(ctx, "recurring filtered", recurring_sql, append_params(where_params, { 1 }))
+    local anomalies_frame = query_params(ctx, "anomalies filtered", anomalies_sql, anomaly_params)
+    local recent_frame = query_params(ctx, "recent filtered", recent_sql, where_params)
 
     ctx.view_version = (ctx.view_version or 0) + 1
     ctx.view = {

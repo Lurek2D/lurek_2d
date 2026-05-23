@@ -2986,8 +2986,13 @@ fn init_logging(
     } else {
         std::env::current_dir()
             .unwrap_or_else(|_| std::path::PathBuf::from("."))
+            .join("work")
+            .join("runtime")
             .join("lurek.log")
     };
+    if let Some(parent) = log_path.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
     let file_result = if log_append {
         std::fs::OpenOptions::new()
             .create(true)

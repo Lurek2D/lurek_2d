@@ -1,0 +1,230 @@
+[root]
+widget_type = "panel"
+id = "root_ui"
+width = 800
+height = 600
+bg_color = [0, 0, 0, 0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "title_screen"
+  width = 800
+  height = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "LEMMINGS"
+    font_size = 48
+    color = [0.3, 0.7, 1.0, 1]
+    anchor = "center"
+    y = -120
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "LET'S GO!"
+    font_size = 24
+    color = [0.2, 0.9, 0.3, 1]
+    anchor = "center"
+    y = -40
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Press ENTER to start"
+    font_size = 16
+    color = [0.7, 0.7, 0.7, 1]
+    anchor = "center"
+    y = 40
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Assign jobs: 1=Blocker  2=Digger  3=Builder  4=Basher"
+    font_size = 14
+    color = [0.7, 0.7, 0.7, 1]
+    anchor = "center"
+    y = 100
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Hover cursor near lemming + press key"
+    font_size = 14
+    color = [0.7, 0.7, 0.7, 1]
+    anchor = "center"
+    y = 130
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "game_over_screen"
+  width = 800
+  height = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "GAME OVER"
+    font_size = 48
+    color = [0.9, 0.8, 0.2, 1]
+    anchor = "center"
+    y = -100
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_text"
+    text = "All levels completed!"
+    font_size = 20
+    color = [0.7, 0.7, 0.7, 1]
+    anchor = "center"
+    y = -20
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Press ENTER to return to title"
+    font_size = 16
+    color = [0.7, 0.7, 0.7, 1]
+    anchor = "center"
+    y = 40
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "hud_screen"
+  width = 800
+  height = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    width = 800
+    height = 28
+    bg_color = [0.1, 0.1, 0.2, 0.85]
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_saved"
+      text = "Saved: 0/8"
+      font_size = 16
+      color = [0.3, 0.9, 0.3, 1]
+      x = 10
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_level"
+      text = "Level 1"
+      font_size = 16
+      color = [0.7, 0.7, 0.9, 1]
+      x = 170
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_spawned"
+      text = "Spawned: 0/12"
+      font_size = 16
+      color = [0.9, 0.9, 0.5, 1]
+      x = 260
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "job_blocker"
+      text = "1:Blocker=0"
+      font_size = 13
+      color = [0.9, 0.3, 0.3, 1]
+      x = 460
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "job_digger"
+      text = "2:Digger=0"
+      font_size = 13
+      color = [0.6, 0.45, 0.2, 1]
+      x = 550
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "job_builder"
+      text = "3:Builder=0"
+      font_size = 13
+      color = [0.9, 0.8, 0.2, 1]
+      x = 640
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "job_basher"
+      text = "4:Basher=0"
+      font_size = 13
+      color = [0.85, 0.55, 0.2, 1]
+      x = 730
+      y = 6
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "hud_timer"
+    text = "Time 0:00"
+    font_size = 14
+    color = [0.6, 0.6, 0.6, 1]
+    x = 10
+    y = 580
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "fps_label"
+    text = "FPS: 60"
+    font_size = 12
+    color = [0.4, 0.4, 0.4, 1]
+    x = 730
+    y = 580
+
+    [[root.children.children]]
+    widget_type = "panel"
+    width = 800
+    height = 18
+    bg_color = [0.1, 0.1, 0.2, 0.7]
+    x = 0
+    y = 560
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      text = "Hover + 1:Blocker  2:Digger  3:Builder  4:Basher    ESC:Quit"
+      font_size = 12
+      color = [0.5, 0.5, 0.6, 1]
+      x = 180
+      y = 2
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "end_screen"
+  width = 800
+  height = 120
+  bg_color = [0, 0, 0, 0.6]
+  anchor = "center"
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "end_title"
+    text = "LEVEL COMPLETE"
+    font_size = 32
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = -30
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "end_stats"
+    text = "Saved: 0   Lost: 0"
+    font_size = 18
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = 20
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Press ENTER to continue"
+    font_size = 14
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = 50

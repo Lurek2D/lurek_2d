@@ -280,11 +280,11 @@ describe("generic minimap and reveal helpers", function()
         expect_true(l >= 0 and l <= 1)
     end)
 
-    -- @covers LRaycaster:buildMinimapTileWindow
-    it("buildMinimapTileWindow returns samples", function()
+    -- @covers LRaycaster:buildMinimapWindow
+    it("buildMinimapWindow returns samples", function()
         local rc = lurek.raycaster.new(16, 16)
         rc:setCell(4, 4, 1)
-        local samples = rc:buildMinimapTileWindow(5.5, 5.5, 3, 0.2, {})
+        local samples = rc:buildMinimapWindow(5.5, 5.5, 3, 0.2, {})
         expect_true(#samples > 0)
         local has_blocked = false
         for _, s in ipairs(samples) do
@@ -1252,11 +1252,11 @@ describe("lowered floor and model-scene helpers", function()
 end)
 
 -- @describe RaycasterScene rendering
-describe("RaycasterScene rendering", function()
-    -- @covers LRaycasterScene:drawToImage
-    it("drawToImage returns correct dimensions", function()
-        local scene = lurek.raycaster.newScene()
-        local img = scene:drawToImage(320, 200)
+describe("Raycaster rendering", function()
+    -- @covers LRaycaster2D:drawView
+    it("drawView returns correct image dimensions", function()
+        local rc = lurek.raycaster.new(16, 16)
+        local img = rc:drawView(8, 8, 0, 90, 320, 200, 100)
         expect_equal(320, img:getWidth())
         expect_equal(200, img:getHeight())
     end)

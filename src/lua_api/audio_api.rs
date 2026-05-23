@@ -437,7 +437,7 @@ impl LuaUserData for LuaBus {
         /// @param | name | string | Type name to check (e.g. "LBus", "Bus", or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LBus" || name == "Bus" || name == "Object")
+            Ok(name == "LBus" || name == "LBus" || name == "Bus" || name == "Object")
         });
         // -- setDuckTarget --
         /// Configures ducking so this bus lowers the volume of a target bus when active.
@@ -866,7 +866,7 @@ impl LuaUserData for LuaMidiPlayer {
         /// @param | name | string | Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LMidiPlayer" || name == "MidiPlayer" || name == "Object")
+            Ok(name == "LMidiPlayer" || name == "LMidiPlayer" || name == "MidiPlayer" || name == "Object")
         });
     }
 }
@@ -944,7 +944,7 @@ impl LuaUserData for LuaSoundPool {
         /// @param | name | string | Type name to check (e.g. "LSoundPool" or "Object").
         /// @return | boolean | True if this object matches the given type.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSoundPool" || name == "SoundPool" || name == "Object")
+            Ok(name == "LSoundPool" || name == "LSoundPool" || name == "SoundPool" || name == "Object")
         });
     }
 }

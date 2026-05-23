@@ -38,6 +38,7 @@ local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
 local state = STATE.PLAYING
 
 -- ── Mutable game state ───────────────────────────────────────────────────
+local app_ui          = {}
 local mushrooms       = {}   -- mushrooms[row][col] = hp (1-4) or nil
 local centipedes      = {}   -- list of chains: {segments={{col,row},...}, dx=1/-1}
 local player          = {}   -- {col, row}
@@ -345,6 +346,26 @@ function lurek.init()
     lurek.input.bind("restart", {"r"})
     lurek.input.bind("quit",    {"escape"})
 
+    lurek.ui.loadLayoutFile("content/games/arcade/centipede/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.wave_label = ui_root:findById("wave_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.final_score = ui_root:findById("final_score")
+    app_ui.press_space = ui_root:findById("press_space")
+    app_ui.press_r = ui_root:findById("press_r")
+    
+    if app_ui.press_space then
+        app_ui.press_space:setOnClick(function() new_game() end)
+    end
+    if app_ui.press_r then
+        app_ui.press_r:setOnClick(function() new_game() end)
+    end
+
     -- Particle systems
     sparks = lurek.particle.newSystem({
         maxParticles  = 80,
@@ -601,6 +622,30 @@ function lurek.process(dt)
     burst:update(dt)
     spider_sparks:update(dt)
 
+    -- Update UI state
+    app_ui.title_screen.visible = (state == STATE.TITLE)
+    app_ui.hud.visible = (state == STATE.PLAYING or state == STATE.GAME_OVER)
+    app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+
+    if app_ui.title_screen.visible then
+        local alpha = 0.5 + 0.5 * math.sin(title_blink * 3)
+        app_ui.press_space.color = {1, 1, 0.3, alpha}
+    end
+
+    if app_ui.hud.visible then
+        app_ui.score_label.text = tostring(score)
+        app_ui.score_label.scale = score_pop.scale
+        app_ui.wave_label.text = "WAVE " .. tostring(wave)
+        app_ui.lives_label.text = "LIVES: " .. tostring(lives)
+        app_ui.fps_label.text = tostring(lurek.timer.getFPS()) .. " FPS"
+    end
+
+    if app_ui.game_over_screen.visible then
+        app_ui.final_score.text = "Final Score: " .. tostring(score)
+        local alpha = 0.5 + 0.5 * math.sin(title_blink * 3)
+        app_ui.press_r.color = {1, 1, 0.3, alpha}
+    end
+
     if state == STATE.TITLE then
         title_blink = title_blink + dt
         if lurek.input.wasActionPressed("fire") then new_game() end
@@ -811,55 +856,7 @@ end
 
 -- ── render_ui (screen space) ──────────────────────────────────────────────
 function lurek.draw_ui()
-    if state == STATE.TITLE then
-        lurek.render.setColor(0.2, 0.9, 0.3, 1)
-        text_("CENTIPEDE", SCREEN_W / 2 - 100, 160, 3)
-
-        lurek.render.setColor(0.8, 0.8, 0.8, 1)
-        text_("Blast the centipede through a mushroom field", SCREEN_W / 2 - 190, 230, 1)
-
-        local alpha = 0.5 + 0.5 * math.sin(title_blink * 3)
-        lurek.render.setColor(1, 1, 0.3, alpha)
-        text_("Press SPACE to start", SCREEN_W / 2 - 90, 340, 1.2)
-
-        lurek.render.setColor(0.5, 0.5, 0.5, 1)
-        text_("Move: WASD / Arrows   Fire: Space   Quit: Escape", SCREEN_W / 2 - 210, 420, 1)
-        return
-    end
-
-    -- HUD
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE", 10, 4, 1)
-    lurek.render.setColor(0.3, 1, 0.3, 1)
-    text_(tostring(score), 70, 4, score_pop.scale)
-
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("WAVE " .. wave, SCREEN_W / 2 - 30, 4, 1)
-
-    lurek.render.setColor(1, 0.3, 0.3, 1)
-    for i = 1, lives do
-        local lx = SCREEN_W - 30 * i
-        circ("fill", lx, 12, 6)
-    end
-
-    -- FPS
-    lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    text_(tostring(lurek.timer.getFPS()) .. " FPS", SCREEN_W - 80, SCREEN_H - 18, 1)
-
-    if state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect("fill", SCREEN_W / 2 - 160, SCREEN_H / 2 - 60, 320, 120)
-
-        lurek.render.setColor(0.9, 0.2, 0.2, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 80, SCREEN_H / 2 - 40, 2)
-
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("Final Score: " .. score, SCREEN_W / 2 - 60, SCREEN_H / 2 + 10, 1)
-
-        local alpha = 0.5 + 0.5 * math.sin(title_blink * 3)
-        lurek.render.setColor(1, 1, 0.3, alpha)
-        text_("Press R to restart", SCREEN_W / 2 - 75, SCREEN_H / 2 + 40, 1)
-    end
+    -- Rendered via TOML layout system
 end
 
 -- ── keypressed ────────────────────────────────────────────────────────────

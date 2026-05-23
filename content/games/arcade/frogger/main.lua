@@ -129,6 +129,7 @@ end
 -- ---------------------------------------------------------------------------
 -- Game state
 -- ---------------------------------------------------------------------------
+local app_ui = {}
 local frog = { gx = 10, gy = START_ROW, x = 0, y = 0, alive = true }
 local frog_visual = { x = 0, y = 0 }   -- smoothly tweened draw position
 local hopping = false                    -- true while hop tween is active
@@ -389,6 +390,32 @@ function lurek.init()
     lurek.input.bind("start", {"return", "space"})
     lurek.input.bind("quit",  {"escape"})
 
+    local ui_root = lurek.ui.loadLayoutFile("content/games/arcade/frogger/ui.toml")
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.press_enter = ui_root:findById("press_enter")
+    app_ui.high_score_title = ui_root:findById("high_score_title")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.level_label = ui_root:findById("level_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.final_score = ui_root:findById("final_score")
+    app_ui.final_level = ui_root:findById("final_level")
+    app_ui.new_high_score = ui_root:findById("new_high_score")
+    app_ui.press_retry = ui_root:findById("press_retry")
+    
+    local function transition_from_enter()
+        if current_state == STATE.TITLE then
+            start_game()
+        elseif current_state == STATE.GAME_OVER then
+            current_state = STATE.TITLE
+        end
+    end
+    
+    if app_ui.press_enter then app_ui.press_enter:setOnClick(transition_from_enter) end
+    if app_ui.press_retry then app_ui.press_retry:setOnClick(transition_from_enter) end
+
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
 
     math.randomseed(os.time())
@@ -402,6 +429,33 @@ function lurek.process(dt)
     if lurek.automation then lurek.automation.update(dt) end
     update_particles(dt)
     update_score_pops(dt)
+
+    -- Update UI
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    app_ui.hud.visible = (current_state == STATE.PLAYING)
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+
+    local blink = math.sin(lurek.timer.getTime() * 4) > 0
+
+    if current_state == STATE.TITLE then
+        if high_score > 0 then
+            app_ui.high_score_title.text = "HIGH SCORE: " .. tostring(high_score)
+            app_ui.high_score_title.visible = true
+        else
+            app_ui.high_score_title.visible = false
+        end
+        app_ui.press_enter.visible = blink
+    elseif current_state == STATE.PLAYING then
+        app_ui.score_label.text = "SCORE: " .. tostring(score)
+        app_ui.level_label.text = "LVL " .. tostring(level)
+        app_ui.lives_label.text = "LIVES: " .. tostring(lives)
+    elseif current_state == STATE.GAME_OVER then
+        app_ui.final_score.text = "SCORE: " .. tostring(score)
+        app_ui.final_level.text = "LEVEL: " .. tostring(level)
+        app_ui.new_high_score.visible = (score >= high_score and score > 0)
+        app_ui.press_retry.visible = blink
+    end
 
     -- ── TITLE ─────────────────────────────────────────────────
     if current_state == STATE.TITLE then
@@ -758,110 +812,7 @@ end
 -- lurek.render_ui — HUD overlay (screen space)
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    -- ── TITLE SCREEN ──────────────────────────────────────────
-    if current_state == STATE.TITLE then
-        lurek.render.setColor(0.05, 0.15, 0.45, 1)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        -- Title
-        lurek.render.setColor(0.1, 0.9, 0.1, 1)
-        text_("F R O G G E R", SCREEN_W / 2 - 100, 100, 2)
-
-        -- ASCII frog art
-        lurek.render.setColor(0.2, 0.8, 0.2, 1)
-        local frog_art = {
-            "    @..@    ",
-            "   (----)   ",
-            "  ( >  < )  ",
-            "  ^^ /\\ ^^  ",
-            "    ~~~~    ",
-        }
-        for i, line in ipairs(frog_art) do
-            text_(line, SCREEN_W / 2 - 72, 180 + i * 22, 1.4)
-        end
-
-        -- Instructions
-        lurek.render.setColor(1, 1, 1, 0.9)
-        text_("Guide the frog across roads and rivers!", SCREEN_W / 2 - 160, 350, 1)
-        text_("Ride logs and turtles — don't fall in!", SCREEN_W / 2 - 155, 375, 1)
-        text_("Fill all 5 home slots to win!", SCREEN_W / 2 - 120, 400, 1)
-
-        -- Blink "PRESS ENTER"
-        local blink = math.sin(lurek.timer.getTime() * 4) > 0
-        if blink then
-            lurek.render.setColor(1, 1, 0, 1)
-            text_("PRESS ENTER", SCREEN_W / 2 - 70, 470, 1.5)
-        end
-
-        -- High score
-        if high_score > 0 then
-            lurek.render.setColor(0.8, 0.8, 0.2, 1)
-            text_("HIGH SCORE: " .. high_score, SCREEN_W / 2 - 70, 530, 1)
-        end
-        return
-    end
-
-    -- ── GAME OVER ─────────────────────────────────────────────
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(1, 0.2, 0.2, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 90, 200, 2.5)
-
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("SCORE: " .. score, SCREEN_W / 2 - 60, 280, 1.5)
-        text_("LEVEL: " .. level, SCREEN_W / 2 - 50, 320, 1.2)
-
-        if score >= high_score and score > 0 then
-            lurek.render.setColor(1, 1, 0, 1)
-            text_("NEW HIGH SCORE!", SCREEN_W / 2 - 80, 360, 1.2)
-        end
-
-        local blink = math.sin(lurek.timer.getTime() * 4) > 0
-        if blink then
-            lurek.render.setColor(1, 1, 1, 0.9)
-            text_("PRESS ENTER TO RETRY", SCREEN_W / 2 - 110, 430, 1.2)
-        end
-        return
-    end
-
-    -- ── PLAYING HUD ───────────────────────────────────────────
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. score, 10, 6, 1)
-
-    -- Level
-    text_("LVL " .. level, SCREEN_W / 2 - 25, 6, 1)
-
-    -- Lives (draw small frogs)
-    for i = 1, lives do
-        lurek.render.setColor(0.15, 0.75, 0.15, 1)
-        rect("fill", SCREEN_W - 30 * i, 6, 16, 16)
-        lurek.render.setColor(1, 1, 1, 1)
-        circ("fill", SCREEN_W - 30 * i + 4, 9, 2)
-        circ("fill", SCREEN_W - 30 * i + 12, 9, 2)
-    end
-
-    -- Timer bar (bottom)
-    local timer_pct = clamp(timer_left / LEVEL_TIME, 0, 1)
-    local bar_x = SCREEN_W / 2 - TIMER_BAR_W / 2
-    local bar_y = SCREEN_H - 22
-    -- Background
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", bar_x, bar_y, TIMER_BAR_W, TIMER_BAR_H)
-    -- Fill (green → yellow → red)
-    local tr = (timer_pct < 0.5) and 1.0 or (1.0 - (timer_pct - 0.5) * 2)
-    local tg = (timer_pct > 0.5) and 1.0 or (timer_pct * 2)
-    lurek.render.setColor(tr, tg, 0.1, 1)
-    rect("fill", bar_x + 1, bar_y + 1, (TIMER_BAR_W - 2) * timer_pct, TIMER_BAR_H - 2)
-    -- Label
-    lurek.render.setColor(1, 1, 1, 0.8)
-    text_("TIME", bar_x - 40, bar_y, 1)
-
-    -- FPS
-    lurek.render.setColor(0.5, 0.5, 0.5, 0.6)
-    text_("FPS: " .. lurek.timer.getFPS(), 10, SCREEN_H - 20, 0.8)
+    -- Rendered via TOML layout system
 end
 
 -- ---------------------------------------------------------------------------

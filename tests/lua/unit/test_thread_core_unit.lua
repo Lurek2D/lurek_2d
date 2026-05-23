@@ -173,7 +173,7 @@ describe("Channel type and typeOf", function()
     it("type returns LChannel", function()
         local ch = lurek.thread.newChannel()
         expect_equal("LChannel", ch:type())
-        expect_equal(0, ch:getCapacity())
+        expect_nil(ch:getCapacity())
         expect_false(ch:isBounded())
     end)
 

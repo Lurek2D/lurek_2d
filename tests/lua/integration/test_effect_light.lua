@@ -1,4 +1,5 @@
 -- Integration: effect overlay ambient state bridged to light world
+-- @describe effect + light ambient bridge
 describe("effect + light ambient bridge", function()
     -- @integration LOverlay:getAmbientColor
     -- @integration LOverlay:pullAmbientFromLight

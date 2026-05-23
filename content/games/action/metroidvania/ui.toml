@@ -1,0 +1,119 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+# Metroidvania UI
+
+[[element]]
+id = "title_panel"
+widget_type = "panel"
+x = 340
+y = 270
+w = 200
+h = 100
+background = [0, 0, 0, 0.0]
+visible = false
+
+    [[root.children.children]]
+    id = "title_text"
+    widget_type = "text"
+    x = 0
+    y = 0
+    text = "METROIDVANIA"
+    color = [0.4, 0.7, 1.0, 1.0]
+
+    [[root.children.children]]
+    id = "title_space"
+    widget_type = "text"
+    x = 10
+    y = 40
+    text = "PRESS SPACE"
+    color = [0.7, 0.7, 0.7, 1.0]
+
+[[element]]
+id = "game_over_panel"
+widget_type = "panel"
+x = 360
+y = 290
+w = 200
+h = 100
+background = [0, 0, 0, 0.0]
+visible = false
+
+    [[root.children.children]]
+    id = "game_over_text"
+    widget_type = "text"
+    x = 0
+    y = 0
+    text = "GAME OVER"
+    color = [1.0, 0.2, 0.2, 1.0]
+
+    [[root.children.children]]
+    id = "game_over_space"
+    widget_type = "text"
+    x = -10
+    y = 25
+    text = "PRESS SPACE"
+    color = [0.7, 0.7, 0.7, 1.0]
+
+[[element]]
+id = "hud_panel"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+background = [0, 0, 0, 0.0]
+visible = false
+
+    [[root.children.children]]
+    id = "hp_label"
+    widget_type = "text"
+    x = 10
+    y = 10
+    text = "HP: "
+    color = [0.2, 0.9, 0.3, 1.0]
+
+    [[root.children.children]]
+    id = "dash_label"
+    widget_type = "text"
+    x = 710
+    y = 10
+    text = "DASH"
+    color = [0.3, 0.3, 0.3, 0.5]
+
+    [[root.children.children]]
+    id = "jump_label"
+    widget_type = "text"
+    x = 755
+    y = 10
+    text = "2xJMP"
+    color = [0.3, 0.3, 0.3, 0.5]
+
+    [[root.children.children]]
+    id = "minimap_label"
+    widget_type = "text"
+    x = 730
+    y = 530
+    text = "[ ][ ][ ]\n[ ][X][ ]\n[ ][ ][ ]"
+    color = [0.5, 0.5, 0.6, 0.7]
+
+    [[root.children.children]]
+    id = "room_label"
+    widget_type = "text"
+    x = 726
+    y = 512
+    text = "Room 0,0"
+    color = [0.5, 0.5, 0.6, 0.7]
+
+    [[root.children.children]]
+    id = "fps_label"
+    widget_type = "text"
+    x = 740
+    y = 582
+    text = "60 FPS"
+    color = [0.5, 0.5, 0.5, 0.5]

@@ -64,13 +64,15 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
             local prev_px, prev_py = nil, nil
             for _, vt in ipairs(vertices) do
                 local vx, vy = latlon_to_px(vt[1], vt[2], W, H)
-                if prev_px then
+                if prev_px and prev_py then
                     img:drawLine(prev_px, prev_py, vx, vy, prov.r, prov.g, prov.b, 255)
                 end
                 prev_px, prev_py = vx, vy
             end
             local first_vx, first_vy = latlon_to_px(vertices[1][1], vertices[1][2], W, H)
-            img:drawLine(prev_px, prev_py, first_vx, first_vy, prov.r, prov.g, prov.b, 255)
+            if prev_px and prev_py then
+                img:drawLine(prev_px, prev_py, first_vx, first_vy, prov.r, prov.g, prov.b, 255)
+            end
         end
 
         -- Equator + prime-meridian reference lines natively
@@ -139,7 +141,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
         local prev_px, prev_py = nil, nil
         for _, pt in ipairs(path_pts) do
             local px, py = latlon_to_px(pt[1], pt[2], W, H)
-            if prev_px and math.abs(px - prev_px) < W / 2 then
+            if prev_px and prev_py and math.abs(px - prev_px) < W / 2 then
                 img:drawLine(prev_px, prev_py, px, py, 255, 200, 80, 255)
             end
             prev_px, prev_py = px, py

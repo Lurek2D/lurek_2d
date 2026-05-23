@@ -1,0 +1,175 @@
+[root]
+widget_type = "panel"
+id = "root_ui"
+width = 800
+height = 600
+bg_color = [0, 0, 0, 0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "title_panel"
+  x = 0
+  y = 0
+  width = 800
+  height = 600
+  visible = true
+  bg_color = [0.0, 0.0, 0.0, 0.6]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "title_label"
+    text = "SENSIBLE SOCCER"
+    x = 300
+    y = 240
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "kickoff_label"
+    text = "KICK OFF!"
+    x = 345
+    y = 300
+    color = [1.0, 1.0, 0.0, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "start_label"
+    text = "Press SPACE to start"
+    x = 310
+    y = 350
+    color = [0.7, 0.7, 0.7, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "controls_label"
+    text = "WASD=Move  SPACE=Kick  F=Pass  T=Tackle"
+    x = 235
+    y = 380
+    color = [0.7, 0.7, 0.7, 1.0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "hud_panel"
+  x = 0
+  y = 0
+  width = 800
+  height = 24
+  visible = false
+  bg_color = [0.0, 0.0, 0.0, 0.6]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "green_score_label"
+    text = "GREEN 0"
+    x = 10
+    y = 4
+    color = [0.3, 1.0, 0.3, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "red_score_label"
+    text = "0 RED"
+    x = 725
+    y = 4
+    color = [1.0, 0.3, 0.3, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "timer_label"
+    text = "3:00"
+    x = 382
+    y = 4
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "half_label"
+    text = "1st HALF"
+    x = 372
+    y = 580
+    color = [0.8, 0.8, 0.8, 0.7]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "goal_label"
+    text = "GOAL!"
+    x = 370
+    y = 280
+    color = [1.0, 1.0, 0.0, 1.0]
+    visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "fps_label"
+    text = "FPS: 60"
+    x = 720
+    y = 580
+    color = [1.0, 1.0, 1.0, 0.4]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "halftime_panel"
+  x = 0
+  y = 0
+  width = 800
+  height = 600
+  visible = false
+  bg_color = [0.0, 0.0, 0.0, 0.7]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "ht_title"
+    text = "HALF TIME"
+    x = 345
+    y = 280
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "ht_score"
+    text = "0 - 0"
+    x = 380
+    y = 310
+    color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "fulltime_panel"
+  x = 0
+  y = 0
+  width = 800
+  height = 600
+  visible = false
+  bg_color = [0.0, 0.0, 0.0, 0.75]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "ft_title"
+    text = "FULL TIME"
+    x = 345
+    y = 260
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "ft_score"
+    text = "0 - 0"
+    x = 380
+    y = 300
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "ft_result"
+    text = "DRAW"
+    x = 355
+    y = 330
+    color = [1.0, 1.0, 0.0, 1.0]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "ft_restart"
+    text = "Press SPACE for rematch"
+    x = 305
+    y = 370
+    color = [0.7, 0.7, 0.7, 1.0]

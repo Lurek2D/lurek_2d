@@ -33,6 +33,7 @@ local p2 = { x = W - 20 - PADDLE_W, y = H / 2 - PADDLE_H / 2, score = 0 }
 local ball = { x = W / 2, y = H / 2, vx = 0, vy = 0 }
 local winner = 0
 local flash_timer = 0
+local app_ui = {}
 
 -- ── Score pop tween state ────────────────────────────────────────────────
 
@@ -150,6 +151,31 @@ function lurek.init()
         colorEnd       = { 1, 0.4, 0, 0 },
     })
 
+    lurek.ui.loadLayoutFile("content/games/arcade/pong/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.p1_score = ui_root:findById("p1_score")
+    app_ui.p2_score = ui_root:findById("p2_score")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.winner_label = ui_root:findById("winner_label")
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    local function handle_start_click()
+        if state == STATE.TITLE then
+            state = STATE.PLAYING
+            full_reset()
+        elseif state == STATE.GAME_OVER then
+            full_reset()
+            state = STATE.PLAYING
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_start_click) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_start_click) end
+
     ball_reset(1)
 end
 
@@ -165,6 +191,23 @@ function lurek.process(dt)
         sparks:update(dt)
     end
 
+    -- UI sync
+    app_ui.title_screen.visible = (state == STATE.TITLE)
+    app_ui.hud.visible = (state == STATE.PLAYING or state == STATE.GAME_OVER)
+    app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+    app_ui.fps_label.text = "FPS: " .. math.floor(lurek.timer.getFPS())
+    app_ui.p1_score.text = tostring(p1.score)
+    app_ui.p2_score.text = tostring(p2.score)
+    
+    if state == STATE.GAME_OVER then
+        app_ui.winner_label.text = "Player " .. winner .. " Wins!"
+    end
+    
+    -- Blinking
+    local blink = math.floor(title_blink * 2) % 2 == 0
+    if app_ui.press_start then app_ui.press_start.color = blink and {0.8, 0.8, 0.8, 1} or {0.8, 0.8, 0.8, 0} end
+    if app_ui.press_restart then app_ui.press_restart.color = blink and {0.7, 0.7, 0.7, 1} or {0.7, 0.7, 0.7, 0} end
+
     -- ── TITLE state ──────────────────────────────────────────────────────
     if state == STATE.TITLE then
         title_blink = title_blink + dt
@@ -177,6 +220,7 @@ function lurek.process(dt)
 
     -- ── GAME_OVER state ──────────────────────────────────────────────────
     if state == STATE.GAME_OVER then
+        title_blink = title_blink + dt
         if lurek.input.wasActionPressed("restart") then
             full_reset()
             state = STATE.PLAYING
@@ -245,8 +289,7 @@ function lurek.process(dt)
     -- Scoring
     if ball.x < 0 then
         p2.score = p2.score + 1
-        score_pop.scale = 2.0
-        lurek.tween.to(score_pop, { scale = 1.0 }, 0.3)
+        -- Tween UI scale if implemented, here we skip UI tween or use old global
         if p2.score >= WIN_SCORE then
             state = STATE.GAME_OVER
             winner = 2
@@ -256,8 +299,6 @@ function lurek.process(dt)
     end
     if ball.x > W then
         p1.score = p1.score + 1
-        score_pop.scale = 2.0
-        lurek.tween.to(score_pop, { scale = 1.0 }, 0.3)
         if p1.score >= WIN_SCORE then
             state = STATE.GAME_OVER
             winner = 1
@@ -270,26 +311,7 @@ end
 -- ── World rendering ──────────────────────────────────────────────────────
 
 function lurek.draw()
-    -- ── TITLE state ──────────────────────────────────────────────────────
-    if state == STATE.TITLE then
-        -- Title
-        lurek.render.setColor(1, 1, 1)
-        text_("PONG", W / 2 - 80, H / 3 - 20, 5)
-
-        -- Blinking prompt
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(0.8, 0.8, 0.8)
-            text_("PRESS ENTER TO START", W / 2 - 150, H / 2 + 20, 2)
-        end
-
-        -- Controls info
-        lurek.render.setColor(0.4, 0.4, 0.4)
-        text_("P1: W / S       P2: Up / Down", W / 2 - 175, H * 0.7, 1.5)
-        text_("First to " .. WIN_SCORE .. " wins", W / 2 - 80, H * 0.7 + 30, 1.5)
-        return
-    end
-
-    -- ── PLAYING / GAME_OVER shared world ─────────────────────────────────
+    if state == STATE.TITLE then return end
 
     -- Center dashed line
     lurek.render.setColor(0.25, 0.25, 0.25)
@@ -314,38 +336,11 @@ function lurek.draw()
     if sparks then
         sparks:render()
     end
-
-    -- Game-over overlay
-    if state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect("fill", 0, 0, W, H)
-        lurek.render.setColor(1, 0.9, 0.1)
-        text_("Player " .. winner .. " Wins!", W / 2 - 130, H / 2 - 30, 3)
-        lurek.render.setColor(0.7, 0.7, 0.7)
-        text_("Press R to restart", W / 2 - 100, H / 2 + 20, 2)
-    end
 end
 
 -- ── HUD / overlay rendering ─────────────────────────────────────────────
 
 function lurek.draw_ui()
-    if state == STATE.TITLE then return end
-
-    -- Score display with tween pop effect
-    local s = score_pop.scale
-    lurek.render.setColor(1, 1, 1)
-    text_(tostring(p1.score), W / 2 - 70, 18, 4 * s)
-    text_(tostring(p2.score), W / 2 + 38, 18, 4 * s)
-
-    -- Controls hint
-    lurek.render.setColor(0.4, 0.4, 0.4)
-    text_("P1: W/S", 8, H - 18, 1)
-    text_("P2: Up/Down", W - 112, H - 18, 1)
-
-    -- FPS counter
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.3, 0.3, 0.3)
-    text_("FPS: " .. math.floor(fps), W - 80, 4, 1)
 end
 
 -- ── Input events ─────────────────────────────────────────────────────────

@@ -1,0 +1,174 @@
+[[widget]]
+type = "panel"
+id = "title_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  text = "P A C - M A N"
+  font_size = 64
+  color = [1.0, 1.0, 0.0, 1]
+  anchor = "top_center"
+  y = 100
+
+  [[widget.children]]
+  type = "label"
+  id = "legend1"
+  text = "Blinky — chases directly"
+  font_size = 20
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 210
+
+  [[widget.children]]
+  type = "label"
+  id = "legend2"
+  text = "Pinky  — ambushes ahead"
+  font_size = 20
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 240
+
+  [[widget.children]]
+  type = "label"
+  id = "legend3"
+  text = "Inky   — unpredictable"
+  font_size = 20
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 270
+
+  [[widget.children]]
+  type = "label"
+  id = "legend4"
+  text = "Clyde  — shy when close"
+  font_size = 20
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 300
+
+  [[widget.children]]
+  type = "button"
+  id = "press_enter"
+  text = "PRESS ENTER TO START"
+  font_size = 32
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 380
+
+  [[widget.children]]
+  type = "label"
+  text = "WASD / Arrows  Move"
+  font_size = 20
+  color = [0.4, 0.4, 0.5, 1]
+  anchor = "top_center"
+  y = 440
+
+  [[widget.children]]
+  type = "label"
+  text = "Escape         Quit"
+  font_size = 20
+  color = [0.4, 0.4, 0.5, 1]
+  anchor = "top_center"
+  y = 460
+
+[[widget]]
+type = "panel"
+id = "hud"
+anchor = "top_left"
+width = 800
+height = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "SCORE"
+  font_size = 22
+  x = 10
+  y = 4
+  color = [1, 1, 1, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "score_label"
+  text = "0"
+  font_size = 22
+  x = 80
+  y = 4
+  color = [1, 1, 1, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "level_label"
+  text = "LVL 1"
+  font_size = 22
+  anchor = "top_center"
+  y = 4
+  color = [0.8, 0.8, 0.3, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "lives_label"
+  text = "x3"
+  font_size = 19
+  anchor = "top_right"
+  x = -20
+  y = 4
+  color = [0.7, 0.7, 0.7, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 16
+  anchor = "bottom_left"
+  x = 8
+  y = -18
+  color = [0.4, 0.4, 0.5, 1]
+
+[[widget]]
+type = "panel"
+id = "game_over_screen"
+anchor = "center"
+width = 800
+height = 600
+bg_color = [0, 0, 0, 0.75]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "G A M E   O V E R"
+  font_size = 48
+  color = [1.0, 0.2, 0.2, 1]
+  anchor = "top_center"
+  y = 200
+
+  [[widget.children]]
+  type = "label"
+  id = "final_score"
+  text = "Score: 0"
+  font_size = 32
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 280
+
+  [[widget.children]]
+  type = "label"
+  id = "final_level"
+  text = "Level: 1"
+  font_size = 32
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 310
+
+  [[widget.children]]
+  type = "button"
+  id = "press_r"
+  text = "PRESS R TO RESTART"
+  font_size = 32
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 380

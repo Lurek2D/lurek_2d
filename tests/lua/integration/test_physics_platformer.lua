@@ -1,4 +1,5 @@
 -- Integration: lurek.physics contact callbacks bridged through lurek.event signals
+-- @describe one-way platform integration
 describe("one-way platform integration", function()
     local world, floor, player
 
@@ -24,6 +25,7 @@ describe("one-way platform integration", function()
 end)
 
 
+-- @describe contact callbacks and sleeping integration
 describe("contact callbacks and sleeping integration", function()
     local world
     local began, ended
@@ -54,6 +56,7 @@ describe("contact callbacks and sleeping integration", function()
 end)
 
 
+-- @describe batch body creation integration
 describe("batch body creation integration", function()
     local world
 
@@ -86,6 +89,7 @@ describe("batch body creation integration", function()
         expect_equal(6, world:getSolverIterations())
     end)
 end)
+-- @describe physics contact bridged through lurek.event signal
 describe("physics contact bridged through lurek.event signal", function()
 
     -- @integration lurek.event.newSignal

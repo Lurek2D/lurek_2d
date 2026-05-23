@@ -1,4 +1,5 @@
 -- Integration: math utility functions used alongside physics body state
+-- @describe math + physics integration
 describe("math + physics integration", function()
     -- @integration LBody:getPosition
     -- @integration LBody:setPosition

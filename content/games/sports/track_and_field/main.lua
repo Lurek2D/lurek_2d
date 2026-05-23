@@ -784,6 +784,55 @@ function lurek.init()
     lurek.window.setTitle("Track & Field — Lurek2D")
     camera = lurek.camera.new()
     init_particles()
+    
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/track_and_field/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.final_screen = ui_root:findById("final_screen")
+    app_ui.final_rows = ui_root:findById("final_rows")
+    app_ui.final_gold = ui_root:findById("final_gold")
+    app_ui.final_silver = ui_root:findById("final_silver")
+    app_ui.final_bronze = ui_root:findById("final_bronze")
+    app_ui.final_total = ui_root:findById("final_total")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    app_ui.intro_screen = ui_root:findById("intro_screen")
+    app_ui.intro_event_num = ui_root:findById("intro_event_num")
+    app_ui.intro_event_name = ui_root:findById("intro_event_name")
+    app_ui.intro_countdown = ui_root:findById("intro_countdown")
+    
+    app_ui.result_screen = ui_root:findById("result_screen")
+    app_ui.result_title = ui_root:findById("result_title")
+    app_ui.result_medal = ui_root:findById("result_medal")
+    app_ui.result_points = ui_root:findById("result_points")
+    app_ui.result_bonus = ui_root:findById("result_bonus")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_event_name = ui_root:findById("hud_event_name")
+    app_ui.speed_bar_fill = ui_root:findById("speed_bar_fill")
+    app_ui.stamina_bar_fill = ui_root:findById("stamina_bar_fill")
+    app_ui.hud_info_1 = ui_root:findById("hud_info_1")
+    app_ui.hud_info_2 = ui_root:findById("hud_info_2")
+    app_ui.hud_info_3 = ui_root:findById("hud_info_3")
+    app_ui.hud_medals = ui_root:findById("hud_medals")
+    
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    local function click_action()
+        if current_state == STATE.TITLE then
+            p_stamina = p_max_stamina
+            medals = { gold = 0, silver = 0, bronze = 0 }
+            total_points = 0
+            event_results = {}
+            setup_event(EVENT.SPRINT_100)
+        elseif current_state == STATE.FINAL then
+            current_state = STATE.TITLE
+        end
+    end
+    if app_ui.press_start then app_ui.press_start:setOnClick(click_action) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(click_action) end
 end
 
 -- ---------------------------------------------------------------------------
@@ -889,8 +938,101 @@ function lurek.process(dt)
         camera:setPosition(cx, 0)
     end
 
-    -- FPS in title
-    lurek.window.setTitle(string.format("Track & Field — %d FPS", lurek.timer.getFPS()))
+    -- Sync UI
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    app_ui.final_screen.visible = (current_state == STATE.FINAL)
+    app_ui.intro_screen.visible = (current_state == STATE.EVENT_INTRO)
+    app_ui.result_screen.visible = (current_state == STATE.EVENT_RESULT)
+    app_ui.hud_screen.visible = (current_state == STATE.RUNNING or current_state == STATE.JUMPING or current_state == STATE.THROWING)
+    
+    if current_state == STATE.FINAL then
+        app_ui.final_rows.children = {}
+        local y_off = 0
+        for i = 1, NUM_EVENTS do
+            local r = event_results[i]
+            local mc = COL_WHITE
+            local medal_str = "---"
+            if r and r.medal then
+                mc = medal_color(r.medal)
+                medal_str = string.upper(r.medal)
+            end
+            local line = string.format("%-18s  %s  %4d pts", EVENT_NAMES[i], medal_str, r and r.player_score or 0)
+            table.insert(app_ui.final_rows.children, {
+                type = "label",
+                text = line,
+                font_size = 16,
+                color = mc,
+                x = 20,
+                y = y_off
+            })
+            y_off = y_off + 30
+        end
+        app_ui.final_gold.text = string.format("Gold: %d", medals.gold)
+        app_ui.final_silver.text = string.format("Silver: %d", medals.silver)
+        app_ui.final_bronze.text = string.format("Bronze: %d", medals.bronze)
+        app_ui.final_total.text = string.format("Total Points: %d", total_points)
+    elseif current_state == STATE.EVENT_INTRO then
+        app_ui.intro_event_num.text = string.format("Event %d / %d", current_event, NUM_EVENTS)
+        app_ui.intro_event_name.text = EVENT_NAMES[current_event]
+        app_ui.intro_countdown.text = tostring(math.ceil(intro_timer))
+    elseif current_state == STATE.EVENT_RESULT then
+        local r = event_results[current_event]
+        app_ui.result_title.text = EVENT_NAMES[current_event] .. " - Results"
+        if r and r.medal then
+            local mc = medal_color(r.medal)
+            local a = tw_medal_alpha.value
+            app_ui.result_medal.text = string.upper(r.medal) .. " MEDAL!"
+            app_ui.result_medal.color = {mc[1], mc[2], mc[3], a}
+        else
+            app_ui.result_medal.text = "No medal"
+            app_ui.result_medal.color = {0.5, 0.5, 0.5, 1}
+        end
+        app_ui.result_points.text = string.format("Points: %d", r and r.player_score or 0)
+        if r and r.bonus then
+            app_ui.result_bonus.text = "Qualifying standard met! +25 bonus"
+            app_ui.result_bonus.visible = true
+        else
+            app_ui.result_bonus.visible = false
+        end
+    elseif current_state == STATE.RUNNING or current_state == STATE.JUMPING or current_state == STATE.THROWING then
+        app_ui.hud_event_name.text = EVENT_NAMES[current_event]
+        local speed_pct = tw_speed_meter.value / MAX_SPEED
+        app_ui.speed_bar_fill.width = 120 * speed_pct
+        local sr = lerp(0.2, 1.0, speed_pct)
+        local sg = lerp(0.8, 0.2, speed_pct)
+        app_ui.speed_bar_fill.bg_color = {sr, sg, 0.2, 1}
+        app_ui.stamina_bar_fill.width = 120 * (p_stamina / p_max_stamina)
+        
+        app_ui.hud_info_1.text = ""
+        app_ui.hud_info_2.text = ""
+        app_ui.hud_info_3.text = ""
+        
+        if current_event == EVENT.SPRINT_100 or current_event == EVENT.HURDLES_110 then
+            app_ui.hud_info_1.text = string.format("Time: %.2fs", event_timer + hurdle_penalty)
+            if current_event == EVENT.HURDLES_110 then
+                app_ui.hud_info_2.text = string.format("Penalty: %.1fs  Cleared: %d/10", hurdle_penalty, hurdles_cleared)
+            end
+        elseif current_event == EVENT.LONG_JUMP then
+            app_ui.hud_info_1.text = string.format("Attempt: %d/%d  Best: %.2fm", attempt, max_attempts, tw_distance.value)
+            if distance == -1 then
+                app_ui.hud_info_2.text = "FOUL!"
+                app_ui.hud_info_2.color = {0.9, 0.2, 0.2, 1}
+            else
+                app_ui.hud_info_2.color = {1, 1, 1, 1}
+            end
+        elseif current_event == EVENT.JAVELIN then
+            app_ui.hud_info_1.text = string.format("Attempt: %d/%d  Best: %.1fm", attempt, max_attempts, tw_distance.value)
+            if angle_set then
+                app_ui.hud_info_2.text = string.format("Angle: %.0f", angle)
+            end
+            app_ui.hud_info_3.text = string.format("Wind: %+.1f m/s", wind_speed)
+        elseif current_event == EVENT.HIGH_JUMP then
+            app_ui.hud_info_1.text = string.format("Bar: %.2fm  Fails: %d/3", hj_bar_height, hj_failures)
+        end
+        
+        app_ui.hud_medals.text = string.format("G:%d  S:%d  B:%d  Pts:%d", medals.gold, medals.silver, medals.bronze, total_points)
+    end
 end
 
 -- ---------------------------------------------------------------------------
@@ -1006,165 +1148,4 @@ end
 -- lurek.render_ui
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    -- Title screen
-    if current_state == STATE.TITLE then
-        lurek.render.setColor(COL_DARK[1], COL_DARK[2], COL_DARK[3])
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-        text_("TRACK & FIELD", SCREEN_W * 0.5 - 100, 160, 0, 2.5, 2.5)
-
-        lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_("GO FOR GOLD", SCREEN_W * 0.5 - 60, 230, 0, 1.5, 1.5)
-
-        lurek.render.setColor(0.6, 0.6, 0.6)
-        text_("Mash A/D to run — Space for actions", SCREEN_W * 0.5 - 140, 310)
-        text_("Press SPACE to start", SCREEN_W * 0.5 - 80, 400)
-        return
-    end
-
-    -- Final results
-    if current_state == STATE.FINAL then
-        lurek.render.setColor(COL_DARK[1], COL_DARK[2], COL_DARK[3])
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-        text_("FINAL RESULTS", SCREEN_W * 0.5 - 90, 40, 0, 2, 2)
-
-        local y = 110
-        for i = 1, NUM_EVENTS do
-            local r = event_results[i]
-            local mc = COL_WHITE
-            local medal_str = "---"
-            if r and r.medal then
-                mc = medal_color(r.medal)
-                medal_str = string.upper(r.medal)
-            end
-            lurek.render.setColor(mc[1], mc[2], mc[3])
-            text_(string.format("%-18s  %s  %4d pts", EVENT_NAMES[i], medal_str, r and r.player_score or 0), 120, y)
-            y = y + 30
-        end
-
-        y = y + 20
-        lurek.render.setColor(COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-        text_(string.format("Gold: %d", medals.gold), 180, y)
-        lurek.render.setColor(COL_SILVER[1], COL_SILVER[2], COL_SILVER[3])
-        text_(string.format("Silver: %d", medals.silver), 320, y)
-        lurek.render.setColor(COL_BRONZE[1], COL_BRONZE[2], COL_BRONZE[3])
-        text_(string.format("Bronze: %d", medals.bronze), 470, y)
-
-        y = y + 40
-        lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_(string.format("Total Points: %d", total_points), 260, y, 0, 1.5, 1.5)
-
-        lurek.render.setColor(0.5, 0.5, 0.5)
-        text_("Press SPACE to return to title", SCREEN_W * 0.5 - 120, SCREEN_H - 60)
-        return
-    end
-
-    -- Event intro overlay
-    if current_state == STATE.EVENT_INTRO then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-        text_(string.format("Event %d / %d", current_event, NUM_EVENTS), SCREEN_W * 0.5 - 60, 200, 0, 1.5, 1.5)
-        lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_(EVENT_NAMES[current_event], SCREEN_W * 0.5 - 80, 250, 0, 2, 2)
-
-        local countdown = math.ceil(intro_timer)
-        lurek.render.setColor(1, 1, 1)
-        text_(tostring(countdown), SCREEN_W * 0.5 - 10, 320, 0, 3, 3)
-        return
-    end
-
-    -- Event result overlay
-    if current_state == STATE.EVENT_RESULT then
-        lurek.render.setColor(0, 0, 0, 0.5)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        local r = event_results[current_event]
-        lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_(EVENT_NAMES[current_event] .. " — Results", SCREEN_W * 0.5 - 100, 150, 0, 1.5, 1.5)
-
-        if r and r.medal then
-            local mc = medal_color(r.medal)
-            local a = tw_medal_alpha.value
-            lurek.render.setColor(mc[1], mc[2], mc[3], a)
-            text_(string.upper(r.medal) .. " MEDAL!", SCREEN_W * 0.5 - 70, 210, 0, 2, 2)
-        else
-            lurek.render.setColor(0.5, 0.5, 0.5)
-            text_("No medal", SCREEN_W * 0.5 - 40, 210, 0, 1.5, 1.5)
-        end
-
-        lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_(string.format("Points: %d", r and r.player_score or 0), SCREEN_W * 0.5 - 50, 270)
-        if r and r.bonus then
-            lurek.render.setColor(COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-            text_("Qualifying standard met! +25 bonus", SCREEN_W * 0.5 - 120, 300)
-        end
-        return
-    end
-
-    -- HUD panel
-    lurek.render.setColor(COL_HUD_BG[1], COL_HUD_BG[2], COL_HUD_BG[3], COL_HUD_BG[4])
-    rect("fill", 0, 0, SCREEN_W, 50)
-
-    -- Event name
-    lurek.render.setColor(COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-    text_(EVENT_NAMES[current_event], 10, 8, 0, 1.2, 1.2)
-
-    -- Speed meter
-    lurek.render.setColor(0.3, 0.3, 0.3)
-    rect("fill", 200, 10, 120, 14)
-    local speed_pct = tw_speed_meter.value / MAX_SPEED
-    local sr = lerp(0.2, 1.0, speed_pct)
-    local sg = lerp(0.8, 0.2, speed_pct)
-    lurek.render.setColor(sr, sg, 0.2)
-    rect("fill", 200, 10, 120 * speed_pct, 14)
-    lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-    text_("Speed", 200, 26)
-
-    -- Stamina
-    lurek.render.setColor(0.3, 0.3, 0.3)
-    rect("fill", 200, 32, 120, 8)
-    lurek.render.setColor(0.2, 0.7, 0.9)
-    rect("fill", 200, 32, 120 * (p_stamina / p_max_stamina), 8)
-
-    -- Event-specific info
-    local info_x = 350
-    lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-
-    if current_event == EVENT.SPRINT_100 or current_event == EVENT.HURDLES_110 then
-        text_(string.format("Time: %.2fs", event_timer + hurdle_penalty), info_x, 10)
-        if current_event == EVENT.HURDLES_110 then
-            text_(string.format("Penalty: %.1fs  Cleared: %d/10", hurdle_penalty, hurdles_cleared), info_x, 28)
-        end
-    elseif current_event == EVENT.LONG_JUMP then
-        text_(string.format("Attempt: %d/%d  Best: %.2fm", attempt, max_attempts, tw_distance.value), info_x, 10)
-        if distance == -1 then
-            lurek.render.setColor(0.9, 0.2, 0.2)
-            text_("FOUL!", info_x + 250, 10)
-        end
-    elseif current_event == EVENT.JAVELIN then
-        text_(string.format("Attempt: %d/%d  Best: %.1fm", attempt, max_attempts, tw_distance.value), info_x, 10)
-        if angle_set then
-            text_(string.format("Angle: %.0f°", angle), info_x, 28)
-        end
-        lurek.render.setColor(0.7, 0.7, 0.9)
-        text_(string.format("Wind: %+.1f m/s", wind_speed), info_x + 200, 10)
-    elseif current_event == EVENT.HIGH_JUMP then
-        text_(string.format("Bar: %.2fm  Fails: %d/3", hj_bar_height, hj_failures), info_x, 10)
-    end
-
-    -- Medal tally (top right)
-    local mx = SCREEN_W - 180
-    lurek.render.setColor(COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-    text_(string.format("G:%d", medals.gold), mx, 10)
-    lurek.render.setColor(COL_SILVER[1], COL_SILVER[2], COL_SILVER[3])
-    text_(string.format("S:%d", medals.silver), mx + 45, 10)
-    lurek.render.setColor(COL_BRONZE[1], COL_BRONZE[2], COL_BRONZE[3])
-    text_(string.format("B:%d", medals.bronze), mx + 90, 10)
-    lurek.render.setColor(COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-    text_(string.format("Pts:%d", total_points), mx + 130, 10)
 end

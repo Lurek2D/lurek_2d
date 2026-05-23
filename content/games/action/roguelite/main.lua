@@ -595,6 +595,51 @@ function lurek.init()
 
     math.randomseed(os.time())
     reset_game()
+
+    lurek.ui.loadLayoutFile("content/games/action/roguelite/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_rooms = ui_root:findById("go_rooms")
+    app_ui.go_kills = ui_root:findById("go_kills")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_perk_texts = {}
+    for i=1, 6 do app_ui.go_perk_texts[i] = ui_root:findById("go_perk_" .. i) end
+    
+    app_ui.perk_select_screen = ui_root:findById("perk_select_screen")
+    app_ui.ps_bgs = {}
+    app_ui.ps_titles = {}
+    app_ui.ps_descs = {}
+    for i=1, 3 do 
+        app_ui.ps_bgs[i] = ui_root:findById("ps_bg_" .. i)
+        app_ui.ps_titles[i] = ui_root:findById("ps_title_" .. i)
+        app_ui.ps_descs[i] = ui_root:findById("ps_desc_" .. i)
+    end
+    app_ui.ps_room_cleared = ui_root:findById("ps_room_cleared")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.hp_fill = ui_root:findById("hp_fill")
+    app_ui.hp_text = ui_root:findById("hp_text")
+    app_ui.room_text = ui_root:findById("room_text")
+    app_ui.score_text = ui_root:findById("score_text")
+    app_ui.kills_text = ui_root:findById("kills_text")
+    
+    app_ui.cd_melee = ui_root:findById("cd_melee")
+    app_ui.cd_ranged = ui_root:findById("cd_ranged")
+    app_ui.cd_dash = ui_root:findById("cd_dash")
+    
+    app_ui.perks_summary_title = ui_root:findById("perks_summary_title")
+    app_ui.hud_perk_texts = {}
+    for i=1, 6 do app_ui.hud_perk_texts[i] = ui_root:findById("hud_perk_" .. i) end
+    
+    app_ui.boss_hp_bg = ui_root:findById("boss_hp_bg")
+    app_ui.boss_hp_fill = ui_root:findById("boss_hp_fill")
+    app_ui.boss_text = ui_root:findById("boss_text")
+
+    app_ui.fps_text = ui_root:findById("fps_text")
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
@@ -822,6 +867,97 @@ function lurek.process(dt)
     if slash_sparks then slash_sparks:update(dt) end
     if dash_trail   then dash_trail:update(dt) end
     if proj_sparks  then proj_sparks:update(dt) end
+
+    -- UI Sync
+    if app_ui then
+        app_ui.fps_text.text = string.format("FPS: %d", lurek.timer.getFPS())
+        app_ui.title_screen.visible = (state == STATE.TITLE)
+        if state == STATE.TITLE then
+            local show = math.floor(title_blink * 2) % 2 == 0
+            app_ui.press_start.visible = show
+        end
+
+        app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+        if state == STATE.GAME_OVER then
+            app_ui.go_rooms.text = string.format("Rooms Cleared: %d", room_number - 1)
+            app_ui.go_kills.text = string.format("Enemies Killed: %d", kills_total)
+            app_ui.go_score.text = string.format("Score: %d", score)
+            for i=1, 6 do
+                if perks_collected[i] then
+                    app_ui.go_perk_texts[i].text = "• " .. perks_collected[i]
+                    app_ui.go_perk_texts[i].visible = true
+                else
+                    app_ui.go_perk_texts[i].visible = false
+                end
+            end
+        end
+
+        app_ui.perk_select_screen.visible = (state == STATE.PERK_SELECT)
+        if state == STATE.PERK_SELECT then
+            for i=1, 3 do
+                local pk = perk_choices and perk_choices[i]
+                if pk then
+                    app_ui.ps_bgs[i].visible = true
+                    app_ui.ps_titles[i].text = string.format("[%d] %s", i, pk.label)
+                    app_ui.ps_descs[i].text = pk.desc
+                    local glow_a = perk_glow.alpha * 0.15
+                    app_ui.ps_bgs[i].background = {0.2 + glow_a, 0.18 + glow_a, 0.15, 0.9}
+                else
+                    app_ui.ps_bgs[i].visible = false
+                end
+            end
+            app_ui.ps_room_cleared.text = string.format("Room %d completed", room_number)
+        end
+
+        app_ui.hud.visible = (state == STATE.COMBAT or state == STATE.BOSS)
+        if app_ui.hud.visible then
+            local hp_frac = player.hp / player.max_hp
+            app_ui.hp_fill.width = 160 * hp_frac
+            app_ui.hp_text.text = string.format("HP %d/%d", player.hp, player.max_hp)
+            app_ui.room_text.text = string.format("Room %d", room_number)
+            app_ui.score_text.text = string.format("Score: %d", score)
+            app_ui.kills_text.text = string.format("Kills: %d", kills_total)
+            
+            if player.melee_cd > 0 then
+                app_ui.cd_melee.width = 50 * (player.melee_cd / (MELEE_COOLDOWN * player.cd_mult))
+            else app_ui.cd_melee.width = 0 end
+            if player.ranged_cd > 0 then
+                app_ui.cd_ranged.width = 50 * (player.ranged_cd / (RANGED_COOLDOWN * player.cd_mult))
+            else app_ui.cd_ranged.width = 0 end
+            if player.dash_cd > 0 then
+                app_ui.cd_dash.width = 50 * (player.dash_cd / (DASH_COOLDOWN * player.cd_mult))
+            else app_ui.cd_dash.width = 0 end
+            
+            if #perks_collected > 0 then
+                app_ui.perks_summary_title.visible = true
+                for i=1, 6 do
+                    if perks_collected[i] then
+                        app_ui.hud_perk_texts[i].text = "• " .. perks_collected[i]
+                        app_ui.hud_perk_texts[i].visible = true
+                    else
+                        app_ui.hud_perk_texts[i].visible = false
+                    end
+                end
+            else
+                app_ui.perks_summary_title.visible = false
+                for i=1, 6 do app_ui.hud_perk_texts[i].visible = false end
+            end
+            
+            if state == STATE.BOSS and boss and boss.hp > 0 then
+                app_ui.boss_hp_bg.visible = true
+                app_ui.boss_hp_fill.visible = true
+                app_ui.boss_text.visible = true
+                local bhp_frac = boss.hp / boss.max_hp
+                app_ui.boss_hp_fill.width = 300 * bhp_frac
+                local phase_txt = boss.phase == 2 and " [ENRAGED]" or ""
+                app_ui.boss_text.text = "BOSS" .. phase_txt
+            else
+                app_ui.boss_hp_bg.visible = false
+                app_ui.boss_hp_fill.visible = false
+                app_ui.boss_text.visible = false
+            end
+        end
+    end
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
@@ -960,141 +1096,5 @@ end
 --  lurek.render_ui — screen-space HUD
 -- ══════════════════════════════════════════════════════════════════════════
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-
-    -- ── Title screen ──────────────────────────────────────────────────
-    if state == STATE.TITLE then
-        lurek.render.setColor(0.9, 0.2, 0.2, 1)
-        text_("ROGUELITE", SCREEN_W / 2 - 100, SCREEN_H / 2 - 60, 40)
-
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(0.8, 0.8, 0.8, 1)
-            text_("PRESS ENTER OR CLICK", SCREEN_W / 2 - 110, SCREEN_H / 2 + 10, 16)
-        end
-
-        lurek.render.setColor(0.5, 0.5, 0.5, 1)
-        text_("WASD move | J melee | K ranged | Shift dash", SCREEN_W / 2 - 180, SCREEN_H / 2 + 50, 12)
-        text_(string.format("FPS: %d", fps), 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- ── Game Over ─────────────────────────────────────────────────────
-    if state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(0.9, 0.2, 0.2, 1)
-        text_("YOU DIED", SCREEN_W / 2 - 80, 120, 36)
-
-        lurek.render.setColor(0.9, 0.9, 0.9, 1)
-        text_(string.format("Rooms Cleared: %d", room_number - 1), SCREEN_W / 2 - 80, 200, 16)
-        text_(string.format("Enemies Killed: %d", kills_total), SCREEN_W / 2 - 80, 225, 16)
-        text_(string.format("Score: %d", score), SCREEN_W / 2 - 80, 250, 16)
-
-        lurek.render.setColor(0.7, 0.7, 0.9, 1)
-        text_("Perks collected:", SCREEN_W / 2 - 80, 290, 14)
-        for i, pname in ipairs(perks_collected) do
-            text_("• " .. pname, SCREEN_W / 2 - 70, 290 + i * 18, 12)
-        end
-
-        lurek.render.setColor(0.6, 0.6, 0.6, 1)
-        text_("Press R to return to title", SCREEN_W / 2 - 100, SCREEN_H - 60, 14)
-        text_(string.format("FPS: %d", fps), 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- ── Perk Select ───────────────────────────────────────────────────
-    if state == STATE.PERK_SELECT then
-        lurek.render.setColor(0, 0, 0, 0.75)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(1, 0.85, 0.3, 1)
-        text_("CHOOSE A PERK", SCREEN_W / 2 - 90, 100, 24)
-
-        for i = 1, 3 do
-            local pk = perk_choices[i]
-            if pk then
-                local bx = SCREEN_W / 2 - 150
-                local by = 170 + (i - 1) * 90
-                local glow_a = perk_glow.alpha * 0.15
-                lurek.render.setColor(0.2 + glow_a, 0.18 + glow_a, 0.15, 0.9)
-                rect("fill", bx, by, 300, 70)
-                lurek.render.setColor(0.8, 0.7, 0.3, 1)
-                rect("line", bx, by, 300, 70)
-
-                lurek.render.setColor(1, 0.9, 0.4, 1)
-                text_(string.format("[%d] %s", i, pk.label), bx + 15, by + 15, 16)
-                lurek.render.setColor(0.7, 0.7, 0.7, 1)
-                text_(pk.desc, bx + 15, by + 40, 12)
-            end
-        end
-
-        lurek.render.setColor(0.5, 0.5, 0.5, 1)
-        text_(string.format("Room %d completed", room_number), SCREEN_W / 2 - 70, SCREEN_H - 50, 12)
-        text_(string.format("FPS: %d", fps), 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- ── Combat / Boss HUD ─────────────────────────────────────────────
-    -- HP bar
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", 10, 10, 160, 18)
-    local hp_frac = player.hp / player.max_hp
-    lurek.render.setColor(0.2, 0.8, 0.3, 1)
-    rect("fill", 10, 10, 160 * hp_frac, 18)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_(string.format("HP %d/%d", player.hp, player.max_hp), 15, 12, 12)
-
-    -- Room + score
-    lurek.render.setColor(0.9, 0.9, 0.9, 1)
-    text_(string.format("Room %d", room_number), 10, 36, 14)
-    text_(string.format("Score: %d", score), 10, 56, 12)
-    text_(string.format("Kills: %d", kills_total), 10, 74, 12)
-
-    -- Cooldown indicators
-    local cd_y = SCREEN_H - 40
-    lurek.render.setColor(0.5, 0.5, 0.5, 0.6)
-    text_("J:Melee  K:Ranged  Shift:Dash", 10, cd_y, 11)
-
-    if player.melee_cd > 0 then
-        lurek.render.setColor(1, 0.3, 0.3, 0.7)
-        rect("fill", 10, cd_y + 14, 50 * (player.melee_cd / (MELEE_COOLDOWN * player.cd_mult)), 4)
-    end
-    if player.ranged_cd > 0 then
-        lurek.render.setColor(1, 1, 0.3, 0.7)
-        rect("fill", 80, cd_y + 14, 50 * (player.ranged_cd / (RANGED_COOLDOWN * player.cd_mult)), 4)
-    end
-    if player.dash_cd > 0 then
-        lurek.render.setColor(0.3, 0.7, 1, 0.7)
-        rect("fill", 170, cd_y + 14, 50 * (player.dash_cd / (DASH_COOLDOWN * player.cd_mult)), 4)
-    end
-
-    -- Perks summary
-    if #perks_collected > 0 then
-        lurek.render.setColor(0.6, 0.5, 0.3, 0.8)
-        text_("Perks:", SCREEN_W - 200, 10, 11)
-        for i, pname in ipairs(perks_collected) do
-            if i > 6 then break end -- show max 6
-            lurek.render.setColor(0.8, 0.7, 0.4, 0.7)
-            text_("• " .. pname, SCREEN_W - 200, 10 + i * 14, 10)
-        end
-    end
-
-    -- Boss HP bar (top center)
-    if state == STATE.BOSS and boss and boss.hp > 0 then
-        local bw = 300
-        local bx = (SCREEN_W - bw) / 2
-        lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-        rect("fill", bx, 10, bw, 20)
-        local bhp_frac = boss.hp / boss.max_hp
-        lurek.render.setColor(0.7, 0.1, 0.5, 1)
-        rect("fill", bx, 10, bw * bhp_frac, 20)
-        lurek.render.setColor(1, 1, 1, 1)
-        local phase_txt = boss.phase == 2 and " [ENRAGED]" or ""
-        text_("BOSS" .. phase_txt, bx + 5, 13, 13)
-    end
-
-    -- FPS
-    lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    text_(string.format("FPS: %d", fps), SCREEN_W - 70, SCREEN_H - 20, 11)
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
 end

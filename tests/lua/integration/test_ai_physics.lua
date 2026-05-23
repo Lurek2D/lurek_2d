@@ -1,4 +1,5 @@
 -- Integration: AI steering forces applied to physics bodies
+-- @describe integration: AI steering with physics bodies
 describe("integration: AI steering with physics bodies", function()
     -- @integration LSteeringManager:addSeek
     -- @integration LSteeringManager:calculate

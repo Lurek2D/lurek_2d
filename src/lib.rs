@@ -317,6 +317,21 @@ pub fn lurek_run() -> std::process::ExitCode {
     };
     let (mut config, conf_error) = Config::load(&game_dir);
     config.modules.validate_and_fix();
+    if let Some(path) = screenshot_path.as_mut() {
+        if path.is_relative() {
+            let resolved = if explicit_game_dir {
+                game_dir.join(path.as_path())
+            } else {
+                env::current_dir()
+                    .unwrap_or_else(|_| std::path::PathBuf::from("."))
+                    .join("work")
+                    .join("runtime")
+                    .join("screenshots")
+                    .join(path.as_path())
+            };
+            *path = resolved;
+        }
+    }
     if let Some(width) = window_width {
         config.window.width = width;
     }

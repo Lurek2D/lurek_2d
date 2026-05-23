@@ -1,4 +1,5 @@
 -- Integration: ECS entity positions synced with physics body state
+-- @describe integration: entity + physics body lifecycle
 describe("integration: entity + physics body lifecycle", function()
     -- @integration LUniverse:get
     -- @integration LUniverse:set

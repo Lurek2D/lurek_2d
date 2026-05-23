@@ -31,6 +31,8 @@ local level_timer = 0
 -- Player
 local player = { x = 0, y = 0, vx = 0, vy = 0, w = 24, h = 28, on_ground = false, alive = true, invincible = false, inv_timer = 0, facing = 1 }
 
+local app_ui = {}
+
 -- Camera
 local cam_x = 0
 
@@ -264,6 +266,30 @@ function lurek.init()
   lurek.input.bind("jump", { "space", "w", "up", "gamepad:0:0" })
   lurek.input.bind("start", { "return", "gamepad:0:0", "gamepad:0:9" })
   lurek.input.bind("quit", { "escape", "gamepad:0:8" })
+  
+  lurek.ui.loadLayoutFile("content/games/retro/giana_sisters/ui.toml")
+  local ui_root = lurek.ui.getRoot()
+  app_ui = {}
+  app_ui.title_screen = ui_root:findById("title_screen")
+  
+  app_ui.game_over_screen = ui_root:findById("game_over_screen")
+  app_ui.go_score = ui_root:findById("go_score")
+  app_ui.go_level = ui_root:findById("go_level")
+  
+  app_ui.level_complete_screen = ui_root:findById("level_complete_screen")
+  app_ui.lc_title = ui_root:findById("lc_title")
+  app_ui.lc_score = ui_root:findById("lc_score")
+  
+  app_ui.hud_screen = ui_root:findById("hud_screen")
+  app_ui.hud_score = ui_root:findById("hud_score")
+  app_ui.hud_gems = ui_root:findById("hud_gems")
+  app_ui.hud_level = ui_root:findById("hud_level")
+  app_ui.hud_lives = ui_root:findById("hud_lives")
+  app_ui.fps_label = ui_root:findById("fps_label")
+  
+  app_ui.star_power_panel = ui_root:findById("star_power_panel")
+  app_ui.star_power_label = ui_root:findById("star_power_label")
+  
   load_level(1)
 end
 
@@ -548,6 +574,38 @@ function lurek.process(dt)
       table.remove(tweens, i)
     end
   end
+  
+  -- Sync UI
+  app_ui.title_screen.visible = (state == TITLE)
+  app_ui.game_over_screen.visible = (state == GAME_OVER)
+  app_ui.level_complete_screen.visible = (state == LEVEL_COMPLETE)
+  app_ui.hud_screen.visible = (state == PLAYING)
+  
+  if state == GAME_OVER then
+    app_ui.go_score.text = "Final Score: " .. score
+    app_ui.go_level.text = "Levels Cleared: " .. (current_level - 1) .. " / " .. #levels
+  elseif state == LEVEL_COMPLETE then
+    app_ui.lc_title.text = "LEVEL " .. current_level .. " COMPLETE!"
+    app_ui.lc_score.text = "Score: " .. score
+  elseif state == PLAYING then
+    app_ui.hud_score.text = "SCORE: " .. score
+    
+    local gem_scale = 1.0 + gem_pulse * 0.3
+    local gem_text_size = math.floor(18 * gem_scale)
+    app_ui.hud_gems.text = "GEMS: " .. gem_count
+    app_ui.hud_gems.font_size = gem_text_size
+    
+    app_ui.hud_level.text = "LEVEL: " .. current_level .. "/" .. #levels
+    app_ui.hud_lives.text = "LIVES: " .. lives
+    app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+    
+    if player.invincible then
+        app_ui.star_power_panel.visible = true
+        app_ui.star_power_label.text = "STAR POWER " .. math.ceil(player.inv_timer) .. "s"
+    else
+        app_ui.star_power_panel.visible = false
+    end
+  end
 end
 
 -- ============================================================================
@@ -661,84 +719,4 @@ end
 -- ============================================================================
 
 function lurek.draw_ui()
-  -- ---- TITLE SCREEN ----
-  if state == TITLE then
-    rect(0, 0, 800, 600, 0.05, 0.05, 0.2, 1)
-    -- Title text background
-    rect(100, 150, 600, 60, 0.2, 0.1, 0.4, 0.8)
-    text_("THE GREAT GIANA SISTERS", 160, 165, 28, 1.0, 0.85, 0.2, 1)
-    text_("A Lurek2D Retro Tribute", 260, 210, 16, 0.7, 0.7, 0.7, 1)
-
-    -- Controls
-    text_("A/D or Arrows - Move", 280, 300, 16, 0.8, 0.8, 0.8, 1)
-    text_("Space/W/Up - Jump", 290, 325, 16, 0.8, 0.8, 0.8, 1)
-    text_("Stomp monsters from above!", 250, 365, 16, 1.0, 0.5, 0.3, 1)
-
-    -- Blink prompt
-    local blink = math.floor(lurek.timer.getTime() * 2) % 2 == 0
-    if blink then
-      text_("PRESS ENTER TO START", 270, 440, 22, 1, 1, 1, 1)
-    end
-
-    -- Decorative gems
-    for i = 0, 7 do
-      local gx = 120 + i * 80
-      rect(gx, 500, 10, 10, 1.0, 0.85, 0.1, 0.6)
-    end
-    return
-  end
-
-  -- ---- GAME OVER ----
-  if state == GAME_OVER then
-    rect(0, 0, 800, 600, 0.1, 0.0, 0.0, 0.85)
-    text_("GAME OVER", 280, 200, 36, 1.0, 0.2, 0.2, 1)
-    text_("Final Score: " .. score, 300, 280, 22, 1, 1, 1, 1)
-    text_("Levels Cleared: " .. (current_level - 1) .. " / " .. #levels, 270, 320, 18, 0.8, 0.8, 0.8, 1)
-    local blink = math.floor(lurek.timer.getTime() * 2) % 2 == 0
-    if blink then
-      text_("PRESS ENTER", 320, 420, 22, 1, 1, 1, 1)
-    end
-    return
-  end
-
-  -- ---- LEVEL COMPLETE ----
-  if state == LEVEL_COMPLETE then
-    rect(200, 200, 400, 120, 0.1, 0.3, 0.1, 0.9)
-    text_("LEVEL " .. current_level .. " COMPLETE!", 270, 230, 26, 0.2, 1.0, 0.3, 1)
-    text_("Score: " .. score, 330, 280, 20, 1, 1, 1, 1)
-  end
-
-  -- ---- HUD ----
-  -- Background bar
-  rect(0, 0, 800, 28, 0, 0, 0, 0.6)
-
-  -- Score
-  text_("SCORE: " .. score, 10, 5, 18, 1, 1, 1, 1)
-
-  -- Gems with pulse effect
-  local gem_scale = 1.0 + gem_pulse * 0.3
-  local gem_text_size = math.floor(18 * gem_scale)
-  text_("GEMS: " .. gem_count, 200, 5, gem_text_size, 1.0, 0.85, 0.1, 1)
-
-  -- Level
-  text_("LEVEL: " .. current_level .. "/" .. #levels, 400, 5, 18, 0.6, 0.8, 1.0, 1)
-
-  -- Lives
-  text_("LIVES: ", 580, 5, 18, 1, 1, 1, 1)
-  for i = 1, lives do
-    rect(648 + (i - 1) * 22, 6, 16, 16, 1.0, 0.45, 0.6, 1)
-  end
-
-  -- FPS
-  local fps = lurek.timer.getFPS()
-  text_("FPS: " .. fps, 730, 5, 14, 0.5, 0.5, 0.5, 1)
-
-  -- Invincibility indicator
-  if player.invincible then
-    local remaining = math.ceil(player.inv_timer)
-    rect(300, 35, 200, 20, 0.2, 0.2, 0.0, 0.7)
-    local bar_w = (player.inv_timer / STAR_DURATION) * 196
-    rect(302, 37, bar_w, 16, 1.0, 0.9, 0.2, 0.9)
-    text_("STAR POWER " .. remaining .. "s", 340, 38, 14, 1, 1, 1, 1)
-  end
 end

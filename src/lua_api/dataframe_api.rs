@@ -238,7 +238,7 @@ impl LuaUserData for LuaDataFrameTask {
         /// @param | name | string | Type name to compare against `LDataFrameTask`, `DataFrameTask`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDataFrameTask" || name == "DataFrameTask" || name == "Object")
+            Ok(name == "LDataFrameTask" || name == "LDataFrameTask" || name == "DataFrameTask" || name == "Object")
         });
     }
 }
@@ -1192,7 +1192,7 @@ impl LuaUserData for LuaDataFrame {
         /// @param | name | string | Type name to compare against `LDataFrame`, `DataFrame`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDataFrame" || name == "DataFrame" || name == "Object")
+            Ok(name == "LDataFrame" || name == "LDataFrame" || name == "DataFrame" || name == "Object")
         });
         // -- withEval --
         /// Returns a dataframe with a column computed from an expression.
@@ -1614,7 +1614,7 @@ impl LuaUserData for LuaDatabase {
         /// @param | name | string | Type name to compare against `LDatabase`, `Database`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LDatabase" || name == "Database" || name == "Object")
+            Ok(name == "LDatabase" || name == "LDatabase" || name == "Database" || name == "Object")
         });
     }
 }
@@ -1908,7 +1908,7 @@ impl LuaUserData for LuaVecFrame {
         /// @param | name | string | Type name to compare against `VecFrame` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "VecFrame" || name == "Object")
+            Ok(name == "LVecFrame" || name == "VecFrame" || name == "Object")
         });
     }
 }

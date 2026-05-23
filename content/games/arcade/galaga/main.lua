@@ -141,7 +141,7 @@ local score = 0
 local high_score = 0
 local lives = 3
 local wave = 1
-
+local app_ui = {}
 -- Camera
 ---@type LCamera
 local cam = nil
@@ -561,6 +561,35 @@ function lurek.init()
     lurek.input.bind("start",   { "return", "gamepad:0:0", "gamepad:0:9" })
     lurek.input.bind("restart", { "r", "gamepad:0:3" })
 
+    local ui_root = lurek.ui.loadLayoutFile("content/games/arcade/galaga/ui.toml")
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.hi_score_label = ui_root:findById("hi_score_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.wave_label = ui_root:findById("wave_label")
+    app_ui.dual_fire = ui_root:findById("dual_fire")
+    app_ui.challenge_msg1 = ui_root:findById("challenge_msg1")
+    app_ui.challenge_msg2 = ui_root:findById("challenge_msg2")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.challenge_result = ui_root:findById("challenge_result")
+    app_ui.press_enter = ui_root:findById("press_enter")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    local function handle_start_click()
+        if current_state == STATE.TITLE then
+            current_state = STATE.PLAYING
+            next_wave()
+        elseif current_state == STATE.GAME_OVER then
+            reset_game()
+            current_state = STATE.TITLE
+        end
+    end
+
+    if app_ui.press_enter then app_ui.press_enter:setOnClick(handle_start_click) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_start_click) end
+
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
 
     math.randomseed(os.time())
@@ -581,6 +610,41 @@ function lurek.process(dt)
     update_particles(dt)
     update_score_pops(dt)
     update_stars(dt)
+
+    -- Update UI
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    app_ui.hud.visible = (current_state == STATE.PLAYING or current_state == STATE.GAME_OVER)
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    app_ui.hi_score_label.text = "HI: " .. tostring(high_score)
+
+    if app_ui.hud.visible then
+        app_ui.score_label.text = "SCORE: " .. tostring(score)
+        app_ui.lives_label.text = "LIVES: " .. tostring(lives)
+        local wl = is_challenge and ("WAVE " .. tostring(wave) .. " (CHALLENGE)") or ("WAVE " .. tostring(wave))
+        app_ui.wave_label.text = wl
+        app_ui.dual_fire.visible = dual_fire
+    end
+
+    if current_state == STATE.PLAYING then
+        if is_challenge and challenge_msg_timer > 0 then
+            local a = clamp(challenge_msg_timer / 0.5, 0, 1)
+            app_ui.challenge_msg1.color = {1, 1, 0, a}
+            app_ui.challenge_msg2.color = {0.8, 0.8, 0.8, a}
+            app_ui.challenge_msg1.visible = true
+            app_ui.challenge_msg2.visible = true
+        else
+            app_ui.challenge_msg1.visible = false
+            app_ui.challenge_msg2.visible = false
+        end
+    elseif current_state == STATE.GAME_OVER then
+        if is_challenge then
+            app_ui.challenge_result.text = "CHALLENGE: " .. tostring(challenge_kills) .. "/" .. tostring(challenge_total)
+            app_ui.challenge_result.visible = true
+        else
+            app_ui.challenge_result.visible = false
+        end
+    end
 
     -- -----------------------------------------------------------------------
     -- TITLE
@@ -994,29 +1058,5 @@ end
 -- Render UI (HUD overlay — screen space)
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. tostring(score), 10, 8)
-
-    -- High score
-    text_("HI: " .. tostring(high_score), SCREEN_W / 2 - 40, 8)
-
-    -- Lives
-    text_("LIVES: " .. tostring(lives), SCREEN_W - 110, 8)
-
-    -- Wave
-    lurek.render.setColor(0.6, 0.6, 0.6, 1)
-    local wave_label = is_challenge and ("WAVE " .. wave .. " (CHALLENGE)") or ("WAVE " .. wave)
-    text_(wave_label, SCREEN_W - 180, 28)
-
-    -- Dual-fire indicator
-    if dual_fire then
-        lurek.render.setColor(0.3, 1.0, 0.3, 1)
-        text_("DUAL FIRE", SCREEN_W / 2 - 30, 28)
-    end
-
-    -- FPS counter
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    text_("FPS: " .. tostring(math.floor(fps)), 10, SCREEN_H - 20)
+    -- Rendered via TOML layout system
 end

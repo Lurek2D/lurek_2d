@@ -74,9 +74,9 @@ describe("lurek.render font functions", function()
   end)
 
   -- @covers lurek.render.getDefaultFont
-  it("default configured font starts at built-in font_10", function()
+  it("default configured font starts at built-in font_8", function()
     local configured = lurek.render.getDefaultFont()
-    local expected = lurek.render.newFont("font_10")
+    local expected = lurek.render.newFont("font_8")
     expect_equal(lurek.render.getFontHeight(expected), lurek.render.getFontHeight(configured))
   end)
 

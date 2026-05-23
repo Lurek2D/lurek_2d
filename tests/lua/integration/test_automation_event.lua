@@ -2,6 +2,7 @@
 
 local automation = lurek.automation
 
+-- @describe automation + event integration
 describe("automation + event integration", function()
     -- @integration lurek.automation.load
     -- @integration lurek.automation.start

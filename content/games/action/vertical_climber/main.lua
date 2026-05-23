@@ -338,6 +338,25 @@ function lurek.init()
         colorEnd   = {0.8, 0.8, 0.8, 0.0},
     })
     reset_game()
+    
+    lurek.ui.loadLayoutFile("content/games/action/vertical_climber/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_highscore = ui_root:findById("title_highscore")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_new_high = ui_root:findById("go_new_high")
+    app_ui.go_restart = ui_root:findById("go_restart")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.hud_score = ui_root:findById("hud_score")
+    app_ui.hud_best = ui_root:findById("hud_best")
+    app_ui.hud_height = ui_root:findById("hud_height")
+    
+    app_ui.fps_text = ui_root:findById("fps_text")
 end
 
 local function _ready_setup()
@@ -567,6 +586,44 @@ function lurek.process(dt)
     spring_ps:update(dt)
     enemy_ps:update(dt)
     bullet_ps:update(dt)
+
+    -- UI Sync
+    if app_ui then
+        app_ui.fps_text.text = "FPS: " .. lurek.timer.getFPS()
+        
+        app_ui.title_screen.visible = (game_state == STATE.TITLE)
+        if game_state == STATE.TITLE then
+            if high_score > 0 then
+                app_ui.title_highscore.text = "HIGH SCORE: " .. high_score
+                app_ui.title_highscore.visible = true
+            else
+                app_ui.title_highscore.visible = false
+            end
+            local blink = math.floor(title_blink * 2) % 2 == 0
+            app_ui.press_start.visible = blink
+        end
+        
+        app_ui.game_over_screen.visible = (game_state == STATE.GAME_OVER)
+        if game_state == STATE.GAME_OVER then
+            app_ui.go_score.text = "Score: " .. score
+            app_ui.go_new_high.visible = (score >= high_score and high_score > 0)
+            local blink = math.floor(title_blink * 2) % 2 == 0
+            app_ui.go_restart.visible = blink
+        end
+        
+        app_ui.hud.visible = (game_state == STATE.PLAYING)
+        if game_state == STATE.PLAYING then
+            app_ui.hud_score.text = "Score: " .. score
+            if high_score > 0 then
+                app_ui.hud_best.text = "Best: " .. high_score
+                app_ui.hud_best.visible = true
+            else
+                app_ui.hud_best.visible = false
+            end
+            local height_m = math.floor(math.abs(max_height) / 10)
+            app_ui.hud_height.text = height_m .. "m"
+        end
+    end
 end
 
 -- ── Render (world space) ──────────────────────────────────────────────────
@@ -674,87 +731,16 @@ function lurek.draw()
     spring_ps:render()
     enemy_ps:render()
     bullet_ps:render()
-end
-
--- ── Render UI (screen space) ──────────────────────────────────────────────
-function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-
-    -- ── Title screen ──────────────────────────────────────────────────────
-    if game_state == STATE.TITLE then
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("VERTICAL CLIMBER", SCREEN_W / 2 - 120, 160, 32)
-
-        lurek.render.setColor(0.8, 0.85, 1.0, 1)
-        text_("Auto-bounce to the top!", SCREEN_W / 2 - 100, 220, 16)
-
-        if high_score > 0 then
-            lurek.render.setColor(1, 0.9, 0.2, 1)
-            text_("HIGH SCORE: " .. high_score, SCREEN_W / 2 - 70, 280, 18)
-        end
-
-        -- Blink prompt
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1, 0.9)
-            text_("PRESS ENTER", SCREEN_W / 2 - 60, 360, 18)
-        end
-
-        -- Controls
-        lurek.render.setColor(0.7, 0.7, 0.8, 0.7)
-        text_("A/D  Move   Space/W  Shoot   Esc  Quit", SCREEN_W / 2 - 160, 440, 14)
-
-        lurek.render.setColor(0.5, 0.5, 0.6, 0.5)
-        text_("FPS: " .. fps, 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- ── Game Over screen ──────────────────────────────────────────────────
-    if game_state == STATE.GAME_OVER then
-        lurek.render.setColor(0.9, 0.15, 0.15, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 80, 200, 32)
-
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("Score: " .. score, SCREEN_W / 2 - 50, 270, 22)
-
-        if score >= high_score and high_score > 0 then
-            lurek.render.setColor(1, 0.9, 0.2, 1)
-            text_("NEW HIGH SCORE!", SCREEN_W / 2 - 80, 310, 20)
-        end
-
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1, 0.9)
-            text_("PRESS ENTER", SCREEN_W / 2 - 60, 380, 18)
-        end
-
-        lurek.render.setColor(0.5, 0.5, 0.6, 0.5)
-        text_("FPS: " .. fps, 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- ── HUD (playing) ─────────────────────────────────────────────────────
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("Score: " .. score, 10, 10, 18)
-
-    -- High score
-    if high_score > 0 then
-        lurek.render.setColor(1, 0.9, 0.2, 0.8)
-        text_("Best: " .. high_score, 10, 34, 14)
-    end
-
-    -- Height indicator
-    local height_m = math.floor(math.abs(max_height) / 10)
-    lurek.render.setColor(0.8, 0.9, 1.0, 0.7)
-    text_(height_m .. "m", SCREEN_W - 60, 10, 16)
 
     -- Score popup
     if score_pop.alpha > 0.01 then
         lurek.render.setColor(1, 1, 0.3, score_pop.alpha)
-        local pop_screen_y = score_pop.y - cam_y
+        local pop_screen_y = score_pop.y + oy
         text_(score_pop.text, SCREEN_W / 2 - 15, pop_screen_y, 16)
     end
+end
 
-    -- FPS
-    lurek.render.setColor(0.5, 0.5, 0.6, 0.5)
-    text_("FPS: " .. fps, SCREEN_W - 70, SCREEN_H - 20, 12)
+-- ── Render UI (screen space) ──────────────────────────────────────────────
+function lurek.draw_ui()
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
 end

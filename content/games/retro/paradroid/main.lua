@@ -43,6 +43,8 @@ local player = {
     fire_cooldown = 0, speed = 120
 }
 
+local app_ui = {}
+
 -- Enemies, bullets, particles, room
 local enemies = {}
 local bullets = {}
@@ -492,6 +494,38 @@ function lurek.init()
     input.bind("confirm",  {"return"})
     input.bind("interact", {"e"})
     input.bind("boost",    {"w", "a", "s", "d"})
+    
+    lurek.ui.loadLayoutFile("content/games/retro/paradroid/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_press_start = ui_root:findById("title_press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_level = ui_root:findById("go_level")
+    app_ui.go_press_start = ui_root:findById("go_press_start")
+    
+    app_ui.level_clear_screen = ui_root:findById("level_clear_screen")
+    app_ui.lc_title = ui_root:findById("lc_title")
+    app_ui.lc_score = ui_root:findById("lc_score")
+    app_ui.lc_press_start = ui_root:findById("lc_press_start")
+    
+    app_ui.transfer_screen = ui_root:findById("transfer_screen")
+    app_ui.transfer_player_label = ui_root:findById("transfer_player_label")
+    app_ui.transfer_player_bar = ui_root:findById("transfer_player_bar")
+    app_ui.transfer_enemy_label = ui_root:findById("transfer_enemy_label")
+    app_ui.transfer_enemy_bar = ui_root:findById("transfer_enemy_bar")
+    app_ui.transfer_time_bar = ui_root:findById("transfer_time_bar")
+    app_ui.transfer_result = ui_root:findById("transfer_result")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_droid = ui_root:findById("hud_droid")
+    app_ui.hud_hp_bar = ui_root:findById("hud_hp_bar")
+    app_ui.hud_en_bar = ui_root:findById("hud_en_bar")
+    app_ui.hud_score = ui_root:findById("hud_score")
+    app_ui.hud_level = ui_root:findById("hud_level")
+    app_ui.fps_label = ui_root:findById("fps_label")
 end
 
 local function _ready_setup() end
@@ -530,184 +564,85 @@ function lurek.process(delta)
             state = STATE_TITLE
         end
     end
-end
-
-function lurek.draw()
+    
+    -- Sync UI
+    local blink = math.floor(title_blink * 2) % 2 == 0
+    app_ui.title_screen.visible = (state == STATE_TITLE)
     if state == STATE_TITLE then
-        -- Title screen
-        text_("PARADROID", 240, 160, 48, 0.3, 0.8, 1.0)
-        text_("Lurek2D Remake", 290, 220, 18, 0.5, 0.5, 0.6)
-
-        -- Animated droid number
-        local display_num = math.floor(title_blink * 5) % 999
-        local num_str = string.format("%03d", display_num)
-        circ(400, 340, 40, 0.2, 0.6, 0.8, 1.0)
-        circ("line", 400, 340, 42, 0.4, 0.8, 1.0, 1.0)
-        text_(num_str, 376, 328, 24, 1, 1, 1)
-
-        if math.floor(title_blink * 2) % 2 == 0 then
-            text_("PRESS SPACE TO START", 270, 440, 20, 0.8, 0.8, 0.8)
-        end
-
-        text_("Arrow keys: Move | Space: Fire | E: Transfer", 175, 500, 14, 0.4, 0.4, 0.5)
-        return
+        app_ui.title_press_start.visible = blink
     end
-
+    
+    app_ui.game_over_screen.visible = (state == STATE_GAME_OVER)
     if state == STATE_GAME_OVER then
-        text_("GAME OVER", 260, 220, 48, 1, 0.3, 0.2)
-        text_("Score: " .. score, 330, 290, 24, 0.8, 0.8, 0.8)
-        text_("Level: " .. level, 345, 330, 20, 0.6, 0.6, 0.6)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            text_("PRESS SPACE", 320, 420, 20, 0.7, 0.7, 0.7)
-        end
-        return
+        app_ui.go_score.text = "Score: " .. score
+        app_ui.go_level.text = "Level: " .. level
+        app_ui.go_press_start.visible = blink
     end
-
+    
+    app_ui.level_clear_screen.visible = (state == STATE_LEVEL_CLEAR)
     if state == STATE_LEVEL_CLEAR then
-        text_("LEVEL " .. level .. " CLEAR", 240, 240, 40, 0.3, 1, 0.4)
-        text_("Score: " .. score, 330, 310, 24, 0.8, 0.8, 0.8)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            text_("PRESS SPACE FOR NEXT LEVEL", 225, 400, 18, 0.7, 0.7, 0.7)
-        end
-        return
+        app_ui.lc_title.text = "LEVEL " .. level .. " CLEAR"
+        app_ui.lc_score.text = "Score: " .. score
+        app_ui.lc_press_start.visible = blink
     end
-
-    -- Draw room
-    -- Floor
-    rect(PLAY_X, PLAY_Y, PLAY_W, PLAY_H, 0.08, 0.08, 0.12, 1)
-
-    -- Walls and corridors
-    for r = 0, ROWS - 1 do
-        if room_walls[r] then
-            for c = 0, COLS - 1 do
-                local wx = PLAY_X + c * CELL
-                local wy = PLAY_Y + r * CELL
-                if room_walls[r][c] then
-                    rect(wx, wy, CELL, CELL, 0.15, 0.15, 0.2, 1)
-                    rect("line", wx, wy, CELL, CELL, 0.2, 0.2, 0.28, 1)
-                else
-                    -- Floor tile lines
-                    rect("line", wx, wy, CELL, CELL, 0.06, 0.06, 0.1, 0.3)
-                end
-            end
-        end
-    end
-
-    -- Draw bullets
-    for _, b in ipairs(bullets) do
-        if b.owner == "player" then
-            circ(b.x, b.y, 3, 0.5, 0.9, 1.0, 1)
-        else
-            circ(b.x, b.y, 3, 1.0, 0.4, 0.2, 1)
-        end
-    end
-
-    -- Draw enemies
-    for _, e in ipairs(enemies) do
-        if e.alive then
-            local c = e.color
-            circ(e.x, e.y, 14, c[1], c[2], c[3], 1)
-            circ("line", e.x, e.y, 15, c[1] * 0.7, c[2] * 0.7, c[3] * 0.7, 1)
-            text_(e.num, e.x - 12, e.y - 6, 12, 1, 1, 1)
-            -- HP bar
-            local hp_frac = e.hp / e.max_hp
-            rect(e.x - 12, e.y - 22, 24, 3, 0.3, 0.1, 0.1, 1)
-            rect(e.x - 12, e.y - 22, 24 * hp_frac, 3, 0.2, 0.9, 0.3, 1)
-        end
-    end
-
-    -- Draw player
-    local ps = get_droid_stats(player.droid_class)
-    local pc = ps.color
-    circ(player.x, player.y, 14, pc[1], pc[2], pc[3], 1)
-    circ("line", player.x, player.y, 16, 1, 1, 1, 0.8)
-    text_(player.droid_num, player.x - 12, player.y - 6, 12, 1, 1, 1)
-
-    -- Direction indicator
-    local dv = DIR_VEC[player.dir]
-    if dv then
-        circ(player.x + dv.dx * 18, player.y + dv.dy * 18, 3, 1, 1, 1, 0.7)
-    end
-
-    -- Particles
-    for _, em in ipairs(emitters) do
-        em.em:render()
-    end
-
-    -- Transfer overlay
+    
+    app_ui.transfer_screen.visible = (state == STATE_TRANSFER)
     if state == STATE_TRANSFER then
-        -- Dim background
-        rect(0, 0, 800, 600, 0, 0, 0, 0.6)
-
-        text_("TRANSFER SEQUENCE", 250, 100, 28, 0.4, 0.8, 1.0)
-        text_("Mash WASD to boost!", 280, 140, 16, 0.6, 0.6, 0.7)
-
-        -- Player bar
-        local bar_w = 300
-        local bar_h = 30
-        local bar_x = 250
+        app_ui.transfer_player_label.text = "YOU [" .. player.droid_num .. "]"
+        
         local p_frac = math.min(transfer.player_bar / TRANSFER_BAR_MAX, 1.0)
-        local e_frac = math.min(transfer.enemy_bar / TRANSFER_BAR_MAX, 1.0)
-
-        text_("YOU [" .. player.droid_num .. "]", bar_x, 200, 16, 0.3, 0.8, 1.0)
-        rect(bar_x, 220, bar_w, bar_h, 0.1, 0.1, 0.15, 1)
-        rect(bar_x, 220, bar_w * p_frac, bar_h, 0.3, 0.7, 1.0, 1)
-        rect("line", bar_x, 220, bar_w, bar_h, 0.4, 0.8, 1.0, 1)
-
+        app_ui.transfer_player_bar.width = 300 * p_frac
+        
         local te = transfer.target
-        if not te then return end
-        local tc = te.color
-        text_("ENEMY [" .. te.num .. "]", bar_x, 280, 16, tc[1], tc[2], tc[3])
-        rect(bar_x, 300, bar_w, bar_h, 0.1, 0.1, 0.15, 1)
-        rect(bar_x, 300, bar_w * e_frac, bar_h, tc[1], tc[2], tc[3], 1)
-        rect("line", bar_x, 300, bar_w, bar_h, tc[1]*0.7, tc[2]*0.7, tc[3]*0.7, 1)
-
-        -- Timer bar
+        if te then
+            local tc = te.color
+            app_ui.transfer_enemy_label.text = "ENEMY [" .. te.num .. "]"
+            app_ui.transfer_enemy_label.color = {tc[1], tc[2], tc[3], 1}
+            local e_frac = math.min(transfer.enemy_bar / TRANSFER_BAR_MAX, 1.0)
+            app_ui.transfer_enemy_bar.width = 300 * e_frac
+            app_ui.transfer_enemy_bar.bg_color = {tc[1], tc[2], tc[3], 1}
+        end
+        
         local time_frac = math.min(transfer.timer / transfer.duration, 1.0)
-        rect(bar_x, 360, bar_w, 6, 0.15, 0.15, 0.2, 1)
-        rect(bar_x, 360, bar_w * time_frac, 6, 0.8, 0.8, 0.3, 1)
-
-        -- Result text
+        app_ui.transfer_time_bar.width = 300 * time_frac
+        
         if transfer.result == "WIN" then
-            text_("TRANSFER COMPLETE!", 260, 410, 24, 0.3, 1.0, 0.4)
+            app_ui.transfer_result.text = "TRANSFER COMPLETE!"
+            app_ui.transfer_result.color = {0.3, 1.0, 0.4, 1}
         elseif transfer.result == "LOSE" then
-            text_("TRANSFER FAILED!", 270, 410, 24, 1.0, 0.3, 0.2)
+            app_ui.transfer_result.text = "TRANSFER FAILED!"
+            app_ui.transfer_result.color = {1.0, 0.3, 0.2, 1}
+        else
+            app_ui.transfer_result.text = ""
+        end
+    end
+    
+    app_ui.hud_screen.visible = (state == STATE_PLAYING or state == STATE_TRANSFER)
+    if state == STATE_PLAYING or state == STATE_TRANSFER then
+        local ps = get_droid_stats(player.droid_class)
+        local pc = ps.color
+        app_ui.hud_droid.text = "DROID " .. player.droid_num
+        app_ui.hud_droid.color = {pc[1], pc[2], pc[3], 1}
+        
+        local hp_frac = player.hp / player.max_hp
+        app_ui.hud_hp_bar.width = 120 * hp_frac
+        
+        local en_frac = player.energy / player.max_energy
+        app_ui.hud_en_bar.width = 120 * en_frac
+        if en_frac < 0.25 then
+            app_ui.hud_en_bar.bg_color = {1.0, 0.3, 0.1, 1}
+        else
+            app_ui.hud_en_bar.bg_color = {0.3, 0.6, 1.0, 1}
+        end
+        
+        app_ui.hud_score.text = "SCORE " .. score
+        app_ui.hud_level.text = "LEVEL " .. level
+        
+        if dt > 0 then
+            app_ui.fps_label.text = string.format("FPS %d", math.floor(1 / dt + 0.5))
         end
     end
 end
 
 function lurek.draw_ui()
-    if state ~= STATE_PLAYING and state ~= STATE_TRANSFER then return end
-
-    -- Droid ID
-    local ps = get_droid_stats(player.droid_class)
-    local pc = ps.color
-    rect(4, 4, 120, 28, 0.05, 0.05, 0.1, 0.9)
-    text_("DROID " .. player.droid_num, 12, 8, 18, pc[1], pc[2], pc[3])
-
-    -- HP
-    rect(4, 36, 120, 14, 0.1, 0.05, 0.05, 0.9)
-    local hp_frac = player.hp / player.max_hp
-    rect(4, 36, 120 * hp_frac, 14, 0.2, 0.8, 0.3, 1)
-    text_("HP", 8, 37, 11, 1, 1, 1)
-
-    -- Energy bar
-    rect(4, 54, 120, 14, 0.05, 0.05, 0.1, 0.9)
-    local en_frac = player.energy / player.max_energy
-    local er, eg, eb = 0.3, 0.6, 1.0
-    if en_frac < 0.25 then er, eg, eb = 1.0, 0.3, 0.1 end
-    rect(4, 54, 120 * en_frac, 14, er, eg, eb, 1)
-    text_("NRG", 8, 55, 11, 1, 1, 1)
-
-    -- Score and Level
-    rect(660, 4, 136, 28, 0.05, 0.05, 0.1, 0.9)
-    text_("SCORE " .. score, 668, 8, 16, 0.8, 0.8, 0.8)
-
-    rect(660, 36, 136, 18, 0.05, 0.05, 0.1, 0.9)
-    text_("LEVEL " .. level, 668, 38, 14, 0.6, 0.6, 0.7)
-
-    -- FPS
-    if dt > 0 then
-        text_(string.format("FPS %d", math.floor(1 / dt + 0.5)), 4, 580, 12, 0.3, 0.3, 0.4)
-    end
 end

@@ -40,6 +40,13 @@ impl LuaUserData for LuaSignal {
         /// @param | name | string | Signal event name to emit.
         /// @param | ... | any | Additional arguments passed to matching callbacks.
         methods.add_method("emit", |lua, this, args: LuaMultiValue| {
+            struct PendingSignalCall<'lua> {
+                handle: u64,
+                callback: Option<LuaFunction<'lua>>,
+                filter: Option<LuaFunction<'lua>>,
+                once: bool,
+            }
+
             let mut iter = args.into_iter();
             let name: String = match iter.next() {
                 Some(LuaValue::String(s)) => s
@@ -55,39 +62,59 @@ impl LuaUserData for LuaSignal {
             let extra_args: Vec<LuaValue> = iter.collect();
             let handles = this.inner.borrow().get_handles(&name);
             let mut to_remove: Vec<u64> = Vec::new();
-            {
+            let pending_calls = {
                 let callbacks = this.callbacks.borrow();
                 let filter_fns = this.filter_fns.borrow();
                 let once_handles = this.once_handles.borrow();
-                for handle in &handles {
-                    if let Some(fkey) = filter_fns.get(handle) {
-                        let filter_fn: LuaFunction = lua.registry_value(fkey)?;
-                        let pass: bool = filter_fn
-                            .call::<_, bool>(LuaMultiValue::from_vec(extra_args.clone()))
-                            .unwrap_or(false);
-                        if !pass {
-                            continue;
-                        }
+                handles
+                    .iter()
+                    .map(|handle| {
+                        Ok(PendingSignalCall {
+                            handle: *handle,
+                            callback: match callbacks.get(handle) {
+                                Some(key) => Some(lua.registry_value(key)?),
+                                None => None,
+                            },
+                            filter: match filter_fns.get(handle) {
+                                Some(key) => Some(lua.registry_value(key)?),
+                                None => None,
+                            },
+                            once: once_handles.contains(handle),
+                        })
+                    })
+                    .collect::<LuaResult<Vec<_>>>()?
+            };
+            for pending_call in pending_calls {
+                if let Some(filter_fn) = pending_call.filter {
+                    let pass: bool = filter_fn
+                        .call::<_, bool>(LuaMultiValue::from_vec(extra_args.clone()))
+                        .unwrap_or(false);
+                    if !pass {
+                        continue;
                     }
-                    if let Some(key) = callbacks.get(handle) {
-                        let func: LuaFunction = lua.registry_value(key)?;
-                        func.call::<_, ()>(LuaMultiValue::from_vec(extra_args.clone()))?;
-                    }
-                    if once_handles.contains(handle) {
-                        to_remove.push(*handle);
-                    }
+                }
+                if let Some(func) = pending_call.callback {
+                    func.call::<_, ()>(LuaMultiValue::from_vec(extra_args.clone()))?;
+                }
+                if pending_call.once {
+                    to_remove.push(pending_call.handle);
                 }
             }
             let wildcard_handles = this.inner.borrow().get_wildcard_handles(&name);
-            {
+            let wildcard_callbacks = {
                 let callbacks = this.callbacks.borrow();
+                let mut pending = Vec::new();
                 for handle in &wildcard_handles {
                     if let Some(key) = callbacks.get(handle) {
                         if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
-                            let _ = func.call::<_, ()>(LuaMultiValue::from_vec(extra_args.clone()));
+                            pending.push(func);
                         }
                     }
                 }
+                pending
+            };
+            for func in wildcard_callbacks {
+                let _ = func.call::<_, ()>(LuaMultiValue::from_vec(extra_args.clone()));
             }
             for handle in to_remove {
                 this.inner.borrow_mut().remove(handle);
@@ -212,7 +239,7 @@ impl LuaUserData for LuaSignal {
         /// @param | name | string | Type name to compare against `LSignal`, `Signal`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LSignal" || name == "Signal" || name == "Object")
+            Ok(name == "LSignal" || name == "LSignal" || name == "Signal" || name == "Object")
         });
     }
 }

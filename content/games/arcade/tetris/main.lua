@@ -113,6 +113,7 @@ local shake_state      = { x = 0, y = 0 }
 
 -- Title screen animation
 local title_blink      = 0
+local app_ui           = {}
 
 -- ── Deep-copy a cells table ───────────────────────────────────────────────
 local function copy_cells(cells)
@@ -338,6 +339,31 @@ function lurek.init()
     lines_cleared = 0
     level         = 1
     drop_interval = 0.5
+    
+    lurek.ui.loadLayoutFile("content/games/arcade/tetris/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.level_label = ui_root:findById("level_label")
+    app_ui.lines_label = ui_root:findById("lines_label")
+    app_ui.hold_empty_label = ui_root:findById("hold_empty_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.final_score = ui_root:findById("final_score")
+    app_ui.final_level = ui_root:findById("final_level")
+    app_ui.final_lines = ui_root:findById("final_lines")
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    local function handle_start_click()
+        if state == STATE.TITLE or state == STATE.GAME_OVER then
+            reset_game()
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_start_click) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_start_click) end
 end
 
 -- ===========================================================================
@@ -368,7 +394,6 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("confirm") then
             reset_game()
         end
-        return
     end
 
     -- Game over — wait for restart
@@ -376,8 +401,30 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("restart") then
             reset_game()
         end
-        return
     end
+
+    -- UI sync
+    app_ui.title_screen.visible = (state == STATE.TITLE)
+    app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+    app_ui.hud.visible = (state == STATE.PLAYING or state == STATE.GAME_OVER)
+    
+    app_ui.score_label.text = tostring(score)
+    app_ui.level_label.text = tostring(level)
+    app_ui.lines_label.text = tostring(lines_cleared)
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    app_ui.hold_empty_label.visible = not hold_piece
+    
+    if state == STATE.GAME_OVER then
+        app_ui.final_score.text = "Score: " .. score
+        app_ui.final_level.text = "Level: " .. level
+        app_ui.final_lines.text = "Lines: " .. lines_cleared
+    end
+    
+    -- Blinking
+    local blink = math.floor(title_blink * 2) % 2 == 0
+    if app_ui.press_start then app_ui.press_start.color = blink and {1, 1, 1, 1} or {1, 1, 1, 0} end
+
+    if state ~= STATE.PLAYING then return end
 
     -- ── PLAYING state ─────────────────────────────────────────────────
     -- Rotation with wall kicks
@@ -536,91 +583,15 @@ end
 --  lurek.render_ui — draw UI OVERLAY (score, next, hold, controls, menus)
 -- ===========================================================================
 function lurek.draw_ui()
+    if state == STATE.TITLE then return end
+    
     local sx = BOARD_X + COLS * CELL + 24
 
-    if state == STATE.TITLE then
-        -- Title screen
-        lurek.render.setColor(0.0, 0.9, 0.9)
-        text_("T E T R I S", SCREEN_W / 2 - 100, 180, 4)
-
-        lurek.render.setColor(0.7, 0.7, 0.9)
-        text_("Rotate and stack falling tetrominoes", SCREEN_W / 2 - 160, 240, 1.5)
-
-        -- Blinking "press enter"
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1)
-            text_("PRESS ENTER TO START", SCREEN_W / 2 - 120, 340, 2)
-        end
-
-        -- Controls preview
-        lurek.render.setColor(0.4, 0.4, 0.5)
-        text_("←→ / AD   Move",     200, 430, 1.3)
-        text_("↑  / W    Rotate",    200, 450, 1.3)
-        text_("↓  / S    Soft drop", 200, 470, 1.3)
-        text_("Space     Hard drop", 200, 490, 1.3)
-        text_("C         Hold",      200, 510, 1.3)
-        text_("Escape    Quit",      200, 530, 1.3)
-        return
-    end
-
-    -- ── Sidebar: Score / Level / Lines ────────────────────────────────
-    lurek.render.setColor(0.7, 0.7, 0.9)
-    text_("SCORE", sx, BOARD_Y + 10, 1.5)
-    lurek.render.setColor(1, 1, 1)
-    text_(tostring(score), sx, BOARD_Y + 30, 1.8)
-
-    lurek.render.setColor(0.7, 0.7, 0.9)
-    text_("LEVEL", sx, BOARD_Y + 70, 1.5)
-    lurek.render.setColor(1, 1, 1)
-    text_(tostring(level), sx, BOARD_Y + 90, 2)
-
-    lurek.render.setColor(0.7, 0.7, 0.9)
-    text_("LINES", sx, BOARD_Y + 130, 1.5)
-    lurek.render.setColor(1, 1, 1)
-    text_(tostring(lines_cleared), sx, BOARD_Y + 150, 2)
-
     -- ── Sidebar: Next piece preview ──────────────────────────────────
-    lurek.render.setColor(0.7, 0.7, 0.9)
-    text_("NEXT", sx, BOARD_Y + 195, 1.5)
-    draw_piece_preview(next_piece, sx, BOARD_Y + 215)
+    draw_piece_preview(next_piece, sx, BOARD_Y + 255)
 
     -- ── Sidebar: Hold piece preview ──────────────────────────────────
-    lurek.render.setColor(0.7, 0.7, 0.9)
-    text_("HOLD", sx, BOARD_Y + 300, 1.5)
     if hold_piece then
-        draw_piece_preview(hold_piece, sx, BOARD_Y + 320)
-    else
-        lurek.render.setColor(0.3, 0.3, 0.4)
-        text_("(empty)", sx, BOARD_Y + 325, 1.2)
-    end
-
-    -- ── Sidebar: Controls ────────────────────────────────────────────
-    lurek.render.setColor(0.4, 0.4, 0.5)
-    text_("←→  Move",      sx, SCREEN_H - 140, 1.2)
-    text_("↑   Rotate",    sx, SCREEN_H - 125, 1.2)
-    text_("↓   Soft drop", sx, SCREEN_H - 110, 1.2)
-    text_("SPC Hard drop", sx, SCREEN_H - 95,  1.2)
-    text_("C   Hold",      sx, SCREEN_H - 80,  1.2)
-    text_("ESC Quit",      sx, SCREEN_H - 65,  1.2)
-
-    -- ── Left sidebar: FPS ────────────────────────────────────────────
-    lurek.render.setColor(0.4, 0.4, 0.5)
-    text_("FPS: " .. math.floor(lurek.timer.getFPS()), 8, SCREEN_H - 20, 1)
-
-    -- ── Game over overlay ────────────────────────────────────────────
-    if state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(1, 0.2, 0.2)
-        text_("GAME OVER", SCREEN_W / 2 - 90, SCREEN_H / 2 - 40, 3.5)
-
-        lurek.render.setColor(1, 1, 1)
-        text_("Score: " .. score, SCREEN_W / 2 - 60, SCREEN_H / 2 + 10, 2)
-        text_("Level: " .. level, SCREEN_W / 2 - 60, SCREEN_H / 2 + 35, 2)
-        text_("Lines: " .. lines_cleared, SCREEN_W / 2 - 60, SCREEN_H / 2 + 60, 2)
-
-        lurek.render.setColor(0.7, 0.7, 0.7)
-        text_("Press R to restart", SCREEN_W / 2 - 100, SCREEN_H / 2 + 100, 2)
+        draw_piece_preview(hold_piece, sx, BOARD_Y + 360)
     end
 end

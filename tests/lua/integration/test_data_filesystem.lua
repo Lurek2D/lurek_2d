@@ -1,4 +1,5 @@
 -- Integration: JSON serialization round-trip via filesystem I/O
+-- @describe integration: data serialization with filesystem I/O
 describe("integration: data serialization with filesystem I/O", function()
     local TMP_PATH = "save/test_data_fs_tmp.json"
 

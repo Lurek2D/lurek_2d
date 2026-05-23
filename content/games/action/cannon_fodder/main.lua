@@ -57,6 +57,7 @@ end
 
 -- ── State ─────────────────────────────────────────────────────────────────
 local STATE = { PLAY = 1, WIN = 2, LOSE = 3 }
+local app_ui = {}
 local state  = STATE.PLAY
 local score  = 0
 
@@ -142,6 +143,15 @@ end
 function lurek.init()
     lurek.window.setTitle("Cannon Fodder — Lurek2D")
     lurek.render.setBackgroundColor(0.18, 0.32, 0.12)
+
+    lurek.ui.loadLayoutFile("content/games/action/cannon_fodder/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.hud_panel = ui_root:findById("hud_panel")
+    app_ui.win_panel = ui_root:findById("win_panel")
+    app_ui.lose_panel = ui_root:findById("lose_panel")
+    app_ui.hud_text = ui_root:findById("hud_text")
+    app_ui.win_text = ui_root:findById("win_text")
+
 
     math.randomseed(os.time())
 
@@ -289,6 +299,19 @@ end
 function lurek.process(dt)
     if lurek.automation then lurek.automation.update(dt) end
     lurek.update(dt)
+
+    -- Update UI
+    if app_ui.hud_panel then
+        app_ui.hud_panel.visible = (state == STATE.PLAY)
+        app_ui.win_panel.visible = (state == STATE.WIN)
+        app_ui.lose_panel.visible = (state == STATE.LOSE)
+        app_ui.hud_text.text = "Squad: " .. #soldiers .. "   Enemies: " .. #enemies .. "   Score: " .. score
+        if state == STATE.WIN then
+            app_ui.win_text.text = "Score: " .. score .. "  (Esc to quit)"
+        end
+    end
+end
+    lurek.update(dt)
 end
 
 -- ── Draw ──────────────────────────────────────────────────────────────────
@@ -355,28 +378,9 @@ function lurek.draw()
         lurek.render.setColor(1, 1, 0, alpha * 0.6)
         circ("line", ex.x, ex.y, r2)
     end
+end
 
-    -- HUD
-    lurek.render.setColor(0, 0, 0, 0.55)
-    rect("fill", 0, 0, W, 26)
-    lurek.render.setColor(0.2, 0.6, 0.95)
-    text_(string.format("Squad: %d   Enemies: %d   Score: %d", #soldiers, #enemies, score), 10, 5)
-
-    if state == STATE.WIN then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", W/2 - 140, H/2 - 30, 280, 60)
-        lurek.render.setColor(0.2, 1, 0.4)
-        text_("MISSION COMPLETE!", W/2 - 90, H/2 - 10, 0, 1.4)
-        lurek.render.setColor(1,1,1)
-        text_(string.format("Score: %d  (Esc to quit)", score), W/2 - 90, H/2 + 16)
-    elseif state == STATE.LOSE then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", W/2 - 120, H/2 - 30, 240, 60)
-        lurek.render.setColor(1, 0.2, 0.2)
-        text_("SQUAD ELIMINATED", W/2 - 85, H/2 - 10, 0, 1.4)
-        lurek.render.setColor(1,1,1)
-        text_("Esc to quit", W/2 - 40, H/2 + 16)
-    end
+function lurek.draw_ui()
 end
 
 -- ── Mousepressed ──────────────────────────────────────────────────────────

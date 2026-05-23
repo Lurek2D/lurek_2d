@@ -1,4 +1,5 @@
 -- Integration: AI state machine + pathfinding A*
+-- @describe integration: AI agent uses pathfinding to navigate
 describe("integration: AI agent uses pathfinding to navigate", function()
     -- @integration LStateMachine:addState
     -- @integration LStateMachine:addTransition

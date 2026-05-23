@@ -305,6 +305,8 @@ function lurek.init()
     lurek.window.setTitle("Turrican — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.05, 0.12)
 
+    lurek.ui.loadLayoutFile("content/games/retro/turrican/ui.toml")
+
     lurek.input.bind("left",   { "a" })
     lurek.input.bind("right",  { "d" })
     lurek.input.bind("jump",   { "space", "w" })
@@ -655,32 +657,59 @@ function lurek.process(dt)
     cam_x = clamp(target_cx, 0, math.max(0, level_w - SCREEN_W))
     camera:setPosition(cam_x, 0)
     camera:update(dt)
+
+    -- ── UI Update ─────────────────────────────────────────────
+    local title_panel = lurek.ui.getElementById("title_panel")
+    local game_over_panel = lurek.ui.getElementById("game_over_panel")
+    local lc_panel = lurek.ui.getElementById("level_complete_panel")
+    local hud_panel = lurek.ui.getElementById("hud_panel")
+
+    title_panel.visible = (current_state == STATE.TITLE)
+    game_over_panel.visible = (current_state == STATE.GAME_OVER)
+    lc_panel.visible = (current_state == STATE.LEVEL_COMPLETE)
+    hud_panel.visible = (current_state == STATE.PLAYING or current_state == STATE.LEVEL_COMPLETE)
+
+    if current_state == STATE.TITLE then
+        local start_label = lurek.ui.getElementById("start_label")
+        start_label.color = {0.9, 0.9, 0.5, math.abs(math.sin(lurek.timer.getTime() * 2.5))}
+    elseif current_state == STATE.GAME_OVER then
+        local go_score = lurek.ui.getElementById("go_score")
+        local go_high = lurek.ui.getElementById("go_high")
+        go_score.text = "Score: " .. score
+        go_high.text = "High Score: " .. high_score
+    elseif current_state == STATE.LEVEL_COMPLETE then
+        local lc_title = lurek.ui.getElementById("lc_title")
+        lc_title.text = "LEVEL " .. current_level .. " COMPLETE!"
+        lc_panel.y = banner.y
+    end
+
+    if hud_panel.visible then
+        local hp_fill = lurek.ui.getElementById("hp_fill")
+        hp_fill.width = (hp / K.MAX_HP) * 106
+
+        local ammo_fill = lurek.ui.getElementById("ammo_fill")
+        ammo_fill.width = (ammo / K.MAX_AMMO) * 106
+
+        local weapon_text = lurek.ui.getElementById("weapon_text")
+        weapon_text.text = has_spread and "SPREAD" or "NORMAL"
+        weapon_text.color = has_spread and { 1, 0.4, 0.4, 1 } or { 0.8, 0.8, 0.3, 1 }
+
+        local score_text = lurek.ui.getElementById("score_text")
+        score_text.text = "SCORE: " .. score
+
+        local level_text = lurek.ui.getElementById("level_text")
+        level_text.text = "LEVEL " .. current_level
+
+        local fps_text = lurek.ui.getElementById("fps_text")
+        fps_text.text = "FPS: " .. lurek.timer.getFPS()
+    end
 end
 
 -- ---------------------------------------------------------------------------
 -- Render (world space — camera-transformed)
 -- ---------------------------------------------------------------------------
 function lurek.draw()
-    if current_state == STATE.TITLE then
-        lurek.render.setColor(0.4, 0.85, 1.0, 1)
-        text_("TURRICAN", SCREEN_W / 2 - 100, SCREEN_H / 3, 4)
-        lurek.render.setColor(0.7, 0.7, 0.8, 1)
-        text_("A Lurek2D Tribute", SCREEN_W / 2 - 80, SCREEN_H / 3 + 60, 1.5)
-        lurek.render.setColor(0.9, 0.9, 0.5, math.abs(math.sin(lurek.timer.getTime() * 2.5)))
-        text_("PRESS F OR SPACE TO START", SCREEN_W / 2 - 120, SCREEN_H / 2 + 40, 1.5)
-        lurek.render.setColor(0.5, 0.5, 0.6, 1)
-        text_("Inspired by Manfred Trenz (1990)", SCREEN_W / 2 - 120, SCREEN_H - 80, 1)
-        return
-    end
-
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(0.9, 0.2, 0.2, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 80, SCREEN_H / 3, 3)
-        lurek.render.setColor(0.8, 0.8, 0.8, 1)
-        text_("Score: " .. score, SCREEN_W / 2 - 60, SCREEN_H / 2, 2)
-        text_("High Score: " .. high_score, SCREEN_W / 2 - 80, SCREEN_H / 2 + 40, 1.5)
-        lurek.render.setColor(0.6, 0.6, 0.7, 1)
-        text_("Press F to return to title", SCREEN_W / 2 - 100, SCREEN_H / 2 + 100, 1)
+    if current_state == STATE.TITLE or current_state == STATE.GAME_OVER then
         return
     end
 
@@ -814,53 +843,10 @@ function lurek.draw()
     ps_pickup:render()
 
     camera:reset()
-
-    -- Level complete banner
-    if current_state == STATE.LEVEL_COMPLETE then
-        lurek.render.setColor(0.1, 0.7, 0.3, 1)
-        text_("LEVEL " .. current_level .. " COMPLETE!", SCREEN_W / 2 - 120, banner.y, 3)
-        lurek.render.setColor(0.8, 0.8, 0.9, 1)
-        text_("Press F to continue", SCREEN_W / 2 - 80, banner.y + 50, 1.5)
-    end
 end
 
 -- ---------------------------------------------------------------------------
 -- Render UI (screen space — HUD overlay)
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    if current_state ~= STATE.PLAYING and current_state ~= STATE.LEVEL_COMPLETE then return end
-
-    -- HP bar
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.7)
-    rect("fill", 10, 10, 110, 18)
-    lurek.render.setColor(0.2, 0.8, 0.3, 1)
-    rect("fill", 12, 12, (hp / K.MAX_HP) * 106, 14)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("HP", 14, 12, 1)
-
-    -- Ammo bar
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.7)
-    rect("fill", 10, 32, 110, 18)
-    lurek.render.setColor(0.3, 0.6, 1.0, 1)
-    rect("fill", 12, 34, (ammo / K.MAX_AMMO) * 106, 14)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("AMMO", 14, 34, 1)
-
-    -- Weapon indicator
-    local weapon_name = has_spread and "SPREAD" or "NORMAL"
-    local wc = has_spread and { 1, 0.4, 0.4 } or { 0.8, 0.8, 0.3 }
-    lurek.render.setColor(wc[1], wc[2], wc[3], 1)
-    text_(weapon_name, 14, 56, 1)
-
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. score, SCREEN_W - 180, 12, 1.2)
-
-    -- Level
-    lurek.render.setColor(0.7, 0.7, 0.8, 1)
-    text_("LEVEL " .. current_level, SCREEN_W - 180, 34, 1)
-
-    -- FPS
-    lurek.render.setColor(0.5, 0.5, 0.5, 0.7)
-    text_("FPS: " .. lurek.timer.getFPS(), SCREEN_W - 90, SCREEN_H - 20, 1)
 end

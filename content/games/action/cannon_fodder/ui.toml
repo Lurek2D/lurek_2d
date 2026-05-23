@@ -1,0 +1,78 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 26
+visible = true
+color = [0.0, 0.0, 0.0, 0.55]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hud_text"
+  text = "Squad: 4   Enemies: 10   Score: 0"
+  x = 10
+  y = 5
+  color = [0.2, 0.6, 0.95, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "win_panel"
+x = 260
+y = 270
+w = 280
+h = 60
+visible = false
+color = [0.0, 0.0, 0.0, 0.7]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "win_title"
+  text = "MISSION COMPLETE!"
+  x = 310
+  y = 290
+  color = [0.2, 1.0, 0.4, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "win_text"
+  text = "Score: 0  (Esc to quit)"
+  x = 310
+  y = 316
+  color = [1.0, 1.0, 1.0, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "lose_panel"
+x = 280
+y = 270
+w = 240
+h = 60
+visible = false
+color = [0.0, 0.0, 0.0, 0.7]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lose_title"
+  text = "SQUAD ELIMINATED"
+  x = 315
+  y = 290
+  color = [1.0, 0.2, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lose_text"
+  text = "Esc to quit"
+  x = 360
+  y = 316
+  color = [1.0, 1.0, 1.0, 1.0]

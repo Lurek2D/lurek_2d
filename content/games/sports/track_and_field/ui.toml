@@ -1,0 +1,302 @@
+[[widget]]
+type = "panel"
+id = "title_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = false
+bg_color = [0.12, 0.12, 0.15, 1]
+
+  [[widget.children]]
+  type = "label"
+  text = "TRACK & FIELD"
+  font_size = 36
+  color = [1.0, 0.84, 0.0, 1]
+  anchor = "top_center"
+  y = 160
+
+  [[widget.children]]
+  type = "label"
+  text = "GO FOR GOLD"
+  font_size = 24
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 230
+
+  [[widget.children]]
+  type = "label"
+  text = "Mash A/D to run - Space for actions"
+  font_size = 16
+  color = [0.6, 0.6, 0.6, 1]
+  anchor = "top_center"
+  y = 310
+
+  [[widget.children]]
+  type = "button"
+  id = "press_start"
+  text = "Press SPACE to start"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 400
+
+[[widget]]
+type = "panel"
+id = "final_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = false
+bg_color = [0.12, 0.12, 0.15, 1]
+
+  [[widget.children]]
+  type = "label"
+  text = "FINAL RESULTS"
+  font_size = 28
+  color = [1.0, 0.84, 0.0, 1]
+  anchor = "top_center"
+  y = 40
+
+  [[widget.children]]
+  type = "panel"
+  id = "final_rows"
+  anchor = "top_center"
+  width = 600
+  height = 200
+  y = 110
+
+  [[widget.children]]
+  type = "label"
+  id = "final_gold"
+  text = ""
+  font_size = 16
+  color = [1.0, 0.84, 0.0, 1]
+  x = 180
+  y = 280
+
+  [[widget.children]]
+  type = "label"
+  id = "final_silver"
+  text = ""
+  font_size = 16
+  color = [0.75, 0.75, 0.75, 1]
+  x = 320
+  y = 280
+
+  [[widget.children]]
+  type = "label"
+  id = "final_bronze"
+  text = ""
+  font_size = 16
+  color = [0.8, 0.5, 0.2, 1]
+  x = 470
+  y = 280
+
+  [[widget.children]]
+  type = "label"
+  id = "final_total"
+  text = ""
+  font_size = 24
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 340
+
+  [[widget.children]]
+  type = "button"
+  id = "press_restart"
+  text = "Press SPACE to return to title"
+  font_size = 16
+  color = [0.5, 0.5, 0.5, 1]
+  anchor = "top_center"
+  y = 540
+
+[[widget]]
+type = "panel"
+id = "intro_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = false
+bg_color = [0, 0, 0, 0.6]
+
+  [[widget.children]]
+  type = "label"
+  id = "intro_event_num"
+  text = ""
+  font_size = 24
+  color = [1.0, 0.84, 0.0, 1]
+  anchor = "top_center"
+  y = 200
+
+  [[widget.children]]
+  type = "label"
+  id = "intro_event_name"
+  text = ""
+  font_size = 32
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 250
+
+  [[widget.children]]
+  type = "label"
+  id = "intro_countdown"
+  text = ""
+  font_size = 48
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 320
+
+[[widget]]
+type = "panel"
+id = "result_screen"
+anchor = "center"
+width = 800
+height = 600
+visible = false
+bg_color = [0, 0, 0, 0.5]
+
+  [[widget.children]]
+  type = "label"
+  id = "result_title"
+  text = ""
+  font_size = 24
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 150
+
+  [[widget.children]]
+  type = "label"
+  id = "result_medal"
+  text = ""
+  font_size = 32
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 210
+
+  [[widget.children]]
+  type = "label"
+  id = "result_points"
+  text = ""
+  font_size = 16
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 270
+
+  [[widget.children]]
+  type = "label"
+  id = "result_bonus"
+  text = ""
+  font_size = 16
+  color = [1.0, 0.84, 0.0, 1]
+  anchor = "top_center"
+  y = 300
+
+[[widget]]
+type = "panel"
+id = "hud_screen"
+anchor = "top_left"
+width = 800
+height = 50
+visible = false
+bg_color = [0.08, 0.08, 0.10, 0.85]
+
+  [[widget.children]]
+  type = "label"
+  id = "hud_event_name"
+  text = ""
+  font_size = 16
+  color = [1.0, 0.84, 0.0, 1]
+  x = 10
+  y = 8
+
+  [[widget.children]]
+  type = "panel"
+  width = 120
+  height = 14
+  bg_color = [0.3, 0.3, 0.3, 1]
+  x = 200
+  y = 10
+
+    [[widget.children.children]]
+    type = "panel"
+    id = "speed_bar_fill"
+    width = 0
+    height = 14
+    bg_color = [1, 1, 0.2, 1]
+
+  [[widget.children]]
+  type = "label"
+  text = "Speed"
+  font_size = 14
+  color = [1, 1, 1, 1]
+  x = 200
+  y = 26
+
+  [[widget.children]]
+  type = "panel"
+  width = 120
+  height = 8
+  bg_color = [0.3, 0.3, 0.3, 1]
+  x = 200
+  y = 32
+
+    [[widget.children.children]]
+    type = "panel"
+    id = "stamina_bar_fill"
+    width = 120
+    height = 8
+    bg_color = [0.2, 0.7, 0.9, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "hud_info_1"
+  text = ""
+  font_size = 14
+  color = [1, 1, 1, 1]
+  x = 350
+  y = 10
+
+  [[widget.children]]
+  type = "label"
+  id = "hud_info_2"
+  text = ""
+  font_size = 14
+  color = [1, 1, 1, 1]
+  x = 350
+  y = 28
+
+  [[widget.children]]
+  type = "label"
+  id = "hud_info_3"
+  text = ""
+  font_size = 14
+  color = [0.7, 0.7, 0.9, 1]
+  x = 550
+  y = 10
+
+  [[widget.children]]
+  type = "label"
+  id = "hud_medals"
+  text = ""
+  font_size = 14
+  color = [1, 1, 1, 1]
+  anchor = "top_right"
+  x = -200
+  y = 10
+
+[[widget]]
+type = "panel"
+id = "fps_container"
+anchor = "bottom_right"
+width = 100
+height = 20
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 12
+  color = [0.5, 0.5, 0.5, 1]
+  x = -70
+  y = -20

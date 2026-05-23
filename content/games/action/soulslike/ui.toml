@@ -1,0 +1,216 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "title_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "title_text"
+    widget_type = "label"
+    x = 310
+    y = 180
+    text = "SOULSLIKE"
+
+    [[root.children.children]]
+    id = "subtitle_text"
+    widget_type = "label"
+    x = 300
+    y = 240
+    text = "PREPARE TO DIE"
+
+    [[root.children.children]]
+    id = "press_start"
+    widget_type = "label"
+    x = 330
+    y = 360
+    text = "PRESS ENTER"
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "hp_bg"
+    widget_type = "panel"
+    x = 40
+    y = 16
+    w = 160
+    h = 14
+
+    [[root.children.children]]
+    id = "hp_fill"
+    widget_type = "panel"
+    x = 40
+    y = 16
+    w = 160
+    h = 14
+
+    [[root.children.children]]
+    id = "hp_label"
+    widget_type = "label"
+    x = 42
+    y = 17
+    text = "HP"
+
+    [[root.children.children]]
+    id = "stam_bg"
+    widget_type = "panel"
+    x = 40
+    y = 34
+    w = 160
+    h = 10
+
+    [[root.children.children]]
+    id = "stam_fill"
+    widget_type = "panel"
+    x = 40
+    y = 34
+    w = 160
+    h = 10
+
+    [[root.children.children]]
+    id = "stam_label"
+    widget_type = "label"
+    x = 42
+    y = 34
+    text = "STA"
+
+    [[root.children.children]]
+    id = "estus_1"
+    widget_type = "panel"
+    x = 40
+    y = 50
+    w = 12
+    h = 16
+
+    [[root.children.children]]
+    id = "estus_2"
+    widget_type = "panel"
+    x = 58
+    y = 50
+    w = 12
+    h = 16
+
+    [[root.children.children]]
+    id = "estus_3"
+    widget_type = "panel"
+    x = 76
+    y = 50
+    w = 12
+    h = 16
+
+    [[root.children.children]]
+    id = "exhaust_warn"
+    widget_type = "label"
+    x = 40
+    y = 70
+    text = "EXHAUSTED"
+    visible = false
+
+    [[root.children.children]]
+    id = "boss_hp_bg"
+    widget_type = "panel"
+    x = 580
+    y = 16
+    w = 200
+    h = 18
+
+    [[root.children.children]]
+    id = "boss_hp_fill"
+    widget_type = "panel"
+    x = 580
+    y = 16
+    w = 200
+    h = 18
+
+    [[root.children.children]]
+    id = "boss_marker_1"
+    widget_type = "panel"
+    x = 712
+    y = 16
+    w = 1
+    h = 18
+
+    [[root.children.children]]
+    id = "boss_marker_2"
+    widget_type = "panel"
+    x = 646
+    y = 16
+    w = 1
+    h = 18
+
+    [[root.children.children]]
+    id = "boss_phase_label"
+    widget_type = "label"
+    x = 584
+    y = 18
+    text = "BOSS  P1"
+
+[[root.children]]
+id = "death_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "death_text"
+    widget_type = "label"
+    x = 320
+    y = 240
+    text = "YOU DIED"
+
+    [[root.children.children]]
+    id = "death_retry"
+    widget_type = "label"
+    x = 310
+    y = 330
+    text = "Press ENTER to retry"
+
+[[root.children]]
+id = "victory_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "victory_text"
+    widget_type = "label"
+    x = 330
+    y = 240
+    text = "VICTORY"
+
+    [[root.children.children]]
+    id = "victory_sub"
+    widget_type = "label"
+    x = 290
+    y = 300
+    text = "HEIR OF FIRE DESTROYED"
+
+    [[root.children.children]]
+    id = "victory_enter"
+    widget_type = "label"
+    x = 345
+    y = 360
+    text = "Press ENTER"

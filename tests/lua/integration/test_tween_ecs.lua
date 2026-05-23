@@ -1,4 +1,5 @@
 -- Integration: tween state animating entity component properties via ECS
+-- @describe integration: tween drives entity transform
 describe("integration: tween drives entity transform", function()
     -- @integration LTweenState:lerp
     -- @integration LTweenState:tick

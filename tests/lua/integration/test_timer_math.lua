@@ -1,11 +1,12 @@
 -- Integration: lurek.tween.newState easing output cross-checked against lurek.math easing functions
 
--- @integration lurek.tween.newState
--- @integration LTweenState:tick
--- @integration LTweenState:lerp
--- @integration lurek.math.inQuad
+-- @describe timer + tween easing integration
 describe("timer + tween easing integration", function()
 
+    -- @integration lurek.tween.newState
+    -- @integration LTweenState:tick
+    -- @integration LTweenState:lerp
+    -- @integration lurek.math.inQuad
     it("tween inQuad output matches lurek.math.inQuad at t=0.5", function()
         local tw = lurek.tween.newState(1.0, "quadIn")
         tw:tick(0.5)

@@ -262,6 +262,42 @@ function lurek.init()
         lurek.input.bind("ingredient" .. i, tostring(i))
     end
     _cam:reset()
+    
+    lurek.ui.loadLayoutFile("content/games/rpg/alchemy/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.fps_text = ui_root:findById("fps_text")
+    app_ui.gold_text = ui_root:findById("gold_text")
+    app_ui.potions_text = ui_root:findById("potions_text")
+    app_ui.discovered_text = ui_root:findById("discovered_text")
+    
+    app_ui.cauldron_elements = ui_root:findById("cauldron_elements")
+    app_ui.elem_fire = ui_root:findById("elem_fire")
+    app_ui.elem_water = ui_root:findById("elem_water")
+    app_ui.elem_earth = ui_root:findById("elem_earth")
+    app_ui.elem_air = ui_root:findById("elem_air")
+    
+    app_ui.recipe_book = ui_root:findById("recipe_book")
+    app_ui.recipes = {}
+    for i=1, 5 do app_ui.recipes[i] = ui_root:findById("recipe_" .. i) end
+    
+    app_ui.msg_panel = ui_root:findById("msg_panel")
+    app_ui.msg_text = ui_root:findById("msg_text")
+    app_ui.controls_hint = ui_root:findById("controls_hint")
+    
+    app_ui.shop_screen = ui_root:findById("shop_screen")
+    app_ui.shop_gold = ui_root:findById("shop_gold")
+    app_ui.shop_buy = {}
+    for i=1, 6 do app_ui.shop_buy[i] = ui_root:findById("shop_buy_" .. i) end
+    app_ui.shop_sell_none = ui_root:findById("shop_sell_none")
+    app_ui.shop_sell = {}
+    for i=1, 4 do app_ui.shop_sell[i] = ui_root:findById("shop_sell_" .. i) end
+    
+    app_ui.discovery_screen = ui_root:findById("discovery_screen")
+    app_ui.disc_title = ui_root:findById("disc_title")
+    app_ui.disc_name = ui_root:findById("disc_name")
+    app_ui.disc_count = ui_root:findById("disc_count")
 end
 
 local function _ready_setup()
@@ -483,6 +519,93 @@ function lurek.process(delta)
             clear_workbench()
         end
     end
+    
+    -- UI Sync
+    if app_ui then
+        app_ui.hud.visible = (state ~= STATE_TITLE and state ~= STATE_DISCOVERY)
+        if app_ui.hud.visible then
+            app_ui.fps_text.text = "FPS: " .. lurek.timer.getFPS()
+            app_ui.gold_text.text = "Gold: " .. gold
+            app_ui.potions_text.text = "Potions: " .. #inventory
+            app_ui.discovered_text.text = "Discovered: " .. #discovered .. "/5"
+            
+            if cauldron then
+                app_ui.cauldron_elements.visible = true
+                app_ui.elem_fire.text = "Fire:  " .. cauldron.fire
+                app_ui.elem_water.text = "Water: " .. cauldron.water
+                app_ui.elem_earth.text = "Earth: " .. cauldron.earth
+                app_ui.elem_air.text = "Air:   " .. cauldron.air
+            else
+                app_ui.cauldron_elements.visible = false
+            end
+            
+            for i, rec in ipairs(recipes) do
+                local found = false
+                for _, d in ipairs(discovered) do
+                    if d == rec.name then found = true; break end
+                end
+                if found then
+                    app_ui.recipes[i].text = rec.name
+                    app_ui.recipes[i].color = {rec.color[1], rec.color[2], rec.color[3], 1}
+                else
+                    app_ui.recipes[i].text = "??? Unknown ???"
+                    app_ui.recipes[i].color = {0.4, 0.4, 0.4, 0.6}
+                end
+            end
+            
+            if message_timer > 0 then
+                app_ui.msg_panel.visible = true
+                local a = math.min(message_timer, 1)
+                app_ui.msg_panel.background = {0, 0, 0, 0.6 * a}
+                app_ui.msg_text.color = {1, 1, 1, a}
+                app_ui.msg_text.text = message
+            else
+                app_ui.msg_panel.visible = false
+            end
+        end
+        
+        app_ui.shop_screen.visible = (state == STATE_SHOP)
+        if app_ui.shop_screen.visible then
+            app_ui.shop_gold.text = "Gold: " .. gold
+            for i=1, 6 do
+                local ing = ingredients[i]
+                local props = ""
+                if ing.fire > 0 then props = props .. "F" .. ing.fire .. " " end
+                if ing.water > 0 then props = props .. "W" .. ing.water .. " " end
+                if ing.earth > 0 then props = props .. "E" .. ing.earth .. " " end
+                if ing.air > 0 then props = props .. "A" .. ing.air .. " " end
+                app_ui.shop_buy[i].text = string.format("%d. %s   %dg   %s   stock:%d", i, ing.name, ing.cost, props, stock[i])
+            end
+            
+            if #inventory == 0 then
+                app_ui.shop_sell_none.visible = true
+                for i=1, 4 do app_ui.shop_sell[i].visible = false end
+            else
+                app_ui.shop_sell_none.visible = false
+                for j=1, 4 do
+                    if j <= #inventory then
+                        local pot = inventory[j]
+                        app_ui.shop_sell[j].text = pot.name .. " — " .. pot.value .. "g"
+                        app_ui.shop_sell[j].visible = true
+                    else
+                        app_ui.shop_sell[j].visible = false
+                    end
+                end
+            end
+        end
+        
+        app_ui.discovery_screen.visible = (state == STATE_DISCOVERY)
+        if app_ui.discovery_screen.visible then
+            local s = anim.disc_scale
+            local r, g, b = discovery_color[1], discovery_color[2], discovery_color[3]
+            app_ui.disc_title.color = {1, 0.9, 0.2, s}
+            -- Approximate size scale with alpha if needed, but ui.toml texts don't scale well. Just fade.
+            app_ui.disc_name.text = discovery_name
+            app_ui.disc_name.color = {r, g, b, s}
+            app_ui.disc_count.text = #discovered .. " / 5 recipes found"
+            app_ui.disc_count.color = {1, 1, 1, 0.6 * s}
+        end
+    end
 end
 
 -- ── Render (world) ──────────────────────────────────────────────────────────
@@ -626,151 +749,26 @@ function lurek.draw()
 end
 
 -- ── Render UI (HUD / overlays) ──────────────────────────────────────────────
-
 function lurek.draw_ui()
-    -- FPS
-    lurek.render.setColor(1, 1, 1, 0.4)
-    text_("FPS: " .. lurek.timer.getFPS(), 720, 8, 10)
-
-    if state == STATE_TITLE then return end
-
-    -- ── Gold ────────────────────────────────────────────────────────────
-    lurek.render.setColor(1, 0.85, 0, 1)
-    text_("Gold: " .. gold, 20, 8, 16)
-
-    -- ── Inventory count ─────────────────────────────────────────────────
-    lurek.render.setColor(0.8, 0.8, 0.8, 1)
-    text_("Potions: " .. #inventory, 160, 8, 14)
-
-    -- ── Discoveries ─────────────────────────────────────────────────────
-    lurek.render.setColor(0.7, 0.7, 0.4, 1)
-    text_("Discovered: " .. #discovered .. "/5", 300, 8, 14)
-
-    -- ── Elemental readout ───────────────────────────────────────────────
-    if cauldron then
-        local y = 100
-        lurek.render.setColor(1, 1, 1, 0.8)
-        text_("Cauldron Elements:", 640, y, 11)
-        y = y + 16
-        lurek.render.setColor(1, 0.3, 0.1, 1)
-        text_("Fire:  " .. cauldron.fire,  650, y, 11); y = y + 14
-        lurek.render.setColor(0.3, 0.5, 1.0, 1)
-        text_("Water: " .. cauldron.water, 650, y, 11); y = y + 14
-        lurek.render.setColor(0.6, 0.4, 0.2, 1)
-        text_("Earth: " .. cauldron.earth, 650, y, 11); y = y + 14
-        lurek.render.setColor(0.5, 0.9, 0.6, 1)
-        text_("Air:   " .. cauldron.air,   650, y, 11)
-    end
-
-    -- ── Recipe book (right side) ────────────────────────────────────────
-    lurek.render.setColor(0.7, 0.6, 0.4, 0.9)
-    text_("Recipe Book:", 640, 200, 12)
-    for i, rec in ipairs(recipes) do
-        local found = false
-        for _, d in ipairs(discovered) do
-            if d == rec.name then found = true; break end
-        end
-        if found then
-            lurek.render.setColor(rec.color[1], rec.color[2], rec.color[3], 1)
-            text_(rec.name, 645, 218 + (i-1)*16, 10)
-        else
-            lurek.render.setColor(0.4, 0.4, 0.4, 0.6)
-            text_("??? Unknown ???", 645, 218 + (i-1)*16, 10)
-        end
-    end
-
-    -- ── Message ─────────────────────────────────────────────────────────
-    if message_timer > 0 then
-        local a = math.min(message_timer, 1)
-        lurek.render.setColor(0, 0, 0, 0.6 * a)
-        rect("fill", 150, 560, 500, 30)
-        lurek.render.setColor(1, 1, 1, a)
-        text_(message, 170, 567, 13)
-    end
-
-    -- ── Controls hint ───────────────────────────────────────────────────
-    lurek.render.setColor(0.6, 0.5, 0.4, 0.6)
-    text_("1-6:Add  G:Grind  H:Heat  J:Cool  B:Bottle  S:Shop  Esc:Quit", 140, 585, 10)
-
-    -- ── Shop overlay ────────────────────────────────────────────────────
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
+    -- Wait, the shop overlay and discovery overlay had some graphics (rectangles).
+    -- But we only used text in ui.toml, and simple rect backgrounds in panels.
+    -- The shop ingredient colored squares and potion colored squares were drawn in draw_ui...
+    -- Wait, if they were drawn there, they will be missing. Let's draw the colored squares here,
+    -- but bound to the shop state.
     if state == STATE_SHOP then
-        lurek.render.setColor(0, 0, 0, 0.75)
-        rect("fill", 100, 60, 600, 480)
-
-        lurek.render.setColor(1, 0.85, 0, 1)
-        text_("ALCHEMIST'S SHOP", 280, 80, 22)
-        lurek.render.setColor(1, 1, 1, 0.8)
-        text_("Gold: " .. gold, 350, 115, 16)
-
-        -- buy section
-        lurek.render.setColor(0.8, 0.7, 0.5, 1)
-        text_("BUY INGREDIENTS (press 1-6):", 180, 150, 14)
-
         for i = 1, 6 do
             local ing = ingredients[i]
             local y = 175 + (i-1) * 36
             local r, g, b = ing.color[1], ing.color[2], ing.color[3]
-
             lurek.render.setColor(r, g, b, 0.8)
             rect("fill", 180, y, 20, 20)
-
-            lurek.render.setColor(1, 1, 1, 1)
-            text_(i .. ". " .. ing.name, 210, y + 2, 13)
-
-            lurek.render.setColor(0.8, 0.8, 0.3, 1)
-            text_(ing.cost .. "g", 420, y + 2, 13)
-
-            lurek.render.setColor(0.6, 0.6, 0.6, 1)
-            local props = ""
-            if ing.fire > 0 then props = props .. "F" .. ing.fire .. " " end
-            if ing.water > 0 then props = props .. "W" .. ing.water .. " " end
-            if ing.earth > 0 then props = props .. "E" .. ing.earth .. " " end
-            if ing.air > 0 then props = props .. "A" .. ing.air .. " " end
-            text_(props, 480, y + 2, 11)
-
-            text_("stock:" .. stock[i], 570, y + 2, 11)
         end
-
-        -- sell section
-        lurek.render.setColor(0.8, 0.7, 0.5, 1)
-        text_("SELL POTIONS (press B):", 180, 400, 14)
-
-        if #inventory == 0 then
-            lurek.render.setColor(0.5, 0.5, 0.5, 0.6)
-            text_("No potions to sell", 220, 425, 12)
-        else
-            for j = 1, math.min(#inventory, 4) do
-                local pot = inventory[j]
-                local y = 420 + (j-1) * 24
-                lurek.render.setColor(pot.color[1], pot.color[2], pot.color[3], 1)
-                rect("fill", 200, y, 14, 14)
-                lurek.render.setColor(1, 1, 1, 1)
-                text_(pot.name .. " — " .. pot.value .. "g", 224, y, 12)
-            end
+        for j = 1, math.min(#inventory, 4) do
+            local pot = inventory[j]
+            local y = 420 + (j-1) * 24
+            lurek.render.setColor(pot.color[1], pot.color[2], pot.color[3], 1)
+            rect("fill", 200, y, 14, 14)
         end
-
-        lurek.render.setColor(0.6, 0.6, 0.6, 0.8)
-        text_("Press S or Esc to close shop", 270, 520, 12)
-    end
-
-    -- ── Discovery overlay ───────────────────────────────────────────────
-    if state == STATE_DISCOVERY then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", 0, 0, 800, 600)
-
-        local s = anim.disc_scale
-        local r, g, b = discovery_color[1], discovery_color[2], discovery_color[3]
-
-        lurek.render.setColor(r, g, b, 0.3 * s)
-        rect("fill", 200, 200, 400 * s, 200 * s)
-
-        lurek.render.setColor(1, 0.9, 0.2, s)
-        text_("NEW DISCOVERY!", 260, 230, math.floor(28 * s))
-
-        lurek.render.setColor(r, g, b, s)
-        text_(discovery_name, 280, 300, math.floor(22 * s))
-
-        lurek.render.setColor(1, 1, 1, 0.6 * s)
-        text_(#discovered .. " / 5 recipes found", 310, 350, 14)
     end
 end

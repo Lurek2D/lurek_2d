@@ -1,4 +1,5 @@
 -- Integration: procedural generation output placed into tilemap layers
+-- @describe procgen + tilemap integration
 describe("procgen + tilemap integration", function()
     -- @integration LTileMap:addLayer
     -- @integration LTileMap:getTile

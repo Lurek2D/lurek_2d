@@ -207,6 +207,7 @@ impl Catalog {
         *self.index_cache.borrow_mut() = Some((self.locale.clone(), index.clone()));
         index
     }
+    /// Resolves a gender-specific key variant and falls back to the base key when not found.
     pub fn translate_gender<'a>(&'a self, key: &'a str, gender: &str) -> &'a str {
         let gender_lower = gender.to_lowercase();
         let gendered_key = format!("{}.{}", key, gender_lower);
@@ -216,6 +217,7 @@ impl Catalog {
             self.translate(key)
         }
     }
+    /// Resolves an English pluralized key variant (`.one` or `.other`) and falls back to the base key.
     pub fn translate_plural(&self, key: &str, count: f64) -> String {
         let plural_key = if super::PluralForm::english(count).key() == "one" {
             format!("{}.one", key)

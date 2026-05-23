@@ -43,7 +43,7 @@ end
 
 local function add_items(combo, values)
     if not combo then return end
-    pcall(function() combo:clearItems() end)
+    combo:clearItems()
     for _, value in ipairs(values or {}) do
         combo:addItem(tostring(value))
     end
@@ -51,7 +51,8 @@ end
 
 local function ensure_status_sections(status)
     if not status then return end
-    if status:getSectionCount() == 0 then
+    local section_count = status:getSectionCount()
+    if section_count == 0 then
         status:addSection("source", 180)
         status:addSection("rows", 220)
         status:addSection("refresh", 180)
@@ -69,26 +70,14 @@ end
 
 local function root_find(root, id)
     if not root then return nil end
-    local ok, found = pcall(function() return root:findById(id) end)
-    if not ok then return nil end
+    local found = root:findById(id)
     if found == nil then return nil end
     return found
 end
 
 local function load_layout(ctx)
     lurek.ui.clear()
-    local load_layout_game_file = lurek.ui["loadLayoutGameFile"]
-    local loaded = pcall(function()
-        if load_layout_game_file then
-            load_layout_game_file(LAYOUT_PATH)
-        else
-            error("loadLayoutGameFile unavailable")
-        end
-    end)
-    if not loaded then
-        local abs = lurek.filesystem.toAbsolutePath(LAYOUT_PATH)
-        lurek.ui.loadLayoutFile(abs)
-    end
+    lurek.ui.loadLayoutGameFile(LAYOUT_PATH)
 end
 
 local function ensure_tabs(tabs, names)
@@ -143,39 +132,8 @@ local function bind_callbacks(ctx)
 end
 
 local function tune_widget_spacing(w)
-    local function pad(widget, top, right, bottom, left)
-        if not widget then return end
-        pcall(function() widget:setPadding(top, right, bottom, left) end)
-    end
-
-    pad(w.title, 6, 8, 4, 8)
-    pad(w.subtitle, 6, 8, 4, 8)
-    pad(w.filter_summary, 2, 8, 2, 8)
-
-    -- Keep controls on native defaults; compact widgets can clip text with extra padding.
-
-    local function style(widget, class_name)
-        if not widget then return end
-        pcall(function() widget:setStyleClass(class_name) end)
-    end
-
-    local function opaque(widget)
-        if not widget then return end
-        pcall(function() widget:setAlpha(1.0) end)
-    end
-
-    style(w.regenerate, "primary")
-    style(w.reload, "secondary")
-    style(w.save, "success")
-    style(w.screenshot, "info")
-
-    opaque(w.title)
-    opaque(w.subtitle)
-    opaque(w.filter_summary)
-    opaque(w.regenerate)
-    opaque(w.reload)
-    opaque(w.save)
-    opaque(w.screenshot)
+    -- Keep native theme defaults for all widgets.
+    local _ = w
 end
 
 function Controls.setup(ctx)
@@ -202,6 +160,19 @@ function Controls.setup(ctx)
         status = root_find(root, "status"),
         transactions = root_find(root, "transactions_table"),
         api = root_find(root, "api_table"),
+        chart_slots = {
+            cashflow_tab2 = root_find(root, "slot_cashflow_tab2"),
+            monthly_area_tab2 = root_find(root, "slot_monthly_area_tab2"),
+            payments_tab2 = root_find(root, "slot_payments_tab2"),
+            categories_tab3 = root_find(root, "slot_categories_tab3"),
+            members_tab3 = root_find(root, "slot_members_tab3"),
+            recurring_tab2 = root_find(root, "slot_recurring_tab2"),
+            anomalies_tab6 = root_find(root, "slot_anomalies_tab6"),
+            members_tab4 = root_find(root, "slot_members_tab4"),
+            payments_tab5 = root_find(root, "slot_payments_tab5"),
+            recurring_tab5 = root_find(root, "slot_recurring_tab5"),
+            cashflow_tab5 = root_find(root, "slot_cashflow_tab5"),
+        },
         labels = {
             member = root_find(root, "member_label"),
             category = root_find(root, "category_label"),
@@ -213,7 +184,10 @@ function Controls.setup(ctx)
     }
 
     ensure_tabs(widgets.tabs, ctx.C.TABS)
-    if widgets.tabs then widgets.tabs:setActiveTab(1) end
+    if widgets.tabs then
+        widgets.tabs:setActiveTab(1)
+        ctx.ui_active_tab = 1
+    end
 
     if widgets.labels then
         if widgets.labels.member then widgets.labels.member:setText("Member") end
@@ -263,6 +237,11 @@ function Controls.setup(ctx)
         { "API", 110 },
     })
 
+    if ctx.fonts and ctx.fonts.table then
+        if widgets.transactions then widgets.transactions:setFont(ctx.fonts.table) end
+        if widgets.api then widgets.api:setFont(ctx.fonts.table) end
+    end
+
     ctx.widgets = widgets
     tune_widget_spacing(widgets)
     bind_callbacks(ctx)
@@ -294,7 +273,11 @@ end
 function Controls.apply_snapshot(ctx, snapshot)
     if not ctx.widgets or not snapshot then return end
     local w = ctx.widgets
-    if snapshot.active_tab and w.tabs then w.tabs:setActiveTab(clamp(snapshot.active_tab, 1, #ctx.C.TABS)) end
+    if snapshot.active_tab and w.tabs then
+        local clamped_tab = clamp(snapshot.active_tab, 1, #ctx.C.TABS)
+        w.tabs:setActiveTab(clamped_tab)
+        ctx.ui_active_tab = clamped_tab
+    end
     if snapshot.member and w.member then w.member:setSelectedIndex(index_of(ctx.C.MEMBERS, snapshot.member)) end
     if snapshot.category and w.category then w.category:setSelectedIndex(index_of(ctx.C.CATEGORIES, snapshot.category)) end
     if snapshot.start_year and w.start_year then w.start_year:setValue(clamp(snapshot.start_year, ctx.C.YEAR_MIN, ctx.C.YEAR_MAX)) end
@@ -319,11 +302,22 @@ function Controls.read_filters(ctx)
         }
     end
 
-    local active_tab = w.tabs and clamp(w.tabs:getActiveTab(), 1, #ctx.C.TABS) or 1
-    local member = w.member and (w.member:getSelectedItem() or "All") or "All"
-    local category = w.category and (w.category:getSelectedItem() or "All") or "All"
-    local start_year = w.start_year and clamp(round(w.start_year:getValue()), ctx.C.YEAR_MIN, ctx.C.YEAR_MAX) or ctx.C.YEAR_MIN
-    local end_year = w.end_year and clamp(round(w.end_year:getValue()), ctx.C.YEAR_MIN, ctx.C.YEAR_MAX) or ctx.C.YEAR_MAX
+    local active_tab = ctx.ui_active_tab or 1
+    if w.tabs then
+        local runtime_tab = w.tabs:getActiveTab()
+        if runtime_tab ~= nil then
+            active_tab = clamp(runtime_tab, 1, #ctx.C.TABS)
+            ctx.ui_active_tab = active_tab
+        end
+    end
+    local member = "All"
+    if w.member then member = tostring(w.member:getSelectedItem() or "All") end
+    local category = "All"
+    if w.category then category = tostring(w.category:getSelectedItem() or "All") end
+    local start_year = ctx.C.YEAR_MIN
+    if w.start_year then start_year = clamp(round(w.start_year:getValue()), ctx.C.YEAR_MIN, ctx.C.YEAR_MAX) end
+    local end_year = ctx.C.YEAR_MAX
+    if w.end_year then end_year = clamp(round(w.end_year:getValue()), ctx.C.YEAR_MIN, ctx.C.YEAR_MAX) end
     if start_year > end_year then
         end_year = start_year
         if w.end_year then w.end_year:setValue(end_year) end
@@ -335,7 +329,7 @@ function Controls.read_filters(ctx)
         category = category,
         start_year = start_year,
         end_year = end_year,
-        use_cleaned = w.cleaned and w.cleaned:isOn() or true,
+        use_cleaned = w.cleaned and (w.cleaned:isOn() == true) or true,
         anomaly_threshold = w.threshold and clamp(round(w.threshold:getValue()), 0, 100) or 30,
     }
 end
@@ -366,18 +360,79 @@ function Controls.update_visibility(ctx)
     if not ctx.widgets or not ctx.filters then return end
     local w = ctx.widgets
     local active = ctx.filters.active_tab or 1
-    if w.transactions then w.transactions:setVisible(active == 4 or active == 7) end
+    if w.transactions then w.transactions:setVisible(active == 7 or active == 8) end
     if w.api then w.api:setVisible(active == 1) end
+
+    local slots = w.chart_slots or {}
+    local function vis(slot, on)
+        if slot then slot:setVisible(on) end
+    end
+
+    vis(slots.cashflow_tab2, active == 2)
+    vis(slots.monthly_area_tab2, active == 2)
+    vis(slots.payments_tab2, active == 2)
+    vis(slots.recurring_tab2, active == 2)
+
+    vis(slots.categories_tab3, active == 3)
+    vis(slots.members_tab3, active == 3)
+
+    vis(slots.members_tab4, active == 4)
+
+    vis(slots.payments_tab5, active == 5)
+    vis(slots.recurring_tab5, active == 5)
+    vis(slots.cashflow_tab5, active == 5)
+
+    vis(slots.anomalies_tab6, active == 6)
+end
+
+local function frame_for_active_tab(ctx, active)
+    local view = ctx.view or {}
+    if active == 7 then return view.recent_frame end
+    return nil
 end
 
 local function update_transactions(ctx)
     local tbl = ctx.widgets and ctx.widgets.transactions
     if not tbl then return end
-    local frame = ctx.view and ctx.view.recent_frame
+    local active = (ctx.filters and ctx.filters.active_tab) or 1
+    local frame = frame_for_active_tab(ctx, active)
     if frame then
-        local version = tostring(ctx.view_version or 0)
+        local version = string.format("%s:%s", tostring(active), tostring(ctx.view_version or 0))
         if ctx.transactions_widget_version == version then return end
         tbl:setDataFrame(frame)
+        ctx.transactions_widget_version = version
+        return
+    end
+
+    if active == 8 then
+        local version = string.format("logs:%s", tostring(#(ctx.logs or {})))
+        if ctx.transactions_widget_version == version then return end
+        local rows = {}
+        local logs = ctx.logs or {}
+        local start = math.max(1, #logs - 24)
+        for i = start, #logs do
+            local row = logs[i]
+            if row then
+                rows[#rows + 1] = {
+                    tostring(i),
+                    tostring(row.level or "info"),
+                    tostring(row.message or ""),
+                    "",
+                    "",
+                    "",
+                    "",
+                }
+            end
+        end
+        tbl:setRows(rows)
+        ctx.transactions_widget_version = version
+        return
+    end
+
+    if active ~= 1 then
+        local version = string.format("empty:%s", tostring(active))
+        if ctx.transactions_widget_version == version then return end
+        tbl:clearRows()
         ctx.transactions_widget_version = version
     else
         if ctx.transactions_widget_version == "empty" then return end

@@ -23,6 +23,7 @@ local STATE_GAME_OVER = "GAME_OVER"
 local state = STATE_PLAYING
 local terrain = {}
 local lemmings = {}
+local app_ui = {}
 local particles = {}
 local tweens_list = {}
 local entrance = { col = 10, row = 3 }
@@ -430,6 +431,29 @@ end
 
 function lurek.init()
     lurek.window.setTitle("Lemmings — Lurek2D")
+    
+    lurek.ui.loadLayoutFile("content/games/retro/lemmings/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_text = ui_root:findById("go_text")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_saved = ui_root:findById("hud_saved")
+    app_ui.hud_level = ui_root:findById("hud_level")
+    app_ui.hud_spawned = ui_root:findById("hud_spawned")
+    app_ui.job_blocker = ui_root:findById("job_blocker")
+    app_ui.job_digger = ui_root:findById("job_digger")
+    app_ui.job_builder = ui_root:findById("job_builder")
+    app_ui.job_basher = ui_root:findById("job_basher")
+    app_ui.hud_timer = ui_root:findById("hud_timer")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    app_ui.end_screen = ui_root:findById("end_screen")
+    app_ui.end_title = ui_root:findById("end_title")
+    app_ui.end_stats = ui_root:findById("end_stats")
 end
 
 local function _ready_setup()
@@ -540,6 +564,45 @@ function lurek.process(dt)
             state = STATE_FAILED
             start_fanfare("FAILED — " .. saved_count .. "/" .. NEEDED .. " saved")
         end
+    end
+    
+    -- Sync UI
+    app_ui.title_screen.visible = (state == STATE_TITLE)
+    app_ui.game_over_screen.visible = (state == STATE_GAME_OVER)
+    app_ui.hud_screen.visible = (state == STATE_PLAYING or state == STATE_LEVEL_COMPLETE or state == STATE_FAILED)
+    app_ui.end_screen.visible = (state == STATE_LEVEL_COMPLETE or state == STATE_FAILED)
+    
+    if state == STATE_GAME_OVER then
+        app_ui.go_text.text = "All " .. #levels .. " levels completed!"
+    elseif state == STATE_LEVEL_COMPLETE or state == STATE_FAILED then
+        app_ui.end_title.text = fanfare_text
+        if state == STATE_LEVEL_COMPLETE then
+            app_ui.end_title.color = {0.3, 1, 0.3, 1}
+        else
+            app_ui.end_title.color = {1, 0.3, 0.3, 1}
+        end
+        app_ui.end_stats.text = "Saved: " .. saved_count .. "   Lost: " .. dead_count
+    end
+    
+    if state == STATE_PLAYING or state == STATE_LEVEL_COMPLETE or state == STATE_FAILED then
+        app_ui.hud_saved.text = "Saved: " .. saved_count .. "/" .. NEEDED
+        app_ui.hud_level.text = "Level " .. level
+        app_ui.hud_spawned.text = "Spawned: " .. spawned_count .. "/" .. TOTAL_LEMMINGS
+        
+        local function update_job(id, name, num_label)
+            local remaining = (job_limits[name] or 0) - (job_used[name] or 0)
+            app_ui[id].text = num_label .. ":" .. name:sub(1,1):upper() .. name:sub(2) .. "=" .. remaining
+        end
+        
+        update_job("job_blocker", "blocker", "1")
+        update_job("job_digger", "digger", "2")
+        update_job("job_builder", "builder", "3")
+        update_job("job_basher", "basher", "4")
+        
+        local mins = math.floor(level_timer / 60)
+        local secs = math.floor(level_timer % 60)
+        app_ui.hud_timer.text = string.format("Time %d:%02d", mins, secs)
+        app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
     end
 end
 
@@ -664,87 +727,4 @@ function lurek.draw()
 end
 
 function lurek.draw_ui()
-    if state == STATE_TITLE then
-        lurek.render.setColor(0.3, 0.7, 1, 1)
-        text_("LEMMINGS", 260, 180, 48)
-        lurek.render.setColor(0.2, 0.9, 0.3, 1)
-        text_("LET'S GO!", 310, 260, 24)
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("Press ENTER to start", 290, 340, 16)
-        text_("Assign jobs: 1=Blocker  2=Digger  3=Builder  4=Basher", 160, 400, 14)
-        text_("Hover cursor near lemming + press key", 230, 430, 14)
-        return
-    end
-
-    if state == STATE_GAME_OVER then
-        lurek.render.setColor(0.9, 0.8, 0.2, 1)
-        text_("GAME OVER", 260, 200, 48)
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("All " .. #levels .. " levels completed!", 280, 280, 20)
-        text_("Press ENTER to return to title", 250, 340, 16)
-        return
-    end
-
-    -- HUD
-    lurek.render.setColor(0.1, 0.1, 0.2, 0.85)
-    rect(0, 0, 800, 28)
-
-    lurek.render.setColor(0.3, 0.9, 0.3, 1)
-    text_("Saved: " .. saved_count .. "/" .. NEEDED, 10, 6, 16)
-
-    lurek.render.setColor(0.7, 0.7, 0.9, 1)
-    text_("Level " .. level, 170, 6, 16)
-
-    lurek.render.setColor(0.9, 0.9, 0.5, 1)
-    text_("Spawned: " .. spawned_count .. "/" .. TOTAL_LEMMINGS, 260, 6, 16)
-
-    -- job counters
-    local jx = 460
-    local job_colors = {
-        blocker = {0.9, 0.3, 0.3},
-        digger = {0.6, 0.45, 0.2},
-        builder = {0.9, 0.8, 0.2},
-        basher = {0.85, 0.55, 0.2},
-    }
-    local job_keys_order = {"blocker", "digger", "builder", "basher"}
-    local key_labels = {blocker = "1", digger = "2", builder = "3", basher = "4"}
-    for _, jn in ipairs(job_keys_order) do
-        local remaining = (job_limits[jn] or 0) - (job_used[jn] or 0)
-        local clr = job_colors[jn]
-        lurek.render.setColor(clr[1], clr[2], clr[3], 1)
-        text_(key_labels[jn] .. ":" .. jn:sub(1,1):upper() .. jn:sub(2) .. "=" .. remaining, jx, 6, 13)
-        jx = jx + 90
-    end
-
-    -- timer
-    lurek.render.setColor(0.6, 0.6, 0.6, 1)
-    local mins = math.floor(level_timer / 60)
-    local secs = math.floor(level_timer % 60)
-    text_(string.format("Time %d:%02d", mins, secs), 10, 580, 14)
-
-    -- FPS
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    text_("FPS: " .. fps, 730, 580, 12)
-
-    -- bottom bar: job instructions
-    lurek.render.setColor(0.1, 0.1, 0.2, 0.7)
-    rect(0, 560, 800, 18)
-    lurek.render.setColor(0.5, 0.5, 0.6, 1)
-    text_("Hover + 1:Blocker  2:Digger  3:Builder  4:Basher    ESC:Quit", 180, 562, 12)
-
-    -- level complete / failed overlay
-    if state == STATE_LEVEL_COMPLETE or state == STATE_FAILED then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect(0, 200, 800, 120)
-        if state == STATE_LEVEL_COMPLETE then
-            lurek.render.setColor(0.3, 1, 0.3, 1)
-        else
-            lurek.render.setColor(1, 0.3, 0.3, 1)
-        end
-        text_(fanfare_text, 200, 230, 32)
-        lurek.render.setColor(0.8, 0.8, 0.8, 1)
-        text_("Saved: " .. saved_count .. "   Lost: " .. dead_count, 290, 280, 18)
-        text_("Press ENTER to continue", 280, 310, 14)
-    end
 end

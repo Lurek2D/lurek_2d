@@ -1,0 +1,482 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "room_banner"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 28
+visible = false
+
+    [[root.children.children]]
+    id = "room_name"
+    widget_type = "label"
+    x = 10
+    y = 6
+    text = "Room Name"
+
+[[root.children]]
+id = "hotspot_desc_panel"
+widget_type = "panel"
+x = 0
+y = 28
+w = 800
+h = 22
+visible = false
+
+    [[root.children.children]]
+    id = "hotspot_desc"
+    widget_type = "label"
+    x = 10
+    y = 32
+    text = "[1] item: description"
+
+[[root.children]]
+id = "inv_bar"
+widget_type = "panel"
+x = 0
+y = 520
+w = 800
+h = 60
+visible = false
+
+    [[root.children.children]]
+    id = "inv_line"
+    widget_type = "panel"
+    x = 0
+    y = 520
+    w = 800
+    h = 2
+
+    [[root.children.children]]
+    id = "inv_label"
+    widget_type = "label"
+    x = 10
+    y = 524
+    text = "Inventory [C]"
+
+    [[root.children.children]]
+    id = "combine_mode_text"
+    widget_type = "label"
+    x = 270
+    y = 502
+    text = "COMBINE MODE — select second item"
+    visible = false
+
+    [[root.children.children]]
+    id = "inv_slot_1"
+    widget_type = "panel"
+    x = 10
+    y = 538
+    w = 60
+    h = 24
+    visible = false
+        [[root.children.children.children]]
+        id = "inv_sel_1"
+        widget_type = "panel"
+        x = 8
+        y = 536
+        w = 64
+        h = 28
+        visible = false
+        [[root.children.children.children]]
+        id = "inv_txt_1"
+        widget_type = "label"
+        x = 13
+        y = 544
+        text = "Item"
+
+    [[root.children.children]]
+    id = "inv_slot_2"
+    widget_type = "panel"
+    x = 74
+    y = 538
+    w = 60
+    h = 24
+    visible = false
+        [[root.children.children.children]]
+        id = "inv_sel_2"
+        widget_type = "panel"
+        x = 72
+        y = 536
+        w = 64
+        h = 28
+        visible = false
+        [[root.children.children.children]]
+        id = "inv_txt_2"
+        widget_type = "label"
+        x = 77
+        y = 544
+        text = "Item"
+
+    [[root.children.children]]
+    id = "inv_slot_3"
+    widget_type = "panel"
+    x = 138
+    y = 538
+    w = 60
+    h = 24
+    visible = false
+        [[root.children.children.children]]
+        id = "inv_sel_3"
+        widget_type = "panel"
+        x = 136
+        y = 536
+        w = 64
+        h = 28
+        visible = false
+        [[root.children.children.children]]
+        id = "inv_txt_3"
+        widget_type = "label"
+        x = 141
+        y = 544
+        text = "Item"
+
+    [[root.children.children]]
+    id = "inv_slot_4"
+    widget_type = "panel"
+    x = 202
+    y = 538
+    w = 60
+    h = 24
+    visible = false
+        [[root.children.children.children]]
+        id = "inv_sel_4"
+        widget_type = "panel"
+        x = 200
+        y = 536
+        w = 64
+        h = 28
+        visible = false
+        [[root.children.children.children]]
+        id = "inv_txt_4"
+        widget_type = "label"
+        x = 205
+        y = 544
+        text = "Item"
+
+    [[root.children.children]]
+    id = "inv_slot_5"
+    widget_type = "panel"
+    x = 266
+    y = 538
+    w = 60
+    h = 24
+    visible = false
+        [[root.children.children.children]]
+        id = "inv_sel_5"
+        widget_type = "panel"
+        x = 264
+        y = 536
+        w = 64
+        h = 28
+        visible = false
+        [[root.children.children.children]]
+        id = "inv_txt_5"
+        widget_type = "label"
+        x = 269
+        y = 544
+        text = "Item"
+
+    [[root.children.children]]
+    id = "inv_slot_6"
+    widget_type = "panel"
+    x = 330
+    y = 538
+    w = 60
+    h = 24
+    visible = false
+        [[root.children.children.children]]
+        id = "inv_sel_6"
+        widget_type = "panel"
+        x = 328
+        y = 536
+        w = 64
+        h = 28
+        visible = false
+        [[root.children.children.children]]
+        id = "inv_txt_6"
+        widget_type = "label"
+        x = 333
+        y = 544
+        text = "Item"
+
+[[root.children]]
+id = "dialog_box"
+widget_type = "panel"
+x = 40
+y = 250
+w = 720
+h = 100
+visible = false
+
+    [[root.children.children]]
+    id = "dialog_border_top"
+    widget_type = "panel"
+    x = 40
+    y = 250
+    w = 720
+    h = 2
+
+    [[root.children.children]]
+    id = "dialog_border_bottom"
+    widget_type = "panel"
+    x = 40
+    y = 350
+    w = 720
+    h = 2
+
+    [[root.children.children]]
+    id = "dialog_border_left"
+    widget_type = "panel"
+    x = 40
+    y = 250
+    w = 2
+    h = 100
+
+    [[root.children.children]]
+    id = "dialog_border_right"
+    widget_type = "panel"
+    x = 760
+    y = 250
+    w = 2
+    h = 100
+
+    [[root.children.children]]
+    id = "dialog_text"
+    widget_type = "label"
+    x = 60
+    y = 270
+    text = "Text"
+
+    [[root.children.children]]
+    id = "dialog_continue"
+    widget_type = "label"
+    x = 620
+    y = 330
+    text = "[E] continue"
+    visible = false
+
+[[root.children]]
+id = "inv_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "inv_screen_bg"
+    widget_type = "panel"
+    x = 100
+    y = 100
+    w = 600
+    h = 340
+
+    [[root.children.children]]
+    id = "inv_screen_border_top"
+    widget_type = "panel"
+    x = 100
+    y = 100
+    w = 600
+    h = 2
+
+    [[root.children.children]]
+    id = "inv_screen_border_bottom"
+    widget_type = "panel"
+    x = 100
+    y = 440
+    w = 600
+    h = 2
+
+    [[root.children.children]]
+    id = "inv_screen_border_left"
+    widget_type = "panel"
+    x = 100
+    y = 100
+    w = 2
+    h = 340
+
+    [[root.children.children]]
+    id = "inv_screen_border_right"
+    widget_type = "panel"
+    x = 700
+    y = 100
+    w = 2
+    h = 340
+
+    [[root.children.children]]
+    id = "inv_screen_title"
+    widget_type = "label"
+    x = 320
+    y = 115
+    text = "INVENTORY"
+
+    [[root.children.children]]
+    id = "inv_screen_hints"
+    widget_type = "label"
+    x = 180
+    y = 140
+    text = "[Left/Right] Select   [C] Combine   [E] Close"
+
+    [[root.children.children]]
+    id = "inv_screen_no_items"
+    widget_type = "label"
+    x = 320
+    y = 220
+    text = "No items yet."
+    visible = false
+
+    [[root.children.children]]
+    id = "full_slot_1"
+    widget_type = "panel"
+    x = 140
+    y = 175
+    w = 132
+    h = 42
+    visible = false
+        [[root.children.children.children]]
+        id = "full_sel_1"
+        widget_type = "panel"
+        x = 136
+        y = 171
+        w = 140
+        h = 50
+        visible = false
+        [[root.children.children.children]]
+        id = "full_txt_1"
+        widget_type = "label"
+        x = 148
+        y = 189
+        text = "Item"
+
+    [[root.children.children]]
+    id = "full_slot_2"
+    widget_type = "panel"
+    x = 290
+    y = 175
+    w = 132
+    h = 42
+    visible = false
+        [[root.children.children.children]]
+        id = "full_sel_2"
+        widget_type = "panel"
+        x = 286
+        y = 171
+        w = 140
+        h = 50
+        visible = false
+        [[root.children.children.children]]
+        id = "full_txt_2"
+        widget_type = "label"
+        x = 298
+        y = 189
+        text = "Item"
+
+    [[root.children.children]]
+    id = "full_slot_3"
+    widget_type = "panel"
+    x = 440
+    y = 175
+    w = 132
+    h = 42
+    visible = false
+        [[root.children.children.children]]
+        id = "full_sel_3"
+        widget_type = "panel"
+        x = 436
+        y = 171
+        w = 140
+        h = 50
+        visible = false
+        [[root.children.children.children]]
+        id = "full_txt_3"
+        widget_type = "label"
+        x = 448
+        y = 189
+        text = "Item"
+
+    [[root.children.children]]
+    id = "full_slot_4"
+    widget_type = "panel"
+    x = 590
+    y = 175
+    w = 132
+    h = 42
+    visible = false
+        [[root.children.children.children]]
+        id = "full_sel_4"
+        widget_type = "panel"
+        x = 586
+        y = 171
+        w = 140
+        h = 50
+        visible = false
+        [[root.children.children.children]]
+        id = "full_txt_4"
+        widget_type = "label"
+        x = 598
+        y = 189
+        text = "Item"
+
+    [[root.children.children]]
+    id = "full_slot_5"
+    widget_type = "panel"
+    x = 140
+    y = 235
+    w = 132
+    h = 42
+    visible = false
+        [[root.children.children.children]]
+        id = "full_sel_5"
+        widget_type = "panel"
+        x = 136
+        y = 231
+        w = 140
+        h = 50
+        visible = false
+        [[root.children.children.children]]
+        id = "full_txt_5"
+        widget_type = "label"
+        x = 148
+        y = 249
+        text = "Item"
+
+    [[root.children.children]]
+    id = "full_slot_6"
+    widget_type = "panel"
+    x = 290
+    y = 235
+    w = 132
+    h = 42
+    visible = false
+        [[root.children.children.children]]
+        id = "full_sel_6"
+        widget_type = "panel"
+        x = 286
+        y = 231
+        w = 140
+        h = 50
+        visible = false
+        [[root.children.children.children]]
+        id = "full_txt_6"
+        widget_type = "label"
+        x = 298
+        y = 249
+        text = "Item"
+
+[[root.children]]
+id = "controls_hint"
+widget_type = "label"
+x = 140
+y = 586
+text = "[Tab] Cycle   [E] Interact   [C] Inventory   [Arrows] Move"
+visible = false

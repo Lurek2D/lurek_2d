@@ -145,36 +145,36 @@ h = 32.0
 widget_type = "button"
 id = "regen_btn"
 text = "Regen"
-x = 864.0
+x = 852.0
 y = 96.0
-w = 80.0
+w = 72.0
 h = 32.0
 
 [[root.children]]
 widget_type = "button"
 id = "reload_btn"
 text = "Reload"
-x = 960.0
+x = 928.0
 y = 96.0
-w = 80.0
+w = 72.0
 h = 32.0
 
 [[root.children]]
 widget_type = "button"
 id = "save_btn"
 text = "Save"
-x = 1056.0
+x = 1004.0
 y = 96.0
-w = 64.0
+w = 72.0
 h = 32.0
 
 [[root.children]]
 widget_type = "button"
 id = "shot_btn"
 text = "Shot"
-x = 1136.0
+x = 1080.0
 y = 96.0
-w = 48.0
+w = 96.0
 h = 32.0
 
 [[root.children]]
@@ -185,14 +185,6 @@ x = 16.0
 y = 144.0
 w = 1168.0
 h = 16.0
-
-[[root.children]]
-widget_type = "panel"
-id = "content_panel"
-x = 16.0
-y = 176.0
-w = 1168.0
-h = 576.0
 
 [[root.children]]
 widget_type = "guitable"

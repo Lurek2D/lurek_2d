@@ -3,6 +3,24 @@
 ## Unreleased
 
 
+ - fix(quality): closed Lua/docs/example coverage gaps by documenting missing Rust functions (`translate_gender`, `translate_plural`, `get_processor_count`), adding UI example coverage for `lurek.ui.loadLayoutGameFile`, covering remaining UI unit-test APIs (`focusNeighbor`, `getStyleToken`, `loadLayoutGameFile`, and `LUiWidget` text/focus/accessibility setters), and tightening `lurek.ui.getStyleToken` docs from `@return any` to typed overloads.
+
+ - fix(lua): dropped `RefCell` callback-store borrows before invoking Lua in `LDepthSorter:flush`, `LSignal:emit`, and `lurek.timer.tickRealTimers`, preventing `L060` panics when callbacks mutate the same dispatcher during execution.
+
+ - fix(vscode): Explorer `Run Game` now always launches repo-local Lurek through the workspace Cargo pipeline in Cargo workspaces, and no longer honors installed/system `lurek` paths there. Non-Cargo workspaces still use explicit `lurek.lurekPath` or `lurek.enginePath`.
+
+ - fix(games): improved readability in `apps/household_finance_lab` by switching to native non-scaled UI font defaults (`app/config.toml`: `font_size=20`, `title_font_size=24`; `conf.toml`: `default_font_size=20`, `default_font_bold=true`), wiring renderer font setup to config values instead of hardcoded 10px, removing custom widget style-class overrides, keeping `Widgets/API` native-only, and moving chart placement to TOML-defined slot widgets (`getRect()`-driven render anchors).
+ - fix(vscode): `Run Game` now disables PATH binary fallback and resolves the workspace root from the selected game path before launch, so menu runs use workspace-local engine binaries (`build/`/`target/`) or local cargo run path in Cargo workspaces.
+
+ - refactor(games): removed dynamic widget dispatch fallback from `apps/household_finance_lab/app/ui_controls_toml.lua` (`try_widget_method`, `widget[method_name]`, and `lurek.ui["..."]` access) and switched to explicit `L*` widget methods so Lua IntelliSense resolves calls directly from generated API stubs.
+ - refactor(games): tightened `apps/household_finance_lab` error handling by removing non-essential `pcall` wrappers around stable UI/window setup paths (`windowConfig`, `setActiveTab`, layout load via `loadLayoutGameFile`, render/ui font setup), leaving `pcall` only on true boundary operations (save restore, optional telemetry, file/JSON cache restore).
+
+ - fix(scene): prevented `lurek.scene` lifecycle callback panics caused by calling Lua while `SceneState` `RefCell` borrows were still active; scene callback dispatch now gathers tables/ids first, drops borrow scopes, then invokes Lua (`push/pop/switchTo/popTo/update/process/processPhysics/processLate/draw/render/renderUi/pushOverlay/pushPreloaded`). This removes `RefCell already borrowed` crashes that surfaced as `L060` with "panic in a function that cannot unwind".
+
+ - fix(games): hardened `apps/household_finance_lab` layout boot by guarding missing UI APIs on older runtimes (`lurek.ui.clear`, TabBar methods), pinned all app fonts to default size 10, disabled per-frame render scaling for this app, locked its window size to 1200x800, added app-level `conf.toml` render defaults (`default_font_size = 10`, `default_font_bold = false`), and aligned the app pipeline with built-in dataframe APIs.
+ - fix(vscode): changed `Run Game` binary resolution so Cargo workspaces use only workspace-local engine outputs (`build/`/`target/`) or local `cargo run`; PATH-installed binaries are no longer used for repo runs.
+ - refactor(games): reduced custom Lua in `apps/household_finance_lab` by moving all refresh-time SQL into external `sql/*.sql` query files and using built-in `LDatabase:queryParams`/`LDatabase:save` directly (removed inline SQL string building and compatibility query fallback logic).
+
  - feat(ui): added `lurek.ui.loadLayoutGameFile(path)` for GameFS-resolved TOML UI loading, and updated `LUiWidget:findById` to return typed widget handles with widget-specific Lua methods (for event binding and value updates after TOML layout load).
  - refactor(games): migrated `apps/household_finance_lab` control shell from manual Lua widget construction to runtime TOML layout loading (`layouts/household_finance_lab_ui.toml`) with ID-based event/data binding.
  - feat(games): added engine-driven TOML layout renderer game at `content/games/tools/layout_toml_renderer` and removed the legacy Python preview renderer (`tools/ui/render_layout.py`), so layout PNG generation now runs through the Lurek2D runtime.

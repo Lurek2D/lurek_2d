@@ -87,6 +87,8 @@ local world_models = {}
 local sectoid_model = nil
 local raycaster = nil
 
+local app_ui = {}
+
 local player = {
     x = 8.5, y = 30.5,
     angle = 0.0, dir = 1,
@@ -585,6 +587,18 @@ function lurek.init()
     build_random_model_instances()
     apply_map_to_raycaster()
     reveal_from_rays()
+    
+    lurek.ui.loadLayoutFile("content/games/retro/dungeon_crawler/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.orbs_label = ui_root:findById("orbs_label")
+    app_ui.torch_label = ui_root:findById("torch_label")
+    app_ui.mode_label = ui_root:findById("mode_label")
+    app_ui.crouch_label = ui_root:findById("crouch_label")
+    app_ui.heading_label = ui_root:findById("heading_label")
+    app_ui.complete_label = ui_root:findById("complete_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
 end
 
 -- T / N are toggled here, NOT in process(), because wasActionPressed
@@ -629,6 +643,40 @@ function lurek.process(dt)
     end
     collect_orbs()
     reveal_from_rays()
+    
+    -- Sync UI
+    app_ui.score_label.text = "Score: " .. score
+    
+    local collected=0
+    for _, orb in ipairs(orbs) do if orb.collected then collected=collected+1 end end
+    app_ui.orbs_label.text = "Orbs: " .. collected .. "/" .. total_orbs
+    
+    local tl = player.torch and "[ON]" or "[OFF]"
+    app_ui.torch_label.text = "Torch: " .. tl
+    if player.torch then
+        app_ui.torch_label.color = {1.0, 0.75, 0.2, 1.0}
+    else
+        app_ui.torch_label.color = {0.4, 0.4, 0.4, 1.0}
+    end
+    
+    local dn = "[" .. mode_name() .. "]"
+    app_ui.mode_label.text = "Mode: " .. dn
+    if TIME_MODE == 1 then
+        app_ui.mode_label.color = {1.0, 0.95, 0.5, 1.0}
+    elseif TIME_MODE == 2 then
+        app_ui.mode_label.color = {1.0, 0.72, 0.45, 1.0}
+    else
+        app_ui.mode_label.color = {0.4, 0.5, 0.9, 1.0}
+    end
+    
+    app_ui.crouch_label.visible = crouching
+    
+    local facing=math.deg(player.angle)
+    if facing < 0 then facing=facing+360 end
+    app_ui.heading_label.text = string.format("Heading: %.0f deg", facing)
+    
+    app_ui.complete_label.visible = (state == STATE.COMPLETE)
+    app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
 end
 
 -- Sky gradient: 3 layers from top (dark) to horizon (bright)
@@ -722,6 +770,7 @@ function lurek.draw()
         lurek.render.setColor(0.07, 0.07, 0.10, 1.0)
         lurek.render.rectangle("fill", 0, VIEW_H, VIEW_W, 600 - VIEW_H)
     end
+    draw_minimap()
 end
 
 local function draw_minimap()
@@ -836,59 +885,4 @@ local function draw_minimap()
 end
 
 function lurek.draw_ui()
-    lurek.render.setColor(0.08,0.08,0.12,0.92)
-    lurek.render.rectangle("fill", PANEL_X-10, PANEL_Y-10, 225, 590)
-    lurek.render.setColor(0.25,0.25,0.32,1.0)
-    lurek.render.rectangle("line", PANEL_X-10, PANEL_Y-10, 225, 590)
-
-    lurek.render.setColor(0.88,0.88,0.95,1.0)
-    lurek.render.print("DUNGEON CRAWLER", PANEL_X, PANEL_Y)
-
-    local collected=0
-    for _, orb in ipairs(orbs) do if orb.collected then collected=collected+1 end end
-    lurek.render.setColor(0.95,0.85,0.25,1.0)
-    lurek.render.print("Score: "..score, PANEL_X, PANEL_Y+28)
-    lurek.render.setColor(0.55,0.88,1.0,1.0)
-    lurek.render.print("Orbs: "..collected.."/"..total_orbs, PANEL_X, PANEL_Y+50)
-    lurek.render.setColor(0.7,0.7,0.78,1.0)
-    lurek.render.print("WSAD move, Q/E turn", PANEL_X, PANEL_Y+70)
-    lurek.render.print("T=torch  N=day/night", PANEL_X, PANEL_Y+86)
-    lurek.render.print("Ctrl=crouch", PANEL_X, PANEL_Y+102)
-
-    -- Torch status
-    local tl = player.torch and "[ON]" or "[OFF]"
-    if player.torch then lurek.render.setColor(1.0,0.75,0.2,1.0)
-    else lurek.render.setColor(0.4,0.4,0.4,1.0) end
-    lurek.render.print("Torch: "..tl, PANEL_X, PANEL_Y+120)
-
-    -- Day/Night status
-    local dn = "[" .. mode_name() .. "]"
-    if TIME_MODE == 1 then
-        lurek.render.setColor(1.0,0.95,0.5,1.0)
-    elseif TIME_MODE == 2 then
-        lurek.render.setColor(1.0,0.72,0.45,1.0)
-    else
-        lurek.render.setColor(0.4,0.5,0.9,1.0)
-    end
-    lurek.render.print("Mode: "..dn, PANEL_X, PANEL_Y+138)
-
-    -- Crouch indicator
-    if crouching then
-        lurek.render.setColor(0.6,0.9,0.6,1.0)
-        lurek.render.print("[CROUCH]", PANEL_X, PANEL_Y+156)
-    end
-
-    local facing=math.deg(player.angle)
-    if facing < 0 then facing=facing+360 end
-    lurek.render.setColor(0.7,0.7,0.78,1.0)
-    lurek.render.print("Heading: "..string.format("%.0f",facing).." deg", PANEL_X, PANEL_Y+176)
-
-    draw_minimap()
-
-    if state==STATE.COMPLETE then
-        lurek.render.setColor(1.0,0.92,0.3,1.0)
-        lurek.render.print("ALL ORBS COLLECTED!", PANEL_X, 550)
-    end
-    lurek.render.setColor(0.45,0.45,0.5,1.0)
-    lurek.render.print("FPS: "..lurek.timer.getFPS(), PANEL_X, 575)
 end

@@ -43,6 +43,7 @@ local speed      = BASE_SPEED
 local cam                            -- Camera2D
 local food_particles                 -- particle system for eat bursts
 local score_tween                    -- active score tween (or nil)
+local app_ui = {}
 
 -- ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -172,6 +173,28 @@ function lurek.init()
             { 0.2, 1.0, 0.2, 0.0 },
         },
     })
+    
+    lurek.ui.loadLayoutFile("content/games/arcade/snake/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.high_score_label = ui_root:findById("high_score_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.final_score = ui_root:findById("final_score")
+    app_ui.new_best = ui_root:findById("new_best")
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    local function handle_start_click()
+        if state == STATE.TITLE or state == STATE.DEAD then
+            reset()
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_start_click) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_start_click) end
 end
 
 -- ── lurek.ready ───────────────────────────────────────────────────────────
@@ -205,7 +228,6 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("confirm") then
             reset()
         end
-        return
     end
 
     -- Death screen
@@ -213,8 +235,23 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("confirm") then
             reset()
         end
-        return
     end
+
+    -- UI sync
+    app_ui.title_screen.visible = (state == STATE.TITLE)
+    app_ui.game_over_screen.visible = (state == STATE.DEAD)
+    app_ui.hud.visible = true
+    
+    app_ui.fps_label.text = "FPS: " .. math.floor(lurek.timer.getFPS())
+    app_ui.score_label.text = "Score: " .. math.floor(display_score.value)
+    app_ui.high_score_label.text = "Best: " .. high_score
+    
+    if state == STATE.DEAD then
+        app_ui.final_score.text = "Score: " .. score
+        app_ui.new_best.visible = (score >= high_score and score > 0)
+    end
+    
+    if state ~= STATE.PLAYING then return end
 
     -- ── Playing ───────────────────────────────────────────────────────────
 
@@ -359,68 +396,4 @@ end
 
 -- ── lurek.render_ui — HUD / overlays ──────────────────────────────────────
 function lurek.draw_ui()
-    -- Top bar background
-    lurek.render.setColor(0.08, 0.12, 0.08)
-    rect("fill", 0, 0, SCREEN_W, HUD_H)
-
-    -- Title
-    lurek.render.setColor(0.4, 0.9, 0.4)
-    text_("SNAKE", 8, 8, 2)
-
-    -- Score (uses tweened display value for smooth pops)
-    lurek.render.setColor(1, 1, 1)
-    text_("Score: " .. math.floor(display_score.value), SCREEN_W / 2 - 50, 10, 1.8)
-
-    -- High score
-    lurek.render.setColor(0.6, 0.8, 0.6)
-    text_("Best: " .. high_score, SCREEN_W - 130, 10, 1.5)
-
-    -- FPS counter (bottom-left)
-    lurek.render.setColor(0.4, 0.4, 0.4)
-    text_("FPS: " .. math.floor(lurek.timer.getFPS()), 4, SCREEN_H - 18, 1)
-
-    -- Controls hint (bottom-right)
-    lurek.render.setColor(0.35, 0.35, 0.35)
-    text_("WASD / Arrows  |  ESC quit", SCREEN_W - 230, SCREEN_H - 18, 1)
-
-    -- ── State overlays ────────────────────────────────────────────────────
-
-    if state == STATE.TITLE then
-        -- Dim overlay
-        lurek.render.setColor(0, 0, 0, 0.75)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        -- Title text
-        lurek.render.setColor(0.4, 1.0, 0.4)
-        text_("SNAKE", SCREEN_W / 2 - 60, SCREEN_H / 2 - 60, 4)
-
-        lurek.render.setColor(0.7, 0.9, 0.7)
-        text_("Eat, grow, avoid yourself", SCREEN_W / 2 - 110, SCREEN_H / 2 - 10, 1.8)
-
-        lurek.render.setColor(1, 1, 1)
-        text_("Press ENTER to start", SCREEN_W / 2 - 95, SCREEN_H / 2 + 30, 2)
-
-        lurek.render.setColor(0.5, 0.5, 0.5)
-        text_("WASD or Arrow Keys to steer", SCREEN_W / 2 - 115, SCREEN_H / 2 + 65, 1.5)
-    end
-
-    if state == STATE.DEAD then
-        -- Dim overlay
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(1, 0.3, 0.3)
-        text_("GAME OVER", SCREEN_W / 2 - 90, SCREEN_H / 2 - 40, 3)
-
-        lurek.render.setColor(1, 1, 1)
-        text_("Score: " .. score, SCREEN_W / 2 - 50, SCREEN_H / 2 + 5, 2)
-
-        if score >= high_score and score > 0 then
-            lurek.render.setColor(1, 1, 0.3)
-            text_("NEW BEST!", SCREEN_W / 2 - 50, SCREEN_H / 2 + 35, 2)
-        end
-
-        lurek.render.setColor(0.7, 0.7, 0.7)
-        text_("Press ENTER to restart", SCREEN_W / 2 - 100, SCREEN_H / 2 + 65, 2)
-    end
 end

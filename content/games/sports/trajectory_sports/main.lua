@@ -689,6 +689,78 @@ function lurek.init()
     lurek.window.setTitle("Trajectory Sports — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.1, 0.15)
     _cam = lurek.camera.new()
+    
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/trajectory_sports/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.select_screen = ui_root:findById("select_screen")
+    app_ui.sel_1 = ui_root:findById("sel_1")
+    app_ui.sel_2 = ui_root:findById("sel_2")
+    app_ui.sel_3 = ui_root:findById("sel_3")
+    app_ui.sel_4 = ui_root:findById("sel_4")
+    app_ui.completed_label = ui_root:findById("completed_label")
+    
+    app_ui.round_end_screen = ui_root:findById("round_end_screen")
+    app_ui.re_title = ui_root:findById("re_title")
+    app_ui.re_score = ui_root:findById("re_score")
+    app_ui.re_medal = ui_root:findById("re_medal")
+    
+    app_ui.final_screen = ui_root:findById("final_screen")
+    app_ui.fs_1 = ui_root:findById("fs_1")
+    app_ui.fs_2 = ui_root:findById("fs_2")
+    app_ui.fs_3 = ui_root:findById("fs_3")
+    app_ui.fs_4 = ui_root:findById("fs_4")
+    app_ui.fs_rank = ui_root:findById("fs_rank")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_sport_name = ui_root:findById("hud_sport_name")
+    
+    app_ui.arch_panel = ui_root:findById("arch_panel")
+    app_ui.arch_score = ui_root:findById("arch_score")
+    app_ui.arch_arrows = ui_root:findById("arch_arrows")
+    app_ui.arch_angle = ui_root:findById("arch_angle")
+    app_ui.arch_wind = ui_root:findById("arch_wind")
+    app_ui.arch_power_fill = ui_root:findById("arch_power_fill")
+    
+    app_ui.bball_panel = ui_root:findById("bball_panel")
+    app_ui.bball_score = ui_root:findById("bball_score")
+    app_ui.bball_shots = ui_root:findById("bball_shots")
+    app_ui.bball_angle = ui_root:findById("bball_angle")
+    app_ui.bball_power_fill = ui_root:findById("bball_power_fill")
+    
+    app_ui.bowl_panel = ui_root:findById("bowl_panel")
+    app_ui.bowl_frame = ui_root:findById("bowl_frame")
+    app_ui.bowl_throw = ui_root:findById("bowl_throw")
+    app_ui.bowl_pins = ui_root:findById("bowl_pins")
+    app_ui.bowl_total = ui_root:findById("bowl_total")
+    app_ui.bowl_power_bg = ui_root:findById("bowl_power_bg")
+    app_ui.bowl_power_fill = ui_root:findById("bowl_power_fill")
+    
+    app_ui.dart_panel = ui_root:findById("dart_panel")
+    app_ui.dart_remaining = ui_root:findById("dart_remaining")
+    app_ui.dart_turn = ui_root:findById("dart_turn")
+    app_ui.dart_darts = ui_root:findById("dart_darts")
+    app_ui.dart_last = ui_root:findById("dart_last")
+    
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    if app_ui.press_start then
+        app_ui.press_start:setOnClick(function()
+            if state == S_TITLE then state = S_SPORT_SELECT end
+        end)
+    end
+    if app_ui.press_restart then
+        app_ui.press_restart:setOnClick(function()
+            if state == S_FINAL_SCORES then
+                scores = { 0, 0, 0, 0 }
+                medals = { "", "", "", "" }
+                state = S_TITLE
+            end
+        end)
+    end
 end
 
 local function _ready_setup()
@@ -754,7 +826,6 @@ function lurek.process(dt)
                 state = S_SPORT_SELECT
             end
         end
-        return
     end
 
     -- ── FINAL SCORES ──
@@ -765,7 +836,109 @@ function lurek.process(dt)
             medals = { "", "", "", "" }
             state = S_TITLE
         end
-        return
+    end
+    
+    -- Sync UI
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    
+    app_ui.title_screen.visible = (state == S_TITLE)
+    app_ui.select_screen.visible = (state == S_SPORT_SELECT)
+    app_ui.round_end_screen.visible = (state == S_ROUND_END)
+    app_ui.final_screen.visible = (state == S_FINAL_SCORES)
+    app_ui.hud_screen.visible = (state == S_PLAYING)
+    
+    if state == S_TITLE then
+        local blink_a = 0.5 + 0.5 * math.sin(title_blink * 2)
+        app_ui.press_start.color = {0.7, 0.7, 0.7, blink_a}
+    end
+    
+    if state == S_SPORT_SELECT then
+        local items = {
+            "[1] ARCHERY    - Bow & Target",
+            "[2] BASKETBALL - Hoop Shots",
+            "[3] BOWLING    - Pin Strike",
+            "[4] DARTS      - 301 Countdown",
+        }
+        local uis = {app_ui.sel_1, app_ui.sel_2, app_ui.sel_3, app_ui.sel_4}
+        for i, txt in ipairs(items) do
+            local c = medals[i] ~= "" and 0.4 or 1.0
+            local medal_txt = medals[i] ~= "" and ("  [" .. medals[i] .. "]") or ""
+            uis[i].text = txt .. medal_txt
+            uis[i].color = {c, c, c * 0.8, 1}
+        end
+        local done = 0
+        for i = 1, 4 do if medals[i] ~= "" then done = done + 1 end end
+        app_ui.completed_label.text = string.format("Completed: %d/4", done)
+    end
+    
+    if state == S_ROUND_END then
+        app_ui.re_title.text = sport_names[sport] .. " COMPLETE!"
+        if sport == 4 then
+            app_ui.re_score.text = string.format("Remaining: %d", scores[4])
+        else
+            app_ui.re_score.text = string.format("Score: %d", scores[sport])
+        end
+        local mc = medals[sport] == "GOLD" and {1, 0.85, 0.1, 1} or
+                   medals[sport] == "SILVER" and {0.75, 0.75, 0.8, 1} or
+                   medals[sport] == "BRONZE" and {0.8, 0.5, 0.2, 1} or {0.5, 0.5, 0.5, 1}
+        app_ui.re_medal.text = "Medal: " .. medals[sport]
+        app_ui.re_medal.color = mc
+    end
+    
+    if state == S_FINAL_SCORES then
+        local uis = {app_ui.fs_1, app_ui.fs_2, app_ui.fs_3, app_ui.fs_4}
+        for i = 1, 4 do
+            local sc = i == 4 and string.format("Remaining: %d", scores[i]) or string.format("Score: %d", scores[i])
+            uis[i].text = string.format("%s: %s  [%s]", sport_names[i], sc, medals[i])
+        end
+        app_ui.fs_rank.text = "Overall: " .. final_rank()
+        local blink_a = 0.5 + 0.5 * math.sin(title_blink * 2)
+        app_ui.press_restart.color = {0.6, 0.6, 0.6, blink_a}
+    end
+    
+    if state == S_PLAYING then
+        app_ui.hud_sport_name.text = sport_names[sport]
+        app_ui.arch_panel.visible = (sport == 1)
+        app_ui.bball_panel.visible = (sport == 2)
+        app_ui.bowl_panel.visible = (sport == 3)
+        app_ui.dart_panel.visible = (sport == 4)
+        
+        if sport == 1 then
+            app_ui.arch_score.text = string.format("Score: %d", math.floor(arch.display_score))
+            app_ui.arch_arrows.text = string.format("Arrows: %d", arch.arrows_left)
+            app_ui.arch_angle.text = string.format("Angle: %.0f", arch.angle)
+            app_ui.arch_wind.text = string.format("Wind: %.0f", arch.wind)
+            app_ui.arch_power_fill.width = (arch.power / 100) * 100
+        elseif sport == 2 then
+            app_ui.bball_score.text = string.format("Score: %d", math.floor(bball.display_score))
+            app_ui.bball_shots.text = string.format("Shots: %d", bball.shots_left)
+            app_ui.bball_angle.text = string.format("Angle: %.0f", bball.angle)
+            app_ui.bball_power_fill.width = (bball.power / 100) * 100
+        elseif sport == 3 then
+            app_ui.bowl_frame.text = string.format("Frame: %d/10", bowl.frame)
+            app_ui.bowl_throw.text = string.format("Throw: %d", bowl.throw_in_frame)
+            app_ui.bowl_pins.text = string.format("Pins: %d/10", count_standing())
+            local t = 0
+            for _, fs in pairs(bowl.frame_scores) do t = t + (fs.total or 0) end
+            app_ui.bowl_total.text = string.format("Total: %d", t)
+            if bowl.rolling then
+                app_ui.bowl_power_bg.visible = false
+                app_ui.bowl_power_fill.visible = false
+            else
+                app_ui.bowl_power_bg.visible = true
+                app_ui.bowl_power_fill.visible = true
+                app_ui.bowl_power_fill.width = (bowl.power / 100) * 100
+            end
+        elseif sport == 4 then
+            app_ui.dart_remaining.text = string.format("Remaining: %d", dart.remaining)
+            app_ui.dart_turn.text = string.format("Turn: %d/%d", dart.turn, dart.max_turns)
+            app_ui.dart_darts.text = string.format("Darts: %d", dart.darts_in_turn)
+            if dart.last_points > 0 then
+                app_ui.dart_last.text = string.format("Last: %d pts", dart.last_points)
+            else
+                app_ui.dart_last.text = ""
+            end
+        end
     end
 end
 
@@ -886,123 +1059,4 @@ end
 -- Render UI — HUD, scores, power bars, menus
 -- ═══════════════════════════════════════════════════════════════════
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-    text_(string.format("FPS: %d", fps), W - 80, 10, 14, 0.6, 0.6, 0.6)
-
-    -- ── TITLE ──
-    if state == S_TITLE then
-        text_("TRAJECTORY SPORTS", W / 2 - 140, 160, 32, 1, 0.9, 0.3)
-        text_("AIM AND FIRE", W / 2 - 80, 210, 20, 0.8, 0.8, 0.8)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            text_("Press SPACE to start", W / 2 - 100, 350, 18, 0.7, 0.7, 0.7)
-        end
-        text_("W/S = Aim   A/D = Move   Space = Power", W / 2 - 180, 450, 14, 0.5, 0.5, 0.5)
-        return
-    end
-
-    -- ── SPORT SELECT ──
-    if state == S_SPORT_SELECT then
-        text_("SELECT SPORT", W / 2 - 90, 80, 28, 1, 0.9, 0.3)
-        local items = {
-            "[1] ARCHERY    — Bow & Target",
-            "[2] BASKETBALL — Hoop Shots",
-            "[3] BOWLING    — Pin Strike",
-            "[4] DARTS      — 301 Countdown",
-        }
-        for i, txt in ipairs(items) do
-            local c = medals[i] ~= "" and 0.4 or 1.0
-            local medal_txt = medals[i] ~= "" and ("  [" .. medals[i] .. "]") or ""
-            text_(txt .. medal_txt, 200, 160 + i * 50, 20, c, c, c * 0.8)
-        end
-        local done = 0
-        for i = 1, 4 do if medals[i] ~= "" then done = done + 1 end end
-        text_(string.format("Completed: %d/4", done), W / 2 - 60, 480, 16, 0.6, 0.6, 0.6)
-        return
-    end
-
-    -- ── ROUND END ──
-    if state == S_ROUND_END then
-        text_(sport_names[sport] .. " COMPLETE!", W / 2 - 120, 180, 28, 1, 0.9, 0.3)
-        if sport == 4 then
-            text_(string.format("Remaining: %d", scores[4]), W / 2 - 70, 250, 22, 1, 1, 1)
-        else
-            text_(string.format("Score: %d", scores[sport]), W / 2 - 50, 250, 22, 1, 1, 1)
-        end
-        local mc = medals[sport] == "GOLD" and {1, 0.85, 0.1} or
-                   medals[sport] == "SILVER" and {0.75, 0.75, 0.8} or
-                   medals[sport] == "BRONZE" and {0.8, 0.5, 0.2} or {0.5, 0.5, 0.5}
-        text_("Medal: " .. medals[sport], W / 2 - 60, 300, 22, mc[1], mc[2], mc[3])
-        return
-    end
-
-    -- ── FINAL SCORES ──
-    if state == S_FINAL_SCORES then
-        text_("FINAL RESULTS", W / 2 - 100, 60, 28, 1, 0.9, 0.3)
-        for i = 1, 4 do
-            local sc = sport == 4 and string.format("Remaining: %d", scores[i])
-                       or string.format("Score: %d", scores[i])
-            if i == 4 then sc = string.format("Remaining: %d", scores[4]) end
-            text_(string.format("%s: %s  [%s]", sport_names[i], sc, medals[i]),
-                120, 120 + i * 50, 18, 0.9, 0.9, 0.9)
-        end
-        local rank = final_rank()
-        text_("Overall: " .. rank, W / 2 - 80, 420, 26, 1, 0.8, 0.2)
-        if math.floor(title_blink * 2) % 2 == 0 then
-            text_("Press SPACE to restart", W / 2 - 110, 500, 16, 0.6, 0.6, 0.6)
-        end
-        return
-    end
-
-    -- ── PLAYING HUD ──
-    if state == S_PLAYING then
-        text_(sport_names[sport], 10, 10, 20, 1, 0.9, 0.3)
-
-        if sport == 1 then
-            -- Archery HUD
-            text_(string.format("Score: %d", math.floor(arch.display_score)), 10, 40, 16, 1, 1, 1)
-            text_(string.format("Arrows: %d", arch.arrows_left), 10, 60, 16, 1, 1, 1)
-            text_(string.format("Angle: %.0f°", arch.angle), 10, 80, 14, 0.8, 0.8, 0.8)
-            text_(string.format("Wind: %.0f", arch.wind), 10, 100, 14, 0.6, 0.8, 1.0)
-            -- Power bar
-            local pw = arch.power / 100
-            rect(10, 125, 100, 10, 0.3, 0.3, 0.3)
-            rect(10, 125, pw * 100, 10, 1.0, 1.0 - pw, 0.1)
-
-        elseif sport == 2 then
-            -- Basketball HUD
-            text_(string.format("Score: %d", math.floor(bball.display_score)), 10, 40, 16, 1, 1, 1)
-            text_(string.format("Shots: %d", bball.shots_left), 10, 60, 16, 1, 1, 1)
-            text_(string.format("Angle: %.0f°", bball.angle), 10, 80, 14, 0.8, 0.8, 0.8)
-            -- Power bar
-            local pw = bball.power / 100
-            rect(10, 105, 100, 10, 0.3, 0.3, 0.3)
-            rect(10, 105, pw * 100, 10, 1.0, 0.5, 0.1)
-
-        elseif sport == 3 then
-            -- Bowling HUD
-            text_(string.format("Frame: %d/10", bowl.frame), 10, 40, 16, 1, 1, 1)
-            text_(string.format("Throw: %d", bowl.throw_in_frame), 10, 60, 14, 0.8, 0.8, 0.8)
-            local standing = count_standing()
-            text_(string.format("Pins: %d/10", standing), 10, 80, 14, 0.8, 0.8, 0.8)
-            -- Score
-            local t = 0
-            for _, fs in pairs(bowl.frame_scores) do t = t + (fs.total or 0) end
-            text_(string.format("Total: %d", t), 10, 100, 16, 1, 1, 1)
-            -- Power bar
-            if not bowl.rolling then
-                local pw = bowl.power / 100
-                rect(10, 125, 100, 10, 0.3, 0.3, 0.3)
-                rect(10, 125, pw * 100, 10, 0.2, 0.6, 1.0)
-            end
-
-        elseif sport == 4 then
-            -- Darts HUD
-            text_(string.format("Remaining: %d", dart.remaining), 10, 40, 18, 1, 1, 1)
-            text_(string.format("Turn: %d/%d", dart.turn, dart.max_turns), 10, 65, 14, 0.8, 0.8, 0.8)
-            text_(string.format("Darts: %d", dart.darts_in_turn), 10, 85, 14, 0.8, 0.8, 0.8)
-            if dart.last_points > 0 then
-                text_(string.format("Last: %d pts", dart.last_points), 10, 110, 16, 1, 0.8, 0.2)
-            end
-        end
-    end
 end

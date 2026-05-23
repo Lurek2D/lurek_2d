@@ -4743,7 +4743,7 @@ lurek.data.read = function(fmt, raw, offset) end
 lurek.data.size = function(fmt) end
 
 --- Encodes a Lua value into the current structured binary interchange payload.
----@param value table Lua value to encode through the serial table converter.
+---@param value any Lua value to encode through the serial table converter.
 ---@return string Encoded binary payload.
 lurek.data.toMsgPack = function(value) end
 
@@ -6517,7 +6517,7 @@ function LUniverse:each(name, callback) end
 
 --- Calls matching event-named functions on registered systems.
 ---@param event string Function name looked up on each system table.
----@param ... table Extra values forwarded after the system and universe arguments.
+---@param ... any Extra values forwarded after the system and universe arguments.
 function LUniverse:emit(event, ...) end
 
 --- Defines a blueprint that inherits from a parent blueprint and applies overrides.
@@ -6736,7 +6736,7 @@ function LUniverse:serialize() end
 --- Stores or replaces a component value on an entity.
 ---@param id number Entity id that receives the component.
 ---@param name string Component name.
----@param value table Lua value stored as the component payload.
+---@param value any Lua value stored as the component payload.
 function LUniverse:set(id, name, value) end
 
 --- Assigns a numeric layer to an entity.
@@ -8592,6 +8592,11 @@ lurek.globe.loadFromTOML = function(name, toml_src, spec_tbl) end
 ---@param spec_tbl? table Globe specification table.
 ---@return LGlobe New globe handle.
 lurek.globe.new = function(name, spec_tbl) end
+
+--- Removes a globe from the registry by name.
+---@param name string Globe registry name.
+---@return boolean True when a globe was removed.
+lurek.globe.remove = function(name) end
 
 ---@class lurek.graph
 lurek.graph = {}
@@ -13443,7 +13448,7 @@ function LMod:setApiVersion(api_version) end
 function LMod:setCapabilities(caps) end
 
 --- Stores a Lua config value for this mod.
----@param value table Config value to store (table, number, string, or boolean).
+---@param value any Config value to store (table, number, string, or boolean).
 function LMod:setConfig(value) end
 
 --- Sets config schema entries from a Lua table.
@@ -13947,7 +13952,7 @@ lurek.network.newRuntime = function() end
 lurek.network.newServer = function(opts) end
 
 --- Packs a supported Lua value into a binary network message string.
----@param value table Lua value to pack (table, number, string, or boolean).
+---@param value any Lua value to pack (table, number, string, or boolean).
 ---@return string Binary packed message.
 lurek.network.pack = function(value) end
 
@@ -15487,7 +15492,7 @@ lurek.pathfind.newPathGrid = function(w, h, cell_size) end
 lurek.pathfind.newPathfinder = function(grid_ud) end
 
 ---@class PathfindRangeMapResult
----@field cells number[] Reachability cost per cell.
+---@field cells table Array of reachable cell tables, each with integer x, y and number cost fields.
 ---@field width number Grid width.
 ---@field height number Grid height.
 
@@ -17581,7 +17586,7 @@ function LWorld:setBodyCCD(id, enabled) end
 
 --- Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
 ---@param id number The body ID.
----@param value table Lua value to associate with this body (table, number, string, etc.).
+---@param value any Lua value to associate with this body (table, number, string, etc.).
 function LWorld:setBodyData(id, value) end
 
 --- Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
@@ -18250,15 +18255,15 @@ lurek.pipeline.newStep = function(name, callback) end
 lurek.procgen = {}
 
 --- Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
----@class BiomeClassifier
-BiomeClassifier = {}
+---@class LBiomeClassifier
+LBiomeClassifier = {}
 
 --- Classify a single point into a biome type based on its environmental parameters.
 ---@param height number Elevation value (0.0–1.0) of the terrain point.
 ---@param moisture number Moisture level (0.0–1.0) at the point.
 ---@param temperature number Temperature value (0.0–1.0) at the point.
 ---@return string Biome name such as "ocean", "desert", "grassland", "taiga", etc.
-function BiomeClassifier:classify(height, moisture, temperature) end
+function LBiomeClassifier:classify(height, moisture, temperature) end
 
 --- Classify an entire grid of points into biome types in bulk.
 ---@param width number Grid width in cells.
@@ -18267,16 +18272,16 @@ function BiomeClassifier:classify(height, moisture, temperature) end
 ---@param moisture table Flat array of moisture values (length = width*height).
 ---@param temperature? table Optional flat array of temperature values. If omitted, temperature is ignored.
 ---@return string[] Biome name strings (length = width*height).
-function BiomeClassifier:classifyMap(width, height, heights, moisture, temperature) end
+function LBiomeClassifier:classifyMap(width, height, heights, moisture, temperature) end
 
 --- Returns the type name of this object.
----@return string Always returns "BiomeClassifier".
-function BiomeClassifier:type() end
+---@return string Always returns "LBiomeClassifier".
+function LBiomeClassifier:type() end
 
 --- Check whether this object matches a given type name.
----@param name string Type name to test (e.g. "BiomeClassifier" or "Object").
+---@param name string Type name to test (e.g. "LBiomeClassifier" or "Object").
 ---@return boolean True if the object is of the specified type.
-function BiomeClassifier:typeOf(name) end
+function LBiomeClassifier:typeOf(name) end
 
 --- Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
 ---@param name string Biome name (e.g. "ocean", "desert", "taiga").
@@ -18387,7 +18392,7 @@ lurek.procgen.lsystemSegments = function(opts, angle, step) end
 
 --- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
 ---@param opts? table Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
----@return BiomeClassifier A classifier object with :classify() and :classifyMap() methods.
+---@return LBiomeClassifier A classifier object with :classify() and :classifyMap() methods.
 lurek.procgen.newBiomeClassifier = function(opts) end
 
 --- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
@@ -19382,9 +19387,9 @@ function LCanvas:release() end
 ---@return string Always "LCanvas".
 function LCanvas:type() end
 
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Canvas".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Canvas" or "Object").
+---@return boolean True if the name matches.
 function LCanvas:typeOf(name) end
 
 --- Z-ordered draw callback layer for sorting draw calls by depth before flushing.
@@ -19459,9 +19464,9 @@ function LFont:setLineHeight(height) end
 ---@return string Always "LFont".
 function LFont:type() end
 
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Font".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Font" or "Object").
+---@return boolean True if the name matches.
 function LFont:typeOf(name) end
 
 --- GPU-backed texture handle used for drawing images to screen.
@@ -19493,9 +19498,9 @@ function LImage:release() end
 ---@return string Always "LImage".
 function LImage:type() end
 
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Image".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Image" or "Object").
+---@return boolean True if the name matches.
 function LImage:typeOf(name) end
 
 --- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
@@ -19585,9 +19590,9 @@ function LMesh:setVertex(index, data) end
 ---@return string Always "LMesh".
 function LMesh:type() end
 
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Mesh".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Mesh" or "Object").
+---@return boolean True if the name matches.
 function LMesh:typeOf(name) end
 
 --- Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
@@ -19686,9 +19691,9 @@ function LQuad:setViewport(x, y, w, h) end
 ---@return string Always "LQuad".
 function LQuad:type() end
 
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Quad".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Quad" or "Object").
+---@return boolean True if the name matches.
 function LQuad:typeOf(name) end
 
 --- GPU shader program for custom rendering effects (post-processing, distortion, etc.).
@@ -19713,9 +19718,9 @@ function LShader:send(name, value) end
 ---@return string Always "LShader".
 function LShader:type() end
 
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "Shader".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Shader" or "Object").
+---@return boolean True if the name matches.
 function LShader:typeOf(name) end
 
 --- Retained compound shape that accumulates drawing commands and can be rendered in one call.
@@ -19862,9 +19867,9 @@ function LSpriteBatch:release() end
 ---@return string Always "LSpriteBatch".
 function LSpriteBatch:type() end
 
---- Returns the type name of this object.
----@param name string Type name to check.
----@return string Always "SpriteBatch".
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("SpriteBatch" or "Object").
+---@return boolean True if the name matches.
 function LSpriteBatch:typeOf(name) end
 
 --- Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
@@ -20150,11 +20155,11 @@ lurek.render.getColorMask = function() end
 ---@return number c Min filter, mag filter, anisotropy level.
 lurek.render.getDefaultFilter = function() end
 
---- Returns a built-in default font at the nearest available pixel height.
----@param pixelHeight? number Desired pixel height (default 14).
----@param bold? boolean When true, returns the bold variant (default false).
+--- Returns a built-in default font at the nearest available bundled point size.
+---@param pointSize? number Desired built-in point size. When omitted, returns the current configured default.
+---@param bold? boolean When true, returns the bold variant. When omitted, uses the current bold selection.
 ---@return LFont The built-in font handle.
-lurek.render.getDefaultFont = function(pixelHeight, bold) end
+lurek.render.getDefaultFont = function(pointSize, bold) end
 
 --- Returns the current depth comparison mode and write-enable flag.
 ---@return string a Depth mode name and whether depth writes are enabled.
@@ -20195,8 +20200,8 @@ lurek.render.getFontHeight = function(font) end
 ---@return number Line height in pixels.
 lurek.render.getFontLineHeight = function(font) end
 
---- Returns all available built-in font pixel heights.
----@return number[] Array of available font height values.
+--- Returns all available built-in point sizes.
+---@return number[] Array of bundled font sizes such as 8, 10, 12, 16, 20, 24, and 30.
 lurek.render.getFontSizes = function() end
 
 --- Measures the pixel width of text using the given font.
@@ -20311,8 +20316,8 @@ lurek.render.newCanvas = function(width, height) end
 ---@return LDrawLayer The created draw layer.
 lurek.render.newDrawLayer = function() end
 
---- Creates a font from a built-in font name, a font file path, or a numeric built-in size selector.
----@param pathOrSize any Built-in font name, font file path, or numeric built-in height selector.
+--- Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
+---@param pathOrSize any Built-in font name, font file path, or numeric built-in point-size selector.
 ---@param size? number Point size for TTF/OTF files, or cell height for PNG atlases.
 ---@return LFont The created font handle.
 lurek.render.newFont = function(pathOrSize, size) end
@@ -20541,6 +20546,12 @@ lurek.render.setColorMask = function(r, g, b, a) end
 ---@param mag string Magnification filter: "nearest" or "linear".
 ---@param anisotropy? number Anisotropy level (default 1).
 lurek.render.setDefaultFilter = function(min, mag, anisotropy) end
+
+--- Selects a built-in default font by bundled point size and makes it the active render font.
+---@param pointSize? number Desired built-in point size. When omitted, reuses the configured default size.
+---@param bold? boolean When true, selects the bold variant. When omitted, reuses the current bold selection.
+---@return LFont The selected built-in font handle.
+lurek.render.setDefaultFont = function(pointSize, bold) end
 
 --- Sets the depth comparison mode and whether depth writes are enabled.
 ---@param mode string Compare mode: "always", "never", "less", "lequal", "equal", "notequal", "greater", "gequal".
@@ -21125,7 +21136,7 @@ lurek.scene.transitions.wipe = function(duration) end
 lurek.serial = {}
 
 --- Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
----@param value table The data table that may have missing fields.
+---@param value any The data value that may have missing fields.
 ---@param schema table A schema table containing `default` entries for fields.
 ---@return table A new table with defaults applied for any absent fields.
 lurek.serial.applyDefaults = function(value, schema) end
@@ -21153,7 +21164,7 @@ lurek.serial.decodeXml = function(text) end
 lurek.serial.detectFormat = function(text) end
 
 --- Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
----@param value table The Lua value to encode.
+---@param value any The Lua value to encode.
 ---@param format string Target format: "json", "toml", "csv", or "msgpack".
 ---@param opts? table Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 ---@return string The encoded string (text or binary depending on format).
@@ -21194,7 +21205,7 @@ lurek.serial.fromToml = function(text) end
 lurek.serial.toCsv = function(value, delimiter, hasHeaders) end
 
 --- Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
----@param value table The Lua value to serialize into JSON.
+---@param value any The Lua value to serialize into JSON.
 ---@param pretty? boolean When true, outputs indented human-readable JSON. Defaults to false (compact).
 ---@return string The JSON-encoded string representation of the value.
 lurek.serial.toJson = function(value, pretty) end
@@ -21205,7 +21216,7 @@ lurek.serial.toJson = function(value, pretty) end
 lurek.serial.toToml = function(value) end
 
 --- Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
----@param value table The data to validate.
+---@param value any The data to validate.
 ---@param schema table A schema table defining the expected structure and constraints.
 ---@return boolean a True if validation passes, false otherwise.
 ---@return string b An error message describing the validation failure, or nil on success.
@@ -21648,10 +21659,12 @@ lurek.runtime.getClipboardText = function() end
 ---@field lua_callback_timeout_ms number Lua callback timeout ms.
 ---@field vsync boolean Vsync.
 ---@field log_level string Log level.
+---@field default_font_size number Configured built-in default render font point size.
+---@field default_font_bold boolean Configured bold variant flag for the default render font.
 ---@field config_reload_revision number Config reload revision.
 
 --- Returns a table containing the current engine runtime configuration values.
----@return RuntimeGetConfigResult Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+---@return RuntimeGetConfigResult Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `default_font_size` (integer), `default_font_bold` (boolean), `config_reload_revision` (number).
 lurek.runtime.getConfig = function() end
 
 --- Returns whether the on-screen debug overlay is currently enabled.
@@ -25724,6 +25737,10 @@ function LUiWidget:setAnchor(left, top, right, bottom) end
 ---@param cy? number Vertical center fraction (0.5 = centered).
 function LUiWidget:setAnchorCenter(cx, cy) end
 
+--- Sets the accessible name metadata for this widget.
+---@param name string Accessible name value.
+function LUiWidget:setAriaName(name) end
+
 --- Binds this widget to a data key and reports whether the widget exists.
 ---@param key string The binding key name.
 ---@return boolean True when the widget exists and the binding key was set.
@@ -25740,6 +25757,20 @@ function LUiWidget:setFlexGrow(grow) end
 --- Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
 ---@param shrink number The shrink factor (0 = no shrinkage).
 function LUiWidget:setFlexShrink(shrink) end
+
+--- Sets the focus traversal group for this widget.
+---@param group string Focus group name; empty string means the default/global group.
+function LUiWidget:setFocusGroup(group) end
+
+--- Sets an explicit directional focus neighbor for this widget.
+---@param direction string Neighbor direction: "up", "down", "left", or "right".
+---@param target? number Target widget index, or nil to clear the neighbor.
+---@return boolean True when direction is valid; false otherwise.
+function LUiWidget:setFocusNeighbor(direction, target) end
+
+--- Sets whether this widget participates in keyboard focus traversal.
+---@param value boolean True to allow focus traversal; false to skip this widget.
+function LUiWidget:setFocusable(value) end
 
 --- Assigns a specific font to this widget and its descendants unless overridden further down the tree.
 ---@param font LFont Font handle to use for this widget subtree.
@@ -25795,6 +25826,10 @@ function LUiWidget:setPadding(top, right, bottom, left) end
 ---@param y number Vertical position in pixels.
 function LUiWidget:setPosition(x, y) end
 
+--- Sets a semantic role string for this widget.
+---@param role string Semantic role name.
+function LUiWidget:setRole(role) end
+
 --- Sets the width and height of this widget in pixels.
 ---@param w number Width in pixels.
 ---@param h number Height in pixels.
@@ -25804,6 +25839,23 @@ function LUiWidget:setSize(w, h) end
 ---@param class string The style class name.
 ---@return boolean True when the widget exists and the class was set.
 function LUiWidget:setStyleClass(class) end
+
+--- Sets the tab-order index for this widget.
+---@param value number Tab-order index.
+function LUiWidget:setTabIndex(value) end
+
+--- Enables or disables ellipsis clipping for overflowing single-line text.
+---@param ellipsis boolean True to enable ellipsis on overflow.
+function LUiWidget:setTextEllipsis(ellipsis) end
+
+--- Sets the vertical alignment of text inside this widget.
+---@param align string Vertical alignment: "top", "middle", or "bottom".
+---@return boolean True when the alignment string is recognised; false leaves the previous value unchanged.
+function LUiWidget:setTextVAlign(align) end
+
+--- Enables or disables word-wrap for text inside this widget.
+---@param wrap boolean True to wrap text, false for single-line.
+function LUiWidget:setTextWrap(wrap) end
 
 --- Sets the tooltip text shown when the user hovers over this widget.
 ---@param text string The tooltip message.
@@ -25848,6 +25900,10 @@ lurek.ui.addToast = function(toast_table) end
 ---@return boolean True if the drag started.
 lurek.ui.beginDrag = function(widget) end
 
+--- Clears all retained UI widgets and transient UI state while keeping the active theme.
+---@return number Number of widgets removed from the retained UI tree.
+lurek.ui.clear = function() end
+
 --- Clears keyboard focus from all widgets.
 lurek.ui.clearFocus = function() end
 
@@ -25876,6 +25932,11 @@ lurek.ui.endDrag = function() end
 ---@return boolean True if the cache was flushed.
 lurek.ui.flushCache = function() end
 
+--- Moves keyboard focus using an explicit directional focus link.
+---@param direction string Direction: "up", "down", "left", or "right".
+---@return boolean True when focus was moved to a configured neighbor.
+lurek.ui.focusNeighbor = function(direction) end
+
 --- Moves keyboard focus to the next focusable widget.
 lurek.ui.focusNext = function() end
 
@@ -25897,6 +25958,11 @@ lurek.ui.getFont = function() end
 --- Returns the root panel widget of the UI tree.
 ---@return LPanel The root panel widget table.
 lurek.ui.getRoot = function() end
+
+--- Returns the value of a named semantic style token from the active theme.
+---@param name string The token name (e.g. "spacing_md", "color_primary").
+---@return any The token value: a number for float tokens, or a table with r/g/b/a fields for color tokens. Nil if the token is not registered.
+lurek.ui.getStyleToken = function(name) end
 
 --- Returns whether a theme is currently set.
 ---@return boolean True if a theme is active.
@@ -25929,6 +25995,11 @@ lurek.ui.loadLayout = function(def) end
 ---@param path string Path to the TOML layout file.
 ---@return number The root widget index.
 lurek.ui.loadLayoutFile = function(path) end
+
+--- Loads a UI layout from a TOML file resolved through GameFS.
+---@param path string GameFS path to the TOML layout file.
+---@return number The root widget index.
+lurek.ui.loadLayoutGameFile = function(path) end
 
 --- Delivers a mouse move event to the UI.
 ---@param x number Mouse X position.

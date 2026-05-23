@@ -1,4 +1,5 @@
 -- Integration: tilemap solid tiles generating physics collision boundaries
+-- @describe integration: tilemap solid tiles as physics boundaries
 describe("integration: tilemap solid tiles as physics boundaries", function()
     -- @integration LBody:getPosition
     -- @integration LTileMap:addLayer

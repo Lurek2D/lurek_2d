@@ -1,4 +1,5 @@
 -- Integration: animation frame stepping + tween interpolation
+-- @describe animation + tween integration
 describe("animation + tween integration", function()
     -- @integration LAnimation:addClip
     -- @integration LAnimation:addFramesFromGrid

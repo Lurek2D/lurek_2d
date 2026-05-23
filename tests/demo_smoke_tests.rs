@@ -176,6 +176,7 @@ demo_smoke_test!(demo_smoke_snake, "content/games/arcade/snake");
 demo_smoke_test!(demo_smoke_tetris, "content/games/arcade/tetris");
 demo_smoke_test!(demo_smoke_pac_man, "content/games/arcade/pac_man");
 demo_smoke_test!(demo_smoke_asteroids, "content/games/arcade/asteroids");
+demo_smoke_test!(demo_smoke_dyna_blaster, "content/games/arcade/dyna_blaster");
 
 // ─── simulation demos ─────────────────────────────────────────────────────────
 

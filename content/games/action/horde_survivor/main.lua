@@ -18,6 +18,7 @@
 local SCREEN_W, SCREEN_H = 800, 600
 local ARENA_W,  ARENA_H  = 1600, 1200
 
+local app_ui = {}
 local STATE = { TITLE = 1, PLAYING = 2, LEVEL_UP = 3, GAME_OVER = 4 }
 local current_state = STATE.TITLE
 
@@ -280,14 +281,34 @@ function lurek.init()
     lurek.window.setTitle("Horde Survivor — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.12, 0.08)
 
-    lurek.input.bind("up",    { "w", "up", "gamepad:0:10" })
-    lurek.input.bind("down",  { "s", "down", "gamepad:0:11" })
-    lurek.input.bind("left",  { "a", "left", "gamepad:0:12" })
-    lurek.input.bind("right", { "d", "right", "gamepad:0:13" })
-    lurek.input.bind("pick1", { "1", "gamepad:0:0" })
-    lurek.input.bind("pick2", { "2", "gamepad:0:2" })
-    lurek.input.bind("pick3", { "3", "gamepad:0:3" })
-    lurek.input.bind("quit",  { "escape", "gamepad:0:8" })
+    lurek.ui.loadLayoutFile("content/games/action/horde_survivor/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.app_ui.fps_label = ui_root:findById("app_ui.fps_label")
+    app_ui.app_ui.game_over_panel = ui_root:findById("app_ui.game_over_panel")
+    app_ui.app_ui.go_kills = ui_root:findById("app_ui.go_kills")
+    app_ui.app_ui.go_level = ui_root:findById("app_ui.go_level")
+    app_ui.app_ui.go_time = ui_root:findById("app_ui.go_time")
+    app_ui.app_ui.hp_bar = ui_root:findById("app_ui.hp_bar")
+    app_ui.app_ui.hp_label = ui_root:findById("app_ui.hp_label")
+    app_ui.app_ui.hud_panel = ui_root:findById("app_ui.hud_panel")
+    app_ui.app_ui.kills_label = ui_root:findById("app_ui.kills_label")
+    app_ui.app_ui.level_label = ui_root:findById("app_ui.level_label")
+    app_ui.app_ui.level_up_panel = ui_root:findById("app_ui.level_up_panel")
+    app_ui.app_ui.stats_label = ui_root:findById("app_ui.stats_label")
+    app_ui.app_ui.time_label = ui_root:findById("app_ui.time_label")
+    app_ui.app_ui.title_panel = ui_root:findById("app_ui.title_panel")
+    app_ui.app_ui.xp_bar = ui_root:findById("app_ui.xp_bar")
+    app_ui.app_ui.xp_label = ui_root:findById("app_ui.xp_label")
+
+
+    lurek.input.bind("up",    { "w", "up" })
+    lurek.input.bind("down",  { "s", "down" })
+    lurek.input.bind("left",  { "a", "left" })
+    lurek.input.bind("right", { "d", "right" })
+    lurek.input.bind("pick1", { "1" })
+    lurek.input.bind("pick2", { "2" })
+    lurek.input.bind("pick3", { "3" })
+    lurek.input.bind("quit",  { "escape" })
 
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
 
@@ -549,6 +570,73 @@ function lurek.process(dt)
         hp = 0
         current_state = STATE.GAME_OVER
     end
+
+    -- ── UI Update ─────────────────────────────────────────────────────────────
+    
+    
+    
+    
+    
+
+    app_ui.title_panel.visible = (current_state == STATE.TITLE)
+    app_ui.hud_panel.visible = (current_state == STATE.PLAYING)
+    app_ui.game_over_panel.visible = (current_state == STATE.GAME_OVER)
+    app_ui.level_up_panel.visible = (current_state == STATE.LEVEL_UP)
+
+    app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+
+    if current_state == STATE.LEVEL_UP then
+        for i, u in ipairs(upgrade_choices) do
+            local name_label = lurek.ui.getElementById("card_" .. i .. "_name")
+            local desc_label = lurek.ui.getElementById("card_" .. i .. "_desc")
+            local card_panel = lurek.ui.getElementById("card_" .. i)
+            if name_label and desc_label and card_panel then
+                card_panel.visible = true
+                name_label.text = u.name
+                desc_label.text = u.desc
+            end
+        end
+        -- hide unused cards if any
+        for i = #upgrade_choices + 1, 3 do
+            local card_panel = lurek.ui.getElementById("card_" .. i)
+            if card_panel then card_panel.visible = false end
+        end
+    elseif current_state == STATE.PLAYING then
+        
+        
+        
+        
+        
+        
+        
+        
+
+        app_ui.hp_label.text = string.format("HP %d/%d", hp, PLAYER_MAX_HP)
+        local hp_frac = hp / PLAYER_MAX_HP
+        local hp_bars = math.floor(hp_frac * 20)
+        app_ui.hp_bar.text = string.rep("█", hp_bars) .. string.rep("░", 20 - hp_bars)
+        app_ui.hp_bar.color = {1 - hp_frac, hp_frac, 0.1, 0.9}
+
+        app_ui.xp_label.text = string.format("XP %d/%d", xp, xp_to_next)
+        local xp_frac = xp / xp_to_next
+        local xp_bars = math.floor(xp_frac * 20)
+        app_ui.xp_bar.text = string.rep("█", xp_bars) .. string.rep("░", 20 - xp_bars)
+
+        app_ui.level_label.text = "Lv " .. level
+        app_ui.kills_label.text = "Kills: " .. kills
+        local time_str = string.format("%d:%02d", math.floor(game_time / 60), math.floor(game_time) % 60)
+        app_ui.time_label.text = time_str
+
+        app_ui.stats_label.text = string.format("DMG:%d  ORB:%d  SPD:%.0f%%  PIERCE:%d", proj_damage, proj_count, speed_mult * 100, proj_pierce)
+    elseif current_state == STATE.GAME_OVER then
+        
+        
+        
+        local time_str = string.format("%d:%02d", math.floor(game_time / 60), math.floor(game_time) % 60)
+        app_ui.go_time.text = "Time: " .. time_str
+        app_ui.go_kills.text = "Kills: " .. kills
+        app_ui.go_level.text = "Level: " .. level
+    end
 end
 
 -- ── Render (world space — affected by camera) ─────────────────────────────
@@ -652,117 +740,4 @@ end
 
 -- ── Render UI (screen space — NOT affected by camera) ─────────────────────
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-
-    -- ── TITLE ─────────────────────────────────────────────────────────
-    if current_state == STATE.TITLE then
-        lurek.render.setColor(1, 0.9, 0.3)
-        text_("HORDE SURVIVOR", SCREEN_W / 2 - 120, 180, 32)
-        lurek.render.setColor(0.8, 0.8, 0.8)
-        text_("Survive the endless horde!", SCREEN_W / 2 - 110, 230, 16)
-        lurek.render.setColor(0.6, 0.9, 0.6)
-        text_("Press 1, 2, or 3 to start", SCREEN_W / 2 - 100, 320, 16)
-        lurek.render.setColor(0.5, 0.5, 0.5)
-        text_("WASD = move  |  Auto-attack", SCREEN_W / 2 - 110, 370, 14)
-        lurek.render.setColor(0.4, 0.4, 0.4)
-        text_(string.format("FPS: %d", fps), 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- ── GAME OVER ─────────────────────────────────────────────────────
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.6)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-        lurek.render.setColor(1, 0.3, 0.3)
-        text_("GAME OVER", SCREEN_W / 2 - 80, 150, 32)
-        lurek.render.setColor(0.9, 0.9, 0.9)
-        local time_str = string.format("%d:%02d", math.floor(game_time / 60), math.floor(game_time) % 60)
-        text_("Time: " .. time_str, SCREEN_W / 2 - 60, 220, 18)
-        text_("Kills: " .. kills, SCREEN_W / 2 - 60, 250, 18)
-        text_("Level: " .. level, SCREEN_W / 2 - 60, 280, 18)
-        lurek.render.setColor(0.6, 0.9, 0.6)
-        text_("Press 1 to restart", SCREEN_W / 2 - 80, 340, 16)
-        lurek.render.setColor(0.4, 0.4, 0.4)
-        text_(string.format("FPS: %d", fps), 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- ── LEVEL UP overlay ──────────────────────────────────────────────
-    if current_state == STATE.LEVEL_UP then
-        lurek.render.setColor(0, 0, 0, 0.65)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-        lurek.render.setColor(1, 1, 0.3)
-        text_("LEVEL UP!", SCREEN_W / 2 - 70, 120, 28)
-        lurek.render.setColor(0.9, 0.9, 0.9)
-        text_("Choose an upgrade:", SCREEN_W / 2 - 80, 170, 16)
-
-        for i, u in ipairs(upgrade_choices) do
-            local bx = SCREEN_W / 2 - 160
-            local by = 210 + (i - 1) * 80
-            -- Card background
-            lurek.render.setColor(0.15, 0.2, 0.15, 0.9)
-            rect("fill", bx, by, 320, 65)
-            lurek.render.setColor(0.4, 0.8, 0.4)
-            rect("line", bx, by, 320, 65)
-            -- Number
-            lurek.render.setColor(1, 0.9, 0.3)
-            text_(tostring(i), bx + 10, by + 12, 28)
-            -- Name and desc
-            lurek.render.setColor(1, 1, 1)
-            text_(u.name, bx + 45, by + 12, 18)
-            lurek.render.setColor(0.7, 0.7, 0.7)
-            text_(u.desc, bx + 45, by + 38, 13)
-        end
-        return
-    end
-
-    -- ── PLAYING HUD ───────────────────────────────────────────────────
-
-    -- HP bar
-    local bar_w = 200
-    local bar_h = 16
-    local bar_x = 10
-    local bar_y = 10
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", bar_x, bar_y, bar_w, bar_h)
-    local hp_frac = hp / PLAYER_MAX_HP
-    local hp_color_r = 1 - hp_frac
-    local hp_color_g = hp_frac
-    lurek.render.setColor(hp_color_r, hp_color_g, 0.1, 0.9)
-    rect("fill", bar_x, bar_y, bar_w * hp_frac, bar_h)
-    lurek.render.setColor(1, 1, 1)
-    text_(string.format("HP %d/%d", hp, PLAYER_MAX_HP), bar_x + 4, bar_y + 1, 12)
-
-    -- XP bar
-    local xp_y = bar_y + bar_h + 4
-    lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
-    rect("fill", bar_x, xp_y, bar_w, 10)
-    local xp_frac = xp / xp_to_next
-    lurek.render.setColor(0.3, 0.8, 1.0, 0.9)
-    rect("fill", bar_x, xp_y, bar_w * xp_frac, 10)
-    lurek.render.setColor(1, 1, 1)
-    text_(string.format("XP %d/%d", xp, xp_to_next), bar_x + 4, xp_y - 1, 10)
-
-    -- Level
-    lurek.render.setColor(1, 0.9, 0.3)
-    text_("Lv " .. level, bar_x + bar_w + 10, bar_y, 16)
-
-    -- Kill counter
-    lurek.render.setColor(0.9, 0.5, 0.5)
-    text_("Kills: " .. kills, SCREEN_W - 130, 10, 14)
-
-    -- Timer
-    local time_str = string.format("%d:%02d", math.floor(game_time / 60), math.floor(game_time) % 60)
-    lurek.render.setColor(0.9, 0.9, 0.9)
-    text_(time_str, SCREEN_W / 2 - 20, 10, 18)
-
-    -- Stats line
-    lurek.render.setColor(0.6, 0.6, 0.6)
-    text_(string.format("DMG:%d  ORB:%d  SPD:%.0f%%  PIERCE:%d",
-        proj_damage, proj_count, speed_mult * 100, proj_pierce),
-        10, SCREEN_H - 22, 11)
-
-    -- FPS
-    lurek.render.setColor(0.4, 0.4, 0.4)
-    text_(string.format("FPS: %d", fps), SCREEN_W - 80, SCREEN_H - 20, 12)
 end

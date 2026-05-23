@@ -1,4 +1,5 @@
 -- Integration: save manager collecting and restoring tilemap tile data
+-- @describe integration: savegame collects and restores tilemap state
 describe("integration: savegame collects and restores tilemap state", function()
     -- @integration LSaveManager:collect
     -- @integration LSaveManager:register

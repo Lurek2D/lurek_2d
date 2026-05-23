@@ -352,6 +352,58 @@ function lurek.init()
         speedMin = 40, speedMax = 120, direction = -1.57, spread = 3.14,
         sizes = { 5, 3, 1 }, colors = { 1, 1, 0.3, 1, 1, 0.8, 0.1, 0 },
     })
+
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/boxing_ring/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.round_end_screen = ui_root:findById("round_end_screen")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    
+    app_ui.round_info = ui_root:findById("round_info")
+    app_ui.timer_label = ui_root:findById("timer_label")
+    app_ui.wins_label = ui_root:findById("wins_label")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.combo_label = ui_root:findById("combo_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    app_ui.round_end_title = ui_root:findById("round_end_title")
+    app_ui.round_end_damage = ui_root:findById("round_end_damage")
+    
+    app_ui.game_over_winner = ui_root:findById("game_over_winner")
+    app_ui.game_over_rounds = ui_root:findById("game_over_rounds")
+    app_ui.game_over_score = ui_root:findById("game_over_score")
+    app_ui.game_over_combo = ui_root:findById("game_over_combo")
+    
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_continue = ui_root:findById("press_continue")
+    app_ui.press_title = ui_root:findById("press_title")
+    
+    local function handle_action_click()
+        if current_state == STATE.TITLE then
+            round_num   = 1
+            round_wins  = { 0, 0 }
+            total_score = 0
+            combo_count = 0
+            best_combo  = 0
+            init_round()
+            current_state = STATE.FIGHT
+        elseif current_state == STATE.ROUND_END then
+            round_num = round_num + 1
+            if round_num > MAX_ROUNDS then
+                current_state = STATE.GAME_OVER
+            else
+                init_round()
+                current_state = STATE.FIGHT
+            end
+        elseif current_state == STATE.GAME_OVER then
+            current_state = STATE.TITLE
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
+    if app_ui.press_continue then app_ui.press_continue:setOnClick(handle_action_click) end
+    if app_ui.press_title then app_ui.press_title:setOnClick(handle_action_click) end
 end
 
 -- ---------------------------------------------------------------------------
@@ -392,10 +444,7 @@ function lurek.process(dt)
             best_combo  = 0
             init_round()
             current_state = STATE.FIGHT
-            banner.y = -60
-            lurek.tween.to(banner, { y = SCREEN_H * 0.35 }, 0.5)
         end
-        return
     end
 
     -- ── ROUND END ─────────────────────────────────────────────
@@ -407,11 +456,8 @@ function lurek.process(dt)
             else
                 init_round()
                 current_state = STATE.FIGHT
-                banner.y = -60
-                lurek.tween.to(banner, { y = SCREEN_H * 0.35 }, 0.5)
             end
         end
-        return
     end
 
     -- ── GAME OVER ─────────────────────────────────────────────
@@ -419,8 +465,50 @@ function lurek.process(dt)
         if lurek.input.wasActionPressed("jab") or lurek.input.wasActionPressed("block") then
             current_state = STATE.TITLE
         end
-        return
     end
+
+    -- UI sync
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    app_ui.round_end_screen.visible = (current_state == STATE.ROUND_END)
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    app_ui.hud.visible = (current_state ~= STATE.TITLE)
+    
+    app_ui.round_info.text = "Round " .. round_num .. "/" .. MAX_ROUNDS
+    app_ui.timer_label.text = string.format("%d", math.ceil(math.max(0, round_timer)))
+    app_ui.wins_label.text = round_wins[1] .. " - " .. round_wins[2]
+    app_ui.score_label.text = "Score: " .. total_score
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    
+    if combo_count > 1 then
+        app_ui.combo_label.visible = true
+        app_ui.combo_label.text = "Combo x" .. combo_count
+    else
+        app_ui.combo_label.visible = false
+    end
+    
+    if current_state == STATE.ROUND_END then
+        if ko_winner then
+            app_ui.round_end_title.text = ko_winner == "player" and "KNOCKOUT! YOU WIN!" or "KNOCKOUT! YOU LOSE!"
+            app_ui.round_end_title.color = ko_winner == "player" and COL_HP_GREEN or COL_HP_RED
+        else
+            app_ui.round_end_title.text = round_dmg[1] >= round_dmg[2] and "ROUND TO PLAYER!" or "ROUND TO OPPONENT!"
+            app_ui.round_end_title.color = COL_GOLD
+        end
+        app_ui.round_end_damage.text = "Damage: " .. round_dmg[1] .. " vs " .. round_dmg[2]
+    end
+    
+    if current_state == STATE.GAME_OVER then
+        local winner = round_wins[1] > round_wins[2] and "YOU WIN!" or (round_wins[1] < round_wins[2] and "YOU LOSE!" or "DRAW!")
+        local w_col  = round_wins[1] > round_wins[2] and COL_HP_GREEN or (round_wins[1] < round_wins[2] and COL_HP_RED or COL_GOLD)
+        
+        app_ui.game_over_winner.text = winner
+        app_ui.game_over_winner.color = w_col
+        app_ui.game_over_rounds.text = "Rounds: " .. round_wins[1] .. " - " .. round_wins[2]
+        app_ui.game_over_score.text = "Score: " .. total_score
+        app_ui.game_over_combo.text = "Best combo: " .. best_combo
+    end
+    
+    if current_state ~= STATE.FIGHT then return end
 
     -- ── FIGHT ─────────────────────────────────────────────────
     round_timer = round_timer - dt
@@ -657,50 +745,19 @@ local function draw_bar(x, y, w, h, value, max_val, r, g, b)
 end
 
 function lurek.draw_ui()
-    -- ── TITLE ─────────────────────────────────────────────────
-    if current_state == STATE.TITLE then
-        text_("BOXING RING", SCREEN_W * 0.5 - 100, 140, 36, COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-        text_("FIGHT NIGHT", SCREEN_W * 0.5 - 85, 190, 22, COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_("Press J or SPACE to start", SCREEN_W * 0.5 - 110, 340, 16, COL_GRAY[1], COL_GRAY[2], COL_GRAY[3])
-        text_("J=Jab  K=Hook  L=Uppercut  Space=Block", SCREEN_W * 0.5 - 170, 380, 14, COL_GRAY[1], COL_GRAY[2], COL_GRAY[3])
-        text_("W=Duck  S=Lean back  A/D=Move", SCREEN_W * 0.5 - 130, 405, 14, COL_GRAY[1], COL_GRAY[2], COL_GRAY[3])
-        -- FPS
-        text_("FPS: " .. tostring(lurek.timer.getFPS()), 10, SCREEN_H - 20, 12, 0.4, 0.4, 0.4)
-        return
-    end
-
-    -- ── HUD (FIGHT + ROUND_END + GAME_OVER) ──────────────────
-    -- Top bar background
-    rect(0, 0, SCREEN_W, 55, COL_HUD_BG[1], COL_HUD_BG[2], COL_HUD_BG[3], COL_HUD_BG[4])
+    if current_state == STATE.TITLE then return end
 
     -- Player HP (left side)
-    text_("PLAYER", 10, 4, 12, COL_PLAYER[1], COL_PLAYER[2], COL_PLAYER[3])
     local hp_col = hp_display.player > 30 and COL_HP_GREEN or COL_HP_RED
     draw_bar(10, 18, 200, 14, hp_display.player, MAX_HP, hp_col[1], hp_col[2], hp_col[3])
     -- Player stamina
     draw_bar(10, 36, 160, 8, player.stamina, MAX_STAMINA, COL_STAMINA[1], COL_STAMINA[2], COL_STAMINA[3])
 
     -- Opponent HP (right side)
-    text_("OPPONENT", SCREEN_W - 85, 4, 12, COL_OPPONENT[1], COL_OPPONENT[2], COL_OPPONENT[3])
     local ohp_col = hp_display.opponent > 30 and COL_HP_GREEN or COL_HP_RED
     draw_bar(SCREEN_W - 210, 18, 200, 14, hp_display.opponent, MAX_HP, ohp_col[1], ohp_col[2], ohp_col[3])
     -- Opponent stamina
     draw_bar(SCREEN_W - 170, 36, 160, 8, opponent.stamina, MAX_STAMINA, COL_STAMINA[1], COL_STAMINA[2], COL_STAMINA[3])
-
-    -- Round info (center)
-    text_("Round " .. round_num .. "/" .. MAX_ROUNDS, SCREEN_W * 0.5 - 35, 4, 14, COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-    local timer_str = string.format("%d", math.ceil(math.max(0, round_timer)))
-    text_(timer_str, SCREEN_W * 0.5 - 8, 22, 20, COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-    -- Wins
-    text_(round_wins[1] .. " - " .. round_wins[2], SCREEN_W * 0.5 - 12, 44, 10, COL_GRAY[1], COL_GRAY[2], COL_GRAY[3])
-
-    -- Bottom bar: score, combo, FPS
-    rect(0, SCREEN_H - 30, SCREEN_W, 30, COL_HUD_BG[1], COL_HUD_BG[2], COL_HUD_BG[3], COL_HUD_BG[4])
-    text_("Score: " .. total_score, 10, SCREEN_H - 24, 14, COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-    if combo_count > 1 then
-        text_("Combo x" .. combo_count, SCREEN_W * 0.5 - 40, SCREEN_H - 24, 14, 1, 0.5, 0.2)
-    end
-    text_("FPS: " .. tostring(lurek.timer.getFPS()), SCREEN_W - 80, SCREEN_H - 24, 12, 0.4, 0.4, 0.4)
 
     -- Dodge indicator
     if player.dodge == DODGE_DUCK then
@@ -712,33 +769,5 @@ function lurek.draw_ui()
     -- Block indicator
     if player.blocking then
         text_("BLOCK", player.x + 2, player.y - 20, 12, 0.9, 0.9, 0.3)
-    end
-
-    -- ── ROUND END overlay ─────────────────────────────────────
-    if current_state == STATE.ROUND_END then
-        rect(0, 0, SCREEN_W, SCREEN_H, 0, 0, 0, 0.5)
-        if ko_winner then
-            local ko_text = ko_winner == "player" and "KNOCKOUT! YOU WIN!" or "KNOCKOUT! YOU LOSE!"
-            local ko_col = ko_winner == "player" and COL_HP_GREEN or COL_HP_RED
-            text_(ko_text, SCREEN_W * 0.5 - 120, 200, 28, ko_col[1], ko_col[2], ko_col[3])
-        else
-            local rd_text = round_dmg[1] >= round_dmg[2] and "ROUND TO PLAYER!" or "ROUND TO OPPONENT!"
-            text_(rd_text, SCREEN_W * 0.5 - 110, 200, 24, COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-        end
-        text_("Damage: " .. round_dmg[1] .. " vs " .. round_dmg[2], SCREEN_W * 0.5 - 70, 250, 16, COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_("Press J or SPACE to continue", SCREEN_W * 0.5 - 120, 310, 16, COL_GRAY[1], COL_GRAY[2], COL_GRAY[3])
-    end
-
-    -- ── GAME OVER overlay ─────────────────────────────────────
-    if current_state == STATE.GAME_OVER then
-        rect(0, 0, SCREEN_W, SCREEN_H, 0, 0, 0, 0.6)
-        local winner = round_wins[1] > round_wins[2] and "YOU WIN!" or (round_wins[1] < round_wins[2] and "YOU LOSE!" or "DRAW!")
-        local w_col  = round_wins[1] > round_wins[2] and COL_HP_GREEN or (round_wins[1] < round_wins[2] and COL_HP_RED or COL_GOLD)
-        text_("FIGHT OVER", SCREEN_W * 0.5 - 80, 160, 30, COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_(winner, SCREEN_W * 0.5 - 60, 210, 28, w_col[1], w_col[2], w_col[3])
-        text_("Rounds: " .. round_wins[1] .. " - " .. round_wins[2], SCREEN_W * 0.5 - 55, 260, 16, COL_WHITE[1], COL_WHITE[2], COL_WHITE[3])
-        text_("Score: " .. total_score, SCREEN_W * 0.5 - 40, 290, 16, COL_GOLD[1], COL_GOLD[2], COL_GOLD[3])
-        text_("Best combo: " .. best_combo, SCREEN_W * 0.5 - 55, 315, 14, 1, 0.5, 0.2)
-        text_("Press J or SPACE for title", SCREEN_W * 0.5 - 110, 370, 16, COL_GRAY[1], COL_GRAY[2], COL_GRAY[3])
     end
 end

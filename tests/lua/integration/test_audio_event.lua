@@ -1,4 +1,5 @@
 -- Integration: audio volume controlled via event signals
+-- @describe audio + event integration
 describe("audio + event integration", function()
     -- @integration LSignal:connect
     -- @integration LSignal:emit

@@ -306,6 +306,22 @@ function lurek.init()
     lurek.input.bind("confirm", { "return", "gamepad:0:0", "gamepad:0:9" })
     lurek.input.bind("quit", { "escape", "gamepad:0:8" })
 
+    local ui_root = lurek.ui.loadLayoutFile("content/games/retro/shadow_beast/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_press_start = ui_root:findById("title_press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_dist = ui_root:findById("go_dist")
+    app_ui.go_press_start = ui_root:findById("go_press_start")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_hp = ui_root:findById("hud_hp")
+    app_ui.hud_score = ui_root:findById("hud_score")
+    app_ui.hud_dist = ui_root:findById("hud_dist")
+    app_ui.hud_boss_warning = ui_root:findById("hud_boss_warning")
+
     cam = lurek.camera.new()
     reset_game()
 end
@@ -745,6 +761,35 @@ function lurek.process(dt)
             reset_game()
         end
     end
+    
+    -- Sync UI
+    local pulse = 0.5 + 0.5 * math.abs(math.sin(lurek.timer.getTime() * 2.5))
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    if current_state == STATE.TITLE then
+        app_ui.title_press_start.color = {0.8, 0.6, 0.9, pulse}
+    end
+    
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    if current_state == STATE.GAME_OVER then
+        app_ui.go_score.text = "Score: " .. score
+        app_ui.go_dist.text = "Distance: " .. math.floor(distance)
+        app_ui.go_press_start.color = {0.6, 0.5, 0.7, pulse}
+    end
+    
+    app_ui.hud_screen.visible = (current_state == STATE.PLAYING)
+    if current_state == STATE.PLAYING then
+        app_ui.hud_hp.text = "HP: " .. player.hp .. " / " .. PLAYER_MAX_HP
+        app_ui.hud_score.text = "SCORE: " .. score
+        app_ui.hud_dist.text = "DIST: " .. math.floor(distance)
+        
+        if boss_active then
+            local flash = math.abs(math.sin(lurek.timer.getTime() * 4))
+            app_ui.hud_boss_warning.visible = true
+            app_ui.hud_boss_warning.color = {1.0, 0.2, 0.1, flash * 0.8}
+        else
+            app_ui.hud_boss_warning.visible = false
+        end
+    end
 end
 
 -- ---------------------------------------------------------------------------
@@ -776,66 +821,4 @@ end
 -- Render UI (HUD, titles, overlays)
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    if current_state == STATE.TITLE then
-        -- Title
-        lurek.render.setColor(0.85, 0.7, 0.95, 1)
-        text_("SHADOW OF THE BEAST", SCREEN_W / 2 - 150, 180, 32)
-        lurek.render.setColor(0.6, 0.45, 0.7, 0.8)
-        text_("A Lurek2D Tribute to Psygnosis", SCREEN_W / 2 - 140, 225, 16)
-        -- Controls
-        lurek.render.setColor(0.5, 0.4, 0.6, 0.7)
-        text_("A/D  Move   |   SPACE  Jump   |   F  Attack", SCREEN_W / 2 - 180, 340, 14)
-        -- Prompt
-        local pulse = 0.5 + 0.5 * math.abs(math.sin(lurek.timer.getTime() * 2.5))
-        lurek.render.setColor(0.8, 0.6, 0.9, pulse)
-        text_("Press ENTER to begin", SCREEN_W / 2 - 90, 420, 18)
-
-    elseif current_state == STATE.PLAYING then
-        -- HP icons
-        for i = 1, PLAYER_MAX_HP do
-            if i <= player.hp then
-                lurek.render.setColor(0.9, 0.2, 0.2, 1)
-            else
-                lurek.render.setColor(0.3, 0.1, 0.1, 0.5)
-            end
-            rect("fill", 10 + (i - 1) * 22, 10, 16, 16)
-            -- Cross on HP icon
-            if i <= player.hp then
-                lurek.render.setColor(1.0, 0.5, 0.5, 1)
-                rect("fill", 14 + (i - 1) * 22, 13, 8, 2)
-                rect("fill", 17 + (i - 1) * 22, 12, 2, 6)
-            end
-        end
-
-        -- Score
-        lurek.render.setColor(0.8, 0.7, 0.9, 1)
-        text_("SCORE: " .. score, SCREEN_W - 180, 12, 16)
-
-        -- Distance
-        lurek.render.setColor(0.6, 0.5, 0.7, 0.8)
-        text_("DIST: " .. math.floor(distance), SCREEN_W - 180, 32, 14)
-
-        -- Boss warning
-        if boss_active then
-            local flash = math.abs(math.sin(lurek.timer.getTime() * 4))
-            lurek.render.setColor(1.0, 0.2, 0.1, flash * 0.8)
-            text_("!! BOSS !!", SCREEN_W / 2 - 40, 50, 20)
-        end
-
-    elseif current_state == STATE.GAME_OVER then
-        -- Fade overlay
-        lurek.render.setColor(0.0, 0.0, 0.0, 0.6)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(0.9, 0.3, 0.3, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 80, 220, 32)
-
-        lurek.render.setColor(0.7, 0.5, 0.8, 1)
-        text_("Score: " .. score, SCREEN_W / 2 - 50, 280, 20)
-        text_("Distance: " .. math.floor(distance), SCREEN_W / 2 - 70, 310, 16)
-
-        local pulse = 0.5 + 0.5 * math.abs(math.sin(lurek.timer.getTime() * 2.5))
-        lurek.render.setColor(0.6, 0.5, 0.7, pulse)
-        text_("Press ENTER to try again", SCREEN_W / 2 - 110, 380, 18)
-    end
 end

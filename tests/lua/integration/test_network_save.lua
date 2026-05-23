@@ -1,4 +1,5 @@
 -- Integration: save manager snapshots serialized and sent as network packets
+-- @describe network + save integration
 describe("network + save integration", function()
     -- @integration LSaveManager:collect
     -- @integration LSaveManager:register

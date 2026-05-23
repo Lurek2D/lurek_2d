@@ -1,4 +1,5 @@
 -- Integration: in-game terminal widget capturing keyboard text input
+-- @describe terminal + input integration
 describe("terminal + input integration", function()
     -- @integration lurek.input.keyboard.hasTextInput
     -- @integration lurek.input.keyboard.setTextInput

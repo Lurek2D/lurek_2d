@@ -33,8 +33,8 @@ describe("Evidence: lurek.raycaster API contracts", function()
             local shade   = lurek.raycaster.distanceShade(dist, 40)
             local _, top, bottom = lurek.raycaster.projectColumn(dist, FOV, H)
             local brightness = math.floor(shade * 200 + 0.5)
-            local t = math.max(0, math.min(H - 1, math.floor(top)))
-            local b = math.max(0, math.min(H - 1, math.floor(bottom)))
+            local t = math.max(0, math.min(H - 1, math.floor(top or 0)))
+            local b = math.max(0, math.min(H - 1, math.floor(bottom or (H - 1))))
 
             if t > 0 then
                 img:drawLine(col, 0, col, t - 1, 40, 40, 40, 255)
@@ -123,7 +123,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
         local NUM_RAYS = 30
         for i = 0, NUM_RAYS - 1 do
             local ra = angle - (fov / 2) + (i / (NUM_RAYS - 1)) * fov
-            local cast = rc:castRay(px, py, math.cos(ra), math.sin(ra), 20.0)
+            local cast = rc:castRay(px, py, ra, 20.0)
             local dist = cast and cast.distance or 20.0
             local hx = px + math.cos(ra) * dist
             local hy = py + math.sin(ra) * dist

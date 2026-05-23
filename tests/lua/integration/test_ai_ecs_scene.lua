@@ -1,4 +1,5 @@
 -- Integration: AI FSM + ECS universe + scene (3-way)
+-- @describe ai + entity + scene integration
 describe("ai + entity + scene integration", function()
     -- @integration LStateMachine:addState
     -- @integration LStateMachine:addTransition

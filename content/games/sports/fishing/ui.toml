@@ -1,0 +1,290 @@
+[[widget]]
+type = "panel"
+id = "title_screen"
+anchor = "center"
+width = 500
+height = 250
+bg_color = [0, 0.1, 0.3, 0.85]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "FISHING"
+  font_size = 40
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = -40
+
+  [[widget.children]]
+  type = "label"
+  text = "PATIENCE REWARDED"
+  font_size = 20
+  color = [0.7, 0.85, 1, 0.9]
+  anchor = "center"
+  y = 0
+
+  [[widget.children]]
+  type = "button"
+  id = "press_start"
+  text = "Press SPACE to start"
+  font_size = 24
+  color = [0.8, 0.8, 0.8, 0.7]
+  anchor = "center"
+  y = 60
+
+[[widget]]
+type = "panel"
+id = "game_over_screen"
+anchor = "center"
+width = 600
+height = 350
+bg_color = [0, 0.05, 0.15, 0.9]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "game_over_title"
+  text = "GAME OVER"
+  font_size = 40
+  color = [1, 0.3, 0.3, 1]
+  anchor = "top_center"
+  y = 30
+
+  [[widget.children]]
+  type = "label"
+  id = "game_over_reason"
+  text = ""
+  font_size = 20
+  color = [0.9, 0.9, 0.9, 1]
+  anchor = "top_center"
+  y = 80
+  visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "game_over_stats"
+  text = "Fish caught: 0\nTotal points: 0"
+  font_size = 20
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 140
+
+  [[widget.children]]
+  type = "label"
+  id = "game_over_bucket"
+  text = ""
+  font_size = 18
+  color = [0.9, 0.9, 0.9, 0.9]
+  anchor = "top_center"
+  y = 200
+
+  [[widget.children]]
+  type = "button"
+  id = "press_title"
+  text = "Press SPACE to return"
+  font_size = 20
+  color = [0.6, 0.6, 0.6, 0.6]
+  anchor = "bottom_center"
+  y = -30
+
+[[widget]]
+type = "panel"
+id = "bucket_screen"
+anchor = "center"
+width = 500
+height = 440
+bg_color = [0.1, 0.08, 0.2, 0.9]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "BUCKET"
+  font_size = 32
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 20
+
+  [[widget.children]]
+  type = "label"
+  id = "bucket_stats"
+  text = "Fish: 0/10  Points: 0"
+  font_size = 20
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 60
+
+  [[widget.children]]
+  type = "label"
+  id = "bucket_list"
+  text = ""
+  font_size = 18
+  color = [0.9, 0.9, 0.9, 0.9]
+  anchor = "top_center"
+  y = 100
+
+  [[widget.children]]
+  type = "button"
+  id = "press_resume"
+  text = "Press SPACE to continue"
+  font_size = 20
+  color = [0.6, 0.6, 0.6, 0.6]
+  anchor = "bottom_center"
+  y = -20
+
+[[widget]]
+type = "panel"
+id = "hud"
+anchor = "top_left"
+width = 800
+height = 600
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 16
+  color = [1, 1, 1, 0.5]
+  anchor = "top_right"
+  x = -80
+  y = 10
+
+  [[widget.children]]
+  type = "label"
+  id = "bait_label"
+  text = "Bait: Worm"
+  font_size = 18
+  color = [1, 1, 1, 0.8]
+  x = 10
+  y = 10
+
+  [[widget.children]]
+  type = "label"
+  id = "bucket_label"
+  text = "Bucket: 0/10"
+  font_size = 18
+  color = [1, 1, 1, 0.8]
+  x = 10
+  y = 30
+
+  [[widget.children]]
+  type = "label"
+  id = "points_label"
+  text = "Points: 0"
+  font_size = 18
+  color = [1, 1, 0.5, 0.8]
+  x = 10
+  y = 50
+
+  [[widget.children]]
+  type = "label"
+  id = "day_night_label"
+  text = "Day"
+  font_size = 18
+  color = [0.8, 0.8, 0.4, 0.7]
+  anchor = "top_right"
+  x = -60
+  y = 30
+
+  [[widget.children]]
+  type = "label"
+  id = "weather_label"
+  text = "Rain"
+  font_size = 18
+  color = [0.5, 0.6, 0.9, 0.7]
+  anchor = "top_right"
+  x = -60
+  y = 50
+  visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "message_label"
+  text = ""
+  font_size = 24
+  color = [1, 1, 0.6, 0.9]
+  anchor = "center"
+  y = -80
+
+  [[widget.children]]
+  type = "panel"
+  id = "power_panel"
+  anchor = "bottom_center"
+  width = 200
+  height = 20
+  bg_color = [0.2, 0.2, 0.2, 0.7]
+  y = -30
+  visible = false
+
+    [[widget.children.children]]
+    type = "panel"
+    id = "power_fill"
+    anchor = "left_center"
+    width = 0
+    height = 16
+    bg_color = [1, 0, 0, 0.9]
+    x = 2
+
+    [[widget.children.children]]
+    type = "label"
+    text = "POWER"
+    font_size = 16
+    color = [1, 1, 1, 0.9]
+    anchor = "center"
+
+  [[widget.children]]
+  type = "panel"
+  id = "tension_panel"
+  anchor = "bottom_center"
+  width = 200
+  height = 24
+  bg_color = [0.15, 0.15, 0.15, 0.8]
+  y = -36
+  visible = false
+
+    [[widget.children.children]]
+    type = "panel"
+    id = "tension_fill"
+    anchor = "left_center"
+    width = 0
+    height = 20
+    bg_color = [0, 1, 0, 0.9]
+    x = 2
+
+    [[widget.children.children]]
+    type = "panel"
+    id = "tension_danger"
+    anchor = "right_center"
+    width = 40
+    height = 20
+    bg_color = [1, 0, 0, 0.2]
+    x = -2
+
+    [[widget.children.children]]
+    type = "label"
+    text = "TENSION"
+    font_size = 16
+    color = [1, 1, 1, 0.9]
+    anchor = "center"
+    x = 30
+
+    [[widget.children.children]]
+    type = "label"
+    id = "fish_name_label"
+    text = "Fish"
+    font_size = 18
+    color = [1, 1, 1, 1]
+    anchor = "top_center"
+    y = -20
+    x = 20
+
+    [[widget.children.children]]
+    type = "label"
+    id = "strain_warning"
+    text = "!! LINE STRAIN !!"
+    font_size = 20
+    color = [1, 0.2, 0.1, 1]
+    anchor = "top_center"
+    y = -40
+    x = -20
+    visible = false

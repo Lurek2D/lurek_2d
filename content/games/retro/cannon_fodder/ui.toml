@@ -1,0 +1,223 @@
+[root]
+widget_type = "panel"
+id = "root_ui"
+width = 800
+height = 600
+bg_color = [0, 0, 0, 0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "title_screen"
+  width = 800
+  height = 600
+  bg_color = [0.05, 0.08, 0.02, 1]
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "CANNON FODDER"
+    font_size = 48
+    color = [0.9, 0.8, 0.2, 1]
+    anchor = "top_center"
+    y = 180
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "WAR HAS NEVER BEEN SO MUCH FUN"
+    font_size = 18
+    color = [0.7, 0.7, 0.6, 1]
+    anchor = "top_center"
+    y = 260
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "title_press_start"
+    text = "Press SPACE to start"
+    font_size = 20
+    color = [0.9, 0.9, 0.9, 1]
+    anchor = "top_center"
+    y = 400
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "WASD = Move   SPACE = Fire   G = Grenade"
+    font_size = 14
+    color = [0.5, 0.5, 0.5, 1]
+    anchor = "top_center"
+    y = 500
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "game_over_screen"
+  width = 800
+  height = 600
+  bg_color = [0.05, 0.02, 0.02, 0.85]
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "GAME OVER"
+    font_size = 48
+    color = [0.9, 0.2, 0.15, 1]
+    anchor = "top_center"
+    y = 220
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_score"
+    text = "Final Score: 0"
+    font_size = 24
+    color = [0.9, 0.9, 0.9, 1]
+    anchor = "top_center"
+    y = 300
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_press_start"
+    text = "Press SPACE"
+    font_size = 20
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "top_center"
+    y = 400
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "hud_screen"
+  width = 800
+  height = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "hud_top_bar"
+    width = 800
+    height = 32
+    bg_color = [0, 0, 0, 0.6]
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_score"
+      text = "SCORE: 0"
+      font_size = 18
+      color = [0.9, 0.85, 0.3, 1]
+      x = 10
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_mission"
+      text = "MISSION 1/5"
+      font_size = 18
+      color = [0.9, 0.9, 0.9, 1]
+      x = 300
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_grenades"
+      text = "GRENADES: 3"
+      font_size = 18
+      color = [0.6, 0.9, 0.4, 1]
+      x = 530
+      y = 6
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_enemies"
+      text = "ENEMIES: 0"
+      font_size = 14
+      color = [0.9, 0.4, 0.3, 1]
+      x = 680
+      y = 6
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "soldier_1"
+    width = 14
+    height = 14
+    bg_color = [0.15, 0.6, 0.15, 1]
+    x = 13
+    y = 568
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "soldier_1_x"
+      text = "X"
+      font_size = 14
+      color = [0.6, 0.2, 0.2, 1]
+      x = 2
+      y = -1
+      visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "soldier_2"
+    width = 14
+    height = 14
+    bg_color = [0.15, 0.6, 0.15, 1]
+    x = 35
+    y = 568
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "soldier_2_x"
+      text = "X"
+      font_size = 14
+      color = [0.6, 0.2, 0.2, 1]
+      x = 2
+      y = -1
+      visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "soldier_3"
+    width = 14
+    height = 14
+    bg_color = [0.15, 0.6, 0.15, 1]
+    x = 57
+    y = 568
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "soldier_3_x"
+      text = "X"
+      font_size = 14
+      color = [0.6, 0.2, 0.2, 1]
+      x = 2
+      y = -1
+      visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "fps_label"
+    text = "FPS: 60"
+    font_size = 12
+    color = [0.5, 0.5, 0.5, 1]
+    x = 730
+    y = 580
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "mission_complete_banner"
+  width = 800
+  height = 80
+  bg_color = [0, 0, 0, 0.75]
+  y = 230
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "mc_title"
+    text = "MISSION 1 COMPLETE!"
+    font_size = 32
+    color = [0.2, 0.9, 0.3, 1]
+    anchor = "top_center"
+    y = 20
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "+500 BONUS"
+    font_size = 18
+    color = [0.9, 0.85, 0.3, 1]
+    anchor = "top_center"
+    y = 60

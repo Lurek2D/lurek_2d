@@ -129,6 +129,7 @@ local current_state = STATE.PLAYING
 local player = { x = 2.5, y = 2.5, angle = 0, hp = 100, ammo = 30 }
 local fire_timer = 0
 local score = 0
+local app_ui = {}
 
 local particles = {}
 local weather = "clear"
@@ -528,6 +529,24 @@ function lurek.init()
     lurek.input.bind("quit",         { "escape" })
     lurek.input.bind("start",        { "return" })
 
+    lurek.ui.loadLayoutFile("content/games/retro/raycaster_fps/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_press_start = ui_root:findById("title_press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_press_start = ui_root:findById("go_press_start")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_hp_bar = ui_root:findById("hud_hp_bar")
+    app_ui.hud_hp_text = ui_root:findById("hud_hp_text")
+    app_ui.hud_ammo = ui_root:findById("hud_ammo")
+    app_ui.hud_score = ui_root:findById("hud_score")
+    app_ui.hud_weather = ui_root:findById("hud_weather")
+    app_ui.fps_label = ui_root:findById("fps_label")
+
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
     reset_game()
 end
@@ -716,6 +735,31 @@ function lurek.process(dt)
     update_popups(dt)
     update_weather(dt)
     cam:update(dt)
+    
+    -- Sync UI
+    local blink = math.sin(lurek.timer.getTime() * 4) > 0
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    if current_state == STATE.TITLE then
+        app_ui.title_press_start.visible = blink
+    end
+    
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    if current_state == STATE.GAME_OVER then
+        app_ui.go_score.text = "Score: " .. score
+        app_ui.go_press_start.visible = blink
+    end
+    
+    app_ui.hud_screen.visible = (current_state == STATE.PLAYING)
+    if current_state == STATE.PLAYING then
+        local hp_frac = clamp(player.hp / 100, 0, 1)
+        app_ui.hud_hp_bar.width = 200 * hp_frac
+        app_ui.hud_hp_bar.bg_color = {1.0 - hp_frac, hp_frac, 0.1, 1}
+        app_ui.hud_hp_text.text = "HP: " .. math.floor(player.hp)
+        app_ui.hud_ammo.text = "AMMO: " .. player.ammo
+        app_ui.hud_score.text = "SCORE: " .. score
+        app_ui.hud_weather.text = "Weather: " .. weather .. "  (F1/F2/F3)"
+    end
+    app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
 end
 
 -- ── lurek.render — 3D viewport ────────────────────────────────
@@ -858,59 +902,7 @@ end
 
 -- ── lurek.render_ui — HUD, minimap, weather, popups ───────────
 function lurek.draw_ui()
-    -- === TITLE SCREEN ===
-    if current_state == STATE.TITLE then
-        lurek.render.setColor(0.8, 0.15, 0.1, 1)
-        text_("RAYCASTER FPS", 300, 160, 40)
-        lurek.render.setColor(0.6, 0.6, 0.7, 1)
-        text_("Wolfenstein 3D-style raycaster with 6 wall types", 225, 230, 16)
-        text_("WASD = Move/Strafe   Q/E = Rotate   Space = Fire", 220, 260, 14)
-        text_("F1-F3 = Weather   Esc = Quit", 320, 285, 14)
-        local blink = math.sin(lurek.timer.getTime() * 4) > 0
-        if blink then
-            lurek.render.setColor(1, 1, 1, 1)
-            text_("PRESS ENTER", 395, 360, 22)
-        end
-        lurek.render.setColor(0.3, 0.3, 0.4, 1)
-        text_("FPS: " .. lurek.timer.getFPS(), 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- === GAME OVER ===
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(0.8, 0.1, 0.1, 1)
-        text_("GAME OVER", 350, 200, 36)
-        lurek.render.setColor(0.9, 0.9, 1, 1)
-        text_("Score: " .. score, 420, 260, 20)
-        local blink = math.sin(lurek.timer.getTime() * 4) > 0
-        if blink then
-            lurek.render.setColor(1, 1, 1, 1)
-            text_("PRESS ENTER TO RESTART", 340, 330, 18)
-        end
-        lurek.render.setColor(0.3, 0.3, 0.4, 1)
-        text_("FPS: " .. lurek.timer.getFPS(), 10, SCREEN_H - 20, 12)
-        return
-    end
-
-    -- === HUD ===
-    -- HP bar
-    lurek.render.setColor(0.15, 0.15, 0.2, 0.8)
-    rect("fill", 10, SCREEN_H - 40, 204, 24)
-    local hp_frac = clamp(player.hp / 100, 0, 1)
-    local hp_r = 1.0 - hp_frac
-    local hp_g = hp_frac
-    lurek.render.setColor(hp_r, hp_g, 0.1, 1)
-    rect("fill", 12, SCREEN_H - 38, 200 * hp_frac, 20)
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("HP: " .. math.floor(player.hp), 15, SCREEN_H - 38, 14)
-
-    -- Ammo
-    lurek.render.setColor(1, 0.8, 0.1, 1)
-    text_("AMMO: " .. player.ammo, 230, SCREEN_H - 38, 14)
-
-    -- Score
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE: " .. score, 380, SCREEN_H - 38, 14)
+    if current_state == STATE.TITLE or current_state == STATE.GAME_OVER then return end
 
     -- Weapon graphic (simple crosshair + gun shape)
     lurek.render.setColor(0.3, 0.3, 0.35, 1)
@@ -925,10 +917,6 @@ function lurek.draw_ui()
     ln(SCREEN_W / 2 + 3, SCREEN_H / 2, SCREEN_W / 2 + 10, SCREEN_H / 2)
     ln(SCREEN_W / 2, SCREEN_H / 2 - 10, SCREEN_W / 2, SCREEN_H / 2 - 3)
     ln(SCREEN_W / 2, SCREEN_H / 2 + 3, SCREEN_W / 2, SCREEN_H / 2 + 10)
-
-    -- Weather indicator
-    lurek.render.setColor(0.5, 0.5, 0.6, 1)
-    text_("Weather: " .. weather .. "  (F1/F2/F3)", 10, 10, 12)
 
     -- === MINIMAP (top-right) ===
     local MM_SIZE = 130
@@ -1015,8 +1003,4 @@ function lurek.draw_ui()
         lurek.render.setColor(1, 1, 0.3, a)
         text_(pu.text, pu.x - 20, pu.y, 14)
     end
-
-    -- FPS
-    lurek.render.setColor(0.3, 0.3, 0.4, 1)
-    text_("FPS: " .. lurek.timer.getFPS(), 10, SCREEN_H - 20, 12)
 end

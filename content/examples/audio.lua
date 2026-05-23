@@ -655,7 +655,7 @@ end
 --@api-stub: lurek.audio.saveWAV
 do
     local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
-    lurek.audio.saveWAV(sd, "output/test_tone.wav")
+    lurek.audio.saveWAV(sd, "work/output/test_tone.wav")
     print("saved WAV file")
 end
 
@@ -727,7 +727,7 @@ end
 do
     local effects = {{ type = "lowpass", p1 = 1000 }, { type = "gain", p1 = 0.8 }}
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "output/processed.wav"
+    local path_out = "work/output/processed.wav"
     lurek.audio.processOffline(path_in, path_out, effects)
     print("offline processing done")
 end
@@ -735,7 +735,7 @@ end
 --@api-stub: lurek.audio.normalizeFile
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "output/normalized.wav"
+    local path_out = "work/output/normalized.wav"
     lurek.audio.normalizeFile(path_in, path_out, 0.9)
     print("normalized to 0.9 peak")
 end
@@ -743,7 +743,7 @@ end
 --@api-stub: lurek.audio.waveformToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "output/waveform.png"
+    local path_out = "work/output/waveform.png"
     lurek.audio.waveformToPng(path_in, path_out, 800, 200)
     print("waveform image saved")
 end
@@ -751,7 +751,7 @@ end
 --@api-stub: lurek.audio.spectrogramToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "output/spectrogram.png"
+    local path_out = "work/output/spectrogram.png"
     lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
     print("spectrogram image saved")
 end

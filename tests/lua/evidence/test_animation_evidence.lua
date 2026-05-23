@@ -1,161 +1,66 @@
--- test_evidence_animation.lua
--- Evidence test: lurek.animation Animator API contracts and PNG sprite grid evidence
+-- Evidence tests: animation module
+-- Artifacts are generated from lurek.animation APIs.
 
 local OUT = "tests/output/animation/"
 
---                  helpers
-
---- Build a fake sprite-sheet ImageData (8 frames of 16x16, laid out in a 4x2 grid).
---- Each frame is a different hue so we can visually verify the correct frame is selected.
-local function make_sprite_sheet()
-    local FRAME_W, FRAME_H = 16, 16
-    local COLS, ROWS = 4, 2
-    local img = lurek.image.newImageData(FRAME_W * COLS, FRAME_H * ROWS)
-    img:fill(0, 0, 0, 0)
-
-    local hues = {
-        {220, 60, 60},   -- red
-        {220, 140, 60},  -- orange
-        {200, 200, 60},  -- yellow
-        {60, 200, 80},   -- green
-        {60, 180, 220},  -- cyan
-        {60, 80, 220},   -- blue
-        {160, 60, 220},  -- purple
-        {220, 60, 160},  -- pink
-    }
-
-    for f = 0, 7 do
-        local col = f % COLS
-        local row = math.floor(f / COLS)
-        local ox  = col * FRAME_W
-        local oy  = row * FRAME_H
-        local c   = hues[f + 1] or {128, 128, 128}
-
-        img:drawRect(ox + 1, oy + 1, FRAME_W - 2, FRAME_H - 2, c[1], c[2], c[3], 255)
-
-        -- Frame number text marker (a small 2x2 bright pixel per digit)
-        img:setPixel(ox + 2, oy + 2, 255, 255, 255, 255)
-        img:setPixel(ox + 3, oy + 2, 255, 255, 255, 255)
-    end
-
-    return img, FRAME_W, FRAME_H, COLS * FRAME_W, ROWS * FRAME_H
-end
-
---                  tests
-
--- @describe describe block
--- @describe Evidence: lurek.animation Animator creation
-describe("Evidence: lurek.animation Animator creation", function()
-end)
--- @describe describe block
-
--- @describe Evidence: lurek.animation addClipFromGrid quad selection
-describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
+-- @describe Evidence: lurek.animation API
+describe("Evidence: lurek.animation API", function()
+    before_each(function()
+        ensure_evidence_dir("animation")
+    end)
 
     -- @evidence file
-    it("addClipFromGrid produces correct UV quads -    PNG evidence: frame_grid", function()
-        local img, FW, FH, TW, TH = make_sprite_sheet()
-
+    it("PNG: animator current frame render", function()
         local anim = lurek.animation.new()
-        anim:addClipFromGrid("all_frames", TW, TH, FW, FH, 0, 8, 6, true)
-        anim:play("all_frames")
+        anim:addClip("walk", { 1, 2, 3, 4, 5, 6, 7, 8 }, 8, true)
+        anim:play("walk")
 
-        -- Collect the quad for each frame by stepping the animator
-        local frame_w = FW
-        local frame_h = FH
-        local out_cols = 4
-        local out_scale = 4
-        local out = lurek.image.newImageData(
-            frame_w * out_cols * out_scale,
-            frame_h * 2 * out_scale
-        )
-        out:fill(20, 20, 30, 255)
-
-        local frame_dt = 1.0 / 6.0  -- one frame at 6fps
-
-        for f = 0, 7 do
-            anim:update(frame_dt)
-            local q = anim:getQuad()
-            if q then
-                -- Blit the source region from the sprite sheet
-                local dst_col = f % out_cols
-                local dst_row = math.floor(f / out_cols)
-                local ox = dst_col * FW * out_scale
-                local oy = dst_row * FH * out_scale
-
-                for py = 0, FH - 1 do
-                    for px = 0, FW - 1 do
-                        local r, g, b, a = img:getPixel(q.x + px, q.y + py)
-                        -- Scale each source pixel to out_scale x out_scale block
-                        for sy = 0, out_scale - 1 do
-                            for sx = 0, out_scale - 1 do
-                                out:setPixel(ox + px*out_scale + sx,
-                                             oy + py*out_scale + sy,
-                                             r, g, b, a)
-                            end
-                        end
-                    end
-                end
-            end
-        -- @describe describe block
+        for _ = 1, 20 do
+            anim:update(1 / 60)
         end
 
-        lurek.image.savePNG(out, OUT .. "evidence_animation_frame_grid.png")
-            local events = anim:pollEvents()
-        local found_done = false
-        for _, ev in ipairs(events) do
-            if ev.type == "done" or ev.type == "ended" or ev.type == "finish" then
-                found_done = true
-            end
-        end
-        -- The clip should no longer be playing
+        local img = anim:drawToImage(192, 96)
+        local path = OUT .. "animation_frame.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
     end)
-end)
-
--- @describe Evidence: animation speed scaling visual
-describe("Evidence: animation speed scaling visual", function()
 
     -- @evidence file
-    it("speed 2x advances twice as fast -    PNG evidence: speed_compare", function()
-        local W = 120
-        local img = lurek.image.newImageData(W, 20)
-        img:fill(20, 20, 20, 255)
+    it("PNG: preview grid from clip frames", function()
+        local anim = lurek.animation.new()
+        anim:addClip("idle", { 1, 2, 3, 4, 5, 6 }, 6, true)
+        anim:play("idle")
 
-        -- Normal speed: step through 4 frames of a 4fps clip over 1 second
-        local anim1 = lurek.animation.new()
-        anim1:addClip("walk", {1, 2, 3, 4}, 4, true)
-        anim1:play("walk")
-
-        -- 2x speed
-        local anim2 = lurek.animation.new()
-        anim2:addClip("walk", {1, 2, 3, 4}, 4, true)
-        anim2:play("walk")
-        anim2:setSpeed(2.0)
-
-        -- Collect frame indices over 1s at 30fps
-        local samples1 = {}
-        local samples2 = {}
-        for i = 1, 30 do
-            anim1:update(1/30)
-            anim2:update(1/30)
-            local q1 = anim1:getQuad()
-            local q2 = anim2:getQuad()
-            samples1[i] = q1 and q1.x or 0
-            samples2[i] = q2 and q2.x or 0
-        end
-
-        -- Draw sample bars
-        for i, v in ipairs(samples1) do
-            local val = math.min(255, (math.floor(v / 16)) * 64 + 60)
-            img:setPixel((i - 1) * (math.floor(W / 30)), 5, val, 180, 80, 255)
-        end
-        for i, v in ipairs(samples2) do
-            local val = math.min(255, (math.floor(v / 16)) * 64 + 60)
-            img:setPixel((i - 1) * (math.floor(W / 30)), 15, 80, 180, val, 255)
-        end
-
-        lurek.image.savePNG(img, OUT .. "evidence_animation_speed_compare.png")
+        local grid = anim:drawPreviewGrid(3, 32)
+        local path = OUT .. "animation_preview_grid.png"
+        lurek.image.savePNG(grid, path)
+        expect_evidence_created(path)
     end)
 
+    -- @evidence file
+    it("TXT: blend/crossfade state evidence", function()
+        local anim = lurek.animation.new()
+        anim:addClip("idle", { 1, 2, 3, 4 }, 4, true)
+        anim:addClip("run", { 5, 6, 7, 8 }, 8, true)
+
+        anim:play("idle")
+        anim:update(0.2)
+        local ok = anim:crossfade("run", 0.4)
+        expect_true(ok)
+
+        anim:update(0.1)
+        local blend = anim:getBlendState()
+        local info = {
+            "frame_count=" .. tostring(anim:getFrameCount()),
+            "clip_count=" .. tostring(anim:getClipCount()),
+            "current_frame=" .. tostring(anim:getCurrentFrame()),
+            "blend_active=" .. tostring(blend ~= nil),
+        }
+
+        local path = OUT .. "animation_blend_state.txt"
+        lurek.filesystem.write(path, table.concat(info, "\n") .. "\n")
+        expect_evidence_created(path)
+    end)
 end)
+
 test_summary()

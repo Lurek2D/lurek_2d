@@ -1,4 +1,5 @@
 -- Universal render helpers (handles all legacy and current call signatures)
+local app_ui = {}
 local _gfx = lurek.render
 local function _sc(c)
     if type(c) == "table" then
@@ -484,6 +485,27 @@ function lurek.init()
     lurek.window.setTitle("Endless Runner — Lurek2D")
     lurek.render.setBackgroundColor(0.4, 0.6, 0.9)
 
+    lurek.ui.loadLayoutFile("content/games/action/endless_runner/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.app_ui.best_score = ui_root:findById("app_ui.best_score")
+    app_ui.app_ui.coins_val = ui_root:findById("app_ui.coins_val")
+    app_ui.app_ui.dead_panel = ui_root:findById("app_ui.dead_panel")
+    app_ui.app_ui.dist_val = ui_root:findById("app_ui.dist_val")
+    app_ui.app_ui.fps_label = ui_root:findById("app_ui.fps_label")
+    app_ui.app_ui.go_coins = ui_root:findById("app_ui.go_coins")
+    app_ui.app_ui.go_dist = ui_root:findById("app_ui.go_dist")
+    app_ui.app_ui.go_restart = ui_root:findById("app_ui.go_restart")
+    app_ui.app_ui.go_total = ui_root:findById("app_ui.go_total")
+    app_ui.app_ui.high_score_title = ui_root:findById("app_ui.high_score_title")
+    app_ui.app_ui.hud_panel = ui_root:findById("app_ui.hud_panel")
+    app_ui.app_ui.jump_2x = ui_root:findById("app_ui.jump_2x")
+    app_ui.app_ui.score_val = ui_root:findById("app_ui.score_val")
+    app_ui.app_ui.speed_up = ui_root:findById("app_ui.speed_up")
+    app_ui.app_ui.speed_val = ui_root:findById("app_ui.speed_val")
+    app_ui.app_ui.start_label = ui_root:findById("app_ui.start_label")
+    app_ui.app_ui.title_panel = ui_root:findById("app_ui.title_panel")
+
+
     lurek.input.bind("jump",  "space"); lurek.input.bind("jump",  "w"); lurek.input.bind("jump",  "up")
     lurek.input.bind("slide", "s");     lurek.input.bind("slide", "down")
     lurek.input.bind("quit",  "escape")
@@ -584,6 +606,90 @@ function lurek.process(dt)
         update_world(dt)
         check_collisions()
     end
+
+    -- ── UI Update ─────────────────────────────────────────────────────────────
+    
+    
+    
+    
+
+    app_ui.title_panel.visible = (scene == STATE.TITLE)
+    app_ui.hud_panel.visible = (scene == STATE.PLAYING)
+    app_ui.dead_panel.visible = (scene == STATE.DEAD)
+
+    local current_fps = tostring(lurek.timer.getFPS()) .. " FPS"
+    app_ui.fps_label.text = current_fps
+
+    if scene == STATE.TITLE then
+        
+        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2.5))
+        app_ui.start_label.color = {1.0, 1.0, 0.3, alpha}
+
+        
+        if high_score > 0 then
+            app_ui.high_score_title.visible = true
+            app_ui.high_score_title.text = "HIGH SCORE: " .. math.floor(high_score) .. "m"
+        else
+            app_ui.high_score_title.visible = false
+        end
+
+        app_ui.fps_label.x = SCREEN_W - 80
+        app_ui.fps_label.y = SCREEN_H - 18
+    elseif scene == STATE.PLAYING then
+        
+        
+        
+        
+        
+        
+        
+
+        app_ui.dist_val.text = math.floor(distance) .. "m"
+        app_ui.coins_val.text = tostring(coins_collected)
+        local total = math.floor(distance) + coins_collected * COIN_SCORE
+        app_ui.score_val.text = tostring(total)
+        app_ui.speed_val.text = math.floor(scroll_speed)
+        app_ui.speed_val.color = {1, 0.5 + 0.5 * (scroll_speed / SPEED_CAP), 0.2, 1}
+
+        if speed_flash.alpha > 0.01 then
+            app_ui.speed_up.visible = true
+            app_ui.speed_up.color = {1.0, 1.0, 0.3, speed_flash.alpha}
+        else
+            app_ui.speed_up.visible = false
+        end
+
+        if distance >= DOUBLE_JUMP_DIST then
+            app_ui.jump_2x.visible = true
+        else
+            app_ui.jump_2x.visible = false
+        end
+
+        if high_score > 0 then
+            app_ui.best_score.visible = true
+            app_ui.best_score.text = "BEST: " .. math.floor(high_score) .. "m"
+        else
+            app_ui.best_score.visible = false
+        end
+
+        app_ui.fps_label.x = 10
+        app_ui.fps_label.y = SCREEN_H - 18
+    elseif scene == STATE.DEAD then
+        
+        
+        
+        
+
+        app_ui.go_dist.text = "Distance: " .. math.floor(distance) .. "m"
+        app_ui.go_coins.text = "Coins: " .. coins_collected .. " (+" .. coins_collected * COIN_SCORE .. ")"
+        local final_score = math.floor(distance) + coins_collected * COIN_SCORE
+        app_ui.go_total.text = "TOTAL: " .. final_score
+
+        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 3))
+        app_ui.go_restart.color = {1.0, 1.0, 0.3, alpha}
+
+        app_ui.fps_label.x = 10
+        app_ui.fps_label.y = SCREEN_H - 18
+    end
 end
 
 -- ── render (world space — parallax + player + obstacles) ──────────────────
@@ -613,93 +719,6 @@ end
 
 -- ── render_ui (screen space — HUD, title, death) ──────────────────────────
 function lurek.draw_ui()
-    if scene == STATE.TITLE then
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("ENDLESS RUNNER", SCREEN_W / 2 - 160, 140, 3)
-
-        lurek.render.setColor(0.9, 0.85, 0.7, 1)
-        text_("Run. Jump. Slide. Survive.", SCREEN_W / 2 - 115, 210, 1.2)
-
-        if high_score > 0 then
-            lurek.render.setColor(1, 0.85, 0.1, 1)
-            text_("HIGH SCORE: " .. math.floor(high_score) .. "m", SCREEN_W / 2 - 80, 270, 1.2)
-        end
-
-        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2.5))
-        lurek.render.setColor(1, 1, 0.3, alpha)
-        text_("PRESS ENTER", SCREEN_W / 2 - 60, 340, 1.5)
-
-        lurek.render.setColor(0.7, 0.7, 0.7, 1)
-        text_("Jump: Space/W/Up   Slide: S/Down   Quit: Escape", SCREEN_W / 2 - 210, 430, 1)
-        text_("Double jump unlocks at 500m!", SCREEN_W / 2 - 120, 460, 1)
-
-        lurek.render.setColor(0.4, 0.4, 0.4, 1)
-        text_(tostring(lurek.timer.getFPS()) .. " FPS", SCREEN_W - 80, SCREEN_H - 18, 1)
-        return
-    end
-
-    -- ── HUD ───────────────────────────────────────────────────────────────
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("DISTANCE", 10, 8, 1)
-    lurek.render.setColor(0.3, 1, 0.5, 1)
-    text_(math.floor(distance) .. "m", 90, 8, 1.1)
-
-    lurek.render.setColor(1, 0.85, 0.1, 1)
-    text_("COINS", 10, 30, 1)
-    lurek.render.setColor(1, 0.9, 0.3, 1)
-    text_(tostring(coins_collected), 65, 30, coin_flash.scale)
-
-    local total = math.floor(distance) + coins_collected * COIN_SCORE
-    lurek.render.setColor(1, 1, 1, 1)
-    text_("SCORE", SCREEN_W / 2 - 40, 8, 1)
-    lurek.render.setColor(0.4, 0.9, 1, 1)
-    text_(tostring(total), SCREEN_W / 2 + 20, 8, 1.1)
-
-    lurek.render.setColor(0.8, 0.8, 0.8, 1)
-    text_("SPEED", SCREEN_W - 130, 8, 1)
-    lurek.render.setColor(1, 0.5 + 0.5 * (scroll_speed / SPEED_CAP), 0.2, 1)
-    text_(math.floor(scroll_speed), SCREEN_W - 70, 8, 1.1)
-
-    -- Speed increase flash
-    if speed_flash.alpha > 0.01 then
-        lurek.render.setColor(1, 1, 0.3, speed_flash.alpha)
-        text_("SPEED UP!", SCREEN_W / 2 - 45, SCREEN_H / 2 - 60, 2)
-    end
-
-    -- Double jump indicator
-    if distance >= DOUBLE_JUMP_DIST then
-        lurek.render.setColor(0.3, 0.9, 1, 0.7)
-        text_("2x JUMP", SCREEN_W - 100, 30, 1)
-    end
-
-    if high_score > 0 then
-        lurek.render.setColor(1, 0.85, 0.1, 0.5)
-        text_("BEST: " .. math.floor(high_score) .. "m", SCREEN_W - 130, SCREEN_H - 18, 1)
-    end
-
-    lurek.render.setColor(0.4, 0.4, 0.4, 1)
-    text_(tostring(lurek.timer.getFPS()) .. " FPS", 10, SCREEN_H - 18, 1)
-
-    -- ── Death overlay ─────────────────────────────────────────────────────
-    if scene == STATE.DEAD then
-        lurek.render.setColor(0, 0, 0, 0.55)
-        rect("fill", SCREEN_W / 2 - 180, SCREEN_H / 2 - 80, 360, 180)
-
-        lurek.render.setColor(0.9, 0.15, 0.1, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 90, SCREEN_H / 2 - 60, 2.5)
-
-        lurek.render.setColor(1, 1, 1, 1)
-        text_("Distance: " .. math.floor(distance) .. "m", SCREEN_W / 2 - 65, SCREEN_H / 2 + 5, 1.2)
-        text_("Coins: " .. coins_collected .. " (+" .. coins_collected * COIN_SCORE .. ")", SCREEN_W / 2 - 75, SCREEN_H / 2 + 30, 1)
-
-        local final_score = math.floor(distance) + coins_collected * COIN_SCORE
-        lurek.render.setColor(0.4, 0.9, 1, 1)
-        text_("TOTAL: " .. final_score, SCREEN_W / 2 - 50, SCREEN_H / 2 + 55, 1.3)
-
-        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 3))
-        lurek.render.setColor(1, 1, 0.3, alpha)
-        text_("PRESS ENTER", SCREEN_W / 2 - 60, SCREEN_H / 2 + 85, 1.2)
-    end
 end
 
 -- ── keypressed (fallback) ─────────────────────────────────────────────────

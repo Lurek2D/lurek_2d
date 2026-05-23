@@ -1,4 +1,5 @@
 -- Integration: save/load cycle preserving entity state across scene transitions
+-- @describe savegame + entity + scene integration
 describe("savegame + entity + scene integration", function()
     -- @integration LSaveManager:collect
     -- @integration LSaveManager:register

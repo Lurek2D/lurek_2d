@@ -513,6 +513,29 @@ function lurek.init()
     })
 
     init_match()
+
+    lurek.ui.loadLayoutFile("content/games/action/platform_fighter/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.hud = ui_root:findById("hud")
+    
+    app_ui.p1_dmg_text = ui_root:findById("p1_dmg_text")
+    app_ui.p1_stocks_text = ui_root:findById("p1_stocks_text")
+    app_ui.p1_cd_fill = ui_root:findById("p1_cd_fill")
+    app_ui.p1_cd_bg = ui_root:findById("p1_cd_bg")
+    
+    app_ui.p2_dmg_text = ui_root:findById("p2_dmg_text")
+    app_ui.p2_stocks_text = ui_root:findById("p2_stocks_text")
+    app_ui.p2_cd_fill = ui_root:findById("p2_cd_fill")
+    app_ui.p2_cd_bg = ui_root:findById("p2_cd_bg")
+    
+    app_ui.ko_screen = ui_root:findById("ko_screen")
+    app_ui.ko_who_text = ui_root:findById("ko_who_text")
+    
+    app_ui.match_over_screen = ui_root:findById("match_over_screen")
+    app_ui.winner_text = ui_root:findById("winner_text")
 end
 
 -- ── lurek.process ────────────────────────────────────────────────────────
@@ -610,6 +633,68 @@ function lurek.process(dt)
             game_state = STATES.TITLE
         end
     end
+
+    -- UI Sync
+    if app_ui then
+        app_ui.title_screen.visible = (game_state == STATES.TITLE)
+        if game_state == STATES.TITLE then
+            local show = math.floor(title_blink * 2) % 2 == 0
+            app_ui.press_start.visible = show
+        end
+
+        app_ui.hud.visible = (game_state ~= STATES.TITLE and p1 ~= nil and p2 ~= nil)
+        if app_ui.hud.visible then
+            app_ui.p1_dmg_text.text = string.format("%.0f%%", p1.damage_pct)
+            local p1_r = 1
+            local p1_g = math.max(0, 1.0 - p1.damage_pct / 150)
+            local p1_b = math.max(0, 1.0 - p1.damage_pct / 100)
+            app_ui.p1_dmg_text.color = {p1_r, p1_g, p1_b, 1}
+            
+            local s1 = ""
+            for i=1, MAX_STOCKS do if i <= p1.stocks then s1 = s1 .. "O " else s1 = s1 .. "X " end end
+            app_ui.p1_stocks_text.text = s1
+            
+            if p1.special_cd > 0 then
+                app_ui.p1_cd_bg.visible = true
+                app_ui.p1_cd_fill.visible = true
+                local pct = p1.special_cd / ATK_SPECIAL.cooldown
+                app_ui.p1_cd_fill.width = 50 * (1 - pct)
+            else
+                app_ui.p1_cd_bg.visible = false
+                app_ui.p1_cd_fill.visible = false
+            end
+            
+            app_ui.p2_dmg_text.text = string.format("%.0f%%", p2.damage_pct)
+            local p2_r = 1
+            local p2_g = math.max(0, 1.0 - p2.damage_pct / 150)
+            local p2_b = math.max(0, 1.0 - p2.damage_pct / 100)
+            app_ui.p2_dmg_text.color = {p2_r, p2_g, p2_b, 1}
+            
+            local s2 = ""
+            for i=1, MAX_STOCKS do if i <= p2.stocks then s2 = s2 .. "O " else s2 = s2 .. "X " end end
+            app_ui.p2_stocks_text.text = s2
+            
+            if p2.special_cd > 0 then
+                app_ui.p2_cd_bg.visible = true
+                app_ui.p2_cd_fill.visible = true
+                local pct2 = p2.special_cd / ATK_SPECIAL.cooldown
+                app_ui.p2_cd_fill.width = 50 * (1 - pct2)
+            else
+                app_ui.p2_cd_bg.visible = false
+                app_ui.p2_cd_fill.visible = false
+            end
+        end
+
+        app_ui.ko_screen.visible = (game_state == STATES.KO)
+        if game_state == STATES.KO then
+            app_ui.ko_who_text.text = ko_who .. " SCORES!"
+        end
+
+        app_ui.match_over_screen.visible = (game_state == STATES.MATCH_OVER)
+        if game_state == STATES.MATCH_OVER then
+            app_ui.winner_text.text = match_winner
+        end
+    end
 end
 
 -- ── Draw helpers ─────────────────────────────────────────────────────────
@@ -681,12 +766,6 @@ end
 function lurek.draw()
     -- ── TITLE ────────────────────────────────────────────────────────
     if game_state == STATES.TITLE then
-        text_("PLATFORM FIGHTER", SCREEN_W * 0.5 - 140, 180, 32, 1, 1, 1, 1)
-        text_("2 PLAYERS", SCREEN_W * 0.5 - 60, 230, 20, 0.8, 0.8, 0.8, 1)
-        local show = math.floor(title_blink * 2) % 2 == 0
-        if show then
-            text_("PRESS ENTER", SCREEN_W * 0.5 - 75, 320, 18, 0.9, 0.9, 0.3, 1)
-        end
         -- Draw preview platforms
         for i, plat in ipairs(PLATFORMS) do
             local c = (i == 1) and PLAT_MAIN or PLAT_FLOAT
@@ -717,82 +796,5 @@ end
 
 -- ── lurek.render_ui ──────────────────────────────────────────────────────
 function lurek.draw_ui()
-    if game_state == STATES.TITLE then return end
-    if not p1 or not p2 then return end
-
-    -- ── Damage percentage display ────────────────────────────────────
-    -- P1 damage (bottom left)
-    local p1_dmg_str = string.format("%.0f%%", p1.damage_pct)
-    local p1_r = 1
-    local p1_g = math.max(0, 1.0 - p1.damage_pct / 150)
-    local p1_b = math.max(0, 1.0 - p1.damage_pct / 100)
-    local p1_flash_add = dmg_flash_p1 * 0.5
-    text_(p1_dmg_str, 80, SCREEN_H - 60, 28,
-                       math.min(1, p1_r + p1_flash_add),
-                       math.min(1, p1_g + p1_flash_add),
-                       math.min(1, p1_b + p1_flash_add), 1)
-    text_("P1", 80, SCREEN_H - 82, 14,
-                       P1_COLOR[1], P1_COLOR[2], P1_COLOR[3], 1)
-
-    -- P2 damage (bottom right)
-    local p2_dmg_str = string.format("%.0f%%", p2.damage_pct)
-    local p2_r = 1
-    local p2_g = math.max(0, 1.0 - p2.damage_pct / 150)
-    local p2_b = math.max(0, 1.0 - p2.damage_pct / 100)
-    local p2_flash_add = dmg_flash_p2 * 0.5
-    text_(p2_dmg_str, SCREEN_W - 140, SCREEN_H - 60, 28,
-                       math.min(1, p2_r + p2_flash_add),
-                       math.min(1, p2_g + p2_flash_add),
-                       math.min(1, p2_b + p2_flash_add), 1)
-    text_("P2", SCREEN_W - 140, SCREEN_H - 82, 14,
-                       P2_COLOR[1], P2_COLOR[2], P2_COLOR[3], 1)
-
-    -- ── Stocks display ──────────────────────────────────────────────
-    for i = 1, MAX_STOCKS do
-        local sx = 80 + (i - 1) * 18
-        local sy = SCREEN_H - 36
-        local a = (i <= p1.stocks) and 1.0 or 0.2
-        circ("fill", sx + 5, sy + 5, 6,
-                            P1_COLOR[1], P1_COLOR[2], P1_COLOR[3], a)
-    end
-    for i = 1, MAX_STOCKS do
-        local sx = SCREEN_W - 140 + (i - 1) * 18
-        local sy = SCREEN_H - 36
-        local a = (i <= p2.stocks) and 1.0 or 0.2
-        circ("fill", sx + 5, sy + 5, 6,
-                            P2_COLOR[1], P2_COLOR[2], P2_COLOR[3], a)
-    end
-
-    -- ── Special cooldown indicators ──────────────────────────────────
-    if p1.special_cd > 0 then
-        local pct = p1.special_cd / ATK_SPECIAL.cooldown
-        rect("fill", 80, SCREEN_H - 18, 50 * (1 - pct), 4,
-                               0.3, 0.8, 1, 0.7)
-        rect("line", 80, SCREEN_H - 18, 50, 4,
-                               0.5, 0.5, 0.5, 0.4)
-    end
-    if p2.special_cd > 0 then
-        local pct = p2.special_cd / ATK_SPECIAL.cooldown
-        rect("fill", SCREEN_W - 140, SCREEN_H - 18, 50 * (1 - pct), 4,
-                               1, 0.5, 0.3, 0.7)
-        rect("line", SCREEN_W - 140, SCREEN_H - 18, 50, 4,
-                               0.5, 0.5, 0.5, 0.4)
-    end
-
-    -- ── KO text ──────────────────────────────────────────────────────
-    if game_state == STATES.KO then
-        local sz = math.floor(36 * ko_text_scale)
-        text_("KO!", SCREEN_W * 0.5 - sz, SCREEN_H * 0.5 - sz * 0.5,
-                           sz, 1, 0.2, 0.2, 1)
-        text_(ko_who .. " SCORES!", SCREEN_W * 0.5 - 100,
-                           SCREEN_H * 0.5 + 30, 20, 1, 1, 0.5, 1)
-    end
-
-    -- ── Match over text ──────────────────────────────────────────────
-    if game_state == STATES.MATCH_OVER then
-        text_(match_winner, SCREEN_W * 0.5 - 120, SCREEN_H * 0.5 - 20,
-                           30, 1, 1, 0.3, 1)
-        text_("PRESS ENTER TO RETURN", SCREEN_W * 0.5 - 120,
-                           SCREEN_H * 0.5 + 30, 16, 0.8, 0.8, 0.8, 1)
-    end
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
 end

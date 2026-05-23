@@ -38,6 +38,7 @@ local DIR = {
 }
 local DIR_DX = { [0]=0, [1]=0,  [2]=0,  [3]=-1, [4]=1 }
 local DIR_DY = { [0]=0, [1]=-1, [2]=1,  [3]=0,  [4]=0 }
+local app_ui = {}
 
 -- ── Maze layout (28×31) ──────────────────────────────────────────────────
 -- W = wall, . = dot, O = power pellet, - = ghost gate, E = empty, T = tunnel
@@ -426,6 +427,30 @@ function lurek.init()
     lurek.input.bind("restart", { "r" })
     lurek.input.bind("quit",    { "escape" })
 
+    local ui_root = lurek.ui.loadLayoutFile("content/games/arcade/pac_man/ui.toml")
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.level_label = ui_root:findById("level_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.final_score = ui_root:findById("final_score")
+    app_ui.final_level = ui_root:findById("final_level")
+    app_ui.press_enter = ui_root:findById("press_enter")
+    app_ui.press_r = ui_root:findById("press_r")
+    
+    local function handle_start_click()
+        if game_state == STATE.TITLE then
+            start_game()
+        elseif game_state == STATE.GAME_OVER then
+            start_game()
+        end
+    end
+
+    if app_ui.press_enter then app_ui.press_enter:setOnClick(handle_start_click) end
+    if app_ui.press_r then app_ui.press_r:setOnClick(handle_start_click) end
+
     -- Dot pickup sparkle particles
     sparks = lurek.particle.newSystem({
         maxParticles = 200,
@@ -490,6 +515,26 @@ function lurek.process(dt)
 
     -- Title blink timer
     title_blink = title_blink + dt
+
+    app_ui.title_screen.visible = (game_state == STATE.TITLE)
+    app_ui.hud.visible = (game_state == STATE.PLAYING or game_state == STATE.GAME_OVER)
+    app_ui.game_over_screen.visible = (game_state == STATE.GAME_OVER)
+    
+    app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
+    
+    if app_ui.hud.visible then
+        app_ui.score_label.text = tostring(score)
+        app_ui.level_label.text = "LVL " .. tostring(level)
+        app_ui.lives_label.text = "x" .. tostring(lives)
+    end
+    if app_ui.game_over_screen.visible then
+        app_ui.final_score.text = "Score: " .. tostring(score)
+        app_ui.final_level.text = "Level: " .. tostring(level)
+    end
+    
+    local blink = math.floor(title_blink * 2) % 2 == 0
+    app_ui.press_enter.color = blink and {1, 1, 1, 1} or {1, 1, 1, 0}
+    app_ui.press_r.color = blink and {0.8, 0.8, 0.8, 1} or {0.8, 0.8, 0.8, 0}
 
     -- ── TITLE STATE ───────────────────────────────────────────────────
     if game_state == STATE.TITLE then
@@ -842,79 +887,5 @@ end
 --  lurek.render_ui — draw UI OVERLAY (score, lives, title, game over)
 -- ===========================================================================
 function lurek.draw_ui()
-    -- ── TITLE SCREEN ──────────────────────────────────────────────────
-    if game_state == STATE.TITLE then
-        -- Game title
-        lurek.render.setColor(1.0, 1.0, 0.0)
-        text_("P A C - M A N", SCREEN_W / 2 - 130, 100, 4)
-
-        -- Ghost legend
-        local legend_y = 210
-        local legend_x = SCREEN_W / 2 - 120
-        for i = 1, 4 do
-            local gc = GHOST_COLORS[i]
-            lurek.render.setColor(gc[1], gc[2], gc[3])
-            rect("fill", legend_x, legend_y + (i-1) * 30, 16, 16)
-            lurek.render.setColor(0.8, 0.8, 0.8)
-            local desc = ""
-            if i == 1 then desc = "Blinky — chases directly"
-            elseif i == 2 then desc = "Pinky  — ambushes ahead"
-            elseif i == 3 then desc = "Inky   — unpredictable"
-            elseif i == 4 then desc = "Clyde  — shy when close"
-            end
-            text_(desc, legend_x + 24, legend_y + (i-1) * 30, 1.3)
-        end
-
-        -- Blinking prompt
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1)
-            text_("PRESS ENTER TO START", SCREEN_W / 2 - 120, 380, 2)
-        end
-
-        -- Controls
-        lurek.render.setColor(0.4, 0.4, 0.5)
-        text_("WASD / Arrows  Move",   SCREEN_W / 2 - 100, 440, 1.3)
-        text_("Escape         Quit",   SCREEN_W / 2 - 100, 460, 1.3)
-        return
-    end
-
-    -- ── HUD: Score ────────────────────────────────────────────────────
-    lurek.render.setColor(1, 1, 1)
-    text_("SCORE", 10, 4, 1.4)
-    text_(tostring(score), 80, 4, 1.4)
-
-    -- ── HUD: Level ────────────────────────────────────────────────────
-    lurek.render.setColor(0.8, 0.8, 0.3)
-    text_("LVL " .. tostring(level), SCREEN_W / 2 - 20, 4, 1.4)
-
-    -- ── HUD: Lives (pac-man icons) ────────────────────────────────────
-    lurek.render.setColor(1, 1, 0)
-    for i = 1, lives - 1 do
-        local lx = SCREEN_W - 30 * i
-        circ("fill", lx, 12, 8)
-    end
-    lurek.render.setColor(0.7, 0.7, 0.7)
-    text_("x" .. tostring(lives), SCREEN_W - 30 * lives - 20, 4, 1.2)
-
-    -- ── FPS counter ───────────────────────────────────────────────────
-    lurek.render.setColor(0.4, 0.4, 0.5)
-    text_("FPS: " .. math.floor(lurek.timer.getFPS()), 8, SCREEN_H - 18, 1)
-
-    -- ── GAME OVER overlay ─────────────────────────────────────────────
-    if game_state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.75)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(1.0, 0.2, 0.2)
-        text_("G A M E   O V E R", SCREEN_W / 2 - 140, 200, 3)
-
-        lurek.render.setColor(1, 1, 1)
-        text_("Score: " .. tostring(score), SCREEN_W / 2 - 60, 280, 2)
-        text_("Level: " .. tostring(level), SCREEN_W / 2 - 60, 310, 2)
-
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(0.8, 0.8, 0.8)
-            text_("PRESS R TO RESTART", SCREEN_W / 2 - 110, 380, 2)
-        end
-    end
+    -- Rendered via TOML layout system
 end

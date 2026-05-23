@@ -326,7 +326,7 @@ describe("Evidence: light + occluder shadows (vending machine scene)", function(
         -- The ratio should be close to (1 - opacity) = 0.5
         local ratio = s_intensity / c_intensity
         expect_near(0.5, ratio, 0.15,
-            "light ratio ~50% through transparent occluder: " .. string.format("%.3f", ratio))
+            "light ratio approx 50% through transparent occluder: " .. string.format("%.3f", ratio))
 
         -- Render the scene
         for y = 0, H - 1 do

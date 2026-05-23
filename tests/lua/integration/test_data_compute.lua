@@ -1,4 +1,5 @@
 -- Integration: serial encoding/decoding with compute array processing
+-- @describe data + compute integration
 describe("data + compute integration", function()
     -- @integration lurek.serial.fromJson
     -- @integration lurek.compute.fromTable

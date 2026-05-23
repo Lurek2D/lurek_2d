@@ -157,6 +157,11 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "tooltippanel" => ctx.add_tooltip_panel(def.text.clone().unwrap_or_default()),
         "colorpicker" => ctx.add_color_picker(),
         "guitable" => ctx.add_gui_table(),
+        // Chart widgets are represented as retained UI slots in TOML layouts.
+        // Lua content can render chart images into these slot rects by id.
+        "chart" | "linechart" | "barchart" | "scatterplot" | "piechart" | "areachart" => {
+            ctx.add_panel()
+        }
         "imagewidget" | "image" => ctx.add_image_widget(),
         "spinbox" => ctx.add_spin_box(def.min.unwrap_or(0.0), def.max.unwrap_or(100.0)),
         "switch" => ctx.add_switch(def.on.unwrap_or(false)),

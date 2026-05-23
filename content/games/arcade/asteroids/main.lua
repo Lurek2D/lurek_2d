@@ -41,6 +41,7 @@ local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
 local state = STATE.PLAYING
 
 -- ── Game state ────────────────────────────────────────────────────────────
+local app_ui = {}
 local ship           -- { x, y, angle, vx, vy, thrusting }
 local bullets        -- array of { x, y, vx, vy, life }
 local asteroids      -- array of { x, y, vx, vy, radius, size, verts }
@@ -229,6 +230,20 @@ end
 function lurek.init()
     lurek.window.setTitle("Asteroids — Lurek2D")
     lurek.render.setBackgroundColor(0.0, 0.0, 0.02)
+
+    lurek.ui.loadLayoutFile("content/games/arcade/asteroids/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.wave_label = ui_root:findById("wave_label")
+    app_ui.lives_label = ui_root:findById("lives_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.final_score_label = ui_root:findById("final_score_label")
+    app_ui.final_wave_label = ui_root:findById("final_wave_label")
+    app_ui.press_enter_label = ui_root:findById("press_enter_label")
 
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
 
@@ -541,65 +556,21 @@ end
 --  lurek.render_ui — draw UI OVERLAY (score, lives, wave, menus)
 -- ===========================================================================
 function lurek.draw_ui()
-    -- ── TITLE SCREEN ──────────────────────────────────────────────────
+    if app_ui.title_screen then app_ui.title_screen.visible = (state == STATE.TITLE) end
+    if app_ui.hud then app_ui.hud.visible = (state == STATE.PLAYING or state == STATE.GAME_OVER) end
+    if app_ui.game_over_screen then app_ui.game_over_screen.visible = (state == STATE.GAME_OVER) end
+
     if state == STATE.TITLE then
-        lurek.render.setColor(1.0, 1.0, 1.0)
-        text_("A S T E R O I D S", SCREEN_W / 2 - 150, 160, 4)
-
-        lurek.render.setColor(0.6, 0.6, 0.7)
-        text_("Navigate the asteroid field and survive", SCREEN_W / 2 - 170, 230, 1.5)
-
-        -- Blinking prompt
-        if math.floor(title_blink * 2) % 2 == 0 then
-            lurek.render.setColor(1, 1, 1)
-            text_("PRESS ENTER TO START", SCREEN_W / 2 - 120, 320, 2)
-        end
-
-        -- Controls preview
-        lurek.render.setColor(0.4, 0.4, 0.5)
-        text_("A/←  D/→  Rotate",   240, 420, 1.3)
-        text_("W/↑       Thrust",    240, 440, 1.3)
-        text_("Space     Fire",      240, 460, 1.3)
-        text_("Escape    Quit",      240, 480, 1.3)
-        return
+        if app_ui.press_enter_label then app_ui.press_enter_label.visible = (math.floor(title_blink * 2) % 2 == 0) end
+    elseif state == STATE.PLAYING or state == STATE.GAME_OVER then
+        if app_ui.score_label then app_ui.score_label.text = "SCORE  " .. score end
+        if app_ui.wave_label then app_ui.wave_label.text = "WAVE " .. wave end
+        if app_ui.lives_label then app_ui.lives_label.text = "LIVES " .. lives end
+        if app_ui.fps_label then app_ui.fps_label.text = "FPS: " .. math.floor(lurek.timer.getFPS()) end
     end
 
-    -- ── HUD (always visible during play and game-over) ────────────────
-    -- Score — top left
-    lurek.render.setColor(1, 1, 1)
-    text_("SCORE  " .. tostring(score), 16, 12, 2)
-
-    -- Wave — top center
-    lurek.render.setColor(0.6, 0.6, 0.7)
-    text_("WAVE " .. tostring(wave), SCREEN_W / 2 - 30, 12, 1.8)
-
-    -- Lives — top right (draw small ship icons)
-    for l = 1, lives do
-        local lx = SCREEN_W - 30 - (l - 1) * 22
-        local ly = 20
-        lurek.render.setColor(1, 1, 1)
-        ln(lx, ly - 8, lx - 5, ly + 6)
-        ln(lx - 5, ly + 6, lx + 5, ly + 6)
-        ln(lx + 5, ly + 6, lx, ly - 8)
-    end
-
-    -- FPS — bottom left
-    lurek.render.setColor(0.4, 0.4, 0.5)
-    text_("FPS: " .. math.floor(lurek.timer.getFPS()), 8, SCREEN_H - 20, 1)
-
-    -- ── GAME OVER OVERLAY ─────────────────────────────────────────────
     if state == STATE.GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", 0, 0, SCREEN_W, SCREEN_H)
-
-        lurek.render.setColor(1, 0.2, 0.2)
-        text_("GAME OVER", SCREEN_W / 2 - 100, SCREEN_H / 2 - 50, 3.5)
-
-        lurek.render.setColor(1, 1, 1)
-        text_("Final Score: " .. tostring(score), SCREEN_W / 2 - 80, SCREEN_H / 2 + 10, 2)
-        text_("Wave: " .. tostring(wave), SCREEN_W / 2 - 40, SCREEN_H / 2 + 40, 2)
-
-        lurek.render.setColor(0.7, 0.7, 0.7)
-        text_("Press R to restart", SCREEN_W / 2 - 100, SCREEN_H / 2 + 90, 2)
+        if app_ui.final_score_label then app_ui.final_score_label.text = "Final Score: " .. score end
+        if app_ui.final_wave_label then app_ui.final_wave_label.text = "Wave: " .. wave end
     end
 end

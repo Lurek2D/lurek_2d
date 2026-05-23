@@ -1,6 +1,7 @@
 -- Integration: lurek.math Vec3/spline/lerp/remap combined with pathfinding costs
 
 -- Vec3 heuristic applied to pathfinding costs
+-- @describe vec3 + pathfinding heuristic integration
 describe("vec3 + pathfinding heuristic integration", function()
 
     -- @integration LJpsGrid:findPath

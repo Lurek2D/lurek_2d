@@ -1,4 +1,5 @@
 -- Universal render helpers (handles all legacy and current call signatures)
+local app_ui = {}
 local _gfx = lurek.render
 local function _sc(c)
     if type(c) == "table" then
@@ -289,6 +290,29 @@ function lurek.init()
     lurek.window.setTitle("Infiltration â€” Lurek2D")
     lurek.render.setBackgroundColor(0.02, 0.02, 0.04)
 
+    lurek.ui.loadLayoutFile("content/games/action/infiltration/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.app_ui.alert_bar = ui_root:findById("app_ui.alert_bar")
+    app_ui.app_ui.alert_label = ui_root:findById("app_ui.alert_label")
+    app_ui.app_ui.caught_panel = ui_root:findById("app_ui.caught_panel")
+    app_ui.app_ui.caught_reason = ui_root:findById("app_ui.caught_reason")
+    app_ui.app_ui.data_label = ui_root:findById("app_ui.data_label")
+    app_ui.app_ui.fps_label = ui_root:findById("app_ui.fps_label")
+    app_ui.gadget_1_label = ui_root:findById("gadget_1_label")
+    app_ui.gadget_2_label = ui_root:findById("gadget_2_label")
+    app_ui.gadget_3_label = ui_root:findById("gadget_3_label")
+    app_ui.app_ui.hack_panel = ui_root:findById("app_ui.hack_panel")
+    app_ui.app_ui.hud_panel = ui_root:findById("app_ui.hud_panel")
+    app_ui.app_ui.msg_label = ui_root:findById("app_ui.msg_label")
+    app_ui.app_ui.msg_panel = ui_root:findById("app_ui.msg_panel")
+    app_ui.app_ui.time_label = ui_root:findById("app_ui.time_label")
+    app_ui.app_ui.title_panel = ui_root:findById("app_ui.title_panel")
+    app_ui.app_ui.vault_label = ui_root:findById("app_ui.vault_label")
+    app_ui.app_ui.won_panel = ui_root:findById("app_ui.won_panel")
+    app_ui.app_ui.won_time = ui_root:findById("app_ui.won_time")
+    app_ui.app_ui.won_vault = ui_root:findById("app_ui.won_vault")
+
+
     lurek.input.bind("up",      "w");    lurek.input.bind("up",      "up")
     lurek.input.bind("down",    "s");    lurek.input.bind("down",    "down")
     lurek.input.bind("left",    "a");    lurek.input.bind("left",    "left")
@@ -485,6 +509,108 @@ function lurek.process(dt)
         state = STATE.WON
         local bonus = vault_open and " + VAULT BONUS!" or ""
         show_msg("MISSION COMPLETE! Data extracted" .. bonus, 5)
+    end
+
+    -- ── UI Update ─────────────────────────────────────────────────────────────
+    
+    
+    
+    
+    
+    
+    
+    app_ui.title_panel.visible = (state == STATE.TITLE)
+    app_ui.hud_panel.visible = (state == STATE.PLAYING or state == STATE.HACKING)
+    app_ui.caught_panel.visible = (state == STATE.CAUGHT)
+    app_ui.won_panel.visible = (state == STATE.WON)
+    app_ui.hack_panel.visible = (state == STATE.HACKING)
+
+    if state == STATE.WON then
+        
+        
+        app_ui.won_time.text = string.format("Time remaining: %d seconds", math.floor(timer_left))
+        app_ui.won_vault.visible = vault_open
+    elseif state == STATE.CAUGHT then
+        
+        app_ui.caught_reason.text = (timer_left <= 0) and "Time expired" or "Alert level critical"
+    elseif state == STATE.PLAYING or state == STATE.HACKING then
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        local t_col = timer_left < 30 and {1.0, 0.3, 0.3, 1.0} or {0.7, 0.9, 0.7, 1.0}
+        app_ui.time_label.text = string.format("TIME: %d:%02d", math.floor(timer_left / 60), math.floor(timer_left) % 60)
+        app_ui.time_label.color = t_col
+
+        local bar_len = math.floor((alert / 100) * 50)
+        app_ui.alert_bar.text = string.rep("█", bar_len) .. string.rep("░", 50 - bar_len)
+        local ar, ag, ab = 0.2 + 0.8 * (alert / 100), 0.8 - 0.6 * (alert / 100), 0.2
+        app_ui.alert_bar.color = {ar, ag, ab, 1.0}
+        app_ui.alert_label.text = string.format("ALERT: %d%%", math.floor(alert))
+
+        local g1 = gadgets[1]
+        local g2 = gadgets[2]
+        local g3 = gadgets[3]
+        app_ui.gadget_1_label.text = string.format("[1] %s: %d/%d", g1.name, g1.uses, g1.max)
+        app_ui.gadget_1_label.color = {g1.color[1], g1.color[2], g1.color[3], g1.uses > 0 and 1.0 or 0.3}
+        app_ui.gadget_2_label.text = string.format("[2] %s: %d/%d", g2.name, g2.uses, g2.max)
+        app_ui.gadget_2_label.color = {g2.color[1], g2.color[2], g2.color[3], g2.uses > 0 and 1.0 or 0.3}
+        app_ui.gadget_3_label.text = string.format("[3] %s: %d/%d", g3.name, g3.uses, g3.max)
+        app_ui.gadget_3_label.color = {g3.color[1], g3.color[2], g3.color[3], g3.uses > 0 and 1.0 or 0.3}
+
+        app_ui.data_label.text = has_data and "DATA: ACQUIRED" or "DATA: NOT YET"
+        app_ui.data_label.color = has_data and {0.2, 1.0, 0.4, 1.0} or {0.5, 0.5, 0.5, 1.0}
+
+        app_ui.vault_label.visible = vault_open
+
+        app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+    end
+
+    if state == STATE.HACKING then
+        local wire_colors = {
+            {0.9, 0.2, 0.2, 1.0}, -- 1 = red
+            {0.2, 0.8, 0.2, 1.0}, -- 2 = green
+            {0.3, 0.4, 0.9, 1.0}, -- 3 = blue
+            {0.9, 0.9, 0.2, 1.0}, -- 4 = yellow
+        }
+        local wire_names = {"RED", "GRN", "BLU", "YLW"}
+        for i = 1, 4 do
+            local wire_label = lurek.ui.getElementById("hack_" .. i)
+            if wire_label then
+                if i <= #hack.sequence then
+                    local w = hack.sequence[i]
+                    local wc = wire_colors[w]
+                    local done = i < hack.input_idx
+                    local current = i == hack.input_idx
+                    local a = done and 0.3 or 1.0
+                    local label = string.format("[%d] %s", w, wire_names[w])
+                    if done then label = label .. " âś“" end
+                    if current then label = "â†’ " .. label end
+                    wire_label.text = label
+                    wire_label.color = {wc[1], wc[2], wc[3], a}
+                    wire_label.visible = true
+                else
+                    wire_label.visible = false
+                end
+            end
+        end
+    end
+
+    if msg_timer > 0 then
+        app_ui.msg_panel.visible = true
+        local ma = math.min(1.0, msg_timer)
+        app_ui.msg_panel.color = {0.05, 0.05, 0.1, 0.85 * ma}
+        
+        app_ui.msg_label.text = msg_text
+        app_ui.msg_label.color = {0.9, 0.9, 0.3, ma}
+    else
+        app_ui.msg_panel.visible = false
     end
 end
 
@@ -710,143 +836,5 @@ end
 
 -- â”€â”€ lurek.render_ui â€” HUD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function lurek.draw_ui()
-    local render = _gfx
-
-    -- â”€â”€ TITLE SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    if state == STATE.TITLE then
-        drawText("SYSTEM INFILTRATION", SCREEN_W / 2 - 180, 120, 32, 0.3, 0.9, 1.0, 1)
-        drawText("â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€", SCREEN_W / 2 - 180, 160, 16, 0.2, 0.5, 0.7, 0.6)
-
-        local y = 200
-        local briefing = {
-            "MISSION BRIEFING:",
-            "",
-            "Infiltrate the facility and download data from the terminal.",
-            "Reach the exit before time runs out.",
-            "",
-            "GADGETS:",
-            "  [1] Keycard  (3x) â€” Opens electronic doors",
-            "  [2] EMP      (2x) â€” Disables all cameras for 8 sec",
-            "  [3] Lockpick (3x) â€” Opens mechanical locks",
-            "",
-            "  [E] Interact â€” Hack terminals & wire-doors",
-            "",
-            "Avoid camera detection. Alert at 100 = CAUGHT.",
-            "Bonus: crack the vault using all 3 gadget types.",
-            "",
-            "Press [E] to begin mission",
-        }
-        for _, line in ipairs(briefing) do
-            drawText(line, 180, y, 16, 0.7, 0.8, 0.9, 0.9)
-            y = y + 22
-        end
-        return
-    end
-
-    -- â”€â”€ WON SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    if state == STATE.WON then
-        rect(0, 0, SCREEN_W, SCREEN_H, 0, 0, 0, 0.7)
-        drawText("MISSION COMPLETE", SCREEN_W / 2 - 150, 200, 32, 0.2, 1.0, 0.4, 1)
-        local time_str = string.format("Time remaining: %d seconds", math.floor(timer_left))
-        drawText(time_str, SCREEN_W / 2 - 120, 260, 18, 0.7, 0.9, 0.7, 1)
-        if vault_open then
-            drawText("VAULT BONUS ACHIEVED", SCREEN_W / 2 - 120, 300, 18, 0.9, 0.9, 0.2, 1)
-        end
-        drawText("Press [E] to return to title", SCREEN_W / 2 - 130, 380, 16, 0.5, 0.7, 0.8, 0.8)
-        return
-    end
-
-    -- â”€â”€ CAUGHT SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    if state == STATE.CAUGHT then
-        rect(0, 0, SCREEN_W, SCREEN_H, 0.15, 0, 0, 0.7)
-        drawText("MISSION FAILED", SCREEN_W / 2 - 130, 200, 32, 1.0, 0.2, 0.2, 1)
-        local reason = timer_left <= 0 and "Time expired" or "Alert level critical"
-        drawText(reason, SCREEN_W / 2 - 80, 260, 18, 0.9, 0.5, 0.5, 1)
-        drawText("Press [E] to return to title", SCREEN_W / 2 - 130, 340, 16, 0.5, 0.7, 0.8, 0.8)
-        return
-    end
-
-    -- â”€â”€ HUD â€” playing / hacking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    -- Timer
-    local t_col = timer_left < 30 and {1.0, 0.3, 0.3} or {0.7, 0.9, 0.7}
-    local time_str = string.format("TIME: %d:%02d", math.floor(timer_left / 60), math.floor(timer_left) % 60)
-    drawText(time_str, SCREEN_W - 140, 10, 18, t_col[1], t_col[2], t_col[3], 1)
-
-    -- Alert bar background
-    rect(10, 10, 200, 20, 0.15, 0.15, 0.2, 0.8)
-    -- Alert bar fill
-    local bar_w = (alert / 100) * 196
-    local ar, ag, ab = 0.2 + 0.8 * (alert / 100), 0.8 - 0.6 * (alert / 100), 0.2
-    -- Glow pulse when rising
-    local glow = alert_bar_glow * 0.3
-    rect(12, 12, bar_w, 16, ar + glow, ag + glow, ab, 1)
-    -- Alert label
-    drawText(string.format("ALERT: %d%%", math.floor(alert)), 14, 12, 14, 1, 1, 1, 0.9)
-
-    -- Gadget slots
-    local gy = 40
-    for i, g in ipairs(gadgets) do
-        local gc = g.color
-        local alpha = g.uses > 0 and 1.0 or 0.3
-        rect(10, gy, 160, 22, 0.1, 0.1, 0.15, 0.8)
-        rect(12, gy + 2, 18, 18, gc[1], gc[2], gc[3], alpha)
-        local label = string.format("[%d] %s: %d/%d", i, g.name, g.uses, g.max)
-        drawText(label, 34, gy + 3, 14, gc[1], gc[2], gc[3], alpha)
-        gy = gy + 26
-    end
-
-    -- Data status
-    local data_label = has_data and "DATA: ACQUIRED" or "DATA: NOT YET"
-    local dc = has_data and {0.2, 1.0, 0.4} or {0.5, 0.5, 0.5}
-    drawText(data_label, 10, gy + 4, 14, dc[1], dc[2], dc[3], 1)
-
-    -- Vault status
-    if vault_open then
-        drawText("VAULT: OPEN", 10, gy + 22, 14, 0.9, 0.9, 0.2, 1)
-    end
-
-    -- FPS
-    drawText(string.format("FPS: %d", lurek.timer.getFPS()), SCREEN_W - 80, SCREEN_H - 20, 12, 0.4, 0.4, 0.5, 0.6)
-
-    -- Message
-    if msg_timer > 0 then
-        local ma = math.min(1.0, msg_timer)
-        rect(SCREEN_W / 2 - 200, SCREEN_H - 60, 400, 30, 0.05, 0.05, 0.1, 0.85 * ma)
-        drawText(msg_text, SCREEN_W / 2 - 190, SCREEN_H - 55, 14, 0.9, 0.9, 0.3, ma)
-    end
-
-    -- â”€â”€ HACKING overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    if state == STATE.HACKING then
-        rect(SCREEN_W / 2 - 150, SCREEN_H / 2 - 80, 300, 160, 0.05, 0.05, 0.12, 0.95)
-        drawText("WIRE HACK", SCREEN_W / 2 - 40, SCREEN_H / 2 - 70, 18, 0.9, 0.7, 0.1, 1)
-
-        local wire_colors = {
-            {0.9, 0.2, 0.2}, -- 1 = red
-            {0.2, 0.8, 0.2}, -- 2 = green
-            {0.3, 0.4, 0.9}, -- 3 = blue
-            {0.9, 0.9, 0.2}, -- 4 = yellow
-        }
-        local wire_names = {"RED", "GRN", "BLU", "YLW"}
-
-        -- Show sequence
-        local sx = SCREEN_W / 2 - 100
-        local sy = SCREEN_H / 2 - 30
-        drawText("Sequence:", sx, sy, 14, 0.7, 0.7, 0.8, 1)
-        sy = sy + 20
-        for i, w in ipairs(hack.sequence) do
-            local wc = wire_colors[w]
-            local done = i < hack.input_idx
-            local current = i == hack.input_idx
-            local a = done and 0.3 or 1.0
-            local label = string.format("[%d] %s", w, wire_names[w])
-            if done then label = label .. " âś“" end
-            if current then label = "â†’ " .. label end
-            drawText(label, sx + 10, sy, 16, wc[1], wc[2], wc[3], a)
-            sy = sy + 22
-        end
-
-        drawText("Press 1-4 to match wires", SCREEN_W / 2 - 80, SCREEN_H / 2 + 60, 12, 0.5, 0.5, 0.6, 0.8)
-    end
 end
 

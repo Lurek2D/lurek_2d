@@ -215,6 +215,72 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.7, 0.8, 0.95)
     compute_ramp()
     math.randomseed(os.time())
+    
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/ski_jump/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_hill_label = ui_root:findById("title_hill_label")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.final_screen = ui_root:findById("final_screen")
+    app_ui.final_rounds = {
+        ui_root:findById("final_round_1"),
+        ui_root:findById("final_round_2"),
+        ui_root:findById("final_round_3")
+    }
+    app_ui.final_total = ui_root:findById("final_total")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    app_ui.top_bar = ui_root:findById("top_bar")
+    app_ui.round_label = ui_root:findById("round_label")
+    app_ui.hill_label = ui_root:findById("hill_label")
+    app_ui.wind_label = ui_root:findById("wind_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    app_ui.approach_hud = ui_root:findById("approach_hud")
+    app_ui.speed_label = ui_root:findById("speed_label")
+    app_ui.crouching_label = ui_root:findById("crouching_label")
+    
+    app_ui.airborne_hud = ui_root:findById("airborne_hud")
+    app_ui.flight_time_label = ui_root:findById("flight_time_label")
+    app_ui.lean_indicator = ui_root:findById("lean_indicator")
+    
+    app_ui.score_hud = ui_root:findById("score_hud")
+    app_ui.distance_label = ui_root:findById("distance_label")
+    app_ui.landing_quality_label = ui_root:findById("landing_quality_label")
+    app_ui.judges = {
+        ui_root:findById("judge_1"),
+        ui_root:findById("judge_2"),
+        ui_root:findById("judge_3"),
+        ui_root:findById("judge_4"),
+        ui_root:findById("judge_5")
+    }
+    app_ui.round_score_label = ui_root:findById("round_score_label")
+    app_ui.press_continue = ui_root:findById("press_continue")
+    
+    local function handle_action_click()
+        if state == "TITLE" then
+            round = 1
+            round_scores = {}
+            start_round()
+        elseif state == "FINAL" then
+            round = 1
+            round_scores = {}
+            start_round()
+        elseif state == "SCORE" and shown_judges >= JUDGES then
+            table.insert(round_scores, total_score())
+            round = round + 1
+            if round > MAX_ROUNDS then
+                state = "FINAL"
+            else
+                start_round()
+            end
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_action_click) end
+    if app_ui.press_continue then app_ui.press_continue:setOnClick(handle_action_click) end
 end
 
 -- ─── Process ─────────────────────────────────────────────────────────
@@ -414,6 +480,92 @@ function lurek.process(delta)
     cam_y = lerp(cam_y, target_cy, clamp(dt * 4, 0, 1))
     cam_x = math.max(0, cam_x)
 
+    -- UI Sync
+    local fps = lurek.timer.getFPS()
+    app_ui.fps_label.text = string.format("FPS: %d", math.floor(fps))
+    
+    app_ui.title_screen.visible = (state == "TITLE")
+    app_ui.final_screen.visible = (state == "FINAL")
+    app_ui.top_bar.visible = (state == "APPROACH" or state == "AIRBORNE" or state == "SCORE")
+    app_ui.approach_hud.visible = (state == "APPROACH")
+    app_ui.airborne_hud.visible = (state == "AIRBORNE")
+    app_ui.score_hud.visible = (state == "SCORE")
+    
+    if state == "TITLE" then
+        app_ui.title_hill_label.text = "Hill: " .. HILLS[hill].name .. " (" .. HILLS[hill].k_point .. "m)"
+    elseif state == "FINAL" then
+        local grand_total = 0
+        for i, s in ipairs(round_scores) do
+            grand_total = grand_total + s
+            if app_ui.final_rounds[i] then
+                app_ui.final_rounds[i].visible = true
+                app_ui.final_rounds[i].text = string.format("Round %d: %.1f", i, s)
+            end
+        end
+        app_ui.final_total.text = string.format("Total: %.1f", grand_total)
+    end
+    
+    if state == "APPROACH" or state == "AIRBORNE" or state == "SCORE" then
+        app_ui.round_label.text = string.format("Round %d/%d", round, MAX_ROUNDS)
+        app_ui.hill_label.text = HILLS[hill].name .. " Hill"
+        
+        local wind_label = string.format("Wind: %.1f m/s %s", math.abs(wind), wind > 0 and "→" or "←")
+        app_ui.wind_label.text = wind_label
+        local wind_color_r = wind > 0 and 0.2 or 0.9
+        local wind_color_b = wind > 0 and 0.9 or 0.2
+        app_ui.wind_label.color = {wind_color_r, 0.7, wind_color_b, 1}
+    end
+    
+    if state == "APPROACH" then
+        app_ui.speed_label.text = string.format("Speed: %.0f km/h", display_speed * 3.6 / 10)
+        app_ui.crouching_label.visible = crouching
+    elseif state == "AIRBORNE" then
+        app_ui.flight_time_label.text = string.format("Flight: %.1fs", flight_time)
+        -- lean ranges from -1 to 1. Meter height is 120. Lean mapped to position.
+        -- meter_y is logically handled by anchoring right_center y offset.
+        local lean_pos = -lean * 55 -- S is pos, W is neg
+        app_ui.lean_indicator.y = lean_pos
+    elseif state == "SCORE" then
+        app_ui.distance_label.text = string.format("Distance: %.1f m", display_distance)
+        
+        if landing_quality == "smooth" then
+            app_ui.landing_quality_label.text = "SMOOTH LANDING!"
+            app_ui.landing_quality_label.color = {0.2, 1, 0.3, 1}
+        elseif landing_quality == "rough" then
+            app_ui.landing_quality_label.text = "ROUGH LANDING"
+            app_ui.landing_quality_label.color = {1, 0.7, 0.2, 1}
+        else
+            app_ui.landing_quality_label.text = "CRASH!"
+            app_ui.landing_quality_label.color = {1, 0.2, 0.2, 1}
+        end
+        
+        for i = 1, JUDGES do
+            if i <= shown_judges then
+                local s = judge_scores[i]
+                app_ui.judges[i].text = tostring(s)
+                if s >= 16 then
+                    app_ui.judges[i].color = {0.2, 1, 0.3, 1}
+                elseif s >= 10 then
+                    app_ui.judges[i].color = {1, 0.9, 0.3, 1}
+                else
+                    app_ui.judges[i].color = {1, 0.4, 0.3, 1}
+                end
+            else
+                app_ui.judges[i].text = "?"
+                app_ui.judges[i].color = {0.5, 0.5, 0.6, 0.5}
+            end
+        end
+        
+        if shown_judges >= JUDGES then
+            app_ui.round_score_label.visible = true
+            app_ui.press_continue.visible = true
+            app_ui.round_score_label.text = string.format("Round Score: %.1f", total_score())
+        else
+            app_ui.round_score_label.visible = false
+            app_ui.press_continue.visible = false
+        end
+    end
+
     update_particles()
 end
 
@@ -526,145 +678,5 @@ function lurek.draw()
     end
 end
 
--- ─── Render UI (HUD) ────────────────────────────────────────────────
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-
-    if state == "TITLE" then
-        lurek.render.setColor(0.1, 0.15, 0.4, 1)
-        text_("SKI JUMP", SCREEN_W / 2 - 100, 140, 48)
-        lurek.render.setColor(0.3, 0.5, 0.8, 1)
-        text_("FLY HIGH", SCREEN_W / 2 - 70, 200, 24)
-
-        lurek.render.setColor(0.2, 0.2, 0.3, 1)
-        text_("Hill: " .. HILLS[hill].name .. " (" .. HILLS[hill].k_point .. "m)", SCREEN_W / 2 - 90, 280, 18)
-        text_("Press 1/2/3 to change hill", SCREEN_W / 2 - 100, 310, 16)
-        text_("Space to start", SCREEN_W / 2 - 55, 350, 16)
-
-        lurek.render.setColor(0.5, 0.5, 0.6, 0.6)
-        text_("D=crouch  Space=jump  W/S=lean", SCREEN_W / 2 - 130, 420, 14)
-        text_(string.format("FPS: %d", fps), 10, 10, 12)
-        return
-    end
-
-    if state == "FINAL" then
-        lurek.render.setColor(0.1, 0.15, 0.4, 1)
-        text_("FINAL RESULTS", SCREEN_W / 2 - 100, 100, 36)
-
-        local grand_total = 0
-        for i, s in ipairs(round_scores) do
-            grand_total = grand_total + s
-            lurek.render.setColor(0.2, 0.2, 0.35, 1)
-            text_(string.format("Round %d: %.1f", i, s), SCREEN_W / 2 - 70, 170 + i * 35, 20)
-        end
-
-        lurek.render.setColor(0.8, 0.6, 0.1, 1)
-        text_(string.format("Total: %.1f", grand_total), SCREEN_W / 2 - 60, 170 + (#round_scores + 1) * 35 + 10, 24)
-
-        lurek.render.setColor(0.3, 0.3, 0.4, 1)
-        text_("Space for new competition  |  1/2/3 change hill", SCREEN_W / 2 - 180, 480, 14)
-        text_(string.format("FPS: %d", fps), 10, 10, 12)
-        return
-    end
-
-    -- ─── HUD during gameplay ─────────────────────────────────────
-    -- top bar background
-    lurek.render.setColor(0, 0, 0, 0.4)
-    rect(0, 0, SCREEN_W, 36)
-
-    lurek.render.setColor(1, 1, 1, 1)
-    text_(string.format("Round %d/%d", round, MAX_ROUNDS), 10, 8, 16)
-    text_(HILLS[hill].name .. " Hill", 150, 8, 16)
-    text_(string.format("FPS: %d", fps), SCREEN_W - 80, 8, 12)
-
-    -- wind indicator
-    local wind_color_r = wind > 0 and 0.2 or 0.9
-    local wind_color_g = 0.7
-    local wind_color_b = wind > 0 and 0.9 or 0.2
-    lurek.render.setColor(wind_color_r, wind_color_g, wind_color_b, 1)
-    local wind_label = string.format("Wind: %.1f m/s %s", math.abs(wind), wind > 0 and "→" or "←")
-    text_(wind_label, SCREEN_W / 2 - 50, 8, 14)
-
-    -- speed display
-    if state == "APPROACH" then
-        lurek.render.setColor(1, 0.9, 0.3, 1)
-        text_(string.format("Speed: %.0f km/h", display_speed * 3.6 / 10), 10, 50, 20)
-
-        if crouching then
-            lurek.render.setColor(0.3, 1, 0.3, 0.8)
-            text_("CROUCHING", 10, 76, 14)
-        end
-
-        lurek.render.setColor(0.8, 0.8, 0.9, 0.6)
-        text_("D=crouch  Space=jump near end", 10, SCREEN_H - 30, 13)
-    end
-
-    -- airborne display
-    if state == "AIRBORNE" then
-        lurek.render.setColor(0.3, 1, 0.5, 1)
-        text_(string.format("Flight: %.1fs", flight_time), 10, 50, 18)
-
-        -- lean meter
-        local meter_x, meter_y = SCREEN_W - 40, SCREEN_H / 2 - 60
-        lurek.render.setColor(0.3, 0.3, 0.4, 0.6)
-        rect(meter_x, meter_y, 20, 120)
-        local lean_pos = meter_y + 60 - lean * 55
-        lurek.render.setColor(1, 1, 0.3, 1)
-        rect(meter_x + 2, lean_pos - 3, 16, 6)
-        lurek.render.setColor(0.8, 0.8, 0.9, 0.5)
-        text_("W", meter_x + 4, meter_y - 18, 12)
-        text_("S", meter_x + 4, meter_y + 124, 12)
-
-        lurek.render.setColor(0.8, 0.8, 0.9, 0.6)
-        text_("W/S=lean  Space=land", 10, SCREEN_H - 30, 13)
-    end
-
-    -- score display
-    if state == "SCORE" then
-        lurek.render.setColor(1, 1, 1, 1)
-        text_(string.format("Distance: %.1f m", display_distance), SCREEN_W / 2 - 80, 60, 22)
-
-        -- landing quality
-        if landing_quality == "smooth" then
-            lurek.render.setColor(0.2, 1, 0.3, 1)
-            text_("SMOOTH LANDING!", SCREEN_W / 2 - 80, 95, 18)
-        elseif landing_quality == "rough" then
-            lurek.render.setColor(1, 0.7, 0.2, 1)
-            text_("ROUGH LANDING", SCREEN_W / 2 - 70, 95, 18)
-        else
-            lurek.render.setColor(1, 0.2, 0.2, 1)
-            text_("CRASH!", SCREEN_W / 2 - 30, 95, 18)
-        end
-
-        -- judge scores (revealed one by one)
-        lurek.render.setColor(0.15, 0.15, 0.25, 0.7)
-        rect(SCREEN_W / 2 - 140, 130, 280, 50)
-
-        for i = 1, JUDGES do
-            local jx = SCREEN_W / 2 - 120 + (i - 1) * 56
-            if i <= shown_judges then
-                local s = judge_scores[i]
-                if s >= 16 then
-                    lurek.render.setColor(0.2, 1, 0.3, 1)
-                elseif s >= 10 then
-                    lurek.render.setColor(1, 0.9, 0.3, 1)
-                else
-                    lurek.render.setColor(1, 0.4, 0.3, 1)
-                end
-                text_(tostring(s), jx + 10, 145, 22)
-            else
-                lurek.render.setColor(0.5, 0.5, 0.6, 0.5)
-                text_("?", jx + 14, 145, 22)
-            end
-        end
-
-        if shown_judges >= JUDGES then
-            local ts = total_score()
-            lurek.render.setColor(0.9, 0.8, 0.2, 1)
-            text_(string.format("Round Score: %.1f", ts), SCREEN_W / 2 - 80, 200, 20)
-
-            lurek.render.setColor(0.7, 0.7, 0.8, 0.7)
-            text_("Space to continue", SCREEN_W / 2 - 60, 240, 14)
-        end
-    end
 end

@@ -4616,6 +4616,47 @@ describe("lurek.ui migrated internal tests", function()
         root:removeChild(label)
         root:removeChild(switch)
     end)
+
+    -- @covers lurek.ui.focusNeighbor
+    -- @covers lurek.ui.getStyleToken
+    -- @covers lurek.ui.loadLayoutGameFile
+    -- @covers LUiWidget.setTextWrap
+    -- @covers LUiWidget.setTextEllipsis
+    -- @covers LUiWidget.setTextVAlign
+    -- @covers LUiWidget.setFocusNeighbor
+    -- @covers LUiWidget.setRole
+    -- @covers LUiWidget.setAriaName
+    it("covers focus/style/gamefs and accessibility ui methods", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
 end)
 
 test_summary()

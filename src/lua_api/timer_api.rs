@@ -502,21 +502,28 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "tickRealTimers",
         lua.create_function(move |lua, ()| {
             let now = std::time::Instant::now();
-            let mut timers = rt.borrow_mut();
-            let mut fired = 0u32;
-            let mut remaining = Vec::new();
-            for (deadline, key) in timers.drain(..) {
-                if now >= deadline {
-                    if let Ok(func) = lua.registry_value::<LuaFunction>(&key) {
-                        let _ = func.call::<_, ()>(());
+            let ready_keys = {
+                let mut timers = rt.borrow_mut();
+                let mut remaining = Vec::new();
+                let mut ready = Vec::new();
+                for (deadline, key) in timers.drain(..) {
+                    if now >= deadline {
+                        ready.push(key);
+                    } else {
+                        remaining.push((deadline, key));
                     }
-                    lua.remove_registry_value(key)?;
-                    fired += 1;
-                } else {
-                    remaining.push((deadline, key));
                 }
+                *timers = remaining;
+                ready
+            };
+            let mut fired = 0u32;
+            for key in ready_keys {
+                if let Ok(func) = lua.registry_value::<LuaFunction>(&key) {
+                    let _ = func.call::<_, ()>(());
+                }
+                lua.remove_registry_value(key)?;
+                fired += 1;
             }
-            *timers = remaining;
             Ok(fired)
         })?,
     )?;

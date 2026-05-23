@@ -236,6 +236,37 @@ function lurek.init()
     lurek.window.setTitle("Pinball — Lurek2D")
     lurek.render.setBackgroundColor(0.02, 0.02, 0.05)
     reset_targets()
+    
+    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/pinball/ui.toml")
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.title_flip_it = ui_root:findById("title_flip_it")
+    app_ui.ball_lost_screen = ui_root:findById("ball_lost_screen")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    
+    app_ui.score_label = ui_root:findById("score_label")
+    app_ui.high_score_label = ui_root:findById("high_score_label")
+    app_ui.balls_label = ui_root:findById("balls_label")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    
+    app_ui.multiplier_label = ui_root:findById("multiplier_label")
+    
+    app_ui.final_score = ui_root:findById("final_score")
+    app_ui.new_high_score = ui_root:findById("new_high_score")
+    
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_title = ui_root:findById("press_title")
+    
+    local function handle_action_click()
+        if state == STATE_TITLE then
+            start_game()
+        elseif state == STATE_GAME_OVER then
+            state = STATE_TITLE
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
+    if app_ui.press_title then app_ui.press_title:setOnClick(handle_action_click) end
 end
 
 local function _ready_setup()
@@ -278,18 +309,16 @@ function lurek.process(dt)
 
     -- ── TITLE ──
     if state == STATE_TITLE then
-        if lurek.input.isActionDown("plunge") then
+        if lurek.input.wasActionPressed("plunge") then
             start_game()
         end
-        return
     end
 
     -- ── GAME OVER ──
     if state == STATE_GAME_OVER then
-        if lurek.input.isActionDown("plunge") then
+        if lurek.input.wasActionPressed("plunge") then
             state = STATE_TITLE
         end
-        return
     end
 
     -- ── BALL LOST ──
@@ -304,8 +333,38 @@ function lurek.process(dt)
                 state = STATE_PLUNGING
             end
         end
-        return
     end
+    
+    -- UI Sync
+    app_ui.title_screen.visible = (state == STATE_TITLE)
+    app_ui.ball_lost_screen.visible = (state == STATE_BALL_LOST)
+    app_ui.game_over_screen.visible = (state == STATE_GAME_OVER)
+    
+    app_ui.score_label.text = string.format("SCORE: %d", display_score)
+    app_ui.high_score_label.text = string.format("HI: %d", high_score)
+    app_ui.balls_label.text = string.format("BALLS: %d", balls_left)
+    app_ui.fps_label.text = string.format("FPS: %d", math.floor(lurek.timer.getFPS()))
+    
+    if multiplier > 1 then
+        app_ui.multiplier_label.visible = true
+        app_ui.multiplier_label.text = string.format("%dX COMBO!", multiplier)
+    else
+        app_ui.multiplier_label.visible = false
+    end
+    
+    if state == STATE_TITLE then
+        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2))
+        app_ui.title_flip_it.color = {1, 1, 1, alpha}
+    elseif state == STATE_GAME_OVER then
+        app_ui.final_score.text = string.format("FINAL SCORE: %d", score)
+        if score >= high_score and score > 0 then
+            app_ui.new_high_score.visible = true
+        else
+            app_ui.new_high_score.visible = false
+        end
+    end
+    
+    if state == STATE_TITLE or state == STATE_GAME_OVER or state == STATE_BALL_LOST then return end
 
     -- ── Flipper control ──
     local left_pressed = lurek.input.isActionDown("left_flip")
@@ -580,54 +639,4 @@ end
 -- ─── Render UI — score, balls, state overlays ───────────────────────
 
 function lurek.draw_ui()
-    local fps = lurek.timer.getFPS()
-
-    -- Score bar
-    lurek.render.setColor(0.05, 0.05, 0.08, 0.9)
-    rect("fill", 0, 0, W, 28)
-
-    lurek.render.setColor(1, 1, 1, 1)
-    text_(string.format("SCORE: %d", display_score), 10, 6)
-    text_(string.format("HI: %d", high_score), W / 2 - 40, 6)
-    text_(string.format("BALLS: %d", balls_left), W - 120, 6)
-    text_(string.format("FPS: %d", fps), W - 200, 6)
-
-    -- Multiplier
-    if multiplier > 1 then
-        lurek.render.setColor(1, 1, 0, 1)
-        text_(string.format("%dX COMBO!", multiplier), TABLE_X + TABLE_W / 2 - 30, TABLE_Y - 16)
-    end
-
-    -- ── State overlays ──
-    if state == STATE_TITLE then
-        lurek.render.setColor(0, 0, 0, 0.7)
-        rect("fill", 0, 0, W, H)
-        lurek.render.setColor(1, 0.8, 0.2, 1)
-        text_("PINBALL", W / 2 - 50, H / 2 - 40)
-        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2))
-        lurek.render.setColor(1, 1, 1, alpha)
-        text_("FLIP IT", W / 2 - 40, H / 2)
-        lurek.render.setColor(0.6, 0.6, 0.7, 1)
-        text_("Press SPACE to start", W / 2 - 70, H / 2 + 40)
-    end
-
-    if state == STATE_BALL_LOST then
-        lurek.render.setColor(1, 0.3, 0.3, 0.8)
-        text_("BALL LOST", W / 2 - 40, H / 2 - 10)
-    end
-
-    if state == STATE_GAME_OVER then
-        lurek.render.setColor(0, 0, 0, 0.75)
-        rect("fill", 0, 0, W, H)
-        lurek.render.setColor(1, 0.2, 0.2, 1)
-        text_("GAME OVER", W / 2 - 50, H / 2 - 30)
-        lurek.render.setColor(1, 1, 1, 1)
-        text_(string.format("FINAL SCORE: %d", score), W / 2 - 60, H / 2 + 10)
-        if score >= high_score and score > 0 then
-            lurek.render.setColor(1, 1, 0, 1)
-            text_("NEW HIGH SCORE!", W / 2 - 55, H / 2 + 40)
-        end
-        lurek.render.setColor(0.6, 0.6, 0.7, 1)
-        text_("Press SPACE", W / 2 - 40, H / 2 + 70)
-    end
 end

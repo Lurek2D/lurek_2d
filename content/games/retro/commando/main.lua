@@ -112,6 +112,8 @@ local COVER_TREE    = 3
 -- Tile
 local TILE_SIZE = 40
 
+local app_ui = {}
+
 -- ---------------------------------------------------------------------------
 -- Game state
 -- ---------------------------------------------------------------------------
@@ -471,6 +473,23 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.08, 0.18, 0.06)
     cam = lurek.camera.new()
     cam:setPosition(0, 0)
+    
+    lurek.ui.loadLayoutFile("content/games/retro/commando/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_high_score = ui_root:findById("go_high_score")
+    
+    app_ui.hud_screen = ui_root:findById("hud_screen")
+    app_ui.hud_score = ui_root:findById("hud_score")
+    app_ui.hud_lives = ui_root:findById("hud_lives")
+    app_ui.hud_grenades = ui_root:findById("hud_grenades")
+    app_ui.hud_dist = ui_root:findById("hud_dist")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.hud_high_score = ui_root:findById("hud_high_score")
 end
 
 -- ---------------------------------------------------------------------------
@@ -759,6 +778,30 @@ function lurek.process(dt)
 
     update_particles(dt)
     update_score_pops(dt)
+    
+    -- Sync UI
+    app_ui.title_screen.visible = (current_state == STATE.TITLE)
+    app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
+    app_ui.hud_screen.visible = (current_state == STATE.PLAYING)
+    
+    if current_state == STATE.GAME_OVER then
+        app_ui.go_score.text = "Score: " .. score
+        app_ui.go_high_score.text = "High Score: " .. high_score
+    end
+    
+    if current_state == STATE.PLAYING then
+        app_ui.hud_score.text = "SCORE: " .. score
+        app_ui.hud_lives.text = "LIVES: " .. lives
+        app_ui.hud_grenades.text = "GRENADES: " .. grenades
+        app_ui.hud_dist.text = "DIST: " .. math.floor(distance)
+        app_ui.fps_label.text = "FPS: " .. lurek.timer.getFPS()
+        if high_score > 0 then
+            app_ui.hud_high_score.visible = true
+            app_ui.hud_high_score.text = "HI: " .. high_score
+        else
+            app_ui.hud_high_score.visible = false
+        end
+    end
 end
 
 -- ---------------------------------------------------------------------------
@@ -853,52 +896,4 @@ end
 -- lurek.render_ui — HUD overlay
 -- ---------------------------------------------------------------------------
 function lurek.draw_ui()
-    if current_state == STATE.TITLE then
-        -- Title screen
-        lurek.render.setColor(0.2, 0.8, 0.15, 1)
-        text_("COMMANDO", SCREEN_W / 2 - 60, SCREEN_H / 2 - 60)
-        lurek.render.setColor(0.9, 0.9, 0.7, 1)
-        text_("PRESS ENTER", SCREEN_W / 2 - 50, SCREEN_H / 2 + 10)
-        lurek.render.setColor(0.6, 0.6, 0.5, 1)
-        text_("WASD - Move   SPACE - Fire   G - Grenade", SCREEN_W / 2 - 140, SCREEN_H / 2 + 50)
-        text_("Rescue POWs for bonus points!", SCREEN_W / 2 - 110, SCREEN_H / 2 + 75)
-        return
-    end
-
-    if current_state == STATE.GAME_OVER then
-        lurek.render.setColor(1, 0.2, 0.15, 1)
-        text_("GAME OVER", SCREEN_W / 2 - 50, SCREEN_H / 2 - 40)
-        lurek.render.setColor(1, 1, 0.8, 1)
-        text_("Score: " .. score, SCREEN_W / 2 - 40, SCREEN_H / 2)
-        text_("High Score: " .. high_score, SCREEN_W / 2 - 55, SCREEN_H / 2 + 25)
-        lurek.render.setColor(0.7, 0.7, 0.6, 1)
-        text_("PRESS ENTER", SCREEN_W / 2 - 50, SCREEN_H / 2 + 60)
-        return
-    end
-
-    -- HUD — top bar
-    lurek.render.setColor(0, 0, 0, 0.5)
-    rect("fill", 0, 0, SCREEN_W, 24)
-
-    lurek.render.setColor(1, 1, 0.8, 1)
-    text_("SCORE: " .. score, 10, 4)
-
-    lurek.render.setColor(0.3, 1, 0.3, 1)
-    text_("LIVES: " .. lives, 200, 4)
-
-    lurek.render.setColor(0.9, 0.7, 0.2, 1)
-    text_("GRENADES: " .. grenades, 340, 4)
-
-    lurek.render.setColor(0.7, 0.8, 1, 1)
-    text_("DIST: " .. math.floor(distance), 530, 4)
-
-    local fps = lurek.timer.getFPS()
-    lurek.render.setColor(0.5, 0.5, 0.5, 0.8)
-    text_("FPS: " .. fps, SCREEN_W - 80, 4)
-
-    -- High score
-    if high_score > 0 then
-        lurek.render.setColor(0.8, 0.8, 0.3, 0.7)
-        text_("HI: " .. high_score, SCREEN_W - 80, SCREEN_H - 20)
-    end
 end
