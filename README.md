@@ -13,6 +13,7 @@
 - **Yes, if** you want to build 2D desktop games in **Lua** and have the heavy systems (render/audio/physics/IO) handled by **Rust**.
 - **Yes, if** you value fast prototyping, moddability, and a clean API under `lurek.*`.
 - **Yes, if** you want docs, tests, examples, reference games, and AI workflow tooling in one repo.
+- **Yes, if** you want work without AI or just with basic AI assistance, its AI-first, not AI-native !
 - **Probably not**, if you need a mobile/web-first engine or an all-in-one closed editor.
 
 ## TL;DR
