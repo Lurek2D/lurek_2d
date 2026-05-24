@@ -1,5 +1,5 @@
 # rpg_dialogue.toml — NPC dialogue box with portrait and choice buttons
-# Viewport: 1280 × 720 (box anchored to bottom of screen)
+# Viewport: 1280 × 240 (dialogue strip; in-game it is anchored to screen bottom)
 # Contains: portrait frame, speaker name, dialogue text, 3 choice buttons, skip
 
 [root]

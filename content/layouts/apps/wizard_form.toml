@@ -185,7 +185,7 @@ group = "role"
 x = 40.0
 y = 184.0
 w = 200.0
-h = 32.0
+h = 24.0
 checked = true
 
 [[root.children]]
@@ -196,7 +196,7 @@ group = "role"
 x = 40.0
 y = 224.0
 w = 200.0
-h = 32.0
+h = 24.0
 
 [[root.children]]
 widget_type = "radiobutton"
@@ -206,7 +206,7 @@ group = "role"
 x = 40.0
 y = 256.0
 w = 224.0
-h = 32.0
+h = 24.0
 
 [[root.children]]
 widget_type = "radiobutton"
@@ -216,7 +216,7 @@ group = "role"
 x = 40.0
 y = 288.0
 w = 200.0
-h = 32.0
+h = 24.0
 
 [[root.children]]
 widget_type = "label"

@@ -291,7 +291,7 @@ id = "status_bar"
 text = "42 items  |  Selected: report.pdf (1.4 MB)"
 x = 8.0
 y = 680.0
-w = 840.0
+w = 808.0
 h = 24.0
 
 [[root.children]]

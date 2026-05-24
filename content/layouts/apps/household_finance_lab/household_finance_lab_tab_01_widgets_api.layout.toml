@@ -42,7 +42,7 @@ widget_type = "label"
 id = "member_label"
 text = "Member"
 x = 16.0
-y = 80.0
+y = 76.0
 w = 128.0
 h = 16.0
 
@@ -51,7 +51,7 @@ widget_type = "label"
 id = "category_label"
 text = "Category"
 x = 160.0
-y = 80.0
+y = 76.0
 w = 160.0
 h = 16.0
 
@@ -60,7 +60,7 @@ widget_type = "label"
 id = "from_label"
 text = "From"
 x = 336.0
-y = 80.0
+y = 76.0
 w = 128.0
 h = 16.0
 
@@ -69,7 +69,7 @@ widget_type = "label"
 id = "to_label"
 text = "To"
 x = 480.0
-y = 80.0
+y = 76.0
 w = 128.0
 h = 16.0
 
@@ -78,7 +78,7 @@ widget_type = "label"
 id = "clean_label"
 text = "Clean"
 x = 624.0
-y = 80.0
+y = 76.0
 w = 96.0
 h = 16.0
 
@@ -87,7 +87,7 @@ widget_type = "label"
 id = "score_label"
 text = "Score"
 x = 736.0
-y = 80.0
+y = 76.0
 w = 128.0
 h = 16.0
 
@@ -96,7 +96,7 @@ widget_type = "combobox"
 id = "member_combo"
 text = "All|Anna|Marek|Ola|Kuba|Luna"
 x = 16.0
-y = 96.0
+y = 100.0
 w = 128.0
 h = 32.0
 
@@ -105,7 +105,7 @@ widget_type = "combobox"
 id = "category_combo"
 text = "All|income|groceries|housing|utilities|transport"
 x = 160.0
-y = 96.0
+y = 100.0
 w = 160.0
 h = 32.0
 
@@ -113,7 +113,7 @@ h = 32.0
 widget_type = "slider"
 id = "year_from"
 x = 336.0
-y = 96.0
+y = 100.0
 w = 128.0
 h = 32.0
 
@@ -121,7 +121,7 @@ h = 32.0
 widget_type = "slider"
 id = "year_to"
 x = 480.0
-y = 96.0
+y = 100.0
 w = 128.0
 h = 32.0
 
@@ -129,7 +129,7 @@ h = 32.0
 widget_type = "switch"
 id = "clean_switch"
 x = 624.0
-y = 96.0
+y = 100.0
 w = 96.0
 h = 32.0
 
@@ -137,7 +137,7 @@ h = 32.0
 widget_type = "slider"
 id = "score_threshold"
 x = 736.0
-y = 96.0
+y = 100.0
 w = 128.0
 h = 32.0
 
@@ -146,7 +146,7 @@ widget_type = "button"
 id = "regen_btn"
 text = "Regen"
 x = 880.0
-y = 96.0
+y = 100.0
 w = 80.0
 h = 32.0
 
@@ -155,7 +155,7 @@ widget_type = "button"
 id = "reload_btn"
 text = "Reload"
 x = 976.0
-y = 96.0
+y = 100.0
 w = 80.0
 h = 32.0
 
@@ -164,7 +164,7 @@ widget_type = "button"
 id = "save_btn"
 text = "Save"
 x = 1072.0
-y = 96.0
+y = 100.0
 w = 64.0
 h = 32.0
 
@@ -173,7 +173,7 @@ widget_type = "button"
 id = "shot_btn"
 text = "Shot"
 x = 1152.0
-y = 96.0
+y = 100.0
 w = 32.0
 h = 32.0
 

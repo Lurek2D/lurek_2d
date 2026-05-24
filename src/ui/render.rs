@@ -455,7 +455,7 @@ fn emit_highlight(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderC
         h: strip_h,
     });
 }
-/// Emit a filled progress track and circular thumb for a slider widget.
+/// Emit a filled progress track and rectangular thumb for a slider widget.
 fn emit_slider(
     base: &WidgetBase,
     value: f64,
@@ -479,15 +479,17 @@ fn emit_slider(
             h: base.height,
         });
     }
-    let thumb_cx = base.x + fill_w;
-    let thumb_cy = base.y + base.height * 0.5;
-    let thumb_r = (base.height * 0.5 - 1.0).max(2.0);
+    let thumb_w = (base.height * 0.35).clamp(4.0, 12.0);
+    let thumb_h = (base.height - 2.0).max(6.0);
+    let thumb_x = (base.x + fill_w - thumb_w * 0.5).clamp(base.x, base.x + (base.width - thumb_w).max(0.0));
+    let thumb_y = base.y + (base.height - thumb_h) * 0.5;
     cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
-    cmds.push(RenderCommand::Circle {
+    cmds.push(RenderCommand::Rectangle {
         mode: DrawMode::Fill,
-        x: thumb_cx,
-        y: thumb_cy,
-        r: thumb_r,
+        x: thumb_x,
+        y: thumb_y,
+        w: thumb_w,
+        h: thumb_h,
     });
 }
 /// Emit a filled progress fill rectangle proportional to `value` in `[min, max]`.
@@ -538,18 +540,19 @@ fn emit_checkbox(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderCo
         y2: cy - s,
     });
 }
-/// Emit a filled circle indicating a selected radio button.
+/// Emit a filled square marker indicating a selected radio button.
 fn emit_radio_button(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderCommand>) {
-    let r = (base.height * 0.5 - 3.0).max(2.0);
-    let cx = base.x + base.height * 0.5;
-    let cy = base.y + base.height * 0.5;
+    let side = (base.height - 6.0).clamp(8.0, 14.0);
+    let x = base.x + 3.0;
+    let y = base.y + (base.height - side) * 0.5;
     let [fr, fg, fb, fa] = style.fg_color;
     cmds.push(RenderCommand::SetColor(fr, fg, fb, fa));
-    cmds.push(RenderCommand::Circle {
+    cmds.push(RenderCommand::Rectangle {
         mode: DrawMode::Fill,
-        x: cx,
-        y: cy,
-        r,
+        x,
+        y,
+        w: side,
+        h: side,
     });
 }
 /// Emit a downward-pointing triangle drop-arrow at the right edge of a combo box.
@@ -640,7 +643,7 @@ fn emit_spin_box(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderCo
         y3: mid_y - s * 0.5,
     });
 }
-/// Emit a rounded track and interpolated thumb for a toggle switch; `thumb_t` is the thumb position in `[0.0, 1.0]`.
+/// Emit a rounded track and interpolated rectangular thumb for a toggle switch; `thumb_t` is the thumb position in `[0.0, 1.0]`.
 fn emit_switch(
     base: &WidgetBase,
     on: bool,
@@ -664,15 +667,18 @@ fn emit_switch(
         ry: base.height * 0.5,
     });
     let t = thumb_t.clamp(0.0, 1.0);
-    let thumb_r = (base.height * 0.5 - 2.0).max(2.0);
-    let thumb_cx = base.x + thumb_r + 2.0 + (base.width - (thumb_r + 2.0) * 2.0).max(0.0) * t;
-    let thumb_cy = base.y + base.height * 0.5;
+    let thumb_h = (base.height - 4.0).max(6.0);
+    let thumb_w = (thumb_h * 0.6).clamp(4.0, 12.0);
+    let travel = (base.width - thumb_w - 4.0).max(0.0);
+    let thumb_x = base.x + 2.0 + travel * t;
+    let thumb_y = base.y + (base.height - thumb_h) * 0.5;
     cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
-    cmds.push(RenderCommand::Circle {
+    cmds.push(RenderCommand::Rectangle {
         mode: DrawMode::Fill,
-        x: thumb_cx,
-        y: thumb_cy,
-        r: thumb_r,
+        x: thumb_x,
+        y: thumb_y,
+        w: thumb_w,
+        h: thumb_h,
     });
 }
 /// Emit the display text of a badge centred inside its bounding box.
@@ -963,10 +969,13 @@ fn render_widget(
     let font = fonts.get(font_key);
     let style_with_alpha = resolve_style_with_alpha(ctx, base, default_style);
     let style = &style_with_alpha;
-    emit_shadow(base, style, cmds);
-    emit_box(base, style, cmds);
-    if style.highlight_alpha > 0.0 {
-        emit_highlight(base, style, cmds);
+    let draw_widget_chrome = !matches!(widget, WidgetKind::Label(_));
+    if draw_widget_chrome {
+        emit_shadow(base, style, cmds);
+        emit_box(base, style, cmds);
+        if style.highlight_alpha > 0.0 {
+            emit_highlight(base, style, cmds);
+        }
     }
     match widget {
         WidgetKind::Slider(w) => {
@@ -1792,79 +1801,82 @@ impl GuiContext {
             let h = rect.height.max(1.0) as u32;
             let style_with_alpha = resolve_style_with_alpha(&layout_ctx, base, &default_style);
             let style = &style_with_alpha;
-            let [sr, sg, sb, sa] = style.shadow_color;
-            if sa > 0.0 {
-                let sx = x + style.shadow_offset[0] as i32;
-                let sy = y + style.shadow_offset[1] as i32;
-                img.draw_rect(
-                    sx,
-                    sy,
-                    w,
-                    h,
-                    (sr * 255.0) as u8,
-                    (sg * 255.0) as u8,
-                    (sb * 255.0) as u8,
-                    (sa * 255.0) as u8,
-                );
-            }
-            let [r0, g0, b0, a0] = style.bg_color;
-            if let Some([r1, g1, b1, _a1]) = style.gradient_end {
-                for py in 0..h {
-                    let t = if h <= 1 {
-                        0.0
-                    } else {
-                        py as f32 / (h - 1) as f32
-                    };
-                    let rr = r0 + (r1 - r0) * t;
-                    let gg = g0 + (g1 - g0) * t;
-                    let bb = b0 + (b1 - b0) * t;
+            let draw_widget_chrome = !matches!(widget, WidgetKind::Label(_));
+            if draw_widget_chrome {
+                let [sr, sg, sb, sa] = style.shadow_color;
+                if sa > 0.0 {
+                    let sx = x + style.shadow_offset[0] as i32;
+                    let sy = y + style.shadow_offset[1] as i32;
+                    img.draw_rect(
+                        sx,
+                        sy,
+                        w,
+                        h,
+                        (sr * 255.0) as u8,
+                        (sg * 255.0) as u8,
+                        (sb * 255.0) as u8,
+                        (sa * 255.0) as u8,
+                    );
+                }
+                let [r0, g0, b0, a0] = style.bg_color;
+                if let Some([r1, g1, b1, _a1]) = style.gradient_end {
+                    for py in 0..h {
+                        let t = if h <= 1 {
+                            0.0
+                        } else {
+                            py as f32 / (h - 1) as f32
+                        };
+                        let rr = r0 + (r1 - r0) * t;
+                        let gg = g0 + (g1 - g0) * t;
+                        let bb = b0 + (b1 - b0) * t;
+                        img.draw_rect(
+                            x,
+                            y + py as i32,
+                            w,
+                            1,
+                            (rr * 255.0) as u8,
+                            (gg * 255.0) as u8,
+                            (bb * 255.0) as u8,
+                            (a0 * 255.0) as u8,
+                        );
+                    }
+                } else {
                     img.draw_rect(
                         x,
-                        y + py as i32,
+                        y,
                         w,
-                        1,
-                        (rr * 255.0) as u8,
-                        (gg * 255.0) as u8,
-                        (bb * 255.0) as u8,
+                        h,
+                        (r0 * 255.0) as u8,
+                        (g0 * 255.0) as u8,
+                        (b0 * 255.0) as u8,
                         (a0 * 255.0) as u8,
                     );
                 }
-            } else {
-                img.draw_rect(
-                    x,
-                    y,
-                    w,
-                    h,
-                    (r0 * 255.0) as u8,
-                    (g0 * 255.0) as u8,
-                    (b0 * 255.0) as u8,
-                    (a0 * 255.0) as u8,
-                );
-            }
-            if style.highlight_alpha > 0.0 {
-                let hi = (style.highlight_alpha.clamp(0.0, 1.0) * 140.0) as u8;
-                let strip_h = (style.border_width.max(2.0)) as u32;
-                img.draw_rect(
-                    x + 1,
-                    y + 1,
-                    w.saturating_sub(2),
-                    strip_h,
-                    255,
-                    255,
-                    255,
-                    hi,
-                );
-            }
-            if style.border_width > 0.0 {
-                let [br, bg, bb, ba] = style.border_color;
-                let br = (br * 255.0) as u8;
-                let bg = (bg * 255.0) as u8;
-                let bb = (bb * 255.0) as u8;
-                let ba = (ba * 255.0) as u8;
-                img.draw_rect(x, y, w, 1, br, bg, bb, ba);
-                img.draw_rect(x, y + h as i32 - 1, w, 1, br, bg, bb, ba);
-                img.draw_rect(x, y, 1, h, br, bg, bb, ba);
-                img.draw_rect(x + w as i32 - 1, y, 1, h, br, bg, bb, ba);
+                if style.highlight_alpha > 0.0 {
+                    let hi = (style.highlight_alpha.clamp(0.0, 1.0) * 140.0) as u8;
+                    let strip_h = (style.border_width.max(2.0)) as u32;
+                    img.draw_rect(
+                        x + 1,
+                        y + 1,
+                        w.saturating_sub(2),
+                        strip_h,
+                        255,
+                        255,
+                        255,
+                        hi,
+                    );
+                }
+                if style.border_width > 0.0 {
+                    let [br, bg, bb, ba] = style.border_color;
+                    let br = (br * 255.0) as u8;
+                    let bg = (bg * 255.0) as u8;
+                    let bb = (bb * 255.0) as u8;
+                    let ba = (ba * 255.0) as u8;
+                    img.draw_rect(x, y, w, 1, br, bg, bb, ba);
+                    img.draw_rect(x, y + h as i32 - 1, w, 1, br, bg, bb, ba);
+                    img.draw_rect(x, y, 1, h, br, bg, bb, ba);
+                    img.draw_rect(x + w as i32 - 1, y, 1, h, br, bg, bb, ba);
+                }
             }
             let [frc, fgc, fbc, _fa] = style.fg_color;
             let fr = (frc * 255.0) as u8;
@@ -1886,8 +1898,16 @@ impl GuiContext {
                         fb,
                         255,
                     );
-                    let knob_x = x + fill_w as i32 - 2;
-                    img.draw_circle(knob_x, y + h as i32 / 2, (h / 3).max(3), 220, 230, 240, 255);
+                    let knob_w = ((h as f32) * 0.35).clamp(4.0, 12.0) as u32;
+                    let knob_h = h.saturating_sub(2).max(6);
+                    let mut knob_x = x + fill_w as i32 - (knob_w as i32 / 2);
+                    let max_x = x + w as i32 - knob_w as i32;
+                    if knob_x < x {
+                        knob_x = x;
+                    } else if knob_x > max_x {
+                        knob_x = max_x;
+                    }
+                    img.draw_rect(knob_x, y + ((h as i32 - knob_h as i32) / 2), knob_w, knob_h, 220, 230, 240, 255);
                     skip_text = true;
                 }
                 WidgetKind::ProgressBar(pb) => {
@@ -1983,16 +2003,11 @@ impl GuiContext {
                     let ty_off = (h - track_h) / 2;
                     let (on_r, on_g, on_b) = if sw.on { (70, 170, 100) } else { (60, 65, 80) };
                     img.draw_rect(x, y + ty_off as i32, w, track_h, on_r, on_g, on_b, 255);
-                    let thumb_x = x + (sw.thumb_t * (w as f32 - track_h as f32)).max(0.0) as i32;
-                    img.draw_circle(
-                        thumb_x + track_h as i32 / 2,
-                        y + (h / 2) as i32,
-                        ((track_h / 2).saturating_sub(1)).max(2),
-                        220,
-                        230,
-                        240,
-                        255,
-                    );
+                    let thumb_h = track_h.saturating_sub(4).max(6);
+                    let thumb_w = ((thumb_h as f32) * 0.6).clamp(4.0, 12.0) as u32;
+                    let travel = (w.saturating_sub(thumb_w + 4)) as f32;
+                    let thumb_x = x + 2 + (sw.thumb_t.clamp(0.0, 1.0) * travel) as i32;
+                    img.draw_rect(thumb_x, y + ((h as i32 - thumb_h as i32) / 2), thumb_w, thumb_h, 220, 230, 240, 255);
                     skip_text = true;
                 }
                 WidgetKind::CheckBox(cb) => {
@@ -2038,16 +2053,28 @@ impl GuiContext {
                     skip_text = true;
                 }
                 WidgetKind::RadioButton(rb) => {
-                    let r = (((h as i32) / 2 - 2).max(3)) as u32;
-                    let cx = x + r as i32 + 3;
-                    let cy = y + h as i32 / 2;
-                    img.draw_circle(cx, cy, r, 90, 95, 115, 255);
-                    img.draw_circle(cx, cy, r.saturating_sub(1).max(1), 28, 30, 44, 255);
+                    let box_sz = (h as i32).clamp(10, 14);
+                    let bx = x + 3;
+                    let by = y + (h as i32 - box_sz) / 2;
+                    img.draw_rect(bx, by, box_sz as u32, box_sz as u32, 90, 95, 115, 255);
+                    img.draw_rect(
+                        bx + 1,
+                        by + 1,
+                        (box_sz - 2).max(0) as u32,
+                        (box_sz - 2).max(0) as u32,
+                        28,
+                        30,
+                        44,
+                        255,
+                    );
                     if rb.selected {
-                        img.draw_circle(cx, cy, (r / 2).max(2), fr, fg, fb, 255);
+                        let inner = ((box_sz as f32) * 0.45).round() as i32;
+                        let ix = bx + ((box_sz - inner) / 2);
+                        let iy = by + ((box_sz - inner) / 2);
+                        img.draw_rect(ix, iy, inner.max(2) as u32, inner.max(2) as u32, fr, fg, fb, 255);
                     }
                     if !rb.text.is_empty() {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &rb.text, cx + r as i32 + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(&mut img, ui_font.as_ref(), &rb.text, bx + box_sz + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
                     }
                     skip_text = true;
                 }

@@ -97,7 +97,7 @@ text = "Set up project structure"
 x = 24.0
 y = 176.0
 w = 344.0
-h = 32.0
+h = 24.0
 checked = true
 
 [[root.children]]
@@ -117,7 +117,7 @@ text = "Write unit tests"
 x = 24.0
 y = 208.0
 w = 344.0
-h = 32.0
+h = 24.0
 checked = false
 
 [[root.children]]
@@ -137,7 +137,7 @@ text = "Review pull requests"
 x = 24.0
 y = 248.0
 w = 344.0
-h = 32.0
+h = 24.0
 checked = false
 
 [[root.children]]
@@ -157,7 +157,7 @@ text = "Update documentation"
 x = 24.0
 y = 288.0
 w = 344.0
-h = 32.0
+h = 24.0
 checked = true
 
 [[root.children]]
@@ -177,7 +177,7 @@ text = "Deploy to staging"
 x = 24.0
 y = 328.0
 w = 344.0
-h = 32.0
+h = 24.0
 checked = false
 
 [[root.children]]

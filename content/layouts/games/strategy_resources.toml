@@ -1,5 +1,5 @@
 # strategy_resources.toml — Real-time strategy top resource bar
-# Viewport: 1280 × 40  (anchored to top of screen)
+# Viewport: 1280 × 48  (anchored to top of screen)
 # Contains: 5 resource counts (Food / Wood / Stone / Gold / Population),
 #           turn counter, game speed controls, end-turn button
 

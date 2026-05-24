@@ -22,7 +22,7 @@ id = "track_title"
 text = "Midnight Drive"
 x = 176.0
 y = 24.0
-w = 304.0
+w = 264.0
 h = 32.0
 
 [[root.children]]

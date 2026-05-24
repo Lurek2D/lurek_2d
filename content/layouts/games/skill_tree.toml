@@ -1,5 +1,5 @@
 # skill_tree.toml — Character skill / ability unlock screen
-# Viewport: 900 × 640  (overlay window)
+# Viewport: 904 × 640  (overlay window)
 # Contains: available points display, 8 skill rows (icon + name + desc + unlock btn),
 #           total cost preview, reset & confirm buttons
 

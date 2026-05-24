@@ -1,5 +1,5 @@
 # settings_menu.toml — Game settings screen (Video / Audio / Controls tabs)
-# Viewport: 900 × 640 (overlay window)
+# Viewport: 904 × 640 (overlay window)
 # Contains: tab bar, video settings (resolution, fullscreen, vsync, gamma),
 #           audio settings (master/music/sfx/voice sliders), Apply / Cancel
 
@@ -56,7 +56,7 @@ text = "Enable fullscreen"
 x = 192.0
 y = 144.0
 w = 224.0
-h = 32.0
+h = 24.0
 checked = true
 
 [[root.children]]
@@ -74,7 +74,7 @@ text = "Enable VSync"
 x = 192.0
 y = 192.0
 w = 224.0
-h = 32.0
+h = 24.0
 checked = true
 
 [[root.children]]

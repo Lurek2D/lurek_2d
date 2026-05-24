@@ -655,3 +655,153 @@ The primary requirement for these editors is that they **must generate and save 
   - Day/Night cycle terminator line simulation.
   - Export coordinates directly to Lua vector representations.
   - Pole distortion severity warning visualization.
+
+### 32. NavMeshEditor
+- **Reference / Inspiration:** Godot NavigationPolygon, Unity NavMesh (2D adapted).
+- **Use case:** Drawing walkable and obstacle polygons for free-form 2D navigation.
+- **Lurek API Integration:** Generates polygon arrays consumed natively by `lurek.pathfind` for A* routing.
+- **Ideas / Vision:** Essential for point-and-click or aRPG games where agents navigate off-grid. Completely distinct from TileMap or WorldMap; this provides actual vector-based movement areas.
+- **Feature list:**
+  - Polygon drawing and vertex snapping tools over the game map.
+  - Subtraction tools for cutting holes (obstacles) in walkable areas.
+  - Bake configuration for agent radius offsets.
+  - Multi-layer navigation linking (e.g. ground vs water).
+  - Visualization overlay of the final baked navigation mesh.
+  - Dynamic obstacle insertion rules.
+  - Cost modifiers assigned to specific polygons (e.g. swamp is slower).
+  - Export to optimized 2D vertex arrays for fast pathfinding.
+
+### 33. SkeletonRiggingEditor
+- **Reference / Inspiration:** Spine 2D, Godot 2D Skeleton/Polygon2D.
+- **Use case:** Rigging 2D sprites with bones for procedural deformation animation.
+- **Lurek API Integration:** Integrates directly with `lurek.spine` to manage skeletal hierarchy.
+- **Ideas / Vision:** Avoids reliance on external software (Spine) for basic 2D rigging. Allows creating fluid boss animations using vertex weights and Inverse Kinematics (IK) instead of drawing 50 individual sprite frames.
+- **Feature list:**
+  - Bone placement and hierarchical parent/child linking.
+  - Inverse Kinematics (IK) chain creation for limbs.
+  - Polygon mesh generation over 2D sprites.
+  - Vertex weight painting assigned to specific bones.
+  - Animation timeline for keyframing bone rotations and IK targets.
+  - Skin switching (swapping texture while keeping the rig).
+  - Real-time physics ragdoll testing sandbox.
+  - Export to `lurek.spine` native data format.
+
+### 34. VisualShaderEditor
+- **Reference / Inspiration:** Godot VisualShader, Unity Shader Graph.
+- **Use case:** Creating fragment, vertex, and compute shaders via a visual node interface.
+- **Lurek API Integration:** Translates node logic into raw code for `lurek.compute` and `lurek.pipeline`.
+- **Ideas / Vision:** Enables technical artists to build complex visual effects (like flowing water or dissolve transitions) without writing mathematical GLSL code.
+- **Feature list:**
+  - Infinite node canvas with math, texture, and logic blocks.
+  - Real-time preview sphere/sprite updating with every connection.
+  - Automatic conversion of nodes to optimized shader code.
+  - Uniform variable exposure for the main properties inspector.
+  - Sub-graph creation for reusable shader functions.
+  - Built-in time and screen-UV coordinate nodes.
+  - Vertex displacement logic implementation.
+  - Compute shader dispatch node configuration.
+
+### 35. LightingEnvironmentEditor
+- **Reference / Inspiration:** Godot WorldEnvironment, 2D Lights & Shadows.
+- **Use case:** Configuring global ambient lighting, 2D shadows, and Global Illumination (GI).
+- **Lurek API Integration:** Direct configuration of the `lurek.light` system.
+- **Ideas / Vision:** Elevates the 2D aesthetic by adding dynamic shadows and ambient occlusion. It shifts Lurek2D from flat pixel art to a modern 2D lit environment.
+- **Feature list:**
+  - Ambient light color and energy scaling.
+  - 2D Point Light and Directional Light placement.
+  - Shadow caster polygon drawing tools.
+  - 2D Global Illumination (GI) bounce intensity tuning.
+  - Normal map visualization for 2D sprites.
+  - Signed Distance Field (SDF) baking configuration.
+  - Light culling mask layer assignments.
+  - Volumetric fog/haze density sliders.
+
+### 36. GuiThemeEditor
+- **Reference / Inspiration:** Godot Theme Editor.
+- **Use case:** Establishing global CSS styling constants for all UI widgets.
+- **Lurek API Integration:** Generates global CSS stylesheets injected into `lurek.html`.
+- **Ideas / Vision:** Separates UI layout (GuiWidgetEditor) from UI styling. Ensures that changing the "Button" color updates across the entire game immediately, preventing hardcoded styles.
+- **Feature list:**
+  - Component-specific styling (Buttons, Sliders, TextBoxes).
+  - State configuration (Normal, Hover, Pressed, Disabled).
+  - Border radius, box-shadow, and stroke editing.
+  - Nine-patch scale configuration for UI panels.
+  - Custom font assignment and baseline shifting.
+  - CSS variable generation and overriding.
+  - Live preview across a sample "UI Gallery".
+  - Theme exporting to global `.css` files.
+
+### 37. NetworkTopologyEditor
+- **Reference / Inspiration:** Godot MultiplayerSynchronizer/Spawner, Photon PUN.
+- **Use case:** Defining multiplayer authority, synchronization targets, and RPCs.
+- **Lurek API Integration:** Configures data packet rules for `lurek.network`.
+- **Ideas / Vision:** Makes netcode visual. Instead of coding serialization by hand, developers define which entity variables are synchronized over the network and who owns them (Server vs Client).
+- **Feature list:**
+  - Variable synchronization tagging (Position, Health, State).
+  - RPC (Remote Procedure Call) registration and permissions.
+  - Authority delegation (Server authoritative vs Client prediction).
+  - Network interpolation and extrapolation smoothing settings.
+  - Entity spawning/despawning replication rules.
+  - Bandwidth consumption estimator based on sync rate.
+  - Simulated latency and packet-loss testing environment.
+  - Export to optimized network manifest configurations.
+
+### 38. GlobalAutoloadEditor
+- **Reference / Inspiration:** Godot Autoloads / Project Settings.
+- **Use case:** Managing persistent global singletons and services that survive scene loads.
+- **Lurek API Integration:** Registers modules via `lurek.system` and `lurek.scene`.
+- **Ideas / Vision:** Solves the problem of "where do I put the player's inventory across levels?". Provides a clean registry for persistent Lua scripts.
+- **Feature list:**
+  - Singleton script registration table.
+  - Load order prioritization (who boots first).
+  - Scene-agnostic persistent data viewing.
+  - Hot-reloading toggles for specific singletons.
+  - Dependency injection mapping.
+  - Boot initialization timing (Pre-engine vs Post-engine ready).
+  - Export to core boot configuration files.
+  - Isolation sandbox configuration for secure modules.
+
+### 39. AssetManifestEditor
+- **Reference / Inspiration:** Godot ResourcePreloader, Unity Addressables.
+- **Use case:** Grouping and managing asynchronous asset loading packages.
+- **Lurek API Integration:** Configures preload groups for `lurek.filesystem`.
+- **Ideas / Vision:** Prevents mid-game stutter by explicitly defining what needs to be in RAM for Level 1 vs Level 2. Essential for memory management on lower-end devices.
+- **Feature list:**
+  - Grouping assets into named "Loading Buckets".
+  - RAM consumption estimation per bucket.
+  - Priority queuing for asynchronous background loading.
+  - Missing asset dependency detection.
+  - Unused asset highlighting and purging.
+  - Automatic packing into encrypted `.pak` files.
+  - Live VRAM memory visualization per group.
+  - Loading screen progress bar integration hooks.
+
+### 40. PerformanceProfilerEditor
+- **Reference / Inspiration:** Godot Debugger Monitors, Unity Profiler.
+- **Use case:** Visualizing real-time game performance and bottlenecks.
+- **Lurek API Integration:** Hooks directly into telemetry from `lurek.devtools` and `lurek.debugbridge`.
+- **Ideas / Vision:** The command center for optimization. Ensures 2D games run at a locked 60FPS by exposing Lua GC pauses and draw-call spikes.
+- **Feature list:**
+  - Real-time frame-time line graphs (CPU vs GPU).
+  - Lua Garbage Collection pause monitoring.
+  - VRAM and RAM consumption tracking.
+  - Draw call and batch count tracking.
+  - Heavy function execution time highlighting (Flame graphs).
+  - Physics step simulation timing.
+  - Remote profiling of built executables over network.
+  - Snapshot saving for performance regression comparison.
+
+### 41. ProjectExportEditor
+- **Reference / Inspiration:** Godot Export Profiles, Unity Build Settings.
+- **Use case:** Configuring platform-specific build settings and compiling the game.
+- **Lurek API Integration:** Interfaces with `lurek.engine` and `lurek.system` compilation flags.
+- **Ideas / Vision:** The final step. Replaces writing manual Cargo build scripts with a visual UI to set app icons, window sizing, and platform targeting.
+- **Feature list:**
+  - Target platform selection (Windows, Linux, macOS).
+  - Application icon assignment per platform resolution.
+  - Window configuration (Resizable, Borderless, Fullscreen, V-Sync).
+  - Feature flag toggles (e.g., Disable Console in Release build).
+  - Security and permission configurations.
+  - File exclusion filters (e.g., ignore `.psd` files on build).
+  - Archive encryption setting configuration.
+  - One-click build triggering and progress monitoring.
