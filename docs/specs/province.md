@@ -1,15 +1,17 @@
 # province
 
+## TL;DR
+
+- The module now also includes a local-only province economy domain model in `economy.rs`.
+
 ## General Info
 
 - Module group: `Edge/Integration`
 - Source path: `src/province/`
 - Lua API path(s): `src/lua_api/province_api.rs`
 - Primary Lua namespace: `lurek.province`
- Rust test path(s): tests/rust/unit/province_tests.rs and tests/rust/unit/province_economy_tests.rs
+- Rust test path(s): tests/rust/unit/province_tests.rs and tests/rust/unit/province_economy_tests.rs
 - Lua test path(s): None found in the workspace
-
-The module now also includes a local-only province economy domain model in `economy.rs`. It models `population`, `food_stockpile`, and `gold_stockpile` per province, resolves monthly consumption/growth/tax locally, and plans daily physical shipments for upstream gold and downstream food. Shipment launch requires real origin cargo; there is no empire-wide hidden shared pool.
 
 ## Summary
 
@@ -47,15 +49,15 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ## Source Documentation
 
+### `border_index.rs`
+- Precompute border-pair index map from province id grid.
+- Assigns a stable u16 pair id for each detected border pixel.
+- Optional dilation expands border coverage for thick styled borders.
+
 ### `borders.rs`
 - Classify shared borders between adjacent provinces by terrain type.
 - Map land/water combinations to discrete border classes (land-land, coast, sea-sea).
 - Provide a single pure function with no side effects for pipeline integration.
-
-### `border_index.rs`
-- Precompute a dense border-pair index map from the province id grid.
-- Assign stable `u16` pair ids to border pixels for shader-friendly lookup.
-- Optional dilation pass expands borders according to per-pair thickness styles.
 
 ### `cache.rs`
 - Serialisable geometry cache for province spans and border segments.
@@ -63,9 +65,15 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Built from a ProvinceRegistry snapshot for fast load without re-scanning.
 
 ### `distance_field.rs`
-- Multi-source BFS precompute of per-pixel distance-to-nearest-border.
-- Stores compact `u8` distance field with configurable max propagation radius.
-- Provides registry-based helper for direct map precompute without external grid wiring.
+- Distance-from-border precompute for province pixels.
+- Multi-source BFS seeded from border pixels where neighboring province ids differ.
+- Produces a compact u8 field used by later shading or LOD passes.
+
+### `economy.rs`
+- Province economy domain model with local-only stockpiles (population, food, gold).
+- Monthly economy tick: food consumption, local upkeep, growth, happiness pressure, and tax.
+- Daily logistics planning: upstream gold, downstream food, and physical shipment movement.
+- No hidden empire-wide pool; all launches require cargo present at the origin node.
 
 ### `events.rs`
 - Change-log entries for single-field province mutations (colour, terrain, border, fog, visibility).
@@ -76,12 +84,11 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - GPU-uploadable province data bridge between registry and render pipeline.
 - Packs province style fields into a repr(C) record for direct buffer upload.
 - Builds sorted record arrays from the province registry for deterministic GPU ordering.
-- Builds border-style GPU records aligned to border-index pair ids for storage-buffer uploads.
 
 ### `gpu_upload.rs`
-- Creates and uploads province map textures for GPU pipelines.
-- Supports `R32Uint` province ids, `R16Uint` border-pair index, and `R8Unorm` distance field maps.
-- Provides deterministic little-endian byte packing helpers for integer texture uploads.
+- Province GPU upload helpers for id, border-index, and distance-field textures.
+- Consistent texture descriptors for `R32Uint`, `R16Uint`, and `R8Unorm` data.
+- Byte packing utilities used by upload paths and unit tests.
 
 ### `import.rs`
 - Province metadata import pipeline: colour-map PNG + RGB CSV + optional TOML → registry.
@@ -118,16 +125,13 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
 - Maintains a monotonic revision counter and ordered change log for incremental sync.
 - Supports border class overrides keyed by normalised province pair.
-- Supports per-pair border style overrides (optional color, thickness, semantic flags).
 - Stores arbitrary string key-value attributes per province via set_attr.
 
 ### `render.rs`
 - Province map rendering: convert registry data into a flat RenderCommand list.
 - Viewport culling based on screen bounds and zoom/pan transform.
 - Fill rendering via per-province span rectangles coloured by the active map mode.
-- Border rendering with class defaults plus per-pair style overrides (color/thickness/flags).
-- Strategic vs tactical zoom modes with mode-based border filtering.
-- Tactical road rendering between visible adjacent province capitals.
+- Border rendering with colour classification (land-land, coast, sea-sea, special).
 - Capital dot markers and text labels with shadow offset.
 - Hover and selection highlight outlines for interactive feedback.
 
@@ -139,7 +143,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ### `types.rs`
 - Core type definitions for the province map system.
-- ProvinceId alias, BorderClass enum, BorderPairFlags/BorderPairStyle overrides, and ProvinceStyle for per-province visuals.
+- ProvinceId alias, BorderClass enum for adjacency classification, and ProvinceStyle for per-province visuals.
 - ProvinceSnapshot provides an immutable point-in-time view of province state.
 
 ### `view_transform.rs`
@@ -149,10 +153,22 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ## Types
 
+- `ProvinceBorderIndex` (`struct`, `border_index.rs`): Dense per-pixel border pair index map.
 - `ProvinceGeometryCache` (`struct`, `cache.rs`): Cache blob of precomputed province geometry.
+- `ProvinceDistanceField` (`struct`, `distance_field.rs`): Per-pixel distance to nearest province border, clamped to `max_distance`.
+- `ShipmentResource` (`enum`, `economy.rs`): Resource kind moved by logistics shipments.
+- `LogisticsRole` (`enum`, `economy.rs`): Logistics role of a province node.
+- `ProvinceEconomyState` (`struct`, `economy.rs`): Local economy state for one province.
+- `MonthlyEconomyConfig` (`struct`, `economy.rs`): Tunable constants for monthly economy resolution.
+- `LogisticsConfig` (`struct`, `economy.rs`): Tunable constants for daily logistics planning.
+- `MonthlyEconomyReport` (`struct`, `economy.rs`): Output of one monthly province resolution.
+- `ShipmentOrder` (`struct`, `economy.rs`): Shipment launch order created by daily planner.
+- `ActiveShipment` (`struct`, `economy.rs`): In-transit shipment that carries real cargo until delivery.
 - `ProvinceChange` (`enum`, `events.rs`): Fine-grained field updates emitted by the province registry.
 - `ProvinceEvent` (`enum`, `events.rs`): High-level province events for subscribers.
 - `ProvinceGpuRecord` (`struct`, `gpu_bridge.rs`): GPU packed province row (std430-friendly 32-byte payload).
+- `BorderStyleGpuRecord` (`struct`, `gpu_bridge.rs`): Per-border-pair GPU style record laid out for direct storage-buffer upload.
+- `ProvinceGpuTextures` (`struct`, `gpu_upload.rs`): GPU texture bundle used by the province map renderer.
 - `MarkerSanitizeOptions` (`struct`, `import.rs`): Thresholds for detecting capital and label marker pixels in a marker PNG.
 - `MarkerSanitizeSummary` (`struct`, `import.rs`): Result counters returned by sanitize_marked_png.
 - `ProvinceMetadataImportOptions` (`struct`, `import.rs`): Options for the full metadata import pipeline run by import_metadata_from_files.
@@ -160,20 +176,55 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - `ProvinceMapMode` (`enum`, `map_modes.rs`): Built-in map modes supported by the province engine.
 - `ProvinceRecord` (`struct`, `registry.rs`): Runtime state for one province row.
 - `ProvinceRegistry` (`struct`, `registry.rs`): Full province dataset with revisioned change history.
+- `ProvinceZoomMode` (`enum`, `render.rs`): Strategic/tactical map rendering mode.
 - `ProvinceRenderOptions` (`struct`, `render.rs`): Render options for one province map pass.
 - `ProvinceGraph` (`struct`, `topology.rs`): Undirected adjacency graph between provinces.
 - `ProvinceId` (`type`, `types.rs`): Province identifier used across province/globe/minimap modules.
 - `BorderClass` (`enum`, `types.rs`): Visual/semantic class for borders between two provinces.
+- `BorderPairFlags` (`struct`, `types.rs`): Bit-flag set controlling semantic styling of a border pair override.
+- `BorderPairStyle` (`struct`, `types.rs`): Per-adjacency border style override keyed by ordered province pair.
 - `ProvinceStyle` (`struct`, `types.rs`): Mutable style/state attached to one province.
 - `ProvinceSnapshot` (`struct`, `types.rs`): Immutable read model consumed by other modules.
 
 ## Functions
 
+- `ProvinceBorderIndex::at` (`border_index.rs`): Return pair id at (x, y), or None when out of bounds.
+- `ProvinceBorderIndex::pair_count` (`border_index.rs`): Return number of unique province pairs referenced by this index.
+- `build_border_index` (`border_index.rs`): Build border index map from raw province id grid.
+- `dilate_border_index_with_styles` (`border_index.rs`): Expand border pixels by radius per pair style thickness.
+- `build_border_index_from_registry` (`border_index.rs`): Build border index map directly from current registry pixel grid.
 - `classify_border` (`borders.rs`): Classifies border class from two province styles.
 - `ProvinceGeometryCache::from_registry` (`cache.rs`): Build a cache by copying spans and border_segments from the given registry.
 - `ProvinceGeometryCache::encode` (`cache.rs`): Serialise to a versioned little-endian byte buffer; always succeeds.
 - `ProvinceGeometryCache::decode` (`cache.rs`): Deserialise from a byte buffer produced by encode; return None on magic mismatch or truncation.
+- `ProvinceDistanceField::at` (`distance_field.rs`): Return field value at (x, y), or None when out of bounds.
+- `compute_distance_field` (`distance_field.rs`): Compute distance-to-border field from a raw province id grid.
+- `compute_distance_field_from_registry` (`distance_field.rs`): Build a distance field directly from the current registry pixel grid.
+- `ProvinceEconomyState::new` (`economy.rs`): Create a basic province economy state with conservative defaults.
+- `population_food_need` (`economy.rs`): Returns monthly food need generated by population only.
+- `monthly_food_need` (`economy.rs`): Returns full monthly food need including army demand.
+- `base_tax_gold` (`economy.rs`): Returns base tax output using 10 population => 1 gold.
+- `happiness_productivity_multiplier` (`economy.rs`): Returns happiness-driven productivity multiplier.
+- `effective_tax_gold` (`economy.rs`): Returns monthly effective tax gold from local multipliers.
+- `computed_population_cap` (`economy.rs`): Returns cap from base + housing.
+- `natural_growth` (`economy.rs`): Returns natural monthly growth without starvation/emigration penalties.
+- `migration_pressure` (`economy.rs`): Returns migration pressure score from local instability.
+- `dispatchable_gold` (`economy.rs`): Returns dispatchable upstream gold after keeping mandatory local reserve.
+- `food_deficit` (`economy.rs`): Returns local food deficit to hit target reserve months.
+- `resolve_monthly_tick` (`economy.rs`): Resolve one monthly local-economy tick for a single province.
+- `resolve_monthly_for_all` (`economy.rs`): Resolve one monthly tick for all provinces, sorted by province id.
+- `assign_logistics_parents` (`economy.rs`): Assign nearest logistics parent for province/hub nodes using adjacency shortest-path distance.
+- `launch_daily_shipments` (`economy.rs`): Plan and launch daily shipments; deduct origin cargo immediately and return launched orders.
+- `to_active_shipments` (`economy.rs`): Convert launch orders into in-transit shipments.
+- `advance_shipments_one_day` (`economy.rs`): Advance all active shipments by one day and deliver arrived cargo to destination stockpiles.
 - `build_gpu_records` (`gpu_bridge.rs`): Builds a sorted GPU record table from registry contents.
+- `build_border_style_gpu_records` (`gpu_bridge.rs`): Build border style GPU records aligned to `ProvinceBorderIndex::id_to_pair`.
+- `pack_u32_pixels_le` (`gpu_upload.rs`): Pack `u32` row-major pixels into little-endian bytes for `R32Uint` uploads.
+- `pack_u16_pixels_le` (`gpu_upload.rs`): Pack `u16` row-major pixels into little-endian bytes for `R16Uint` uploads.
+- `create_province_id_texture` (`gpu_upload.rs`): Create and upload province id map texture (`R32Uint`).
+- `create_border_index_texture` (`gpu_upload.rs`): Create and upload border index texture (`R16Uint`).
+- `create_distance_field_texture` (`gpu_upload.rs`): Create and upload distance field texture (`R8Unorm`).
+- `create_province_gpu_textures` (`gpu_upload.rs`): Create all core province textures in one call.
 - `sanitize_marked_png` (`import.rs`): Replace capital and label marker pixels with their nearest non-marker neighbour and write the result to output_png_path; return pixel counts or an error string.
 - `import_metadata_from_files` (`import.rs`): Import province metadata from colour-map PNG, RGB CSV, and optional TOML/marker files into registry; return counts or an error string.
 - `centroids_from_spans` (`labels.rs`): Computes centroid candidates from fill spans.
@@ -211,6 +262,8 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - `ProvinceRegistry::set_visibility_state` (`registry.rs`): Set the visibility state byte for id and record a VisibilityState change; return false if id is unknown.
 - `ProvinceRegistry::set_border_class` (`registry.rs`): Set the border class for the (a, b) pair and record a BorderClass change.
 - `ProvinceRegistry::get_border_class` (`registry.rs`): Return the stored border class for the (a, b) pair, or None if not explicitly set.
+- `ProvinceRegistry::set_border_pair_style` (`registry.rs`): Set the border pair style for (a, b) and record a BorderPairStyle change.
+- `ProvinceRegistry::get_border_pair_style` (`registry.rs`): Return the stored border pair style for (a, b), or None if not explicitly set.
 - `ProvinceRegistry::set_attr` (`registry.rs`): Insert a key-value string attribute for id; return false if id is unknown.
 - `generate_render_commands` (`render.rs`): Generates render commands for one province map frame.
 - `ProvinceGraph::new` (`topology.rs`): Return a new empty graph.
@@ -219,6 +272,13 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - `ProvinceGraph::is_adjacent` (`topology.rs`): Return true if a and b share a border in the graph.
 - `ProvinceGraph::province_ids` (`topology.rs`): Return all province ids present in the graph, sorted ascending.
 - `ProvinceGraph::adjacency_pairs` (`topology.rs`): Return all unique adjacency pairs (a < b) sorted ascending.
+- `BorderPairFlags::empty` (`types.rs`): Create an empty flag set.
+- `BorderPairFlags::bits` (`types.rs`): Return the raw bit pattern.
+- `BorderPairFlags::from_bits` (`types.rs`): Build a flag set from raw bits.
+- `BorderPairFlags::insert_bits` (`types.rs`): Insert a raw flag mask.
+- `BorderPairFlags::contains_bits` (`types.rs`): Return true if all bits from mask are present.
+- `BorderPairFlags::parse_token` (`types.rs`): Parse a single canonical flag token.
+- `BorderPairFlags::to_tokens` (`types.rs`): Return canonical tokens for all set bits.
 - `BorderClass::as_str` (`types.rs`): Return the canonical string token used in TOML and CSV exports.
 - `BorderClass::parse_str` (`types.rs`): Parse a string token back to a variant; return None on unknown input.
 - `fit_camera_to_screen` (`view_transform.rs`): Computes camera transform that fits the full province map inside the screen.
@@ -259,11 +319,13 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - `LProvinceRegistry:getNeighbors`: Returns a table of province IDs that share a border with the given province.
 - `LProvinceRegistry:getBorderClass`: Returns the border classification string between two adjacent provinces (e.g. "river", "mountain", "sea"), or nil if no class is set.
 - `LProvinceRegistry:setBorderClass`: Sets the border classification between two adjacent provinces. Used to control border rendering style (e.g. rivers drawn as blue lines).
+- `LProvinceRegistry:setBorderPairStyle`: Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
+- `LProvinceRegistry:getBorderPairStyle`: Returns the style override for a specific adjacency pair, or nil when unset.
 - `LProvinceRegistry:setPoliticalColor`: Sets the political map color for a province. Used in political map mode rendering and change tracking.
 - `LProvinceRegistry:setTerrainType`: Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
 - `LProvinceRegistry:setBorderStyle`: Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.
-- `LProvinceRegistry:setFogState`: Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
-- `LProvinceRegistry:setVisibilityState`: Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
+- `LProvinceRegistry:setFogState`: Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.
+- `LProvinceRegistry:setVisibilityState`: Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
 - `LProvinceRegistry:setAttr`: Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
 - `LProvinceRegistry:setCapital`: Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.
 - `LProvinceRegistry:setLabelLine`: Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.

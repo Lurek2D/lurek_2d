@@ -29,7 +29,7 @@ export class SoundDspEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Sound DSP Panel", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr;
+        display: grid; grid-template-columns: 48px 1fr;
         grid-template-rows: auto auto 1fr auto;
         height: 100vh;
       }
@@ -68,7 +68,9 @@ export class SoundDspEditor extends WebviewEditor {
           <div class="group">
             ${iconButton(ICONS.copy, 'btnCopy', 'Copy Code')}
             ${iconButton(ICONS.add, 'btnInsert', 'Insert at Cursor')}
-          </div>
+          ${toolbarSep()}
+          ${iconButton('save', { id: 'btnExportLua', title: 'Export Lua Config' })}
+        </div>
           ${toolbarSep()}
           <div class="group" style="font-size:10px;color:var(--text-dim)">Sound DSP Designer</div>
           ${toolbarSpacer()}
@@ -433,6 +435,7 @@ export class SoundDspEditor extends WebviewEditor {
       document.getElementById('btnInsert').addEventListener('click', () => { vscode.postMessage({type:'insertCode',code:g('codeOut').textContent}); });
       document.getElementById('btnExport').addEventListener('click', () => { vscode.postMessage({type:'exportLua',content:g('codeOut').textContent}); });
       genCode(); drawVis();
-    `);
+          document.getElementById("btnExportLua")?.addEventListener("click", () => { vscode.postMessage({ type: "exportLua", content: "-- Lurek2D Effect Config\nreturn {}" }); });
+      `);
   }
 }

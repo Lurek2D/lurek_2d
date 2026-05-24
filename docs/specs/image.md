@@ -1,5 +1,9 @@
 # image
 
+## TL;DR
+
+- The `image` module is an extensive Platform Services tier component responsible for CPU-side pixel buffer operations, providing a robust suite of tools for loading, manipulating, and exporting image data.
+
 ## General Info
 
 - Module group: `Platform Services`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `image` module is an extensive Platform Services tier component responsible for CPU-side pixel buffer operations, providing a robust suite of tools for loading, manipulating, and exporting image data. The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
+ The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
 
 Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
 
@@ -41,7 +45,7 @@ The `image` module features specialized systems for game development, most notab
 - Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
 - Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
 - Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
-- Primitive drawing: filled rectangles, circles, Bresenham lines, and compact 5x7 bitmap text labels for ASCII letters, digits, and common UI punctuation.
+- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
 - PNG encoding for serialization and export.
 
 ### `layers.rs`
@@ -192,6 +196,7 @@ The `image` module features specialized systems for game development, most notab
 - `LayeredImage` (`struct`, `layers.rs`): Owns an ordered stack of `ImageLayer` values and merges them into a flat image when callers need a composited result.
 - `PaletteLUT` (`struct`, `palette_lut.rs`): Describes palette remapping tables for effects that replace source colors with target colors.
 - `AdjacencyPair` (`struct`, `province_grid.rs`): Records that `province_a` and `province_b` share a border of `border_pixels` length (public fields).
+- `ProvinceShapeCacheEntry` (`struct`, `province_grid.rs`): Cached province polygon draw data with color, bounds, and flattened vertices.
 - `ProvinceGrid` (`struct`, `province_grid.rs`): Flat `Vec<u32>` spatial index for province-colour maps. Built from an `ImageData` in a single O(w×h) scan; each unique non-black RGB is assigned a sequential province ID (1..n).
 - `TextureColorSpace` (`enum`, `texture.rs`): Texture color space stored alongside decoded pixels.
 - `Texture` (`struct`, `texture.rs`): A lightweight texture handle and metadata wrapper used when CPU image data is inserted into renderer-owned texture storage.
@@ -251,7 +256,8 @@ The `image` module features specialized systems for game development, most notab
 - `ImageData::draw_rect` (`image_data.rs`): Fill an axis-aligned rectangle with a solid color and alpha.
 - `ImageData::draw_circle` (`image_data.rs`): Fill a circle with a solid color and alpha.
 - `ImageData::draw_line` (`image_data.rs`): Draw a line with Bresenham's algorithm using a solid color and alpha.
-- `ImageData::draw_label` (`image_data.rs`): Draw a small bitmap label for digits, letters, and a few punctuation marks.
+- `ImageData::draw_label` (`image_data.rs`): Draw a compact 5x7 bitmap label for ASCII letters, digits, and UI punctuation.
+- `ImageData::draw_text_with_font` (`image_data.rs`): Draw `text` into this image using a bitmap font atlas produced by `crate::render::font::Font`.
 - `ImageData::encode_png` (`image_data.rs`): Encode the image as PNG bytes and return an error on encode failure.
 - `ImageData::as_bytes` (`image_data.rs`): Return a slice of the raw RGBA pixel bytes.
 - `ImageData::get_string` (`image_data.rs`): Return a cloned copy of the raw RGBA pixel bytes.
@@ -293,6 +299,7 @@ The `image` module features specialized systems for game development, most notab
 - `ProvinceGrid::border_segments` (`province_grid.rs`): Return contiguous border segments between differing provinces.
 - `ProvinceGrid::province_polygons` (`province_grid.rs`): Trace province polygons as ordered point loops.
 - `ProvinceGrid::province_polygons_simplified` (`province_grid.rs`): Return simplified province polygons with redundant vertices removed.
+- `ProvinceGrid::build_shape_cache` (`province_grid.rs`): Build a simplified polygon shape cache for efficient drawing.
 - `ProvinceGrid::serialize_shape_data` (`province_grid.rs`): Serialize spans and border segments into a compact binary blob.
 - `ProvinceGrid::deserialize_shape_data` (`province_grid.rs`): Decode serialized spans and border segments from a shape-data blob.
 - `ImageData::generate_render_commands` (`render.rs`): Generate draw commands for this image buffer at the given screen position.
@@ -443,7 +450,7 @@ The `image` module features specialized systems for game development, most notab
 - `LImageData:setRawData`: Replaces the image byte buffer with raw bytes.
 - `LImageData:paste`: Pastes a source image into this image at unsigned destination coordinates.
 - `LImageData:type`: Returns the Lua-visible type name for this image data handle.
-- `LImageData:typeOf`: Returns whether this image data handle matches the `ImageData` type name.
+- `LImageData:typeOf`: Returns whether this image data handle matches the `LImageData` type name.
 
 ### `LLayeredImage` Methods
 - `LLayeredImage:getWidth`: Returns the layered image width. This method is available to Lua scripts.
@@ -484,7 +491,7 @@ The `image` module features specialized systems for game development, most notab
 - `LProvinceGrid:borderSegments`: Returns border line segments between neighboring provinces.
 - `LProvinceGrid:getPolygons`: Returns polygon rings for every province.
 - `LProvinceGrid:getPolygonsSimplified`: Returns simplified polygon rings for every province.
-- `LProvinceGrid:drawShapes`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport.
+- `LProvinceGrid:drawShapes`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
 - `LProvinceGrid:type`: Returns the Lua-visible type name for this province grid handle.
 - `LProvinceGrid:typeOf`: Returns whether this province grid handle matches a supported type name.
 - `LProvinceGrid:serializeShapeData`: Serializes province span and border shape data into a binary Lua string.

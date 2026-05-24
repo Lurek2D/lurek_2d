@@ -1,6 +1,10 @@
 # Lurek2D — Test Framework Architecture
 
-Source of truth for the test suite structure, placement rules, BDD framework, golden tests, and CI quality gates.
+## TL;DR
+
+- Source of truth for the test suite structure, placement rules, BDD framework, golden tests, and CI quality gates.
+
+
 
 Companion documents: [engine-architecture.md](engine-architecture.md) · [philosophy.md](philosophy.md)
 
@@ -186,7 +190,7 @@ All Rust test binaries are **explicitly registered** in `Cargo.toml` under `[[te
 
 | Category | Path | Scope |
 |---|---|---|
-| Integration | `tests/rust/unit/` | Internal Rust types + private methods not exposed to Lua |
+| Unit | `tests/rust/unit/` | Internal Rust types + private methods not exposed to Lua |
 | Stress | `tests/rust/stress/` | Raw Rust-level throughput (no Lua boundary) |
 | Golden | `tests/rust/golden/` | Byte-level snapshot comparison |
 | Config | `tests/rust/config/` | TOML loading + validation |

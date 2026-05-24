@@ -49,7 +49,7 @@ This page is generated from the current module specs, examples, and Lua API data
 
 ## 📋 Summary
 
-The `light` module is a comprehensive Platform Services tier component that provides a robust 2D lighting data model for Lurek2D. It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
+It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
 
 The central orchestration of these lighting primitives is handled by the `LightWorld`. This scene-level container holds pools of active lights and `Occluder` shapes (convex polygons that block light propagation to generate shadows). It provides an efficient slotmap-backed architecture for adding, removing, and querying these entities, as well as applying batch operations like intensity or color changes across named light groups. The lighting model supports sophisticated attenuation, allowing for quadratic, linear, and inverse-square falloff models, alongside custom coefficient tuples to precisely control how light decays over distance. Blend modes (additive, subtractive, alpha-mix) dictate how each light composited into the final accumulation buffer.
 
@@ -3193,7 +3193,7 @@ Source: [light.lua](../blob/main/content/examples/light.lua)
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     print("type = " .. occ:type())
-    print("is Occluder = " .. tostring(occ:typeOf("Occluder")))
+    print("is Occluder = " .. tostring(occ:typeOf("LOccluder")))
 end
 ```
 
@@ -3226,7 +3226,7 @@ Source: [light.lua](../blob/main/content/examples/light.lua)
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     print("type = " .. occ:type())
-    print("is Occluder = " .. tostring(occ:typeOf("Occluder")))
+    print("is Occluder = " .. tostring(occ:typeOf("LOccluder")))
 end
 ```
 

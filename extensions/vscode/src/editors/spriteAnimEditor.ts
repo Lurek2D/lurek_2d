@@ -22,7 +22,7 @@ export class SpriteAnimEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Sprite Animation", `
       .editor-layout {
-        display: grid; grid-template-columns: 200px 1fr 200px;
+        display: grid; grid-template-columns: 48px 200px 1fr 200px;
         grid-template-rows: auto 1fr auto auto;
         height: 100vh;
       }

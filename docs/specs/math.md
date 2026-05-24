@@ -1,5 +1,9 @@
 # math
 
+## TL;DR
+
+- The `math` module is the most pervasive Foundations tier component in Lurek2D, providing an expansive suite of 2D mathematics, geometry, color management, procedural generation, and spatial utility types.
+
 ## General Info
 
 - Module group: `Foundations`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `math` module is the most pervasive Foundations tier component in Lurek2D, providing an expansive suite of 2D mathematics, geometry, color management, procedural generation, and spatial utility types. As the foundational leaf of the engine's dependency graph, it is imported and utilized by nearly every other subsystem. The core vector mathematics are handled by highly optimized `Vec2` and `Vec3` types, which offer a complete set of arithmetic operations, geometric helpers (dot, cross, normalize, distance), and angle conversions. Complex transformations are managed by the `Transform` struct, backed by a row-major 3x3 affine matrix (`Mat3`), facilitating chainable translation, rotation, scale, and shear operations.
+ As the foundational leaf of the engine's dependency graph, it is imported and utilized by nearly every other subsystem. The core vector mathematics are handled by highly optimized `Vec2` and `Vec3` types, which offer a complete set of arithmetic operations, geometric helpers (dot, cross, normalize, distance), and angle conversions. Complex transformations are managed by the `Transform` struct, backed by a row-major 3x3 affine matrix (`Mat3`), facilitating chainable translation, rotation, scale, and shear operations.
 
 Beyond basic vectors, the module implements a robust set of geometric primitives and intersection algorithms. `Rect` and `Circle` structs provide foundational AABB and radial collision checks. The `geometry` submodule extends this with advanced operations: signed polygon area (shoelace formula), centroid calculation, point-in-polygon ray casting, line and segment intersection, Ear-clipping triangulation, Sutherland-Hodgman polygon clipping, and Andrew's monotone chain convex hull generation. To accelerate geometric queries, the module provides dynamic spatial indexing structures: an `AabbTree` for broad-phase hierarchical queries and a `SpatialHash` for uniform grid lookups, scaling efficiently with entity density rather than raw count.
 
@@ -457,7 +461,7 @@ The module also excels in procedural generation and animation. It features a sop
 
 ### Module Functions
 - `lurek.math.newRandomGenerator`: Creates a deterministic random generator with an optional seed.
-- `lurek.math.newTransform`: Creates an identity transform or a transform from optional components.
+- `lurek.math.newTransform`: Creates a 2D transform. All components are optional; omitting all returns an identity transform.
 - `lurek.math.newBezierCurve`: Creates a Bezier curve from a flat point table.
 - `lurek.math.newTween`: Creates a tween with a duration and optional easing name.
 - `lurek.math.newSpatialHash`: Creates a spatial hash index with a cell size.

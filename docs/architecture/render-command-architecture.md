@@ -1,6 +1,10 @@
 # Lurek2D — Render Command Architecture
 
-Source of truth for the three-layer rendering pipeline, per-module output catalogue, resource handle system, and the raycaster/lighting design decisions.
+## TL;DR
+
+- Source of truth for the three-layer rendering pipeline, per-module output catalogue, resource handle system, and the raycaster/lighting design decisions.
+
+
 
 Companion documents: [engine-architecture.md](engine-architecture.md) · [philosophy.md](philosophy.md)
 

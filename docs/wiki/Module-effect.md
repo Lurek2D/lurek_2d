@@ -59,7 +59,7 @@ Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL pa
 
 ## 📋 Summary
 
-The `effect` module is a comprehensive Platform Services component responsible for the engine's post-processing and screen-space visual effects pipeline. It provides developers with the tools to significantly enhance the visual fidelity of their games through composable, full-screen shaders and overlays. The core of this pipeline is the `PostFxStack`, which manages an ordered list of `PostFxEffect` instances. These effects process the rendered frame buffer sequentially before it is presented to the screen. The built-in effects catalog is extensive, offering varied blur algorithms (Gaussian, box, radial), bloom (combining thresholding, blurring, and additive blending), LUT-based color grading, lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation. Custom shader passes are also fully supported via explicit shader handles.
+It provides developers with the tools to significantly enhance the visual fidelity of their games through composable, full-screen shaders and overlays. The core of this pipeline is the `PostFxStack`, which manages an ordered list of `PostFxEffect` instances. These effects process the rendered frame buffer sequentially before it is presented to the screen. The built-in effects catalog is extensive, offering varied blur algorithms (Gaussian, box, radial), bloom (combining thresholding, blurring, and additive blending), LUT-based color grading, lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation. Custom shader passes are also fully supported via explicit shader handles.
 
 Operating parallel to the shader pipeline is the `Overlay` controller. It manages screen-space, CPU-driven visual states that overlay the world, such as ambient lighting tints driven by a time-of-day curve (dawn, day, dusk, night) and complex weather particle simulations (rain, snow, hail, dust, leaves, ash, pollen). The `Overlay` system also handles instantaneous atmospheric triggers, including screen flashes, camera shakes with deterministic PRNG offsets, lightning flashes, and fade-in/fade-out transitions. A specialized `WaterOverlay` adds animated water surface distortion with configurable amplitude and depth-based color shifting.
 
@@ -1035,7 +1035,7 @@ Source: [effect.lua](../blob/main/content/examples/effect.lua)
 ```lua
 do
     local ie = lurek.effect.newImageEffect()
-    print("is ImageEffect = " .. tostring(ie:typeOf("ImageEffect")))
+    print("is ImageEffect = " .. tostring(ie:typeOf("LImageEffect")))
 end
 ```
 
@@ -3297,7 +3297,7 @@ Source: [effect.lua](../blob/main/content/examples/effect.lua)
 ```lua
 do
     local ov = lurek.effect.newOverlay(800, 600)
-    print("is Overlay = " .. tostring(ov:typeOf("Overlay")))
+    print("is Overlay = " .. tostring(ov:typeOf("LOverlay")))
 end
 ```
 
@@ -4030,7 +4030,7 @@ Source: [effect.lua](../blob/main/content/examples/effect.lua)
 ```lua
 do
     local fx = lurek.effect.newEffect("blur")
-    print("is PostFxEffect = " .. tostring(fx:typeOf("PostFxEffect")))
+    print("is PostFxEffect = " .. tostring(fx:typeOf("LPostFxEffect")))
 end
 ```
 
@@ -4767,7 +4767,7 @@ Source: [effect.lua](../blob/main/content/examples/effect.lua)
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    print("is PostFxStack = " .. tostring(stack:typeOf("PostFxStack")))
+    print("is PostFxStack = " .. tostring(stack:typeOf("LPostFxStack")))
 end
 ```
 
@@ -5054,7 +5054,7 @@ Source: [effect.lua](../blob/main/content/examples/effect.lua)
 ```lua
 do
     local tr = lurek.effect.newTransition()
-    print("is ScreenTransition = " .. tostring(tr:typeOf("ScreenTransition")))
+    print("is ScreenTransition = " .. tostring(tr:typeOf("LScreenTransition")))
 end
 ```
 

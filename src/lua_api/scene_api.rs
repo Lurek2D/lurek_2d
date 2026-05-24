@@ -1018,7 +1018,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 if let Some(key) = s.scene_refs.get(id) {
                     let table: LuaTable = lua.registry_value(key)?;
                     result.raw_set(out_index, table)?;
-                    out_index = out_index + 1;
+                    out_index += 1;
                 }
             }
             Ok(result)

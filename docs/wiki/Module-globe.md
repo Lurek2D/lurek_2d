@@ -55,7 +55,7 @@ XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers
 
 ## 📋 Summary
 
-The `globe` module, situated in the Feature Systems tier, provides a comprehensive framework for rendering and interacting with an XCOM-style Geoscape. At its core is the `Globe` structure, which oversees a highly optimized, province-based spherical map. It utilizes an orbit camera with latitude and longitude positioning, supporting smooth interpolation, variable zoom levels, and automatic Level-of-Detail (LOD) adjustments. A key architectural decision is that all rendering output consists of 2D draw commands (such as convex fans, polylines, and circles) projected from spherical coordinates, intentionally avoiding the complexity of a full 3D pipeline.
+At its core is the `Globe` structure, which oversees a highly optimized, province-based spherical map. It utilizes an orbit camera with latitude and longitude positioning, supporting smooth interpolation, variable zoom levels, and automatic Level-of-Detail (LOD) adjustments. A key architectural decision is that all rendering output consists of 2D draw commands (such as convex fans, polylines, and circles) projected from spherical coordinates, intentionally avoiding the complexity of a full 3D pipeline.
 
 The module manages complex geographical topologies via the `ProvinceGraph`, which caches adjacency data and enables rapid pathfinding and reachability queries. Province geometry can be constructed in multiple ways: parsed from TOML descriptions, extracted from color-indexed PNG maps, or generated dynamically from Voronoi seed points. For visual presentation, the module implements advanced lighting models, including a day/night terminator band, per-province diffuse intensity, and atmospheric halos.
 
@@ -2726,7 +2726,7 @@ Source: [globe.lua](../blob/main/content/examples/globe.lua)
 ```lua
 do
     local g = lurek.globe.new("typeof_globe")
-    print("is Globe = " .. tostring(g:typeOf("Globe")))
+    print("is Globe = " .. tostring(g:typeOf("LGlobe")))
 end
 ```
 

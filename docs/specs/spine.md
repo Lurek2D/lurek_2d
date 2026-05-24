@@ -1,5 +1,9 @@
 # spine
 
+## TL;DR
+
+- The `spine` module is an advanced Feature Systems tier component that provides a complete, high-performance runtime for 2D skeletal animation.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `spine` module is an advanced Feature Systems tier component that provides a complete, high-performance runtime for 2D skeletal animation. Moving beyond traditional frame-by-frame sprites, this module enables fluid, dynamic animations using hierarchical bone trees and slot-based attachments. Central to the system is the `Skeleton` struct, which maintains an ordered array of `Bone` elements. Each bone stores local transform properties (position, rotation, scale) and automatically computes accumulated world-space transforms as they propagate down the parent-child hierarchy. Visual representation is handled via `Slot` attachments, which bind graphical content—such as sprite regions, meshes, or bounding boxes—to specific bones with precise draw-order and blend-mode configurations, ensuring correct back-to-front rendering even in complex layered characters.
+ Moving beyond traditional frame-by-frame sprites, this module enables fluid, dynamic animations using hierarchical bone trees and slot-based attachments. Central to the system is the `Skeleton` struct, which maintains an ordered array of `Bone` elements. Each bone stores local transform properties (position, rotation, scale) and automatically computes accumulated world-space transforms as they propagate down the parent-child hierarchy. Visual representation is handled via `Slot` attachments, which bind graphical content—such as sprite regions, meshes, or bounding boxes—to specific bones with precise draw-order and blend-mode configurations, ensuring correct back-to-front rendering even in complex layered characters.
 
 To achieve sophisticated, procedural motion, the module features a dedicated Inverse Kinematics (IK) system. The `IKConstraint` solver calculates the necessary joint rotations for a two-bone chain (e.g., an arm or leg) to reach a specific world-space target, vastly simplifying dynamic interactions like foot placement on uneven terrain or aiming weapons. The animation pipeline itself is driven by `SkeletonAnimation` clips, which organize multiple `BoneTimeline` and `SlotTimeline` sequences containing keyed property changes. The runtime efficiently interpolates between these keyframes using various easing curves (linear, stepped, bezier) and applies the resulting poses to the skeleton. Animations can be blended together using configurable weights, allowing for smooth transitions between states (like transitioning from a run cycle to a jump).
 
@@ -120,6 +124,7 @@ The module also supports extensive customization and event handling. The Skin sy
 - `SkeletonAnimation::new` (`timeline.rs`): Create an empty animation clip with the given name and duration.
 - `SkeletonAnimation::add_timeline` (`timeline.rs`): Append a BoneTimeline to this animation.
 - `SkeletonAnimation::add_event_key` (`timeline.rs`): Insert an event at the given time; events are kept sorted by time.
+- `SkeletonAnimation::add_keyframe` (`timeline.rs`): Add a keyframe to a specific bone property timeline.
 - `SkeletonAnimation::collect_events` (`timeline.rs`): Return all event (name, value) pairs whose time is in the half-open range (from, to].
 - `SkeletonAnimation::apply_to_skeleton` (`timeline.rs`): Apply all bone timelines at the given time to the target skeleton by setting local properties directly.
 - `SkeletonAnimation::apply_to_skeleton_blended` (`timeline.rs`): Apply all bone timelines blended with blend_weight in [0, 1]; weight=1 is full override, weight=0 is no-op.
@@ -148,7 +153,7 @@ The module also supports extensive customization and event handling. The Skin sy
 - `LSkeleton:setPosition`: Sets the root bone world position, shifting the entire skeleton.
 - `LSkeleton:boneCount`: Returns the total number of bones in the skeleton.
 - `LSkeleton:slotCount`: Returns the total number of slots in the skeleton.
-- `LSkeleton:drawToImage`: Renders the skeleton into an in-memory image of the given dimensions and returns it as LImage userdata.
+- `LSkeleton:drawToImage`: Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
 - `LSkeleton:playAnimation`: Starts playing a named animation on this skeleton. Optionally loops.
 - `LSkeleton:stopAnimation`: Stops the currently playing animation and resets playback state.
 - `LSkeleton:updateAnimation`: Advances the current animation by a delta time, applying bone transforms to the skeleton.

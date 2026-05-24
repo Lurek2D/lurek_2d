@@ -85,39 +85,19 @@ export async function openApiDocs(): Promise<void> {
  */
 export async function openWiki(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
-
   const wordRange = editor?.document.getWordRangeAtPosition(
     editor.selection.active,
     /lurek\.[a-zA-Z0-9_.]+/
   );
-  const symbol = wordRange ? editor!.document.getText(wordRange) : undefined;
-
-  const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-  if (!root) { vscode.window.showErrorMessage("No workspace folder open."); return; }
-
-  const docPath = resolveWorkspaceApiDocPath(root) ?? null;
-
-  if (docPath) {
-    const content = fs.readFileSync(docPath, "utf-8");
-
-    if (symbol) {
-      const lineIndex = findApiSymbolLine(content, docPath, symbol);
-      const doc = await vscode.workspace.openTextDocument(docPath);
-      const editorDoc = await vscode.window.showTextDocument(doc);
-      const pos = new vscode.Position(Math.max(0, lineIndex), 0);
-      editorDoc.selection = new vscode.Selection(pos, pos);
-      editorDoc.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
-      if (lineIndex < 0) {
-        vscode.window.showInformationMessage(`"${symbol}" not found in API docs — showing full reference.`);
-      }
-    } else {
-      const doc = await vscode.workspace.openTextDocument(docPath);
-      await vscode.window.showTextDocument(doc);
-    }
-  } else {
-    // Fallback: quick-pick browse
-    await browseApi();
+  const symbol = wordRange ? editor!.document.getText(wordRange) : "";
+  
+  let url = "https://github.com/RandomBladeDude/lurek2d/wiki";
+  if (symbol) {
+    // GitHub wikis often use dashes for search or titles, but linking directly to the search isn't straightforward.
+    // We'll just open the main wiki page, or if there's a predictable module, open that.
+    vscode.window.showInformationMessage(`Opening Wiki for ${symbol}...`);
   }
+  vscode.env.openExternal(vscode.Uri.parse(url));
 }
 
 /**
@@ -188,22 +168,38 @@ export function depGraph(context: vscode.ExtensionContext): void {
         nodes.push({ id: dir, tier: tiers[dir] ?? "domain" });
       }
 
-      // Parse use crate:: imports to build edges
+      // Parse use crate:: imports to build edges by recursively reading .rs files
+      function getRsFiles(dirPath: string): string[] {
+        let results: string[] = [];
+        const list = fs.readdirSync(dirPath, { withFileTypes: true });
+        for (const item of list) {
+          const fullPath = path.join(dirPath, item.name);
+          if (item.isDirectory()) {
+            results = results.concat(getRsFiles(fullPath));
+          } else if (item.name.endsWith(".rs")) {
+            results.push(fullPath);
+          }
+        }
+        return results;
+      }
+
       for (const dir of dirs) {
-        const modFile = path.join(srcDir, dir, "mod.rs");
-        const libFile = path.join(srcDir, dir, "lib.rs");
-        const candidate = fs.existsSync(modFile) ? modFile : fs.existsSync(libFile) ? libFile : null;
-        if (!candidate) continue;
+        const modDir = path.join(srcDir, dir);
+        if (!fs.existsSync(modDir)) continue;
 
         try {
-          const src = fs.readFileSync(candidate, "utf-8");
-          const matches = [...src.matchAll(/use crate::([a-z_]+)/g)];
+          const rsFiles = getRsFiles(modDir);
           const seen = new Set<string>();
-          for (const m of matches) {
-            const dep = m[1];
-            if (dep !== dir && dirs.includes(dep) && !seen.has(dep)) {
-              seen.add(dep);
-              edges.push({ from: dir, to: dep });
+
+          for (const file of rsFiles) {
+            const src = fs.readFileSync(file, "utf-8");
+            const matches = [...src.matchAll(/use crate::([a-z_]+)/g)];
+            for (const m of matches) {
+              const dep = m[1];
+              if (dep !== dir && dirs.includes(dep) && !seen.has(dep)) {
+                seen.add(dep);
+                edges.push({ from: dir, to: dep });
+              }
             }
           }
         } catch { /* skip unreadable files */ }

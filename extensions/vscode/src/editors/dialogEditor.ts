@@ -22,7 +22,7 @@ export class DialogEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Dialog Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 260px;
+        display: grid; grid-template-columns: 48px 1fr 260px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }
@@ -115,6 +115,8 @@ export class DialogEditor extends WebviewEditor {
           </span>
           <div class="sep"></div>
           <span id="statusConns">0 connections</span>
+          <div class="sep"></div>
+          <span id="statusSelected">selected: none</span>
           <div class="sep"></div>
           <span id="statusMode">Select</span>
           <div class="spacer"></div>
@@ -365,8 +367,32 @@ export class DialogEditor extends WebviewEditor {
       function updateStatus() {
         document.getElementById('statusNodes').textContent = nodes.length + ' nodes';
         document.getElementById('statusConns').textContent = edges.length + ' connections';
+        document.getElementById('statusSelected').textContent = selectedNode ? ('selected: #' + selectedNode.id) : 'selected: none';
         document.getElementById('statusMode').textContent = connectMode ? 'Connect' : 'Select';
         document.getElementById('statusZoom').textContent = Math.round(zoom * 100) + '%';
+      }
+
+      function nudgeSelected(dx, dy) {
+        if (!selectedNode) return;
+        pushUndo();
+        selectedNode.x += dx;
+        selectedNode.y += dy;
+        render();
+        updateStatus();
+      }
+
+      function duplicateSelected() {
+        if (!selectedNode) return;
+        pushUndo();
+        const clone = JSON.parse(JSON.stringify(selectedNode));
+        clone.id = nextId++;
+        clone.x += 40;
+        clone.y += 40;
+        nodes.push(clone);
+        selectedNode = clone;
+        showProps(clone);
+        render();
+        updateStatus();
       }
 
       // ── Canvas Events ──────────────────────────────────
@@ -477,6 +503,12 @@ export class DialogEditor extends WebviewEditor {
       registerShortcut('2', () => addNode('choice'));
       registerShortcut('3', () => addNode('condition'));
       registerShortcut('4', () => addNode('action'));
+      registerShortcut('f', () => document.getElementById('btnFitView').click());
+      registerShortcut('ctrl+d', () => duplicateSelected());
+      registerShortcut('up', () => nudgeSelected(0, -20));
+      registerShortcut('down', () => nudgeSelected(0, 20));
+      registerShortcut('left', () => nudgeSelected(-20, 0));
+      registerShortcut('right', () => nudgeSelected(20, 0));
 
       // ── Export ─────────────────────────────────────────
       function buildLuaCode() {

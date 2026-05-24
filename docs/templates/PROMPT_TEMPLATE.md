@@ -4,6 +4,11 @@ agent: Agent-Name
 ---
 # Prompt Title
 
+## TL;DR
+
+- TODO: Write summary.
+
+
 ## Goal
 - One clear outcome for this prompt.
 
@@ -12,7 +17,7 @@ agent: Agent-Name
 - Required input two.
 
 ## Steps
-1. Load [skill: primary-skill](../.github/skills/primary-skill/SKILL.md) and any other listed skills before acting.
+1. Load [skill: primary-skill](../../.github/skills/primary-skill/SKILL.md) and any other listed skills before acting.
 2. Read the owning files, source of truth, and nearest validation surface.
 3. Perform only the bounded work named by this prompt.
 4. Run the narrowest relevant validation, then report proof and remaining risk.

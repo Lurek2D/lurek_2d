@@ -1,5 +1,9 @@
 # compute
 
+## TL;DR
+
+- The `compute` module is a dense N-dimensional numerical array library forming a core component of the Foundations tier.
+
 ## General Info
 
 - Module group: `Foundations`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `compute` module is a dense N-dimensional numerical array library forming a core component of the Foundations tier. Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
+ Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
 
 The module offers a vast mathematical operations suite accessible via `ops.rs`. This includes element-wise arithmetic, boolean comparisons, bitwise logic, and reduction operations (sum, mean, min, max) that can be applied globally or along specific array axes. Many of these operations feature in-place mutation variants and support row-broadcasting to optimize memory usage. For large array processing, the module leverages the `rayon` crate to automatically dispatch operations concurrently across threads when workloads exceed a tunable parallelization threshold.
 
@@ -209,7 +213,7 @@ Finally, the `analytics.rs` module provides statistical and analytical tools, in
 - `lurek.compute.range`: Creates a one-dimensional range array.
 - `lurek.compute.fromTable`: Creates an array from a flat Lua table and optional shape.
 - `lurek.compute.gaussianKernel`: Creates a square Gaussian kernel array.
-- `lurek.compute.rotate2dMatrix`: Creates a 2D rotation matrix. This function is exposed to Lua scripts.
+- `lurek.compute.rotate2dMatrix`: Creates a 2D rotation matrix from an angle in radians.
 - `lurek.compute.affine2d`: Creates a 2D affine transform matrix.
 - `lurek.compute.fft`: Computes the FFT of real-valued samples.
 - `lurek.compute.ifft`: Computes the inverse FFT of complex frequency pairs.
@@ -221,13 +225,13 @@ Finally, the `analytics.rs` module provides statistical and analytical tools, in
 - `LArray:getShape`: Returns the array shape as one-based dimension table.
 - `LArray:getDimensions`: Returns the number of array dimensions.
 - `LArray:getSize`: Returns the total number of array elements.
-- `LArray:getDataType`: Returns the array data type name. This method is available to Lua scripts.
+- `LArray:getDataType`: Returns the element data type name as a string.
 - `LArray:isOnGPU`: Returns whether this array is currently stored on the GPU.
 - `LArray:get`: Reads an array element using one-based indices.
 - `LArray:set`: Writes an array element using one-based indices followed by the value.
 - `LArray:toTable`: Returns array values flattened into a Lua table.
 - `LArray:reshape`: Returns a reshaped copy of this array.
-- `LArray:clone`: Returns a copy of this array. This method is available to Lua scripts.
+- `LArray:clone`: Returns an independent deep copy of this array.
 - `LArray:transpose`: Returns a transposed copy of a two-dimensional array.
 - `LArray:fill`: Fills this array in place with one value.
 - `LArray:addInplace`: Adds another array into this array in place.
@@ -251,7 +255,7 @@ Finally, the `analytics.rs` module provides statistical and analytical tools, in
 - `LArray:lte`: Returns element-wise less-or-equal comparison with an array or scalar.
 - `LArray:threshold`: Returns a mask array where values above a threshold are selected.
 - `LArray:where`: Selects values from this array or another array using a mask array.
-- `LArray:countNonZero`: Counts non-zero elements. This method is available to Lua scripts.
+- `LArray:countNonZero`: Counts the number of non-zero elements in this array.
 - `LArray:argmin`: Returns the one-based flat index of the minimum value.
 - `LArray:argmax`: Returns the one-based flat index of the maximum value.
 - `LArray:any`: Returns whether any element is non-zero.

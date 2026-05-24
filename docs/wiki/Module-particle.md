@@ -50,11 +50,11 @@ Emitter-based 2D particle systems with bounded pools and Euler integration.
 
 ## 📋 Summary
 
-The `particle` module is a powerful Feature Systems tier component that provides comprehensive, emitter-based 2D particle systems for Lurek2D. Designed for high-performance visual effects, it utilizes bounded, fixed-capacity memory pools and CPU-based Euler integration. At the core of the module is the `ParticleSystem`, an emitter that spawns `Particle` instances according to highly configurable emission shapes, such as point, circle, ring, rectangle, cone, line, and custom callbacks. Once spawned, each particle evolves independently based on a robust physics model that includes linear velocity, gravity, radial/tangential acceleration, linear damping, drag, orbit mechanics, and turbulence, before eventually expiring after a predefined lifetime.
+Designed for high-performance visual effects, it utilizes bounded, fixed-capacity memory pools and CPU-based Euler integration. At the core of the module is the `ParticleSystem`, an emitter that spawns `Particle` instances according to highly configurable emission shapes, such as point, circle, ring, rectangle, cone, line, and custom callbacks. Once spawned, each particle evolves independently based on a robust physics model that includes linear velocity, gravity, radial/tangential acceleration, linear damping, drag, orbit mechanics, and turbulence, before eventually expiring after a predefined lifetime.
 
 The visual representation of particles is extremely flexible. The system supports both procedural geometric shapes (like squares, circles, sparks, and shrapnel) and fully textured sprites. Throughout their lifetime, particles dynamically interpolate key properties—such as color, size, rotation, and opacity—using customizable multi-stop keyframe curves. To create complex, layered effects, `ParticleSystem`s support sub-emitters, allowing particles to spawn entirely new child particle bursts upon specific events, such as birth, death, or collision. The module also features a robust physics collision integration, allowing particles to bounce realistically off defined bounding boxes or dynamic Rapier2D world geometry with configurable restitution.
 
-Beyond standalone particles, the module implements a sophisticated `Trail` system. This generates connected ribbon segments behind moving particles or standalone points, featuring width tapering, age-based point retirement, and head-to-tail color interpolation. Additional advanced features include point attractors (gravity wells) that dynamically pull or repel live particles, and texture animation that can cycle through sprite atlas frames over a particle's lifetime. For ease of use, the module provides a suite of ready-made `presets` for common effects like fire, smoke, rain, snow, and sparks. The entire module is heavily optimized for deterministic simulation (given the same initial seed) and provides extensive debug visualization tools. It is fully exposed to the Lua scripting environment via the `lurek.particle.*` API, making it an essential tool for bringing dynamic, visua
+Beyond standalone particles, the module implements a sophisticated `Trail` system. This generates connected ribbon segments behind moving particles or standalone points, featuring width tapering, age-based point retirement, and head-to-tail color interpolation. Additional advanced features include point attractors (gravity wells) that dynamically pull or repel live particles, and texture animation that can cycle through sprite atlas frames over a particle's lifetime. For ease of use, the module provides a suite of ready-made `presets` for common effects like fire, smoke, rain, snow, and sparks. The entire module is heavily optimized for deterministic simulation (given the same initial seed) and provides extensive debug visualization tools. It is fully exposed to the Lua scripting environment via the `lurek.particle.*` API, making it an essential tool for bringing dynamic, visually rich effects to Lurek2D games.
 
 [⬆ back to top](#table-of-contents)
 
@@ -2962,8 +2962,8 @@ do
     local ps = lurek.particle.newSystem()
     print("type = " .. ps:type())
     print("is PS = " .. tostring(ps:typeOf("LParticleSystem")))
-    print("is Drawable = " .. tostring(ps:typeOf("Drawable")))
-    print("is Object = " .. tostring(ps:typeOf("Object")))
+    print("is Drawable = " .. tostring(ps:typeOf("LDrawable")))
+    print("is Object = " .. tostring(ps:typeOf("LObject")))
 end
 ```
 
@@ -2997,8 +2997,8 @@ do
     local ps = lurek.particle.newSystem()
     print("type = " .. ps:type())
     print("is PS = " .. tostring(ps:typeOf("LParticleSystem")))
-    print("is Drawable = " .. tostring(ps:typeOf("Drawable")))
-    print("is Object = " .. tostring(ps:typeOf("Object")))
+    print("is Drawable = " .. tostring(ps:typeOf("LDrawable")))
+    print("is Object = " .. tostring(ps:typeOf("LObject")))
 end
 ```
 
@@ -3128,7 +3128,7 @@ do
     trail:pushPoint(50, 25) ; local img = trail:drawToImage(64, 64)
     print("trail image type = " .. img:type())
     print("is LTrail = " .. tostring(trail:typeOf("LTrail")))
-    print("is Object = " .. tostring(trail:typeOf("Object")))
+    print("is Object = " .. tostring(trail:typeOf("LObject")))
 end
 ```
 
@@ -3489,7 +3489,7 @@ do
     trail:pushPoint(50, 25) ; local img = trail:drawToImage(64, 64)
     print("trail image type = " .. img:type())
     print("is LTrail = " .. tostring(trail:typeOf("LTrail")))
-    print("is Object = " .. tostring(trail:typeOf("Object")))
+    print("is Object = " .. tostring(trail:typeOf("LObject")))
 end
 ```
 

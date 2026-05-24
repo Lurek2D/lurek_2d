@@ -16,3 +16,4 @@
 - **`validate_module_coverage.py`**: validate_module_coverage.py
 - **`validate_param_types.py`**: validate_param_types.py — Verify that @param type tags match Rust closure type inference.
 - **`validate_rust_source_docs.py`**: Validate file-level and public-item Rust documentation under src/.
+- **`validate_snippets.py`**: Validate content/snippets marker structure and VS Code snippet output freshness.

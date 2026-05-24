@@ -41,7 +41,7 @@ Grid-based minimap data model: fog of war, tracked objects, pings, viewport over
 
 ## 📋 Summary
 
-The `minimap` module is a robust Feature Systems tier component that implements a highly configurable, grid-based minimap and radar system for Lurek2D. It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
+It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
 
 Beyond basic terrain visualization, the minimap acts as a comprehensive strategic display. It tracks active game entities via `MinimapObject`s, which project world positions onto the grid and render as typed, owner-colored dots or assigned texture icons. To support mission and location tracking, it provides a `MinimapMarker` system for persistent or timed points of interest, featuring built-in animation states like blinking, pulsing, or rotating crosshairs. For strategic feedback, the module supports dynamic `OverlayShape`s (lines, rectangles, named polyline paths) and temporary animated `MinimapPing` alerts to draw player attention to specific map coordinates.
 
@@ -2966,7 +2966,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     print(mm:type())
     print(mm:typeOf("LMinimap"))
-    print(mm:typeOf("Object"))
+    print(mm:typeOf("LObject"))
 end
 ```
 
@@ -3001,7 +3001,7 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     print(mm:type())
     print(mm:typeOf("LMinimap"))
-    print(mm:typeOf("Object"))
+    print(mm:typeOf("LObject"))
 end
 ```
 

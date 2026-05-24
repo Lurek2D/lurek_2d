@@ -1,0 +1,48 @@
+Na podstawie analizy dostarczonego pliku definicji API (lurek.lua), poniżej znajduje się szczegółowa analiza architektoniczna silnika oraz wskazanie oczywistych braków i anomalii projektowych, przy założeniu, że ma to być ogólne API silnika do tworzenia gier i aplikacji 2D.
+
+Silnik posiada strukturę pętli zwrotnej (callbacks) bardzo przypominającą popularne frameworki (np. Love2D), oferując funkcje takie jak lurek.draw(), lurek.process(dt) czy lurek.keypressed(key). Zaskakuje jednak ogromną liczbą wbudowanych, niezwykle zaawansowanych systemów, przy jednoczesnym braku elementarnych narzędzi programistycznych.
+
+I. Oczywiste braki w API (Gaps)
+Brak ogólnego modułu systemu plików (Generic Filesystem I/O)
+Silnik posiada bardzo wyspecjalizowane funkcje do ładowania konkretnych zasobów (np. lurek.image.loadImage, lurek.data.parseToml, lurek.dataframe.fromCSVFile) oraz sztywne funkcje zapisu do wyznaczonego folderu save/.
+
+Wada: W API całkowicie brakuje generycznego modułu do obsługi plików (np. lurek.fs lub lurek.filesystem). Deweloper nie ma możliwości sprawdzenia, czy plik istnieje, usunięcia pliku, wylistowania zawartości katalogu (directory listing) czy stworzenia nowego folderu z poziomu kodu Lua.
+
+Paraliż niestandardowych shaderów (Brak możliwości przesyłania Uniformów)
+Moduł renderowania pozwala na kompilację nowoczesnych shaderów WebGPU przy użyciu języka WGSL (lurek.render.newShader(code)) oraz ich aktywację przez lurek.render.setShader.
+
+Wada: W całym module lurek.render oraz w klasie LShader nie ma ani jednej funkcji pozwalającej na przesyłanie zmiennych dynamicznych (tzw. uniforms lub constants) z poziomu Lua do shadera. Niemożliwe jest przesłanie np. aktualnego czasu gry, pozycji gracza czy niestandardowego koloru dla pojedynczego rysowanego obiektu. Co ciekawe, taka funkcja istnieje, ale wyłącznie w odizolowanym module post-processingu (LPostFxEffect:setParameter). Uniemożliwia to tworzenie własnych dynamicznych efektów graficznych na obiektach w świecie gry.
+
+Brak natywnego wsparcia dla lekkich wektorów (Vector2 / Vector3)
+Gry 2D opierają się na ciągłych obliczeniach pozycji, prędkości, sił i odległości w każdej klatce obrazu. Moduł lurek.compute dostarcza niezwykle zaawansowaną klasę wielowymiarowych tablic LArray.
+
+Wada: LArray to ciężki obiekt typu userdata zarządzany przez dewelopera w pamięci C++/Rust, oferujący operacje matematyczne (w tym algebrę liniową). Używanie go do reprezentowania prostych wektorów x, y dla setek obiektów gry (np. pocisków) doprowadziłoby do ogromnego narzutu pamięciowego i paraliżu odśmiecania pamięci (Garbage Collection) w Lua. Silnik nie oferuje prostych, lekkich struktur wektorowych (np. opartych na zwykłych tabelach Lua lub zoptymalizowanych matematycznie strukturach 2D).
+
+Brak automatyzacji rysowania komponentów animacji
+Silnik posiada rozbudowany moduł animacji tekstur lurek.animation wraz z maszyną stanów (LAnimStateMachine).
+
+Wada: Funkcja lurek.render.draw nie akceptuje obiektów typu LAnimation czy LAnimStateMachine jako obiektów rysowalnych (obsługuje wyłącznie LImage, LCanvas, LSpriteBatch oraz LMesh). Zmusza to programistę do pisania powtarzalnego kodu (boilerplate), gdzie w każdej klatce musi ręcznie wyciągać aktualny prostokąt klatki przez animation:getQuad() i przekazywać go do niskopoziomowej funkcji lurek.render.drawq.
+
+Brak wbudowanego systemu zarządzania sceną lub encjami (Scene Graph / ECS)
+Poza cyklem życia aplikacji (draw, process) silnik nie oferuje żadnej struktury organizującej obiekty gry w świecie. Posiada co prawda drzewo dla elementów interfejsu użytkownika (LUiWidget) oraz system agentów dla sztucznej inteligencji (LAIWorld), ale brakuje standardowego kontenera na encje gry. Deweloper musi od zera napisać własny system zarządzania obiektami, ich pozycjonowaniem i warstwami renderowania.
+
+II. Anomalie projektowe (Przerost formy i brak spójności)
+Analizując to API, można odnieść wrażenie, że silnik cierpi na skrajny tzw. Feature Creep (przeładowanie funkcjonalnościami). Zamiast skupić się na uniwersalnych fundamentach 2D, twórcy wbudowali w rdzeń silnika gigantyczne, niszowe systemy, które zazwyczaj pisze się na poziomie samej gry:
+
+Przerost modułów AI i Data Science (DataFrames i SQL w silniku 2D):
+Obecność modułów takich jak lurek.dataframe (analiza tabelaryczna w stylu biblioteki Pandas z Pythona), LDatabase obsługująca zapytania SQL z wątkami asynchronicznymi (queryAsync), transformaty Fouriera (lurek.compute.fft), a także sieci neuronowe i neuroewolucja (LNeuralNet, LNeuroevolution) to absolutny ewenement. O ile zaawansowane AI (GOAP, Drzewa Behawioralne) jest przydatne, o tyle silnik bazy danych SQL zintegrowany bezpośrednio z rdzeniem renderowania 2D drastycznie narusza zasadę spójności architektury.
+
+Skrajna specjalizacja gatunkowa (Grand Strategy + Wolf3D):
+Silnik posiada wbudowane, gotowe mechaniki pod dwa zupełnie skrajne i specyficzne gatunki gier:
+
+Gry Grand Strategy (np. w stylu Paradox): Moduł lurek.globe (renderowanie globusa, mapy ciepła, fog-of-war) oraz LProvinceGrid (obsługa map prowincji z podziałem na segmenty granic).
+
+Retro Strzelanki 3D: Kompletny silnik pseudo-3D oparty o raycasting (LRaycaster, LHeightMap do regulacji wysokości podłóg/sufitów, automatyczny LDoorManager do animowania przesuwanych drzwi).
+
+Dwa alternatywne systemy UI:
+Z jednej strony silnik posiada bardzo zaawansowany natywny system UI oparty o architekturę Flexbox (lurek.ui z parametrami flexGrow, flexShrink, marginesami i dopełnieniami). Z drugiej strony w silnik wbudowano moduł lurek.html, który potrafi parsować dokumenty HTML i style CSS (lurek.html.loadDocument). Posiadanie dwóch tak potężnych i niezależnych systemów UI w jednym silniku 2D drastycznie zwiększa wagę aplikacji i komplikuje naukę API.
+
+Podsumowanie
+Dostarczone API reprezentuje silnik o bardzo wysokim poziomie zaawansowania technologicznego (wykorzystanie WebGPU/WGSL, asynchroniczność w Rust dewelagowana do Lua), który został zaprojektowany z myślą o bardzo konkretnych projektach (prawdopodobnie złożonych symulacjach strategicznych, grach RPG z zaawansowanym AI lub hybrydach retro-3D).
+
+Jeśli ma to być jednak uniwersalny silnik 2D dewelopera gier, jego architektura jest chaotyczna – zmusza użytkownika do ręcznego wiązania animacji z grafiką i radzenia sobie bez podstawowego modułu plików, jednocześnie narzucając mu wbudowane sieci neuronowe, zapytania SQL i rendering prowincji geograficznych.

@@ -43,13 +43,13 @@ Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / 
 
 ## 📋 Summary
 
-The `compute` module is a dense N-dimensional numerical array library forming a core component of the Foundations tier. Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
+Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
 
 The module offers a vast mathematical operations suite accessible via `ops.rs`. This includes element-wise arithmetic, boolean comparisons, bitwise logic, and reduction operations (sum, mean, min, max) that can be applied globally or along specific array axes. Many of these operations feature in-place mutation variants and support row-broadcasting to optimize memory usage. For large array processing, the module leverages the `rayon` crate to automatically dispatch operations concurrently across threads when workloads exceed a tunable parallelization threshold.
 
 Beyond basic arithmetic, `compute` includes specialized submodules for advanced mathematics. `fft.rs` provides Radix-2 in-place Fast Fourier Transforms (FFT) and Inverse FFTs for frequency domain analysis, including magnitude spectrum extraction. `linalg.rs` implements essential linear algebra primitives, offering 2D transformations (rotation, affine matrices), Sobel edge detection, Gaussian convolution kernels, LU decomposition for linear system solving, and dominant eigenpair estimation via power iteration. `spatial.rs` extends these capabilities with 2D image-processing functions such as Manhattan-distance morphological operations (dilate/erode), flood filling, sub-region extraction, and 2D convolution with zero-padded boundary handling.
 
-Finally, the `analytics.rs` module provides statistical and analytical tools, including histogram binning, percentile extraction, cumulative sums, cross-correlation, and data normalization (range scaling and z-score standardization). The entire API surface is fully exposed to Lua via the `lurek.compute.*` namespace, allowing script developers to write highly performant data processing algorithms without leaving Lua. The documentatio
+Finally, the `analytics.rs` module provides statistical and analytical tools, including histogram binning, percentile extraction, cumulative sums, cross-correlation, and data normalization (range scaling and z-score standardization). The entire API surface is fully exposed to Lua via the `lurek.compute.*` namespace, allowing script developers to write highly performant data processing algorithms without leaving Lua. The documentation contract strictly enforces that all polymorphic parameter types and return shapes are meticulously detailed in to guar
 
 [⬆ back to top](#table-of-contents)
 
@@ -3080,7 +3080,7 @@ Source: [compute.lua](../blob/main/content/examples/compute.lua)
 do
     local a = lurek.compute.ones({2, 2})
     print("is LArray = " .. tostring(a:typeOf("LArray")))
-    print("is Object = " .. tostring(a:typeOf("Object")))
+    print("is Object = " .. tostring(a:typeOf("LObject")))
 end
 ```
 

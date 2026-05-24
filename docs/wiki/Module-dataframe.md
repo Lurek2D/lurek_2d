@@ -23,8 +23,8 @@
   - [query/window.rs](#querywindowrs)
   - [rng.rs](#rngrs)
   - [serial.rs](#serialrs)
-  - [task.rs](#taskrs)
   - [sql.rs](#sqlrs)
+  - [task.rs](#taskrs)
   - [vectorized.rs](#vectorizedrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
@@ -61,13 +61,13 @@ In-memory column-major tabular data with lightweight SQL-style queries (lurek.da
 
 ## 📋 Summary
 
-The `dataframe` module provides a powerful in-memory, column-major tabular data engine that brings lightweight SQL-style querying and advanced data manipulation to Lurek2D. Positioned within the Foundations tier, it offers robust data analytics capabilities completely decoupled from engine-specific state. The core data structure is the `DataFrame`, which stores named columns containing `CellValue` variants (Nil, Bool, Int, Float, String). It provides a comprehensive set of operations including adding or removing columns and rows, cell access, sorting, and filtering via predicates. The module also supports advanced tabular functions like inner, left, right, and full joins, grouping, and aggregations (sum, mean, min, max, count).
+Positioned within the Foundations tier, it offers robust data analytics capabilities completely decoupled from engine-specific state. The core data structure is the `DataFrame`, which stores named columns containing `CellValue` variants (Nil, Bool, Int, Float, String). It provides a comprehensive set of operations including adding or removing columns and rows, cell access, sorting, and filtering via predicates. The module also supports advanced tabular functions like inner, left, right, and full joins, grouping, and aggregations (sum, mean, min, max, count).
 
 For analytical workloads, the module includes an extensive suite of window functions (rank, row_number, lag, lead, running totals) and processing helpers such as value counts, missing value reports, duplicate row extraction, and ISO date part extraction. A lazy query builder (`LazyQuery`) is available to chain sequential query steps (filter, sort, select, slice) before materializing the final frame, improving efficiency for complex data pipelines. Additionally, for highly performant bulk numeric operations, a vectorized variant called `VecFrame` leverages parallel operations and typed storage.
 
 A standout feature is the `Database` container, which holds multiple named `DataFrame` instances and acts as a localized query catalog. The module features a bespoke, built-in SQL engine complete with a tokenizer and recursive-descent parser. This engine natively executes SQL queries across the database, supporting full SELECT statements with WHERE clauses, GROUP BY, ORDER BY, LIMIT, subqueries, and table JOINs. It robustly handles explicit `AS` aliases, aggregate calls, and complex arithmetic expressions, including parameterized queries with positional `?` placeholders.
 
-To facilitate seamless data interchange, the module implements native serialization and deserialization for CSV, JSON, and compact binary (LVDF) formats. Recognizing the performance impact of parsing large datasets, these operations—alongside SQL queries—can be executed asynchronously on Rust worker threads using `DataFrameTask`. These tasks operate on storage snapshots, ensuring that heavy I/O and SQL processing do not block the main Lua thread. The entire robust feature set
+To facilitate seamless data interchange, the module implements native serialization and deserialization for CSV, JSON, and compact binary (LVDF) formats. Recognizing the performance impact of parsing large datasets, these operations—alongside SQL queries—can be executed asynchronously on Rust worker threads using `DataFrameTask`. These tasks operate on storage snapshots, ensuring that heavy I/O and SQL processing do not block the main Lua thread. The entire robust feature set is exposed to script authors through the `lurek.dataframe.*` API, enabling sophisticated data engineering and analytics within game scripts.
 
 [⬆ back to top](#table-of-contents)
 
@@ -75,10 +75,10 @@ To facilitate seamless data interchange, the module implements native serializat
 
 ### `file_io.rs`
 
-- Storage-agnostic DataFrame and Database file persistence helpers.
-- Narrow trait for reading and writing text, JSON, and binary payloads without importing GameFS.
-- CSV, JSON, LVDF, and database serializers combined with caller-provided storage operations.
-- Separate storage failures from parse and format failures so bindings can preserve error surfaces.
+- Provides storage-agnostic DataFrame and Database file persistence helpers.
+- Defines a narrow trait for reading and writing text, JSON, and binary payloads without importing GameFS.
+- Combines existing CSV, JSON, LVDF, and database serializers with caller-provided storage operations.
+- Keeps storage failures separate from parse and format failures so Lua bindings can preserve error surfaces.
 
 ### `frame.rs`
 
@@ -104,7 +104,7 @@ To facilitate seamless data interchange, the module implements native serializat
 
 - Columnar DataFrame type and Database container
 - Lazy query builder and deferred execution pipeline
-- Query-time transforms: filtering, grouping, analytics, and window functions
+- Query-time transforms: filtering, grouping, analytics, processing, and window functions
 - CSV, JSON, and binary serialization and parsing
 - Storage-agnostic file persistence helpers for dataframe and database payloads
 - One-shot threaded dataframe tasks for file loading and SQL queries
@@ -179,25 +179,24 @@ To facilitate seamless data interchange, the module implements native serializat
 - Database-level JSON parsing from named table arrays
 - Nested JSON value and array handling during parse
 
-### `task.rs`
-
-- One-shot threaded dataframe jobs for file loading and SQL queries.
-- Worker-owned storage snapshots so large CSV/JSON reads do not pass through Lua strings.
-- Poll, wait, result, error, and progress lifecycle helpers shared by Lua bindings.
-- Snapshot-based DataFrame and Database query execution on Rust worker threads.
-
 ### `sql.rs`
 
 - SQL text tokenizer producing typed token stream
 - Recursive-descent parser for SELECT statements
 - WHERE clause expression tree with AND, OR, NOT, LIKE, and IN
 - Aggregate function support: COUNT, SUM, AVG, MIN, MAX
-- SELECT arithmetic expression support with explicit `AS` aliases
+- SELECT arithmetic expressions with explicit `AS` aliases
 - GROUP BY with HAVING filter and ORDER BY with LIMIT/OFFSET
 - JOIN clause parsing and inner-join execution
 - SQL LIKE pattern matching with `%` and `_` wildcards
 - Single-frame and multi-table Database query entry points
-- Positional parameter binding for database queries with escaped SQL literals
+
+### `task.rs`
+
+- One-shot threaded dataframe jobs for file loading and SQL queries.
+- Worker-owned storage snapshots so large CSV/JSON reads do not pass through Lua strings.
+- Poll, wait, result, error, and progress lifecycle helpers shared by Lua bindings.
+- Snapshot-based DataFrame and Database query execution on Rust worker threads.
 
 ### `vectorized.rs`
 
@@ -6404,7 +6403,7 @@ do
   -- typeOf checks against "LDataFrame", "DataFrame", or "Object".
   -- Useful for generic functions that accept multiple handle types.
   local df = lurek.dataframe.newDataFrame()
-  if df:typeOf("Object") then
+  if df:typeOf("LObject") then
     lurek.log.info("DataFrame is an Object (all handles are)")
   end
 end

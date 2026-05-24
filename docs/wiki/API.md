@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7250 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26601 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7252 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (26620 lines)
 
 ## Coverage
 
 - 52 modules
-- 4880 functions and methods
+- 4882 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -48,7 +48,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.filesystem](Module-filesystem) | 44 | 3 | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
 | [lurek.globe](Module-globe) | 9 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [lurek.graph](Module-graph) | 1 | 4 | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
-| [lurek.html](Module-html) | 6 | 2 | The html module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D. |
+| [lurek.html](Module-html) | 6 | 2 | It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. |
 | [lurek.i18n](Module-i18n) | 36 | 0 | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
 | [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 80 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |

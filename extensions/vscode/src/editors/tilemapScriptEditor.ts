@@ -22,7 +22,7 @@ export class TilemapScriptEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Tilemap Script Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 180px 1fr 280px;
+        display: grid; grid-template-columns: 48px 180px 1fr 280px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }

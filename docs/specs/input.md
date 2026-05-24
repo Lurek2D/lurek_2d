@@ -1,5 +1,9 @@
 # input
 
+## TL;DR
+
+- The `input` module is a core Platform Services tier component that aggregates and processes hardware inputs across keyboard, mouse, gamepad, and multi-touch devices.
+
 ## General Info
 
 - Module group: `Platform Services`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `input` module is a core Platform Services tier component that aggregates and processes hardware inputs across keyboard, mouse, gamepad, and multi-touch devices. Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
+ Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
 
 The `MouseState` system offers comprehensive tracking of cursor coordinates, scroll-wheel deltas, and multi-button states. It allows developers to customize the cursor by selecting from system icons, providing raw RGBA pixel data, or toggling visibility and window-grab confinement (relative mode) for first-person control schemes. Gamepad support is exceptionally robust via the `GamepadState` struct, which tracks up to four connected controllers simultaneously. It manages analog sticks, triggers, button presses, connection lifecycles, and OS force-feedback vibration requests, synthesizing virtual D-pads and providing SDL2 GameControllerDB GUID mapping for maximum compatibility. `TouchState` similarly handles multi-point contact tracking for mobile or touchscreen interfaces, capturing press, move, and release lifecycles.
 
@@ -23,6 +27,9 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - Multi-step key-press combo detection with per-step and total-sequence timeouts.
 - Stateful detector that advances, breaks, or completes on each key feed or timer tick.
 - Used by the `lurek.input` combo API to recognize fighting-game-style input sequences.
+
+### `events.rs`
+- Lua event name constants for input callbacks.
 
 ### `gamepad.rs`
 - Per-slot gamepad state tracking: buttons, axes, connection lifecycle, and per-frame delta sets.
@@ -201,7 +208,7 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - Namespace: `lurek.input.keyboard`
 
 ### Module Functions
-- `lurek.input.keyboard.isDown`: Returns whether any supplied keyboard key is currently down.
+- `lurek.input.keyboard.isDown`: Returns whether any of the supplied key names are currently held down.
 - `lurek.input.keyboard.isScancodeDown`: Returns whether a scancode is currently down.
 - `lurek.input.keyboard.setKeyRepeat`: Enables or disables key repeat tracking.
 - `lurek.input.keyboard.hasKeyRepeat`: Returns whether key repeat tracking is enabled.
@@ -214,11 +221,11 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - `lurek.input.mouse.getX`: Returns the current mouse x coordinate.
 - `lurek.input.mouse.getY`: Returns the current mouse y coordinate.
 - `lurek.input.mouse.isDown`: Returns whether a one-based mouse button index is down.
-- `lurek.input.mouse.setVisible`: Sets mouse cursor visibility. This function is exposed to Lua scripts.
+- `lurek.input.mouse.setVisible`: Sets the mouse cursor visibility state.
 - `lurek.input.mouse.isVisible`: Returns whether the mouse cursor is visible.
 - `lurek.input.mouse.setGrabbed`: Sets whether the mouse is grabbed by the window.
 - `lurek.input.mouse.isGrabbed`: Returns whether the mouse is grabbed by the window.
-- `lurek.input.mouse.setRelativeMode`: Sets relative mouse mode. This function is exposed to Lua scripts.
+- `lurek.input.mouse.setRelativeMode`: Sets the relative mouse input mode state.
 - `lurek.input.mouse.getRelativeMode`: Returns whether relative mouse mode is enabled.
 - `lurek.input.mouse.setPosition`: Requests a mouse cursor position change.
 - `lurek.input.mouse.setCursor`: Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.
@@ -231,12 +238,12 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - `lurek.input.gamepad.getJoystickCount`: Returns the number of joystick slots tracked by the runtime.
 - `lurek.input.gamepad.getJoysticks`: Returns ids for currently connected gamepads.
 - `lurek.input.gamepad.isConnected`: Returns whether a gamepad id is currently connected.
-- `lurek.input.gamepad.getName`: Returns a gamepad display name. This function is exposed to Lua scripts.
+- `lurek.input.gamepad.getName`: Returns a gamepad display name by its id.
 - `lurek.input.gamepad.isGamepad`: Returns whether a connected gamepad exists at an id.
 - `lurek.input.gamepad.getButtonCount`: Returns the button count for a gamepad.
 - `lurek.input.gamepad.getAxisCount`: Returns the axis count for a gamepad.
 - `lurek.input.gamepad.isDown`: Returns whether a gamepad button is currently down.
-- `lurek.input.gamepad.getAxis`: Returns a gamepad axis value. This function is exposed to Lua scripts.
+- `lurek.input.gamepad.getAxis`: Returns a gamepad axis value by index.
 - `lurek.input.gamepad.virtualDpad`: Converts analog x and y values into virtual d-pad booleans and direction.
 - `lurek.input.gamepad.isVibrationSupported`: Returns whether a gamepad supports vibration requests.
 - `lurek.input.gamepad.vibrate`: Requests gamepad vibration with low and high frequency motor strengths.
@@ -254,19 +261,19 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - `lurek.input.gamepad.loadGamepadMappings`: Loads gamepad mapping strings from a file.
 - `lurek.input.gamepad.saveGamepadMappings`: Saves gamepad mapping strings to a file.
 - `lurek.input.touch.getTouches`: Returns active touch points with id, position, and pressure.
-- `lurek.input.touch.getPosition`: Returns the position of a touch id. This function is exposed to Lua scripts.
-- `lurek.input.touch.getPressure`: Returns pressure for a touch id. This function is exposed to Lua scripts.
+- `lurek.input.touch.getPosition`: Returns the position of a touch point by id.
+- `lurek.input.touch.getPressure`: Returns pressure for a touch point by its id.
 - `lurek.input.touch.getTouchCount`: Returns the current active touch count.
 - `lurek.input.touch.wasPressed`: Returns whether a touch id began this frame.
 - `lurek.input.touch.wasReleased`: Returns whether a touch id ended this frame.
 - `lurek.input.bind`: Adds one or more keyboard/gamepad bindings to an action.
 - `lurek.input.newMapping`: Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
-- `lurek.input.isDown`: Returns true if down for Lua scripts in this module.
-- `lurek.input.wasPressed`: Was pressed for Lua scripts in this module.
-- `lurek.input.wasReleased`: Was released for Lua scripts in this module.
+- `lurek.input.isDown`: Returns whether any bound key for this mapping is currently down.
+- `lurek.input.wasPressed`: Returns whether any bound key for this mapping was pressed this frame.
+- `lurek.input.wasReleased`: Returns whether any bound key for this mapping was released this frame.
 - `lurek.input.unbind`: Removes all bindings for an action.
-- `lurek.input.clearBindings`: Removes all action bindings. This function is exposed to Lua scripts.
-- `lurek.input.getBindings`: Returns all action bindings. This function is exposed to Lua scripts.
+- `lurek.input.clearBindings`: Removes all action bindings from the map.
+- `lurek.input.getBindings`: Returns all registered action bindings.
 - `lurek.input.isActionDown`: Returns whether any binding for an action is currently down.
 - `lurek.input.wasActionPressed`: Returns whether any binding for an action was pressed this frame and records the frame.
 - `lurek.input.wasActionReleased`: Returns whether any binding for an action was released this frame.

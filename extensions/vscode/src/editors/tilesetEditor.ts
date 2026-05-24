@@ -22,7 +22,7 @@ export class TilesetEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Tileset", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 220px;
+        display: grid; grid-template-columns: 48px 1fr 220px;
         grid-template-rows: auto 1fr auto;
         height: 100vh;
       }
@@ -52,20 +52,23 @@ export class TilesetEditor extends WebviewEditor {
       <div class="editor-layout">
         <div class="toolbar">
           <div class="group">
-            ${iconButton(ICONS.add, 'btnUpload', 'Upload Image')}
+            ${iconButton('add', { id: 'btnUpload', title: 'Upload Image' })}
           </div>
           ${toolbarSep()}
           <div class="group">
             <label>W:</label><input type="number" id="tileW" value="32" min="8" max="256" style="width:44px">
             <label>H:</label><input type="number" id="tileH" value="32" min="8" max="256" style="width:44px">
+            <button id="preset16" data-preset="16" title="Set 16x16">16</button>
+            <button id="preset32" data-preset="32" title="Set 32x32">32</button>
+            <button id="preset64" data-preset="64" title="Set 64x64">64</button>
           </div>
           ${toolbarSep()}
           <div class="group">
-            ${iconButton(ICONS.grid, 'btnShowGrid', 'Toggle Grid')}
+            ${iconButton('grid', { id: 'btnShowGrid', title: 'Toggle Grid', className: 'active' })}
             <button id="btnShowIds" title="Show Tile IDs" style="font-size:10px;padding:2px 6px">IDs</button>
           </div>
           ${toolbarSpacer()}
-          ${iconButton(ICONS.save, 'btnExport', 'Export Lua')}
+          ${iconButton('save', { id: 'btnExport', title: 'Export Lua' })}
         </div>
 
         <div class="tileset-area" id="tilesetArea">
@@ -126,6 +129,10 @@ export class TilesetEditor extends WebviewEditor {
       registerShortcut('ctrl+shift+z', () => { const s = undo.redo(); if (s) loadState(s); });
       registerShortcut('ctrl+s', () => document.getElementById('btnExport').click());
       registerShortcut('g', () => document.getElementById('btnShowGrid').click());
+      registerShortcut('left', () => moveSelection(-1, 0));
+      registerShortcut('right', () => moveSelection(1, 0));
+      registerShortcut('up', () => moveSelection(0, -1));
+      registerShortcut('down', () => moveSelection(0, 1));
 
       function updateGrid() {
         if (!imageLoaded) return;
@@ -168,21 +175,40 @@ export class TilesetEditor extends WebviewEditor {
         }
       }
 
+      function selectTile(tileIndex) {
+        if (!imageLoaded) return;
+        if (tileIndex < 0 || tileIndex >= gridCols * gridRows) return;
+        selectedTile = tileIndex;
+        document.getElementById('tileId').value = selectedTile;
+        document.getElementById('statusTile').textContent = 'Tile: ' + selectedTile;
+        const p = tileProps[selectedTile] || {};
+        document.getElementById('propSolid').checked = !!p.solid;
+        document.getElementById('propAnimated').checked = !!p.animated;
+        document.getElementById('propSlope').checked = !!p.slope;
+        document.getElementById('propHazard').checked = !!p.hazard;
+        document.getElementById('tileName').value = p.name || '';
+        draw();
+      }
+
+      function moveSelection(dx, dy) {
+        if (!imageLoaded || gridCols <= 0 || gridRows <= 0) return;
+        if (selectedTile < 0) {
+          selectTile(0);
+          return;
+        }
+        const col = selectedTile % gridCols;
+        const row = Math.floor(selectedTile / gridCols);
+        const nextCol = Math.max(0, Math.min(gridCols - 1, col + dx));
+        const nextRow = Math.max(0, Math.min(gridRows - 1, row + dy));
+        selectTile(nextRow * gridCols + nextCol);
+      }
+
       canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
         const c = Math.floor((e.clientX - rect.left) / tileW);
         const r = Math.floor((e.clientY - rect.top) / tileH);
         if (c < gridCols && r < gridRows) {
-          selectedTile = r * gridCols + c;
-          document.getElementById('tileId').value = selectedTile;
-          document.getElementById('statusTile').textContent = 'Tile: ' + selectedTile;
-          const p = tileProps[selectedTile] || {};
-          document.getElementById('propSolid').checked = !!p.solid;
-          document.getElementById('propAnimated').checked = !!p.animated;
-          document.getElementById('propSlope').checked = !!p.slope;
-          document.getElementById('propHazard').checked = !!p.hazard;
-          document.getElementById('tileName').value = p.name || '';
-          draw();
+          selectTile(r * gridCols + c);
         }
       });
 
@@ -209,6 +235,18 @@ export class TilesetEditor extends WebviewEditor {
 
       document.getElementById('tileW').addEventListener('change', (e) => { tileW = parseInt(e.target.value); updateGrid(); });
       document.getElementById('tileH').addEventListener('change', (e) => { tileH = parseInt(e.target.value); updateGrid(); });
+      document.querySelectorAll('[data-preset]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const v = parseInt(btn.getAttribute('data-preset'), 10);
+          if (!v) return;
+          tileW = v;
+          tileH = v;
+          document.getElementById('tileW').value = String(v);
+          document.getElementById('tileH').value = String(v);
+          updateGrid();
+          showToast('Applied preset ' + v + 'x' + v, 'info');
+        });
+      });
 
       document.getElementById('btnShowGrid').addEventListener('click', function() {
         showGrid = !showGrid; this.classList.toggle('active', showGrid); draw();
@@ -246,6 +284,18 @@ export class TilesetEditor extends WebviewEditor {
           const lbl = document.createElement('span');
           lbl.textContent = ' \\u2192 Tile ' + rule.target;
           row.appendChild(lbl);
+          const tgt = document.createElement('input');
+          tgt.type = 'number';
+          tgt.min = '0';
+          tgt.value = String(rule.target);
+          tgt.style.width = '54px';
+          tgt.title = 'Target tile';
+          tgt.addEventListener('change', () => {
+            pushUndo();
+            rule.target = Math.max(0, parseInt(tgt.value, 10) || 0);
+            renderAutoRules();
+          });
+          row.appendChild(tgt);
           c.appendChild(row);
         });
       }

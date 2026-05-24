@@ -25,7 +25,7 @@ export class TileMapEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Tile Map Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 38px 1fr 220px;
+        display: grid; grid-template-columns: 48px 1fr 220px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }
@@ -82,6 +82,13 @@ export class TileMapEditor extends WebviewEditor {
           <div class="group">
             <label>Tile</label>
             <input type="number" id="tileSize" value="32" min="8" max="128" style="width:48px" title="Tile pixel size">
+            <label>Brush</label>
+            <select id="brushSize" title="Brush Size ([ and ])">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
           </div>
           ${toolbarSep()}
           <div class="group">
@@ -156,10 +163,14 @@ export class TileMapEditor extends WebviewEditor {
           <div class="sep"></div>
           <span id="statusTool">Paint</span>
           <div class="sep"></div>
+          <span id="statusBrush">Brush: 1</span>
+          <div class="sep"></div>
           <span id="statusTile">Tile: 1</span>
           <div class="sep"></div>
           <span id="statusLayer">ground</span>
           <div class="spacer"></div>
+          <span id="statusZoom">Zoom: 100%</span>
+          <div class="sep"></div>
           <span id="statusSize">20×15</span>
           <div class="sep"></div>
           <span class="dirty-indicator">${ICONS.clean}</span>
@@ -183,6 +194,7 @@ export class TileMapEditor extends WebviewEditor {
 
       let mapW = 20, mapH = 15, tileSize = 32;
       let currentTile = 1, currentTool = 'paint';
+      let brushSize = 1;
       let showGrid = true, showIds = false, showAllLayers = true;
       let offsetX = 0, offsetY = 0, zoom = 1;
       let isPanning = false, panStartX = 0, panStartY = 0;
@@ -315,6 +327,15 @@ export class TileMapEditor extends WebviewEditor {
         }
       }
 
+      function setTileBrush(tx, ty, value) {
+        const offset = Math.floor((brushSize - 1) / 2);
+        for (let by = 0; by < brushSize; by++) {
+          for (let bx = 0; bx < brushSize; bx++) {
+            setTile(tx + bx - offset, ty + by - offset, value);
+          }
+        }
+      }
+
       function floodFill(tx, ty, target, replacement) {
         if (target === replacement) return;
         const layer = layerData[currentLayer];
@@ -341,8 +362,8 @@ export class TileMapEditor extends WebviewEditor {
         if (e.button === 0) {
           pushUndo(); isDrawing = true;
           const { tx, ty } = screenToTile(e.offsetX, e.offsetY);
-          if (currentTool === 'paint') { setTile(tx, ty, currentTile); render(); }
-          else if (currentTool === 'erase') { setTile(tx, ty, 0); render(); }
+          if (currentTool === 'paint') { setTileBrush(tx, ty, currentTile); render(); }
+          else if (currentTool === 'erase') { setTileBrush(tx, ty, 0); render(); }
           else if (currentTool === 'fill') {
             const layer = layerData[currentLayer];
             if (tx >= 0 && tx < mapW && ty >= 0 && ty < mapH) {
@@ -357,7 +378,7 @@ export class TileMapEditor extends WebviewEditor {
             }
           }
           else if (currentTool === 'rect') { rectStartX = tx; rectStartY = ty; }
-          else if (currentTool === 'stamp') { setTile(tx, ty, currentTile); render(); }
+          else if (currentTool === 'stamp') { setTileBrush(tx, ty, currentTile); render(); }
         }
       });
 
@@ -367,8 +388,8 @@ export class TileMapEditor extends WebviewEditor {
         document.getElementById('statusPos').textContent = tx + ', ' + ty;
         if (isPanning) { offsetX = e.clientX - panStartX; offsetY = e.clientY - panStartY; render(); return; }
         if (isDrawing) {
-          if (currentTool === 'paint' || currentTool === 'stamp') { setTile(tx, ty, currentTile); render(); }
-          else if (currentTool === 'erase') { setTile(tx, ty, 0); render(); }
+          if (currentTool === 'paint' || currentTool === 'stamp') { setTileBrush(tx, ty, currentTile); render(); }
+          else if (currentTool === 'erase') { setTileBrush(tx, ty, 0); render(); }
           else if (currentTool === 'rect') { render(); }
         }
       });
@@ -396,6 +417,7 @@ export class TileMapEditor extends WebviewEditor {
         zoom = Math.max(0.1, Math.min(5, zoom));
         offsetX = e.offsetX - (e.offsetX - offsetX) * zoom / oldZoom;
         offsetY = e.offsetY - (e.offsetY - offsetY) * zoom / oldZoom;
+        updateViewStatus();
         render();
       }, { passive: false });
 
@@ -404,6 +426,33 @@ export class TileMapEditor extends WebviewEditor {
       Object.entries(toolKeys).forEach(([key, tool]) => {
         registerShortcut(key, () => { selectTool(tool); });
       });
+      registerShortcut('q', () => {
+        currentTile = Math.max(0, currentTile - 1);
+        updateTileDisplay();
+      });
+      registerShortcut('w', () => {
+        currentTile = Math.min(31, currentTile + 1);
+        updateTileDisplay();
+      });
+      registerShortcut('[', () => {
+        brushSize = Math.max(1, brushSize - 1);
+        document.getElementById('brushSize').value = String(brushSize);
+        updateViewStatus();
+      });
+      registerShortcut(']', () => {
+        brushSize = Math.min(4, brushSize + 1);
+        document.getElementById('brushSize').value = String(brushSize);
+        updateViewStatus();
+      });
+      registerShortcut('shift+q', () => cycleLayer(-1));
+      registerShortcut('shift+w', () => cycleLayer(1));
+      for (let i = 0; i <= 9; i++) {
+        const tileValue = i;
+        registerShortcut(String(i), () => {
+          currentTile = tileValue;
+          updateTileDisplay();
+        });
+      }
 
       function selectTool(tool) {
         currentTool = tool;
@@ -411,6 +460,21 @@ export class TileMapEditor extends WebviewEditor {
           b.classList.toggle('active', b.dataset.tool === tool);
         });
         document.getElementById('statusTool').textContent = tool.charAt(0).toUpperCase() + tool.slice(1);
+        updateViewStatus();
+      }
+
+      function updateViewStatus() {
+        document.getElementById('statusBrush').textContent = 'Brush: ' + brushSize;
+        document.getElementById('statusZoom').textContent = 'Zoom: ' + Math.round(zoom * 100) + '%';
+      }
+
+      function cycleLayer(delta) {
+        const idx = LAYER_NAMES.indexOf(currentLayer);
+        const nextIdx = (idx + delta + LAYER_NAMES.length) % LAYER_NAMES.length;
+        currentLayer = LAYER_NAMES[nextIdx];
+        refreshLayers();
+        document.getElementById('statusLayer').textContent = currentLayer;
+        render();
       }
 
       document.getElementById('tools').addEventListener('click', (e) => {
@@ -449,6 +513,10 @@ export class TileMapEditor extends WebviewEditor {
 
       document.getElementById('tileName').addEventListener('change', (e) => { tileNames[currentTile] = e.target.value; });
       document.getElementById('tileSolid').addEventListener('change', (e) => { tileSolid[currentTile] = e.target.checked; });
+      document.getElementById('brushSize').addEventListener('change', (e) => {
+        brushSize = Math.max(1, Math.min(4, parseInt(e.target.value) || 1));
+        updateViewStatus();
+      });
 
       // ── Grid / View ────────────────────────────────────
       document.getElementById('btnGrid').addEventListener('click', function() {
@@ -615,6 +683,7 @@ export class TileMapEditor extends WebviewEditor {
       window.addEventListener('resize', resizeCanvas);
       resizeCanvas();
       centerCanvas();
+      updateViewStatus();
       render();
     `);
   }

@@ -40,6 +40,7 @@
 - **`audit/scan_exact.py`**: Scan specific Rust API files for exact function signatures.
 - **`audit/scan_module_fns.py`**: Find module-level constructors (registered on lurek.X table, not on UserData).
 - **`audit/scan_sigs.py`**: Find exact function registrations for failing APIs in Rust source files.
+- **`audit/snippet_coverage.py`**: Report snippet coverage per Lua API module based on -- @snippet markers.
 - **`audit/stress_report.py`**: stress_report.py — Lurek2D stress test runner and reporter.
 - **`audit/strict_api_check.py`**: Validate all lurek.* API stubs in content/examples/ against the master API data.
 - **`audit/strict_api_check_math.py`**: Validate math-module API stubs in content/examples/math.lua.
@@ -112,9 +113,21 @@
 
 - **`mods/mod_init.py`**: mod_init.py — Scaffold a minimal Lurek2D mod project.
 
+## rag
+
+- **`rag/build_index.py`**: build_index.py — Builds the local SQLite FTS5 RAG index for Lurek2D documentation and code.
+- **`rag/query.py`**: query.py — Queries the local SQLite FTS5 RAG index for Lurek2D API examples and usage.
+- **`rag/scratch.py`**: Brak docstringu.
+- **`rag/test_rag.py`**: Brak docstringu.
+
 ## root
 
 - **`gen_all_docs.py`**: Convenience runner: regenerate the full Lurek2D documentation pipeline in one command.
+
+## snippets
+
+- **`snippets/gen_vscode_snippets.py`**: Build extensions/vscode/data/snippets.json from content/snippets/*.lua.
+- **`snippets/snippet_catalog.py`**: Shared parser for content/snippets/*.lua marker blocks.
 
 ## ui
 
@@ -136,4 +149,5 @@
 - **`validate/validate_module_coverage.py`**: validate_module_coverage.py
 - **`validate/validate_param_types.py`**: validate_param_types.py — Verify that @param type tags match Rust closure type inference.
 - **`validate/validate_rust_source_docs.py`**: Validate file-level and public-item Rust documentation under src/.
+- **`validate/validate_snippets.py`**: Validate content/snippets marker structure and VS Code snippet output freshness.
 

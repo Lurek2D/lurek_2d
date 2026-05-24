@@ -1,5 +1,9 @@
 # procgen
 
+## TL;DR
+
+- The `procgen` module is a versatile Foundations tier library dedicated to procedural content generation in Lurek2D.
+
 ## General Info
 
 - Module group: `Foundations`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `procgen` module is a versatile Foundations tier library dedicated to procedural content generation in Lurek2D. It offers a rich suite of deterministic, headless-testable algorithms for creating diverse game worlds, terrains, and structures. Central to the module is a robust `NoiseGenerator` built on an internal seeded Linear Congruential Generator (LCG). It supports 2D/3D/4D Perlin and Simplex noise, as well as 2D/3D Worley (cellular) noise with various distance metrics. These base noises can be combined using fractal combinators like Fractal Brownian Motion (FBM), ridged multifractal, and turbulence, and deformed via domain warping. For map generation, `procgen` provides sequential and parallel (`rayon`-powered) heightmap generation with options for hydraulic erosion, which can then be classified into dynamic biomes (e.g., ocean, desert, forest) via the `BiomeClassifier`.
+ It offers a rich suite of deterministic, headless-testable algorithms for creating diverse game worlds, terrains, and structures. Central to the module is a robust `NoiseGenerator` built on an internal seeded Linear Congruential Generator (LCG). It supports 2D/3D/4D Perlin and Simplex noise, as well as 2D/3D Worley (cellular) noise with various distance metrics. These base noises can be combined using fractal combinators like Fractal Brownian Motion (FBM), ridged multifractal, and turbulence, and deformed via domain warping. For map generation, `procgen` provides sequential and parallel (`rayon`-powered) heightmap generation with options for hydraulic erosion, which can then be classified into dynamic biomes (e.g., ocean, desert, forest) via the `BiomeClassifier`.
 
 The module also excels at dungeon and interior generation. The `BspDungeon` generator uses Binary Space Partitioning to recursively divide space and carve rooms connected by L-shaped corridors. Alternatively, the `rooms_dungeon` generator places random non-overlapping rooms. Both systems support a prefab stamping feature that cleanly pastes named template shapes into qualifying rooms in a round-robin fashion. For organic caves, the `cellular_automata` generator applies birth/survival rules to a grid to form natural-looking caverns.
 
@@ -267,11 +271,11 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 - `lurek.procgen.newBiomeClassifier`: Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
 - `lurek.procgen.biomeColor`: Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
 
-### `BiomeClassifier` Methods
-- `BiomeClassifier:classify`: Classify a single point into a biome type based on its environmental parameters.
-- `BiomeClassifier:classifyMap`: Classify an entire grid of points into biome types in bulk.
-- `BiomeClassifier:type`: Returns the type name of this object.
-- `BiomeClassifier:typeOf`: Check whether this object matches a given type name.
+### `LBiomeClassifier` Methods
+- `LBiomeClassifier:classify`: Classify a single point into a biome type based on its environmental parameters.
+- `LBiomeClassifier:classifyMap`: Classify an entire grid of points into biome types in bulk.
+- `LBiomeClassifier:type`: Returns the type name of this object.
+- `LBiomeClassifier:typeOf`: Check whether this object matches a given type name.
 
 ## References
 

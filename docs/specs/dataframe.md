@@ -1,5 +1,9 @@
 # dataframe
 
+## TL;DR
+
+- The `dataframe` module provides a powerful in-memory, column-major tabular data engine that brings lightweight SQL-style querying and advanced data manipulation to Lurek2D.
+
 ## General Info
 
 - Module group: `Foundations`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `dataframe` module provides a powerful in-memory, column-major tabular data engine that brings lightweight SQL-style querying and advanced data manipulation to Lurek2D. Positioned within the Foundations tier, it offers robust data analytics capabilities completely decoupled from engine-specific state. The core data structure is the `DataFrame`, which stores named columns containing `CellValue` variants (Nil, Bool, Int, Float, String). It provides a comprehensive set of operations including adding or removing columns and rows, cell access, sorting, and filtering via predicates. The module also supports advanced tabular functions like inner, left, right, and full joins, grouping, and aggregations (sum, mean, min, max, count).
+ Positioned within the Foundations tier, it offers robust data analytics capabilities completely decoupled from engine-specific state. The core data structure is the `DataFrame`, which stores named columns containing `CellValue` variants (Nil, Bool, Int, Float, String). It provides a comprehensive set of operations including adding or removing columns and rows, cell access, sorting, and filtering via predicates. The module also supports advanced tabular functions like inner, left, right, and full joins, grouping, and aggregations (sum, mean, min, max, count).
 
 For analytical workloads, the module includes an extensive suite of window functions (rank, row_number, lag, lead, running totals) and processing helpers such as value counts, missing value reports, duplicate row extraction, and ISO date part extraction. A lazy query builder (`LazyQuery`) is available to chain sequential query steps (filter, sort, select, slice) before materializing the final frame, improving efficiency for complex data pipelines. Additionally, for highly performant bulk numeric operations, a vectorized variant called `VecFrame` leverages parallel operations and typed storage.
 
@@ -22,10 +26,10 @@ To facilitate seamless data interchange, the module implements native serializat
 ## Source Documentation
 
 ### `file_io.rs`
-- Storage-agnostic DataFrame and Database file persistence helpers.
-- Narrow trait for reading and writing text, JSON, and binary payloads without importing GameFS.
-- CSV, JSON, LVDF, and database serializers combined with caller-provided storage operations.
-- Separate storage failures from parse and format failures so bindings can preserve error surfaces.
+- Provides storage-agnostic DataFrame and Database file persistence helpers.
+- Defines a narrow trait for reading and writing text, JSON, and binary payloads without importing GameFS.
+- Combines existing CSV, JSON, LVDF, and database serializers with caller-provided storage operations.
+- Keeps storage failures separate from parse and format failures so Lua bindings can preserve error surfaces.
 
 ### `frame.rs`
 - Core dataframe cell type and typed value representation
@@ -48,7 +52,7 @@ To facilitate seamless data interchange, the module implements native serializat
 ### `mod.rs`
 - Columnar DataFrame type and Database container
 - Lazy query builder and deferred execution pipeline
-- Query-time transforms: filtering, grouping, analytics, and window functions
+- Query-time transforms: filtering, grouping, analytics, processing, and window functions
 - CSV, JSON, and binary serialization and parsing
 - Storage-agnostic file persistence helpers for dataframe and database payloads
 - One-shot threaded dataframe tasks for file loading and SQL queries
@@ -115,23 +119,22 @@ To facilitate seamless data interchange, the module implements native serializat
 - Database-level JSON parsing from named table arrays
 - Nested JSON value and array handling during parse
 
-### `task.rs`
-- One-shot threaded dataframe jobs for file loading and SQL queries.
-- Worker-owned storage snapshots so large CSV/JSON reads do not pass through Lua strings.
-- Poll, wait, result, error, and progress lifecycle helpers shared by Lua bindings.
-- Snapshot-based DataFrame and Database query execution on Rust worker threads.
-
 ### `sql.rs`
 - SQL text tokenizer producing typed token stream
 - Recursive-descent parser for SELECT statements
 - WHERE clause expression tree with AND, OR, NOT, LIKE, and IN
 - Aggregate function support: COUNT, SUM, AVG, MIN, MAX
-- SELECT arithmetic expression support with explicit `AS` aliases
+- SELECT arithmetic expressions with explicit `AS` aliases
 - GROUP BY with HAVING filter and ORDER BY with LIMIT/OFFSET
 - JOIN clause parsing and inner-join execution
 - SQL LIKE pattern matching with `%` and `_` wildcards
 - Single-frame and multi-table Database query entry points
-- Positional parameter binding for database queries with escaped SQL literals
+
+### `task.rs`
+- One-shot threaded dataframe jobs for file loading and SQL queries.
+- Worker-owned storage snapshots so large CSV/JSON reads do not pass through Lua strings.
+- Poll, wait, result, error, and progress lifecycle helpers shared by Lua bindings.
+- Snapshot-based DataFrame and Database query execution on Rust worker threads.
 
 ### `vectorized.rs`
 - Typed columnar storage (Float64, Int64, Bool, Text) with optional validity masks
@@ -146,17 +149,18 @@ To facilitate seamless data interchange, the module implements native serializat
 
 ## Types
 
-- `CellValue` (`enum`, `frame.rs`): Per-cell tagged value used throughout the module. It keeps nil, number, text, and boolean data explicit without forcing every column to share one type.
-- `ColRef` (`enum`, `frame.rs`): Column selector that can resolve either a name or a 1-based index. It gives the Lua bridge and Rust helpers one shared way to address columns.
 - `DataFrameFileStore` (`trait`, `file_io.rs`): Minimal storage contract required by dataframe file persistence helpers.
 - `DataFrameFileError` (`enum`, `file_io.rs`): Persistence error category that keeps storage failures distinct from payload format failures.
+- `DataFrameFileResult` (`type`, `file_io.rs`): Result type used by dataframe file persistence helpers.
+- `CellValue` (`enum`, `frame.rs`): Per-cell tagged value used throughout the module. It keeps nil, number, text, and boolean data explicit without forcing every column to share one type.
+- `ColRef` (`enum`, `frame.rs`): Column selector that can resolve either a name or a 1-based index. It gives the Lua bridge and Rust helpers one shared way to address columns.
 - `DataFrame` (`struct`, `frame.rs`): Core column-major table type with named columns and query methods. Most module behavior is expressed as methods on this type.
 - `DataFrameRowIter` (`struct`, `frame.rs`): Iterate rows as vectors of column-name and cell references.
 - `Database` (`struct`, `frame.rs`): Named collection of DataFrames used for multi-table workflows and SQL joins. It is deliberately small and acts as a query catalog rather than a storage engine.
 - `AggFn` (`enum`, `frame.rs`): Aggregation function variants for group-by and pivot operations.
 - `LazyQuery` (`struct`, `lazy.rs`): Hold deferred query source frame and queued steps.
-- `DataFrameTask` (`struct`, `task.rs`): Owns one background dataframe job and its eventual result.
 - `Xorshift64` (`struct`, `rng.rs`): Hold xorshift64 state used by dataframe-local random helpers.
+- `DataFrameTask` (`struct`, `task.rs`): Owns one background dataframe job and its eventual result.
 - `ColumnStore` (`enum`, `vectorized.rs`): Typed flat-buffer column with an optional null/validity bitmap.
 - `ScalarOp` (`enum`, `vectorized.rs`): Scalar arithmetic operation applied element-wise to an entire column.
 - `BinaryOp` (`enum`, `vectorized.rs`): Element-wise binary operation between two Float64 columns.
@@ -166,6 +170,14 @@ To facilitate seamless data interchange, the module implements native serializat
 
 ## Functions
 
+- `read_csv_dataframe` (`file_io.rs`): Read CSV text from storage, parse it, and return a dataframe.
+- `read_json_dataframe` (`file_io.rs`): Read JSON text from storage, parse it, and return a dataframe.
+- `read_binary_dataframe` (`file_io.rs`): Read LVDF bytes from storage, parse them, and return a dataframe.
+- `write_csv_dataframe` (`file_io.rs`): Serialize a dataframe to CSV and write it through storage.
+- `write_json_dataframe` (`file_io.rs`): Serialize a dataframe to JSON and write it through storage.
+- `write_binary_dataframe` (`file_io.rs`): Serialize a dataframe to LVDF bytes and write them through storage.
+- `load_json_database` (`file_io.rs`): Read JSON database text from storage, parse it, and return a database.
+- `save_json_database` (`file_io.rs`): Serialize a database to JSON and write it through storage.
 - `CellValue::is_nil` (`frame.rs`): Return true when cell is nil.
 - `CellValue::as_number` (`frame.rs`): Return numeric value when cell stores number.
 - `CellValue::as_text` (`frame.rs`): Return text slice when cell stores text.
@@ -239,10 +251,6 @@ To facilitate seamless data interchange, the module implements native serializat
 - `DataFrame::join` (`query/filter.rs`): Join two frames by key columns and return merged frame.
 - `DataFrame::merge` (`query/filter.rs`): Append columns and rows from other frame into self.
 - `DataFrame::count_by` (`query/filter.rs`): Count occurrences by key column and return two-column frame.
-- `DataFrame::value_counts` (`query/processing.rs`): Count occurrences of values in one column with optional percentage output.
-- `DataFrame::missing_report` (`query/processing.rs`): Build a per-column missing-value report.
-- `DataFrame::duplicate_rows` (`query/processing.rs`): Return rows whose full-row or selected-column key appears more than once.
-- `DataFrame::date_parts` (`query/processing.rs`): Return a new dataframe with ISO date year, month, and day columns appended.
 - `DataFrame::drop_nil` (`query/filter.rs`): Drop rows where selected column is nil.
 - `DataFrame::sample` (`query/filter.rs`): Sample up to n rows using deterministic optional seed.
 - `DataFrame::sum` (`query/filter.rs`): Sum numeric values from selected column.
@@ -263,6 +271,10 @@ To facilitate seamless data interchange, the module implements native serializat
 - `DataFrame::pivot` (`query/grouping.rs`): Pivot row and column keys into cross-tabulated frame.
 - `DataFrame::corr` (`query/grouping.rs`): Compute Pearson correlation between two numeric columns.
 - `DataFrame::correlation_matrix` (`query/grouping.rs`): Build numeric-column correlation matrix frame.
+- `DataFrame::value_counts` (`query/processing.rs`): Count occurrences of values in one column with optional percentage output.
+- `DataFrame::missing_report` (`query/processing.rs`): Build a per-column missing-value report.
+- `DataFrame::duplicate_rows` (`query/processing.rs`): Return rows whose full-row or selected-column key appears more than once.
+- `DataFrame::date_parts` (`query/processing.rs`): Return a new dataframe with ISO date year, month, and day columns appended.
 - `DataFrame::with_rolling_mean` (`query/window.rs`): Compute rolling mean and append output column.
 - `DataFrame::with_rolling_sum` (`query/window.rs`): Compute rolling sum and append output column.
 - `DataFrame::with_rolling_min` (`query/window.rs`): Compute rolling minimum and append output column.
@@ -274,14 +286,6 @@ To facilitate seamless data interchange, the module implements native serializat
 - `Xorshift64::next_u64` (`rng.rs`): Advance generator and return next 64-bit pseudo-random value.
 - `Xorshift64::next_f64` (`rng.rs`): Return pseudo-random float in the half-open range [0, 1).
 - `Xorshift64::next_usize` (`rng.rs`): Return pseudo-random index in the half-open range [0, max).
-- `read_csv_dataframe` (`file_io.rs`): Read CSV text from storage, parse it, and return a dataframe.
-- `read_json_dataframe` (`file_io.rs`): Read JSON text from storage, parse it, and return a dataframe.
-- `read_binary_dataframe` (`file_io.rs`): Read LVDF bytes from storage, parse them, and return a dataframe.
-- `write_csv_dataframe` (`file_io.rs`): Serialize a dataframe to CSV and write it through storage.
-- `write_json_dataframe` (`file_io.rs`): Serialize a dataframe to JSON and write it through storage.
-- `write_binary_dataframe` (`file_io.rs`): Serialize a dataframe to LVDF bytes and write them through storage.
-- `load_json_database` (`file_io.rs`): Read JSON database text from storage, parse it, and return a database.
-- `save_json_database` (`file_io.rs`): Serialize a database to JSON and write it through storage.
 - `from_csv` (`serial.rs`): Parse a CSV string into a DataFrame.
 - `DataFrame::to_csv` (`serial.rs`): Serialize DataFrame to CSV string.
 - `from_json` (`serial.rs`): Parse JSON (array-of-objects) into a DataFrame.
@@ -289,8 +293,8 @@ To facilitate seamless data interchange, the module implements native serializat
 - `DataFrame::to_binary` (`serial.rs`): Serialize DataFrame to compact binary format bytes.
 - `from_binary` (`serial.rs`): Deserialize a DataFrame from LVDF binary format.
 - `DataFrame::to_string_table` (`serial.rs`): Render DataFrame as padded string table.
-- `Database::to_json` (`serial.rs`): Serialize Database tables to JSON string.
 - `database_from_json` (`serial.rs`): Parse a JSON database object whose table names map to DataFrame JSON arrays.
+- `Database::to_json` (`serial.rs`): Serialize Database tables to JSON string.
 - `query_sql` (`sql.rs`): Execute a SQL query on a single DataFrame.
 - `query_sql_database` (`sql.rs`): Execute a SQL query on a Database (supports FROM and JOIN).
 - `query_sql_database_params` (`sql.rs`): Execute SQL-like database query after binding positional parameters.
@@ -435,6 +439,15 @@ To facilitate seamless data interchange, the module implements native serializat
 - `LDataFrame:rank`: Returns a dataframe with a rank column.
 - `LDataFrame:lazy`: Starts a lazy query pipeline from this dataframe.
 
+### `LDataFrameTask` Methods
+- `LDataFrameTask:isDone`: Returns whether this dataframe task has completed with success or failure.
+- `LDataFrameTask:wait`: Blocks until this dataframe task completes.
+- `LDataFrameTask:result`: Returns the completed dataframe result.
+- `LDataFrameTask:getError`: Returns the task error message after failure.
+- `LDataFrameTask:progress`: Returns a coarse task progress estimate.
+- `LDataFrameTask:type`: Returns the Lua-visible type name for this dataframe task handle.
+- `LDataFrameTask:typeOf`: Returns whether this dataframe task handle matches a supported type name.
+
 ### `LDatabase` Methods
 - `LDatabase:addTable`: Adds or replaces a named dataframe table in the database.
 - `LDatabase:getTable`: Returns a copy of a named table when it exists.
@@ -448,19 +461,10 @@ To facilitate seamless data interchange, the module implements native serializat
 - `LDatabase:save`: Serializes the database to the JSON database file format and writes it through GameFS.
 - `LDatabase:query`: Runs a SQL-style query against the database tables.
 - `LDatabase:queryAsync`: Runs a SQL-style query against a snapshot of the database tables on a Rust worker thread.
-- `LDatabase:queryParams`: Runs a SQL-style query against the database tables with positional parameters. SELECT expressions may use arithmetic and `AS` aliases after parameter binding.
+- `LDatabase:queryParams`: Runs a SQL-style query against the database tables with positional parameters.
 - `LDatabase:queryParamsAsync`: Runs a parameterized SQL query against a snapshot of the database tables on a Rust worker thread.
 - `LDatabase:type`: Returns the Lua-visible type name for this database handle.
 - `LDatabase:typeOf`: Returns whether this database handle matches a supported type name.
-
-### `LDataFrameTask` Methods
-- `LDataFrameTask:isDone`: Returns whether this dataframe task has completed with success or failure.
-- `LDataFrameTask:wait`: Blocks until this dataframe task completes.
-- `LDataFrameTask:result`: Returns the completed dataframe result.
-- `LDataFrameTask:getError`: Returns the task error message after failure.
-- `LDataFrameTask:progress`: Returns a coarse task progress estimate.
-- `LDataFrameTask:type`: Returns the Lua-visible type name for this dataframe task handle.
-- `LDataFrameTask:typeOf`: Returns whether this dataframe task handle matches a supported type name.
 
 ### `LGroupedFrame` Methods
 - `LGroupedFrame:aggregate`: Aggregates one numeric column in every group by calling a Lua function with that group's numeric values.

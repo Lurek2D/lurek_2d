@@ -22,7 +22,7 @@ export class ShaderPreviewEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Shader Preview", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 1fr;
+        display: grid; grid-template-columns: 48px 1fr 1fr;
         grid-template-rows: auto 1fr auto;
         height: 100vh;
       }

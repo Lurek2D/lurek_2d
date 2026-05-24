@@ -43,7 +43,7 @@ DAG-based workflow orchestration: analytics, test sequences, asset / mod process
 
 ## 📋 Summary
 
-The `pipeline` module is an Edge/Integration tier component that provides a robust Directed Acyclic Graph (DAG) workflow orchestration engine for Lurek2D. It is designed to sequence complex, multi-step operations—such as asset processing, test orchestration, analytics batching, or mod build workflows—by strictly enforcing dependency ordering. At the core of the module is the `Pipeline` struct, which stores named `PipelineStep`s and their dependencies. Using Kahn's algorithm, it performs topological sorting to determine the correct execution order and detects cycles before a workflow can run. It also groups independent steps into parallel execution tiers, allowing unrelated tasks to be scheduled concurrently.
+It is designed to sequence complex, multi-step operations—such as asset processing, test orchestration, analytics batching, or mod build workflows—by strictly enforcing dependency ordering. At the core of the module is the `Pipeline` struct, which stores named `PipelineStep`s and their dependencies. Using Kahn's algorithm, it performs topological sorting to determine the correct execution order and detects cycles before a workflow can run. It also groups independent steps into parallel execution tiers, allowing unrelated tasks to be scheduled concurrently.
 
 Each `PipelineStep` is highly configurable, acting as a discrete unit of work. Steps support conditional execution (via run-if predicates), configurable delayed starts, and maximum timeout limits. To handle transient failures robustly, steps can be configured with automatic retries and custom retry-delay backoffs. A step's error policy (`ErrorMode`) can be explicitly set to either abort the entire pipeline upon failure or allow execution to continue (treating the failure as optional). Pipelines themselves can be nested, with `add_sub_pipeline` allowing complex workflows to be merged under namespace prefixes while automatically wiring outer dependencies into the sub-pipeline's entry points.
 
@@ -1274,7 +1274,7 @@ Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 ```lua
 do
     local pipe = lurek.pipeline.newPipeline("typed")
-    print("is LPipeline = " .. tostring(pipe:typeOf("LPipeline")) .. ", is Object = " .. tostring(pipe:typeOf("Object")))
+    print("is LPipeline = " .. tostring(pipe:typeOf("LPipeline")) .. ", is Object = " .. tostring(pipe:typeOf("LObject")))
 end
 ```
 
@@ -2177,7 +2177,7 @@ Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 ```lua
 do
     local step = lurek.pipeline.newStep("typed", function() end)
-    print("is LPipelineStep = " .. tostring(step:typeOf("LPipelineStep")) .. ", is Object = " .. tostring(step:typeOf("Object")))
+    print("is LPipelineStep = " .. tostring(step:typeOf("LPipelineStep")) .. ", is Object = " .. tostring(step:typeOf("LObject")))
 end
 ```
 

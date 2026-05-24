@@ -8,6 +8,10 @@
   scaffolded by tools/docs/gen_module_specs.py and then revised manually.
 -->
 
+## TL;DR
+
+- A short 1-2 sentence summary of what this module does.
+
 ## General Info
 
 - Module group: `<Foundations | Core Runtime | Platform Services | Feature Systems | Edge/Integration>`

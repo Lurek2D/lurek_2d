@@ -1,5 +1,9 @@
 # tween
 
+## TL;DR
+
+- The `tween` module is a versatile Feature Systems tier component responsible for smooth value interpolation, easing, and spring-physics animations.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `tween` module is a versatile Feature Systems tier component responsible for smooth value interpolation, easing, and spring-physics animations. It provides a robust engine for animating numeric properties over time, making it ideal for UI transitions, camera movements, and gameplay juice. At its core, `LuaTween` interpolates a single numeric property (or multiple numeric fields on a single Lua table) from a start value to a target value over a specified duration. Developers can choose from over 30 built-in easing curves—including linear, quadratic, cubic, elastic, bounce, and back—or register custom easing functions to achieve the exact feel required. Tweens support full lifecycle callbacks (`onUpdate`, `onComplete`, `onCancel`) and can be configured to repeat infinitely, yoyo (reverse direction on repeat), or operate in relative mode where targets act as offsets.
+ It provides a robust engine for animating numeric properties over time, making it ideal for UI transitions, camera movements, and gameplay juice. At its core, `LuaTween` interpolates a single numeric property (or multiple numeric fields on a single Lua table) from a start value to a target value over a specified duration. Developers can choose from over 30 built-in easing curves—including linear, quadratic, cubic, elastic, bounce, and back—or register custom easing functions to achieve the exact feel required. Tweens support full lifecycle callbacks (`onUpdate`, `onComplete`, `onCancel`) and can be configured to repeat infinitely, yoyo (reverse direction on repeat), or operate in relative mode where targets act as offsets.
 
 To handle complex animation choreography, the module provides powerful combinators. `LuaTweenSequence` enables the chaining of multiple tweens, delays, and callbacks into an ordered execution pipeline, where each step seamlessly transitions to the next while carrying over leftover frame delta time. Conversely, `LuaTweenParallel` groups multiple tweens together, executing them simultaneously and completing only when the longest-running child finishes. For a more organic, physics-driven feel, `SpringSystem` offers damped spring interpolation with configurable stiffness and damping. This eliminates fixed durations in favor of natural settling dynamics, which is particularly effective for responsive UI elements or following camera logic.
 
@@ -150,7 +154,7 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LTween:await`: Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
 - `LTween:setRepeat`: Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
 - `LTween:setYoyo`: Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
-- `LTween:onComplete`: On complete on this LTween object. This method is available to Lua scripts.
+- `LTween:onComplete`: Sets a callback to fire when the tween completes. Returns the tween for chaining.
 - `LTween:onUpdate`: Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
 - `LTween:onCancel`: Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
 - `LTween:type`: Returns the type name of this object.

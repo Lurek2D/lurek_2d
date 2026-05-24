@@ -1,5 +1,9 @@
 # patterns
 
+## TL;DR
+
+- The `patterns` module is a fundamental Foundations tier library providing a comprehensive suite of twelve classic game-programming design patterns and robust data structures for Lurek2D.
+
 ## General Info
 
 - Module group: `Foundations`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `patterns` module is a fundamental Foundations tier library providing a comprehensive suite of twelve classic game-programming design patterns and robust data structures for Lurek2D. Designed to be highly reusable, completely decoupled from one another, and fully exposed to the Lua environment, these primitives act as high-level building blocks for complex game logic. At the core of AI decision-making is the `BehaviorTree` system, featuring Sequences, Selectors, Parallels, Inverters, Repeats, and Leaf action nodes. For transition-heavy logic, the module offers a hierarchical `StateMachine` with enter/exit/update callbacks, explicit transition rules, and bounded history, alongside a `SimpleState` alternative for simpler needs.
+ Designed to be highly reusable, completely decoupled from one another, and fully exposed to the Lua environment, these primitives act as high-level building blocks for complex game logic. At the core of AI decision-making is the `BehaviorTree` system, featuring Sequences, Selectors, Parallels, Inverters, Repeats, and Leaf action nodes. For transition-heavy logic, the module offers a hierarchical `StateMachine` with enter/exit/update callbacks, explicit transition rules, and bounded history, alongside a `SimpleState` alternative for simpler needs.
 
 To facilitate decoupled communication across systems, the module provides a robust `EventBus` for pub-sub messaging with wildcard listeners and prioritized execution, as well as a channel-based `Mediator`. The `Observer` pattern is available for reactive property-change notifications, and the `Blackboard` provides a shared, typed key-value store with revision tracking—essential for coordinating AI state. For undo/redo functionality (e.g., in editors or turn-based games), the `CommandStack` offers a cursor-based linear history with batching support. Resource management is handled by the `ObjectPool`, which tracks active and idle IDs to reduce allocation churn for frequently spawned entities like bullets or particles. The `Factory` and `ServiceLocator` patterns provide dynamic object construction and dependency injection.
 
@@ -490,21 +494,6 @@ The module also includes specialized data structures optimized for game developm
 - `LFunnel:pendingCount`: Return the number of entries waiting to be flushed.
 - `LFunnel:getFlushCount`: Return the total number of times this funnel has flushed since creation.
 
-### `LGraph` Methods
-- `LGraph:addNode`: Add a node to the graph with an optional label and payload value.
-- `LGraph:removeNode`: Remove a node and all its connected edges. Returns true if the node existed.
-- `LGraph:getNodeValue`: Retrieve the payload value stored on a node. Returns nil if no payload.
-- `LGraph:addEdge`: Add a directed (or undirected) edge between two nodes with optional weight and label.
-- `LGraph:removeEdge`: Remove an edge by its ID. Returns true if it existed.
-- `LGraph:neighbors`: Return an array of node IDs directly connected to the given node.
-- `LGraph:bfs`: Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
-- `LGraph:dfs`: Perform a depth-first search from a node. Returns visited node IDs in DFS order.
-- `LGraph:isConnected`: Check whether there is any path from one node to another.
-- `LGraph:hasNode`: Check whether a node with the given ID exists in the graph.
-- `LGraph:nodeCount`: Return the total number of nodes in the graph.
-- `LGraph:edgeCount`: Return the total number of edges in the graph.
-- `LGraph:clearAll`: Remove all nodes, edges, and payloads from the graph.
-
 ### `LList` Methods
 - `LList:add`: Append a value to the end of the list.
 - `LList:push`: Append a value to the end of the list (alias for add).
@@ -561,6 +550,21 @@ The module also includes specialized data structures optimized for game developm
 - `LObserver:subscribe`: Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
 - `LObserver:unsubscribe`: Remove a subscription by its ID. The callback will no longer fire.
 - `LObserver:getCount`: Return the total number of active subscriptions across all keys.
+
+### `LPatternGraph` Methods
+- `LPatternGraph:addNode`: Add a node to the graph with an optional label and payload value.
+- `LPatternGraph:removeNode`: Remove a node and all its connected edges. Returns true if the node existed.
+- `LPatternGraph:getNodeValue`: Retrieve the payload value stored on a node. Returns nil if no payload.
+- `LPatternGraph:addEdge`: Add a directed (or undirected) edge between two nodes with optional weight and label.
+- `LPatternGraph:removeEdge`: Remove an edge by its ID. Returns true if it existed.
+- `LPatternGraph:neighbors`: Return an array of node IDs directly connected to the given node.
+- `LPatternGraph:bfs`: Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
+- `LPatternGraph:dfs`: Perform a depth-first search from a node. Returns visited node IDs in DFS order.
+- `LPatternGraph:isConnected`: Check whether there is any path from one node to another.
+- `LPatternGraph:hasNode`: Check whether a node with the given ID exists in the graph.
+- `LPatternGraph:nodeCount`: Return the total number of nodes in the graph.
+- `LPatternGraph:edgeCount`: Return the total number of edges in the graph.
+- `LPatternGraph:clearAll`: Remove all nodes, edges, and payloads from the graph.
 
 ### `LPriorityQueue` Methods
 - `LPriorityQueue:push`: Add an item with a numeric priority. Higher priority items are dequeued first.

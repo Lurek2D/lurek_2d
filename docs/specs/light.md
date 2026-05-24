@@ -1,5 +1,9 @@
 # light
 
+## TL;DR
+
+- The `light` module is a comprehensive Platform Services tier component that provides a robust 2D lighting data model for Lurek2D.
+
 ## General Info
 
 - Module group: `Platform Services`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `light` module is a comprehensive Platform Services tier component that provides a robust 2D lighting data model for Lurek2D. It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
+ It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
 
 The central orchestration of these lighting primitives is handled by the `LightWorld`. This scene-level container holds pools of active lights and `Occluder` shapes (convex polygons that block light propagation to generate shadows). It provides an efficient slotmap-backed architecture for adding, removing, and querying these entities, as well as applying batch operations like intensity or color changes across named light groups. The lighting model supports sophisticated attenuation, allowing for quadratic, linear, and inverse-square falloff models, alongside custom coefficient tuples to precisely control how light decays over distance. Blend modes (additive, subtractive, alpha-mix) dictate how each light composited into the final accumulation buffer.
 
@@ -221,6 +225,7 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 - `lurek.light.syncAmbient`: Returns the light world's ambient color hint.
 - `lurek.light.getGodRayHints`: Returns directional light hints for god-ray style effects.
 - `lurek.light.getNormalMapHints`: Returns light hints that reference normal maps.
+- `lurek.light.drawToImage`: Renders an approximate light-map preview of this world into an ImageData.
 
 ### `LLight` Methods
 - `LLight:setPosition`: Sets this light position. This method is available to Lua scripts.

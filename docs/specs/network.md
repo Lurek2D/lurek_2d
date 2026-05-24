@@ -1,5 +1,9 @@
 # network
 
+## TL;DR
+
+- The `network` module is a powerful Core Runtime tier component providing a comprehensive multiplayer networking stack for Lurek2D.
+
 ## General Info
 
 - Module group: `Core Runtime`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `network` module is a powerful Core Runtime tier component providing a comprehensive multiplayer networking stack for Lurek2D. It is engineered to handle a diverse array of network topologies and transport protocols, including high-performance ENet UDP transport, raw non-blocking TCP sockets, asynchronous HTTP requests, and persistent bidirectional WebSocket connections. The module is built around a dedicated background `NetworkRuntime` thread (powered by Tokio) that handles all blocking I/O, ensuring that socket latency and network operations never stall the primary game loop. The game thread communicates with this runtime via highly efficient MPSC request/response channels.
+ It is engineered to handle a diverse array of network topologies and transport protocols, including high-performance ENet UDP transport, raw non-blocking TCP sockets, asynchronous HTTP requests, and persistent bidirectional WebSocket connections. The module is built around a dedicated background `NetworkRuntime` thread (powered by Tokio) that handles all blocking I/O, ensuring that socket latency and network operations never stall the primary game loop. The game thread communicates with this runtime via highly efficient MPSC request/response channels.
 
 At the heart of real-time multiplayer functionality is the `NetworkHost` structure, which wraps an ENet instance and manages robust connections across Server, Client, or Peer-to-Peer roles. It supports sophisticated traffic shaping, including per-peer bandwidth limits and reliable/unreliable channel separation, and provides a continuous stream of `NetworkEvent`s (connect, disconnect, receive) for Lua to consume. To address the complexities of modern internet connectivity, the module features a sophisticated `relay` system that utilizes NAT-punching probes and encoded `RelayTicket`s to establish peer connections even across restrictive networks. It also provides built-in LAN lobby discovery via UDP broadcasting.
 
@@ -207,7 +211,7 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `lurek.network.newClient`: Creates a client host and connects to an address.
 - `lurek.network.newRuntime`: Creates a background network runtime.
 - `lurek.network.pack`: Packs a supported Lua value into a binary network message string.
-- `lurek.network.unpack`: Unpacks a binary network message string into Lua values.
+- `lurek.network.unpack`: Unpacks a binary network message string into a Lua value.
 - `lurek.network.createLobby`: Broadcasts lobby information and returns it as a table.
 - `lurek.network.discoverLobbies`: Discovers broadcast lobbies. This function is exposed to Lua scripts.
 - `lurek.network.createRoom`: Creates a local room record. This function is exposed to Lua scripts.
@@ -242,10 +246,10 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `LNetworkHost:setChannelLimit`: Sets channel limit. This method is available to Lua scripts.
 - `LNetworkHost:getBandwidthLimit`: Returns incoming and outgoing bandwidth limits.
 - `LNetworkHost:setBandwidthLimit`: Sets incoming and outgoing bandwidth limits.
-- `LNetworkHost:getConnectedPeerCount`: Returns connected peer count. This method is available to Lua scripts.
-- `LNetworkHost:getConnectedPeerIds`: Returns ids for connected peers. This method is available to Lua scripts.
+- `LNetworkHost:getConnectedPeerCount`: Returns the number of currently connected peers.
+- `LNetworkHost:getConnectedPeerIds`: Returns an array of ids for all connected peers.
 - `LNetworkHost:getPeerStats`: Returns statistics for a peer. This method is available to Lua scripts.
-- `LNetworkHost:destroy`: Destroys the network host. This method is available to Lua scripts.
+- `LNetworkHost:destroy`: Destroys the network host and releases resources.
 - `LNetworkHost:isDestroyed`: Returns whether the network host is destroyed.
 - `LNetworkHost:getRole`: Returns host role string. This method is available to Lua scripts.
 - `LNetworkHost:isServer`: Returns whether this host has server role.
@@ -264,7 +268,7 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `LNetworkRuntime:wsSend`: Sends text over a WebSocket connection.
 - `LNetworkRuntime:wsClose`: Closes a WebSocket connection. This method is available to Lua scripts.
 - `LNetworkRuntime:poll`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
-- `LNetworkRuntime:shutdown`: Shuts down the network runtime. This method is available to Lua scripts.
+- `LNetworkRuntime:shutdown`: Shuts down the network runtime and cancels pending requests.
 - `LNetworkRuntime:type`: Returns the Lua-visible type name for this network runtime handle.
 - `LNetworkRuntime:typeOf`: Returns whether this network runtime handle matches a supported type name.
 

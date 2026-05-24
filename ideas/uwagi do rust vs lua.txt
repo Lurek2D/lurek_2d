@@ -1,0 +1,119 @@
+Projekt o takiej skali – 50 modułów w Rust i warstwa skryptowa w LuaJIT (w stylu Love2D) – to świetny koncept, ale bez odpowiedniej separacji szybko zderzysz się z problemem "god object" w module wrappera oraz piekłem czasów kompilacji.
+
+Głównym celem architektury w takim przypadku jest odizolowanie czystej logiki silnika od mechanizmów specyficznych dla Lua oraz umożliwienie testowania skryptów bez konieczności uruchamiania pełnego okna gry.
+
+Oto szczegółowy blueprint architektury kodu i testów dla Twojego projektu.
+
+1. Architektura Kodu (Rust → Lua)
+Trzymanie 50 modułów w jednej wielkiej skrzynce (crate) i jednego gigantycznego wrappera to przepis na techniczną dług. Powinieneś podzielić projekt na Cargo Workspace.
+
+Struktura Projektu (Workspace)
+Zamiast monolitu, podziel silnik na logiczne warstwy:
+
+Plaintext
+my_game_engine/
+├── Cargo.toml
+├── crates/
+│   ├── engine_core/        # Logika niezależna od Lua (ECS, systemy, matematyka)
+│   ├── engine_render/      # Grafika, textury, shadery
+│   ├── engine_audio/       # Zarządzanie dźwiękiem
+│   ├── engine_lua/         # TWÓJ WRAPPER (zależy od core, render, audio)
+│   └── engine_app/         # Punkt wejścia (Main), spina engine_lua i okno systemowe
+Decentralizacja Wrappera Lua
+Nie rejestruj wszystkich 50 modułów w jednym pliku lua_wrapper.rs. Wykorzystaj potęgę cech (traits) i system modułów Rust. Zakładając, że używasz biblioteki mlua (obecnie standard dla Rust + LuaJIT):
+
+W engine_lua stwórz strukturę zarządzającą stanem Lua (np. LuaRuntime).
+
+Rozbij rejestrację na mniejsze podmoduły odzwierciedlające API (np. graphics, audio, input).
+
+Stwórz wewnętrzny trait dla łatwej rejestracji:
+
+Rust
+// crates/engine_lua/src/modules/mod.rs
+use mlua::Lua;
+
+pub trait LuaModule {
+    fn register(lua: &Lua) -> mlua::Result<()>;
+}
+
+// Spięcie wszystkiego w głównym obiekcie uruchomieniowym
+pub fn init_lua_api(lua: &Lua) -> mlua::Result<()> {
+    graphics::GraphicsModule::register(lua)?;
+    audio::AudioModule::register(lua)?;
+    // ... i tak dalej
+    Ok(())
+}
+Zarządzanie Stanem i Pamięcią (Identyfikatory zamiast wskaźników)
+Przekazywanie referencji z Rusta do Lua bywa bolesne przez system zarządzania pamięcią (Garbage Collector w Lua vs Borrow Checker w Rust).
+
+Zła droga: Próba mapowania surowych wskaźników lub skomplikowanych struktur z czasem życia ('a) do Lua.
+
+Dobra droga (Handles): Rust zarządza zasobami w swoich modułach (np. przechowuje tekstury w HashMap<TextureId, Texture>). Do Lua przekazujesz tylko lekkie, kopiowalne struktury opakowujące ID (np. struct LuaTexture { id: TextureId }). Gdy Lua wywołuje draw(texture), przekazuje ID, a Rust wyciąga odpowiedni zasób ze swojego managera.
+
+2. Architektura Testów
+W silnikach gier sterowanych skryptami potrzebujesz trójwarstwowego podejścia do testów.
+
+       / \
+      /   \     Testy Integracyjne Lua (Skrypty .lua testujące grę)
+     /     \
+    /-------\   Testy Wrappera / Bindingów (Czy Rust poprawnie rozmawia z Lua)
+   /         \
+  /-----------\  Testy Jednostkowe Rusta (Matematyka, ECS, Fizyka bez Lua)
+ /_____________\
+Poziom 1: Testy Jednostkowe Rusta (Unit Tests)
+Testujesz swoje 50 modułów w czystym Rust, całkowicie bez udziału Lua.
+
+Jeśli masz moduł fizyki, testujesz go, podając wejściowe wektory i sprawdzając wyjściowe.
+
+Cel: Pewność, że silnik działa poprawnie na poziomie systemowym. Czas wykonania: milisekundy.
+
+Poziom 2: Testy Bindingów (Z poziomu Rusta)
+Musisz upewnić się, że Twój wrapper poprawnie mapuje typy i reaguje na błędy (np. co się stanie, gdy Lua przekaże nil zamiast stringa).
+
+W module engine_lua tworzysz testy, które ręcznie podnoszą instancję Lua, rejestrują testowany podmoduł i wykonują mini-skrypty:
+
+Rust
+#[test]
+fn test_lua_graphics_color_binding() {
+    let lua = mlua::Lua::new();
+    graphics::GraphicsModule::register(&lua).unwrap();
+
+    // Sprawdzamy, czy funkcja z Rusta poprawnie przekazała dane do Lua i z powrotem
+    let result: bool = lua.load(r#"
+        local col = engine.graphics.newColor(255, 0, 0)
+        return col.r == 255
+    "#).eval().unwrap();
+
+    assert!(result);
+}
+Poziom 3: Skryptowe Testy Integracyjne (Z poziomu Lua)
+To jest odpowiednik testowania samej gry. Chcesz napisać testy w Lua, które sprawdzają pętlę gry, zachowanie obiektów itp.
+
+Tryb Headless (Bez okna): Twój silnik musi wspierać flagę uruchomienia --headless (wyłącza inicjalizację okna, bindowanie kontekstu OpenGL/Vulkan, audio podmienia na mocki). Bez tego nie uruchomisz testów w środowisku CI (np. GitHub Actions).
+
+Framework testowy w Lua: Możesz użyć gotowego narzędzia typu busted (jeśli uruchamiasz je przez specjalny runner Twojego silnika) lub napisać prosty system asercji wbudowany w silnik.
+
+Przykład pliku tests/integration_spec.lua:
+
+Lua
+-- Uruchamiane przez: my_engine --headless --test tests/integration_spec.lua
+
+function test_player_movement()
+    local player = Player.new()
+    player:move(10, 0)
+
+    -- Nasza funkcja asercji wystawiona przez silnik lub bibliotekę lua
+    assert_equal(player.x, 10, "Gracz powinien przesunąć się o 10 jednostek w osi X")
+end
+
+-- Silnik zbiera wyniki i zwraca kod wyjścia 0 (sukces) lub 1 (porażka) dla konsoli
+Podsumowanie korzyści
+Dzięki takiemu podejściu:
+
+Przy zmianie kodu w module audio kompilujesz tylko engine_audio i engine_app. Wrapper Lua (engine_lua) nie musi być rekompilowany, jeśli nie zmieniło się publiczne API Rusta.
+
+Twoje testy w CI mogą odpalać się na serwerach bez karty graficznej (dzięki trybowi --headless).
+
+Warstwa Lua jest cienka i łatwa do zastąpienia (np. gdybyś w przyszłości chciał zmienić LuaJIT na Rhai lub WebAssembly).
+
+W jaki sposób obecnie rozwiązujesz zarządzanie stanem i pamięcią między Rustem a Lua? Używasz jakiegoś konkretnego wzorca (np. ECS), do którego Lua musi mieć dostęp?

@@ -22,7 +22,7 @@ export class VoxelEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Voxel Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 44px 1fr 1fr 200px;
+        display: grid; grid-template-columns: 48px 1fr 1fr 200px;
         grid-template-rows: auto 1fr 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }

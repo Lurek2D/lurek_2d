@@ -1,5 +1,9 @@
 # event
 
+## TL;DR
+
+- The `event` module resides in the Core Runtime tier and provides the centralized event queue and signal dispatch backbone necessary for decoupled inter-system communication.
+
 ## General Info
 
 - Module group: `Core Runtime`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `event` module resides in the Core Runtime tier and provides the centralized event queue and signal dispatch backbone necessary for decoupled inter-system communication. At the engine level, it acts as the primary data exchange conduit, ensuring thread-safe synchronization and orderly event processing. The foundational structure is `EventQueue`, a dual-lane FIFO buffer implemented with a `VecDeque` that separates events into high and normal priority lanes. During polling (`poll()`), the queue prioritizes the high-priority lane while strictly maintaining insertion order within each priority level. It also supports condvar-based blocking (`wait(timeout_ms)`) to prevent CPU spin-looping when threads need to synchronize on event arrival.
+ At the engine level, it acts as the primary data exchange conduit, ensuring thread-safe synchronization and orderly event processing. The foundational structure is `EventQueue`, a dual-lane FIFO buffer implemented with a `VecDeque` that separates events into high and normal priority lanes. During polling (`poll()`), the queue prioritizes the high-priority lane while strictly maintaining insertion order within each priority level. It also supports condvar-based blocking (`wait(timeout_ms)`) to prevent CPU spin-looping when threads need to synchronize on event arrival.
 
 Event payloads are encapsulated within an `Event` struct containing a `Vec<EventArg>`, which safely handles scalar types (strings, numbers, booleans, nil) and dynamically clones shallow Lua table payloads. This allows rich event data to securely cross the Rust-Lua boundary without creating tight coupling. Additionally, to resolve issues with event mutation during loop iteration, the module features a deferred event buffer. Deferred events (`pushDeferred`) queue safely in the background and are delivered on the next frame (`flushDeferred`), enabling safe emission during active table iteration.
 
@@ -85,7 +89,7 @@ Beyond the global queue, the module implements a robust publish-subscribe patter
 - `lurek.event.newSignal`: Creates an isolated signal dispatcher for Lua callbacks.
 - `lurek.event.pump`: Pumps the shared event queue without removing events for Lua.
 - `lurek.event.wait`: Waits for the next queued event and returns success, name, and argument table.
-- `lurek.event.restart`: Requests an engine restart. This function is exposed to Lua scripts.
+- `lurek.event.restart`: Requests a full engine restart cycle from the runtime.
 - `lurek.event.quit`: Requests engine shutdown with exit code zero.
 - `lurek.event.pushDeferred`: Adds a normal-priority event to the deferred buffer instead of the live queue.
 - `lurek.event.pushDeferredPriority`: Adds an event with explicit priority to the deferred buffer.

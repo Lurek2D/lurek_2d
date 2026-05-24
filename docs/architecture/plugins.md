@@ -1,6 +1,10 @@
 # Lurek2D — Plugin Architecture (Proposed)
 
-**Status: Proposed.** Activates binding constraint **A-05** once accepted.
+## TL;DR
+
+- **Status: Proposed.** Activates binding constraint **A-05** once accepted.
+
+
 
 Companion documents: [philosophy.md](philosophy.md) · [engine-architecture.md](engine-architecture.md)
 

@@ -1,6 +1,10 @@
 # Lurek2D — TOGAF Architecture
 
-**Target-state document.** This file describes how Lurek2D implements TOGAF-aligned architecture. Authoritative, not aspirational. TOGAF-aware — not TOGAF-certified.
+## TL;DR
+
+- **Target-state document.** This file describes how Lurek2D implements TOGAF-aligned architecture.
+
+ Authoritative, not aspirational. TOGAF-aware — not TOGAF-certified.
 
 Companion documents: [philosophy.md](philosophy.md) · [engine-architecture.md](engine-architecture.md) · [cag-system.md](cag-system.md)
 

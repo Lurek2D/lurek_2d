@@ -21,6 +21,7 @@
   - [mod.rs](#modrs)
   - [render.rs](#renderrs)
   - [theme.rs](#themers)
+  - [widget.rs](#widgetrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -126,7 +127,7 @@ Retained-mode widget system; rendering deferred through RenderCommand.
 
 ## 📋 Summary
 
-The `ui` module is a comprehensive Feature Systems tier component that provides a full-featured, retained-mode Graphical User Interface (GUI) toolkit. Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
+Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
 
 At the structural level, the module employs a robust flex-based layout engine (`Layout`) that supports vertical, horizontal, and grid packing, alongside alignment, spacing, padding, and min/max constraints. Layouts can be constructed programmatically in Lua or loaded dynamically from declarative TOML files using the built-in layout loader, which dramatically accelerates UI iteration. The visual presentation is governed by a flexible `Theme` system that maps widget states (Normal, Hovered, Pressed, Focused, Disabled) to specific styles containing color palettes, font overrides, borders, and shadows. The module natively supports resolution-independent 9-slice borders (`NinePatch`) and per-widget transition animations (alpha fades, position slides) to deliver a polished, responsive user experience.
 
@@ -144,8 +145,8 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 - Shared `ChartConfig` controls dimensions, background/axis/grid/label colours, title,
 - margins, and grid visibility across all chart types.
 - Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
-- scaled to arbitrary value ranges on both axes, with X-axis tick density reduced on compact plots.
-- Legend panels reserve right or bottom space outside plotted data when the image size allows it, using the shared 5x7 `ImageData` label advance for width estimates.
+- scaled to arbitrary value ranges on both axes.
+- Legend panels reserve space outside the plotted data area when the image size allows it.
 - Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
 - anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
 - Area chart performs linear interpolation between uniform X samples and fills columns
@@ -181,7 +182,7 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 
 - Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
 - Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
-- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants; `TextInput` also clamps direct `setText` and existing text when `setMaxLength` changes.
+- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
 - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
 - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
 
@@ -209,7 +210,7 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 - Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
 - Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
 - Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
-- Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to an RGBA PNG.
+- Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to PNG.
 - Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
 - Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
 
@@ -228,9 +229,9 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 - Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
 - Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
 - HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
-- `WidgetRenderer` carrier struct threading `GuiContext`, resolved font storage, and output buffer through the render pass.
+- `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
 - Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
-- Font-aware text measurement and alignment for labels, tabs, menu shortcuts, and text-input cursor placement.
+- Font-aware text measurement and alignment using the active UI font when available.
 
 ### `theme.rs`
 
@@ -242,8 +243,10 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
 - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
 - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
-- `ThemeToken` enum carries `Color([f32;4])` or `Float(f32)` values; the `tokens` map on `Theme` is keyed by name string.
-- `Theme::get_token(name)` returns `Option<&ThemeToken>` for use at render time or from Lua.
+
+### `widget.rs`
+
+- Public types and helpers for the widget module.
 
 [⬆ back to top](#table-of-contents)
 

@@ -1,0 +1,328 @@
+Przeanalizowałem dostarczoną bazę kodu Twojego systemu UI. Masz tutaj kawał solidnej inżynierii – system oparty na płaskiej arenie indeksów (Vec<WidgetKind>) zamiast rdzawego piekła wskaźników i cykli referencji to bardzo mądry wybór w Rust, świetnie sprawdzający się w systemach gier. Integracja z deskryptorami układów (TOML), hybrydowy system renderowania (GPU commands + CPU fallback) oraz wbudowane zaawansowane widgety (jak tabele i wykresy) dają doskonałą pozycję startową.
+
+Jednak patrząc na ten kod przez pryzmat architektury nowoczesnego silnika gier 2D (takiego jak Godot), system cierpi na kilka wąskich gardeł wydajnościowych oraz ograniczeń architektonicznych, które spowolnią rozwój zaawansowanych gier. Poniżej znajduje się szczegółowy raport z analizy wraz z konkretnymi propozycjami usprawnień.
+
+1. Analiza Architektury i Pętli Kontrolnej
+Wąskie gardło: Brak dwufazowej pasażu układu (Size Negotiation)
+W pliku context.rs metoda run_layout_pass oraz layout_widget wykonują układ odgórnie (Top-Down). Rodzic narzuca rozmiar, a komponenty potomne próbują się dopasować.
+
+Problem: W silnikach takich jak Godot, układ UI opiera się na dwufazowej negocjacji rozmiaru:
+
+Faza oddolna (Bottom-Up / Min-Size Hint): Dzieci informują rodzica, ile minimalnie przestrzeni potrzebują (np. Label na podstawie wymiarów tekstu i fontu).
+
+Faza odgórna (Top-Down / Allocation): Rodzic zbiera te dane i dystrybuuje faktycznie dostępną przestrzeń, biorąc pod uwagę flagi rozsunięcia (flex_grow, expand).
+
+Konsekwencja w Twoim kodzie: Aktualnie przypisujesz sztywne wartości domyślne lub zerowe (np. w create_from_def szerokość tekstu nie wpływa automatycznie na rozmiar przycisku, dopóki layout nie zostanie wymuszony ręcznie).
+
+Wydajność: Koszt Hit-Testingu i Mouse Moved (O(N))
+Metody hit_test, hit_test_scroll_target oraz mouse_moved iterują po całej tablicy widgetów od indeksu 1..self.widgets.len().
+
+Problem: Jeśli scena UI w grze (np. rozbudowane ekrany ekwipunku, drzewka technologiczne, statystyki) osiągnie kilkaset lub kilka tysięcy elementów, sprawdzanie pozycji myszy w każdej klatce wygeneruje zauważalny narzut procesora. Wykonywanie układu (ensure_input_layout) wewnątrz obsługi myszy pogłębia ten problem.
+
+Rozwiązanie: Wprowadzenie prostej hierarchicznej struktury przeszukiwania (np. drzewo czwórkowe / Quadtree dla przestrzeni dwuwymiarowej lub po prostu rekurencyjne przeszukiwanie drzewa widgetów tylko przez widoczne gałęzie kontenerów).
+
+2. Szczegółowy Przegląd Kodu (Code Review & Refactoring)
+Zarządzanie pamięcią i mutowalnością w Arenie
+Używanie płaskiego wektora indeksowanego za pomocą usize rozwiązuje problem z cyklami referencji, ale generuje spore trudności przy jednoczesnej mutacji. Spójrz na makro widget_kind_base_match!:
+Za każdym razem, gdy chcesz zmodyfikować komponent bazowy, musisz rozpakować enum przez dopasowanie wzorca (match).
+
+W metodzie update_bindings wykonujesz operację:
+
+Rust
+for w in &mut self.widgets { ... }
+To blokuje cały kontekst na czas trwania iteracji. Jeśli wewnątrz bindingu widget chciałby odpytać inny widget o stan (poprzez indeks), kompilator Rusta zgłosi błąd zapożyczenia (borrow checker).
+
+Sugerowane usprawnienie: Split komponentu bazowego
+Zamiast trzymać WidgetBase wewnątrz każdego konkretnego wariantu enuma (np. Button { base: WidgetBase, text: String }), znacznie lepiej zmienić strukturę GuiContext:
+
+Rust
+pub struct GuiContext {
+    // Dane strukturalne i transformacje wszystkich widgetów spłaszczone w cache-friendly wektory
+    pub bases: Vec<WidgetBase>,
+    pub kinds: Vec<WidgetKind>, // Tutaj warianty zawierają wyłącznie unikalne dane (np. text: String)
+    pub hierarchy: Vec<WidgetNode>, // Indeksy rodziców, dzieci i rodzeństwa
+}
+Zysk: Gwarantuje to niesamowity skok wydajności keszowania procesora (Data-Oriented Design) oraz pozwala na bezpieczne pożyczanie danych transformacji (bases) niezależnie od danych specyficznych dla widgetu.
+
+3. Układy Pojemnikowe (Containers) i Rozciąganie
+W pliku containers.rs klasa Layout posiada metodę perform_layout. Logika ta jest dublowana w context.rs przez funkcję perform_flex_layout.
+
+Rust
+match layout.direction {
+    LayoutDirection::Horizontal => { cx += cw + cb.margin[1] + cb.margin[3] + spacing }
+    // ...
+}
+Problem z Gridem: W implementacji grida brakuje wsparcia dla elastycznych wierszy i kolumn. Jeśli jedno dziecko w siatce jest wyższe, sąsiednie elementy w tym samym rzędzie nie wiedzą, jak wyrównać się do linii bazowej.
+
+Rekomendacja: Zaimplementuj uproszczony podzbiór specyfikacji Flexbox/Grid, zbliżony do Godotowych HBoxContainer, VBoxContainer i GridContainer. Każdy kontener powinien nadpisywać wirtualną funkcję obliczania minimalnego rozmiaru.
+
+4. System Renderowania i Tematyzacji (UI Skinning)
+Twój plik render.rs i theme.rs są mocno ze sobą sprzężone. Funkcja render_widget to wielki, monolityczny blok kodu sprawdzający typ widgetu za pomocą match.
+
+Rust
+match widget {
+    WidgetKind::Slider(w) => { ... }
+    WidgetKind::SpinBox(w) => { ... }
+    // 35+ wariantów
+}
+Problem z rozszerzalnością (Open-Closed Principle)
+Jeśli programista gry chce stworzyć niestandardowy widget (np. kołowy pasek zdrowia, minimapę), jedyną opcją jest użycie CustomWidget, który opiera się na zewnętrznym wywołaniu zwrotnym (callback). Jednak silnik cierpi na brak elastyczności, ponieważ styl niestandardowego widgetu nie może być kontrolowany z poziomu systemu Theme.
+
+Sugerowane usprawnienie: Rejestr Emitterów
+Zamiast jednego wielkiego match, przenieś logikę budowania komend renderowania do cechy (trait), którą implementuje każdy widget:
+
+Rust
+pub trait WidgetRender {
+    fn draw(&self, base: &WidgetBase, style: &WidgetStyle, font_key: FontKey, ctx: &RenderContext, cmds: &mut Vec<RenderCommand>);
+}
+Pozwoli to na łatwe rejestrowanie nowych typów widgetów przez użytkowników Twojego silnika bez modyfikacji pliku render.rs.
+
+5. System Wejścia i Reaktywności (Input & Signals)
+Obecna implementacja opiera się na zdarzeniach gromadzonych w wektorze pending_events i czyszczonych w każdej klatce:
+
+Rust
+pub enum GuiEvent {
+    Click(usize),
+    Change(usize),
+    Close(usize),
+    Select(usize, usize),
+}
+Architektura Silnika Gier: Sygnały vs Polling
+W grach warstwa skryptowa (np. Lua, tak jak wspominasz w komentarzach) potrzebuje subskrybować konkretne zdarzenia konkretnego widgetu, a nie filtrować globalną kolejkę w każdej klatce. Jeśli gra ma 100 przycisków, sprawdzanie w Lua:
+
+Lua
+for _, event in ipairs(Gui:drain_events()) do
+    if event.type == "Click" and event.widget_idx == MY_BUTTON then ... end
+end
+jest nieefektywne.
+
+Rekomendacja: Wzorzec Obserwatora (Event Listeners)
+Dodaj do WidgetBase opcjonalny wektor identyfikatorów akcji lub callbacków bezpośrednio powiązanych ze zdarzeniami myszy/klawiatury:
+
+Rust
+pub struct WidgetBase {
+    pub on_click_action: Option<String>, // Nazwa funkcji/eventu wysyłanego do maszyny skryptowej
+    // ...
+}
+6. Propozycja Zmian (Roadmap Usprawnień)
+Poniższa tabela zbiera zidentyfikowane problemy, proponowane architektury wzorowane na silniku Godot oraz oczekiwane korzyści:
+
+Obszar	Obecny Stan	Propozycja Godot-style	Zysk Wydajności / DX
+Zarządzanie Drzewem	Płaski Vec mieszający dane transformacji i logiki.	Separacja struktur danych (Bases, Nodes, Components).	Lepsze wykorzystanie cache CPU, łatwiejsze pożyczanie mutowalne (&mut).
+Layout Pass	Jednofazowy, Top-Down (Rodzic wymusza wymiary).	Dwufazowy: get_minimum_size() -> allocate_rect().	Tekst i obrazy same definiują minimalne rozmiary przycisków i okien.
+Hit Testing	O(N) iteracja po całym wektorze widgetów.	Rekurencyjne przeszukiwanie gałęzi drzewa (Bounding Box check).	Redukcja kosztu obsługi myszy w rozbudowanych interfejsach do O(logN).
+Data Binding	update_bindings szuka klucza tekstowego w pętli.	Reaktywne właściwości wiązane przez ID (Pub/Sub).	Natychmiastowa aktualizacja interfejsu bez przeszukiwania całego drzewa.
+Render Pass	Gigantyczna pętla match w render.rs.	Dynamiczny polimorfizm / rejestr komponentów rysujących.	Czysty kod, możliwość tworzenia wtyczek i nowych widgetów przez użytkowników.
+Przykładowy Refactoring: Dwufazowy Layout
+Aby pokazać, jak drastycznie zmieniłoby to elastyczność systemu interfejsu interaktywnego, oto zarys implementacji negocjacji rozmiaru dla komponentu Button:
+
+Rust
+// Krok 1: Definiowanie wymagań (Bottom-Up)
+fn calculate_minimum_size(widget: &WidgetKind, font: Option<&Font>, style: &WidgetStyle) -> (f32, f32) {
+    match widget {
+        WidgetKind::Button(btn) => {
+            // Przycisk musi pomieścić tekst + padding
+            let text_w = measure_text(&btn.text, style, font);
+            let text_h = style.font_size;
+
+            let min_w = text_w + style.border_width * 2.0 + 16.0; // 16.0 to margines wewnętrzny tekstu
+            let min_h = text_h + style.border_width * 2.0 + 8.0;
+
+            (min_w.max(widget.base().min_width), min_h.max(widget.base().min_height))
+        }
+        // Pozostałe widgety...
+        _ => (widget.base().min_width, widget.base().min_height),
+    }
+}
+Dzięki temu eliminujesz potrzebę ręcznego wpisywania rozmiarów przycisków w plikach TOML – interfejs dopasuje się sam, bez względu na język (lokalizację tekstu) czy rozdzielczość ekranu, dokładnie tak samo, jak robi to system węzłów Control w silniku Godot.
+
+Czy chciałbyś, abym rozwinął konkretny aspekt tego raportu, na przykład szczegółową implementację reaktywnego systemu sygnałów dla skryptów Lua lub strukturę danych DOD (Data-Oriented Design) dla menedżera widgetów?
+
+
+Oto kontynuacja szczegółowej analizy architektonicznej Twojego systemu UI pod kątem systemów stosowanych w nowoczesnych silnikach gier 2D (takich jak Godot Engine). Poniżej znajduje się 10 kolejnych, zaawansowanych uwag inżynieryjnych, które pozwolą przekształcić ten system w profesjonalne, elastyczne środowisko produkcyjne dla gier.1. Implementacja Pełnego Modelu Kotwic i Przesunięć (Godot Anchors & Offsets)Analiza stanu obecnegoW pliku widget.rs struktura WidgetBase posiada pola anchor_left, anchor_right, anchor_top oraz anchor_bottom typu Option<f32>. Jednak w context.rs logika ich rozwiązywania miesza się z bezpośrednim pozycjonowaniem pikselowym, co uniemożliwia budowanie prawdziwie elastycznych layoutów.Architektura wzorowana na Godot EngineW Godot każda kontrolka (Control) definiuje swoje kotwice jako proporcję rozmiaru rodzica (wartości z zakresu $[0.0, 1.0]$) oraz przesunięcia (offsety) w pikselach.Pozycja dowolnej krawędzi widgetu obliczana jest za pomocą wzoru:$$\text{Pozycja\_Krawędzi} = (\text{Rozmiar\_Rodzica} \times \text{Kotwica}) + \text{Przesunięcie\_Pikselowe}$$Propozycja refaktoryzacjiPrzekształć strukturę reprezentującą geometrię w WidgetBase, aby jawnie oddzielić intencję pozycjonowania (proporcjonalną) od stanu faktycznego (pikselowego):Rustpub struct WidgetBase {
+    // Kotwice jako współczynniki [0.0, 1.0] względem kontenera nadrzędnego
+    pub anchor_left: f32,
+    pub anchor_top: f32,
+    pub anchor_right: f32,
+    pub anchor_bottom: f32,
+
+    // Marginesy/Offsety pikselowe od punktów zakotwiczenia
+    pub offset_left: f32,
+    pub offset_top: f32,
+    pub offset_right: f32,
+    pub offset_bottom: f32,
+
+    // Wynik końcowy (cache dla renderera i hit-testu)
+    pub computed_rect: Rect,
+}
+Dzięki temu, gdy okno gry lub kontener nadrzędny zmieni swój rozmiar, przeliczenie całego drzewa UI sprowadza się do jednej, liniowej operacji matematycznej, zapewniając perfekcyjne skalowanie interfejsu (np. bocznych paneli ekwipunku czy radaru).2. Dynamiczne Filtrowanie Zdarzeń Myszy (Mouse Filter Modes)Analiza stanu obecnegoMetoda hit_test oraz system propagacji wejścia w context.rs traktują każdy widoczny widget jako fizyczną przeszkodę dla myszy. Jeśli na ekranie gry znajduje się przezroczysty kontener HUD nakładający się na świat gry, przechwyci on kliknięcia, uniemożliwiając graczowi interakcję z obiektami 2D w świecie (np. kliknięcie przeciwnika).Architektura wzorowana na Godot EngineGodot wprowadza dla kontrolek flagę mouse_filter z trzema trybami:MOUSE_FILTER_STOP: Przechwytuje zdarzenie i blokuje dalszą propagację (domyślne dla przycisków).MOUSE_FILTER_PASS: Obsługuje zdarzenie, ale przekazuje je również do rodzica.MOUSE_FILTER_IGNORE: Całkowicie ignoruje mysz (zdarzenie "przelatuje" przez widget).Propozycja refaktoryzacjiDodaj enum kontrolujący zachowanie hit-testu do WidgetBase:Rust#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MouseFilter {
+    Stop,
+    Pass,
+    Ignore,
+}
+
+// W context.rs podczas wykonywania hit-testu:
+pub fn hit_test(&self, x: f32, y: f32) -> Option<usize> {
+    // Iteracja od tyłu (od najwyższego z-indexu)
+    for (idx, widget) in self.widgets.iter().enumerate().rev() {
+        let base = widget.base();
+        if base.visible && base.enabled && base.contains_point(x, y) {
+            match base.mouse_filter {
+                MouseFilter::Stop => return Some(idx),
+                MouseFilter::Pass => return Some(idx), // wymaga implementacji bąbelkowania (bubbling)
+                MouseFilter::Ignore => continue, // leci dalej do obiektów pod spodem
+            }
+        }
+    }
+    None
+}
+3. Sprzętowy Stos Obcinania (Scissor Stack) w Rendererze GPUAnaliza stanu obecnegoW pliku render.rs metoda draw_to_image (fallback CPU) oraz potok poleceń GPU budują spłaszczoną strukturę komend. W przypadku komponentów takich jak ScrollPanel (plik containers.rs), dzieci rysują się bezwzględnie w swoich obliczonych pozycjach, co przy przewijaniu doprowadzi do ich "wylewania się" poza geometryczne granice panelu.Architektura wzorowana na Godot EngineSilniki gier realizują obcinanie (clipping) przy użyciu testu nożycowego (Scissor Test) na poziomie GPU. Ponieważ kontenery mogą być zagnieżdżone (np. przewijana lista wewnątrz przewijanego okna), konieczne jest zarządzanie globalnym stosem nożyc.Propozycja refaktoryzacjiWprowadź do potoku renderowania komendy PushScissor oraz PopScissor, które operują na iloczynie geometrycznym (intersection) prostokątów:Rustpub enum RenderCommand {
+    DrawRect { rect: Rect, color: [f32; 4] },
+    DrawText { text: String, pos: (f32, f32), ... },
+    PushScissor(Rect),
+    PopScissor,
+}
+
+// W render.rs podczas generowania komend dla ScrollPanel:
+let panel_rect = base.computed_rect;
+cmds.push(RenderCommand::PushScissor(panel_rect));
+
+// Renderuj wszystkie dzieci wewnątrz panelu...
+for child_idx in &panel.children {
+    self.render_widget(*child_idx, cmds);
+}
+
+cmds.push(RenderCommand::PopScissor);
+Twój backend graficzny (np. wgpu) przy napotkaniu PushScissor powinien wywołać render_pass.set_scissor_rect(...) z uwzględnieniem przecięcia z aktualnym wierzchołkiem stosu.4. Wyodrębnienie Logiki Animacji do Generycznego Systemu (Property Tweens)Analiza stanu obecnegoAktualnie animacje przejść są wszyte na sztywno w logikę biznesową widgetów (np. Switch w controls.rs posiada pole thumb_t: f32, a context.rs ręcznie krokuje czas w metodach aktualizacji). Uniemożliwia to programiście gry dodanie niestandardowych efektów (np. soczystego kliknięcia przycisku ze skalowaniem Spring/Bounce).Architektura wzorowana na Godot EngineW Godot do animacji UI używa się obiektów Tween, które potrafią interpolować dowolne właściwości numeryczne obiektów w czasie, bez znajomości wewnętrznej logiki danej kontrolki.Propozycja refaktoryzacjiStwórz niezależny menedżer animacji (Tween Engine) wewnątrz GuiContext, oparty na identyfikatorach widgetów i enumie reprezentującym animowane właściwości:Rustpub enum AnimatableProperty {
+    PositionX,
+    PositionY,
+    Alpha,
+    Custom(String),
+}
+
+pub struct Tween {
+    pub target_widget: usize,
+    pub property: AnimatableProperty,
+    pub start_value: f32,
+    pub end_value: f32,
+    pub elapsed: f32,
+    pub duration: f32,
+    pub transition_type: TransitionType, // Linear, Sine, Cubic, Bounce, Elastic
+}
+
+// W pętli głównej context.rs:
+pub fn step_animations(&mut self, delta_time: f32) {
+    self.tweens.retain_mut(|tween| {
+        tween.elapsed += delta_time;
+        let t = (tween.elapsed / tween.duration).clamp(0.0, 1.0);
+        let eased_t = ease_value(t, tween.transition_type);
+        let current_val = tween.start_value + (tween.end_value - tween.start_value) * eased_t;
+
+        if let Some(widget) = self.widgets.get_mut(tween.target_widget) {
+            widget.apply_animated_property(tween.property, current_val);
+        }
+
+        tween.elapsed < tween.duration
+    });
+}
+5. Wsparcie dla Wielowariantowego Tekstu (RichTextLabel / BBCode)Analiza stanu obecnegoTwoje komponenty tekstowe (Label, Button) operują na płaskich strukturach String. Renderer rysuje cały tekst jednym fontem i jednym kolorem zdefiniowanym w WidgetStyle. W grach RPG, strategiach czy komunikatach UI niezbędne jest wyróżnianie słów kluczowych (np. "Otrzymujesz [color=red]50 punktów obrażeń[/color] od ognia").Architektura wzorowana na Godot EngineWęzeł RichTextLabel w Godot pozwala na parsowanie tagów BBCode (lub uproszczonego Markdownu) i generowanie wewnętrznych struktur logicznych opisujących fragmenty tekstu (Text Spans), z których każdy ma własne właściwości stylu.Propozycja refaktoryzacjiWprowadź zaawansowany komponent RichTextLabel w extras.rs oraz zaimplementuj interpreter tekstu formowanego:Rustpub struct TextSpan {
+    pub text: String,
+    pub color_override: Option<[f32; 4]>,
+    pub bold: bool,
+    pub italic: bool,
+    pub wave_effect: bool, // Popularny w grach efekt falującego tekstu
+}
+
+pub struct RichTextLabel {
+    pub base: WidgetBase,
+    pub raw_text: String,
+    pub parsed_spans: Vec<TextSpan>,
+}
+Podczas fazy układu (layout_pass), zamiast mierzyć cały ciąg znaków, system mierzy i składa wiersze z poszczególnych fragmentów (TextSpan), co pozwala na łamanie linii z zachowaniem unikalnych stylów wewnątrz jednego bloku tekstu.6. Izolacja Shaderów i Materialów (Custom UI Shaders)Analiza stanu obecnegoPlik theme.rs dostarcza statyczne parametry rysowania, takie jak bg_color, border_width, czy shadow_offset. W grach 2D interfejs użytkownika często wymaga zaawansowanych efektów graficznych na poziomie pojedynczych elementów (np. rozmycie tła pod oknem pauzy - Frosted Glass, efekt lśnienia na legendarnym przedmiocie, kołowy pasek postępu sterowany shaderem fragmentów).Architektura wzorowana na Godot EngineKażda kontrolka w Godot posiada pole material, do którego można przypisać dedykowany ShaderMaterial. Pozwala to na pełną programowalność potoku graficznego UI.Propozycja refaktoryzacjiRozszerz strukturę WidgetStyle oraz komendy renderowania o opcjonalny klucz zasobu shadera oraz dane wejściowe (Uniforms):Rustpub struct MaterialInstance {
+    pub shader_key: String, // Klucz zarejestrowany w Twoim silniku graficznym
+    pub custom_uniforms: Vec<(String, f32)>, // Dynamiczne parametry przekazywane do GPU
+}
+
+pub struct WidgetStyle {
+    // ... dotychczasowe pola ...
+    pub material: Option<MaterialInstance>,
+}
+Podczas przetwarzania polecenia rysowania w potoku GPU, jeśli material jest obecny, renderer przełącza aktywny potok (RenderPipeline) na zdefiniowany niestandardowy shader i binguje jego uniformy zamiast standardowego shadera UI.7. Globalne Skalowanie i Niezależność od Rozdzielczości (Canvas Stretch Modes)Analiza stanu obecnegoZarówno moduł ładowania układów z TOML (layout_loader.rs), jak i silnik layoutu operują na sztywnych wartościach pikselowych. Jeśli gra zostanie uruchomiona na ekranie o rozdzielczości $1920 \times 1080$, a następnie na ekranie Steam Decka ($1280 \times 800$) lub monitorze $4\text{K}$, interfejs stanie się nieczytelny, albo zbyt wielki, albo miniaturowy.Architektura wzorowana na Godot EngineGodot implementuje globalny system Stretch Settings na poziomie okna głównego (Viewport). Użytkownik definiuje rozdzielczość bazową (np. $1152 \times 648$) oraz tryb rozciągania (disabled, 2d, viewport), a silnik automatycznie aplikuje macierz transformacji do całego interfejsu.Propozycja refaktoryzacjiWprowadź do GuiContext globalny parametr skali oraz logiczny prostokąt widoku:Rustpub struct GuiContext {
+    // ...
+    pub base_resolution: (f32, f32),
+    pub current_resolution: (f32, f32),
+    pub scale_factor: f32,
+}
+
+impl GuiContext {
+    pub fn update_resolution(&mut self, width: f32, height: f32) {
+        self.current_resolution = (width, height);
+        // Przykład trybu: zachowaj proporcje pionowe i dopasuj skalę
+        self.scale_factor = height / self.base_resolution.1;
+        self.dirty = true;
+    }
+}
+Podczas wyliczania pozycji w fazie układu, weź pod uwagę scale_factor. Dzięki temu wszystkie wymiary z plików TOML staną się pikselami logicznymi, które silnik bez wysiłku przeskaluje do natywnej rozdzielczości ekranu gracza.8. Cykl Życia Węzłów UI (Lifecycle Notifications)Analiza stanu obecnegoKiedy layout_loader.rs tworzy instancję interfejsu na podstawie definicji TOML, komponenty są po prostu wpychane do wektora widgets. Widgety nie wiedzą, kiedy zostały dodane do drzewa, kiedy zostały z niego usunięte, ani kiedy cała struktura skończyła się inicjalizować. Uniemożliwia to implementację logiki self-contained (np. rozwijana lista ComboBox, która po pojawieniu się na ekranie automatycznie pobiera listę serwerów z sieci).Architektura wzorowana na Godot EngineKażdy węzeł w Godot przechodzi przez precyzyjnie zdefiniowane zdarzenia cyklu życia: _enter_tree(), _ready() (gdy wszystkie dzieci są gotowe) oraz _exit_tree().Propozycja refaktoryzacjiWprowadź system powiadomień wewnętrznych (Notifications) przesyłanych przez GuiContext do komponentów:Rustpub enum GuiNotification {
+    EnterTree,
+    Ready,
+    ExitTree,
+}
+
+// W context.rs, po pomyślnym załadowaniu struktury z TOML:
+pub fn notify_tree_ready(&mut self) {
+    for idx in 0..self.widgets.len() {
+        // Powiadom każdy widget, że całe drzewo jest zbudowane i połączone
+        self.dispatch_notification(idx, GuiNotification::Ready);
+    }
+}
+Pozwala to na przeniesienie logiki konfiguracyjnej bezpośrednio do kodu konkretnych widgetów lub skryptów Lua powiązanych z ich identyfikatorami, diametralnie czyszcząc architekturę kodu sterującego grą.9. Przewidywanie i Przestrzenna Nawigacja Klawiatury/Pad-a (Spatial Focus Search)Analiza stanu obecnegoTwój plik context.rs zarządza fokusem za pomocą prostej metody tabulacji (tab_index). Choć w WidgetBase widać opcjonalne pola sąsiadów (focus_neighbor_up itd.), to ich konfiguracja musi być zdefiniowana ręcznie na sztywno. Jeśli gracz korzysta z kontrolera (gamepada) i naciśnie d-pad w górę, silnik nie potrafi samodzielnie wyznaczyć, który element interfejsu znajduje się fizycznie nad obecnym przyciskiem.Architektura wzorowana na Godot EngineGodot w przypadku braku jawnie zdefiniowanych sąsiadów (focus_neighbor), używa algorytmu heurystyki przestrzennej. Skanuje on otoczenie aktywnej kontrolki w zadanym wektorze kierunkowym, analizując odległość i kąt rozwarcia innych obiektów zdolnych do przejęcia fokusu.Propozycja refaktoryzacjiZaimplementuj automatyczne wyszukiwanie sąsiada oparte na geometrii skrzynek kolizyjnych (computed_rect). Gdy gracz naciśnie klawisz strzałki lub gałkę pada:Rustpub fn find_nearest_focus_neighbor(&self, current_idx: usize, direction: Vector2D) -> Option<usize> {
+    let current_rect = self.widgets[current_idx].base().computed_rect;
+    let current_center = current_rect.center();
+
+    let mut best_candidate = None;
+    let mut closest_score = f32::MAX;
+
+    for (idx, widget) in self.widgets.iter().enumerate() {
+        if idx == current_idx || !widget.base().focusable || !widget.base().visible {
+            continue;
+        }
+
+        let target_rect = widget.base().computed_rect;
+        let target_center = target_rect.center();
+        let to_target = target_center - current_center;
+
+        // Sprawdź, czy cel leży w pożądanym stożku kierunkowym
+        let alignment = to_target.normalize().dot(direction);
+        if alignment > 0.5 { // Kąt akceptacji ~60 stopni
+            // Heurystyka: dystans z uwzględnieniem kary za odchylenie od osi kierunku
+            let distance = to_target.length();
+            let score = distance / alignment;
+
+            if score < closest_score {
+                closest_score = score;
+                best_candidate = Some(idx);
+            }
+        }
+    }
+    best_candidate
+}
+To fundamentalna funkcjonalność dla gier konsolowych oraz produkcji z pełnym wsparciem dla kontrolerów, eliminująca setki linii nudnej konfiguracji w plikach layoutu.10. Wirtualizacja Renderowania i Układu dla Ekstremalnych Kolekcji (UI Virtualization)Analiza stanu obecnegoTwój plik extras.rs zawiera komponenty tabelaryczne (GUITable), a controls.rs posiada ListBox. W obecnej formie elementy te przetwarzają i składają do renderowania całą swoją kolekcję danych w pętli. Jeśli gra posiada ogromny dziennik zadań, historię wiadomości czatu na żywo (np. MMO), czy rynek z tysiącami przedmiotów, przetwarzanie tysięcy wierszy wygeneruje kolosalny narzut, mimo że na ekranie widać jednocześnie zaledwie $15-20$ z nich.Architektura wzorowana na Godot EngineWydajne kontenery list w grach stosują wirtualizację. Nie renderują ani nie pozycjonują fizycznie obiektów, które znajdują się poza aktualnym prostokątem widoczności (Viewport / Scissor Bounds) kontenera przewijającego.Propozycja refaktoryzacjiPrzetwórz algorytm rysowania list i tabel, aby opierał się na indeksach matematycznych zamiast fizycznych instancjach widgetów w pętli:Rust// W render.rs podczas rysowania ListBox/Table:
+let scroll_y = scroll_panel.current_scroll_offset_y;
+let item_height = style.font_size + style.padding[0] + style.padding[2];
+let viewport_height = scroll_panel.base.computed_rect.height;
+
+// Oblicz matematycznie, które indeksy są faktycznie widoczne
+let start_idx = (scroll_y / item_height).floor() as usize;
+let end_idx = ((scroll_y + viewport_height) / item_height).ceil() as usize;
+
+// Ogranicz pętlę iterującą do zakresu widocznego
+let clamped_end = end_idx.min(list_box.items.len());
+for i in start_idx..clamped_end {
+    let item_text = &list_box.items[i];
+    let item_y = base.computed_rect.y + (i as f32 * item_height) - scroll_y;
+
+    // Generuj komendy renderowania tylko dla tego wycinka!
+    self.emit_item_render_commands(item_text, item_y, &mut cmds);
+}
+Zredukuje to złożoność obliczeniową layoutu i renderowania z $O(N)$ (gdzie $N$ to całkowita liczba przedmiotów w bazie danych) do niezmiennej, ultra-szybkiej złożoności $O(M)$ (wyszukiwanie stałe, zależne tylko od wielkości fizycznej ekranu monitora $M$).PodsumowanieWprowadzenie powyższych 10 modyfikacji ugruntuje architekturę Twojego silnika GUI na poziomie komercyjnych rozwiązań:Punkty 1, 2, 7 oraz 9 diametralnie podniosą standard User Experience (UX) oraz komfort deweloperski, zbliżając workflow projektowania interfejsów do tego znanego z Godota.Punkty 3, 6 oraz 10 zagwarantują stałe $60+$ klatek na sekundę (Performance) i uchronią silnik przed bottleneckami procesora podczas skomplikowanych operacji na danych.Punkty 4, 5 oraz 8 otworzą drogę do zaawansowanych efektów wizualnych (Visual Polish), które stanowią o jakości współczesnych gier 2D.

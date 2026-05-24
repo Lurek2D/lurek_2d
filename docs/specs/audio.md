@@ -1,5 +1,9 @@
 # audio
 
+## TL;DR
+
+- The `audio` module provides a comprehensive, high-performance sound engine for Lurek2D, built on top of `rodio` and positioned within the Platform Services tier.
+
 ## General Info
 
 - Module group: `Platform Services`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `audio` module provides a comprehensive, high-performance sound engine for Lurek2D, built on top of `rodio` and positioned within the Platform Services tier. It manages the entire audio lifecycle, including loading, real-time playback, bus mixing, DSP effects, spatial 2D audio, MIDI synthesis, and offline processing. At the core of the module is the `Mixer`, which serves as the central registry for all audio operations. It utilizes a highly efficient `SlotMap` to provide O(1) handle lookups for `AudioEntry` records, ensuring that the engine can effortlessly manage hundreds of concurrent sound instances. Audio sources can be loaded as fully decoded `Static` in-memory buffers for zero-latency sound effects, or as `Stream` sources for memory-efficient incremental decoding of longer music and voice tracks.
+ It manages the entire audio lifecycle, including loading, real-time playback, bus mixing, DSP effects, spatial 2D audio, MIDI synthesis, and offline processing. At the core of the module is the `Mixer`, which serves as the central registry for all audio operations. It utilizes a highly efficient `SlotMap` to provide O(1) handle lookups for `AudioEntry` records, ensuring that the engine can effortlessly manage hundreds of concurrent sound instances. Audio sources can be loaded as fully decoded `Static` in-memory buffers for zero-latency sound effects, or as `Stream` sources for memory-efficient incremental decoding of longer music and voice tracks.
 
 A standout feature of the `audio` module is its advanced `Bus` routing system. It supports hierarchical audio buses—such as Master, SFX, Music, and Voice—each equipped with its own volume, pitch, pause state, and dynamic `EffectChain`. The DSP effect system provides a rich suite of audio filters, including low-pass, high-pass, biquad EQ, reverb, chorus, flanger, phaser, distortion, limiter, and compressor. These effects operate using lock-free atomic parameters, allowing Lua scripts to modulate audio parameters dynamically without blocking the audio thread. Additionally, buses support automatic ducking, meaning a 'Voice' bus can automatically suppress the volume of a 'Music' bus when active.
 
@@ -420,46 +424,46 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 - `lurek.audio.getMeter`: Returns the current master peak level for VU-meter displays.
 - `lurek.audio.newMidiPlayer`: Creates a new MIDI player instance, optionally loading a file immediately.
 - `lurek.audio.newSoundData`: Creates a new SoundData object from a file path or blank buffer for procedural audio.
-- `lurek.audio.setMidiSoundFont`: Sets the midi sound font for Lua scripts in this module.
-- `lurek.audio.hasMidiSoundFont`: Returns true if midi sound font for Lua scripts in this module.
-- `lurek.audio.clearMidiSoundFont`: Clears midi sound font for Lua scripts in this module.
-- `lurek.audio.newDecoder`: New decoder for Lua scripts in this module.
-- `lurek.audio.newQueueableSource`: New queueable source for Lua scripts in this module.
-- `lurek.audio.queueSource`: Queue source for Lua scripts in this module.
-- `lurek.audio.getFreeBufferCount`: Returns the free buffer count for Lua scripts in this module.
-- `lurek.audio.playQueueable`: Play queueable for Lua scripts in this module.
-- `lurek.audio.stopQueueable`: Stop queueable for Lua scripts in this module.
-- `lurek.audio.getPlaybackDevices`: Returns the playback devices for Lua scripts in this module.
-- `lurek.audio.getPlaybackDevice`: Returns the playback device for Lua scripts in this module.
-- `lurek.audio.setPlaybackDevice`: Sets the playback device for Lua scripts in this module.
-- `lurek.audio.create_bus`: Create_bus for Lua scripts in this module.
-- `lurek.audio.set_bus_volume`: Overwrites one normalized PCM sample value in this sound buffer.
-- `lurek.audio.add_effect`: Add_effect for Lua scripts in this module.
-- `lurek.audio.remove_effect`: Remove_effect for Lua scripts in this module.
-- `lurek.audio.set_effect_param`: Set_effect_param for Lua scripts in this module.
-- `lurek.audio.newSineWave`: New sine wave for Lua scripts in this module.
-- `lurek.audio.newSquareWave`: New square wave for Lua scripts in this module.
-- `lurek.audio.newSawtoothWave`: New sawtooth wave for Lua scripts in this module.
-- `lurek.audio.newTriangleWave`: New triangle wave for Lua scripts in this module.
-- `lurek.audio.newWhiteNoise`: New white noise for Lua scripts in this module.
-- `lurek.audio.applyLowpass`: Apply lowpass for Lua scripts in this module.
-- `lurek.audio.applyHighpass`: Apply highpass for Lua scripts in this module.
-- `lurek.audio.applyBandpass`: Apply bandpass for Lua scripts in this module.
-- `lurek.audio.applyGain`: Apply gain for Lua scripts in this module.
-- `lurek.audio.mixInto`: Mix into for Lua scripts in this module.
-- `lurek.audio.saveWAV`: Save wav for Lua scripts in this module.
-- `lurek.audio.setStereoWidth`: Sets the stereo width for Lua scripts in this module.
-- `lurek.audio.getStereoWidth`: Returns the stereo width for Lua scripts in this module.
-- `lurek.audio.setRandomPitch`: Sets the random pitch for Lua scripts in this module.
-- `lurek.audio.clearRandomPitch`: Clears random pitch for Lua scripts in this module.
-- `lurek.audio.crossfade`: Crossfade for Lua scripts in this module.
-- `lurek.audio.getBusPeak`: Returns the bus peak for Lua scripts in this module.
-- `lurek.audio.getBusRms`: Returns the bus rms for Lua scripts in this module.
-- `lurek.audio.newPool`: New pool for Lua scripts in this module.
-- `lurek.audio.processOffline`: Process offline for Lua scripts in this module.
-- `lurek.audio.normalizeFile`: Normalize file for Lua scripts in this module.
-- `lurek.audio.waveformToPng`: Waveform to png for Lua scripts in this module.
-- `lurek.audio.spectrogramToPng`: Spectrogram to png for Lua scripts in this module.
+- `lurek.audio.setMidiSoundFont`: Sets the SoundFont file used for MIDI synthesis.
+- `lurek.audio.hasMidiSoundFont`: Returns whether a SoundFont file has been loaded for MIDI synthesis.
+- `lurek.audio.clearMidiSoundFont`: Clears the loaded SoundFont and reverts MIDI synthesis to default.
+- `lurek.audio.newDecoder`: Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
+- `lurek.audio.newQueueableSource`: Creates a new queueable audio source for streaming PCM data buffer by buffer.
+- `lurek.audio.queueSource`: Queues a decoded audio chunk for playback on a queueable source.
+- `lurek.audio.getFreeBufferCount`: Returns the number of free (available) buffer slots on a queueable source.
+- `lurek.audio.playQueueable`: Starts playback of a queueable audio source.
+- `lurek.audio.stopQueueable`: Stops playback of a queueable audio source.
+- `lurek.audio.getPlaybackDevices`: Returns a list of available audio playback device names.
+- `lurek.audio.getPlaybackDevice`: Returns the name of the currently active audio playback device.
+- `lurek.audio.setPlaybackDevice`: Sets the active audio playback device by name.
+- `lurek.audio.create_bus`: Creates a named audio bus, optionally parented to another bus.
+- `lurek.audio.set_bus_volume`: Sets the volume of a named audio bus.
+- `lurek.audio.add_effect`: Adds an effect to a named audio bus and returns its effect ID.
+- `lurek.audio.remove_effect`: Removes an effect from a named audio bus by effect ID.
+- `lurek.audio.set_effect_param`: Sets a parameter value on an effect attached to a named audio bus.
+- `lurek.audio.newSineWave`: Generates a sine wave as a `SoundData` buffer.
+- `lurek.audio.newSquareWave`: Generates a square wave as a `SoundData` buffer.
+- `lurek.audio.newSawtoothWave`: Generates a sawtooth wave as a `SoundData` buffer.
+- `lurek.audio.newTriangleWave`: Generates a triangle wave as a `SoundData` buffer.
+- `lurek.audio.newWhiteNoise`: Generates white noise as a `SoundData` buffer using a deterministic seed.
+- `lurek.audio.applyLowpass`: Applies a lowpass filter in-place to the sound data.
+- `lurek.audio.applyHighpass`: Applies a highpass filter in-place to the sound data.
+- `lurek.audio.applyBandpass`: Applies a bandpass filter in-place to the sound data.
+- `lurek.audio.applyGain`: Applies a gain multiplier in-place to the sound data.
+- `lurek.audio.mixInto`: Mixes the samples of `src` into `dest` in-place (both must have the same format).
+- `lurek.audio.saveWAV`: Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
+- `lurek.audio.setStereoWidth`: Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
+- `lurek.audio.getStereoWidth`: Returns the current stereo width factor of an audio source.
+- `lurek.audio.setRandomPitch`: Sets a random pitch range for a source; each play picks a random pitch between min and max.
+- `lurek.audio.clearRandomPitch`: Clears any random pitch range previously set on the source.
+- `lurek.audio.crossfade`: Crossfades from one audio source to another over the given duration.
+- `lurek.audio.getBusPeak`: Returns the peak amplitude of the named audio bus over the last processing frame.
+- `lurek.audio.getBusRms`: Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.
+- `lurek.audio.newPool`: Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
+- `lurek.audio.processOffline`: Processes an audio file offline through a chain of effects and writes the result to an output file.
+- `lurek.audio.normalizeFile`: Normalizes an audio file to a target peak amplitude and saves the result.
+- `lurek.audio.waveformToPng`: Renders a waveform visualization of an audio file and saves it as a PNG image.
+- `lurek.audio.spectrogramToPng`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 
 ### `LBus` Methods
 - `LBus:getName`: Returns the name of this audio bus. This method is available to Lua scripts.
@@ -477,7 +481,7 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 - `LBus:getPeak`: Returns the current peak amplitude level of this bus for VU-meter displays.
 
 ### `LDecoder` Methods
-- `LDecoder:decode`: Decodes the next chunk of audio data and returns it as a SoundData object.
+- `LDecoder:decode`: Decodes the next chunk of audio data and returns it as a LSoundData object.
 - `LDecoder:getChannelCount`: Returns the number of audio channels in the source file.
 - `LDecoder:getBitDepth`: Returns the bit depth of the source audio file.
 - `LDecoder:getSampleRate`: Returns the sample rate of the source audio file.
@@ -551,6 +555,8 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 - `LSoundData:getSample`: Returns the sample value at the given zero-based sample index.
 - `LSoundData:drawWaveform`: Draws this sound buffer as a waveform into an image buffer.
 - `LSoundData:setSample`: Overwrites the sample value at the given zero-based sample index.
+- `LSoundData:type`: Returns the type name of this object for runtime type-checking.
+- `LSoundData:typeOf`: Checks whether this object matches the given type name.
 
 ### `LSoundPool` Methods
 - `LSoundPool:play`: Plays the next available voice from the pool in round-robin order.

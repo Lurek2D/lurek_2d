@@ -67,7 +67,7 @@ CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG enc
 
 ## 📋 Summary
 
-The `image` module is an extensive Platform Services tier component responsible for CPU-side pixel buffer operations, providing a robust suite of tools for loading, manipulating, and exporting image data. The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
+The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
 
 Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
 
@@ -102,7 +102,7 @@ The `image` module features specialized systems for game development, most notab
 - Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
 - Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
 - Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
-- Primitive drawing: filled rectangles, circles, Bresenham lines, and compact 5x7 bitmap text labels for ASCII letters, digits, and common UI punctuation.
+- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
 - PNG encoding for serialization and export.
 
 ### `layers.rs`
@@ -1035,7 +1035,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
-    print("is CompressedImageData = " .. tostring(cdata:typeOf("CompressedImageData")))
+    print("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
 end
 ```
 
@@ -1068,7 +1068,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
-    print("is CompressedImageData = " .. tostring(cdata:typeOf("CompressedImageData")))
+    print("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
 end
 ```
 
@@ -2533,7 +2533,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 ```lua
 do
     local img = lurek.image.newImageData(1, 1)
-    print("is ImageData = " .. tostring(img:typeOf("ImageData")))
+    print("is ImageData = " .. tostring(img:typeOf("LImageData")))
 end
 ```
 
@@ -3317,7 +3317,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 do
     local lut = lurek.image.newPaletteLut()
     print("type = " .. lut:type())
-    print("is PaletteLUT = " .. tostring(lut:typeOf("PaletteLUT")))
+    print("is PaletteLUT = " .. tostring(lut:typeOf("LPaletteLUT")))
 end
 ```
 
@@ -3350,7 +3350,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 do
     local lut = lurek.image.newPaletteLut()
     print("type = " .. lut:type())
-    print("is PaletteLUT = " .. tostring(lut:typeOf("PaletteLUT")))
+    print("is PaletteLUT = " .. tostring(lut:typeOf("LPaletteLUT")))
 end
 ```
 
@@ -3740,7 +3740,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("type = " .. grid:type())
-    print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
+    print("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 ```
 
@@ -3773,7 +3773,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("type = " .. grid:type())
-    print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
+    print("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 ```
 

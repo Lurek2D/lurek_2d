@@ -1,6 +1,10 @@
 # Lurek2D — Philosophy and Design Assumptions
 
-Source of truth for first principles, binding architectural decisions, and project identity. All other architecture docs reference this file.
+## TL;DR
+
+- Source of truth for first principles, binding architectural decisions, and project identity.
+
+ All other architecture docs reference this file.
 
 Companion documents: [engine-architecture.md](engine-architecture.md) · [test-framework.md](test-framework.md)
 

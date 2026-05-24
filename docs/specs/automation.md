@@ -1,5 +1,9 @@
 # automation
 
+## TL;DR
+
+- The `automation` module provides a powerful headless input simulation framework designed for automated testing, QA replay, and recorded gameplay sessions.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `automation` module provides a powerful headless input simulation framework designed for automated testing, QA replay, and recorded gameplay sessions. Positioned within the Feature Systems tier, it enables Lurek2D to execute deterministic, time-sorted sequences of synthetic input events without requiring a visible operating system window or actual hardware interactions. This makes it an invaluable tool for continuous integration pipelines, visual regression testing, and creating in-game replay features.
+ Positioned within the Feature Systems tier, it enables Lurek2D to execute deterministic, time-sorted sequences of synthetic input events without requiring a visible operating system window or actual hardware interactions. This makes it an invaluable tool for continuous integration pipelines, visual regression testing, and creating in-game replay features.
 
 At the core of the module is the `Script` container, which holds an ordered sequence of `Step` entries. Each `Step` describes a timed action—such as key presses, mouse movements, clicks, scrolling, text input, or wait delays. Scripts can be authored externally in TOML format or constructed dynamically via Lua tables, supporting advanced orchestration capabilities including repeat expansions and configurable step limits to prevent runaway execution. 
 

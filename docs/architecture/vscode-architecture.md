@@ -1,6 +1,10 @@
 # Lurek2D — VS Code Extension Architecture
 
-Architecture for the `extensions/vscode/` extension. All content reflects the real source files.
+## TL;DR
+
+- Architecture for the `extensions/vscode/` extension.
+
+ All content reflects the real source files.
 
 Companion documents: [engine-architecture.md](engine-architecture.md) · [cag-system.md](cag-system.md)
 

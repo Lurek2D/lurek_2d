@@ -1,6 +1,10 @@
 # `docs/specs/` — Lurek2D Module Reference Index
 
-Per-module reference: each module under `src/<module>/` has a matching `docs/specs/<module>.md` produced by [tools/docs/gen_module_specs.py](../../tools/docs/gen_module_specs.py) (auto sections) plus hand-curated `Summary` / `General Info` / `Notes` (manual sections). Specs are the canonical reference; [docs/architecture/](../architecture/) holds the narrative, [docs/reports/](../reports/) holds the generated public surface.
+## TL;DR
+
+- Per-module reference: each module under `src/<module>/` has a matching `docs/specs/<module>.md` produced by [tools/docs/gen_module_specs.py](../../tools/docs/gen_module_specs.py) (auto sections) plus hand-curated `Summary` / `General Info` / `Notes`
+
+ (manual sections). Specs are the canonical reference; [docs/architecture/](../architecture/) holds the narrative, [logs/reports/](../../logs/reports/) holds the generated public surface.
 
 ## Table of Contents
 

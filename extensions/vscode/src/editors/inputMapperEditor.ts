@@ -22,7 +22,7 @@ export class InputMapperEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Input Mapper", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 210px;
+        display: grid; grid-template-columns: 48px 1fr 210px;
         grid-template-rows: auto 1fr auto;
         height: 100vh;
       }

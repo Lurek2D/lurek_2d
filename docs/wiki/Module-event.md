@@ -39,7 +39,7 @@ Centralised event queue: OS input, window state, custom Lua events, automation i
 
 ## 📋 Summary
 
-The `event` module resides in the Core Runtime tier and provides the centralized event queue and signal dispatch backbone necessary for decoupled inter-system communication. At the engine level, it acts as the primary data exchange conduit, ensuring thread-safe synchronization and orderly event processing. The foundational structure is `EventQueue`, a dual-lane FIFO buffer implemented with a `VecDeque` that separates events into high and normal priority lanes. During polling (`poll()`), the queue prioritizes the high-priority lane while strictly maintaining insertion order within each priority level. It also supports condvar-based blocking (`wait(timeout_ms)`) to prevent CPU spin-looping when threads need to synchronize on event arrival.
+At the engine level, it acts as the primary data exchange conduit, ensuring thread-safe synchronization and orderly event processing. The foundational structure is `EventQueue`, a dual-lane FIFO buffer implemented with a `VecDeque` that separates events into high and normal priority lanes. During polling (`poll()`), the queue prioritizes the high-priority lane while strictly maintaining insertion order within each priority level. It also supports condvar-based blocking (`wait(timeout_ms)`) to prevent CPU spin-looping when threads need to synchronize on event arrival.
 
 Event payloads are encapsulated within an `Event` struct containing a `Vec<EventArg>`, which safely handles scalar types (strings, numbers, booleans, nil) and dynamically clones shallow Lua table payloads. This allows rich event data to securely cross the Rust-Lua boundary without creating tight coupling. Additionally, to resolve issues with event mutation during loop iteration, the module features a deferred event buffer. Deferred events (`pushDeferred`) queue safely in the background and are delivered on the next frame (`flushDeferred`), enabling safe emission during active table iteration.
 
@@ -975,7 +975,7 @@ Source: [event.lua](../blob/main/content/examples/event.lua)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    print("is Signal = " .. tostring(sig:typeOf("Signal")))
+    print("is Signal = " .. tostring(sig:typeOf("LSignal")))
 end
 ```
 

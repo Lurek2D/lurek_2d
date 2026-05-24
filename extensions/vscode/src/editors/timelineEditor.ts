@@ -22,7 +22,7 @@ export class TimelineEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Timeline", `
       .editor-layout {
-        display: grid; grid-template-columns: 140px 1fr 200px;
+        display: grid; grid-template-columns: 48px 140px 1fr 200px;
         grid-template-rows: auto 1fr auto;
         height: 100vh;
       }
@@ -73,7 +73,7 @@ export class TimelineEditor extends WebviewEditor {
       <div class="editor-layout">
         <div class="toolbar">
           <div class="group">
-            ${iconButton(ICONS.add, 'btnAddTrack', 'Add Track')}
+            ${iconButton('add', { id: 'btnAddTrack', title: 'Add Track' })}
             <select id="trackType" style="font-size:10px">
               <option value="dialog">Dialog</option>
               <option value="camera">Camera</option>
@@ -84,8 +84,8 @@ export class TimelineEditor extends WebviewEditor {
           </div>
           ${toolbarSep()}
           <div class="group">
-            ${iconButton(ICONS.play, 'btnPlay', 'Play')}
-            ${iconButton(ICONS.pause, 'btnStop', 'Stop')}
+            ${iconButton('play', { id: 'btnPlay', title: 'Play (Space)' })}
+            ${iconButton('stop', { id: 'btnStop', title: 'Stop (Space)' })}
             <span id="timeDisplay" style="font-family:var(--font-mono,monospace);font-size:11px;min-width:70px;">00:00.000</span>
           </div>
           ${toolbarSep()}
@@ -106,7 +106,7 @@ export class TimelineEditor extends WebviewEditor {
             <button id="btnDeleteKeyframe" style="font-size:10px;padding:2px 6px;color:var(--error)">× KF</button>
           </div>
           ${toolbarSpacer()}
-          ${iconButton(ICONS.save, 'btnExport', 'Export Lua')}
+          ${iconButton('save', { id: 'btnExport', title: 'Export Lua' })}
         </div>
 
         <div class="track-list" id="trackList"></div>
@@ -171,6 +171,8 @@ export class TimelineEditor extends WebviewEditor {
       registerShortcut('ctrl+shift+z', () => { const s = undo.redo(); if (s) load(s); });
       registerShortcut('ctrl+s', () => document.getElementById('btnExport').click());
       registerShortcut('space', () => { if (playing) document.getElementById('btnStop').click(); else document.getElementById('btnPlay').click(); });
+      registerShortcut('k', () => document.getElementById('btnAddKeyframe').click());
+      registerShortcut('delete', () => document.getElementById('btnDeleteKeyframe').click());
 
       function build() {
         const list = document.getElementById('trackList'); list.innerHTML = '';
@@ -217,6 +219,36 @@ export class TimelineEditor extends WebviewEditor {
         document.getElementById('statusKeyframes').textContent = totalKF + ' kf';
         document.getElementById('statusDuration').textContent = duration + 's';
       }
+
+      function getSnapStep() {
+        const raw = parseFloat(document.getElementById('snapGrid').value || '0');
+        return raw > 0 ? raw : 0.1;
+      }
+
+      function seekTo(time) {
+        playTime = Math.max(0, Math.min(duration, time));
+        document.getElementById('playhead').style.left = (playTime * PX) + 'px';
+        const m = Math.floor(playTime / 60), s = Math.floor(playTime % 60), ms = Math.floor((playTime % 1) * 1000);
+        document.getElementById('timeDisplay').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0') + '.' + String(ms).padStart(3,'0');
+      }
+
+      function jumpKeyframe(direction) {
+        const tr = tracks[selTrack];
+        if (!tr || tr.keyframes.length === 0) return;
+        const sorted = tr.keyframes.map(k => k.t).sort((a, b) => a - b);
+        if (direction > 0) {
+          const next = sorted.find(t => t > playTime + 1e-6);
+          if (next !== undefined) seekTo(next);
+        } else {
+          const prev = [...sorted].reverse().find(t => t < playTime - 1e-6);
+          if (prev !== undefined) seekTo(prev);
+        }
+      }
+
+      registerShortcut('j', () => jumpKeyframe(-1));
+      registerShortcut('l', () => jumpKeyframe(1));
+      registerShortcut(',', () => seekTo(playTime - getSnapStep()));
+      registerShortcut('.', () => seekTo(playTime + getSnapStep()));
 
       function drawRuler() {
         const canvas = document.getElementById('ruler');
@@ -309,15 +341,12 @@ export class TimelineEditor extends WebviewEditor {
         playTimer = setInterval(() => {
           playTime += 0.05;
           if (playTime >= duration) playTime = 0;
-          document.getElementById('playhead').style.left = (playTime * PX) + 'px';
-          const m = Math.floor(playTime / 60), s = Math.floor(playTime % 60), ms = Math.floor((playTime % 1) * 1000);
-          document.getElementById('timeDisplay').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0') + '.' + String(ms).padStart(3,'0');
+          seekTo(playTime);
         }, 50);
       });
       document.getElementById('btnStop').addEventListener('click', () => {
         playing = false; clearInterval(playTimer);
-        playTime = 0; document.getElementById('playhead').style.left = '0px';
-        document.getElementById('timeDisplay').textContent = '00:00.000';
+        seekTo(0);
       });
 
       document.getElementById('duration').addEventListener('change', e => { duration = parseInt(e.target.value); build(); });

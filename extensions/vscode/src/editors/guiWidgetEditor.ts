@@ -22,7 +22,7 @@ export class GuiWidgetEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "GUI Widget Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 180px 1fr 240px;
+        display: grid; grid-template-columns: 48px 180px 1fr 240px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }

@@ -4452,7 +4452,7 @@ function LByteData:setByte(offset, value) end
 function LByteData:type() end
 
 --- Checks whether this object matches the given type name.
----@param name string Type name to check (e.g. "LByteData" or "Object").
+---@param name string Type name to check (e.g. "LByteData" or "LObject").
 ---@return boolean True if this object matches the given type.
 function LByteData:typeOf(name) end
 
@@ -18648,7 +18648,7 @@ function LProvinceRegistry:provinceIds() end
 function LProvinceRegistry:provinceSpans() end
 
 --- Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
----@param opts? table?|Render options: map_mode(string?),x/y/zoom/pixel_size/screen_w/screen_h(number?),draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads(boolean?),border_width(number?),zoom_mode("strategic" "tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
+---@param opts? table?|Render options: map_mode(string?),x/y/zoom/pixel_size/screen_w/screen_h(number?),draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads(boolean?),border_width(number?),zoom_mode("auto"|"strategic" "tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
 function LProvinceRegistry:render(opts) end
 
 --- Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.

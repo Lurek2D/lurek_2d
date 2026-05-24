@@ -52,7 +52,7 @@ Directed flow-simulation graph: typed items flow through nodes, accumulate, deca
 
 ## 📋 Summary
 
-The `graph` module is a powerful Foundations tier component designed to model directed flow-simulation networks. Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
+Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
 
 The simulation is deeply systemic. Items (`GraphItem`) accumulate in node inventories and traverse directed edges (`Edge`). These edges are not merely logical links; they enforce strict constraints including transit capacities, cooldown timers, and item-type filters. Nodes (`Node`) possess configurable item capacities, explicit queueing systems, and distinct flow modes (passive, push, or pull). Furthermore, nodes can execute `ConversionRule`s—acting as economic factories that consume specific inputs to produce new typed outputs. To manage bottlenecks, nodes implement defined `OverflowPolicy` behaviors, dictating whether excess items are rejected, queued, or destroyed.
 
@@ -1515,7 +1515,7 @@ Source: [graph.lua](../blob/main/content/examples/graph.lua)
 ```lua
 do
     local g = lurek.graph.newGraph()
-    print("is Graph = " .. tostring(g:typeOf("Graph")))
+    print("is Graph = " .. tostring(g:typeOf("LGraph")))
 end
 ```
 
@@ -2419,7 +2419,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("is GraphEdge = " .. tostring(e:typeOf("GraphEdge")))
+    print("is GraphEdge = " .. tostring(e:typeOf("LGraphEdge")))
 end
 ```
 
@@ -2771,7 +2771,7 @@ Source: [graph.lua](../blob/main/content/examples/graph.lua)
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
-    print("is GraphItem = " .. tostring(item:typeOf("GraphItem")))
+    print("is GraphItem = " .. tostring(item:typeOf("LGraphItem")))
 end
 ```
 
@@ -4205,7 +4205,7 @@ Source: [graph.lua](../blob/main/content/examples/graph.lua)
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    print("is GraphNode = " .. tostring(n:typeOf("GraphNode")))
+    print("is GraphNode = " .. tostring(n:typeOf("LGraphNode")))
 end
 ```
 

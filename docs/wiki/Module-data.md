@@ -52,7 +52,7 @@ Binary data toolkit: byte buffers, compression, hashing, encoding, structured pa
 
 ## 📋 Summary
 
-The `data` module is a comprehensive binary data toolkit situated in the Foundations tier of the engine. It provides high-performance data manipulation utilities entirely decoupled from engine-specific state, making it highly portable and resilient. It offers a robust suite of tools for byte buffering, compression, cryptographic hashing, string encoding, and structured binary packing and unpacking operations, all of which are critical for tasks ranging from network protocols to save-game serialization.
+It provides high-performance data manipulation utilities entirely decoupled from engine-specific state, making it highly portable and resilient. It offers a robust suite of tools for byte buffering, compression, cryptographic hashing, string encoding, and structured binary packing and unpacking operations, all of which are critical for tasks ranging from network protocols to save-game serialization.
 
 At the center of the module is `ByteData`, an owned, resizable byte vector equipped with indexed read and write access for all primitive types (including integers and floating-point numbers) in both little-endian and big-endian formats. For zero-copy inspection of binary payloads, the `DataView` struct provides read-only typed access over shared byte slices, minimizing overhead when decoding large network packets or streaming assets. Complementing this is `DataWriter`, a sequential builder that accumulates serialized binary output using a movable cursor.
 
@@ -1285,7 +1285,7 @@ end
 
 ```lua
 --- Checks whether this object matches the given type name.
----@param name string Type name to check (e.g. "LByteData" or "Object").
+---@param name string Type name to check (e.g. "LByteData" or "LObject").
 ---@return boolean True if this object matches the given type.
 function LByteData:typeOf(name) end
 ```
@@ -1296,7 +1296,7 @@ Checks whether this object matches the given type name.
 
 Parameters:
 
-- `name` (`string`, required): Type name to check (e.g. "LByteData" or "Object").
+- `name` (`string`, required): Type name to check (e.g. "LByteData" or "LObject").
 
 Returns: `boolean` - True if this object matches the given type.
 

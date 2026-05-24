@@ -22,7 +22,7 @@ export class SceneFlowEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Scene Flow Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 240px;
+        display: grid; grid-template-columns: 48px 1fr 240px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }
@@ -98,6 +98,8 @@ export class SceneFlowEditor extends WebviewEditor {
           </span>
           <div class="sep"></div>
           <span id="statusTransitions">0 transitions</span>
+          <div class="sep"></div>
+          <span id="statusSelected">selected: none</span>
           <div class="sep"></div>
           <span id="statusMode">Select</span>
           <div class="spacer"></div>
@@ -323,8 +325,33 @@ export class SceneFlowEditor extends WebviewEditor {
       function updateStatus() {
         document.getElementById('statusScenes').textContent = nodes.length + ' scenes';
         document.getElementById('statusTransitions').textContent = edges.length + ' transitions';
+        document.getElementById('statusSelected').textContent = selectedNode ? ('selected: #' + selectedNode.id) : 'selected: none';
         document.getElementById('statusMode').textContent = connectMode ? 'Connect' : 'Select';
         document.getElementById('statusZoom').textContent = Math.round(zoom * 100) + '%';
+      }
+
+      function nudgeSelected(dx, dy) {
+        if (!selectedNode) return;
+        pushUndo();
+        selectedNode.x += dx;
+        selectedNode.y += dy;
+        render();
+        updateStatus();
+      }
+
+      function duplicateSelected() {
+        if (!selectedNode) return;
+        pushUndo();
+        const clone = JSON.parse(JSON.stringify(selectedNode));
+        clone.id = nextId++;
+        clone.x += 40;
+        clone.y += 40;
+        clone.name = clone.name + '_copy';
+        nodes.push(clone);
+        selectedNode = clone;
+        showProps(clone);
+        render();
+        updateStatus();
       }
 
       // ── Canvas Events ──────────────────────────────────
@@ -430,6 +457,12 @@ export class SceneFlowEditor extends WebviewEditor {
       registerShortcut('delete', () => document.getElementById('btnDelete').click());
       registerShortcut('ctrl+z', () => { const s = undo.undo(); if (s) restoreSnap(s); });
       registerShortcut('ctrl+y', () => { const s = undo.redo(); if (s) restoreSnap(s); });
+      registerShortcut('ctrl+d', () => duplicateSelected());
+      registerShortcut('f', () => document.getElementById('btnFitView').click());
+      registerShortcut('up', () => nudgeSelected(0, -20));
+      registerShortcut('down', () => nudgeSelected(0, 20));
+      registerShortcut('left', () => nudgeSelected(-20, 0));
+      registerShortcut('right', () => nudgeSelected(20, 0));
 
       // ── Export ─────────────────────────────────────────
       function buildLuaCode() {

@@ -22,7 +22,7 @@ export class QuestTreeEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Quest / Tech Tree Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 260px;
+        display: grid; grid-template-columns: 48px 1fr 260px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }
@@ -91,6 +91,8 @@ export class QuestTreeEditor extends WebviewEditor {
           </span>
           <div class="sep"></div>
           <span id="statusLinks">0 links</span>
+          <div class="sep"></div>
+          <span id="statusSelected">selected: none</span>
           <div class="sep"></div>
           <span id="statusMode" class="mode-badge select">SELECT</span>
           <div class="spacer"></div>
@@ -244,6 +246,7 @@ export class QuestTreeEditor extends WebviewEditor {
       function updateStatus() {
         document.getElementById('statusQuests').textContent = nodes.length + ' quests';
         document.getElementById('statusLinks').textContent = edges.length + ' links';
+        document.getElementById('statusSelected').textContent = selectedNode ? ('selected: #' + selectedNode.id) : 'selected: none';
         document.getElementById('statusZoom').textContent = Math.round(zoom * 100) + '%';
         // Stats
         const statsEl = document.getElementById('statsContent');
@@ -256,6 +259,30 @@ export class QuestTreeEditor extends WebviewEditor {
           '<span style="color:#666">Locked: ' + locked + '</span>' +
           '<span style="color:#ffd700">Completed: ' + done + '</span>' +
           '<span>Total: ' + nodes.length + '</span></div>';
+      }
+
+      function nudgeSelected(dx, dy) {
+        if (!selectedNode) return;
+        pushUndo();
+        selectedNode.x += dx;
+        selectedNode.y += dy;
+        render();
+        updateStatus();
+      }
+
+      function duplicateSelected() {
+        if (!selectedNode) return;
+        pushUndo();
+        const clone = JSON.parse(JSON.stringify(selectedNode));
+        clone.id = nextId++;
+        clone.x += 40;
+        clone.y += 40;
+        clone.name = clone.name + ' Copy';
+        nodes.push(clone);
+        selectedNode = clone;
+        showProps(clone);
+        render();
+        updateStatus();
       }
 
       function fitView() {
@@ -359,6 +386,11 @@ export class QuestTreeEditor extends WebviewEditor {
       registerShortcut('c', () => document.getElementById('btnConnect').click());
       registerShortcut('Delete', () => document.getElementById('btnDelete').click());
       registerShortcut('f', () => fitView());
+      registerShortcut('ctrl+d', () => duplicateSelected());
+      registerShortcut('up', () => nudgeSelected(0, -20));
+      registerShortcut('down', () => nudgeSelected(0, 20));
+      registerShortcut('left', () => nudgeSelected(-20, 0));
+      registerShortcut('right', () => nudgeSelected(20, 0));
 
       // ── Export ─────────────────────────────────────────
       function buildLuaCode() {

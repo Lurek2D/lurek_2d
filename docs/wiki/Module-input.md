@@ -12,6 +12,7 @@
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
   - [combo.rs](#combors)
+  - [events.rs](#eventsrs)
   - [gamepad.rs](#gamepadrs)
   - [keyboard.rs](#keyboardrs)
   - [mod.rs](#modrs)
@@ -47,7 +48,7 @@ Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
 
 ## 📋 Summary
 
-The `input` module is a core Platform Services tier component that aggregates and processes hardware inputs across keyboard, mouse, gamepad, and multi-touch devices. Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
+Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
 
 The `MouseState` system offers comprehensive tracking of cursor coordinates, scroll-wheel deltas, and multi-button states. It allows developers to customize the cursor by selecting from system icons, providing raw RGBA pixel data, or toggling visibility and window-grab confinement (relative mode) for first-person control schemes. Gamepad support is exceptionally robust via the `GamepadState` struct, which tracks up to four connected controllers simultaneously. It manages analog sticks, triggers, button presses, connection lifecycles, and OS force-feedback vibration requests, synthesizing virtual D-pads and providing SDL2 GameControllerDB GUID mapping for maximum compatibility. `TouchState` similarly handles multi-point contact tracking for mobile or touchscreen interfaces, capturing press, move, and release lifecycles.
 
@@ -62,6 +63,10 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - Multi-step key-press combo detection with per-step and total-sequence timeouts.
 - Stateful detector that advances, breaks, or completes on each key feed or timer tick.
 - Used by the `lurek.input` combo API to recognize fighting-game-style input sequences.
+
+### `events.rs`
+
+- Lua event name constants for input callbacks.
 
 ### `gamepad.rs`
 
@@ -3114,7 +3119,7 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 do
     local combo = lurek.input.newCombo({"a"})
     print("type = " .. combo:type())
-    print("is Combo = " .. tostring(combo:typeOf("Combo")))
+    print("is Combo = " .. tostring(combo:typeOf("LCombo")))
 end
 ```
 
@@ -3147,7 +3152,7 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 do
     local combo = lurek.input.newCombo({"a"})
     print("type = " .. combo:type())
-    print("is Combo = " .. tostring(combo:typeOf("Combo")))
+    print("is Combo = " .. tostring(combo:typeOf("LCombo")))
 end
 ```
 

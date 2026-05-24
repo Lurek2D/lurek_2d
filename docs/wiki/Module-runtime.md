@@ -18,6 +18,7 @@
   - [messages.rs](#messagesrs)
   - [mod.rs](#modrs)
   - [mode.rs](#moders)
+  - [os.rs](#osrs)
   - [resource_keys.rs](#resourcekeysrs)
   - [shared_state.rs](#sharedstaters)
 - [🧩 Key Types](#key-types)
@@ -39,7 +40,7 @@ Foundational shared state, engine config, error types, resource keys, log catalo
 
 ## 📋 Summary
 
-The `runtime` module forms the very foundation of the Lurek2D dependency graph. As a Core Runtime tier component, it defines the essential shared state, engine configuration, unified error handling, and structured logging mechanisms upon which every other engine subsystem relies. At the heart of the module is `SharedState`, a central, mutable state container accessed via `RefCell` borrows. It orchestrates cross-module communication during a frame, tracking window state, input aggregation, timing profiles, asynchronous file I/O (GameFS), render pipeline configurations, and managing slot-map resource pools (textures, fonts, shaders, particle systems, etc.) while enforcing memory budgets via LRU eviction.
+As a Core Runtime tier component, it defines the essential shared state, engine configuration, unified error handling, and structured logging mechanisms upon which every other engine subsystem relies. At the heart of the module is `SharedState`, a central, mutable state container accessed via `RefCell` borrows. It orchestrates cross-module communication during a frame, tracking window state, input aggregation, timing profiles, asynchronous file I/O (GameFS), render pipeline configurations, and managing slot-map resource pools (textures, fonts, shaders, particle systems, etc.) while enforcing memory budgets via LRU eviction.
 
 Configuration is driven by the `Config` struct, which parses the `conf.toml` file at startup. It dictates window settings, renderer preferences, performance caps (like Lua callback timeouts), and feature-toggles (`ModulesConfig`) that selectively load or auto-disable engine subsystems based on prerequisites. The runtime actively supports hot-reloading for many configuration values, allowing live tweaks to target FPS, physics ticks, log levels, and viewport settings without restarting the game. The module also robustly handles different startup modes (`gui`, `tui`, `headless`, `cli`), with the headless path specifically designed for script automation and CI testing without requiring window or audio contexts.
 
@@ -105,6 +106,10 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - Provides lowercase string tokens for config serialization and CLI parsing via `as_str` and `Display`.
 - `FromStr` accepts any casing and returns a typed parse error that names the rejected token.
 - Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
+
+### `os.rs`
+
+- OS-level utilities including clipboard, system info, environment variables, and platform detection.
 
 ### `resource_keys.rs`
 

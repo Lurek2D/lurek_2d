@@ -1,6 +1,10 @@
 # Lurek2D — Engine Architecture
 
-Source of truth for runtime module structure, boot sequence, frame model, state management, and subsystem pipelines.
+## TL;DR
+
+- Source of truth for runtime module structure, boot sequence, frame model, state management, and subsystem pipelines.
+
+
 
 Companion documents: [philosophy.md](philosophy.md) · [render-command-architecture.md](render-command-architecture.md) · [test-framework.md](test-framework.md)
 
@@ -62,7 +66,7 @@ graph TD
     P["PLATFORM SERVICES<br/>render · audio · physics · input · image · window · camera · light · effect"]
     C["CORE RUNTIME<br/>runtime · event · timer · thread · network · filesystem"]
     B["FOUNDATIONS<br/>math · log · data · serial · compute · dataframe · graph · procgen · patterns"]
-    L["LUNASOME library/<br/>Pure-Lua libraries — public lurek.* API only"]
+    L["Lureksome library/<br/>Pure-Lua libraries — public lurek.* API only"]
 
     E --> F
     E --> P
@@ -589,7 +593,9 @@ lurek2d/
 │   ├── examples/           Single-file API usage scripts (documentation only)
 │   ├── games/              Playable game demos (must all pass CI)
 │   ├── layouts/            TOML UI layout files
-│   └── plugins/            Plugin examples
+│   ├── plugins/            Plugin examples
+│   ├── snippets/           VS Code snippet sources
+│   └── zips/               Zipped assets and examples
 ├── tests/
 │   ├── rust/               Rust tests (unit, stress, golden, config, security, ext)
 │   └── lua/                Lua BDD tests (unit, integration, content, stress, security)

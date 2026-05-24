@@ -4,6 +4,11 @@ description: "Load this skill when the task clearly matches this domain. Skip it
 ---
 # skill-name
 
+## TL;DR
+
+- TODO: Write summary.
+
+
 ## Mission
 - Own one narrow knowledge area.
 

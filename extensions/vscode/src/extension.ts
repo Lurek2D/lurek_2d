@@ -12,6 +12,7 @@ import { ApiDataService } from "./services/apiData.js";
 import {
   ProjectToolsProvider,
   DevToolsProvider,
+  EditorsProvider,
   AiToolsProvider,
 } from "./providers/sidebar.js";
 
@@ -132,11 +133,13 @@ export function activate(context: vscode.ExtensionContext): void {
   // ─── Sidebar Tree Views ──────────────────────────────────
   const projectTools = new ProjectToolsProvider();
   const devTools = new DevToolsProvider();
+  const editorsTools = new EditorsProvider();
   const aiTools = new AiToolsProvider();
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider("lurek.projectTools", projectTools),
     vscode.window.registerTreeDataProvider("lurek.devTools", devTools),
+    vscode.window.registerTreeDataProvider("lurek.editors", editorsTools),
     vscode.window.registerTreeDataProvider("lurek.aiCopilot", aiTools)
   );
 
@@ -200,6 +203,41 @@ export function activate(context: vscode.ExtensionContext): void {
   // ─── Scaffold Commands ───────────────────────────────────
   registerCommand(context, "lurek.scaffold.project", () => scaffoldProject());
   registerCommand(context, "lurek.scaffold.file", () => scaffoldFile());
+  registerCommand(context, "lurek.scaffold.mod", () => {
+    const wsRoot = getWorkspaceRoot();
+    if (wsRoot) {
+      const term = vscode.window.createTerminal("Lurek2D Scaffold Mod");
+      term.show();
+      term.sendText(`python tools/mods/mod_init.py`);
+    }
+  });
+
+  registerCommand(context, "lurek.ui.snapToGrid", () => {
+    const wsRoot = getWorkspaceRoot();
+    if (wsRoot) {
+      const term = vscode.window.createTerminal("Lurek2D Snap UI");
+      term.show();
+      term.sendText(`python tools/ui/snap_to_grid.py`);
+    }
+  });
+
+  registerCommand(context, "lurek.ui.fixLayouts", () => {
+    const wsRoot = getWorkspaceRoot();
+    if (wsRoot) {
+      const term = vscode.window.createTerminal("Lurek2D Fix UI Layouts");
+      term.show();
+      term.sendText(`python tools/ui/fix_layouts.py`);
+    }
+  });
+
+  registerCommand(context, "lurek.test.rust.parallel", () => {
+    const wsRoot = getWorkspaceRoot();
+    if (wsRoot) {
+      const term = vscode.window.createTerminal("Lurek2D Parallel Tests");
+      term.show();
+      term.sendText(`python tools/dev/parallel_cargo.py test all`);
+    }
+  });
 
   // ─── Refactor Commands ───────────────────────────────────
   registerCommand(context, "lurek.extractToModuleFile",
@@ -274,7 +312,6 @@ export function activate(context: vscode.ExtensionContext): void {
   });
 
   // ─── Dependency Graph Commands ───────────────────────────
-  registerCommand(context, "lurek.deps.showGraph", () => depGraph(context));
   registerCommand(context, "lurek.deps.findCircular", async () => {
     const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     if (!wsRoot) { vscode.window.showErrorMessage("No workspace folder open."); return; }
@@ -615,16 +652,29 @@ window.addEventListener('resize',draw);
   registerCommand(context, "lurek.cag.selectSkill", () => selectSkill());
   registerCommand(context, "lurek.cag.selectPrompt", () => selectPrompt());
   registerCommand(context, "lurek.cag.update", () => {
-    vscode.window.showInformationMessage(
-      "CAG update is not yet implemented."
-    );
+    vscode.commands.executeCommand("lurek.cag.install");
   });
 
   // ─── MCP Commands ────────────────────────────────────────
-  registerCommand(context, "lurek.mcp.install", () => {
-    vscode.window.showInformationMessage(
-      "MCP server installation is not yet implemented."
-    );
+  registerCommand(context, "lurek.mcp.install", async () => {
+    const mcpConfig = {
+      mcpServers: {
+        "lurek2d": {
+          "command": "node",
+          "args": [
+            path.join(context.extensionPath, "dist", "mcp", "server.js"),
+            "--workspace",
+            workspaceRoot || ""
+          ]
+        }
+      }
+    };
+    const doc = await vscode.workspace.openTextDocument({
+      content: JSON.stringify(mcpConfig, null, 2),
+      language: "json"
+    });
+    await vscode.window.showTextDocument(doc);
+    vscode.window.showInformationMessage("Copy this configuration to your MCP client settings.");
   });
   registerCommand(context, "lurek.mcp.status", () => {
     vscode.window.showInformationMessage(
@@ -635,14 +685,22 @@ window.addEventListener('resize',draw);
   // ─── Game Jam Commands (Phase 5a) ─────────────────────────
   registerGameJamCommands(context);
   registerCommand(context, "lurek.jam.quickBuild", () => {
-    const terminal = vscode.window.createTerminal("Lurek2D Quick Build");
-    terminal.show();
-    terminal.sendText(buildBuildCommand("release"));
+    packageZip();
+    vscode.window.showInformationMessage("Packaging Game Jam project...");
   });
-  registerCommand(context, "lurek.jam.checklist", () => {
-    vscode.window.showInformationMessage(
-      "Submission Checklist is not yet implemented."
-    );
+  registerCommand(context, "lurek.jam.checklist", async () => {
+    const wsRoot = getWorkspaceRoot();
+    if (!wsRoot) {
+      vscode.window.showErrorMessage("No workspace open.");
+      return;
+    }
+    const checklistPath = path.join(wsRoot, "submission_checklist.md");
+    if (!fs.existsSync(checklistPath)) {
+      const content = `# Game Jam Submission Checklist\n\n- [ ] Game runs without crashing\n- [ ] All assets are included and paths are relative\n- [ ] Windows build tested\n- [ ] Linux build tested\n- [ ] README.md updated with controls and credits\n- [ ] Screenshots added\n- [ ] Uploaded to submission page\n`;
+      fs.writeFileSync(checklistPath, content, "utf-8");
+    }
+    const doc = await vscode.workspace.openTextDocument(checklistPath);
+    await vscode.window.showTextDocument(doc);
   });
 
   // ─── Library Commands (Phase 5a) ──────────────────────────
@@ -947,6 +1005,36 @@ window.addEventListener('resize',draw);
   const workspaceRoot = getWorkspaceRoot();
   if (workspaceRoot) {
     mcpProcess = startMcpServer(workspaceRoot);
+  }
+
+  // ─── RAG Auto-Indexing & Panel ───────────────────────────
+  const { RagPanel } = require("./panels/ragPanel.js");
+  const { execRagBuildIndex } = require("./services/rag.js");
+
+  registerCommand(context, "lurek2d.showRagPanel", () => {
+    RagPanel.createOrShow(workspaceRoot || ".");
+  });
+
+  if (workspaceRoot) {
+    const ragWatcher = vscode.workspace.createFileSystemWatcher("**/*.{lua,md,rs}");
+    const updateRagIndex = (uri: vscode.Uri) => {
+      // Don't auto-index things outside main folders
+      const relativePath = vscode.workspace.asRelativePath(uri);
+      if (relativePath.match(/^(src|content|docs|library|tests|\.github)[\\/]/)) {
+        execRagBuildIndex(workspaceRoot, [relativePath])
+          .catch((err: any) => console.error("RAG auto-index error:", err));
+      }
+    };
+    
+    context.subscriptions.push(
+      ragWatcher.onDidChange(updateRagIndex),
+      ragWatcher.onDidCreate(updateRagIndex),
+      ragWatcher.onDidDelete((uri) => {
+        // We could run build_index with a delete flag, but for now we'll just let it be.
+        // It'll be cleaned up on the next full build.
+      }),
+      ragWatcher
+    );
   }
 
   // ─── Lua Language Server Integration ──────────────────

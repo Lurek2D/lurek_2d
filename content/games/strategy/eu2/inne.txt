@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kreator i Eksplorator Map EU - Wektoryzacja 8:1</title>
+    <!-- Tailwind CSS dla pięknego, ciemnego interfejsu -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #e2e8f0;
+            overflow: hidden;
+        }
+        .serif-title {
+            font-family: 'Cinzel', serif;
+        }
+        /* Custom scrollbar dla listy prowincji */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col select-none">
+
+    <!-- TOP BAR -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between shadow-lg z-10">
+        <div class="flex items-center space-x-4">
+            <div class="bg-gradient-to-r from-amber-500 to-yellow-600 p-2 rounded-lg shadow-inner">
+                <!-- Golden Crown SVG -->
+                <svg class="w-6 h-6 text-slate-950" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </div>
+            <div>
+                <h1 class="serif-title text-lg md:text-xl font-bold text-amber-400 tracking-wide">MAPA INTERAKTYWNA EU</h1>
+                <p class="text-xs text-slate-400">Wektoryzator Pikseli 8:1 & Narzędzie Scenariuszy</p>
+            </div>
+        </div>
+
+        <!-- Narzędzia globalne i tryby mapy -->
+        <div class="flex items-center space-x-3">
+            <span class="text-xs text-slate-400 hidden lg:inline">Tryb mapy:</span>
+            <div class="bg-slate-950 p-1 rounded-lg border border-slate-800 flex space-x-1">
+                <button id="btn-mapmode-prov" class="px-3 py-1.5 text-xs font-semibold rounded bg-amber-500 text-slate-950 transition" onclick="setMapMode('provinces')">
+                    Prowincje
+                </button>
+                <button id="btn-mapmode-pol" class="px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white transition" onclick="setMapMode('political')">
+                    Polityczna
+                </button>
+                <button id="btn-mapmode-phys" class="px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white transition" onclick="setMapMode('physical')">
+                    Fizyczna
+                </button>
+            </div>
+
+            <!-- Przycisk wczytywania własnego pliku mapy -->
+            <label class="cursor-pointer bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-4 py-2 rounded text-xs transition flex items-center space-x-1 shadow-md">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                <span>Wgraj map.png</span>
+                <input type="file" id="map-upload" accept="image/*" class="hidden" onchange="handleMapUpload(event)">
+            </label>
+        </div>
+    </header>
+
+    <!-- GŁÓWNA ZAWARTOŚĆ -->
+    <main class="flex-1 flex overflow-hidden relative">
+
+        <!-- LEWY PANEL - EDYCJA I INFORMACJE (STYL EU4) -->
+        <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col shadow-2xl z-10">
+            <!-- Zakładki -->
+            <div class="border-b border-slate-800 flex text-center bg-slate-950">
+                <button id="tab-prov" class="flex-1 py-3 text-xs font-bold border-b-2 border-amber-500 text-amber-400" onclick="switchTab('province')">
+                    PROWINCJA
+                </button>
+                <button id="tab-nat" class="flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200" onclick="switchTab('nations')">
+                    PAŃSTWA
+                </button>
+            </div>
+
+            <!-- ZAWARTOŚĆ ZAKŁADKI PROWINCJI -->
+            <div id="content-prov" class="flex-1 p-5 overflow-y-auto space-y-4">
+                <div id="no-selection-msg" class="text-center py-12 text-slate-500 space-y-3">
+                    <svg class="w-12 h-12 mx-auto opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                    <p class="text-sm">Kliknij lewym przyciskiem myszy na prowincję, aby wyświetlić jej szczegóły.</p>
+                </div>
+
+                <div id="province-details" class="hidden space-y-4">
+                    <!-- Nagłówek prowincji -->
+                    <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                        <label class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Nazwa Prowincji</label>
+                        <input type="text" id="prov-name-input" class="w-full bg-transparent text-xl font-bold text-slate-100 border-b border-transparent hover:border-slate-700 focus:border-amber-500 focus:outline-none py-1 transition" oninput="updateSelectedProvinceName(this.value)">
+                        
+                        <div class="flex justify-between items-center mt-3 text-xs text-slate-400">
+                            <span>ID Koloru:</span>
+                            <span id="prov-color-id" class="font-mono text-amber-500 font-bold">#000000</span>
+                        </div>
+                    </div>
+
+                    <!-- Informacje o przynależności -->
+                    <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-3">
+                        <div>
+                            <label class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold block mb-1">Właściciel (Państwo)</label>
+                            <select id="prov-nation-select" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-sm text-slate-200 focus:border-amber-500 focus:outline-none" onchange="assignProvinceNation(this.value)">
+                                <option value="none">Niczyja (Ziemia nieznana)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Statystyki EU Style -->
+                    <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-4">
+                        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Rozwój Prowincji</h3>
+                        
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-amber-950/20 border border-amber-900/50 p-2 rounded">
+                                <span class="text-xs text-amber-400 block font-semibold">Podatki</span>
+                                <div class="flex items-center justify-center space-x-1 mt-1">
+                                    <button class="text-xs text-slate-500 hover:text-white px-1" onclick="adjustStat('tax', -1)">-</button>
+                                    <span id="stat-tax" class="font-bold text-amber-300">3</span>
+                                    <button class="text-xs text-slate-500 hover:text-white px-1" onclick="adjustStat('tax', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="bg-emerald-950/20 border border-emerald-900/50 p-2 rounded">
+                                <span class="text-xs text-emerald-400 block font-semibold">Produkcja</span>
+                                <div class="flex items-center justify-center space-x-1 mt-1">
+                                    <button class="text-xs text-slate-500 hover:text-white px-1" onclick="adjustStat('prod', -1)">-</button>
+                                    <span id="stat-prod" class="font-bold text-emerald-300">3</span>
+                                    <button class="text-xs text-slate-500 hover:text-white px-1" onclick="adjustStat('prod', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="bg-sky-950/20 border border-sky-900/50 p-2 rounded">
+                                <span class="text-xs text-sky-400 block font-semibold">Rezerwy</span>
+                                <div class="flex items-center justify-center space-x-1 mt-1">
+                                    <button class="text-xs text-slate-500 hover:text-white px-1" onclick="adjustStat('manpower', -1)">-</button>
+                                    <span id="stat-manpower" class="font-bold text-sky-300">3</span>
+                                    <button class="text-xs text-slate-500 hover:text-white px-1" onclick="adjustStat('manpower', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-800 pt-3 flex justify-between text-xs text-slate-400">
+                            <span>Łączny rozwój (Dev):</span>
+                            <span id="total-dev" class="font-bold text-white">9</span>
+                        </div>
+                    </div>
+
+                    <!-- Generowanie Lore / Nazwy -->
+                    <button class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2 px-3 rounded border border-slate-700 transition" onclick="generateLoreName()">
+                        Generuj klimatyczną nazwę
+                    </button>
+                </div>
+            </div>
+
+            <!-- ZAWARTOŚĆ ZAKŁADKI PAŃSTV -->
+            <div id="content-nations" class="flex-1 p-5 overflow-y-auto space-y-4 hidden">
+                <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                    <h3 class="text-xs font-bold text-slate-300 uppercase mb-3">Dodaj Nowe Państwo</h3>
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="text-slate-500 block mb-1">Nazwa Państwa</label>
+                            <input type="text" id="new-nat-name" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-100 focus:outline-none focus:border-amber-500" placeholder="np. Rzeczpospolita">
+                        </div>
+                        <div class="flex space-x-2">
+                            <div class="flex-1">
+                                <label class="text-slate-500 block mb-1">Kolor mapy</label>
+                                <input type="color" id="new-nat-color" class="w-full h-9 bg-slate-900 border border-slate-800 rounded cursor-pointer p-0.5" value="#3b82f6">
+                            </div>
+                            <div class="flex items-end">
+                                <button class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-4 h-9 rounded transition" onclick="createNewNation()">
+                                    Dodaj
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista istniejących Państw -->
+                <div class="space-y-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Istniejące Potęgi</h3>
+                    <div id="nations-list" class="space-y-2">
+                        <!-- Dynamiczna lista -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- STOPKA PANELU - Edytor Pędzla -->
+            <div class="p-4 bg-slate-950 border-t border-slate-800 space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Narzędzie interakcji:</span>
+                    <span id="brush-status" class="text-amber-500 font-bold font-mono">Wskaźnik</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="tool-select" class="bg-amber-500 text-slate-950 font-semibold py-1.5 px-3 rounded text-xs transition" onclick="setActiveTool('select')">
+                        Wskaźnik (Klik)
+                    </button>
+                    <button id="tool-paint" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-1.5 px-3 rounded text-xs border border-slate-700 transition" onclick="setActiveTool('paint')">
+                        Malarz Państw
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- KANWAS MAPY ORAZ INTERFEJS KONTROLI -->
+        <div class="flex-1 relative overflow-hidden bg-[#111625]">
+            <!-- Loader postępu wektoryzacji -->
+            <div id="loader" class="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center z-50 transition-opacity duration-500">
+                <div class="max-w-md w-full px-6 text-center space-y-6">
+                    <div class="relative w-24 h-24 mx-auto">
+                        <div class="absolute inset-0 border-4 border-amber-500/20 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-t-amber-500 rounded-full animate-spin"></div>
+                    </div>
+                    <div class="space-y-2">
+                        <h2 class="serif-title text-2xl font-bold text-amber-400 tracking-wider">WEKTORYZACJA MAPY</h2>
+                        <p id="loader-step" class="text-sm text-slate-400">Ładowanie mapy bazowej...</p>
+                    </div>
+                    <!-- Pasek postępu -->
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="loader-progress" class="bg-gradient-to-r from-amber-500 to-yellow-500 h-full w-0 transition-all duration-150"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interaktywny Canvas -->
+            <canvas id="map-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+
+            <!-- KOMPAS I KONTROLKI ZOOMU NA MAPIE -->
+            <div class="absolute bottom-6 right-6 flex flex-col space-y-2 bg-slate-950/80 backdrop-blur border border-slate-800 p-2 rounded-lg shadow-2xl">
+                <button class="w-8 h-8 text-slate-200 hover:text-white hover:bg-slate-800 rounded font-bold text-lg flex items-center justify-center transition" onclick="zoomMap(1.3)" title="Przybliż">+</button>
+                <button class="w-8 h-8 text-slate-200 hover:text-white hover:bg-slate-800 rounded font-bold text-lg flex items-center justify-center transition" onclick="zoomMap(0.7)" title="Oddal">-</button>
+                <button class="w-8 h-8 text-slate-200 hover:text-white hover:bg-slate-800 rounded flex items-center justify-center transition" onclick="resetView()" title="Zresetuj widok">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                </button>
+            </div>
+
+            <!-- STATUS BAR NA DOLE MAPY -->
+            <div class="absolute bottom-6 left-6 bg-slate-950/80 backdrop-blur border border-slate-800 px-4 py-2 rounded-lg shadow-2xl flex space-x-6 text-xs text-slate-300">
+                <div class="flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="status-map-size">Wektory 8:1</span>
+                </div>
+                <div>
+                    <span>Skala: </span>
+                    <span id="status-scale" class="font-bold text-amber-400">100%</span>
+                </div>
+                <div class="hidden sm:block">
+                    <span>Najechanie: </span>
+                    <span id="status-hover" class="font-semibold text-white">-</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PASEK EKSPORTU I INSTRUKCJI -->
+    <footer class="bg-slate-950 border-t border-slate-800 px-6 py-2.5 flex flex-wrap items-center justify-between text-xs text-slate-400 space-y-2 sm:space-y-0">
+        <div class="flex items-center space-x-2">
+            <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] uppercase font-bold">Wskazówka</span>
+            <span>Użyj kółka myszy by powiększać. Przeciągaj prawym lub lewym przyciskiem myszy, aby przesuwać mapę.</span>
+        </div>
+        <div class="flex space-x-3">
+            <button class="text-amber-400 hover:text-amber-300 transition flex items-center space-x-1 font-semibold" onclick="exportScenario()">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span>Eksportuj Scenariusz (JSON)</span>
+            </button>
+            <button class="text-slate-300 hover:text-white transition flex items-center space-x-1 font-semibold" onclick="triggerImport()">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span>Importuj</span>
+            </button>
+            <input type="file" id="import-input" accept=".json" class="hidden" onchange="importScenario(event)">
+        </div>
+    </footer>
+
+    <!-- SKRYPT LOGIKI MAPY -->
+    <script>
+        // --- KONFIGURACJA I ZMIENNE GLOBALNE ---
+        const scaleFactor = 8; // Skala 8:1 dla wektorów w stosunku do obrazka
+        let originalImgWidth = 0;
+        let originalImgHeight = 0;
+        let virtualMapWidth = 0;
+        let virtualMapHeight = 0;
+
+        // Dane prowincji i wektorów
+        let provinces = {}; // Klucz: "R,G,B" -> Obiekt prowincji
+        let provinceList = []; // Tablica dla łatwiejszego indeksowania
+        let nations = {
+            'none': { id: 'none', name: 'Ziemia nieznana', color: '#1e293b', provincesCount: 0 }
+        };
+        let activeNationId = 'none';
+
+        // Stan widoku (Zoom / Pan)
+        let scale = 1.0;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        // Stan edytora
+        let currentMapMode = 'provinces'; // 'provinces', 'political', 'physical'
+        let currentTool = 'select'; // 'select', 'paint'
+        let selectedProvince = null;
+        let hoveredProvince = null;
+        let activeTab = 'province';
+
+        // Bufor graficzny do błyskawicznego wykrywania kliknięć
+        let offscreenCanvas = document.createElement('canvas');
+        let offscreenCtx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
+        let originalImgData = null;
+
+        // Dynamiczne odniesienia do DOM
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+        const loader = document.getElementById('loader');
+        const loaderProgress = document.getElementById('loader-progress');
+        const loaderStep = document.getElementById('loader-step');
+
+        // --- STYLIZACJA I REAKTYWNOŚĆ OKNA ---
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- PROCERURALNY GENERATOR MAPY DEMO (Gdy nie ma pliku) ---
+        // Generuje mapę imitującą plik map.png z prowincjami o unikalnych barwach rozdzielonych czarnym kolorem (0,0,0)
+        function generateDemoMap() {
+            const w = 240;
+            const h = 110;
+            const demoCanvas = document.createElement('canvas');
+            demoCanvas.width = w;
+            demoCanvas.height = h;
+            const dCtx = demoCanvas.getContext('2d');
+
+            // Wypełnienie tła - morze (kolor 0,0,0)
+            dCtx.fillStyle = '#000000';
+            dCtx.fillRect(0, 0, w, h);
+
+            // Generowanie wysp/kontynentów jako skupisk prowincji
+            const numProvinces = 60;
+            const centers = [];
+            
+            // Losowe centra prowincji (z unikaniem krawędzi)
+            for (let i = 0; i < numProvinces; i++) {
+                centers.push({
+                    x: Math.floor(15 + Math.random() * (w - 30)),
+                    y: Math.floor(15 + Math.random() * (h - 30)),
+                    r: 40 + Math.floor(Math.random() * 40),
+                    g: 40 + Math.floor(Math.random() * 40),
+                    b: 40 + Math.floor(Math.random() * 40),
+                    islandId: Math.floor(Math.random() * 3) // grupowanie w 3 kontynenty
+                });
+            }
+
+            const imgData = dCtx.createImageData(w, h);
+            const data = imgData.data;
+
+            // Algorytm najbliższego sąsiada (diagram Voronoi) dla prowincji
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    let minDist = Infinity;
+                    let closestCenter = null;
+
+                    // Ograniczamy rysowanie do organicznych kształtów kontynentów
+                    let noise = Math.sin(x * 0.05) * Math.cos(y * 0.05) * 15;
+                    let isLand = false;
+                    
+                    // Definiujemy 3 okręgi jako bazy kontynentów
+                    const continents = [
+                        {x: w * 0.25, y: h * 0.5, r: 40},
+                        {x: w * 0.6, y: h * 0.4, r: 35},
+                        {x: w * 0.8, y: h * 0.7, r: 25}
+                    ];
+
+                    for (let c of continents) {
+                        let distToCont = Math.hypot(x - c.x, y - c.y);
+                        if (distToCont < c.r + noise) {
+                            isLand = true;
+                            break;
+                        }
+                    }
+
+                    if (!isLand) {
+                        // Zostaje głębokie czarne morze
+                        const idx = (y * w + x) * 4;
+                        data[idx] = 0;
+                        data[idx+1] = 0;
+                        data[idx+2] = 0;
+                        data[idx+3] = 255;
+                        continue;
+                    }
+
+                    for (let c of centers) {
+                        let dist = Math.hypot(x - c.x, y - c.y);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestCenter = c;
+                        }
+                    }
+
+                    if (closestCenter) {
+                        const idx = (y * w + x) * 4;
+                        data[idx] = closestCenter.r;
+                        data[idx+1] = closestCenter.g;
+                        data[idx+2] = closestCenter.b;
+                        data[idx+3] = 255;
+                    }
+                }
+            }
+
+            // Dodanie czarnych granic pomiędzy prowincjami (symulacja map.png)
+            const borderData = new Uint8ClampedArray(data);
+            for (let y = 1; y < h - 1; y++) {
+                for (let x = 1; x < w - 1; x++) {
+                    const idx = (y * w + x) * 4;
+                    // Jeśli piksel jest lądem, ale jego sąsiad ma inny kolor, tworzymy granicę
+                    const r = borderData[idx];
+                    const g = borderData[idx+1];
+                    const b = borderData[idx+2];
+                    if (r === 0 && g === 0 && b === 0) continue;
+
+                    let hasDifferentNeighbor = false;
+                    const neighbors = [
+                        ((y-1) * w + x) * 4,
+                        ((y+1) * w + x) * 4,
+                        (y * w + (x-1)) * 4,
+                        (y * w + (x+1)) * 4
+                    ];
+
+                    for (let nIdx of neighbors) {
+                        if (borderData[nIdx] !== r || borderData[nIdx+1] !== g || borderData[nIdx+2] !== b) {
+                            hasDifferentNeighbor = true;
+                            break;
+                        }
+                    }
+
+                    if (hasDifferentNeighbor) {
+                        data[idx] = 0;
+                        data[idx+1] = 0;
+                        data[idx+2] = 0;
+                    }
+                }
+            }
+
+            dCtx.putImageData(imgData, 0, 0);
+            return demoCanvas.toDataURL();
+        }
+
+        // --- INICJALIZACJA SYSTEMU ---
+        window.onload = function() {
+            // Generujemy przykładową mapę na start
+            loadMapFromUrl(generateDemoMap());
+            
+            // Państwa początkowe w klimacie historycznym dla dema
+            createNationManual("Polska", "#e11d48");
+            createNationManual("Niemcy", "#2563eb");
+            createNationManual("Szwecja", "#eab308");
+            createNationManual("Turcja", "#10b981");
+
+            // Przygotowanie widoku interakcji
+            setupInteractions();
+            resizeCanvas();
+        };
+
+        // --- WCZYTYWANIE MAPY ---
+        function loadMapFromUrl(url) {
+            showLoader(true, "Ładowanie obrazu mapy...");
+            const img = new Image();
+            img.onload = function() {
+                originalImgWidth = img.width;
+                originalImgHeight = img.height;
+                virtualMapWidth = originalImgWidth * scaleFactor;
+                virtualMapHeight = originalImgHeight * scaleFactor;
+
+                document.getElementById('status-map-size').innerText = `Wektory: ${virtualMapWidth}x${virtualMapHeight}`;
+
+                // Konfiguracja offscreen do detekcji pikseli
+                offscreenCanvas.width = originalImgWidth;
+                offscreenCanvas.height = originalImgHeight;
+                offscreenCtx.drawImage(img, 0, 0);
+                originalImgData = offscreenCtx.getImageData(0, 0, originalImgWidth, originalImgHeight);
+
+                // Automatyczne dopasowanie widoku do ekranu
+                resetView();
+
+                // Proces wektoryzacji podzielony na klatki (aby uniknąć zacięcia interfejsu)
+                runVectorization();
+            };
+            img.src = url;
+        }
+
+        function handleMapUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                loadMapFromUrl(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- ZAAWANSOWANA WEKTORYZACJA 8:1 (Zoptymalizowany podział na komponenty i uproszczenie) ---
+        async function runVectorization() {
+            showLoader(true, "Inicjalizowanie analizatora...");
+            await sleep(100);
+
+            const width = originalImgWidth;
+            const height = originalImgHeight;
+            const data = originalImgData.data;
+
+            // Krok 1: Skanowanie pikseli i zbieranie unikalnych kolorów
+            showLoader(true, "Skanowanie kolorów prowincji...", 10);
+            await sleep(50);
+
+            // Tworzymy tablicę odwiedzonych do detekcji połączonych komponentów
+            const visited = new Uint8Array(width * height);
+            provinces = {};
+            provinceList = [];
+
+            const dx = [1, 0, -1, 0];
+            const dy = [0, 1, 0, -1];
+
+            // Krok 2: Analiza zalewowa (Connected Components) dla każdej prowincji
+            showLoader(true, "Identyfikacja spójnych prowincji...", 30);
+            await sleep(50);
+
+            let provinceCounter = 0;
+
+            for (let y = 0; y < height; y++) {
+                // Pozwalamy przeglądarce oddychać co kilka rzędów pikseli
+                if (y % 15 === 0) {
+                    const progress = Math.floor(30 + (y / height) * 40);
+                    showLoader(true, `Analiza rzędu pikseli ${y}/${height}...`, progress);
+                    await sleep(5);
+                }
+
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4;
+                    const offset = y * width + x;
+
+                    if (visited[offset]) continue;
+
+                    const r = data[idx];
+                    const g = data[idx+1];
+                    const b = data[idx+2];
+                    const a = data[idx+3];
+
+                    // Ignorujemy czarny (0,0,0) - traktujemy jako granice lub morze bezpaństwowe
+                    if (a < 50 || (r === 0 && g === 0 && b === 0)) {
+                        visited[offset] = 1;
+                        continue;
+                    }
+
+                    const hexKey = rgbToHex(r, g, b);
+
+                    // Wykonujemy szybki BFS, aby znaleźć cały połączony komponent o tym kolorze (np. wyspa lub główny kontynent)
+                    const componentPixels = [];
+                    const queue = [x, y];
+                    visited[offset] = 1;
+
+                    let head = 0;
+                    while (head < queue.length) {
+                        const cx = queue[head++];
+                        const cy = queue[head++];
+                        componentPixels.push({ x: cx, y: cy });
+
+                        for (let d = 0; d < 4; d++) {
+                            const nx = cx + dx[d];
+                            const ny = cy + dy[d];
+
+                            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                                const noffset = ny * width + nx;
+                                if (!visited[noffset]) {
+                                    const nidx = noffset * 4;
+                                    if (data[nidx] === r && data[nidx+1] === g && data[nidx+2] === b) {
+                                        visited[noffset] = 1;
+                                        queue.push(nx, ny);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Generujemy wektory dla tego połączonego komponentu
+                    const polygons = traceContoursForComponent(componentPixels);
+
+                    if (polygons.length > 0) {
+                        if (!provinces[hexKey]) {
+                            provinceCounter++;
+                            provinces[hexKey] = {
+                                id: hexKey,
+                                r: r, g: g, b: b,
+                                name: `Prowincja ${provinceCounter}`,
+                                nation: 'none',
+                                dev: { tax: 3, prod: 3, manpower: 3 },
+                                polygons: [],
+                                boundingBox: { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+                            };
+                        }
+
+                        // Dodajemy polygony tego komponentu do prowincji
+                        for (let poly of polygons) {
+                            provinces[hexKey].polygons.push(poly);
+                            
+                            // Aktualizujemy globalny bounding box prowincji do szybkiej eliminacji rysowania poza ekranem
+                            for (let pt of poly) {
+                                if (pt.x < provinces[hexKey].boundingBox.minX) provinces[hexKey].boundingBox.minX = pt.x;
+                                if (pt.y < provinces[hexKey].boundingBox.minY) provinces[hexKey].boundingBox.minY = pt.y;
+                                if (pt.x > provinces[hexKey].boundingBox.maxX) provinces[hexKey].boundingBox.maxX = pt.x;
+                                if (pt.y > provinces[hexKey].boundingBox.maxY) provinces[hexKey].boundingBox.maxY = pt.y;
+                            }
+                        }
+                    }
+                }
+            }
+
+            showLoader(true, "Wyliczanie uśrednionych centrów prowincji...", 80);
+            await sleep(50);
+
+            // Tworzymy finalną listę prowincji i obliczamy ich środki geometryczne (do rysowania nazw)
+            provinceList = Object.values(provinces);
+            for (let prov of provinceList) {
+                let sumX = 0, sumY = 0, totalPts = 0;
+                for (let poly of prov.polygons) {
+                    for (let pt of poly) {
+                        sumX += pt.x;
+                        sumY += pt.y;
+                        totalPts++;
+                    }
+                }
+                prov.centerX = totalPts > 0 ? sumX / totalPts : (prov.boundingBox.minX + prov.boundingBox.maxX) / 2;
+                prov.centerY = totalPts > 0 ? sumY / totalPts : (prov.boundingBox.minY + prov.boundingBox.maxY) / 2;
+            }
+
+            showLoader(true, "Układanie danych i odświeżanie mapy...", 95);
+            await sleep(50);
+
+            updateNationsDropdown();
+            updateNationsList();
+            showLoader(false);
+            draw();
+        }
+
+        // --- MATEMATYCZNE TRASOWANIE KRAWĘDZI DO POLIGONU ---
+        // Buduje skierowany graf krawędzi komórek pikseli i łączy je w idealne zamknięte wielokąty wektorowe (8:1)
+        function traceContoursForComponent(pixels) {
+            const pixelSet = new Set();
+            for (let p of pixels) {
+                pixelSet.add(`${p.x}_${p.y}`);
+            }
+
+            // Mapa adiacencji krawędzi skierowanych: "x,y" -> ["nextX,nextY"]
+            const adj = {};
+            const addEdge = (x1, y1, x2, y2) => {
+                const k1 = `${x1},${y1}`;
+                const k2 = `${x2},${y2}`;
+                if (!adj[k1]) adj[k1] = [];
+                adj[k1].push(k2);
+            };
+
+            // Dla każdego piksela sprawdzamy 4 sąsiadów. Jeśli sąsiada brak w zestawie komponentu - tworzymy krawędź
+            for (let p of pixels) {
+                const x = p.x;
+                const y = p.y;
+
+                // Góra pusta -> krawędź w prawo
+                if (!pixelSet.has(`${x}_${y-1}`)) {
+                    addEdge(x, y, x + 1, y);
+                }
+                // Prawa pusta -> krawędź w dół
+                if (!pixelSet.has(`${x+1}_${y}`)) {
+                    addEdge(x + 1, y, x + 1, y + 1);
+                }
+                // Dół pusta -> krawędź w lewo
+                if (!pixelSet.has(`${x}_${y+1}`)) {
+                    addEdge(x + 1, y + 1, x, y + 1);
+                }
+                // Lewa pusta -> krawędź w górę
+                if (!pixelSet.has(`${x-1}_${y}`)) {
+                    addEdge(x, y + 1, x, y);
+                }
+            }
+
+            // Łączymy segmenty krawędziowe w zamknięte pętle (poligony)
+            const polygons = [];
+            const visitedKeys = new Set();
+
+            for (const startKey in adj) {
+                if (!adj[startKey] || adj[startKey].length === 0) continue;
+
+                while (adj[startKey].length > 0) {
+                    const path = [];
+                    let curr = startKey;
+                    let success = false;
+
+                    while (curr && adj[curr] && adj[curr].length > 0) {
+                        const next = adj[curr].pop();
+                        path.push(curr);
+                        if (next === startKey) {
+                            success = true;
+                            break;
+                        }
+                        curr = next;
+                    }
+
+                    if (success && path.length >= 3) {
+                        // Przekształcamy klucze tekstowe na współrzędne i skalujemy wektorowo 8:1
+                        const points = path.map(k => {
+                            const [px, py] = k.split(',').map(Number);
+                            return { x: px * scaleFactor, y: py * scaleFactor };
+                        });
+
+                        // Uproszczenie kolinearnych krawędzi prostoliniowych (redukcja punktów o ~70% bez utraty jakości)
+                        polygons.push(simplifyCollinear(points));
+                    }
+                }
+            }
+
+            return polygons;
+        }
+
+        // Usuwa zbędne punkty leżące na liniach prostych
+        function simplifyCollinear(points) {
+            if (points.length < 3) return points;
+            const result = [points[0]];
+
+            for (let i = 1; i < points.length - 1; i++) {
+                const prev = points[i-1];
+                const curr = points[i];
+                const next = points[i+1];
+
+                // Obliczanie powierzchni trójkąta (wyznacznik)
+                const area = prev.x * (curr.y - next.y) + curr.x * (next.y - prev.y) + next.x * (prev.y - curr.y);
+                // Jeśli pole jest bliskie 0, punkty są kolinearne
+                if (Math.abs(area) > 0.001) {
+                    result.push(curr);
+                }
+            }
+            result.push(points[points.length - 1]);
+            return result;
+        }
+
+        // --- RYSOWANIE MAPY NA CANVAS ---
+        function draw() {
+            if (canvas.width === 0 || canvas.height === 0) return;
+
+            // Czyszczenie tła - kolor głębi oceanu
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            // Aplikacja przesunięcia i przybliżenia
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+
+            // Wyznaczanie granic ekranu w układzie współrzędnych mapy dla frustum culling (optymalizacja)
+            const minViewX = -offsetX / scale;
+            const minViewY = -offsetY / scale;
+            const maxViewX = (canvas.width - offsetX) / scale;
+            const maxViewY = (canvas.height - offsetY) / scale;
+
+            // Rysowanie wszystkich prowincji
+            for (let i = 0; i < provinceList.length; i++) {
+                const prov = provinceList[i];
+
+                // Optymalizacja: Pomiń rysowanie, jeśli prowincja leży całkowicie poza widocznym obszarem
+                if (prov.boundingBox.maxX < minViewX || prov.boundingBox.minX > maxViewX ||
+                    prov.boundingBox.maxY < minViewY || prov.boundingBox.minY > maxViewY) {
+                    continue;
+                }
+
+                // Kolorowanie w zależności od trybu mapy
+                if (currentMapMode === 'provinces') {
+                    ctx.fillStyle = `rgb(${prov.r}, ${prov.g}, ${prov.b})`;
+                } else if (currentMapMode === 'political') {
+                    if (prov.nation !== 'none' && nations[prov.nation]) {
+                        ctx.fillStyle = nations[prov.nation].color;
+                    } else {
+                        // Niezasiedlone prowincje w trybie politycznym rysujemy wyblakłe
+                        ctx.fillStyle = `rgba(${prov.r}, ${prov.g}, ${prov.b}, 0.25)`;
+                    }
+                } else if (currentMapMode === 'physical') {
+                    // Tryb stylowego "papierowego" terenu
+                    ctx.fillStyle = prov.nation !== 'none' ? '#1e293b' : '#334155';
+                }
+
+                // Rysujemy polygony prowincji (w tym wyspy)
+                for (let poly of prov.polygons) {
+                    ctx.beginPath();
+                    ctx.moveTo(poly[0].x, poly[0].y);
+                    for (let j = 1; j < poly.length; j++) {
+                        ctx.lineTo(poly[j].x, poly[j].y);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Rysowanie cienkich czarnych granic
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 0.5 / scale; // Stała grubość granic na ekranie przy zoomowaniu
+                    ctx.stroke();
+                }
+            }
+
+            // Podświetlenie najechanego (hover) prowincji
+            if (hoveredProvince) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+                for (let poly of hoveredProvince.polygons) {
+                    ctx.beginPath();
+                    ctx.moveTo(poly[0].x, poly[0].y);
+                    for (let j = 1; j < poly.length; j++) {
+                        ctx.lineTo(poly[j].x, poly[j].y);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            // Podświetlenie wybranego prowincji (Złote, grube obramowanie)
+            if (selectedProvince) {
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2.5 / scale;
+                ctx.shadowColor = '#f59e0b';
+                ctx.shadowBlur = 10;
+                for (let poly of selectedProvince.polygons) {
+                    ctx.beginPath();
+                    ctx.moveTo(poly[0].x, poly[0].y);
+                    for (let j = 1; j < poly.length; j++) {
+                        ctx.lineTo(poly[j].x, poly[j].y);
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+                ctx.shadowBlur = 0; // Reset cienia
+            }
+
+            // Rysowanie nazw potęg/państw na środku ich prowincji
+            if (scale > 0.8) {
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#000000';
+                ctx.shadowBlur = 4;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Dostosowujemy czcionkę do zoomu
+                const fontSize = Math.max(7, Math.min(11, 8 / scale));
+                ctx.font = `bold ${fontSize}px sans-serif`;
+
+                for (let prov of provinceList) {
+                    if (prov.boundingBox.maxX < minViewX || prov.boundingBox.minX > maxViewX) continue;
+
+                    // Pokazujemy skróconą nazwę prowincji lub właściciela
+                    let text = prov.name;
+                    if (currentMapMode === 'political' && prov.nation !== 'none') {
+                        text = nations[prov.nation].name.substring(0, 8).toUpperCase();
+                    }
+                    ctx.fillText(text, prov.centerX, prov.centerY);
+                }
+                ctx.shadowBlur = 0;
+            }
+
+            ctx.restore();
+        }
+
+        // --- DETEKCJA KLIKNIĘĆ (Błyskawiczne O(1) dzięki buforowi koloru) ---
+        function getProvinceAtCoords(screenX, screenY) {
+            if (!originalImgData) return null;
+
+            // Przeliczamy współrzędne ekranowe na współrzędne wirtualne mapy
+            const mapX = (screenX - offsetX) / scale;
+            const mapY = (screenY - offsetY) / scale;
+
+            // Przeliczamy na piksele oryginalnego obrazu (dzielimy przez scaleFactor = 8)
+            const origX = Math.floor(mapX / scaleFactor);
+            const origY = Math.floor(mapY / scaleFactor);
+
+            if (origX < 0 || origX >= originalImgWidth || origY < 0 || origY >= originalImgHeight) {
+                return null;
+            }
+
+            const idx = (origY * originalImgWidth + origX) * 4;
+            const r = originalImgData.data[idx];
+            const g = originalImgData.data[idx+1];
+            const b = originalImgData.data[idx+2];
+            const a = originalImgData.data[idx+3];
+
+            // Jeśli trafiliśmy w czarne obramowanie lub przeźroczystość - brak prowincji
+            if (a < 50 || (r === 0 && g === 0 && b === 0)) return null;
+
+            const hexKey = rgbToHex(r, g, b);
+            return provinces[hexKey] || null;
+        }
+
+        // --- INTERAKCJA MYSZY I GESTÓW (ZOOM & PAN) ---
+        function setupInteractions() {
+            // Przesunięcia widoku i interakcja
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                dragStartX = e.clientX - offsetX;
+                dragStartY = e.clientY - offsetY;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                // Przesuwanie mapy
+                if (isDragging) {
+                    offsetX = e.clientX - dragStartX;
+                    offsetY = e.clientY - dragStartY;
+                    draw();
+                } else {
+                    // Detekcja hover prowincji
+                    const prevHover = hoveredProvince;
+                    hoveredProvince = getProvinceAtCoords(mouseX, mouseY);
+                    
+                    if (hoveredProvince) {
+                        document.getElementById('status-hover').innerText = `${hoveredProvince.name} (${nations[hoveredProvince.nation].name})`;
+                    } else {
+                        document.getElementById('status-hover').innerText = '-';
+                    }
+
+                    if (prevHover !== hoveredProvince) {
+                        draw();
+                    }
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Kliknięcie i malowanie prowincji
+            canvas.addEventListener('click', (e) => {
+                // Jeśli przesunęliśmy kursor o więcej niż 3 piksele podczas przeciągania, traktujemy to jako Pan, nie Klik
+                const dragDist = Math.hypot(e.clientX - lastMouseX, e.clientY - lastMouseY);
+                if (dragDist > 4) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                const clickedProv = getProvinceAtCoords(mouseX, mouseY);
+
+                if (clickedProv) {
+                    if (currentTool === 'select') {
+                        // Standardowy wybór prowincji
+                        selectedProvince = clickedProv;
+                        showProvinceDetails(clickedProv);
+                    } else if (currentTool === 'paint') {
+                        // Narzędzie malowania państwa
+                        paintProvince(clickedProv, activeNationId);
+                    }
+                    draw();
+                }
+            });
+
+            // Obsługa Zoom kółkiem myszy
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                const zoomIntensity = 0.12;
+                const wheel = e.deltaY < 0 ? 1 : -1;
+                const zoomFactor = Math.exp(wheel * zoomIntensity);
+
+                // Matematyka zoomu z zachowaniem punktu pod kursorem jako centrum
+                const mapX = (mouseX - offsetX) / scale;
+                const mapY = (mouseY - offsetY) / scale;
+
+                scale *= zoomFactor;
+                // Bezpieczne granice zoomu
+                scale = Math.max(0.1, Math.min(scale, 40));
+
+                offsetX = mouseX - mapX * scale;
+                offsetY = mouseY - mapY * scale;
+
+                document.getElementById('status-scale').innerText = `${Math.round(scale * 100)}%`;
+                draw();
+            }, { passive: false });
+        }
+
+        // Ręczne przyciski Zoom
+        function zoomMap(factor) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const mapX = (centerX - offsetX) / scale;
+            const mapY = (centerY - offsetY) / scale;
+
+            scale *= factor;
+            scale = Math.max(0.1, Math.min(scale, 40));
+
+            offsetX = centerX - mapX * scale;
+            offsetY = centerY - mapY * scale;
+
+            document.getElementById('status-scale').innerText = `${Math.round(scale * 100)}%`;
+            draw();
+        }
+
+        function resetView() {
+            if (virtualMapWidth === 0) return;
+            // Dopasowujemy mapę do dostępnego kontenera
+            const scaleX = canvas.width / virtualMapWidth;
+            const scaleY = canvas.height / virtualMapHeight;
+            scale = Math.min(scaleX, scaleY) * 0.95; // 95% dla marginesu
+
+            offsetX = (canvas.width - virtualMapWidth * scale) / 2;
+            offsetY = (canvas.height - virtualMapHeight * scale) / 2;
+
+            document.getElementById('status-scale').innerText = `${Math.round(scale * 100)}%`;
+            draw();
+        }
+
+        // --- ZARZĄDZANIE PAŃSTWAMI ---
+        function createNationManual(name, color) {
+            const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            nations[id] = {
+                id: id,
+                name: name,
+                color: color,
+                provincesCount: 0
+            };
+            return id;
+        }
+
+        function createNewNation() {
+            const nameInput = document.getElementById('new-nat-name');
+            const colorInput = document.getElementById('new-nat-color');
+            const name = nameInput.value.trim();
+            const color = colorInput.value;
+
+            if (!name) return;
+
+            const id = createNationManual(name, color);
+            nameInput.value = '';
+
+            updateNationsDropdown();
+            updateNationsList();
+            setActivePaintNation(id);
+        }
+
+        function deleteNation(id) {
+            if (id === 'none') return;
+            // Wszystkie prowincje wracają do ziemi niczyjej
+            for (let prov of provinceList) {
+                if (prov.nation === id) {
+                    prov.nation = 'none';
+                }
+            }
+            delete nations[id];
+            updateNationsDropdown();
+            updateNationsList();
+            if (selectedProvince && selectedProvince.nation === id) {
+                selectedProvince.nation = 'none';
+                showProvinceDetails(selectedProvince);
+            }
+            draw();
+        }
+
+        function updateNationsDropdown() {
+            const select = document.getElementById('prov-nation-select');
+            select.innerHTML = '';
+            
+            for (let nat of Object.values(nations)) {
+                const opt = document.createElement('option');
+                opt.value = nat.id;
+                opt.innerText = nat.name;
+                select.appendChild(opt);
+            }
+        }
+
+        function updateNationsList() {
+            // Przeliczanie prowincji dla każdego państwa
+            for (let nat of Object.values(nations)) {
+                nat.provincesCount = 0;
+            }
+            for (let prov of provinceList) {
+                if (nations[prov.nation]) {
+                    nations[prov.nation].provincesCount++;
+                }
+            }
+
+            const listContainer = document.getElementById('nations-list');
+            listContainer.innerHTML = '';
+
+            for (let nat of Object.values(nations)) {
+                if (nat.id === 'none') continue; // Ignorujemy ziemię nieznaną na liście interaktywnej
+
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-2.5 rounded border transition cursor-pointer ${activeNationId === nat.id ? 'bg-slate-800 border-amber-500' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}`;
+                div.onclick = () => setActivePaintNation(nat.id);
+
+                div.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <span class="w-4 h-4 rounded-full border border-black/40 flex-shrink-0" style="background-color: ${nat.color}"></span>
+                        <div class="truncate">
+                            <span class="font-semibold text-xs block text-slate-100">${nat.name}</span>
+                            <span class="text-[10px] text-slate-400">Prowincje: ${nat.provincesCount}</span>
+                        </div>
+                    </div>
+                    <button class="text-[10px] text-rose-400 hover:text-rose-300 font-bold px-2 py-1 hover:bg-rose-950/40 rounded transition" onclick="event.stopPropagation(); deleteNation('${nat.id}')">
+                        Usuń
+                    </button>
+                `;
+                listContainer.appendChild(div);
+            }
+        }
+
+        function setActivePaintNation(id) {
+            activeNationId = id;
+            updateNationsList();
+            if (currentTool === 'paint') {
+                document.getElementById('brush-status').innerText = `Malarz (${nations[id].name})`;
+                document.getElementById('brush-status').style.color = nations[id].color;
+            }
+        }
+
+        // --- AKTUALIZACJA SZCZEGÓŁÓW PROWINCJI ---
+        function showProvinceDetails(prov) {
+            document.getElementById('no-selection-msg').classList.add('hidden');
+            const details = document.getElementById('province-details');
+            details.classList.remove('hidden');
+
+            document.getElementById('prov-name-input').value = prov.name;
+            document.getElementById('prov-color-id').innerText = prov.id;
+            document.getElementById('prov-color-id').style.color = prov.id;
+            document.getElementById('prov-nation-select').value = prov.nation;
+
+            document.getElementById('stat-tax').innerText = prov.dev.tax;
+            document.getElementById('stat-prod').innerText = prov.dev.prod;
+            document.getElementById('stat-manpower').innerText = prov.dev.manpower;
+            
+            const total = prov.dev.tax + prov.dev.prod + prov.dev.manpower;
+            document.getElementById('total-dev').innerText = total;
+        }
+
+        function updateSelectedProvinceName(val) {
+            if (selectedProvince) {
+                selectedProvince.name = val;
+            }
+        }
+
+        function assignProvinceNation(nationId) {
+            if (selectedProvince) {
+                selectedProvince.nation = nationId;
+                updateNationsList();
+                draw();
+            }
+        }
+
+        function paintProvince(prov, nationId) {
+            prov.nation = nationId;
+            updateNationsList();
+        }
+
+        function adjustStat(type, amount) {
+            if (selectedProvince) {
+                selectedProvince.dev[type] = Math.max(1, selectedProvince.dev[type] + amount);
+                showProvinceDetails(selectedProvince);
+            }
+        }
+
+        // Generuje losową epicką nazwę w klimacie europejskim/fantasy
+        function generateLoreName() {
+            if (!selectedProvince) return;
+            const prefixes = ["Nowy ", "Górny ", "Dolny ", "Wielki ", "Święty ", "Ost-", "West-", "Nord-", "Süd-"];
+            const roots = ["Krak", "Warsz", "Gdań", "Wroc", "Pozn", "Berl", "Lond", "Paryż", "Wied", "Madryt", "Rzym", "Kij", "Mosk", "Sztok", "Prag"];
+            const suffixes = ["ów", "ice", "burg", "grad", "ia", "owo", "in", "by", "heim", "stadt", "shire", "fort"];
+
+            let name = "";
+            if (Math.random() < 0.25) name += prefixes[Math.floor(Math.random() * prefixes.length)];
+            name += roots[Math.floor(Math.random() * roots.length)];
+            name += suffixes[Math.floor(Math.random() * suffixes.length)];
+
+            document.getElementById('prov-name-input').value = name;
+            updateSelectedProvinceName(name);
+        }
+
+        // --- ZMIANA INTERFEJSU (TABS / TOOLS / MAPMODES) ---
+        function switchTab(tab) {
+            activeTab = tab;
+            document.getElementById('tab-prov').className = `flex-1 py-3 text-xs font-bold border-b-2 ${tab === 'province' ? 'border-amber-500 text-amber-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`;
+            document.getElementById('tab-nat').className = `flex-1 py-3 text-xs font-bold border-b-2 ${tab === 'nations' ? 'border-amber-500 text-amber-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`;
+
+            if (tab === 'province') {
+                document.getElementById('content-prov').classList.remove('hidden');
+                document.getElementById('content-nations').classList.add('hidden');
+            } else {
+                document.getElementById('content-prov').classList.add('hidden');
+                document.getElementById('content-nations').classList.remove('hidden');
+                updateNationsList();
+            }
+        }
+
+        function setActiveTool(tool) {
+            currentTool = tool;
+            document.getElementById('tool-select').className = tool === 'select' ? 'bg-amber-500 text-slate-950 font-semibold py-1.5 px-3 rounded text-xs transition shadow' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-1.5 px-3 rounded text-xs border border-slate-700 transition';
+            document.getElementById('tool-paint').className = tool === 'paint' ? 'bg-amber-500 text-slate-950 font-semibold py-1.5 px-3 rounded text-xs transition shadow' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-1.5 px-3 rounded text-xs border border-slate-700 transition';
+
+            const status = document.getElementById('brush-status');
+            if (tool === 'select') {
+                status.innerText = "Wskaźnik";
+                status.style.color = "#f59e0b";
+            } else {
+                status.innerText = `Malarz (${nations[activeNationId].name})`;
+                status.style.color = nations[activeNationId].color;
+            }
+        }
+
+        function setMapMode(mode) {
+            currentMapMode = mode;
+            document.getElementById('btn-mapmode-prov').className = mode === 'provinces' ? 'px-3 py-1.5 text-xs font-semibold rounded bg-amber-500 text-slate-950 transition' : 'px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white transition';
+            document.getElementById('btn-mapmode-pol').className = mode === 'political' ? 'px-3 py-1.5 text-xs font-semibold rounded bg-amber-500 text-slate-950 transition' : 'px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white transition';
+            document.getElementById('btn-mapmode-phys').className = mode === 'physical' ? 'px-3 py-1.5 text-xs font-semibold rounded bg-amber-500 text-slate-950 transition' : 'px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white transition';
+            draw();
+        }
+
+        // --- EKSPORT I IMPORT DANYCH SCENARIUSZA (JSON) ---
+        function exportScenario() {
+            const dataToExport = {
+                nations: nations,
+                provincesData: provinceList.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    nation: p.nation,
+                    dev: p.dev
+                }))
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "scenariusz_mapy.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function triggerImport() {
+            document.getElementById('import-input').click();
+        }
+
+        function importScenario(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    
+                    if (imported.nations) {
+                        nations = imported.nations;
+                    }
+                    if (imported.provincesData) {
+                        for (let pData of imported.provincesData) {
+                            if (provinces[pData.id]) {
+                                provinces[pData.id].name = pData.name;
+                                provinces[pData.id].nation = pData.nation;
+                                provinces[pData.id].dev = pData.dev;
+                            }
+                        }
+                    }
+
+                    updateNationsDropdown();
+                    updateNationsList();
+                    if (selectedProvince) showProvinceDetails(selectedProvince);
+                    draw();
+                    
+                    // Pokazujemy komunikat sukcesu za pomocą customowej notyfikacji w status barze
+                    document.getElementById('status-hover').innerText = "Scenariusz wczytany poprawnie!";
+                } catch (err) {
+                    document.getElementById('status-hover').innerText = "Błąd importu pliku JSON!";
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- POMOCNICZE FUNKCJE ---
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+
+        function showLoader(show, text = "", progress = 0) {
+            if (show) {
+                loader.classList.remove('opacity-0');
+                loader.classList.remove('pointer-events-none');
+                loaderStep.innerText = text;
+                loaderProgress.style.width = `${progress}%`;
+            } else {
+                loaderProgress.style.width = '100%';
+                setTimeout(() => {
+                    loader.classList.add('opacity-0');
+                    loader.classList.add('pointer-events-none');
+                }, 300);
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>

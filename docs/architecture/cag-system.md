@@ -1,6 +1,10 @@
 # Lurek2D — CAG System
 
-Source of truth for the Context Augmented Guidance layer: everything under `.github/` that customises how Copilot and other LLM agents work in this repository.
+## TL;DR
+
+- Source of truth for the Context Augmented Guidance layer: everything under `.github/` that customises how Copilot and other LLM agents work in this repository.
+
+
 
 The system prompt at [.github/copilot-instructions.md](../../.github/copilot-instructions.md) is a discovery index. This document is where agents and contributors come for full doctrine.
 
@@ -245,7 +249,7 @@ python tools/audit/cag_persona_matrix.py --format markdown
 
 ### Editing the system prompt
 
-1. Keep ≤ 300 lines. Move prose to `docs/architecture/philosophy.md` or a skill.
+1. Keep ≤ 120 lines. Move prose to `docs/architecture/philosophy.md` or a skill.
 2. Binding constraints only. Each constraint has a stable code (T-xx, A-xx, B-xx, C-xx, TST-xx). Never renumber — add at end of the group.
 3. Cross-artifact sync rules: any time a file type changes, the sync table updates in the same commit.
 4. After any change: `python tools/validate/cag_validate.py` + `python tools/audit/cag_link_check.py --strict`. Both must exit 0.

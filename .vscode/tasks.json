@@ -274,6 +274,40 @@
             "problemMatcher": []
         },
 
+        // ─── 🧩 SNIPPETS ─────────────────────────────────────────────────────
+        {
+            "label": "Snippets: Generate VS Code JSON",
+            "detail": "🧩 Generate extensions/vscode/data/snippets.json from content/snippets markers.",
+            "type": "shell",
+            "command": "python tools/snippets/gen_vscode_snippets.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Snippets: Validate",
+            "detail": "🧩 Validate snippet marker structure and generated snippets JSON.",
+            "type": "shell",
+            "command": "python tools/validate/validate_snippets.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Snippets: Coverage",
+            "detail": "🧩 Generate module-level snippet coverage report from @snippet markers.",
+            "type": "shell",
+            "command": "python tools/audit/snippet_coverage.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Snippets: Pipeline",
+            "detail": "🧩 Run handcrafted snippet pipeline: generate VS Code JSON, validate, then coverage report.",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Snippets: Generate VS Code JSON",
+                "Snippets: Validate",
+                "Snippets: Coverage"
+            ],
+            "problemMatcher": []
+        },
+
         // ─── 📦 DIST ──────────────────────────────────────────────────────────
         // Package Windows: full dist build + UPX compress + ZIP → dist/ folder.
         // Repackage: skip cargo build, just re-run UPX + copy (fast iteration).

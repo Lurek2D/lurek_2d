@@ -1,5 +1,9 @@
 # ai
 
+## TL;DR
+
+- The `ai` module is a comprehensive and deeply integrated Game AI toolkit designed to provide robust, scalable, and highly configurable non-player character (NPC) behavior for Lurek2D.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `ai` module is a comprehensive and deeply integrated Game AI toolkit designed to provide robust, scalable, and highly configurable non-player character (NPC) behavior for Lurek2D. Positioned within the Feature Systems tier, the module is entirely pure CPU, headless-testable, and imposes zero rendering dependencies, making it suitable for server-side logic and highly optimized simulation loops. It imports only the `math` and `runtime` modules, maintaining strict architectural isolation.
+ Positioned within the Feature Systems tier, the module is entirely pure CPU, headless-testable, and imposes zero rendering dependencies, making it suitable for server-side logic and highly optimized simulation loops. It imports only the `math` and `runtime` modules, maintaining strict architectural isolation.
 
 At its core, the module offers a centralized `AIWorld` that manages registered agents and their execution. Individual `Agent` records maintain state, motion, and active decision models. To facilitate complex decision-making, the module includes over a dozen specialized subsystems. These include traditional reactive architectures like Finite State Machines (`FSM`) and Behavior Trees with a variety of composite, decorator, and leaf nodes, alongside advanced planning architectures such as Goal-Oriented Action Planning (`GOAP`) and Hierarchical Task Networks (`HTN`). For dynamic environments, Monte-Carlo Tree Search (`MCTS`) provides bounded lookahead, while `UtilityAI` allows agents to score candidate actions using response curves and considerations.
 
@@ -591,6 +595,8 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `AIWorld::add_agent` (`world.rs`): Add a named agent and return its index; returns an error on duplicate names.
 - `AIWorld::remove_agent` (`world.rs`): Remove an agent by name and rebuild the index map.
 - `AIWorld::get_agent_index` (`world.rs`): Return the index of an agent by name.
+- `AIWorld::agent` (`world.rs`): Return a reference to an agent by name.
+- `AIWorld::agent_mut` (`world.rs`): Return a mutable reference to an agent by name.
 - `AIWorld::agent_count` (`world.rs`): Return the number of agents in the world.
 - `AIWorld::global_blackboard` (`world.rs`): Return the shared global blackboard.
 - `AIWorld::global_blackboard_mut` (`world.rs`): Return the shared global blackboard mutably.

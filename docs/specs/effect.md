@@ -1,5 +1,9 @@
 # effect
 
+## TL;DR
+
+- The `effect` module is a comprehensive Platform Services component responsible for the engine's post-processing and screen-space visual effects pipeline.
+
 ## General Info
 
 - Module group: `Platform Services`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `effect` module is a comprehensive Platform Services component responsible for the engine's post-processing and screen-space visual effects pipeline. It provides developers with the tools to significantly enhance the visual fidelity of their games through composable, full-screen shaders and overlays. The core of this pipeline is the `PostFxStack`, which manages an ordered list of `PostFxEffect` instances. These effects process the rendered frame buffer sequentially before it is presented to the screen. The built-in effects catalog is extensive, offering varied blur algorithms (Gaussian, box, radial), bloom (combining thresholding, blurring, and additive blending), LUT-based color grading, lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation. Custom shader passes are also fully supported via explicit shader handles.
+ It provides developers with the tools to significantly enhance the visual fidelity of their games through composable, full-screen shaders and overlays. The core of this pipeline is the `PostFxStack`, which manages an ordered list of `PostFxEffect` instances. These effects process the rendered frame buffer sequentially before it is presented to the screen. The built-in effects catalog is extensive, offering varied blur algorithms (Gaussian, box, radial), bloom (combining thresholding, blurring, and additive blending), LUT-based color grading, lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation. Custom shader passes are also fully supported via explicit shader handles.
 
 Operating parallel to the shader pipeline is the `Overlay` controller. It manages screen-space, CPU-driven visual states that overlay the world, such as ambient lighting tints driven by a time-of-day curve (dawn, day, dusk, night) and complex weather particle simulations (rain, snow, hail, dust, leaves, ash, pollen). The `Overlay` system also handles instantaneous atmospheric triggers, including screen flashes, camera shakes with deterministic PRNG offsets, lightning flashes, and fade-in/fade-out transitions. A specialized `WaterOverlay` adds animated water surface distortion with configurable amplitude and depth-based color shifting.
 
@@ -168,6 +172,9 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 - `Overlay::get_shake_offset` (`overlay.rs`): Returns the current camera shake offset.
 - `Overlay::is_active` (`overlay.rs`): Returns whether any overlay subsystem is currently enabled or animating.
 - `Overlay::clear` (`overlay.rs`): Restores every overlay subsystem to its default inactive state.
+- `Overlay::pull_ambient_from_light` (`overlay.rs`): Copies ambient color from the given light world ambient color into this overlay.
+- `Overlay::push_ambient_to_light` (`overlay.rs`): Copies this overlay ambient color into the given light world ambient color.
+- `Overlay::sync_ambient_with_light` (`overlay.rs`): Resolves overlay and light ambient colors using a named mode and writes both stores.
 - `Overlay::resize` (`overlay.rs`): Updates the overlay target dimensions.
 - `Overlay::get_width` (`overlay.rs`): Returns the overlay target width.
 - `Overlay::get_height` (`overlay.rs`): Returns the overlay target height.
@@ -276,7 +283,7 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 - `LOverlay:getLightningAlpha`: Returns the current lightning alpha.
 - `LOverlay:setAmbientEnabled`: Enables or disables overlay ambient color rendering.
 - `LOverlay:isAmbientEnabled`: Returns whether overlay ambient color rendering is enabled.
-- `LOverlay:setAmbientColor`: Sets overlay ambient RGBA color. This method is available to Lua scripts.
+- `LOverlay:setAmbientColor`: Sets the overlay ambient color from RGBA channels.
 - `LOverlay:getAmbientColor`: Returns overlay ambient RGBA color.
 - `LOverlay:pullAmbientFromLight`: Copies ambient color from the shared light world into this overlay.
 - `LOverlay:pushAmbientToLight`: Copies this overlay ambient color into the shared light world.
@@ -287,7 +294,7 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 - `LOverlay:isFogEnabled`: Returns whether overlay fog rendering is enabled.
 - `LOverlay:setFogDensity`: Sets overlay fog density. This method is available to Lua scripts.
 - `LOverlay:getFogDensity`: Returns overlay fog density. This method is available to Lua scripts.
-- `LOverlay:setFogColor`: Sets overlay fog RGBA color. This method is available to Lua scripts.
+- `LOverlay:setFogColor`: Sets the overlay fog color from RGBA channels.
 - `LOverlay:getFogColor`: Returns overlay fog RGBA color. This method is available to Lua scripts.
 - `LOverlay:setHeatHazeEnabled`: Enables or disables overlay heat haze rendering.
 - `LOverlay:isHeatHazeEnabled`: Returns whether overlay heat haze rendering is enabled.
@@ -407,6 +414,7 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 ## References
 
 - `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 

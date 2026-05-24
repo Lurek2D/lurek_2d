@@ -21,6 +21,7 @@
   - [mod.rs](#modrs)
   - [obj_loader.rs](#objloaderrs)
   - [postfx_pipeline.rs](#postfxpipeliners)
+  - [province_map_pipeline.rs](#provincemappipeliners)
   - [renderer.rs](#rendererrs)
   - [shader.rs](#shaderrs)
   - [shape.rs](#shapers)
@@ -71,7 +72,7 @@ wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua 
 
 ## 📋 Summary
 
-The `render` module is a core Platform Services tier subsystem that powers the entire visual output of Lurek2D. Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
+Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
 
 The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
 
@@ -101,12 +102,13 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 
 ### `font.rs`
 
-- Bundled Courier New bitmap atlases in regular and bold variants using `assets/fonts/font_*` and `fontb_*`.
-- Latin-1 coverage for 0x20..=0xFF plus terminal-symbol aliases for box-drawing, blocks, and arrows.
-- Runtime rasterisation of TTF/OTF bytes into the same atlas format used by the bundled fonts.
-- Glyph lookup returning UV coordinates, pixel metrics, per-glyph advance widths, and alias resolution.
-- Text measurement: total pixel width, line height with multiplier, ascent and descent.
-- Atlas dirty-tracking for lazy GPU texture upload.
+- Bitmap font atlas loading and runtime font rasterisation.
+- This module provides:
+- Bundled Courier New bitmap atlases in regular and bold variants.
+- Latin-1 coverage for 0x20..=0xFF.
+- Terminal-symbol aliases for 0x80..=0x9F and direct Unicode lookups.
+- Runtime rasterisation of TTF/OTF fonts into the same atlas format.
+- Glyph metrics, text measurement, and word wrapping.
 
 ### `gpu_renderer.rs`
 
@@ -171,9 +173,9 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 
 ### `province_map_pipeline.rs`
 
-- Fullscreen province-map shader pipeline for strategic/tactical map rendering.
-- Data bind group includes province id, border index, distance field, and storage buffers.
-- Uniform helper maps viewport and zoom-mode state to GPU shader inputs.
+- Dedicated fullscreen province-map GPU pipeline.
+- Binds province id texture, border index texture, distance field texture, and storage buffers.
+- Owns uniforms for viewport mapping and strategic/tactical mode selection.
 
 ### `renderer.rs`
 
@@ -5721,7 +5723,7 @@ Source: [image.lua](../blob/main/content/examples/image.lua)
 ```lua
 do
     local img = lurek.image.newImageData(1, 1)
-    print("is ImageData = " .. tostring(img:typeOf("ImageData")))
+    print("is ImageData = " .. tostring(img:typeOf("LImageData")))
 end
 ```
 

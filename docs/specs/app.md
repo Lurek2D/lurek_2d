@@ -1,5 +1,9 @@
 # app
 
+## TL;DR
+
+- The `app` module serves as the primary application lifecycle controller and integration point for Lurek2D, positioned at the top of the Edge/Integration tier.
+
 ## General Info
 
 - Module group: `Edge/Integration`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `app` module serves as the primary application lifecycle controller and integration point for Lurek2D, positioned at the top of the Edge/Integration tier. Its core responsibility is to orchestrate the engine's initialization, manage the central game loop, and mediate communication between hardware events, graphics presentation, and Lua script execution. The central component is `LurekApp`, which initializes all engine subsystems in strict dependency order, establishes the `wgpu` rendering surface, and assumes control of the `winit` event loop.
+ Its core responsibility is to orchestrate the engine's initialization, manage the central game loop, and mediate communication between hardware events, graphics presentation, and Lua script execution. The central component is `LurekApp`, which initializes all engine subsystems in strict dependency order, establishes the `wgpu` rendering surface, and assumes control of the `winit` event loop.
 
 During active execution, `LurekApp` drives the engine's frame lifecycle. Each frame, it advances the core `Clock` timing, polls hardware inputs (including keyboard, mouse, touch, and `gilrs`-driven gamepads), steps the physics simulation, and dispatches events to the active Lua environment via structured callbacks such as `load`, `update`, `draw`, and `keypressed`. The module implements safety boundaries around script execution using `lua_callbacks` wrappers, ensuring that unhandled Lua panics are caught and long-running scripts can be aborted via instruction-count timeouts before they freeze the application.
 
@@ -27,7 +31,6 @@ Additionally, `app` seamlessly manages development workflows with built-in hot-r
 - Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
 - Handles window events (keyboard, mouse, touch, gamepad, drag-drop, resize, focus).
 - Provides splash-screen and error-screen rendering paths when no game is loaded or a fatal occurs.
-- Renders fatal-screen text with runtime active/default fonts when available, with embedded-font fallback.
 - Owns hot-reload watchers for conf.toml, Lua scripts, and asset files with automatic restart.
 - Integrates gilrs for gamepad polling, force-feedback vibration, and axis/button callbacks.
 - Performs viewport letterbox/stretch/pixel scaling and automatic screenshot capture.
@@ -71,6 +74,7 @@ Additionally, `app` seamlessly manages development workflows with built-in hot-r
 - `RunState` (`enum`, `app.rs`): Tracks whether the engine is running normally, showing an error, or shutting down.
 - `LurekApp` (`struct`, `app.rs`): Lurek2D application state managed by the winit event loop.
 - `App` (`struct`, `app.rs`): Public entry point used to launch the engine with loaded configuration and optional startup error context. It is the outward-facing runtime shell around the real application lifecycle.
+- `AppRunOptions` (`struct`, `app.rs`): Startup options passed to the GUI/TUI/CLI application runner.
 - `DebugOverlay` (`struct`, `debug_overlay.rs`): Small runtime overlay for FPS and draw-call visibility. It is useful when changes affect per-frame diagnostics rather than the full devtools subsystem.
 - `ErrorScreen` (`struct`, `error_screen.rs`): Structured error presentation model that converts failures into readable render commands. It is the module's user-facing failure surface.
 - `SplashTexture` (`struct`, `splash_screen.rs`): Handle and dimensions for one splash texture uploaded to render texture storage.

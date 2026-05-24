@@ -1,5 +1,9 @@
 # runtime
 
+## TL;DR
+
+- The `runtime` module forms the very foundation of the Lurek2D dependency graph.
+
 ## General Info
 
 - Module group: `Core Runtime`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `runtime` module forms the very foundation of the Lurek2D dependency graph. As a Core Runtime tier component, it defines the essential shared state, engine configuration, unified error handling, and structured logging mechanisms upon which every other engine subsystem relies. At the heart of the module is `SharedState`, a central, mutable state container accessed via `RefCell` borrows. It orchestrates cross-module communication during a frame, tracking window state, input aggregation, timing profiles, asynchronous file I/O (GameFS), render pipeline configurations, and managing slot-map resource pools (textures, fonts, shaders, particle systems, etc.) while enforcing memory budgets via LRU eviction.
+ As a Core Runtime tier component, it defines the essential shared state, engine configuration, unified error handling, and structured logging mechanisms upon which every other engine subsystem relies. At the heart of the module is `SharedState`, a central, mutable state container accessed via `RefCell` borrows. It orchestrates cross-module communication during a frame, tracking window state, input aggregation, timing profiles, asynchronous file I/O (GameFS), render pipeline configurations, and managing slot-map resource pools (textures, fonts, shaders, particle systems, etc.) while enforcing memory budgets via LRU eviction.
 
 Configuration is driven by the `Config` struct, which parses the `conf.toml` file at startup. It dictates window settings, renderer preferences, performance caps (like Lua callback timeouts), and feature-toggles (`ModulesConfig`) that selectively load or auto-disable engine subsystems based on prerequisites. The runtime actively supports hot-reloading for many configuration values, allowing live tweaks to target FPS, physics ticks, log levels, and viewport settings without restarting the game. The module also robustly handles different startup modes (`gui`, `tui`, `headless`, `cli`), with the headless path specifically designed for script automation and CI testing without requiring window or audio contexts.
 
@@ -69,6 +73,9 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - `FromStr` accepts any casing and returns a typed parse error that names the rejected token.
 - Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
 
+### `os.rs`
+- OS-level utilities including clipboard, system info, environment variables, and platform detection.
+
 ### `resource_keys.rs`
 - Typed slotmap keys for every engine resource pool (textures, fonts, sounds, particles, etc.).
 - Each key is a lightweight handle safe to store in Lua userdata and pass across frames.
@@ -105,6 +112,7 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - `MessageCatalog` (`struct`, `messages.rs`): Immutable map from stable message ID (e.g.
 - `RuntimeMode` (`enum`, `mode.rs`): Supported startup modes: `gui`, `tui`, `headless`, and `cli`.
 - `RuntimeModeParseError` (`struct`, `mode.rs`): Error for invalid mode tokens.
+- `PowerState` (`enum`, `os.rs`): Describes the current power supply state of the host device.
 - `TextureKey` (`struct`, `resource_keys.rs`): Key for texture resources stored in SharedState.
 - `FontKey` (`struct`, `resource_keys.rs`): Key for font resources stored in SharedState.
 - `CanvasKey` (`struct`, `resource_keys.rs`): Key for canvas off-screen render targets.
@@ -157,6 +165,13 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - `catalog` (`messages.rs`): Returns a reference to the global [`MessageCatalog`], or `None` if [`init`] has not been called yet.
 - `RuntimeMode::as_str` (`mode.rs`): Return the lowercase config and CLI token for this mode.
 - `RuntimeModeParseError::value` (`mode.rs`): Return the invalid token supplied by the caller.
+- `get_os_name` (`os.rs`): Returns the current operating system name.
+- `get_processor_count` (`os.rs`): Returns the number of logical processors available on the host system.
+- `get_memory_size` (`os.rs`): Returns total physical memory in megabytes reported by the operating system.
+- `open_url` (`os.rs`): Opens a URL in the default system browser.
+- `get_preferred_locales` (`os.rs`): Returns the user's preferred locale list from the operating system, falling back to `"en_US"` if unavailable.
+- `PowerState::as_str` (`os.rs`): Returns the Lua-visible power state string.
+- `get_power_info` (`os.rs`): Returns the current power state, battery percentage (0-100), and estimated seconds remaining.
 - `SharedState::new` (`shared_state.rs`): Create a new shared state with initial window dimensions, title, and game directory.
 - `SharedState::step_timer` (`shared_state.rs`): Advance the frame clock and update delta time, FPS, and total time.
 - `SharedState::touch_texture` (`shared_state.rs`): Mark a texture as recently used for LRU eviction tracking.
@@ -165,6 +180,8 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - `SharedState::resource_memory_stats` (`shared_state.rs`): Compute current resource memory usage across all asset types.
 - `SharedState::request_async_load` (`shared_state.rs`): Submit an asynchronous file read and return a poll handle.
 - `SharedState::request_async_write` (`shared_state.rs`): Submit an asynchronous file write and return a poll handle.
+- `SharedState::set_configured_default_font` (`shared_state.rs`): Update the configured built-in default render font.
+- `SharedState::set_active_builtin_font` (`shared_state.rs`): Select a built-in font by point size and make it the active render font.
 - `SharedState::load_default_fonts` (`shared_state.rs`): Load all built-in font sizes and set the default active font.
 - `SharedState::poll_async_load` (`shared_state.rs`): Check the status of a pending asynchronous read operation.
 - `SharedState::poll_async_write` (`shared_state.rs`): Check the status of a pending asynchronous write operation.

@@ -1,5 +1,9 @@
 # terminal
 
+## TL;DR
+
+- The `terminal` module is a sophisticated Feature Systems tier component that provides a full-featured character-grid terminal emulator within the engine.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `terminal` module is a sophisticated Feature Systems tier component that provides a full-featured character-grid terminal emulator within the engine. Originally designed to host the in-game developer console, it functions as a highly versatile UI surface capable of rendering classic ASCII interfaces, roguelike displays, and complex debugging tools. At its foundation, the `Terminal` struct manages a fixed-size grid of cells (`TCell`), each storing a character codepoint alongside independent foreground and background colors. The module implements a robust ANSI escape sequence parser (`ansi.rs`), capable of decoding standard 8-color palettes, 256-color xterm indexes, and 24-bit true-color RGB combinations, enabling seamless integration with existing terminal-based output streams and logging tools.
+ Originally designed to host the in-game developer console, it functions as a highly versatile UI surface capable of rendering classic ASCII interfaces, roguelike displays, and complex debugging tools. At its foundation, the `Terminal` struct manages a fixed-size grid of cells (`TCell`), each storing a character codepoint alongside independent foreground and background colors. The module implements a robust ANSI escape sequence parser (`ansi.rs`), capable of decoding standard 8-color palettes, 256-color xterm indexes, and 24-bit true-color RGB combinations, enabling seamless integration with existing terminal-based output streams and logging tools.
 
 Beyond raw text rendering, the terminal provides a surprisingly capable immediate-mode widget framework (`widget.rs`). Developers can compose interactive interfaces directly on the character grid using pre-built elements like Buttons, Labels, TextBoxes, Lists, and Panels. These widgets handle their own bounds checking, input routing, and rendering (complete with ASCII border drawing and shaded backgrounds). To support command-line workflows, the module includes a `CompletionEngine` for context-aware tab completion, a persistent command history buffer for quick recall, and a scrollback buffer that gracefully evicts the oldest lines when capacity is reached. For specialized display needs—such as the interactive Lua REPL (`lurek.repl`)—the module integrates a regex-driven `highlighter.rs` that applies token-based syntax coloring to code inputs in real-time.
 
@@ -50,7 +54,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 
 ### `render.rs`
 - Render the composited terminal cell grid as a list of `RenderCommand` draw calls.
-- Rasterise the composited grid into an `ImageData` thumbnail for previews.
+- Rasterise the composited grid into an `ImageData` thumbnail for previews and tests.
 - Both paths include terminal widgets and map foreground/background colours to output.
 
 ### `terminal_state.rs`
@@ -60,7 +64,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - Scrollback buffer: capped line history with offset-based windowed retrieval.
 - Command history: push/prev/next navigation for console-style input recall.
 - Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application.
-- Render output: composited cell buffer flattened into batched text and background `RenderCommand` lists for the renderer.
+- Render output: composited cell buffer flattened into batched background and text `RenderCommand` lists for the renderer.
 - Border rendering: single, double, and ASCII frame styles with optional title text.
 - Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
 
@@ -106,8 +110,8 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - `CompletionEngine::next_completion` (`completion.rs`): Advance to the next candidate matching `prefix` and return it; returns `None` when no matches exist.
 - `CompletionEngine::reset` (`completion.rs`): Reset the cycling position without clearing candidates.
 - `highlight_spans` (`highlighter.rs`): Splits `text` into colored spans by matching `rules` left-to-right.
-- `Terminal::generate_render_commands` (`render.rs`): Build a `RenderCommand` list for the composited grid using `font_key`, `char_w`/`char_h` cell dimensions, and `scale`.
-- `Terminal::draw_to_image` (`render.rs`): Rasterise the composited grid into a `width`×`height` `ImageData` thumbnail; backgrounds and non-space cells are drawn as solid colored rectangles.
+- `Terminal::generate_render_commands` (`render.rs`): Build a `RenderCommand` list for the current cell grid using `font_key`, `char_w`/`char_h` cell dimensions, and `scale`.
+- `Terminal::draw_to_image` (`render.rs`): Rasterise the cell grid into a `width`×`height` `ImageData` thumbnail; non-space cells are drawn as solid colored rectangles.
 - `Terminal::new` (`terminal_state.rs`): Create a new `Terminal` with a blank grid of `cols`×`rows` cells, clamped to `MAX_COLS`/`MAX_ROWS`.
 - `Terminal::set` (`terminal_state.rs`): Set cell at 1-based `(col, row)` to `ch` with `fg` and `bg` colors; silently ignored when out of bounds.
 - `Terminal::get` (`terminal_state.rs`): Return the cell at 1-based `(col, row)`; returns a default cell when out of bounds.
@@ -146,7 +150,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - `Terminal::resize` (`terminal_state.rs`): Resize the grid to `new_cols`×`new_rows`, preserving the overlapping content region.
 - `Terminal::widget_count` (`terminal_state.rs`): Return the number of registered widgets.
 - `Terminal::find_by_tag` (`terminal_state.rs`): Return the first widget whose `base.tag` matches `tag`, or `None`.
-- `Terminal::build_render_commands` (`terminal_state.rs`): Build a batched `RenderCommand` list for the composited cell grid at pixel origin `(ox, oy)` with `cell_w`/`cell_h`, background runs, and `font_key`.
+- `Terminal::build_render_commands` (`terminal_state.rs`): Build a batched `RenderCommand` list for the composited cell grid at pixel origin `(ox, oy)` with `cell_w`/`cell_h` and `font_key`.
 - `Terminal::set_default_colors` (`terminal_state.rs`): Apply `fg` and `bg` to every cell in the grid without changing character codepoints.
 - `Terminal::print_colored` (`terminal_state.rs`): Write `text` with explicit `fg` and optional `bg` starting at 1-based `(col, row)`.
 - `Terminal::set_scrollback_cap` (`terminal_state.rs`): Set the scrollback line cap; trims oldest lines immediately if the buffer exceeds the new limit.
@@ -200,7 +204,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - Namespace: `lurek.terminal`
 
 ### Module Functions
-- `lurek.terminal.newTerminal`: Creates a new terminal emulator grid with the given column and row count.
+- `lurek.terminal.newTerminal`: Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
 - `lurek.terminal.newLabel`: Creates a new label widget that displays static text at the given cell position.
 - `lurek.terminal.newButton`: Creates a new clickable button widget with the given position, size, and label text.
 - `lurek.terminal.newTextBox`: Creates a new single-line text input widget at the given position with a fixed width.
@@ -245,12 +249,12 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - `LTerminal:keypressed`: Forwards a key press event to the terminal for widget input processing.
 - `LTerminal:textinput`: Forwards a text input event to the terminal for character entry into focused widgets.
 - `LTerminal:mousepressed`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
-- `LTerminal:render`: Renders the terminal grid and all attached widgets by emitting render commands at the given screen position; also stages a window size matching the terminal grid and active cell size.
-- `LTerminal:setFont`: Selects the nearest built-in bitmap font by pixel height for terminal cell rendering.
-- `LTerminal:setCellSize`: Overrides the cell width and height used for rendering this terminal grid.
-- `LTerminal:resetCellSize`: Removes any custom cell size override, reverting to the size derived from the active font.
-- `LTerminal:getCellSize`: Returns the active terminal cell width and height in pixels, using a custom override or font metrics.
-- `LTerminal:autoResize`: Requests the window to resize so it exactly fits the terminal grid at the active cell size.
+- `LTerminal:render`: Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
+- `LTerminal:setFont`: Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
+- `LTerminal:setCellSize`: Overrides the cell width and height used for rendering this terminal grid and refits the window.
+- `LTerminal:resetCellSize`: Removes any custom cell size override, reverting to the active font metrics and refitting the window.
+- `LTerminal:getCellSize`: Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+- `LTerminal:autoResize`: Requests the window to resize so it exactly fits the terminal grid at the current cell size.
 - `LTerminal:type`: Returns the type name string "LTerminal".
 - `LTerminal:typeOf`: Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
 
@@ -268,7 +272,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - `LWidget:setText`: Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
 - `LWidget:getText`: Returns the current text content of a label, button, or text box widget.
 - `LWidget:setColor`: Sets the foreground color of the widget as RGBA components (0-1 range).
-- `LWidget:getColor`: Returns the current RGBA color assigned to this widget.
+- `LWidget:getColor`: Returns the foreground color of the widget as RGBA components.
 - `LWidget:setOnClick`: Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
 - `LWidget:setMaxLength`: Sets the maximum number of characters allowed in a text box widget.
 - `LWidget:getMaxLength`: Returns the maximum character limit of a text box widget.

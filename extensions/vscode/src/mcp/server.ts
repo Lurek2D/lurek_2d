@@ -203,6 +203,8 @@ function buildToolRegistry(
     handleRunLuaTest,
     handleCheckBuild,
     handleGetLogs,
+    handleRagSearch,
+    handleRagBuildIndex,
   } = require("./tools");
 
   const registry = new Map<string, ToolHandler>();
@@ -212,6 +214,8 @@ function buildToolRegistry(
   registry.set("lurek2d.runLuaTest", handleRunLuaTest(workspaceRoot));
   registry.set("lurek2d.checkBuild", handleCheckBuild(workspaceRoot));
   registry.set("lurek2d.getLogs", handleGetLogs(workspaceRoot));
+  registry.set("lurek2d.ragSearch", handleRagSearch(workspaceRoot));
+  registry.set("lurek2d.ragBuildIndex", handleRagBuildIndex(workspaceRoot));
   return registry;
 }
 

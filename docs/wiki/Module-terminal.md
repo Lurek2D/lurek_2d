@@ -46,7 +46,7 @@ Character-cell text-mode terminal for roguelikes, debug consoles, ASCII renderin
 
 ## 📋 Summary
 
-The `terminal` module is a sophisticated Feature Systems tier component that provides a full-featured character-grid terminal emulator within the engine. Originally designed to host the in-game developer console, it functions as a highly versatile UI surface capable of rendering classic ASCII interfaces, roguelike displays, and complex debugging tools. At its foundation, the `Terminal` struct manages a fixed-size grid of cells (`TCell`), each storing a character codepoint alongside independent foreground and background colors. The module implements a robust ANSI escape sequence parser (`ansi.rs`), capable of decoding standard 8-color palettes, 256-color xterm indexes, and 24-bit true-color RGB combinations, enabling seamless integration with existing terminal-based output streams and logging tools.
+Originally designed to host the in-game developer console, it functions as a highly versatile UI surface capable of rendering classic ASCII interfaces, roguelike displays, and complex debugging tools. At its foundation, the `Terminal` struct manages a fixed-size grid of cells (`TCell`), each storing a character codepoint alongside independent foreground and background colors. The module implements a robust ANSI escape sequence parser (`ansi.rs`), capable of decoding standard 8-color palettes, 256-color xterm indexes, and 24-bit true-color RGB combinations, enabling seamless integration with existing terminal-based output streams and logging tools.
 
 Beyond raw text rendering, the terminal provides a surprisingly capable immediate-mode widget framework (`widget.rs`). Developers can compose interactive interfaces directly on the character grid using pre-built elements like Buttons, Labels, TextBoxes, Lists, and Panels. These widgets handle their own bounds checking, input routing, and rendering (complete with ASCII border drawing and shaded backgrounds). To support command-line workflows, the module includes a `CompletionEngine` for context-aware tab completion, a persistent command history buffer for quick recall, and a scrollback buffer that gracefully evicts the oldest lines when capacity is reached. For specialized display needs—such as the interactive Lua REPL (`lurek.repl`)—the module integrates a regex-driven `highlighter.rs` that applies token-based syntax coloring to code inputs in real-time.
 
@@ -93,7 +93,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 ### `render.rs`
 
 - Render the composited terminal cell grid as a list of `RenderCommand` draw calls.
-- Rasterise the composited grid into an `ImageData` thumbnail for previews.
+- Rasterise the composited grid into an `ImageData` thumbnail for previews and tests.
 - Both paths include terminal widgets and map foreground/background colours to output.
 
 ### `terminal_state.rs`
@@ -104,7 +104,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - Scrollback buffer: capped line history with offset-based windowed retrieval.
 - Command history: push/prev/next navigation for console-style input recall.
 - Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application.
-- Render output: composited cell buffer flattened into batched text and background `RenderCommand` lists for the renderer.
+- Render output: composited cell buffer flattened into batched background and text `RenderCommand` lists for the renderer.
 - Border rendering: single, double, and ASCII frame styles with optional title text.
 - Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
 

@@ -39,13 +39,13 @@ This page is generated from the current module specs, examples, and Lua API data
 
 ## 🎯 Purpose
 
-The html module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D.
+It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages.
 
 [⬆ back to top](#table-of-contents)
 
 ## 📋 Summary
 
-The `html` module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D. It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element.
+It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element.
 
 Layout computation is driven by a flexible vertical block layout engine with robust flexbox support, accurately calculating an `HtmlRect` for every DOM node. Instead of rendering pixels directly, the module translates the computed layout into a renderer-agnostic list of `HtmlDrawCommand` instructions (rectangles, text, borders, images, and clipping regions). The engine includes a comprehensive CSS color parser that understands hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and an extended set of named color keywords.
 
@@ -1240,7 +1240,7 @@ Source: [html.lua](../blob/main/content/examples/html.lua)
 ```lua
 do
     local doc = lurek.html.newDocument()
-    print("is HtmlDocument = " .. tostring(doc:typeOf("HtmlDocument")))
+    print("is HtmlDocument = " .. tostring(doc:typeOf("LHtmlDocument")))
 end
 ```
 
@@ -2176,7 +2176,7 @@ Source: [html.lua](../blob/main/content/examples/html.lua)
 do
     local doc = lurek.html.newDocument("<div>X</div>")
     local el = doc:getRoot()
-    print("is HtmlElement = " .. tostring(el:typeOf("HtmlElement")))
+    print("is HtmlElement = " .. tostring(el:typeOf("LHtmlElement")))
 end
 ```
 

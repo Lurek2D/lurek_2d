@@ -47,7 +47,7 @@ Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the gam
 
 ## 📋 Summary
 
-The `filesystem` module resides in the Core Runtime tier and implements `GameFS`, a strictly sandboxed virtual filesystem. It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
+It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
 
 Beyond security, the module offers a robust suite of filesystem operations. It supports synchronous and asynchronous file reads/writes, directory creation, flat and recursive listing, glob matching, and file copy/move operations. A notable feature is its support for virtual mount overlays: directories or read-only `.zip` archives (`ZipMount`) can be layered into the virtual filesystem at specified prefixes. When a file is requested, `GameFS` queries these layered mounts seamlessly, enabling modding, content patching, and asset packing without altering game logic.
 
@@ -94,7 +94,6 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
 - Recursive and flat directory listing with merged overlay results.
 - File handle creation, copy, move, and remove operations within the save boundary.
-- DataFrame file persistence storage trait implementation that delegates to existing GameFS read/write methods.
 
 ### `watcher.rs`
 
@@ -1717,7 +1716,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 ```lua
 do
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    print("is FileData = " .. tostring(fd:typeOf("FileData")))
+    print("is FileData = " .. tostring(fd:typeOf("LFileData")))
 end
 ```
 
@@ -2043,7 +2042,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 ```lua
 do
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    print("is FileHandle = " .. tostring(fh:typeOf("FileHandle")))
+    print("is FileHandle = " .. tostring(fh:typeOf("LFileHandle")))
     fh:close()
 end
 ```
@@ -2257,7 +2256,7 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 ```lua
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("is ZipMount = " .. tostring(zip:typeOf("ZipMount")))
+    print("is ZipMount = " .. tostring(zip:typeOf("LZipMount")))
 end
 ```
 

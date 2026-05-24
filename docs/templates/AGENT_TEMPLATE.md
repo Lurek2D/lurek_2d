@@ -5,6 +5,11 @@ tools: [read, search, execute, edit]
 ---
 # Agent-Name
 
+## TL;DR
+
+- TODO: Write summary.
+
+
 ## Mission
 - Own one clear responsibility.
 - State the finish line for that responsibility.

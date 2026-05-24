@@ -1,5 +1,9 @@
 # docs
 
+## TL;DR
+
+- The `docs` module is an Edge/Integration tier component responsible for maintaining the engine's runtime documentation catalog.
+
 ## General Info
 
 - Module group: `Edge/Integration`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `docs` module is an Edge/Integration tier component responsible for maintaining the engine's runtime documentation catalog. By scanning and reflecting Lua API metadata upon startup, it provides robust, programmatic access to function signatures, parameter descriptions, return types, and usage examples. The foundational structure of this module is the `DocEntry`, which securely encapsulates the canonical details of one documented API item—from its prose description to structured parameter and return metadata. These entries are efficiently stored and aggregated within an in-memory `Catalog`, fully searchable and indexable by namespace path.
+ By scanning and reflecting Lua API metadata upon startup, it provides robust, programmatic access to function signatures, parameter descriptions, return types, and usage examples. The foundational structure of this module is the `DocEntry`, which securely encapsulates the canonical details of one documented API item—from its prose description to structured parameter and return metadata. These entries are efficiently stored and aggregated within an in-memory `Catalog`, fully searchable and indexable by namespace path.
 
 A key capability of the module is its rigorous validation and quality-reporting system. By comparing the populated catalog against the live, reflected `lurek` API surface, it accurately generates `ValidationReport` and `QualityReport` structures. These tools score documentation completeness, assign letter grades, and identify missing, phantom, or incomplete entries, ensuring that the engine's documentation quality remains consistently high.
 
@@ -122,7 +126,6 @@ Beyond in-engine diagnostics, the `docs` module drives Lurek2D's IDE integration
 - `lurek.docs.exportCheatsheet`: Writes a compact text cheatsheet from catalog entries.
 - `lurek.docs.schema`: Builds a schema validator from Lua table rules.
 - `lurek.docs.schemaFromToml`: Builds a schema validator from TOML schema text.
-	TOML schema text accepts rule tables under either `[fields.<name>]` or `[rules.<name>]`; both forms populate the same schema rule set.
 - `lurek.docs.reflectLive`: Reflects live `lurek` module tables into plain name and type rows.
 - `lurek.docs.reflectTable`: Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
 

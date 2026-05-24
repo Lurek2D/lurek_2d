@@ -11,10 +11,14 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [border_index.rs](#borderindexrs)
   - [borders.rs](#bordersrs)
   - [cache.rs](#cachers)
+  - [distance_field.rs](#distancefieldrs)
+  - [economy.rs](#economyrs)
   - [events.rs](#eventsrs)
   - [gpu_bridge.rs](#gpubridgers)
+  - [gpu_upload.rs](#gpuuploadrs)
   - [import.rs](#importrs)
   - [labels.rs](#labelsrs)
   - [map_modes.rs](#mapmodesrs)
@@ -51,31 +55,29 @@ Engine-native province runtime: topology, style state, revisioned deltas, geomet
 
 The `province` module is an advanced Edge/Integration tier subsystem that provides a complete, engine-native province map runtime, tailor-made for grand strategy and map-painting games in Lurek2D. Operating independently of tilemaps, it manages irregular, pixel-perfect regions using a `ProvinceRegistry`. This registry acts as the central source of truth, storing metadata for each province—including ownership, terrain type, border styles, capital coordinates, label anchors, and arbitrary string attributes. At its core, the registry maintains a `ProvinceGraph` that tracks undirected adjacencies, allowing for rapid topological queries (e.g., neighbor enumeration) and sophisticated border classification (e.g., distinguishing land-land borders from coastlines or sea-sea boundaries).
 
+### `economy.rs` - Province economy state model with local stockpiles for population, food, and gold. - Monthly tick helpers for food demand, tax generation, growth, happiness pressure, and migration pressure. - Local-only monthly resolution that consumes and spends only provincial stockpiles. - Daily logistics planning for upstream gold and downstream food using adjacency shortest paths. - In-transit shipment model with day-by-day delivery to destination stockpiles.
+
 A standout feature of the module is its highly optimized rendering pipeline. To avoid the overhead of per-pixel evaluation at runtime, a `ProvinceGeometryCache` pre-computes horizontal cell spans, bounding boxes, and border line segments. These structures are packed into a `ProvinceGpuRecord` (a std430-friendly 32-byte payload) for direct GPU upload. Rendering is driven by customizable `ProvinceMapMode`s (such as Political, Terrain, or Visibility), mapping a `ProvinceStyle` to specific fill colors. The module handles viewport culling, screen-to-map transformations, and zoom-to-anchor logic, seamlessly generating render commands for solid fills, border strokes, capital icons, and shadowed text labels.
 
-The border pipeline now supports per-adjacency pair style overrides with optional color, custom thickness, and semantic flags (`country`, `alliance`, `war`, `truce`). Rendering can run in strategic or tactical mode (auto-selected by zoom threshold or set explicitly), and tactical mode can emit roads between capitals of visible adjacent provinces.
+### Economy Loop Contract
 
-The import pipeline is equally robust, automatically converting color-coded PNG maps and RGB CSV metadata into structured registry data. It includes a marker sanitization step that strips out capital (near-white) and label (magenta) pixels, reassigning them to the correct province while computing optimal label line vectors via expanding-ring neighbor searches. To support game logic, the registry employs a monotonic revision counter and change-stream (`get_changes_since`), emitting fine-grained deltas whenever a province's color, terrain, or fog state mutates. Exposed entirely through the `lurek.province.*` API, this module provides the complex topological, visual, and event-driven infrastructure required for high-performance interactive cartography.
-
-### Visibility Rendering Contract
-
-`visibility_state = 0`: hidden. The renderer skips province fill, border, capital marker, and label. - 
+`population`, `food_stockpile`, and `gold_stockpile` are province-local state. - Monthly economy resolution and daily shipment transport are separate operations. - Upkeep and construction spending consume only local gold. - Food consumption consumes only local food. - Shipment launch is valid only when the origin node physically holds the requested cargo. - Gold flow is planned upstream (province
 
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
+
+### `border_index.rs`
+
+- Precompute border-pair index map from province id grid.
+- Assigns a stable u16 pair id for each detected border pixel.
+- Optional dilation expands border coverage for thick styled borders.
 
 ### `borders.rs`
 
 - Classify shared borders between adjacent provinces by terrain type.
 - Map land/water combinations to discrete border classes (land-land, coast, sea-sea).
 - Provide a single pure function with no side effects for pipeline integration.
-
-### `border_index.rs`
-
-- Precompute a dense border-pair index map from province id pixels.
-- Assign stable `u16` pair ids for per-border pair lookup during rendering.
-- Optional dilation pass expands border coverage for thick per-pair styles.
 
 ### `cache.rs`
 
@@ -85,9 +87,16 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ### `distance_field.rs`
 
-- Multi-source BFS precompute of per-pixel distance to nearest province border.
-- Produces compact `u8` field for border shading or LOD logic.
-- Provides helper to build directly from `ProvinceRegistry` grid data.
+- Distance-from-border precompute for province pixels.
+- Multi-source BFS seeded from border pixels where neighboring province ids differ.
+- Produces a compact u8 field used by later shading or LOD passes.
+
+### `economy.rs`
+
+- Province economy domain model with local-only stockpiles (population, food, gold).
+- Monthly economy tick: food consumption, local upkeep, growth, happiness pressure, and tax.
+- Daily logistics planning: upstream gold, downstream food, and physical shipment movement.
+- No hidden empire-wide pool; all launches require cargo present at the origin node.
 
 ### `events.rs`
 
@@ -100,13 +109,12 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - GPU-uploadable province data bridge between registry and render pipeline.
 - Packs province style fields into a repr(C) record for direct buffer upload.
 - Builds sorted record arrays from the province registry for deterministic GPU ordering.
-- Builds border-style GPU records aligned to border-index pair ids for storage-buffer uploads.
 
 ### `gpu_upload.rs`
 
-- Creates and uploads province GPU textures for map id, border index, and distance field data.
-- Uses `R32Uint`, `R16Uint`, and `R8Unorm` formats for shader-friendly sampling paths.
-- Includes deterministic little-endian packers for integer texture upload buffers.
+- Province GPU upload helpers for id, border-index, and distance-field textures.
+- Consistent texture descriptors for `R32Uint`, `R16Uint`, and `R8Unorm` data.
+- Byte packing utilities used by upload paths and unit tests.
 
 ### `import.rs`
 
@@ -148,7 +156,6 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
 - Maintains a monotonic revision counter and ordered change log for incremental sync.
 - Supports border class overrides keyed by normalised province pair.
-- Supports per-pair border style overrides (optional color, thickness, semantic flags).
 - Stores arbitrary string key-value attributes per province via set_attr.
 
 ### `render.rs`
@@ -156,9 +163,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Province map rendering: convert registry data into a flat RenderCommand list.
 - Viewport culling based on screen bounds and zoom/pan transform.
 - Fill rendering via per-province span rectangles coloured by the active map mode.
-- Border rendering with class defaults plus per-pair style overrides.
-- Strategic vs tactical mode filtering for border detail.
-- Tactical road rendering between capitals of visible adjacent provinces.
+- Border rendering with colour classification (land-land, coast, sea-sea, special).
 - Capital dot markers and text labels with shadow offset.
 - Hover and selection highlight outlines for interactive feedback.
 
@@ -172,7 +177,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 ### `types.rs`
 
 - Core type definitions for the province map system.
-- ProvinceId alias, BorderClass enum, BorderPairFlags/BorderPairStyle overrides, and ProvinceStyle for per-province visuals.
+- ProvinceId alias, BorderClass enum for adjacency classification, and ProvinceStyle for per-province visuals.
 - ProvinceSnapshot provides an immutable point-in-time view of province state.
 
 ### `view_transform.rs`
@@ -185,7 +190,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ## 🧩 Key Types
 
-- `LProvinceRegistry` (31 methods) - Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
+- `LProvinceRegistry` (33 methods) - Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 
 [⬆ back to top](#table-of-contents)
 
@@ -194,7 +199,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Source spec: [docs/specs/province.md](../blob/main/docs/specs/province.md)
 - Module-level functions: 8
 - Lua-visible types: 1
-- Total type methods: 31
+- Total type methods: 33
 
 
 [⬆ back to top](#table-of-contents)
@@ -680,6 +685,82 @@ do
 end
 ```
 
+#### LProvinceRegistry:getBorderPairStyle
+
+#### Definition
+
+```lua
+--- Returns the style override for a specific adjacency pair, or nil when unset.
+---@param a number First province ID.
+---@param b number Second province ID.
+---@return table Style table or nil.
+function LProvinceRegistry:getBorderPairStyle(a, b) end
+```
+
+#### Description
+
+Returns the style override for a specific adjacency pair, or nil when unset.
+
+Parameters:
+
+- `a` (`integer`, required): First province ID.
+- `b` (`integer`, required): Second province ID.
+
+Returns: `table` - Style table or nil.
+
+#### Example
+
+Source: [province.lua](../blob/main/content/examples/province.lua)
+
+```lua
+--- Province Module: province maps from PNG, spatial queries, styles, rendering, change tracking
+
+
+--@api-stub: lurek.province.newFromPng
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("world", "assets/textures/province_map.png")
+    print("registry name = " .. reg:getName())
+end
+
+--@api-stub: LProvinceRegistry:getWidth
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_width", "assets/textures/province_map.png")
+    print("width = " .. reg:getWidth())
+end
+
+--@api-stub: LProvinceRegistry:getHeight
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_height", "assets/textures/province_map.png")
+    print("height = " .. reg:getHeight())
+end
+
+--@api-stub: LProvinceRegistry:provinceCount
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_count", "assets/textures/province_map.png")
+    print("provinces = " .. reg:provinceCount())
+end
+
+--@api-stub: LProvinceRegistry:provinceIds
+do
+    local reg = lurek.province.newFromPng("info_ids", "assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    print("id count = " .. #ids)
+    print("first id = " .. tostring(ids[1]))
+end
+
+--@api-stub: LProvinceRegistry:getAt
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("spatial", "assets/textures/province_map.png")
+    local id = reg:getAt(50, 50)
+    print("province at 50,50 = " .. id)
+end
+```
+
 #### LProvinceRegistry:getChangesSince
 
 #### Definition
@@ -1020,7 +1101,7 @@ end
 
 ```lua
 --- Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
----@param opts? table Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals (boolean?), border_width (number?), hovered_id/selected_id (integer?).
+---@param opts? table?|Render options: map_mode(string?),x/y/zoom/pixel_size/screen_w/screen_h(number?),draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads(boolean?),border_width(number?),zoom_mode("auto"|"strategic" "tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
 function LProvinceRegistry:render(opts) end
 ```
 
@@ -1030,7 +1111,7 @@ Renders the province map to the screen using the current camera and style settin
 
 Parameters:
 
-- `opts` (`table`, optional): Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals (boolean?), border_width (number?), hovered_id/selected_id (integer?).
+- `opts` (`table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"`, optional): "tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
 
 #### Example
 
@@ -1207,6 +1288,84 @@ do
     local p = pairs[1]
     reg:setBorderClass(p.province_a, p.province_b, "coast")
     print("border class assigned")
+end
+```
+
+#### LProvinceRegistry:setBorderPairStyle
+
+#### Definition
+
+```lua
+--- Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
+---@param a number First province ID.
+---@param b number Second province ID.
+---@param style table|Style table with optional fields: color={r,g,b,a},thickness=number,flags=string string[].
+---@return boolean True when style was applied.
+function LProvinceRegistry:setBorderPairStyle(a, b, style) end
+```
+
+#### Description
+
+Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
+
+Parameters:
+
+- `a` (`integer`, required): First province ID.
+- `b` (`integer`, required): Second province ID.
+- `style` (`table|Style table with optional fields: color={r,g,b,a}, thickness=number, flags=string`, required): string[].
+
+Returns: `boolean` - True when style was applied.
+
+#### Example
+
+Source: [province.lua](../blob/main/content/examples/province.lua)
+
+```lua
+--- Province Module: province maps from PNG, spatial queries, styles, rendering, change tracking
+
+
+--@api-stub: lurek.province.newFromPng
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("world", "assets/textures/province_map.png")
+    print("registry name = " .. reg:getName())
+end
+
+--@api-stub: LProvinceRegistry:getWidth
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_width", "assets/textures/province_map.png")
+    print("width = " .. reg:getWidth())
+end
+
+--@api-stub: LProvinceRegistry:getHeight
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_height", "assets/textures/province_map.png")
+    print("height = " .. reg:getHeight())
+end
+
+--@api-stub: LProvinceRegistry:provinceCount
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_count", "assets/textures/province_map.png")
+    print("provinces = " .. reg:provinceCount())
+end
+
+--@api-stub: LProvinceRegistry:provinceIds
+do
+    local reg = lurek.province.newFromPng("info_ids", "assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    print("id count = " .. #ids)
+    print("first id = " .. tostring(ids[1]))
+end
+
+--@api-stub: LProvinceRegistry:getAt
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("spatial", "assets/textures/province_map.png")
+    local id = reg:getAt(50, 50)
+    print("province at 50,50 = " .. id)
 end
 ```
 

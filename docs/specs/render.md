@@ -1,5 +1,9 @@
 # render
 
+## TL;DR
+
+- The `render` module is a core Platform Services tier subsystem that powers the entire visual output of Lurek2D.
+
 ## General Info
 
 - Module group: `Platform Services`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `render` module is a core Platform Services tier subsystem that powers the entire visual output of Lurek2D. Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
+ Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
 
 The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
 
@@ -35,12 +39,13 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Sorted at flush time so draw callbacks execute in front-to-back order.
 
 ### `font.rs`
-- Bundled Courier New bitmap atlases in regular and bold variants using `assets/fonts/font_*` and `fontb_*`.
-- Latin-1 coverage for 0x20..=0xFF plus terminal-symbol aliases for box-drawing, blocks, and arrows.
-- Runtime rasterisation of TTF/OTF bytes into the same atlas format used by the bundled fonts.
-- Glyph lookup returning UV coordinates, pixel metrics, per-glyph advance widths, and alias resolution.
-- Text measurement: total pixel width, line height with multiplier, ascent and descent.
-- Atlas dirty-tracking for lazy GPU texture upload.
+- Bitmap font atlas loading and runtime font rasterisation.
+- This module provides:
+- Bundled Courier New bitmap atlases in regular and bold variants.
+- Latin-1 coverage for 0x20..=0xFF.
+- Terminal-symbol aliases for 0x80..=0x9F and direct Unicode lookups.
+- Runtime rasterisation of TTF/OTF fonts into the same atlas format.
+- Glyph metrics, text measurement, and word wrapping.
 
 ### `gpu_renderer.rs`
 - wgpu-based GPU renderer: vertex batching, draw-call encoding, pipeline caching, and frame presentation.
@@ -98,9 +103,9 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Pass sequencing respects insertion order; final result written directly to the surface target.
 
 ### `province_map_pipeline.rs`
-- Fullscreen province-map render pipeline using a dedicated WGSL shader.
-- Bind-group wiring for province id texture, border index texture, distance field texture, and storage buffers.
-- Uniform block for viewport mapping, screen/map sizes, and strategic/tactical mode selection.
+- Dedicated fullscreen province-map GPU pipeline.
+- Binds province id texture, border index texture, distance field texture, and storage buffers.
+- Owns uniforms for viewport mapping and strategic/tactical mode selection.
 
 ### `renderer.rs`
 - Defines the `RenderCommand` enum — the complete vocabulary of draw, state, and control operations submitted each frame.
@@ -132,8 +137,8 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `DecalSurface` (`struct`, `decal_surface.rs`): Render-owned descriptor for decal workflows.
 - `LayerEntry` (`struct`, `draw_layer.rs`): A queued draw entry with its z-order.
 - `DrawLayer` (`struct`, `draw_layer.rs`): Ordered callback container for higher-level draw sequencing.
-- `Font` (`struct`, `font.rs`): Render-side text resource with atlas and measurement behavior.
 - `GlyphInfo` (`struct`, `font.rs`): Information about a single glyph in the atlas.
+- `Font` (`struct`, `font.rs`): Render-side text resource with atlas and measurement behavior.
 - `RenderStats` (`struct`, `gpu_renderer.rs`): Per-frame rendering statistics.
 - `GpuRenderer` (`struct`, `gpu_renderer.rs`): wgpu-backed renderer that owns the actual frame, pipeline, and GPU resource logic.
 - `ShaderPassDescriptor` (`struct`, `image_effect.rs`): Lightweight effect-pass description attached to image draws.
@@ -150,6 +155,8 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `ObjCamera` (`struct`, `obj_loader.rs`): Simple camera parameters for `project_to_mesh`.
 - `PostFxTexture` (`struct`, `postfx_pipeline.rs`): Stores a wgpu texture and its default view together for convenience.
 - `PostFxPipeline` (`struct`, `postfx_pipeline.rs`): GPU post-processing pipeline.
+- `ProvinceMapUniforms` (`struct`, `province_map_pipeline.rs`): Uniforms used by the province map fullscreen shader.
+- `ProvinceMapPipeline` (`struct`, `province_map_pipeline.rs`): Province map GPU pipeline and bind-group layouts.
 - `CompareMode` (`enum`, `renderer.rs`): Stencil comparison mode for `lurek.render.setStencilTest`.
 - `StencilAction` (`enum`, `renderer.rs`): Stencil write action for `lurek.render.stencil` and `lurek.render.setStencilMode`.
 - `StencilMode` (`struct`, `renderer.rs`): Combined stencil rendering mode stored in `SharedState`.
@@ -189,24 +196,25 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `DrawLayer::flush` (`draw_layer.rs`): Sort entries by `z_order`, drain, and return them; leaves the layer empty.
 - `DrawLayer::clear` (`draw_layer.rs`): Discard all pending entries without firing callbacks.
 - `DrawLayer::get_count` (`draw_layer.rs`): Return the number of pending entries.
-- `Font::builtin_slot_by_name` (`font.rs`): Resolve a stable built-in font name such as `font_12` or `fontb_12` to `(slot, bold)`.
-- `Font::from_png_bytes` (`font.rs`): Load and decode `data` as a PNG bitmap font atlas with `cell_w`×`cell_h` cells; return error on decode failure.
-- `Font::from_font_bytes` (`font.rs`): Rasterise TTF/OTF bytes into a runtime atlas matching the renderer's bitmap-font contract.
-- `Font::load_all_sizes` (`font.rs`): Load all seven bundled regular bitmap font sizes; silently skip any that fail to decode.
-- `Font::load_all_bold` (`font.rs`): Load all seven bundled bold bitmap font sizes; silently skip any that fail to decode.
-- `Font::nearest_size` (`font.rs`): Return the index into `AVAILABLE_HEIGHTS` whose cell height is closest to `pixel_height`.
-- `Font::glyph` (`font.rs`): Return `GlyphInfo` for `ch`, or `None` if the character is not in the atlas.
-- `Font::text_width` (`font.rs`): Return the pixel advance-width sum for all glyphs in `text`.
-- `Font::line_height` (`font.rs`): Return `cell_height * line_height_mul` as the vertical line spacing in pixels.
-- `Font::set_line_height` (`font.rs`): Set the line-height multiplier applied over `cell_height`.
-- `Font::ascent` (`font.rs`): Return `cell_height` as the ascent value in pixels.
-- `Font::descent` (`font.rs`): Return 0.0; bitmap fonts have no descender in this implementation.
-- `Font::atlas_data` (`font.rs`): Return `(pixel_data, width, height)` for the atlas texture upload.
-- `Font::is_dirty` (`font.rs`): Return true when the atlas pixel data has not yet been uploaded to the GPU.
-- `Font::mark_clean` (`font.rs`): Clear the dirty flag after a successful GPU texture upload.
-- `Font::size` (`font.rs`): Return the pixel height of one character cell.
-- `Font::cell_width` (`font.rs`): Return the pixel width of one character cell.
-- `Font::wrap_text` (`font.rs`): Break `text` into lines that each fit within `limit` pixels, honouring existing newlines.
+- `Font::builtin_slot_by_name` (`font.rs`): Returns the built-in slot and bold flag for a stable built-in font name.
+- `Font::from_png_bytes` (`font.rs`): Loads a PNG atlas with fixed-size cells.
+- `Font::from_font_bytes` (`font.rs`): Rasterises TTF/OTF bytes into the same atlas format used by bundled fonts.
+- `Font::load_all_sizes` (`font.rs`): Loads all bundled regular fonts.
+- `Font::load_all_bold` (`font.rs`): Loads all bundled bold fonts.
+- `Font::nearest_size` (`font.rs`): Returns the slot whose height is closest to `pixel_height`.
+- `Font::nearest_point_size` (`font.rs`): Returns the slot whose built-in point size is closest to `point_size`.
+- `Font::glyph` (`font.rs`): Returns glyph info for `ch`, or `None` if the character is not present.
+- `Font::text_width` (`font.rs`): Returns the summed advance width for `text`.
+- `Font::line_height` (`font.rs`): Returns the effective line height in pixels.
+- `Font::set_line_height` (`font.rs`): Sets the line-height multiplier.
+- `Font::ascent` (`font.rs`): Returns ascent in pixels.
+- `Font::descent` (`font.rs`): Returns descent in pixels.
+- `Font::atlas_data` (`font.rs`): Returns atlas upload data as `(pixel_data, width, height)`.
+- `Font::is_dirty` (`font.rs`): Returns true when the atlas still needs GPU upload.
+- `Font::mark_clean` (`font.rs`): Clears the dirty flag after upload.
+- `Font::size` (`font.rs`): Returns the nominal cell height in pixels.
+- `Font::cell_width` (`font.rs`): Returns the nominal cell width in pixels.
+- `Font::wrap_text` (`font.rs`): Wraps text by pixel width while honoring explicit newlines.
 - `GpuRenderer::new` (`gpu_renderer.rs`): Create a `GpuRenderer` from an already-acquired wgpu device/queue pair and surface format.
 - `GpuRenderer::resize` (`gpu_renderer.rs`): Update viewport dimensions after a window resize; recreates stencil targets and clears light GPU state.
 - `GpuRenderer::upload_texture` (`gpu_renderer.rs`): Upload RGBA pixel data for `key` to the GPU, replacing any previously uploaded texture.
@@ -247,6 +255,10 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `PostFxPipeline::new` (`postfx_pipeline.rs`): Build all built-in effect pipelines and shared GPU resources for `surface_format`.
 - `PostFxPipeline::register_custom` (`postfx_pipeline.rs`): Compile and register a custom WGSL fragment shader under `name` for use in `PostFxPass`.
 - `PostFxPipeline::apply` (`postfx_pipeline.rs`): Execute all enabled `passes` in sequence using ping-pong textures; write final result to `target_view`.
+- `ProvinceMapUniforms::full_map` (`province_map_pipeline.rs`): Create default uniforms matching a full-map viewport.
+- `ProvinceMapPipeline::new` (`province_map_pipeline.rs`): Create province map render pipeline and uniform resources.
+- `ProvinceMapPipeline::create_data_bind_group` (`province_map_pipeline.rs`): Create bind group for province map textures and storage buffers.
+- `ProvinceMapPipeline::update_uniforms` (`province_map_pipeline.rs`): Update province map uniforms.
 - `TextSpan::new` (`renderer.rs`): Construct a `TextSpan` from a string-like value and explicit RGBA and scale.
 - `Shader::new` (`shader.rs`): Parse, validate, and prepare `source`; return error string on WGSL validation failure.
 - `Shader::send` (`shader.rs`): Set or replace the named uniform value used on subsequent frames.
@@ -271,49 +283,51 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `lurek.render.setBackgroundColor`: Sets the background clear color used at the start of each frame.
 - `lurek.render.getBackgroundColor`: Returns the current background clear color.
 - `lurek.render.rectangle`: Draws a rectangle. If rx is provided, draws a rounded rectangle.
-- `lurek.render.circle`: Draws a circle. This function is exposed to Lua scripts.
-- `lurek.render.ellipse`: Draws an ellipse. This function is exposed to Lua scripts.
+- `lurek.render.circle`: Draws a filled or outlined circle at the given position.
+- `lurek.render.ellipse`: Draws a filled or outlined ellipse at the given position.
 - `lurek.render.triangle`: Draws a triangle from three vertex positions.
 - `lurek.render.line`: Draws a line between two points, or a polyline through multiple points.
 - `lurek.render.polygon`: Draws a polygon from a flat list of x,y vertex coordinates.
-- `lurek.render.arc`: Draws a circular arc. This function is exposed to Lua scripts.
+- `lurek.render.arc`: Draws a filled or outlined circular arc segment.
 - `lurek.render.points`: Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
 - `lurek.render.draw`: Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
 - `lurek.render.drawq`: Draws a sub-region of an image defined by a Quad, with optional transform.
 - `lurek.render.drawMany`: Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
 - `lurek.render.printRotated`: Draws text centered and rotated around its midpoint.
+- `lurek.render.printRotatedWithFont`: Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
 - `lurek.render.print`: Draws text using the active font at the given position.
+- `lurek.render.printWithFont`: Draws text using a specific font without changing the global active font.
 - `lurek.render.printf`: Draws word-wrapped and aligned text within a pixel-width limit.
+- `lurek.render.printfWithFont`: Draws word-wrapped and aligned text with a specific font without changing the global active font.
 - `lurek.render.printRich`: Draws rich text composed of individually styled spans at the given position.
+- `lurek.render.printRichWithFont`: Draws rich text using a specific font without changing the global active font.
 - `lurek.render.clear`: Clears all queued render commands for the current frame.
 - `lurek.render.setLineWidth`: Sets the line width for subsequent line-mode draw calls.
-- `lurek.render.getLineWidth`: Returns the current line width. This function is exposed to Lua scripts.
+- `lurek.render.getLineWidth`: Returns the current line width used for line-mode drawing.
 - `lurek.render.setPointSize`: Sets the point size for subsequent point draw calls.
-- `lurek.render.getPointSize`: Returns the current point size. This function is exposed to Lua scripts.
+- `lurek.render.getPointSize`: Returns the current point diameter used for point drawing.
 - `lurek.render.setBlendMode`: Sets the blend mode for subsequent draw operations.
 - `lurek.render.getBlendMode`: Returns the current blend mode name.
-- `lurek.render.newFont`: Creates a font from a built-in `font_*` / `fontb_*` name, a font file path, or a numeric built-in size selector.
+- `lurek.render.newFont`: Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
 - `lurek.render.setFont`: Sets the active font used by print, printf, and other text rendering calls.
 - `lurek.render.getFont`: Returns the currently active font, or nil if none is set.
-- `lurek.render.getFontSizes`: Returns all available built-in bundled point sizes (`8, 10, 12, 16, 20, 24, 30`).
-- `lurek.render.getBuiltInFontNames`: Returns all stable built-in font names in regular-then-bold order.
-- `lurek.render.getDefaultFont`: Returns the configured built-in default font, or the nearest available bundled point size when one is requested explicitly.
+- `lurek.render.getFontSizes`: Returns all available built-in point sizes.
+- `lurek.render.getBuiltInFontNames`: Returns all stable built-in font names.
+- `lurek.render.getDefaultFont`: Returns a built-in default font at the nearest available bundled point size.
 - `lurek.render.setDefaultFont`: Selects a built-in default font by bundled point size and makes it the active render font.
-- `lurek.render.printWithFont`: Draws text with an explicit font without changing the active font.
-- `lurek.render.printfWithFont`: Draws wrapped/aligned text with an explicit font without changing the active font.
-- `lurek.render.printRotatedWithFont`: Draws rotated text with an explicit font without changing the active font.
-- `lurek.render.printRichWithFont`: Draws rich text spans with an explicit font without changing the active font.
+- `lurek.render.setBold`: Sets whether subsequent font size lookups use the bold Courier New variant.
+- `lurek.render.isBold`: Returns true if the current default font selection uses the bold variant.
 - `lurek.render.getFontCellWidth`: Returns the fixed cell width of a bitmap font.
 - `lurek.render.getFontWidth`: Measures the pixel width of text using the given font.
 - `lurek.render.getFontHeight`: Returns the line height of the given font.
 - `lurek.render.getFontLineHeight`: Returns the line spacing of the given font.
-- `lurek.render.setFontLineHeight`: Sets the line height override for a font.
+- `lurek.render.setFontLineHeight`: Sets the line height override for a font (currently a no-op stub).
 - `lurek.render.getFontAscent`: Returns the ascent (pixels above baseline) of the given font.
 - `lurek.render.getFontDescent`: Returns the descent (pixels below baseline) of the given font.
 - `lurek.render.getFontWrap`: Word-wraps text using the active font and returns the resulting lines and widest line width.
-- `lurek.render.setBold`: Switches the implicit built-in font selection between normal and bold variants while preserving the nearest configured bundled point size.
 - `lurek.render.newImage`: Loads a texture from a file path or creates one from an ImageData object.
 - `lurek.render.newCanvas`: Creates a new off-screen render target with the given dimensions.
+- `lurek.render.resetCanvas`: Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
 - `lurek.render.setCanvas`: Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
 - `lurek.render.getCanvas`: Returns the currently active canvas, or nil if drawing to the screen.
 - `lurek.render.getCanvasSize`: Returns the pixel dimensions of a canvas.
@@ -363,7 +377,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `lurek.render.drawGradientRect`: Draws a rectangle with a two-color gradient fill.
 - `lurek.render.drawColoredPolygon`: Draws a polygon with per-vertex colors.
 - `lurek.render.drawIsoCubeTile`: Draws an isometric cube tile with configurable face colors and optional textures.
-- `lurek.render.drawHexTile`: Draws a regular hexagonal tile. This function is exposed to Lua scripts.
+- `lurek.render.drawHexTile`: Draws a regular hexagonal tile at the given center position.
 - `lurek.render.beginSortGroup`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 - `lurek.render.pushSortKey`: Sets the depth sort key for subsequent draw calls within the current sort group.
 - `lurek.render.flushSortGroup`: Ends a sort group and emits all accumulated draw calls in sorted order.
@@ -376,7 +390,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `lurek.render.drawGradientRect`: Draws a rectangle with a two-color gradient fill.
 - `lurek.render.drawColoredPolygon`: Draws a polygon with per-vertex colors.
 - `lurek.render.drawIsoCubeTile`: Draws an isometric cube tile with configurable face colors and optional textures.
-- `lurek.render.drawHexTile`: Draws a regular hexagonal tile. This function is exposed to Lua scripts.
+- `lurek.render.drawHexTile`: Draws a regular hexagonal tile at the given center position.
 - `lurek.render.beginSortGroup`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 - `lurek.render.pushSortKey`: Sets the depth sort key for subsequent draw calls within the current sort group.
 - `lurek.render.flushSortGroup`: Ends a sort group and emits all accumulated draw calls in sorted order.
@@ -398,15 +412,15 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LCanvas:getHeight`: Returns the height of this canvas in pixels.
 - `LCanvas:getDimensions`: Returns both width and height of this canvas.
 - `LCanvas:release`: Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
-- `LCanvas:typeOf`: Returns the type name of this object.
-- `LCanvas:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LCanvas:typeOf`: Checks whether this object matches the given type name.
+- `LCanvas:type`: Returns the type name string for this canvas object.
 
 ### `LDrawLayer` Methods
 - `LDrawLayer:queue`: Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
 - `LDrawLayer:flush`: Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
 - `LDrawLayer:clear`: Discards all queued callbacks without executing them.
 - `LDrawLayer:getCount`: Returns the number of callbacks currently queued.
-- `LDrawLayer:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LDrawLayer:type`: Returns the type name string for this draw layer.
 - `LDrawLayer:typeOf`: Checks whether this object matches the given type name.
 
 ### `LFont` Methods
@@ -418,8 +432,8 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LFont:getDescent`: Returns the descent (pixels below the baseline) of this font.
 - `LFont:getWrap`: Word-wraps text to fit within a pixel width limit and returns the resulting lines.
 - `LFont:release`: Releases the font resource. The handle becomes invalid after this call.
-- `LFont:typeOf`: Returns the type name of this object.
-- `LFont:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LFont:typeOf`: Checks whether this object matches the given type name.
+- `LFont:type`: Returns the type name string for this font object.
 
 ### `LImage` Methods
 - `LImage:getId`: Returns the internal numeric handle ID for this image.
@@ -427,8 +441,8 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LImage:getHeight`: Returns the height of this image in pixels.
 - `LImage:getDimensions`: Returns both width and height of this image.
 - `LImage:release`: Releases the GPU memory for this image. The handle becomes invalid after this call.
-- `LImage:typeOf`: Returns the type name of this object.
-- `LImage:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LImage:typeOf`: Checks whether this object matches the given type name.
+- `LImage:type`: Returns the type name string for this image object.
 
 ### `LImageData` Methods
 - `LImageData:getWidth`: Returns the width of this image data in pixels.
@@ -446,9 +460,9 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LMesh:getVertex`: Returns the data for a single vertex by 1-based index.
 - `LMesh:setVertex`: Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
 - `LMesh:setTexture`: Assigns or removes a texture for this mesh. Pass nil to clear the texture.
-- `LMesh:release`: Releases the mesh resource. This method is available to Lua scripts.
-- `LMesh:typeOf`: Returns the type name of this object.
-- `LMesh:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LMesh:release`: Releases the mesh GPU resource and invalidates the handle.
+- `LMesh:typeOf`: Checks whether this object matches the given type name.
+- `LMesh:type`: Returns the type name string for this mesh object.
 
 ### `LNineSlice` Methods
 - `LNineSlice:getInsets`: Returns the border insets (top, right, bottom, left) that define the stretchable regions.
@@ -468,15 +482,15 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LQuad:getViewport`: Returns the quad's viewport rectangle within the source texture.
 - `LQuad:setViewport`: Updates the quad's viewport rectangle.
 - `LQuad:getTextureDimensions`: Returns the full dimensions of the source texture this quad references.
-- `LQuad:typeOf`: Returns the type name of this object.
-- `LQuad:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LQuad:typeOf`: Checks whether this object matches the given type name.
+- `LQuad:type`: Returns the type name string for this quad object.
 
 ### `LShader` Methods
 - `LShader:send`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
 - `LShader:hasUniform`: Checks whether this shader declares a uniform with the given name.
 - `LShader:release`: Releases the shader resource. If active, the default shader is restored.
-- `LShader:typeOf`: Returns the type name of this object.
-- `LShader:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LShader:typeOf`: Checks whether this object matches the given type name.
+- `LShader:type`: Returns the type name string for this shader object.
 
 ### `LShape` Methods
 - `LShape:getCommandCount`: Returns the number of drawing commands accumulated in this shape.
@@ -485,16 +499,16 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LShape:setLineWidth`: Sets the line width for subsequent line-mode shape commands.
 - `LShape:rectangle`: Adds a rectangle command to the shape.
 - `LShape:roundedRectangle`: Adds a rounded rectangle command to the shape.
-- `LShape:circle`: Adds a circle command to the shape. This method is available to Lua scripts.
+- `LShape:circle`: Adds a filled or outlined circle command to the shape.
 - `LShape:ellipse`: Adds an ellipse command to the shape.
 - `LShape:triangle`: Adds a triangle command to the shape.
 - `LShape:polygon`: Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
 - `LShape:line`: Adds a line segment command to the shape.
 - `LShape:polyline`: Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
-- `LShape:arc`: Adds an arc command to the shape. This method is available to Lua scripts.
+- `LShape:arc`: Adds a filled or outlined arc command to the shape.
 - `LShape:draw`: Renders the accumulated shape commands to the screen with optional transform.
 - `LShape:typeOf`: Checks whether this object matches the given type name.
-- `LShape:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LShape:type`: Returns the type name string for this shape object.
 
 ### `LSpriteBatch` Methods
 - `LSpriteBatch:add`: Adds a sprite entry to the batch at the given position with optional transform.
@@ -502,8 +516,8 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LSpriteBatch:getCount`: Returns the number of sprite entries currently in the batch.
 - `LSpriteBatch:getBufferSize`: Returns the maximum number of entries this batch can hold.
 - `LSpriteBatch:release`: Releases the sprite batch resource.
-- `LSpriteBatch:typeOf`: Returns the type name of this object.
-- `LSpriteBatch:type`: Returns the internal Lua type tag. This method is available to Lua scripts.
+- `LSpriteBatch:typeOf`: Checks whether this object matches the given type name.
+- `LSpriteBatch:type`: Returns the type name string for this sprite batch.
 
 ## References
 

@@ -1,5 +1,9 @@
 # ui
 
+## TL;DR
+
+- The `ui` module is a comprehensive Feature Systems tier component that provides a full-featured, retained-mode Graphical User Interface (GUI) toolkit.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,28 +15,11 @@
 
 ## Summary
 
-The `ui` module is a comprehensive Feature Systems tier component that provides a full-featured, retained-mode Graphical User Interface (GUI) toolkit. Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
+ Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
 
 At the structural level, the module employs a robust flex-based layout engine (`Layout`) that supports vertical, horizontal, and grid packing, alongside alignment, spacing, padding, and min/max constraints. Layouts can be constructed programmatically in Lua or loaded dynamically from declarative TOML files using the built-in layout loader, which dramatically accelerates UI iteration. The visual presentation is governed by a flexible `Theme` system that maps widget states (Normal, Hovered, Pressed, Focused, Disabled) to specific styles containing color palettes, font overrides, borders, and shadows. The module natively supports resolution-independent 9-slice borders (`NinePatch`) and per-widget transition animations (alpha fades, position slides) to deliver a polished, responsive user experience.
 
 Beyond standard UI components and input routing, the module uniquely integrates powerful data visualization and binding tools. The built-in chart system (Line, Bar, Scatter, Pie, Area) software-rasterizes complex datasets directly into pixel buffers without GPU dependencies, intelligently handling automatic axes scaling, legends, and grid lines. The `GUITable` and charts seamlessly integrate with the `dataframe` module, enabling bulk loading of structured rows directly into UI views without expensive Lua-side iterations. Fully exposed through the `lurek.ui.*` API, this module equips developers with everything needed to build intricate developer dashboards, complex menus, and data-rich game interfaces.
-
-## Files
-
-| File | Purpose |
-|---|---|
-| `src/ui/chart.rs` | Software-rasterized chart rendering (line, bar, scatter, pie, area) into `ImageData` pixel buffers. |
-| `src/ui/containers.rs` | Container widgets: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel. |
-| `src/ui/context.rs` | Retained-mode `GuiContext` owning the widget arena, layout pass, focus, drag-and-drop, and events. |
-| `src/ui/controls.rs` | Concrete control widgets: Button, Label, TextInput, CheckBox, Slider, ProgressBar, ComboBox, and more. |
-| `src/ui/data_graph_renderer.rs` | Stateful `GraphRenderer` for named data series (line, scatter, bar) with world/screen transforms. |
-| `src/ui/extras.rs` | Supplemental widgets: Toast, Separator, TreeView, Toolbar, MenuBar, Dialog, ColorPicker, GUITable, Badge. |
-| `src/ui/layout_loader.rs` | TOML layout file deserializer that instantiates widget trees into a live `GuiContext`. |
-| `src/ui/mod.rs` | Module root and re-export surface. |
-| `src/ui/render.rs` | GPU render-command emission and CPU pixel-rasterization fallback for all widget types. |
-| `src/ui/theme.rs` | Visual theming system mapping `(WidgetType, WidgetState)` pairs to `WidgetStyle` records. |
-| `src/ui/widget.rs` | Shared `WidgetBase`, `WidgetType`, `WidgetState`, `WidgetTransition` types used by all widgets. |
-| `src/lua_api/ui_api.rs` | Lua bindings for `lurek.ui.*`; registers all UI creation and control functions. |
 
 ## Source Documentation
 
@@ -43,8 +30,8 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 - Shared `ChartConfig` controls dimensions, background/axis/grid/label colours, title,
 - margins, and grid visibility across all chart types.
 - Grid and axis helpers draw horizontal/vertical grid lines, tick marks, and numeric labels
-- scaled to arbitrary value ranges on both axes, with X-axis tick density reduced on compact plots.
-- Legend panels reserve right or bottom space outside plotted data when the image size allows it, using the shared 5x7 `ImageData` label advance for width estimates.
+- scaled to arbitrary value ranges on both axes.
+- Legend panels reserve space outside the plotted data area when the image size allows it.
 - Pie chart uses brute-force per-pixel distance and angle checks with edge-darkening for
 - anti-aliased-looking wedge boundaries; divider lines drawn as white radial spokes.
 - Area chart performs linear interpolation between uniform X samples and fills columns
@@ -74,23 +61,10 @@ Beyond standard UI components and input routing, the module uniquely integrates 
 - Toast overlay queue with per-message timers and automatic expiry.
 - Event queue (`GuiEvent`) drained each frame by the Lua binding layer.
 
-#### Layout contract
-All render coordinates are taken from `computed_rect` after the layout pass, not from raw widget
-position fields (`x`, `y`, `width`, `height`). The `run_layout_pass` method recursively computes
-absolute screen-space `computed_rect` values from parent-relative positions for every widget in
-the tree. Both rendering (`build_render_commands`) and input hit-testing (`mouse_pressed`,
-`mouse_released`) call `run_layout_pass` first, so render position and hit-test region are always
-consistent. Children are drawn in ascending `z_order` so higher `z_order` values appear on top,
-matching the topmost-wins selection rule in `hit_test`.
-
-**Migration note:** Child widgets must use container-relative coordinates. Setting a child's
-`x` and `y` to absolute screen coordinates will produce incorrect results because the layout
-pass adds the parent's absolute screen position to the child's local position.
-
 ### `controls.rs`
 - Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
 - Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
-- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants; `TextInput` also clamps direct `setText` and existing text when `setMaxLength` changes.
+- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
 - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
 - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
 
@@ -115,7 +89,7 @@ pass adds the parent's absolute screen position to the child's local position.
 - Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
 - Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
 - Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
-- Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to an RGBA PNG.
+- Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to PNG.
 - Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
 - Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
 
@@ -132,9 +106,9 @@ pass adds the parent's absolute screen position to the child's local position.
 - Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
 - Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
 - HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
-- `WidgetRenderer` carrier struct threading `GuiContext`, resolved font storage, and output buffer through the render pass.
+- `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
 - Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
-- Font-aware text measurement and alignment for labels, tabs, menu shortcuts, and text-input cursor placement.
+- Font-aware text measurement and alignment using the active UI font when available.
 
 ### `theme.rs`
 - Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records.
@@ -145,117 +119,9 @@ pass adds the parent's absolute screen position to the child's local position.
 - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
 - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
 - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
-- `ThemeToken` enum carries `Color([f32;4])` or `Float(f32)` values; the `tokens` map on `Theme` is keyed by name string.
-- `Theme::get_token(name)` returns `Option<&ThemeToken>` for use at render time or from Lua.
-
-## Style tokens
-
-Named semantic tokens registered in `Theme::default_dark()`. Accessible via `lurek.ui.getStyleToken(name)`.
-
-| Token name | Type | Default value | Purpose |
-|---|---|---|---|
-| `spacing_sm` | Float | 4.0 | Small spacing unit (inner padding, gaps). |
-| `spacing_md` | Float | 8.0 | Medium spacing unit (standard widget padding). |
-| `spacing_lg` | Float | 16.0 | Large spacing unit (section spacing, dialog margins). |
-| `color_primary` | Color | [0.2, 0.5, 1.0, 1.0] | Brand primary / action colour. |
-| `color_danger` | Color | [0.9, 0.2, 0.2, 1.0] | Error / destructive action colour. |
-| `color_warning` | Color | [1.0, 0.7, 0.1, 1.0] | Warning / caution colour. |
-| `color_success` | Color | [0.2, 0.8, 0.3, 1.0] | Success / confirmation colour. |
-| `focus_ring_color` | Color | [0.3, 0.6, 1.0, 0.8] | Focus ring outline colour. |
-| `disabled_opacity` | Float | 0.4 | Opacity multiplier for disabled widget overlays. |
 
 ### `widget.rs`
 - Public types and helpers for the widget module.
-- `TextVAlign` enum (Top, Middle, Bottom) controls vertical text placement inside a widget's bounds.
-- `WidgetBase` now carries `text_wrap`, `text_ellipsis`, and `text_v_align` fields (defaults: wrap=false, ellipsis=true, v_align=Middle).
-
-## Text Model
-
-All text-bearing widgets (Label, Button, CheckBox, RadioButton, MenuItem) share a unified layout pipeline defined in `render.rs::layout_text`.
-
-### Fields on `WidgetBase`
-
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `text_wrap` | `bool` | `false` | When true, text wraps at word boundaries when it exceeds the widget width. |
-| `text_ellipsis` | `bool` | `true` | When true and `text_wrap=false`, overflowing text is truncated with a trailing "…". |
-| `text_v_align` | `TextVAlign` | `Middle` | Vertical alignment: `Top` pins to inner top edge, `Middle` centres, `Bottom` pins to inner bottom edge. |
-
-### Wrap behaviour
-
-- `text_wrap=true`: `layout_text` breaks the string at word boundaries using `split_whitespace`, accumulating each line until the next word would exceed `inner_width`. Each resulting line is a separate `TextLine` and receives its own `Print` command.
-- `text_wrap=false` (default): the entire text is treated as a single line. If `text_ellipsis=true` and the line width exceeds the available inner width, it is truncated character-by-character and "…" is appended.
-
-### Vertical alignment
-
-`inner_height = rect.height - padding[0] - padding[2]`. The `total_text_height = line_count × font_size`. Placement:
-
-- `Top`: `start_y = rect.y + padding[0]`
-- `Middle`: `start_y = rect.y + padding[0] + max(0, (inner_height − total_text_height) / 2)`
-- `Bottom`: `start_y = max(rect.y + padding[0], rect.y + padding[0] + inner_height − total_text_height)`
-
-### Clip / scissor
-
-`emit_text` wraps each group of `Print` commands in `SetScissor(Some(rect))` … `SetScissor(None)`, bounding text to the widget's bounding box. This prevents text overflow from bleeding into adjacent widgets.
-
-### Horizontal alignment
-
-`text_align` is read from `WidgetStyle` as before: `"left"` aligns to `inner_x + 4`, `"right"` aligns to `inner_x + inner_w − text_w − 6`, `"center"` centres.
-
-### Lua API
-
-| Method | Description |
-|---|---|
-| `LUiWidget:setTextWrap(bool)` | Enable or disable word-wrap. |
-| `LUiWidget:setTextEllipsis(bool)` | Enable or disable ellipsis on single-line overflow. |
-| `LUiWidget:setTextVAlign(string)` | Set vertical alignment: `"top"`, `"middle"`, or `"bottom"`. Returns `true` if recognised. |
-
-## Focus model
-
-Focus traversal is retained-mode and widget-index based, managed by `GuiContext`.
-
-### Focus metadata on `WidgetBase`
-
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `focusable` | `bool` | `true` | Whether widget can be reached by `focusNext` / `focusPrev`. |
-| `tab_index` | `i32` | `0` | Sort key for traversal; lower values are visited first. |
-| `focus_group` | `String` | `""` | Optional traversal group. If focused widget has a non-empty group, traversal stays in that group. |
-| `focus_neighbor_up/down/left/right` | `Option<usize>` | `None` | Explicit directional focus links for `focusNeighbor(direction)`. |
-| `role` | `String` | `"generic"` | Semantic role metadata. |
-| `aria_name` | `String` | `""` | Accessible display name metadata. |
-| `description` | `String` | `""` | Accessible long description metadata. |
-| `label_for` | `Option<usize>` | `None` | Optional target index that this widget labels. |
-
-### Traversal rules
-
-- `set_focus` accepts only visible, enabled, and `focusable=true` widgets.
-- `focusNext` / `focusPrev` sort candidates by `(tab_index, widget_index)`.
-- If current focus has a non-empty `focus_group`, traversal is restricted to that group; if the group has no candidates, traversal falls back to global candidates.
-- `focusNeighbor(direction)` follows explicit `focus_neighbor_*` links on the focused widget and returns `false` when no link exists.
-
-### Lua API
-
-| Method | Description |
-|---|---|
-| `LUiWidget:setFocusable(bool)` | Enable or disable focus traversal eligibility. |
-| `LUiWidget:setTabIndex(integer)` | Set traversal order index. |
-| `LUiWidget:setFocusGroup(string)` | Set traversal group name. |
-| `LUiWidget:setFocusNeighbor(string, integer?)` | Set directional neighbor (`up/down/left/right`), or clear with `nil`. |
-| `LUiWidget:setRole(string)` | Set semantic role metadata. |
-| `LUiWidget:setAriaName(string)` | Set accessible name metadata. |
-| `lurek.ui.focusNeighbor(string)` | Move focus using explicit directional links. |
-
-## Cache model
-
-`GuiContext` keeps both a legacy `dirty` bit and fine-grained flags:
-
-- `layout_dirty`: geometry/tree changes requiring layout recompute.
-- `style_dirty`: theme/style changes affecting visuals.
-- `text_dirty`: text content/measurement changes.
-- `render_dirty`: visual command changes requiring render-command rebuild.
-
-`flush_cache()` now clears all four flags together with `dirty` and still checks render-signature hash drift for safety.
 
 ## Types
 
@@ -322,9 +188,13 @@ Focus traversal is retained-mode and widget-index based, managed by `GuiContext`
 - `CustomWidget` (`struct`, `extras.rs`): A fully Lua-driven widget with custom rendering.
 - `WidgetDef` (`struct`, `layout_loader.rs`): Tree node describing a single widget and its optional children.
 - `LayoutDef` (`struct`, `layout_loader.rs`): Top-level TOML layout descriptor.
+- `TextLine` (`struct`, `render.rs`): A single laid-out text run with absolute screen position and clip bounds.
+- `ThemeToken` (`enum`, `theme.rs`): A named semantic design token value used for consistent spacing, colour roles, and visual cues.
 - `WidgetStyle` (`struct`, `theme.rs`): A concrete set of colors, borders, radius, and font-size values used by theme lookup.
 - `Theme` (`struct`, `theme.rs`): Stores widget styles keyed by widget type and state so the same UI tree can be skinned consistently.
+- `TextVAlign` (`enum`, `widget.rs`): Vertical alignment of text inside a text-bearing widget.
 - `WidgetState` (`enum`, `widget.rs`): Encodes common UI states such as normal, hovered, pressed, focused, and disabled.
+- `MouseFilter` (`enum`, `widget.rs`): Mouse interaction filter matching Godot's control behavior.
 - `WidgetType` (`enum`, `widget.rs`): Identifies the broad widget class for styling and state-dependent behavior.
 - `WidgetTransitionKind` (`enum`, `widget.rs`): Which property a `WidgetTransition` animates.
 - `WidgetTransition` (`struct`, `widget.rs`): Active animation on a `WidgetBase`; evaluated each frame by `GuiContext::update`.
@@ -371,6 +241,7 @@ Focus traversal is retained-mode and widget-index based, managed by `GuiContext`
 - `WidgetKind::children` (`context.rs`): Return a shared reference to the child-index list for container variants; `None` for leaf widgets.
 - `WidgetKind::children_mut` (`context.rs`): Return a mutable reference to the child-index list for container variants; `None` for leaf widgets.
 - `GuiContext::new` (`context.rs`): Create a new context with a root panel, default dark theme, and dirty=true.
+- `GuiContext::clear` (`context.rs`): Reset the retained widget tree and transient UI state while preserving the active theme.
 - `GuiContext::widget_count` (`context.rs`): Return the total number of widgets including the root panel.
 - `GuiContext::drain_events` (`context.rs`): Drain and return all pending events accumulated since the last call.
 - `GuiContext::run_layout_pass` (`context.rs`): Recursively compute and write `computed_rect` and `is_visible` for all widgets from root.
@@ -427,6 +298,7 @@ Focus traversal is retained-mode and widget-index based, managed by `GuiContext`
 - `GuiContext::set_focus` (`context.rs`): Move focus to `widget_idx`, updating `WidgetState` for the previous and new focused widgets.
 - `GuiContext::focus_next` (`context.rs`): Advance focus to the next visible enabled widget, wrapping around.
 - `GuiContext::focus_prev` (`context.rs`): Move focus to the previous visible enabled widget, wrapping around.
+- `GuiContext::focus_neighbor` (`context.rs`): Move focus using an explicit neighbor edge on the currently focused widget.
 - `GuiContext::add_toast` (`context.rs`): Push a toast message into the overlay queue.
 - `GuiContext::toast_count` (`context.rs`): Return the number of active toast messages.
 - `GuiContext::update` (`context.rs`): Advance toast timers, expire old toasts, and step all active widget transitions by `dt` seconds.
@@ -434,37 +306,14 @@ Focus traversal is retained-mode and widget-index based, managed by `GuiContext`
 - `GuiContext::mouse_pressed` (`context.rs`): Process a mouse button press at `(x, y)`; return `true` if any widget consumed it.
 - `GuiContext::mouse_released` (`context.rs`): Process a mouse button release at `(x, y)`; fires `Click` events on clickable widgets.
 - `GuiContext::mouse_moved` (`context.rs`): Process a mouse move to `(x, y)`; updates `Hovered`/`Normal` states; return `true` on any state change.
-
-#### Event routing contract
-
-Mouse events (`mouse_pressed`, `mouse_released`, `mouse_moved`) follow these routing rules:
-
-**Visibility and enabled gate.** Widgets where `!base.is_visible` or `!base.enabled` are
-completely skipped in hit-testing and event dispatch. They cannot receive `Pressed`, `Hovered`,
-or any event regardless of their position on screen. `is_visible` is computed recursively by the
-layout pass — a widget with a hidden ancestor is also considered invisible.
-
-**`MouseFilter::Stop` (default for interactive widgets).** The widget is an authoritative event
-target. The topmost Stop widget (highest `z_order`, then earliest insertion order) at the cursor
-position claims the event.
-
-**`MouseFilter::Pass`.** The widget is visible and receives hover styling in `mouse_moved`, but
-it is not an authoritative event target. Hit-testing for click/press dispatch skips all Pass
-widgets and falls through to the first Stop widget below. This lets transparent overlays and
-container panels sit above interactive content without blocking clicks.
-
-**`MouseFilter::Ignore`.** The widget is completely transparent to all mouse events including
-hover. It does not receive `Hovered` state, cannot be pressed, and is not returned by hit-testing.
-Its children (stored as separate flat-arena entries) use their own filter and are unaffected.
-
-Default assignments: `Spacer`, `Separator`, and `Label` default to `Ignore`; all other widget
-types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `GuiContext::key_pressed` (`context.rs`): Process a key press by name; routes focus, editing, activation, and widget navigation keys.
 - `GuiContext::text_input` (`context.rs`): Insert `text` into the focused `TextInput`; return `true` if consumed.
 - `GuiContext::wheel_moved` (`context.rs`): Scroll the focused `ScrollPanel` by `y` lines; return `true` if consumed.
 - `Button::new` (`controls.rs`): Create a button with the given text.
 - `Label::new` (`controls.rs`): Create a label with the given text.
 - `TextInput::new` (`controls.rs`): Create an empty text input with no placeholder and unlimited length.
+- `TextInput::set_text` (`controls.rs`): Replace the text and clamp it to `max_length` when one is configured.
+- `TextInput::set_max_length` (`controls.rs`): Set the maximum character count, truncating existing text when needed.
 - `TextInput::insert_text` (`controls.rs`): Insert `input` at the cursor position; return `false` if it would exceed `max_length`.
 - `TextInput::backspace` (`controls.rs`): Delete the character before the cursor; return `false` if already at position 0.
 - `TextInput::move_cursor_left` (`controls.rs`): Move the insertion cursor one character left; return `false` when already at the start.
@@ -579,16 +428,24 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `load_layout_def` (`layout_loader.rs`): Recursively build a widget tree from a `WidgetDef` into a `GuiContext`. Returns the pool index of the created root widget.
 - `load_layout_toml` (`layout_loader.rs`): Parse a TOML source string into a `LayoutDef` then delegate to `load_layout_def`. Returns the pool index of the created root widget.
 - `render_to_image` (`layout_loader.rs`): Save the engine's software UI rasterisation (`GuiContext::draw_to_image`) to a PNG. Headless-safe and visually aligned with default UI rendering.
+- `GuiContext::build_render_commands_with_fonts` (`render.rs`): Run a layout pass then emit render commands using `font_key` and explicit font storage.
 - `GuiContext::build_render_commands` (`render.rs`): Run a layout pass then emit all render commands using `font_key`; return the command list.
 - `GuiContext::generate_render_commands` (`render.rs`): Run a layout pass and emit render commands using the default font key.
 - `GuiContext::draw_to_image` (`render.rs`): Rasterise all visible widgets into a new `ImageData` of `width × height` pixels.
 - `Theme::new` (`theme.rs`): Create a theme with no style overrides.
 - `Theme::set_style` (`theme.rs`): Register `style` for `(widget_type, state)`, replacing any previous entry.
+- `Theme::set_class_style` (`theme.rs`): Register a class-specific style override.
 - `Theme::get_style` (`theme.rs`): Return the style for `(widget_type, state)`, falling back to `WidgetState::Normal` if the exact state is absent.
+- `Theme::get_style_with_class` (`theme.rs`): Return the style for `(widget_type, state)` with cascading fallback logic to support classes.
+- `Theme::get_token` (`theme.rs`): Return the named semantic token, or `None` if the name is not registered.
 - `Theme::draw_button_states_to_image` (`theme.rs`): Render all four `Button` states as labelled tiles into a new `ImageData` of `width × height` pixels.
 - `Theme::default_dark` (`theme.rs`): Create the built-in dark theme preset with styles for all standard widget types and states.
+- `TextVAlign::parse_str` (`widget.rs`): Parse a lowercase string ("top", "middle", "bottom") to a variant; returns `None` on unknown input.
+- `TextVAlign::as_str` (`widget.rs`): Return the canonical lowercase name string for this alignment.
 - `WidgetState::parse_str` (`widget.rs`): Parse a lowercase state name to a variant, or return `None` if unrecognised.
 - `WidgetState::as_str` (`widget.rs`): Return the canonical lowercase name string for this state.
+- `MouseFilter::parse_str` (`widget.rs`): Parse from a string representation.
+- `MouseFilter::as_str` (`widget.rs`): Return the canonical string representation.
 - `WidgetType::as_str` (`widget.rs`): Return the canonical lowercase name string for this type.
 - `WidgetType::parse_str` (`widget.rs`): Parse str.
 - `WidgetType::default_size` (`widget.rs`): Return the default `(width, height)` size in pixels for this widget type.
@@ -640,15 +497,16 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `lurek.ui.setTheme`: Applies a theme to the entire UI context.
 - `lurek.ui.getTheme`: Returns whether a theme is currently set.
 - `lurek.ui.getRoot`: Returns the root panel widget of the UI tree.
-- `lurek.ui.setFont`: Sets the global UI font by assigning it to the root widget.
-- `lurek.ui.getFont`: Returns the global UI font assigned to the root widget, or nil when UI inherits the render fallback font.
-- `lurek.ui.clearFont`: Clears the global UI font override from the root widget.
-- `lurek.ui.getWidgetFont`: Returns the font override assigned to a widget, or nil when the widget inherits from its parent.
+- `lurek.ui.setFont`: Sets the global UI font by applying it to the root widget.
+- `lurek.ui.getFont`: Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
+- `lurek.ui.clearFont`: Clears the global UI font override so the UI falls back to the active render font again.
+- `lurek.ui.getWidgetFont`: Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
 - `lurek.ui.setFocus`: Sets keyboard focus to a widget, or clears focus if nil.
 - `lurek.ui.getFocus`: Returns the index of the currently focused widget, or nil.
 - `lurek.ui.focusNext`: Moves keyboard focus to the next focusable widget.
 - `lurek.ui.focusPrev`: Moves keyboard focus to the previous focusable widget.
-- `lurek.ui.clear`: Clears the retained UI tree and transient UI state while keeping the active theme.
+- `lurek.ui.focusNeighbor`: Moves keyboard focus using an explicit directional focus link.
+- `lurek.ui.clear`: Clears all retained UI widgets and transient UI state while keeping the active theme.
 - `lurek.ui.clearFocus`: Clears keyboard focus from all widgets.
 - `lurek.ui.addToast`: Adds a toast notification to the queue.
 - `lurek.ui.getToastCount`: Returns the number of active toast notifications.
@@ -679,12 +537,13 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `lurek.ui.getActiveDrag`: Returns the widget index currently being dragged, or nil.
 - `lurek.ui.dropOn`: Drops the currently dragged widget onto a target widget.
 - `lurek.ui.endDrag`: Ends the current drag operation without dropping.
-- `lurek.ui.update_bindings`: Updates data bindings for widgets that reference binding keys and returns the number of changed widgets.
-- `lurek.ui.updateBindings`: CamelCase alias for `update_bindings` that returns the number of changed widgets.
+- `lurek.ui.update_bindings`: Updates data bindings for widgets that reference binding keys.
+- `lurek.ui.updateBindings`: Updates data bindings for widgets that reference binding keys.
 - `lurek.ui.loadLayout`: Loads a UI layout from a Lua table definition.
 - `lurek.ui.loadLayoutFile`: Loads a UI layout from a TOML layout file.
-- `lurek.ui.loadLayoutGameFile`: Loads a UI layout TOML file through GameFS (game-relative path).
-- `lurek.ui.renderToImage`: Renders the entire UI to a PNG image file. The canonical order is `(width, height, path)`; the binding also accepts `(path, width, height)` for compatibility with older tests.
+- `lurek.ui.loadLayoutGameFile`: Loads a UI layout from a TOML file resolved through GameFS.
+- `lurek.ui.renderToImage`: Renders the entire UI to a PNG image file.
+- `lurek.ui.getStyleToken`: Returns the value of a named semantic style token from the active theme.
 
 ### `LAccordion` Methods
 - `LAccordion:addSection`: Adds a collapsible section to this accordion.
@@ -810,9 +669,9 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `LLayout:setColumns`: Sets the number of columns for grid layout mode (minimum 1).
 - `LLayout:setWrap`: Enables or disables wrapping of children to the next row/column when they overflow.
 - `LLayout:getWrap`: Returns whether wrapping is enabled for this layout.
-- `LLayout:setAlign`: Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch") and returns true when applied.
-- `LLayout:getAlign`: Returns the current cross-axis alignment mode; new layouts default to "stretch".
-- `LLayout:setJustify`: Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between") and returns true when applied.
+- `LLayout:setAlign`: Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
+- `LLayout:getAlign`: Returns the current cross-axis alignment mode.
+- `LLayout:setJustify`: Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
 - `LLayout:getJustify`: Returns the current main-axis justification mode.
 
 ### `LLineChart` Methods
@@ -971,16 +830,16 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `LTabBar:getActiveTab`: Returns the 1-based index of the currently active tab.
 
 ### `LTextInput` Methods
-- `LTextInput:setText`: Sets the text content of this text input field, clamps it to `maxLength` when configured, and moves the cursor to the end.
+- `LTextInput:setText`: Sets the text content of this text input field and moves the cursor to the end.
 - `LTextInput:getText`: Returns the current text content of this text input field.
 - `LTextInput:setPlaceholder`: Sets the placeholder text shown when the input is empty.
 - `LTextInput:getPlaceholder`: Returns the placeholder text of this text input.
-- `LTextInput:setMaxLength`: Sets the maximum number of characters allowed in this text input and clamps existing text when needed.
+- `LTextInput:setMaxLength`: Sets the maximum number of characters allowed in this text input.
 - `LTextInput:isFocused`: Returns whether this text input currently has keyboard focus.
 - `LTextInput:getCursorPosition`: Returns the current cursor position (character index) within the text input.
 
 ### `LTheme` Methods
-- `LTheme:setStyle`: Sets a style entry for the given widget type and state, returning true when the style is applied.
+- `LTheme:setStyle`: Sets a style entry for the given widget type and state, optionally restricted to a style class.
 - `LTheme:type`: Returns the type name of this object.
 - `LTheme:typeOf`: Checks whether this object matches the given type name.
 
@@ -1039,12 +898,21 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `LUiWidget:getPosition`: Returns the local position of this widget relative to its parent.
 - `LUiWidget:setSize`: Sets the width and height of this widget in pixels.
 - `LUiWidget:getSize`: Returns the width and height of this widget.
-- `LUiWidget:setFont`: Assigns a font override to this widget and its descendants unless a deeper widget overrides it again.
-- `LUiWidget:clearFont`: Clears this widget's font override so it inherits from its parent again.
+- `LUiWidget:setFont`: Assigns a specific font to this widget and its descendants unless overridden further down the tree.
+- `LUiWidget:clearFont`: Clears any font override on this widget so it inherits from its parent again.
 - `LUiWidget:getRect`: Returns the computed bounding rectangle of this widget in screen coordinates after layout.
-- `LUiWidget:setStyleClass`: Sets the style class of this widget and returns true when applied.
-- `LUiWidget:getStyleClass`: Returns the style class of this widget, or an empty string when none is set.
-- `LUiWidget:setMouseFilter`: Sets the mouse filter for this widget ("stop", "pass", "ignore"); invalid values reset to "stop" and return false.
+- `LUiWidget:setStyleClass`: Sets the style class of this widget.
+- `LUiWidget:getStyleClass`: Returns the style class of this widget.
+- `LUiWidget:setMouseFilter`: Sets the mouse filter for this widget ("stop", "pass", "ignore").
+- `LUiWidget:setTextWrap`: Enables or disables word-wrap for text inside this widget.
+- `LUiWidget:setTextEllipsis`: Enables or disables ellipsis clipping for overflowing single-line text.
+- `LUiWidget:setTextVAlign`: Sets the vertical alignment of text inside this widget.
+- `LUiWidget:setFocusable`: Sets whether this widget participates in keyboard focus traversal.
+- `LUiWidget:setTabIndex`: Sets the tab-order index for this widget.
+- `LUiWidget:setFocusGroup`: Sets the focus traversal group for this widget.
+- `LUiWidget:setFocusNeighbor`: Sets an explicit directional focus neighbor for this widget.
+- `LUiWidget:setRole`: Sets a semantic role string for this widget.
+- `LUiWidget:setAriaName`: Sets the accessible name metadata for this widget.
 - `LUiWidget:getMouseFilter`: Returns the mouse filter of this widget.
 - `LUiWidget:setVisible`: Shows or hides this widget. Hidden widgets are not drawn and do not receive input.
 - `LUiWidget:isVisible`: Returns whether this widget is currently visible.
@@ -1059,7 +927,7 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `LUiWidget:removeChild`: Removes a child widget from this widget's hierarchy.
 - `LUiWidget:getChildCount`: Returns the number of direct child widgets attached to this widget.
 - `LUiWidget:getChildren`: Returns a table of lightweight child widget references, each containing an _idx field.
-- `LUiWidget:findById`: Searches this widget's subtree for a child with the given ID and returns a typed widget handle (with widget-specific methods).
+- `LUiWidget:findById`: Searches this widget's subtree for a child with the given ID.
 - `LUiWidget:setOnClick`: Registers a callback function invoked when this widget is clicked.
 - `LUiWidget:setOnChange`: Registers a callback function invoked when this widget's value changes.
 - `LUiWidget:setOnDraw`: Registers a custom draw callback for this widget, invoked each frame during the draw pass.
@@ -1082,7 +950,7 @@ types default to `Stop`. Use `LUiWidget:setMouseFilter` to override.
 - `LUiWidget:setFlexShrink`: Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
 - `LUiWidget:getFlexShrink`: Returns the flex-shrink factor of this widget.
 - `LUiWidget:bind`: Binds this widget to a data key for use with update_bindings.
-- `LUiWidget:setBindKey`: Binds this widget to a data key and returns true when the widget exists.
+- `LUiWidget:setBindKey`: Binds this widget to a data key and reports whether the widget exists.
 - `LUiWidget:unbind`: Removes the data binding from this widget.
 - `LUiWidget:setAlpha`: Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
 - `LUiWidget:getAlpha`: Returns the current opacity of this widget.

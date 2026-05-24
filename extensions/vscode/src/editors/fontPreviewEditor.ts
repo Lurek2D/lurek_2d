@@ -22,7 +22,7 @@ export class FontPreviewEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Font Preview", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 200px;
+        display: grid; grid-template-columns: 48px 1fr 200px;
         grid-template-rows: auto 1fr auto;
         height: 100vh;
       }

@@ -28,6 +28,8 @@ import { FontPreviewEditor } from "../editors/fontPreviewEditor.js";
 import { LocalizationEditor } from "../editors/localizationEditor.js";
 import { PhysicsMaterialsEditor } from "../editors/physicsMaterialsEditor.js";
 import { WorldMapEditor } from "../editors/worldMapEditor.js";
+import { ProvinceEditor } from "../editors/provinceEditor.js";
+import { GlobeEditor } from "../editors/globeEditor.js";
 
 interface EditorEntry {
   id: string;
@@ -37,7 +39,7 @@ interface EditorEntry {
 const EDITORS: EditorEntry[] = [
   { id: "tileMap", open: (ctx) => TileMapEditor.open(ctx) },
   { id: "sceneFlow", open: (ctx) => SceneFlowEditor.open(ctx) },
-  { id: "ecs", open: (ctx) => EntityEditor.open(ctx) },
+  { id: "entity", open: (ctx) => EntityEditor.open(ctx) },
   { id: "pixelArt", open: (ctx) => PixelArtEditor.open(ctx) },
   { id: "particle", open: (ctx) => ParticleEditor.open(ctx) },
   { id: "dialog", open: (ctx) => DialogEditor.open(ctx) },
@@ -61,9 +63,11 @@ const EDITORS: EditorEntry[] = [
   { id: "timeline", open: (ctx) => TimelineEditor.open(ctx) },
   { id: "shaderPreview", open: (ctx) => ShaderPreviewEditor.open(ctx) },
   { id: "fontPreview", open: (ctx) => FontPreviewEditor.open(ctx) },
-  { id: "i18n", open: (ctx) => LocalizationEditor.open(ctx) },
+  { id: "localization", open: (ctx) => LocalizationEditor.open(ctx) },
   { id: "physicsMaterials", open: (ctx) => PhysicsMaterialsEditor.open(ctx) },
   { id: "worldMap", open: (ctx) => WorldMapEditor.open(ctx) },
+  { id: "province", open: (ctx) => ProvinceEditor.open(ctx) },
+  { id: "globe", open: (ctx) => GlobeEditor.open(ctx) },
 ];
 
 /**

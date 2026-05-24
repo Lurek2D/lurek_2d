@@ -1,5 +1,9 @@
 # debugbridge
 
+## TL;DR
+
+- The `debugbridge` module provides a powerful TCP-based communication layer that enables external tools—such as the VS Code extension, remote inspectors, and diagnostic dashboards—to connect directly to a running Lurek2D instance.
+
 ## General Info
 
 - Module group: `Edge/Integration`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `debugbridge` module provides a powerful TCP-based communication layer that enables external tools—such as the VS Code extension, remote inspectors, and diagnostic dashboards—to connect directly to a running Lurek2D instance. Situated within the Edge/Integration tier, the bridge operates primarily over a lightweight JSON-RPC protocol. It accepts requests for real-time engine interactions, including breakpoint management, variable inspection, expression evaluation, screenshot capture, and print history retrieval. By design, the module is disabled by default in release builds for security and performance reasons, activating only when explicitly started from Lua via `lurek.debugbridge.start()`.
+ Situated within the Edge/Integration tier, the bridge operates primarily over a lightweight JSON-RPC protocol. It accepts requests for real-time engine interactions, including breakpoint management, variable inspection, expression evaluation, screenshot capture, and print history retrieval. By design, the module is disabled by default in release builds for security and performance reasons, activating only when explicitly started from Lua via `lurek.debugbridge.start()`.
 
 At the architectural core of the module is `BridgeShared`, a synchronized state container wrapped in an `Arc<Mutex<>>`. This structure safely brokers data between the main game thread and the dedicated background TCP I/O thread. It holds pending request and response queues, frame-time performance metrics with bounded sampling windows, and a broadcast queue for event delivery to all connected clients. One of its key features is print capture: it intercepts `lurek.log` and standard Lua `print` output, storing it in a bounded ring buffer so that external editors can natively display runtime textual output without needing to scrape the system's stdout.
 
@@ -70,12 +74,12 @@ The server loop manages non-blocking TCP connections, executing protocol handsha
 - `lurek.debugbridge.start`: Starts the localhost debug bridge server on a port.
 - `lurek.debugbridge.stop`: Stops the debug bridge server and joins its server thread.
 - `lurek.debugbridge.isRunning`: Returns whether the debug bridge server is currently running.
-- `lurek.debugbridge.getPort`: Returns the debug bridge TCP port. This function is exposed to Lua scripts.
+- `lurek.debugbridge.getPort`: Returns the configured TCP port for the debug bridge.
 - `lurek.debugbridge.getClientCount`: Returns the number of connected debug bridge clients.
 - `lurek.debugbridge.poll`: Polls pending debugger requests, evaluates supported methods, and queues responses.
 - `lurek.debugbridge.capturePrint`: Captures a print message and broadcasts it to debug bridge clients.
 - `lurek.debugbridge.getPrintHistory`: Returns captured print history entries.
-- `lurek.debugbridge.clearPrintHistory`: Clears captured print history. This function is exposed to Lua scripts.
+- `lurek.debugbridge.clearPrintHistory`: Clears all entries from the captured print history buffer.
 - `lurek.debugbridge.setMaxPrintHistory`: Sets the maximum retained print history entry count.
 - `lurek.debugbridge.getPerformance`: Returns debug bridge performance metrics.
 - `lurek.debugbridge.requestScreenshot`: Requests a screenshot from the runtime.

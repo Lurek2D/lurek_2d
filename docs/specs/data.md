@@ -1,5 +1,9 @@
 # data
 
+## TL;DR
+
+- The `data` module is a comprehensive binary data toolkit situated in the Foundations tier of the engine.
+
 ## General Info
 
 - Module group: `Foundations`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `data` module is a comprehensive binary data toolkit situated in the Foundations tier of the engine. It provides high-performance data manipulation utilities entirely decoupled from engine-specific state, making it highly portable and resilient. It offers a robust suite of tools for byte buffering, compression, cryptographic hashing, string encoding, and structured binary packing and unpacking operations, all of which are critical for tasks ranging from network protocols to save-game serialization.
+ It provides high-performance data manipulation utilities entirely decoupled from engine-specific state, making it highly portable and resilient. It offers a robust suite of tools for byte buffering, compression, cryptographic hashing, string encoding, and structured binary packing and unpacking operations, all of which are critical for tasks ranging from network protocols to save-game serialization.
 
 At the center of the module is `ByteData`, an owned, resizable byte vector equipped with indexed read and write access for all primitive types (including integers and floating-point numbers) in both little-endian and big-endian formats. For zero-copy inspection of binary payloads, the `DataView` struct provides read-only typed access over shared byte slices, minimizing overhead when decoding large network packets or streaming assets. Complementing this is `DataWriter`, a sequential builder that accumulates serialized binary output using a movable cursor.
 
@@ -202,21 +206,23 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - `lurek.data.read`: Reads binary values from a byte string using a format string.
 - `lurek.data.size`: Measures fixed byte size for a binary format string.
 - `lurek.data.parseToml`: Parses TOML text into Lua tables and scalar values.
-- `lurek.data.encodeToml`: Encodes a Lua table into TOML text. This function is exposed to Lua scripts.
+- `lurek.data.encodeToml`: Encodes a Lua table into a TOML document string.
 - `lurek.data.newRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
 - `lurek.data.toMsgPack`: Encodes a Lua value into the current structured binary interchange payload.
 - `lurek.data.fromMsgPack`: Decodes a structured binary interchange payload back into Lua values.
 - `lurek.data.newWriter`: Creates an empty binary data writer.
 
 ### `LByteData` Methods
-- `LByteData:getSize`: Returns the byte buffer length. This method is available to Lua scripts.
+- `LByteData:getSize`: Returns the byte buffer length in bytes.
 - `LByteData:getString`: Returns the byte buffer as a string.
 - `LByteData:getByte`: Reads one byte at a zero-based offset.
-- `LByteData:setByte`: Writes one byte at a zero-based offset.
-- `LByteData:clone`: Returns a copy of this byte buffer. This method is available to Lua scripts.
-- `LByteData:setBit`: Sets or clears one bit inside a byte.
-- `LByteData:getBit`: Reads one bit inside a byte. This method is available to Lua scripts.
+- `LByteData:setByte`: Writes one byte at a zero-based offset inside the buffer.
+- `LByteData:clone`: Returns a deep copy of the entire byte buffer.
+- `LByteData:setBit`: Sets or clears one bit inside a byte at the given offset.
+- `LByteData:getBit`: Reads one bit inside a byte at the given offsets.
 - `LByteData:readBits`: Reads up to 32 bits starting at a byte and bit offset.
+- `LByteData:type`: Returns the type name of this object for runtime type-checking.
+- `LByteData:typeOf`: Checks whether this object matches the given type name.
 
 ### `LDataView` Methods
 - `LDataView:getUInt8`: Reads an unsigned 8-bit integer at a byte offset.
@@ -232,34 +238,34 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - `LDataView:typeOf`: Returns whether this data view handle matches a supported type name.
 
 ### `LDataWriter` Methods
-- `LDataWriter:writeU8`: Writes an unsigned 8-bit integer. This method is available to Lua scripts.
-- `LDataWriter:writeI8`: Writes a signed 8-bit integer. This method is available to Lua scripts.
-- `LDataWriter:writeU16LE`: Writes an unsigned 16-bit integer in little-endian order.
-- `LDataWriter:writeU16BE`: Writes an unsigned 16-bit integer in big-endian order.
-- `LDataWriter:writeI16LE`: Writes a signed 16-bit integer in little-endian order.
-- `LDataWriter:writeU32LE`: Writes an unsigned 32-bit integer in little-endian order.
-- `LDataWriter:writeI32LE`: Writes a signed 32-bit integer in little-endian order.
-- `LDataWriter:writeF32LE`: Writes a 32-bit float in little-endian order.
-- `LDataWriter:writeF64LE`: Writes a 64-bit float in little-endian order.
-- `LDataWriter:writeString`: Writes a UTF-8 string to the writer.
-- `LDataWriter:writeBytes`: Writes raw bytes from a Lua string to the writer.
-- `LDataWriter:seek`: Moves the writer cursor. This method is available to Lua scripts.
+- `LDataWriter:writeU8`: Appends an unsigned 8-bit integer to the writer buffer.
+- `LDataWriter:writeI8`: Appends a signed 8-bit integer to the writer buffer.
+- `LDataWriter:writeU16LE`: Appends an unsigned 16-bit integer in little-endian byte order.
+- `LDataWriter:writeU16BE`: Appends an unsigned 16-bit integer in big-endian byte order.
+- `LDataWriter:writeI16LE`: Appends a signed 16-bit integer in little-endian byte order.
+- `LDataWriter:writeU32LE`: Appends an unsigned 32-bit integer in little-endian byte order.
+- `LDataWriter:writeI32LE`: Appends a signed 32-bit integer in little-endian byte order.
+- `LDataWriter:writeF32LE`: Appends a 32-bit float value in little-endian byte order.
+- `LDataWriter:writeF64LE`: Appends a 64-bit float value in little-endian byte order.
+- `LDataWriter:writeString`: Appends a UTF-8 encoded string to the writer buffer.
+- `LDataWriter:writeBytes`: Appends raw bytes from a Lua string to the writer buffer.
+- `LDataWriter:seek`: Moves the writer cursor to a specific byte position.
 - `LDataWriter:tell`: Returns the writer cursor position.
-- `LDataWriter:len`: Returns the writer buffer length. This method is available to Lua scripts.
+- `LDataWriter:len`: Returns the current length of the writer buffer.
 - `LDataWriter:toBytes`: Returns the writer buffer as a binary string.
 - `LDataWriter:type`: Returns the Lua-visible type name for this data writer handle.
 - `LDataWriter:typeOf`: Returns whether this data writer handle matches a supported type name.
 
 ### `LRingBuffer` Methods
 - `LRingBuffer:push`: Pushes a value into the ring buffer and evicts the oldest value when full.
-- `LRingBuffer:pop`: Removes and returns the oldest value.
-- `LRingBuffer:peek`: Returns the oldest value without removing it.
-- `LRingBuffer:peekNewest`: Returns the newest value without removing it.
+- `LRingBuffer:pop`: Removes and returns the oldest stored value from the ring buffer.
+- `LRingBuffer:peek`: Returns the oldest stored value without removing it from the ring buffer.
+- `LRingBuffer:peekNewest`: Returns the newest stored value without removing it from the ring buffer.
 - `LRingBuffer:len`: Returns the number of values currently stored.
-- `LRingBuffer:capacity`: Returns the ring buffer capacity. This method is available to Lua scripts.
+- `LRingBuffer:capacity`: Returns the maximum capacity of the ring buffer.
 - `LRingBuffer:isEmpty`: Returns whether the ring buffer has no values.
 - `LRingBuffer:isFull`: Returns whether the ring buffer is at capacity.
-- `LRingBuffer:clear`: Removes every stored value and releases registry keys.
+- `LRingBuffer:clear`: Removes every stored value and releases their registry keys.
 - `LRingBuffer:toTable`: Returns stored values in oldest-to-newest order.
 - `LRingBuffer:type`: Returns the Lua-visible type name for this ring buffer handle.
 - `LRingBuffer:typeOf`: Returns whether this ring buffer handle matches a supported type name.

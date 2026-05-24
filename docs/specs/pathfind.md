@@ -1,5 +1,9 @@
 # pathfind
 
+## TL;DR
+
+- The `pathfind` module is a comprehensive Feature Systems tier library providing a vast array of pathfinding algorithms and spatial reasoning tools for Lurek2D.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `pathfind` module is a comprehensive Feature Systems tier library providing a vast array of pathfinding algorithms and spatial reasoning tools for Lurek2D. It is designed to handle everything from simple grid-based movement to complex, multi-agent AI steering and hierarchical navigation. The foundation of the module is the `NavGrid`, a robust 2D grid structure supporting per-cell walkability masks, integer-based movement costs, and configurable diagonal movement policies (with corner-cutting prevention). On top of this, the module implements classical algorithms like A* (with octile or Manhattan heuristics), Dijkstra's algorithm for cost-weighted reachability, and unweighted BFS. For high-performance uniform-cost grids, it features Jump Point Search (JPS), which dramatically accelerates A* by pruning symmetric neighbors.
+ It is designed to handle everything from simple grid-based movement to complex, multi-agent AI steering and hierarchical navigation. The foundation of the module is the `NavGrid`, a robust 2D grid structure supporting per-cell walkability masks, integer-based movement costs, and configurable diagonal movement policies (with corner-cutting prevention). On top of this, the module implements classical algorithms like A* (with octile or Manhattan heuristics), Dijkstra's algorithm for cost-weighted reachability, and unweighted BFS. For high-performance uniform-cost grids, it features Jump Point Search (JPS), which dramatically accelerates A* by pruning symmetric neighbors.
 
 To address the challenges of large open worlds and massive agent counts, the module includes several advanced AI pathing techniques. Hierarchical Pathfinding A* (HPA*) partitions grids into chunks, building an abstract graph of boundary entrances to allow near-instant long-distance path planning that is later refined into tile-by-tile routes. For crowd simulation, the `FlowField` and `ai_flow_field` structures precompute directional vectors across a grid toward a specific goal, allowing hundreds of agents to steer smoothly without calculating individual paths. Additionally, the `InfluenceMap` system allows developers to propagate, blend, and decay scalar values across grids—perfect for tactical AI to evaluate threat levels, control zones, or attractive points of interest.
 
@@ -343,26 +347,26 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - Namespace: `lurek.pathfind`
 
 ### Module Functions
-- `lurek.pathfind.newNavGrid`: Creates a navigation grid. This function is exposed to Lua scripts.
+- `lurek.pathfind.newNavGrid`: Creates a navigation grid with the given dimensions.
 - `lurek.pathfind.newPathfinder`: Creates a unit pathfinder for a navigation grid.
 - `lurek.pathfind.newFlowField`: Creates a flow field for a navigation grid.
-- `lurek.pathfind.newPathGrid`: Creates a cell-size path grid. This function is exposed to Lua scripts.
+- `lurek.pathfind.newPathGrid`: Creates a cell-size path grid with given dimensions.
 - `lurek.pathfind.newPathFlowField`: Creates an AI flow field from a path grid.
-- `lurek.pathfind.setThreadCount`: Records a warning because pathfinding thread count is not implemented.
-- `lurek.pathfind.getThreadCount`: Returns the pathfinding thread count.
+- `lurek.pathfind.setThreadCount`: Sets the configured pathfinding worker-thread count.
+- `lurek.pathfind.getThreadCount`: Returns the configured pathfinding thread count.
 - `lurek.pathfind.newNavGridFromTileMap`: Creates a navigation grid from a tilemap layer and blocked gid table.
-- `lurek.pathfind.newHexGrid`: Creates a hex grid. This function is exposed to Lua scripts.
-- `lurek.pathfind.newJpsGrid`: Creates a Jump Point Search grid. This function is exposed to Lua scripts.
-- `lurek.pathfind.newNavMesh`: Creates an empty navigation mesh. This function is exposed to Lua scripts.
+- `lurek.pathfind.newHexGrid`: Creates a hex grid with the given dimensions.
+- `lurek.pathfind.newJpsGrid`: Creates a Jump Point Search grid with given dimensions.
+- `lurek.pathfind.newNavMesh`: Creates an empty navigation mesh for polygon-based pathfinding.
 - `lurek.pathfind.rangeMap`: Computes reachable cells from range map options.
 
 ### `LAIFlowField` Methods
-- `LAIFlowField:getWidth`: Returns flow field width. This method is available to Lua scripts.
-- `LAIFlowField:getHeight`: Returns flow field height. This method is available to Lua scripts.
-- `LAIFlowField:hasGoal`: Returns whether a goal is set. This method is available to Lua scripts.
-- `LAIFlowField:setGoal`: Sets the one-based flow field goal.
-- `LAIFlowField:getGoal`: Returns the one-based flow field goal when set.
-- `LAIFlowField:getDirection`: Returns flow direction for a one-based cell.
+- `LAIFlowField:getWidth`: Returns flow field width from this object.
+- `LAIFlowField:getHeight`: Returns flow field height from this object.
+- `LAIFlowField:hasGoal`: Returns whether a flow field goal is currently set.
+- `LAIFlowField:setGoal`: Sets the one-based flow field goal and recalculates the field.
+- `LAIFlowField:getGoal`: Returns the one-based flow field goal, or nil when no goal is set.
+- `LAIFlowField:getDirection`: Returns flow direction vector for a one-based cell.
 - `LAIFlowField:getDistance`: Returns distance to goal for a one-based cell.
 - `LAIFlowField:type`: Returns the Lua-visible type name for this AI flow field handle.
 - `LAIFlowField:typeOf`: Returns whether this AI flow field handle matches a supported type name.
@@ -370,54 +374,54 @@ Beyond standard square grids, the module offers extensive support for alternativ
 ### `LFlowField` Methods
 - `LFlowField:calculate`: Calculates a flow field toward one target cell.
 - `LFlowField:calculateMulti`: Calculates a flow field toward multiple target cells.
-- `LFlowField:getDirection`: Returns flow direction at a one-based grid cell.
+- `LFlowField:getDirection`: Returns flow direction vector at a one-based grid cell.
 - `LFlowField:getDirectionAngle`: Returns flow direction angle at a one-based grid cell.
-- `LFlowField:getCostToTarget`: Returns flow field cost to target from a one-based grid cell.
+- `LFlowField:getCostToTarget`: Returns integration cost to the target from a one-based grid cell.
 - `LFlowField:isCalculated`: Returns whether the flow field has been calculated.
 - `LFlowField:getTargets`: Returns target cells for this flow field.
-- `LFlowField:steer`: Returns steering data for a world position.
+- `LFlowField:steer`: Returns a steering velocity for a world position using the flow field.
 - `LFlowField:type`: Returns the Lua-visible type name for this flow field handle.
 - `LFlowField:typeOf`: Returns whether this flow field handle matches a supported type name.
 
 ### `LHexGrid` Methods
 - `LHexGrid:setBlocked`: Sets blocked state for a one-based hex cell.
 - `LHexGrid:setCost`: Sets movement cost for a one-based hex cell.
-- `LHexGrid:isBlocked`: Returns blocked state for a one-based hex cell.
+- `LHexGrid:isBlocked`: Returns whether a one-based hex cell is blocked.
 - `LHexGrid:findPath`: Finds a path between one-based hex cells.
 - `LHexGrid:lineOfSight`: Returns whether two one-based hex cells have line of sight.
-- `LHexGrid:fieldOfView`: Returns visible hex cells within range.
-- `LHexGrid:rangeOfMovement`: Returns reachable hex cells within movement budget.
-- `LHexGrid:distance`: Returns distance between two one-based hex cells.
+- `LHexGrid:fieldOfView`: Returns visible hex cells within range from an origin.
+- `LHexGrid:rangeOfMovement`: Returns reachable hex cells within a movement budget.
+- `LHexGrid:distance`: Returns hex distance between two one-based hex cells.
 - `LHexGrid:type`: Returns the Lua-visible type name for this hex grid handle.
 - `LHexGrid:typeOf`: Returns whether this hex grid handle matches a supported type name.
 
 ### `LJpsGrid` Methods
-- `LJpsGrid:setBlocked`: Sets blocked state for a one-based grid cell.
-- `LJpsGrid:isBlocked`: Returns blocked state for a one-based grid cell.
+- `LJpsGrid:setBlocked`: Sets blocked state for a one-based JPS grid cell.
+- `LJpsGrid:isBlocked`: Returns whether a one-based JPS grid cell is blocked.
 - `LJpsGrid:findPath`: Finds a JPS path between one-based grid cells.
 - `LJpsGrid:type`: Returns the Lua-visible type name for this JPS grid handle.
 - `LJpsGrid:typeOf`: Returns whether this JPS grid handle matches a supported type name.
 
 ### `LNavGrid` Methods
-- `LNavGrid:getWidth`: Returns grid width. This method is available to Lua scripts.
-- `LNavGrid:getHeight`: Returns grid height. This method is available to Lua scripts.
-- `LNavGrid:getDimensions`: Returns grid dimensions. This method is available to Lua scripts.
+- `LNavGrid:getWidth`: Returns grid width from this object.
+- `LNavGrid:getHeight`: Returns grid height from this object.
+- `LNavGrid:getDimensions`: Returns grid width and height as two integers.
 - `LNavGrid:setCost`: Sets movement cost at a one-based grid cell.
 - `LNavGrid:getCost`: Returns movement cost at a one-based grid cell.
 - `LNavGrid:setBlocked`: Sets blocked state at a one-based grid cell.
-- `LNavGrid:isBlocked`: Returns blocked state at a one-based grid cell.
+- `LNavGrid:isBlocked`: Returns whether a one-based grid cell is blocked.
 - `LNavGrid:isWalkable`: Returns whether a one-based grid cell is walkable for a unit size.
-- `LNavGrid:fill`: Fills the grid with a movement cost.
+- `LNavGrid:fill`: Fills the entire grid with a uniform movement cost.
 - `LNavGrid:fillRect`: Fills a one-based rectangular area with a movement cost.
-- `LNavGrid:loadFromString`: Loads grid data from a binary string.
-- `LNavGrid:saveToString`: Saves grid data to a binary string. This method is available to Lua scripts.
-- `LNavGrid:setChunkSize`: Sets hierarchical chunk size. This method is available to Lua scripts.
-- `LNavGrid:getChunkSize`: Returns hierarchical chunk size. This method is available to Lua scripts.
+- `LNavGrid:loadFromString`: Loads grid data from a serialized binary string.
+- `LNavGrid:saveToString`: Saves grid data to a serialized binary string.
+- `LNavGrid:setChunkSize`: Sets hierarchical chunk size for abstract graph partitioning.
+- `LNavGrid:getChunkSize`: Returns the hierarchical chunk size in cells.
 - `LNavGrid:rebuildAbstract`: Rebuilds the cached abstract graph for this grid.
-- `LNavGrid:setDirty`: Marks a one-based rectangular region dirty.
-- `LNavGrid:clearDirty`: Clears dirty regions. This method is available to Lua scripts.
-- `LNavGrid:setDiagonalMode`: Sets diagonal movement mode. This method is available to Lua scripts.
-- `LNavGrid:getDiagonalMode`: Returns diagonal movement mode. This method is available to Lua scripts.
+- `LNavGrid:setDirty`: Marks a one-based rectangular region dirty for incremental rebuild.
+- `LNavGrid:clearDirty`: Clears all dirty region markers from the grid.
+- `LNavGrid:setDiagonalMode`: Sets diagonal movement mode for this object.
+- `LNavGrid:getDiagonalMode`: Returns the current diagonal movement mode name.
 - `LNavGrid:type`: Returns the Lua-visible type name for this navigation grid handle.
 - `LNavGrid:typeOf`: Returns whether this navigation grid handle matches a supported type name.
 
@@ -425,14 +429,14 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LNavMesh:addPolygon`: Adds a polygon from vertex tables and returns a one-based id.
 - `LNavMesh:connectPolygons`: Connects two polygons by one-based id.
 - `LNavMesh:findPath`: Finds a path through the navmesh between world points.
-- `LNavMesh:getPolygonCount`: Returns navmesh polygon count. This method is available to Lua scripts.
+- `LNavMesh:getPolygonCount`: Returns the total navmesh polygon count.
 - `LNavMesh:type`: Returns the Lua-visible type name for this navmesh handle.
 - `LNavMesh:typeOf`: Returns whether this navmesh handle matches a supported type name.
 
 ### `LPathGrid` Methods
-- `LPathGrid:getWidth`: Returns grid width. This method is available to Lua scripts.
-- `LPathGrid:getHeight`: Returns grid height. This method is available to Lua scripts.
-- `LPathGrid:getCellSize`: Returns path grid cell size. This method is available to Lua scripts.
+- `LPathGrid:getWidth`: Returns grid width from this object.
+- `LPathGrid:getHeight`: Returns grid height from this object.
+- `LPathGrid:getCellSize`: Returns path grid cell size from this object.
 - `LPathGrid:setWalkable`: Sets walkability at a one-based cell.
 - `LPathGrid:isWalkable`: Returns walkability at a one-based cell.
 - `LPathGrid:setCost`: Sets movement cost at a one-based cell.
@@ -446,18 +450,18 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LUnitPathfinder:findPath`: Finds a path between one-based grid cells.
 - `LUnitPathfinder:findPathSmooth`: Finds a smoothed path between one-based grid cells.
 - `LUnitPathfinder:findPathBidirectional`: Finds a path using bidirectional A* and returns completion status.
-- `LUnitPathfinder:getPathLength`: Returns path length for a waypoint table.
-- `LUnitPathfinder:getPathCost`: Returns path cost for a waypoint table.
-- `LUnitPathfinder:findPartialPath`: Finds a partial path with a node limit.
+- `LUnitPathfinder:getPathLength`: Returns the total Euclidean length of a waypoint path.
+- `LUnitPathfinder:getPathCost`: Returns the total movement cost along a waypoint path.
+- `LUnitPathfinder:findPartialPath`: Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
 - `LUnitPathfinder:findNearestWalkable`: Finds nearest walkable one-based grid cell within a radius.
-- `LUnitPathfinder:isReachable`: Returns whether a target cell is reachable.
+- `LUnitPathfinder:isReachable`: Returns whether a target cell is reachable from a start cell.
 - `LUnitPathfinder:heuristicDistance`: Returns heuristic distance between two one-based cells.
 - `LUnitPathfinder:lineOfSight`: Returns whether two one-based cells have line of sight.
-- `LUnitPathfinder:setCacheEnabled`: Enables or disables path cache. This method is available to Lua scripts.
+- `LUnitPathfinder:setCacheEnabled`: Enables or disables the path cache on this object.
 - `LUnitPathfinder:isCacheEnabled`: Returns whether path cache is enabled.
-- `LUnitPathfinder:clearCache`: Clears cached paths. This method is available to Lua scripts.
-- `LUnitPathfinder:getCacheSize`: Returns current path cache size. This method is available to Lua scripts.
-- `LUnitPathfinder:setCacheMaxSize`: Sets maximum path cache size. This method is available to Lua scripts.
+- `LUnitPathfinder:clearCache`: Clears all cached paths on this object.
+- `LUnitPathfinder:getCacheSize`: Returns the current path cache entry count.
+- `LUnitPathfinder:setCacheMaxSize`: Sets maximum path cache size for this object.
 - `LUnitPathfinder:type`: Returns the Lua-visible type name for this pathfinder handle.
 - `LUnitPathfinder:typeOf`: Returns whether this pathfinder handle matches a supported type name.
 

@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { resolveWorkspaceApiDocPath, searchApiDocumentation } from "../services/apiDocs.js";
 import { execParallelCargoCommand } from "../services/parallelCargo.js";
+import { execRagQuery, execRagBuildIndex } from "../services/rag.js";
 
 /**
  * MCP tool definition following the Model Context Protocol schema.
@@ -103,6 +104,40 @@ export function getToolDefinitions(): ToolDefinition[] {
             type: "number",
             description:
               "Number of log lines to return (default: 50).",
+          },
+        },
+      },
+    },
+    {
+      name: "lurek2d.ragSearch",
+      description:
+        "Search the local Lurek2D RAG index for API examples, specs, and best practices.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description:
+              'Search query keywords (e.g. "lurek.graphics draw", "audio play").',
+          },
+          profile: {
+            type: "string",
+            description: 'Target developer profile (game, engine, or all). Defaults to all. Game profile excludes src and test internals.',
+          },
+        },
+        required: ["query"],
+      },
+    },
+    {
+      name: "lurek2d.ragBuildIndex",
+      description: "Trigger an on-demand rebuild of the local RAG index.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          directories: {
+            type: "array",
+            items: { type: "string" },
+            description: "Optional list of specific directories to index. Defaults to all.",
           },
         },
       },
@@ -279,4 +314,37 @@ function listExampleDirs(workspaceRoot: string): string[] {
   } catch {
     return [];
   }
+}
+
+/**
+ * Creates the handler for `lurek2d.ragSearch`.
+ *
+ * Queries the local SQLite RAG index.
+ */
+export function handleRagSearch(
+  workspaceRoot: string
+): ToolHandler {
+  return async (args) => {
+    const query = args.query as string | undefined;
+    const profile = (args.profile as "game" | "engine" | "all") || "all";
+    if (!query) {
+      return "Error: 'query' parameter is required.";
+    }
+
+    return execRagQuery(workspaceRoot, query, profile);
+  };
+}
+
+/**
+ * Creates the handler for `lurek2d.ragBuildIndex`.
+ *
+ * Builds the local SQLite RAG index on-demand.
+ */
+export function handleRagBuildIndex(
+  workspaceRoot: string
+): ToolHandler {
+  return async (args) => {
+    const directories = (args.directories as string[]) || [];
+    return execRagBuildIndex(workspaceRoot, directories);
+  };
 }

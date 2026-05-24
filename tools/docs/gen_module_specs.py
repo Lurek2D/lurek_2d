@@ -129,6 +129,7 @@ SECTION_ALIASES = {
     "lua_api": ["Lua API Reference", "Lua API", "Lua API Summary"],
     "references": ["References"],
     "notes": ["Notes", "Constraints"],
+    "tldr": ["TL;DR"],
 }
 
 
@@ -695,9 +696,11 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     type_overrides = combine_pair_maps(spec_sections["types"], agent_sections["types"], legacy_sections["types"])
     function_overrides = combine_pair_maps(spec_sections["functions"], legacy_sections["functions"])
     reference_overrides = combine_pair_maps(spec_sections["references"], legacy_sections["references"])
-    notes_text = first_non_empty(spec_sections["notes"], legacy_sections["notes"])
+    notes_text = first_non_empty(spec_sections.get("notes", ""), legacy_sections.get("notes", ""))
     if not notes_text or "AGENT" in notes_text:
         notes_text = build_default_notes(module, lua_api)
+
+    tldr_text = first_non_empty(spec_sections.get("tldr", ""), agent_sections.get("tldr", ""), legacy_sections.get("tldr", ""))
 
     general_info = format_general_info(module, group, rust_tests, lua_tests, lua_api)
     source_docs_text = format_source_docs(source["file_docs"])
@@ -707,6 +710,10 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     references_text = format_references(group, source["references"], reference_overrides)
 
     content = f"""# {module}
+
+## TL;DR
+
+{tldr_text}
 
 ## General Info
 

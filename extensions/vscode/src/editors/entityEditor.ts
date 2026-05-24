@@ -22,7 +22,7 @@ export class EntityEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Entity Designer", `
       .editor-layout {
-        display: grid; grid-template-columns: 200px 1fr 220px;
+        display: grid; grid-template-columns: 48px 200px 1fr 220px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }

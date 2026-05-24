@@ -1,5 +1,9 @@
 # particle
 
+## TL;DR
+
+- The `particle` module is a powerful Feature Systems tier component that provides comprehensive, emitter-based 2D particle systems for Lurek2D.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `particle` module is a powerful Feature Systems tier component that provides comprehensive, emitter-based 2D particle systems for Lurek2D. Designed for high-performance visual effects, it utilizes bounded, fixed-capacity memory pools and CPU-based Euler integration. At the core of the module is the `ParticleSystem`, an emitter that spawns `Particle` instances according to highly configurable emission shapes, such as point, circle, ring, rectangle, cone, line, and custom callbacks. Once spawned, each particle evolves independently based on a robust physics model that includes linear velocity, gravity, radial/tangential acceleration, linear damping, drag, orbit mechanics, and turbulence, before eventually expiring after a predefined lifetime.
+ Designed for high-performance visual effects, it utilizes bounded, fixed-capacity memory pools and CPU-based Euler integration. At the core of the module is the `ParticleSystem`, an emitter that spawns `Particle` instances according to highly configurable emission shapes, such as point, circle, ring, rectangle, cone, line, and custom callbacks. Once spawned, each particle evolves independently based on a robust physics model that includes linear velocity, gravity, radial/tangential acceleration, linear damping, drag, orbit mechanics, and turbulence, before eventually expiring after a predefined lifetime.
 
 The visual representation of particles is extremely flexible. The system supports both procedural geometric shapes (like squares, circles, sparks, and shrapnel) and fully textured sprites. Throughout their lifetime, particles dynamically interpolate key properties—such as color, size, rotation, and opacity—using customizable multi-stop keyframe curves. To create complex, layered effects, `ParticleSystem`s support sub-emitters, allowing particles to spawn entirely new child particle bursts upon specific events, such as birth, death, or collision. The module also features a robust physics collision integration, allowing particles to bounce realistically off defined bounding boxes or dynamic Rapier2D world geometry with configurable restitution.
 
@@ -191,10 +195,10 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 ### `LParticleSystem` Methods
 - `LParticleSystem:update`: Updates the particle system, applies optional physics collision, and invokes pending callbacks.
 - `LParticleSystem:emit`: Emits particles immediately. This method is available to Lua scripts.
-- `LParticleSystem:start`: Starts particle emission. This method is available to Lua scripts.
-- `LParticleSystem:stop`: Stops particle emission. This method is available to Lua scripts.
+- `LParticleSystem:start`: Starts particle emission on this object.
+- `LParticleSystem:stop`: Stops particle emission on this object.
 - `LParticleSystem:pause`: Pauses particle emission and updates.
-- `LParticleSystem:resume`: Resumes a paused particle system. This method is available to Lua scripts.
+- `LParticleSystem:resume`: Resumes a paused particle system if it was previously paused.
 - `LParticleSystem:reset`: Resets particles and emitter state.
 - `LParticleSystem:moveTo`: Moves the particle emitter. This method is available to Lua scripts.
 - `LParticleSystem:count`: Returns the current particle count.
@@ -225,11 +229,11 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `LParticleSystem:getLinearAcceleration`: Returns linear acceleration range.
 - `LParticleSystem:setRadialAcceleration`: Sets radial acceleration range. This method is available to Lua scripts.
 - `LParticleSystem:getRadialAcceleration`: Returns radial acceleration range.
-- `LParticleSystem:setTangentialAcceleration`: Sets tangential acceleration range.
+- `LParticleSystem:setTangentialAcceleration`: Sets tangential acceleration range for emitted particles.
 - `LParticleSystem:getTangentialAcceleration`: Returns tangential acceleration range.
 - `LParticleSystem:setLinearDamping`: Sets linear damping range. This method is available to Lua scripts.
 - `LParticleSystem:getLinearDamping`: Returns linear damping range. This method is available to Lua scripts.
-- `LParticleSystem:setSizes`: Sets particle size keyframes from numeric arguments.
+- `LParticleSystem:setSizes`: Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
 - `LParticleSystem:getSizes`: Returns particle size keyframes. This method is available to Lua scripts.
 - `LParticleSystem:setSizeVariation`: Sets size variation. This method is available to Lua scripts.
 - `LParticleSystem:getSizeVariation`: Returns size variation. This method is available to Lua scripts.
@@ -241,7 +245,7 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `LParticleSystem:getSpinVariation`: Returns spin variation. This method is available to Lua scripts.
 - `LParticleSystem:setRelativeRotation`: Sets whether particle rotation is relative to movement.
 - `LParticleSystem:hasRelativeRotation`: Returns whether relative rotation is enabled.
-- `LParticleSystem:setColors`: Sets particle color keyframes from RGBA tables.
+- `LParticleSystem:setColors`: Sets particle color keyframes from one or more RGBA tables.
 - `LParticleSystem:getColors`: Returns particle color keyframes.
 - `LParticleSystem:setOffset`: Sets particle spawn offset. This method is available to Lua scripts.
 - `LParticleSystem:getOffset`: Returns particle spawn offset. This method is available to Lua scripts.
@@ -261,10 +265,10 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `LParticleSystem:toImage`: Draws particles to image data. This method is available to Lua scripts.
 - `LParticleSystem:warmUp`: Advances the system by a warm-up duration.
 - `LParticleSystem:addAttractor`: Adds an attractor to the particle system.
-- `LParticleSystem:clearAttractors`: Clears all attractors. This method is available to Lua scripts.
+- `LParticleSystem:clearAttractors`: Clears all attractors on this object.
 - `LParticleSystem:getAttractorCount`: Returns attractor count. This method is available to Lua scripts.
 - `LParticleSystem:setBounds`: Sets collision bounds for particles.
-- `LParticleSystem:clearBounds`: Clears collision bounds. This method is available to Lua scripts.
+- `LParticleSystem:clearBounds`: Clears collision bounds on this object.
 - `LParticleSystem:setCollidesWithPhysics`: Enables particle collision against a physics world.
 - `LParticleSystem:clearCollidesWithPhysics`: Disables particle collision against a physics world.
 - `LParticleSystem:hasCollidesWithPhysics`: Returns whether particle physics collision is enabled.
@@ -280,14 +284,14 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `LTrail:pushPoint`: Adds a point to the trail. This method is available to Lua scripts.
 - `LTrail:update`: Updates trail point lifetimes. This method is available to Lua scripts.
 - `LTrail:setWidth`: Sets trail start and optional end width.
-- `LTrail:getWidth`: Returns trail width settings. This method is available to Lua scripts.
+- `LTrail:getWidth`: Returns trail width settings from this object.
 - `LTrail:setLifetime`: Sets trail point lifetime. This method is available to Lua scripts.
 - `LTrail:getLifetime`: Returns trail point lifetime. This method is available to Lua scripts.
 - `LTrail:setMinDistance`: Sets minimum distance between trail points.
-- `LTrail:setHeadColor`: Sets trail head color. This method is available to Lua scripts.
-- `LTrail:setTailColor`: Sets trail tail color. This method is available to Lua scripts.
+- `LTrail:setHeadColor`: Sets the color of the leading edge of the trail.
+- `LTrail:setTailColor`: Sets the color of the trailing edge of the trail.
 - `LTrail:getPointCount`: Returns trail point count. This method is available to Lua scripts.
-- `LTrail:clear`: Clears all trail points. This method is available to Lua scripts.
+- `LTrail:clear`: Clears all trail points on this object.
 - `LTrail:drawToImage`: Draws the trail to image data. This method is available to Lua scripts.
 - `LTrail:type`: Returns the Lua-visible type name for this trail handle.
 - `LTrail:typeOf`: Returns whether this trail handle matches a supported type name.

@@ -1,5 +1,9 @@
 # filesystem
 
+## TL;DR
+
+- The `filesystem` module resides in the Core Runtime tier and implements `GameFS`, a strictly sandboxed virtual filesystem.
+
 ## General Info
 
 - Module group: `Core Runtime`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `filesystem` module resides in the Core Runtime tier and implements `GameFS`, a strictly sandboxed virtual filesystem. It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
+ It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
 
 Beyond security, the module offers a robust suite of filesystem operations. It supports synchronous and asynchronous file reads/writes, directory creation, flat and recursive listing, glob matching, and file copy/move operations. A notable feature is its support for virtual mount overlays: directories or read-only `.zip` archives (`ZipMount`) can be layered into the virtual filesystem at specified prefixes. When a file is requested, `GameFS` queries these layered mounts seamlessly, enabling modding, content patching, and asset packing without altering game logic.
 
@@ -51,7 +55,6 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
 - Recursive and flat directory listing with merged overlay results.
 - File handle creation, copy, move, and remove operations within the save boundary.
-- DataFrame file persistence storage trait implementation that delegates to existing GameFS read/write methods.
 
 ### `watcher.rs`
 - Poll-based file watcher that detects modification-time changes on registered paths.
@@ -177,7 +180,7 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `lurek.filesystem.read`: Reads a UTF-8 text file from GameFS.
 - `lurek.filesystem.write`: Writes a UTF-8 text file through GameFS.
 - `lurek.filesystem.readJson`: Reads a JSON document as text from GameFS.
-- `lurek.filesystem.writeJson`: Writes JSON text through GameFS. This function is exposed to Lua scripts.
+- `lurek.filesystem.writeJson`: Writes JSON text through the GameFS layer.
 - `lurek.filesystem.readOrWriteJson`: Reads a JSON file or writes and returns default JSON when the file is absent.
 - `lurek.filesystem.readBytes`: Reads a binary file from GameFS and returns the bytes as a Lua string.
 - `lurek.filesystem.writeBytes`: Writes binary data through GameFS.
@@ -202,12 +205,12 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `lurek.filesystem.writeAsync`: Starts an asynchronous file write request.
 - `lurek.filesystem.pollAsyncWrite`: Polls an asynchronous file write request.
 - `lurek.filesystem.mount`: Mounts an external source path at a GameFS mount point.
-- `lurek.filesystem.unmount`: Removes a GameFS mount point. This function is exposed to Lua scripts.
+- `lurek.filesystem.unmount`: Removes a GameFS mount point by its name.
 - `lurek.filesystem.load`: Loads a Lua chunk from GameFS and returns it as a Lua function.
 - `lurek.filesystem.newFileData`: Loads a file into an immutable file data handle.
 - `lurek.filesystem.copy`: Copies one GameFS file to another path.
 - `lurek.filesystem.move`: Moves or renames one GameFS file to another path.
-- `lurek.filesystem.removeDir`: Removes a GameFS directory. This function is exposed to Lua scripts.
+- `lurek.filesystem.removeDir`: Removes a GameFS directory by its path.
 - `lurek.filesystem.glob`: Returns GameFS paths matching a glob pattern.
 - `lurek.filesystem.listRecursive`: Lists all paths under a GameFS directory recursively.
 - `lurek.filesystem.stat`: Returns size and file/directory flags for a GameFS path.
@@ -228,10 +231,10 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `LFileHandle:write`: Writes a string to this file handle.
 - `LFileHandle:seek`: Moves the file cursor to an absolute byte position.
 - `LFileHandle:tell`: Returns the current file cursor position.
-- `LFileHandle:getSize`: Returns the size of the open file. This method is available to Lua scripts.
+- `LFileHandle:getSize`: Returns the size of the open file in bytes.
 - `LFileHandle:getMode`: Returns the mode used to open this file handle.
 - `LFileHandle:flush`: Flushes pending writes on this file handle.
-- `LFileHandle:close`: Closes this file handle. This method is available to Lua scripts.
+- `LFileHandle:close`: Closes this file handle on this object.
 - `LFileHandle:isEOF`: Returns whether the file cursor is at end of file.
 - `LFileHandle:type`: Returns the Lua-visible type name for this file handle.
 - `LFileHandle:typeOf`: Returns whether this file handle matches a supported type name.
@@ -246,6 +249,7 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 
 ## References
 
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes

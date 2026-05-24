@@ -1,5 +1,11 @@
 # System Prompt Template
 
+## TL;DR
+
+- ```markdown
+# <Engine Identity Title>
+
+
 > Use this template when updating or restructuring `.github/copilot-instructions.md`.
 > The system prompt is the only CAG file always in context. Keep it lean — every line costs tokens on every interaction.
 
@@ -7,8 +13,7 @@
 
 ## Structure
 
-```markdown
-# <Engine Identity Title>
+
 
 ## Communication
 <2–4 bullet rules for how the agent communicates>

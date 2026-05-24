@@ -129,7 +129,7 @@ export class TestRunnerEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Test Runner", `
       .editor-layout {
-        display: grid; grid-template-columns: 260px 1fr;
+        display: grid; grid-template-columns: 48px 260px 1fr;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }

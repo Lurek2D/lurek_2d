@@ -1,5 +1,9 @@
 # lua_api
 
+## TL;DR
+
+- The `lua_api` module serves as the critical Edge/Integration tier composition root for Lurek2D, acting as the primary interface bridge between the high-performance Rust engine and the flexible Lua scripting environment.
+
 ## General Info
 
 - Module group: `Edge/Integration`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `lua_api` module serves as the critical Edge/Integration tier composition root for Lurek2D, acting as the primary interface bridge between the high-performance Rust engine and the flexible Lua scripting environment. Its fundamental responsibility is the creation and configuration of the Lua Virtual Machine (via the `mlua` crate) and the comprehensive registration of all `lurek.*` API namespaces. This module is the structural terminus of the engine's dependency graph—it imports nearly every other core module to expose their functionality, but is strictly never imported by them, ensuring a unidirectional data flow and enforcing architectural boundaries.
+ Its fundamental responsibility is the creation and configuration of the Lua Virtual Machine (via the `mlua` crate) and the comprehensive registration of all `lurek.*` API namespaces. This module is the structural terminus of the engine's dependency graph—it imports nearly every other core module to expose their functionality, but is strictly never imported by them, ensuring a unidirectional data flow and enforcing architectural boundaries.
 
 At the heart of this module is a vast collection of over 70 custom userdata type definitions that wrap Rust engine structs (such as `LuaVec2`, `LuaLight`, `LuaSpriteBatch`, and `LuaWorld`) and expose them as fully-featured Lua objects. Each engine subsystem has a dedicated binding file (e.g., `audio_api.rs`, `physics_api.rs`, `render_api.rs`) responsible for parsing Lua arguments, invoking the underlying Rust business logic, and safely converting the results back into Lua-compatible values. The module strictly enforces Lurek2D's binding constraints (TST-03): binding files must contain absolutely no domain business logic. Their sole purpose is translation, validation, and error boundary management.
 
@@ -206,6 +210,7 @@ A crucial aspect of the `lua_api` module is its rigorous approach to state manag
 - `LuaRingBuffer` (`struct`, `data_api.rs`): Lua-side fixed-capacity ring buffer that holds any Lua value.
 - `LuaDataWriter` (`struct`, `data_api.rs`): Write-cursor wrapper for the `lurek.data` module.
 - `LuaGroupedFrame` (`struct`, `dataframe_api.rs`): Lua-side wrapper around a grouped result from [`DataFrame::group_by`].
+- `LuaDataFrameTask` (`struct`, `dataframe_api.rs`): Lua-side handle for a threaded dataframe job.
 - `LuaDataFrame` (`struct`, `dataframe_api.rs`): Lua-side wrapper around a shared [`DataFrame`].
 - `LuaLazyQuery` (`struct`, `dataframe_api.rs`): Lua-side lazy dataframe query pipeline.
 - `LuaDatabase` (`struct`, `dataframe_api.rs`): Lua-side wrapper around a shared [`Database`].
@@ -294,7 +299,6 @@ A crucial aspect of the `lua_api` module is its rigorous approach to state manag
 - `LuaSkeletonAnimation` (`struct`, `spine_api.rs`): Lua-side wrapper around a [`SkeletonAnimation`] keyframe clip.
 - `LuaSpriteSheet` (`struct`, `sprite_api.rs`): Lua-side wrapper around a [`SpriteSheet`] frame-grid calculator.
 - `LuaSpriteAtlas` (`struct`, `sprite_api.rs`): Lua-side wrapper around a [`SpriteAtlas`] named-region store.
-- `PowerState` (`enum`, `system_api.rs`): Power state of the device.
 - `LuaThreadHandle` (`struct`, `thread_api.rs`): Lua-side wrapper around a background [`LuaThread`].
 - `LuaThreadPool` (`struct`, `thread_api.rs`): Lua-side wrapper around a [`ThreadPool`].
 - `LuaPromise` (`struct`, `thread_api.rs`): Lua-side wrapper around a one-shot [`Promise`].
@@ -338,6 +342,7 @@ A crucial aspect of the `lua_api` module is its rigorous approach to state manag
 - `register` (`camera_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`compute_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`data_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `LuaDataFrame::borrow_dataframe` (`dataframe_api.rs`): Borrows the inner dataframe for cross-binding helpers.
 - `LuaVecFrame::new` (`dataframe_api.rs`): Wraps a vectorized frame in shared Lua userdata state.
 - `register` (`dataframe_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`debugbridge_api.rs`): Registers the `lurek.window` API table with the Lua VM.
@@ -398,12 +403,6 @@ A crucial aspect of the `lua_api` module is its rigorous approach to state manag
 - `register` (`serial_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`spine_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`sprite_api.rs`): Registers the `lurek.window` API table with the Lua VM.
-- `get_processor_count` (`system_api.rs`): Returns the number of logical processors available.
-- `get_memory_size` (`system_api.rs`): Returns total system RAM in MiB using the `sysinfo` crate.
-- `open_url` (`system_api.rs`): Opens a URL in the default browser/application.
-- `get_preferred_locales` (`system_api.rs`): Returns the user's preferred locale strings.
-- `PowerState::as_str` (`system_api.rs`): Returns the Lua-visible power state string.
-- `get_power_info` (`system_api.rs`): Returns power/battery information: (state, percent, seconds).
 - `register` (`system_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`terminal_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`thread_api.rs`): Registers the `lurek.window` API table with the Lua VM.

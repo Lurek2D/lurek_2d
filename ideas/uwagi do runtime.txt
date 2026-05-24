@@ -1,0 +1,151 @@
+Przeanalizować Twój kod pod kątem dobrych praktyk w języku Rust, wydajności oraz architektury systemów dla silników gier. Kod jest ogólnie bardzo czysty, czytelny i dobrze udokumentowany, ale istnieje kilka krytycznych miejsc (szczególnie związanych z zarządzaniem pamięcią i wydajnością), które warto usprawnić.
+
+Poniżej znajdziesz listę rekomendowanych poprawek podzieloną na konkretne pliki.
+
+1. messages.rs — Wycieki pamięci przy przeładowaniu (Hot-Reload)
+Problem
+Funkcja collect_strings używa Box::leak do tworzenia statycznych referencji &'static str z dynamicznie sparsowanego pliku TOML:
+
+Rust
+let static_str: &'static str = Box::leak(s.clone().into_boxed_str());
+Jeśli funkcja from_toml zostanie wywołana więcej niż raz w trakcie działania aplikacji (np. podczas implementacji mechanizmu przeładowania języków/tłumaczeń w locie), pamięć ze starych stringów wycieknie i nigdy nie zostanie zwolniona.
+
+Rozwiązanie
+Zrezygnuj z Box::leak na rzecz bezpiecznego i współdzielonego licznika referencji Arc<str> lub po prostu przechowuj String.
+
+Rust
+// Zmień strukturę na:
+pub struct MessageCatalog {
+    messages: HashMap<String, std::sync::Arc<str>>,
+}
+Jeśli koniecznie potrzebujesz taniego kopiowania bez alokacji, Arc<str> idealnie zastępuje &'static str w strukturach tego typu.
+
+2. error.rs — Ręczna serializacja JSON
+Problem
+Metoda to_json w strukturze ErrorSnapshot ręcznie eskapuje znaki i formatuje stringa:
+
+Rust
+let escaped = self.message.replace('\\', "\\\\").replace('"', "\\\"");
+format!(r#"{{"message":"{}","code":"{}","category":"{}","hint":"{}"}}"#, ... )
+Ręczne budowanie JSON-a jest podatne na błędy (np. nie obsługuje znaków nowej linii \n, tabulacji czy innych znaków kontrolnych, które mogą pojawić się w message).
+
+Rozwiązanie
+Skoro używasz już serde w projekcie (widać to w mode.rs), dodaj makro Serialize do struktury ErrorSnapshot i użyj serde_json:
+
+Rust
+#[derive(Debug, Clone, serde::Serialize)] // Dodaj Serialize
+pub struct ErrorSnapshot {
+    pub message: String,
+    pub code: &'static str,
+    pub category: &'static str,
+    #[serde(rename = "hint")]
+    pub recovery_hint: &'static str,
+}
+
+impl ErrorSnapshot {
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).unwrap_or_else(|_| "{}".to_string())
+    }
+}
+3. headless.rs — Wydajność hooków Lua i blokujące I/O
+Problem 1: Kosztowne sprawdzanie czasu
+W funkcji call_with_timeout ustawiasz hook Lua, który wykonuje się co 20 000 instrukcji i sprawdza czas za pomocą Instant::now():
+
+Rust
+lua.set_hook(HookTriggers { ... every_nth_instruction: Some(20_000) }, move |_, _| {
+    if Instant::now() >= deadline { ... }
+});
+Instant::now() na wielu platformach (szczególnie starszych systemach operacyjnych lub środowiskach wirtualizowanych) wykonuje kosztowne odwołanie systemowe (syscall). Sprawdzanie tego co 20k instrukcji w pętli gry może zauważalnie obniżyć wydajność (tzw. frame rate pacing).
+
+Rozwiązanie 1
+Zwiększ limit instrukcji (np. do 100 000) lub zamiast czasu, użyj samego licznika instrukcji Lua jako limitu (jeśli to możliwe w logice Twoich skryptów), co całkowicie wyeliminuje narzut sprawdzania zegara systemowego.
+
+Problem 2: Blokujące operacje plikowe
+W load_main_if_present używasz std::fs::read_to_string, co jest operacją blokującą wątek. Silnik posiada dedykowany AsyncLoader w SharedState, więc wczytywanie skryptów powinno docelowo również go wykorzystywać.
+
+4. mode.rs — Redukcja kodu szablonowego (Boilerplate)
+Problem
+Ręcznie implementujesz cechy Display, FromStr oraz metodę as_str dla enuma RuntimeMode. Kod ten zajmuje dużo miejsca i łatwo o nim zapomnieć przy dodawaniu nowego trybu (np. jeśli dodasz w przyszłości tryb Editor).
+
+Rozwiązanie
+Użyj popularnej i standardowej w ekosystemie Rusta biblioteki strum, która automatycznie wygeneruje ten kod za pomocą makr:
+
+Rust
+use strum_macros::{Display, EnumString, AsRefStr};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default, Display, EnumString, AsRefStr)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum RuntimeMode {
+    #[default]
+    Gui,
+    Tui,
+    Headless,
+    Cli,
+}
+Dzięki temu cała ręczna implementacja FromStr i Display staje się zbędna. Metodę as_str() zastąpi wbudowana w strum cecha AsRef<str>.
+
+5. os.rs — Bezpieczeństwo i wieloplatformowość open_url
+Problem
+Funkcja open_url ręcznie wywołuje procesy systemowe w zależności od platformy:
+
+Rust
+std::process::Command::new("cmd").args(["/C", "start", "", url]).spawn()
+Tego typu ręczne parsowanie bywa zawodne i rodzi luki bezpieczeństwa na systemach Windows (podatność na Command Injection, jeśli ciąg znaków url zawiera złośliwie sformatowane argumenty).
+
+Rozwiązanie
+Użyj sprawdzonego i bezpiecznego crate'u open:
+
+Rust
+pub fn open_url(url: &str) -> bool {
+    let url_lower = url.to_lowercase();
+    if !url_lower.starts_with("http://") && !url_lower.starts_with("https://") && !url_lower.starts_with("mailto:") {
+        log_msg!(warn, LA03_OPEN_URL_REJECTED);
+        return false;
+    }
+    open::that(url).is_ok()
+}
+6. log_messages.rs — Optymalizacja makra i porządki
+Problem 1: Powtarzalność kodu w makrze
+Makro log_msg! posiada bardzo dużo powtórzeń kodu dla każdego poziomu logowania (error, warn, info, itd.).
+
+Rozwiązanie 1
+Możesz uprościć makro, przekazując poziom logowania jako bezpośrednią ścieżkę do makra z biblioteki log:
+
+Rust
+#[macro_export]
+macro_rules! log_msg {
+    ($level:ident, $id:expr) => {
+        ::log::$level!("[{}] {}", $id, $crate::runtime::messages::get_message($id))
+    };
+    ($level:ident, $id:expr, $($arg:tt)+) => {
+        ::log::$level!("[{}] {}: {}", $id, $crate::runtime::messages::get_message($id), format_args!($($arg)+))
+    };
+}
+To skraca definicję makra z 40 linii do zaledwie kilku, zachowując dokładnie tę samą funkcjonalność (log_msg!(info, L001_ENGINE_START) zadziała identycznie).
+
+Problem 2: Martwy kod (Dead Code)
+Na końcu pliku znajduje się ogromna liczba stałych bez przypisanych wartości tekstowych (np. pub const AS01: &str = "AS01";). Jeśli są to zarezerwowane kody, warto zgrupować je w komentarzu strukturalnym lub wygenerować automatycznie, aby nie generować ostrzeżeń kompilatora o nieużywanym kodzie (dead_code).
+
+7. shared_state.rs — Architektura typu "God Object"
+Problem
+SharedState cierpi na antywzorzec God Object (Obiekt-Menedżer, który wie i robi wszystko). Zawiera konfigurację okna, audio, wejście myszy/klawiatury, timingi, pule assetów, komendy renderowania, a nawet systemy fizyki i UI.
+
+Konsekwencje:
+
+Brak skalowalności wątkowej: Przez to, że wszystko jest w jednej strukturze, w headless.rs musisz zamknąć całe SharedState w Rc<RefCell<SharedState>>. Uniemożliwia to jednoczesny odczyt danych wejściowych i aktualizację np. fizyki w osobnym wątku.
+
+Koszt LRU: Metoda evict_lru_resources alokuje wektor i sortuje wszystkie tekstury w każdej ramce, jeśli przekroczono budżet: candidates.sort_unstable_by_key(...). Przy tysiącach tekstur będzie to powodować mikroprzycięcia (stuttering).
+
+Rozwiązanie
+Rozbij strukturę na podsystemy: SharedState powinno być kontenerem przechowującym mniejsze, niezależne struktury, np.:
+
+Rust
+pub struct SharedState {
+    pub input: InputSubsystem,
+    pub assets: AssetSubsystem,
+    pub window: WindowSubsystem,
+    pub renderer: RenderSubsystem,
+    // ...
+}
+Zoptymalizuj LRU: Zamiast sortować całą pulę zasobów w pętli gry, użyj struktury danych, która utrzymuje kolejność chronologiczną automatycznie (np. prócz SlotMap użyj linked list dla kluczy lub indeksuj zasoby w prostych kubełkach (buckets) per ramka).

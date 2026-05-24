@@ -34,7 +34,7 @@ export class ApiReferenceEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "API Reference", `
       .editor-layout {
-        display: grid; grid-template-columns: 200px 1fr;
+        display: grid; grid-template-columns: 48px 200px 1fr;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }

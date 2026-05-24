@@ -1,5 +1,9 @@
 # minimap
 
+## TL;DR
+
+- The `minimap` module is a robust Feature Systems tier component that implements a highly configurable, grid-based minimap and radar system for Lurek2D.
+
 ## General Info
 
 - Module group: `Feature Systems`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `minimap` module is a robust Feature Systems tier component that implements a highly configurable, grid-based minimap and radar system for Lurek2D. It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
+ It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
 
 Beyond basic terrain visualization, the minimap acts as a comprehensive strategic display. It tracks active game entities via `MinimapObject`s, which project world positions onto the grid and render as typed, owner-colored dots or assigned texture icons. To support mission and location tracking, it provides a `MinimapMarker` system for persistent or timed points of interest, featuring built-in animation states like blinking, pulsing, or rotating crosshairs. For strategic feedback, the module supports dynamic `OverlayShape`s (lines, rectangles, named polyline paths) and temporary animated `MinimapPing` alerts to draw player attention to specific map coordinates.
 
@@ -182,27 +186,27 @@ The module also features a robust rendering pipeline that composites these layer
 - `lurek.minimap.newMinimap`: Creates a minimap with grid dimensions and optional display size.
 
 ### `LMinimap` Methods
-- `LMinimap:getGridWidth`: Returns the minimap grid width. This method is available to Lua scripts.
-- `LMinimap:getGridHeight`: Returns the minimap grid height. This method is available to Lua scripts.
+- `LMinimap:getGridWidth`: Returns the width of the minimap grid in cells.
+- `LMinimap:getGridHeight`: Returns the height of the minimap grid in cells.
 - `LMinimap:getCellCount`: Returns the total number of grid cells.
-- `LMinimap:getGridSize`: Returns the minimap grid size. This method is available to Lua scripts.
+- `LMinimap:getGridSize`: Returns the minimap grid width and height in cells.
 - `LMinimap:getDisplayWidth`: Returns the minimap display width.
 - `LMinimap:getDisplayHeight`: Returns the minimap display height.
-- `LMinimap:getDisplaySize`: Returns the minimap display size. This method is available to Lua scripts.
-- `LMinimap:setDisplaySize`: Sets the minimap display size. This method is available to Lua scripts.
+- `LMinimap:getDisplaySize`: Returns the minimap display width and height in pixels.
+- `LMinimap:setDisplaySize`: Sets the minimap display width and height in pixels.
 - `LMinimap:setTerrain`: Sets terrain type for a one-based grid cell.
 - `LMinimap:getTerrain`: Returns terrain type for a one-based grid cell.
 - `LMinimap:setTerrainData`: Replaces terrain data from a flat array table.
-- `LMinimap:setTerrainColor`: Sets RGBA color for a terrain type. This method is available to Lua scripts.
+- `LMinimap:setTerrainColor`: Sets the RGBA display color for a terrain type.
 - `LMinimap:getTerrainColor`: Returns RGBA color for a terrain type.
 - `LMinimap:setTileDescription`: Sets text description for a tile type.
 - `LMinimap:getTileDescription`: Returns text description for a tile type.
-- `LMinimap:setFogEnabled`: Enables or disables fog display. This method is available to Lua scripts.
+- `LMinimap:setFogEnabled`: Enables or disables the minimap fog display.
 - `LMinimap:isFogEnabled`: Returns whether fog display is enabled.
 - `LMinimap:setFogLevel`: Sets fog level for a one-based grid cell.
 - `LMinimap:getFogLevel`: Returns fog level for a one-based grid cell.
-- `LMinimap:setFogColor`: Sets the fog overlay color. This method is available to Lua scripts.
-- `LMinimap:getFogColor`: Returns the fog overlay color. This method is available to Lua scripts.
+- `LMinimap:setFogColor`: Sets the RGBA fog overlay color for covered cells.
+- `LMinimap:getFogColor`: Returns the current RGBA fog overlay color.
 - `LMinimap:setFogData`: Replaces fog data from a flat array table.
 - `LMinimap:addObjectType`: Adds an object type and returns its one-based index.
 - `LMinimap:setObjectTypeVisible`: Sets visibility for an object type by one-based index.
@@ -211,51 +215,51 @@ The module also features a robust rendering pipeline that composites these layer
 - `LMinimap:setObjectTypeTexture`: Assigns an image texture to an object type.
 - `LMinimap:clearObjectTypeTexture`: Clears image texture for an object type.
 - `LMinimap:setObject`: Adds or updates an object on the minimap.
-- `LMinimap:removeObject`: Removes an object by id. This method is available to Lua scripts.
+- `LMinimap:removeObject`: Removes a minimap object by its unique id.
 - `LMinimap:clearObjects`: Clears all objects from the minimap.
 - `LMinimap:getObjectCount`: Returns the number of objects on the minimap.
-- `LMinimap:setOwnerColor`: Sets RGBA color for an owner id. This method is available to Lua scripts.
-- `LMinimap:getOwnerColor`: Returns RGBA color for an owner id. This method is available to Lua scripts.
-- `LMinimap:setColorMode`: Sets the minimap color mode. This method is available to Lua scripts.
+- `LMinimap:setOwnerColor`: Sets the RGBA display color for an owner id.
+- `LMinimap:getOwnerColor`: Returns the current RGBA color for an owner id.
+- `LMinimap:setColorMode`: Sets the minimap color mode to terrain or political.
 - `LMinimap:getColorMode`: Returns the current minimap color mode.
-- `LMinimap:setZoom`: Sets minimap zoom. This method is available to Lua scripts.
-- `LMinimap:getZoom`: Returns minimap zoom. This method is available to Lua scripts.
-- `LMinimap:setCenter`: Sets minimap world center. This method is available to Lua scripts.
+- `LMinimap:setZoom`: Sets the minimap zoom magnification level.
+- `LMinimap:getZoom`: Returns the current minimap zoom magnification level.
+- `LMinimap:setCenter`: Sets the minimap world-space center position.
 - `LMinimap:trackCamera`: Centers the minimap and viewport rectangle from a camera handle.
 - `LMinimap:revealRadius`: Reveals fog inside a world-space radius.
-- `LMinimap:getCenter`: Returns minimap world center. This method is available to Lua scripts.
+- `LMinimap:getCenter`: Returns the current minimap world-space center position.
 - `LMinimap:getCenterX`: Returns minimap world center x coordinate.
 - `LMinimap:getCenterY`: Returns minimap world center y coordinate.
 - `LMinimap:setViewportRect`: Sets the visible viewport rectangle shown on the minimap.
-- `LMinimap:clearViewportRect`: Clears the viewport rectangle. This method is available to Lua scripts.
+- `LMinimap:clearViewportRect`: Clears the minimap viewport rectangle overlay.
 - `LMinimap:getViewportRect`: Returns the viewport rectangle when one is set.
 - `LMinimap:setViewportVisible`: Sets whether the viewport rectangle is visible.
 - `LMinimap:isViewportVisible`: Returns whether the viewport rectangle is visible.
 - `LMinimap:setViewportColor`: Sets the viewport rectangle color.
 - `LMinimap:getViewportColor`: Returns the viewport rectangle color.
-- `LMinimap:addPing`: Adds a timed ping effect at a minimap position.
+- `LMinimap:addPing`: Adds a timed ping effect at a minimap world position.
 - `LMinimap:getPingCount`: Returns the number of active pings.
-- `LMinimap:addMarker`: Adds a marker and returns its id. This method is available to Lua scripts.
-- `LMinimap:removeMarker`: Removes a marker by id. This method is available to Lua scripts.
+- `LMinimap:addMarker`: Adds a world-space marker and returns its unique id.
+- `LMinimap:removeMarker`: Removes a minimap marker by its unique id.
 - `LMinimap:hasMarker`: Returns whether a marker id exists.
 - `LMinimap:getMarkerDescription`: Returns a marker description by id.
-- `LMinimap:getMarkerCount`: Returns the number of markers. This method is available to Lua scripts.
+- `LMinimap:getMarkerCount`: Returns the total number of minimap markers.
 - `LMinimap:setMarkerTexture`: Assigns an image texture to a marker.
 - `LMinimap:clearMarkerTexture`: Clears image texture from a marker.
 - `LMinimap:setMarkerAnimation`: Sets marker animation by type name.
-- `LMinimap:clearMarkerAnimation`: Clears marker animation by id. This method is available to Lua scripts.
-- `LMinimap:drawLine`: Adds an overlay line. This method is available to Lua scripts.
-- `LMinimap:drawRect`: Adds an overlay rectangle. This method is available to Lua scripts.
-- `LMinimap:clearOverlay`: Clears overlay shapes. This method is available to Lua scripts.
+- `LMinimap:clearMarkerAnimation`: Clears the animation assigned to a marker by id.
+- `LMinimap:drawLine`: Adds an overlay line between two world-space points.
+- `LMinimap:drawRect`: Adds an overlay rectangle at a world-space position.
+- `LMinimap:clearOverlay`: Clears all minimap overlay shapes.
 - `LMinimap:getOverlayShapeCount`: Returns the number of overlay shapes.
 - `LMinimap:showPath`: Adds a colored path overlay and returns its id.
 - `LMinimap:clearPath`: Clears one path by id or all paths when no id is provided.
-- `LMinimap:getPathCount`: Returns the number of paths. This method is available to Lua scripts.
-- `LMinimap:setLayer`: Sets active minimap layer. This method is available to Lua scripts.
-- `LMinimap:getLayer`: Returns active minimap layer. This method is available to Lua scripts.
+- `LMinimap:getPathCount`: Returns the number of active path overlays.
+- `LMinimap:setLayer`: Sets the active minimap display layer index.
+- `LMinimap:getLayer`: Returns the active minimap display layer index.
 - `LMinimap:getLayerCount`: Returns the number of minimap layers.
-- `LMinimap:setLayerData`: Sets raw cell data for a layer. This method is available to Lua scripts.
-- `LMinimap:getLayerData`: Returns raw cell data for a layer. This method is available to Lua scripts.
+- `LMinimap:setLayerData`: Sets raw cell data for a minimap layer.
+- `LMinimap:getLayerData`: Returns raw cell data for a minimap layer.
 - `LMinimap:setAntiAlias`: Enables or disables minimap anti-aliasing.
 - `LMinimap:isAntiAlias`: Returns whether anti-aliasing is enabled.
 - `LMinimap:setClickable`: Enables or disables minimap click handling.

@@ -62,6 +62,8 @@ export class PostFxOverlayEditor extends WebviewEditor {
           ${iconButton(ICONS.add,'btnInsert','Insert at Cursor')}
           ${toolbarSpacer()}
           ${iconButton(ICONS.save,'btnExport','Export Lua')}
+        ${toolbarSep()}
+          ${iconButton('save', { id: 'btnExportLua', title: 'Export Lua Config' })}
         </div>
         <div class="tab-bar" id="tabs">
           <button class="tab sel" data-tab="weather">Weather</button>
@@ -491,6 +493,7 @@ export class PostFxOverlayEditor extends WebviewEditor {
 
       undo.push(snap());
       updateCode(); drawPreview();
-    `);
+          document.getElementById("btnExportLua")?.addEventListener("click", () => { vscode.postMessage({ type: "exportLua", content: "-- Lurek2D Effect Config\nreturn {}" }); });
+      `);
   }
 }

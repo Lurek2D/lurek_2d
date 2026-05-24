@@ -22,7 +22,7 @@ export class GraphEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Graph / Node Editor", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr 240px;
+        display: grid; grid-template-columns: 48px 1fr 240px;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }
@@ -83,6 +83,8 @@ export class GraphEditor extends WebviewEditor {
           </span>
           <div class="sep"></div>
           <span id="statusEdges">0 edges</span>
+          <div class="sep"></div>
+          <span id="statusSelected">selected: none</span>
           <div class="sep"></div>
           <span id="statusMode" class="mode-badge select">SELECT</span>
           <div class="spacer"></div>
@@ -236,7 +238,32 @@ export class GraphEditor extends WebviewEditor {
       function updateStatus() {
         document.getElementById('statusNodes').textContent = nodes.length + ' nodes';
         document.getElementById('statusEdges').textContent = edges.length + ' edges';
+        document.getElementById('statusSelected').textContent = selectedNode ? ('selected: #' + selectedNode.id) : 'selected: none';
         document.getElementById('statusZoom').textContent = Math.round(zoom * 100) + '%';
+      }
+
+      function nudgeSelected(dx, dy) {
+        if (!selectedNode) return;
+        pushUndo();
+        selectedNode.x += dx;
+        selectedNode.y += dy;
+        render();
+        updateStatus();
+      }
+
+      function duplicateSelected() {
+        if (!selectedNode) return;
+        pushUndo();
+        const copy = JSON.parse(JSON.stringify(selectedNode));
+        copy.id = nextId++;
+        copy.x += 40;
+        copy.y += 40;
+        copy.label = copy.label + ' Copy';
+        nodes.push(copy);
+        selectedNode = copy;
+        showProps(copy);
+        render();
+        updateStatus();
       }
 
       function fitView() {
@@ -304,6 +331,15 @@ export class GraphEditor extends WebviewEditor {
       registerShortcut('c', () => document.getElementById('btnConnect').click());
       registerShortcut('Delete', () => document.getElementById('btnDelete').click());
       registerShortcut('f', () => fitView());
+      registerShortcut('ctrl+d', () => duplicateSelected());
+      registerShortcut('up', () => nudgeSelected(0, -20));
+      registerShortcut('down', () => nudgeSelected(0, 20));
+      registerShortcut('left', () => nudgeSelected(-20, 0));
+      registerShortcut('right', () => nudgeSelected(20, 0));
+      registerShortcut('shift+up', () => nudgeSelected(0, -60));
+      registerShortcut('shift+down', () => nudgeSelected(0, 60));
+      registerShortcut('shift+left', () => nudgeSelected(-60, 0));
+      registerShortcut('shift+right', () => nudgeSelected(60, 0));
 
       // ── Export ─────────────────────────────────────────
       function buildLuaCode() {

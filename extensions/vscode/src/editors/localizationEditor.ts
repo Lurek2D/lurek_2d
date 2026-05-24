@@ -25,7 +25,7 @@ export class LocalizationEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Localization", `
       .editor-layout {
-        display: grid; grid-template-columns: 1fr;
+        display: grid; grid-template-columns: 48px 1fr;
         grid-template-rows: auto auto 1fr auto auto;
         height: 100vh;
       }

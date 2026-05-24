@@ -1,11 +1,16 @@
 # Lua API File Standard
 
+## TL;DR
+
+- 1.
+
+
 > Canonical reference for the structure, docstring format, and registration patterns
 > used in every `src/lua_api/*_api.rs` file.
 
 ## Table of Contents
 
-1. [File Structure](#1-file-structure)
+ [File Structure](#1-file-structure)
 2. [Docstring Format](#2-docstring-format)
 3. [Section Separators](#3-section-separators)
 4. [UserData Types](#4-userdata-types)

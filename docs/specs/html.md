@@ -1,5 +1,9 @@
 # html
 
+## TL;DR
+
+- The `html` module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D.
+
 ## General Info
 
 - Module group: `Edge/Integration`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `html` module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D. It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element. 
+ It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element. 
 
 Layout computation is driven by a flexible vertical block layout engine with robust flexbox support, accurately calculating an `HtmlRect` for every DOM node. Instead of rendering pixels directly, the module translates the computed layout into a renderer-agnostic list of `HtmlDrawCommand` instructions (rectangles, text, borders, images, and clipping regions). The engine includes a comprehensive CSS color parser that understands hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and an extended set of named color keywords.
 
@@ -162,9 +166,9 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 - Namespace: `lurek.html`
 
 ### Module Functions
-- `lurek.html.preventDefault`: Prevent default for Lua scripts in this module.
-- `lurek.html.stopPropagation`: Stop propagation for Lua scripts in this module.
-- `lurek.html.isDefaultPrevented`: Returns true if default prevented for Lua scripts in this module.
+- `lurek.html.preventDefault`: Marks the event as having its default action prevented.
+- `lurek.html.stopPropagation`: Stops event propagation to remaining listeners.
+- `lurek.html.isDefaultPrevented`: Returns whether the default action was prevented.
 - `lurek.html.newDocument`: Creates an HTML document from optional source and layout/style options.
 - `lurek.html.loadDocument`: Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
 - `lurek.html.supports`: Returns whether the HTML engine supports a named feature.
@@ -199,7 +203,7 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 
 ### `LHtmlElement` Methods
 - `LHtmlElement:getDocument`: Returns the document handle that owns this element.
-- `LHtmlElement:getTagName`: Returns this element's tag name. This method is available to Lua scripts.
+- `LHtmlElement:getTagName`: Returns this element's HTML tag name.
 - `LHtmlElement:getId`: Returns this element's id attribute.
 - `LHtmlElement:setId`: Sets or clears this element's id attribute.
 - `LHtmlElement:getText`: Returns this element's text content.
@@ -212,7 +216,7 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 - `LHtmlElement:setAttribute`: Sets or clears an attribute on this element.
 - `LHtmlElement:removeAttribute`: Removes an attribute from this element.
 - `LHtmlElement:hasClass`: Returns whether this element has a CSS class.
-- `LHtmlElement:addClass`: Adds a CSS class to this element. This method is available to Lua scripts.
+- `LHtmlElement:addClass`: Adds a CSS class to this element's class list.
 - `LHtmlElement:removeClass`: Removes a CSS class from this element.
 - `LHtmlElement:toggleClass`: Toggles a CSS class on this element, optionally forcing the final state.
 - `LHtmlElement:getStyle`: Returns an inline or computed style value for this element.

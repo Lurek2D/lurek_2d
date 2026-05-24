@@ -1,7 +1,7 @@
 {
   "name": "lurek2d-toolkit",
   "displayName": "Lurek2D Toolkit",
-  "description": "Official VS Code extension for the Lurek2D game engine v1.0. 4000+ lurek.* API items (1200+ module functions + 2900+ class methods across 50 modules and 223 types), 13 Lurek-specific diagnostic rules, semantic highlighting, callback/test/library/demo CodeLens markers, type inference for lurek factory objects, 85 commands, debug adapter (DAP), build/run/package tools, visual editors, and MCP server for AI agents. Designed to complement sumneko.lua — focuses only on Lurek-unique features.",
+  "description": "Official VS Code extension for the Lurek2D game engine v1.0. 4000+ lurek.* API items (1200+ module functions + 2900+ class methods across 50 modules and 223 types), 13 Lurek-specific diagnostic rules, semantic highlighting, callback/test/library/demo CodeLens markers, type inference for lurek factory objects, 85 commands, debug adapter (DAP), build/run/package tools, visual editors, and MCP server for AI agents. Designed to complement sumneko.lua \u2014 focuses only on Lurek-unique features.",
   "version": "1.0.0",
   "publisher": "lurek2d",
   "icon": "media/lurek-logo.png",
@@ -57,6 +57,11 @@
           "icon": "$(beaker)"
         },
         {
+          "id": "lurek.editors",
+          "name": "Editors",
+          "icon": "$(window)"
+        },
+        {
           "id": "lurek.assetExplorer",
           "name": "Assets",
           "icon": "$(file-media)"
@@ -107,115 +112,143 @@
       },
       {
         "command": "lurek.editor.testRunner",
-        "title": "Open Test Runner"
+        "title": "Open Test Runner",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.tileMap",
-        "title": "Open Tile Map Editor"
+        "title": "Open Tile Map Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.tileset",
-        "title": "Open Tileset Editor"
+        "title": "Open Tileset Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.tilemapScript",
-        "title": "Open Tilemap Script Editor"
+        "title": "Open Tilemap Script Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.worldMap",
-        "title": "Open World Map Editor"
+        "title": "Open World Map Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.procMap",
-        "title": "Open Procedural Map Generator"
+        "title": "Open Procedural Map Generator",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.pixelArt",
-        "title": "Open Pixel Art Editor"
+        "title": "Open Pixel Art Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.spriteAnim",
-        "title": "Open Sprite Animation Editor"
+        "title": "Open Sprite Animation Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.shaderPreview",
-        "title": "Open Shader Preview"
+        "title": "Open Shader Preview",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.colorPalette",
-        "title": "Open Color Palette"
+        "title": "Open Color Palette",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.fontPreview",
-        "title": "Open Font Preview"
+        "title": "Open Font Preview",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.sceneFlow",
-        "title": "Open Scene Flow Editor"
+        "title": "Open Scene Flow Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.entity",
-        "title": "Open Entity Designer"
+        "title": "Open Entity Designer",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.dialog",
-        "title": "Open Dialog Editor"
+        "title": "Open Dialog Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.questTree",
-        "title": "Open Quest Tree Editor"
+        "title": "Open Quest Tree Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.guiWidget",
-        "title": "Open GUI Widget Editor"
+        "title": "Open GUI Widget Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.timeline",
-        "title": "Open Timeline Cutscene Editor"
+        "title": "Open Timeline Cutscene Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.inputMapper",
-        "title": "Open Input Mapper"
+        "title": "Open Input Mapper",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.localization",
-        "title": "Open Localization Editor"
+        "title": "Open Localization Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.particle",
-        "title": "Open Particle Designer"
+        "title": "Open Particle Designer",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.physicsMaterials",
-        "title": "Open Physics Materials Editor"
+        "title": "Open Physics Materials Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.aiBehavior",
-        "title": "Open AI Behavior Tree Editor"
+        "title": "Open AI Behavior Tree Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.voxel",
-        "title": "Open Voxel Editor"
+        "title": "Open Voxel Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.audioMixer",
-        "title": "Open Audio Mixer"
+        "title": "Open Audio Mixer",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.soundDsp",
-        "title": "Open Sound DSP Panel"
+        "title": "Open Sound DSP Panel",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.postfxOverlay",
-        "title": "Open PostFX Overlay Designer"
+        "title": "Open PostFX Overlay Designer",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.database",
-        "title": "Open Database Browser"
+        "title": "Open Database Browser",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.editor.graph",
-        "title": "Open Graph Editor"
+        "title": "Open Graph Editor",
+        "category": "Lurek2D Editor"
       },
       {
         "command": "lurek.debug.runAndConnect",
@@ -456,12 +489,12 @@
       },
       {
         "command": "lurek.run.debugPickDemo",
-        "title": "Run: Debug — pick demo",
+        "title": "Run: Debug \u2014 pick demo",
         "icon": "$(list-selection)"
       },
       {
         "command": "lurek.run.releasePickDemo",
-        "title": "Run: Release — pick demo",
+        "title": "Run: Release \u2014 pick demo",
         "icon": "$(list-selection)"
       },
       {
@@ -608,6 +641,37 @@
         "command": "lurek.validate.cag",
         "title": "Validate: CAG Files",
         "icon": "$(hubot)"
+      },
+      {
+        "command": "lurek2d.showRagPanel",
+        "title": "Lurek2D: Search Knowledge Base (RAG)",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.scaffold.mod",
+        "title": "Create New Mod from Template"
+      },
+      {
+        "command": "lurek.ui.snapToGrid",
+        "title": "Snap TOML UI to Grid"
+      },
+      {
+        "command": "lurek.ui.fixLayouts",
+        "title": "Fix TOML UI Layouts"
+      },
+      {
+        "command": "lurek.test.rust.parallel",
+        "title": "Run Parallel Cargo Tests"
+      },
+      {
+        "command": "lurek.editor.province",
+        "title": "Lurek2D: Province Editor",
+        "category": "Lurek2D Editor"
+      },
+      {
+        "command": "lurek.editor.globe",
+        "title": "Lurek2D: Globe Editor",
+        "category": "Lurek2D Editor"
       }
     ],
     "keybindings": [
@@ -955,13 +1019,13 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "prebuild": "npm run generate-api && npm run generate-luacats",
+    "prebuild": "npm run generate-api && npm run generate-snippets && npm run generate-luacats",
     "build": "node esbuild.config.mjs --production",
-    "watch": "npm run generate-api && npm run generate-luacats && node esbuild.config.mjs --watch",
+    "watch": "npm run generate-api && npm run generate-snippets && npm run generate-luacats && node esbuild.config.mjs --watch",
     "test": "node esbuild.config.mjs --test && node ./dist/test/runTest.js",
     "lint": "eslint src --ext ts",
     "generate-api": "npx tsx tools/generate-api-data.ts",
-    "generate-snippets": "npx tsx tools/generate-snippets.ts",
+    "generate-snippets": "python ../../tools/snippets/gen_vscode_snippets.py",
     "generate-luacats": "npx tsx tools/generate-luacats.ts",
     "generate-all": "npm run generate-api && npm run generate-snippets && npm run generate-luacats",
     "package": "npx @vscode/vsce package --no-dependencies --allow-missing-repository"

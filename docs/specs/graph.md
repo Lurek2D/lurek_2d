@@ -1,5 +1,9 @@
 # graph
 
+## TL;DR
+
+- The `graph` module is a powerful Foundations tier component designed to model directed flow-simulation networks.
+
 ## General Info
 
 - Module group: `Foundations`
@@ -11,7 +15,7 @@
 
 ## Summary
 
-The `graph` module is a powerful Foundations tier component designed to model directed flow-simulation networks. Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
+ Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
 
 The simulation is deeply systemic. Items (`GraphItem`) accumulate in node inventories and traverse directed edges (`Edge`). These edges are not merely logical links; they enforce strict constraints including transit capacities, cooldown timers, and item-type filters. Nodes (`Node`) possess configurable item capacities, explicit queueing systems, and distinct flow modes (passive, push, or pull). Furthermore, nodes can execute `ConversionRule`s—acting as economic factories that consume specific inputs to produce new typed outputs. To manage bottlenecks, nodes implement defined `OverflowPolicy` behaviors, dictating whether excess items are rejected, queued, or destroyed.
 
@@ -223,25 +227,25 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraph:addNode`: Creates a node with optional type and capacity.
 - `LGraph:removeNode`: Removes a node and graph links associated with it.
 - `LGraph:hasNode`: Returns whether a node handle still exists in this graph.
-- `LGraph:getNodes`: Returns all nodes in this graph. This method is available to Lua scripts.
+- `LGraph:getNodes`: Returns all nodes in this logistics graph.
 - `LGraph:getNodeCount`: Returns the number of nodes in this graph.
 - `LGraph:addEdge`: Creates an edge between two nodes with an optional edge type.
-- `LGraph:removeEdge`: Removes an edge by handle. This method is available to Lua scripts.
+- `LGraph:removeEdge`: Removes an edge by handle on this object.
 - `LGraph:hasEdge`: Returns whether an edge handle still exists in this graph.
-- `LGraph:getEdges`: Returns all edges in this graph. This method is available to Lua scripts.
+- `LGraph:getEdges`: Returns all edges in this logistics graph.
 - `LGraph:getEdgeCount`: Returns the number of edges in this graph.
 - `LGraph:getEdgeBetween`: Returns the edge connecting two nodes when one exists.
 - `LGraph:createItem`: Creates an unplaced graph item with optional type and decay time.
-- `LGraph:addItem`: Places an item onto a node. This method is available to Lua scripts.
-- `LGraph:removeItem`: Removes an item from this graph. This method is available to Lua scripts.
+- `LGraph:addItem`: Places an item onto a destination node.
+- `LGraph:removeItem`: Removes an item from this logistics graph.
 - `LGraph:hasItem`: Returns whether an item handle still exists in this graph.
-- `LGraph:getItems`: Returns all items in this graph. This method is available to Lua scripts.
+- `LGraph:getItems`: Returns all items in this logistics graph.
 - `LGraph:getItemCount`: Returns the number of items in this graph.
 - `LGraph:sendItem`: Starts moving an item along an edge.
 - `LGraph:update`: Advances graph simulation by delta time and dispatches generated callbacks.
 - `LGraph:step`: Runs one discrete graph simulation step and dispatches generated callbacks.
 - `LGraph:tickParallel`: Advances graph simulation through the parallel update path and dispatches generated callbacks.
-- `LGraph:findPath`: Finds a path between two nodes. This method is available to Lua scripts.
+- `LGraph:findPath`: Finds a path between two graph nodes.
 - `LGraph:findPathForItem`: Finds a path for a specific item between two nodes while respecting item constraints.
 - `LGraph:getDistance`: Returns graph distance between two nodes when reachable.
 - `LGraph:getReachable`: Returns nodes reachable from a start node within an optional maximum distance.
@@ -274,7 +278,7 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraphEdge:getWeight`: Returns the pathfinding weight for this edge.
 - `LGraphEdge:setWeight`: Sets the pathfinding weight for this edge.
 - `LGraphEdge:getSpeedModifier`: Returns this edge's speed modifier.
-- `LGraphEdge:setSpeedModifier`: Sets this edge's speed modifier. This method is available to Lua scripts.
+- `LGraphEdge:setSpeedModifier`: Sets this edge's speed modifier value.
 - `LGraphEdge:getCooldown`: Returns this edge's cooldown timer value.
 - `LGraphEdge:setCooldown`: Sets this edge's cooldown timer value.
 - `LGraphEdge:isOnCooldown`: Returns whether this edge is currently on cooldown.
@@ -305,10 +309,10 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraphItem:typeOf`: Returns whether this graph item handle matches a supported type name.
 
 ### `LGraphNode` Methods
-- `LGraphNode:getType`: Returns this node's type string. This method is available to Lua scripts.
-- `LGraphNode:setType`: Sets this node's type string. This method is available to Lua scripts.
+- `LGraphNode:getType`: Returns this node's type classification string.
+- `LGraphNode:setType`: Sets this node's type string for this object.
 - `LGraphNode:getCapacity`: Returns this node's item capacity.
-- `LGraphNode:setCapacity`: Sets this node's item capacity. This method is available to Lua scripts.
+- `LGraphNode:setCapacity`: Sets this node's item capacity value.
 - `LGraphNode:getItemCount`: Returns the number of items currently stored on this node.
 - `LGraphNode:isFull`: Returns whether this node has reached its item capacity.
 - `LGraphNode:isActive`: Returns whether this node is active for graph simulation.
@@ -317,10 +321,10 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraphNode:setOverflowPolicy`: Sets this node's overflow policy from a policy name.
 - `LGraphNode:getFlowMode`: Returns this node's flow mode name.
 - `LGraphNode:setFlowMode`: Sets this node's flow mode from a mode name.
-- `LGraphNode:getPushRate`: Returns this node's push rate. This method is available to Lua scripts.
-- `LGraphNode:setPushRate`: Sets this node's push rate. This method is available to Lua scripts.
-- `LGraphNode:getPullRate`: Returns this node's pull rate. This method is available to Lua scripts.
-- `LGraphNode:setPullRate`: Sets this node's pull rate. This method is available to Lua scripts.
+- `LGraphNode:getPushRate`: Returns this node's push rate value.
+- `LGraphNode:setPushRate`: Sets this node's push rate for this object.
+- `LGraphNode:getPullRate`: Returns this node's pull rate value.
+- `LGraphNode:setPullRate`: Sets this node's pull rate for this object.
 - `LGraphNode:getPushFilter`: Returns this node's optional push item-type filter.
 - `LGraphNode:setPushFilter`: Sets or clears this node's push item-type filter.
 - `LGraphNode:getPullFilter`: Returns this node's optional pull item-type filter.
@@ -330,17 +334,17 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraphNode:isQueueEnabled`: Returns whether this node's explicit queue is enabled.
 - `LGraphNode:setQueueEnabled`: Enables or disables this node's explicit queue.
 - `LGraphNode:getQueueCapacity`: Returns this node's queue capacity.
-- `LGraphNode:setQueueCapacity`: Sets this node's queue capacity. This method is available to Lua scripts.
+- `LGraphNode:setQueueCapacity`: Sets this node's queue capacity value.
 - `LGraphNode:getQueueSize`: Returns the number of item ids currently queued at this node.
 - `LGraphNode:getItems`: Returns item handles currently stored on this node.
 - `LGraphNode:getEdges`: Returns edge handles connected to this node in the requested direction.
 - `LGraphNode:setConversion`: Configures an item conversion rule on this node.
 - `LGraphNode:clearConversion`: Removes a conversion rule by input item type.
 - `LGraphNode:clearAllConversions`: Removes every conversion rule from this node.
-- `LGraphNode:addTag`: Adds a tag to this node. This method is available to Lua scripts.
-- `LGraphNode:removeTag`: Removes a tag from this node. This method is available to Lua scripts.
+- `LGraphNode:addTag`: Adds a tag to this node on this object.
+- `LGraphNode:removeTag`: Removes a tag from this node on this object.
 - `LGraphNode:hasTag`: Returns whether this node has a tag.
-- `LGraphNode:clearTags`: Removes every tag from this node. This method is available to Lua scripts.
+- `LGraphNode:clearTags`: Removes every tag from this graph node.
 - `LGraphNode:getTags`: Returns all tags assigned to this node.
 - `LGraphNode:addSupply`: Adds supply quantity for an item type on this node.
 - `LGraphNode:removeSupply`: Removes supply entry for an item type from this node.

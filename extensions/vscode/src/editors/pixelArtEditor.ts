@@ -12,6 +12,9 @@ export class PixelArtEditor extends WebviewEditor {
 
   protected handleMessage(msg: { type: string;[key: string]: unknown }): void {
     switch (msg.type) {
+      case "exportLua":
+        this.exportLua(msg.content as string, "effect_config.lua");
+        break;
       case "exportPng":
         this.exportFile(msg.content as string, "sprite.png", "PNG Image", "png");
         break;
@@ -26,7 +29,7 @@ export class PixelArtEditor extends WebviewEditor {
     return wrapHtml(nonce, "Pixel Art Editor", `
       .editor-layout {
         display: grid;
-        grid-template-columns: 38px 1fr 220px;
+        grid-template-columns: 48px 1fr 220px;
         grid-template-rows: auto 1fr auto;
         height: 100vh;
       }
@@ -127,7 +130,16 @@ export class PixelArtEditor extends WebviewEditor {
               <option value="64">64×64</option>
               <option value="128">128×128</option>
             </select>
-          </div>
+            <label>Brush</label>
+            <select id="brushSize" title="Brush Size ([ and ])">
+              <option value="1" selected>1px</option>
+              <option value="2">2px</option>
+              <option value="3">3px</option>
+              <option value="4">4px</option>
+            </select>
+          ${toolbarSep()}
+          ${iconButton('save', { id: 'btnExportLua', title: 'Export Lua Config' })}
+        </div>
           ${toolbarSep()}
           <div class="group">
             ${iconButton('undo', { id: 'btnUndo', title: 'Undo (Ctrl+Z)' })}
@@ -232,7 +244,11 @@ export class PixelArtEditor extends WebviewEditor {
           <div class="sep"></div>
           <span id="statusTool">Pen</span>
           <div class="sep"></div>
+          <span id="statusBrush">Brush 1px</span>
+          <div class="sep"></div>
           <span id="statusSize">16×16</span>
+          <div class="sep"></div>
+          <span id="statusZoom">Zoom 100%</span>
           <div class="spacer"></div>
           <span class="status-group">
             <span id="statusFrameInfo">Frame 1/1</span>
@@ -270,6 +286,7 @@ export class PixelArtEditor extends WebviewEditor {
       let frames = [null];
       let currentFrame = 0, playing = false, animTimer = null, fps = 8;
       let offsetX = 0, offsetY = 0, zoom = 16;
+      let brushSize = 1;
       let showGrid = true, showOnionSkin = false;
       let mirrorH = false, mirrorV = false;
       let isPanning = false, panSX = 0, panSY = 0;
@@ -451,6 +468,15 @@ export class PixelArtEditor extends WebviewEditor {
         }
       }
 
+      function setBrushPixel(cx, cy, color) {
+        const offset = Math.floor((brushSize - 1) / 2);
+        for (let by = 0; by < brushSize; by++) {
+          for (let bx = 0; bx < brushSize; bx++) {
+            setPixel(cx + bx - offset, cy + by - offset, color);
+          }
+        }
+      }
+
       function getPixel(x, y) {
         if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) return layers[currentLayer].data[y * gridSize + x];
         return undefined;
@@ -477,7 +503,7 @@ export class PixelArtEditor extends WebviewEditor {
         const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
         let err = dx - dy;
         while (true) {
-          setPixel(x0, y0, color);
+          setBrushPixel(x0, y0, color);
           if (x0 === x1 && y0 === y1) break;
           const e2 = 2 * err;
           if (e2 > -dy) { err -= dy; x0 += sx; }
@@ -488,8 +514,8 @@ export class PixelArtEditor extends WebviewEditor {
       function applyTool(px, py, button) {
         const color = button === 2 ? rightColor : leftColor;
         switch (currentTool) {
-          case 'pen': setPixel(px, py, color); break;
-          case 'eraser': setPixel(px, py, null); break;
+          case 'pen': setBrushPixel(px, py, color); break;
+          case 'eraser': setBrushPixel(px, py, null); break;
           case 'bucket': floodFill(px, py, getPixel(px, py), color); break;
           case 'pick': {
             const c = getPixel(px, py);
@@ -547,7 +573,7 @@ export class PixelArtEditor extends WebviewEditor {
             const x0 = Math.min(lineStartX, x), x1 = Math.max(lineStartX, x);
             const y0 = Math.min(lineStartY, y), y1 = Math.max(lineStartY, y);
             for (let ry = y0; ry <= y1; ry++) for (let rx = x0; rx <= x1; rx++) {
-              if (ry === y0 || ry === y1 || rx === x0 || rx === x1) setPixel(rx, ry, color);
+              if (ry === y0 || ry === y1 || rx === x0 || rx === x1) setBrushPixel(rx, ry, color);
             }
           }
           isDrawing = false; render();
@@ -562,6 +588,7 @@ export class PixelArtEditor extends WebviewEditor {
         zoom = Math.max(2, Math.min(64, zoom + (e.deltaY < 0 ? 2 : -2)));
         offsetX = e.offsetX - (e.offsetX - offsetX) * zoom / oldZoom;
         offsetY = e.offsetY - (e.offsetY - offsetY) * zoom / oldZoom;
+        updateBrushAndZoomStatus();
         render();
       }, { passive: false });
 
@@ -573,6 +600,16 @@ export class PixelArtEditor extends WebviewEditor {
       registerShortcut('x', () => {
         [leftColor, rightColor] = [rightColor, leftColor]; updateColorDisplay();
       });
+      registerShortcut('[', () => {
+        brushSize = Math.max(1, brushSize - 1);
+        document.getElementById('brushSize').value = String(brushSize);
+        updateBrushAndZoomStatus();
+      });
+      registerShortcut(']', () => {
+        brushSize = Math.min(4, brushSize + 1);
+        document.getElementById('brushSize').value = String(brushSize);
+        updateBrushAndZoomStatus();
+      });
 
       function selectTool(tool) {
         currentTool = tool;
@@ -580,6 +617,12 @@ export class PixelArtEditor extends WebviewEditor {
           b.classList.toggle('active', b.dataset.tool === tool);
         });
         document.getElementById('statusTool').textContent = tool.charAt(0).toUpperCase() + tool.slice(1);
+      }
+
+      function updateBrushAndZoomStatus() {
+        document.getElementById('statusBrush').textContent = 'Brush ' + brushSize + 'px';
+        const zoomPct = Math.max(1, Math.round((zoom / 16) * 100));
+        document.getElementById('statusZoom').textContent = 'Zoom ' + zoomPct + '%';
       }
 
       document.getElementById('tools').addEventListener('click', (e) => {
@@ -645,7 +688,13 @@ export class PixelArtEditor extends WebviewEditor {
         initData(); refreshLayers(); refreshFrames();
         offsetX = 0; offsetY = 0; zoom = Math.max(2, Math.floor(320 / gridSize));
         document.getElementById('statusSize').textContent = gridSize + '×' + gridSize;
+        updateBrushAndZoomStatus();
         resizeCanvas();
+      });
+
+      document.getElementById('brushSize').addEventListener('change', (e) => {
+        brushSize = Math.max(1, Math.min(4, parseInt(e.target.value) || 1));
+        updateBrushAndZoomStatus();
       });
 
       // ── Layers ─────────────────────────────────────────
@@ -845,7 +894,9 @@ export class PixelArtEditor extends WebviewEditor {
       window.addEventListener('resize', resizeCanvas);
       resizeCanvas();
       centerCanvas();
+      updateBrushAndZoomStatus();
       render();
-    `);
+          document.getElementById("btnExportLua")?.addEventListener("click", () => { vscode.postMessage({ type: "exportLua", content: "-- Lurek2D Effect Config\nreturn {}" }); });
+      `);
   }
 }

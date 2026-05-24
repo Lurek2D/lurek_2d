@@ -18,6 +18,9 @@ export class DatabaseEditor extends WebviewEditor {
       case "exportToml":
         this.exportToml(msg.content as string, "data.toml");
         break;
+      case "exportJson":
+        this.exportJson(msg.content as string, "data.json");
+        break;
       case "importCsv":
         this.importCsv();
         break;
@@ -39,7 +42,7 @@ export class DatabaseEditor extends WebviewEditor {
     const nonce = getNonce();
     return wrapHtml(nonce, "Database Browser", `
       .editor-layout {
-        display: grid; grid-template-columns: 180px 1fr;
+        display: grid; grid-template-columns: 48px 180px 1fr;
         grid-template-rows: auto 1fr auto; height: 100vh;
       }
       .toolbar { grid-column: 1 / -1; }

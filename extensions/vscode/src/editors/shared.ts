@@ -58,305 +58,321 @@ export const ICONS = {
 
 export function getSharedCss(): string {
   return `
-    /* ── Reset & Theme ──────────────────────────────────── */
+    /* ── Reset & Theme (VS Code Native) ─────────────────── */
     :root {
-      /* Map to VS Code theme tokens with game-editor fallbacks */
-      --bg:        var(--vscode-editor-background, #1e1e2e);
-      --surface:   var(--vscode-sideBar-background, #232334);
-      --surface-2: var(--vscode-editorGroupHeader-tabsBackground, #2a2a3d);
-      --surface-3: #31314a;
-      --border:    var(--vscode-panel-border, #3c3c5c);
-      --text:      var(--vscode-editor-foreground, #cdd6f4);
-      --text-dim:  var(--vscode-descriptionForeground, #7f849c);
-      --text-bright: #ffffff;
-      --accent:    var(--vscode-focusBorder, #89b4fa);
-      --accent-2:  #a6e3a1;
-      --accent-dim: rgba(137,180,250,0.15);
-      --success:   #a6e3a1;
-      --warning:   #f9e2af;
-      --danger:    #f38ba8;
-      --selection: var(--vscode-editor-selectionBackground, #2a4070);
-      --hover:     rgba(255,255,255,0.04);
-      --radius:    4px;
-      --radius-lg: 6px;
-      --font-mono: var(--vscode-editor-font-family, 'Cascadia Code', 'Fira Code', 'Consolas', monospace);
-      --font-ui:   var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+      --bg: var(--vscode-editor-background);
+      --surface: var(--vscode-sideBar-background);
+      --surface-2: var(--vscode-editorGroupHeader-tabsBackground);
+      --surface-3: var(--vscode-sideBarSectionHeader-background);
+      --border: var(--vscode-panel-border);
+      --text: var(--vscode-editor-foreground);
+      --text-dim: var(--vscode-descriptionForeground);
+      --text-bright: var(--vscode-foreground);
+      --accent: var(--vscode-focusBorder);
+      --accent-dim: color-mix(in srgb, var(--vscode-focusBorder) 20%, transparent);
+      --selection: var(--vscode-list-activeSelectionBackground);
+      --hover: var(--vscode-list-hoverBackground);
+      
+      --btn-bg: var(--vscode-button-background);
+      --btn-fg: var(--vscode-button-foreground);
+      --btn-hover: var(--vscode-button-hoverBackground);
+      --btn-secondary-bg: var(--vscode-button-secondaryBackground, var(--vscode-editorWidget-background));
+      --btn-secondary-fg: var(--vscode-button-secondaryForeground, var(--vscode-editorWidget-foreground));
+      --btn-secondary-hover: var(--vscode-button-secondaryHoverBackground, var(--vscode-list-hoverBackground));
+
+      --input-bg: var(--vscode-input-background);
+      --input-fg: var(--vscode-input-foreground);
+      --input-border: var(--vscode-input-border);
+      
+      --toolbar-bg: var(--vscode-editorGroupHeader-tabsBackground);
+      --activity-bg: var(--vscode-activityBar-background);
+      --activity-fg: var(--vscode-activityBar-foreground);
+      --activity-fg-inactive: var(--vscode-activityBar-inactiveForeground);
+      --activity-active-border: var(--vscode-activityBar-activeBorder, var(--vscode-focusBorder));
+
+      --radius: 2px;
+      --radius-lg: 4px;
+      --font-mono: var(--vscode-editor-font-family, 'Cascadia Code', 'Consolas', monospace);
+      --font-ui: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
       --z-toolbar: 100;
       --z-dropdown: 200;
-      --z-modal:   300;
-      --z-toast:   400;
+      --z-modal: 300;
+      --z-toast: 400;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: var(--font-ui);
-      font-size: 12px;
-      color: var(--text); background: var(--bg);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg);
       overflow: hidden; height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
     /* ── Typography ─────────────────────────────────────── */
-    h1 { font-size: 16px; font-weight: 600; color: var(--text-bright); }
+    h1 { font-size: 14px; font-weight: 600; color: var(--text-bright); }
     h2 { font-size: 13px; font-weight: 600; color: var(--text); }
-    h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dim); letter-spacing: 0.8px; }
-    code, .mono { font-family: var(--font-mono); font-size: 11px; }
+    h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dim); }
+    code, .mono { font-family: var(--font-mono); font-size: 12px; }
 
     /* ── Buttons ────────────────────────────────────────── */
     button, .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-      background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
-      padding: 4px 10px; border-radius: var(--radius); cursor: pointer; font-size: 11px;
-      font-family: var(--font-ui); transition: all 0.12s ease; user-select: none;
-      line-height: 1.4; white-space: nowrap;
+      background: var(--btn-secondary-bg); color: var(--btn-secondary-fg); 
+      border: 1px solid var(--border);
+      padding: 4px 8px; border-radius: var(--radius); cursor: pointer; font-size: 12px;
+      font-family: var(--font-ui); user-select: none; white-space: nowrap;
     }
-    button:hover { background: var(--surface-3); border-color: var(--accent); color: var(--text-bright); }
-    button:active { transform: scale(0.97); }
-    button.active, button[aria-pressed="true"] {
-      background: var(--accent); border-color: var(--accent); color: var(--bg);
-    }
+    button:hover { background: var(--btn-secondary-hover); }
+    button:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
     button:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-    button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
-    button.primary:hover { filter: brightness(1.15); }
-    button.danger { border-color: var(--danger); color: var(--danger); }
-    button.danger:hover { background: var(--danger); color: var(--bg); }
+    button.primary { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-fg); }
+    button.primary:hover { background: var(--btn-hover); }
     button.ghost { background: transparent; border-color: transparent; }
-    button.ghost:hover { background: var(--hover); border-color: transparent; }
+    button.ghost:hover { background: var(--hover); }
     button svg { width: 14px; height: 14px; flex-shrink: 0; }
 
-    /* ── Icon Button (square, toolbar-style) ────────────── */
+    /* ── Icon Button (VS Code Toolbar style) ────────────── */
     .icon-btn {
       width: 28px; height: 28px; padding: 0; display: flex;
       align-items: center; justify-content: center;
       background: transparent; border: 1px solid transparent;
       border-radius: var(--radius); cursor: pointer; color: var(--text-dim);
-      transition: all 0.12s ease;
     }
-    .icon-btn:hover { background: var(--surface-3); color: var(--text-bright); border-color: var(--border); }
+    .icon-btn:hover { background: var(--hover); color: var(--text-bright); }
     .icon-btn.active, .icon-btn[aria-pressed="true"] {
-      background: var(--accent); color: var(--bg); border-color: var(--accent);
+      background: var(--selection); color: var(--text-bright); border-color: transparent;
     }
+    .icon-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
+    .icon-btn.help-btn { font-size: 13px; font-weight: 700; }
     .icon-btn svg { width: 16px; height: 16px; }
-    .icon-btn[title]::after { content: none; }
 
-    /* ── Form Controls ──────────────────────────────────── */
+    /* ── Form Controls (VS Code style) ──────────────────── */
     input, select, textarea {
-      background: var(--surface); color: var(--text); border: 1px solid var(--border);
-      padding: 4px 8px; border-radius: var(--radius); font-size: 12px;
-      font-family: var(--font-ui); transition: border-color 0.12s ease;
+      background: var(--input-bg); color: var(--input-fg); border: 1px solid var(--input-border);
+      padding: 4px 6px; border-radius: var(--radius); font-size: 13px;
+      font-family: var(--font-ui);
     }
     input:focus, select:focus, textarea:focus {
-      outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-dim);
+      outline: 1px solid var(--accent); outline-offset: -1px; border-color: transparent;
     }
     input[type="range"] {
-      -webkit-appearance: none; height: 4px; background: var(--border);
-      border-radius: 2px; border: none; padding: 0;
+      -webkit-appearance: none; height: 2px; background: var(--border);
+      border-radius: 0; border: none; padding: 0;
     }
     input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 14px; height: 14px;
+      -webkit-appearance: none; width: 12px; height: 12px;
       background: var(--accent); border-radius: 50%; cursor: pointer;
-      border: 2px solid var(--bg);
     }
     input[type="checkbox"] {
-      appearance: none; width: 14px; height: 14px; border: 1px solid var(--border);
-      border-radius: 3px; background: var(--surface); cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 0; vertical-align: middle;
+      appearance: none; width: 16px; height: 16px; border: 1px solid var(--vscode-checkbox-border, var(--input-border));
+      border-radius: 3px; background: var(--vscode-checkbox-background, var(--input-bg)); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; padding: 0; vertical-align: middle;
     }
     input[type="checkbox"]:checked {
-      background: var(--accent); border-color: var(--accent);
+      background: var(--vscode-checkbox-background, var(--input-bg)); border-color: var(--accent);
     }
     input[type="checkbox"]:checked::after {
-      content: ''; display: block; width: 8px; height: 5px;
-      border-left: 2px solid var(--bg); border-bottom: 2px solid var(--bg);
-      transform: rotate(-45deg) translateY(-1px);
+      content: ''; display: block; width: 8px; height: 4px;
+      border-left: 2px solid var(--vscode-checkbox-foreground, var(--input-fg)); 
+      border-bottom: 2px solid var(--vscode-checkbox-foreground, var(--input-fg));
+      transform: rotate(-45deg) translateY(-2px);
     }
-    input[type="number"] { width: 60px; text-align: center; }
-    select { padding-right: 20px; cursor: pointer; }
-    label {
-      font-size: 11px; color: var(--text-dim); user-select: none;
-      display: inline-flex; align-items: center; gap: 4px;
-    }
+    input[type="number"] { width: 60px; }
+    select { padding-right: 20px; cursor: pointer; background: var(--vscode-dropdown-background); color: var(--vscode-dropdown-foreground); border: 1px solid var(--vscode-dropdown-border); }
+    label { font-size: 12px; color: var(--text); user-select: none; display: inline-flex; align-items: center; gap: 4px; }
     textarea { font-family: var(--font-mono); resize: vertical; }
 
-    /* ── Toolbar (Godot-style top bar) ──────────────────── */
+    /* ── Toolbar (Top - VS Code Editor Title style) ─────── */
     .toolbar {
       display: flex; align-items: center; gap: 4px; padding: 4px 8px;
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      z-index: var(--z-toolbar); flex-shrink: 0; min-height: 36px;
+      background: var(--toolbar-bg);
+      border-bottom: 1px solid var(--border);
+      z-index: var(--z-toolbar); flex-shrink: 0; min-height: 35px;
+      flex-wrap: wrap; position: sticky; top: 0;
     }
     .toolbar .group {
       display: flex; align-items: center; gap: 2px;
-      padding: 0 2px;
+      padding: 0; background: transparent; border: none; min-height: 28px;
     }
     .toolbar .sep {
-      width: 1px; height: 20px; background: var(--border); margin: 0 4px; flex-shrink: 0;
+      width: 1px; height: 16px; background: var(--border); margin: 0 4px; flex-shrink: 0;
     }
     .toolbar .spacer { flex: 1; }
-    .toolbar label { margin: 0 2px 0 4px; }
+    .toolbar label { margin: 0 4px; }
 
-    /* ── Tool Sidebar (Godot-style left rail) ───────────── */
-    .tool-rail {
-      display: flex; flex-direction: column; align-items: center;
-      padding: 4px 2px; gap: 2px; background: var(--surface);
-      border-right: 1px solid var(--border); overflow-y: auto;
-      width: 38px; flex-shrink: 0;
+    /* ── Tool Sidebar (Left - VS Code Activity Bar style) ── */
+    .tool-rail, .auto-tool-rail { grid-column: 1; grid-row: 2; z-index: 10; }
+    .auto-tool-rail {
+      position: fixed; left: 0; top: 36px; bottom: 22px; z-index: calc(var(--z-toolbar) + 1);
     }
     .tool-rail .tool-group {
-      display: flex; flex-direction: column; gap: 1px; width: 100%;
-      padding: 2px 0;
+      display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center;
     }
     .tool-rail .tool-group + .tool-group {
-      border-top: 1px solid var(--border); padding-top: 4px; margin-top: 2px;
+      padding-top: 8px; margin-top: 4px; position: relative;
     }
-    .tool-rail .icon-btn { width: 32px; height: 32px; border-radius: var(--radius); }
-    .tool-rail .icon-btn svg { width: 16px; height: 16px; }
+    .tool-rail .tool-group + .tool-group::before {
+      content: ''; position: absolute; top: 0; width: 30px; height: 1px; background: var(--border); left: 9px;
+    }
+    .auto-tool-rail .tool-rail-sep {
+      width: 30px; height: 1px; background: var(--border); margin: 4px 0;
+    }
+    .tool-rail .icon-btn, .auto-tool-rail .icon-btn {
+      width: 48px; height: 48px; border-radius: 0; border: none;
+      background: transparent; color: var(--activity-fg-inactive); position: relative;
+    }
+    .tool-rail .icon-btn:hover, .auto-tool-rail .icon-btn:hover {
+      color: var(--activity-fg); background: transparent;
+    }
+    .tool-rail .icon-btn.active, .tool-rail .icon-btn[aria-pressed="true"],
+    .auto-tool-rail .icon-btn.active, .auto-tool-rail .icon-btn[aria-pressed="true"] {
+      color: var(--activity-fg); background: transparent;
+    }
+    .tool-rail .icon-btn.active::before, .tool-rail .icon-btn[aria-pressed="true"]::before,
+    .auto-tool-rail .icon-btn.active::before, .auto-tool-rail .icon-btn[aria-pressed="true"]::before {
+      content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px;
+      background: var(--activity-active-border);
+    }
+    .tool-rail .icon-btn svg, .auto-tool-rail .icon-btn svg { width: 24px; height: 24px; }
 
-    /* ── Panel (Godot-style properties dock) ─────────────── */
-    .panel {
-      background: var(--surface); border-right: 1px solid var(--border);
+    /* ── Panel (Right - VS Code Sidebar style) ──────────── */
+    .panel, .properties {
+      background: var(--surface); border-left: 1px solid var(--border); border-right: none;
       overflow-y: auto; padding: 0; flex-shrink: 0;
     }
-    .panel-section {
-      border-bottom: 1px solid var(--border);
-    }
+    .panel-section { border-bottom: 1px solid var(--border); }
     .panel-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 6px 10px; cursor: pointer; user-select: none;
-      background: var(--surface-2); transition: background 0.12s;
+      padding: 0 8px 0 20px; cursor: pointer; user-select: none;
+      background: var(--surface-3); height: 22px; transition: background 0.1s;
+      position: relative;
     }
-    .panel-header:hover { background: var(--surface-3); }
-    .panel-header h3 { margin: 0; pointer-events: none; }
+    .panel-header:hover { background: var(--hover); }
+    .panel-header h3 { margin: 0; pointer-events: none; color: var(--text-bright); font-size: 11px; font-weight: bold; text-transform: none; }
     .panel-header .toggle-icon {
-      width: 14px; color: var(--text-dim); transition: transform 0.15s ease;
+      width: 14px; color: var(--text); position: absolute; left: 4px; top: 4px;
+      transition: transform 0.1s ease;
     }
     .panel-header .toggle-icon.collapsed { transform: rotate(-90deg); }
-    .panel-body { padding: 8px 10px; }
+    .panel-body { padding: 10px; }
     .panel-body.collapsed { display: none; }
 
-    /* ── Collapsible section helper ─────────────────────── */
-    .section { margin-bottom: 8px; }
+    /* ── Section Helper ─────────────────────────────────── */
+    .section { margin-bottom: 12px; }
     .section-title {
-      font-size: 11px; text-transform: uppercase; color: var(--text-dim);
-      letter-spacing: 0.5px; margin-bottom: 6px; display: flex;
-      align-items: center; gap: 4px; cursor: default;
+      font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 4px; cursor: default; text-transform: none;
     }
 
-    /* ── Property Fields (Godot inspector style) ─────────── */
-    .field { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
-    .field > label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .field-row {
-      display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
-    }
-    .field-row > label { min-width: 70px; text-align: right; flex-shrink: 0; }
+    /* ── Property Fields ────────────────────────────────── */
+    .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .field > label { font-size: 12px; }
+    .field-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .field-row > label { min-width: 80px; text-align: right; flex-shrink: 0; }
     .field-row > input, .field-row > select { flex: 1; }
     .field-inline {
-      display: grid; grid-template-columns: 80px 1fr; gap: 4px; align-items: center;
-      margin-bottom: 4px; font-size: 12px;
+      display: grid; grid-template-columns: 80px 1fr; gap: 8px; align-items: center;
+      margin-bottom: 6px; font-size: 12px;
     }
-    .field-inline > label { text-align: right; color: var(--text-dim); font-size: 11px; }
+    .field-inline > label { text-align: right; color: var(--text); font-size: 12px; }
 
     /* ── List Items ─────────────────────────────────────── */
     .list-item {
-      padding: 4px 8px; cursor: pointer; border-radius: var(--radius); font-size: 12px;
-      display: flex; align-items: center; gap: 6px; transition: background 0.08s;
+      padding: 4px 8px; cursor: pointer; border-radius: var(--radius); font-size: 13px;
+      display: flex; align-items: center; gap: 6px; transition: background 0.05s; margin-bottom: 2px;
     }
     .list-item:hover { background: var(--hover); }
-    .list-item.selected { background: var(--selection); }
-    .list-item .item-icon { width: 14px; height: 14px; color: var(--text-dim); flex-shrink: 0; }
+    .list-item.selected { background: var(--selection); color: var(--text-bright); }
+    .list-item .item-icon { width: 16px; height: 16px; flex-shrink: 0; }
     .list-item .item-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .list-item .item-badge {
-      font-size: 10px; padding: 1px 5px; border-radius: 8px;
-      background: var(--surface-2); color: var(--text-dim);
+      font-size: 10px; padding: 1px 5px; border-radius: 10px; background: var(--accent-dim); color: var(--accent);
     }
 
-    /* ── Tabs (Godot-style docked tabs) ──────────────────── */
-    .tabs {
-      display: flex; gap: 0; border-bottom: 1px solid var(--border);
-      background: var(--surface); padding: 0 4px; flex-shrink: 0;
-    }
-    .tab {
-      padding: 6px 14px; font-size: 11px; cursor: pointer; border: none;
-      background: transparent; color: var(--text-dim); position: relative;
-      transition: color 0.12s; user-select: none; white-space: nowrap;
-      border-radius: 0;
-    }
-    .tab:hover { color: var(--text); background: var(--hover); }
-    .tab.active {
-      color: var(--accent); font-weight: 600;
-    }
-    .tab.active::after {
-      content: ''; position: absolute; bottom: -1px; left: 4px; right: 4px;
-      height: 2px; background: var(--accent); border-radius: 1px;
-    }
-
-    /* ── Status Bar (Godot-style bottom info strip) ──────── */
+    /* ── Status Bar (Bottom - VS Code Status Bar style) ─── */
     .status-bar {
-      display: flex; align-items: center; gap: 8px; padding: 3px 10px;
-      background: var(--surface); border-top: 1px solid var(--border);
-      font-size: 11px; color: var(--text-dim); flex-shrink: 0;
-      min-height: 24px; z-index: var(--z-toolbar);
+      display: flex; align-items: center; gap: 12px; padding: 0 10px;
+      background: var(--vscode-statusBar-background);
+      color: var(--vscode-statusBar-foreground);
+      font-size: 12px; flex-shrink: 0; min-height: 22px; z-index: var(--z-toolbar);
     }
     .status-bar .spacer { flex: 1; }
-    .status-bar .status-group {
-      display: flex; align-items: center; gap: 4px;
-    }
-    .status-bar .sep { width: 1px; height: 14px; background: var(--border); }
-    .status-bar .badge {
-      font-size: 10px; padding: 1px 6px; border-radius: 8px;
-      background: var(--accent-dim); color: var(--accent);
-    }
-    .status-bar .badge.warn { background: rgba(249,226,175,0.15); color: var(--warning); }
-    .status-bar .badge.error { background: rgba(243,139,168,0.15); color: var(--danger); }
-    .status-bar .badge.ok { background: rgba(166,227,161,0.15); color: var(--success); }
-
+    .status-bar .status-group { display: flex; align-items: center; gap: 6px; }
+    .status-bar .sep { display: none; }
+    .status-bar .badge { padding: 0; background: transparent; color: inherit; }
+    .status-bar span { padding: 0 6px; height: 100%; display: flex; align-items: center; cursor: default; }
+    .status-bar span:hover { background: var(--vscode-statusBarItem-hoverBackground); }
+    
     /* ── Toast Notifications ────────────────────────────── */
     .toast-container {
-      position: fixed; bottom: 32px; right: 12px; z-index: var(--z-toast);
-      display: flex; flex-direction: column-reverse; gap: 4px;
+      position: fixed; bottom: 32px; right: 16px; z-index: var(--z-toast);
+      display: flex; flex-direction: column-reverse; gap: 8px;
     }
     .toast {
-      padding: 8px 14px; border-radius: var(--radius-lg);
-      font-size: 12px; color: var(--text-bright);
-      background: var(--surface-3); border: 1px solid var(--border);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-      animation: toastIn 0.2s ease; max-width: 320px;
+      padding: 10px 16px; border-radius: var(--radius); font-size: 13px; color: var(--text-bright);
+      background: var(--vscode-notifications-background, var(--surface)); 
+      border: 1px solid var(--vscode-notifications-border, var(--border));
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2); animation: toastIn 0.2s ease; max-width: 320px;
     }
-    .toast.info { border-left: 3px solid var(--accent); }
-    .toast.success { border-left: 3px solid var(--success); }
-    .toast.warn { border-left: 3px solid var(--warning); }
-    .toast.error { border-left: 3px solid var(--danger); }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .toast.info { border-left: 4px solid var(--vscode-notificationsInfoIcon-foreground, var(--accent)); }
+    .toast.success { border-left: 4px solid var(--vscode-notificationsSuccessIcon-foreground, var(--success)); }
+    .toast.warn { border-left: 4px solid var(--vscode-notificationsWarningIcon-foreground, var(--warning)); }
+    .toast.error { border-left: 4px solid var(--vscode-notificationsErrorIcon-foreground, var(--danger)); }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
 
     /* ── Modal / Dialog ─────────────────────────────────── */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      position: fixed; inset: 0; background: var(--vscode-widget-shadow, rgba(0,0,0,0.5));
       z-index: var(--z-modal); display: flex; align-items: center; justify-content: center;
     }
     .modal {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 16px; min-width: 320px; max-width: 500px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      background: var(--vscode-editorWidget-background, var(--surface)); 
+      border: 1px solid var(--vscode-editorWidget-border, var(--border));
+      border-radius: var(--radius); padding: 20px; min-width: 400px; max-width: 600px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3); color: var(--vscode-editorWidget-foreground, var(--text));
     }
-    .modal h2 { margin-bottom: 12px; }
-    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    .modal h2 { margin-bottom: 16px; font-weight: normal; font-size: 14px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; }
+
+    /* ── Shortcut Help ──────────────────────────────────── */
+    .shortcut-help-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+    .shortcut-help-table tr { border-bottom: 1px solid var(--border); }
+    .shortcut-help-table tr:last-child { border-bottom: none; }
+    .shortcut-help-table td { padding: 8px 4px; vertical-align: middle; }
+    .shortcut-help-table td:first-child { width: 140px; }
+    .shortcut-help-empty { color: var(--text-dim); margin-top: 12px; }
+
+    /* ── Action Palette ─────────────────────────────────── */
+    .action-palette-search { width: 100%; margin: 8px 0; padding: 6px; font-size: 14px; }
+    .action-palette-list {
+      max-height: 300px; overflow-y: auto; border: 1px solid var(--border);
+      background: var(--bg); border-radius: var(--radius);
+    }
+    .action-palette-item {
+      width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 6px 8px; border: none; background: transparent; color: var(--text); cursor: pointer; font-size: 13px;
+    }
+    .action-palette-item:hover, .action-palette-item.active { background: var(--selection); color: var(--text-bright); }
+    .action-palette-item .hint { color: var(--text-dim); font-size: 11px; }
+    kbd {
+      display: inline-block; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 3px; padding: 2px 6px; font-size: 11px; font-family: var(--font-mono); color: var(--text);
+    }
 
     /* ── Context Menu ────────────────────────────────────── */
     .context-menu {
-      position: fixed; z-index: var(--z-dropdown); background: var(--surface);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 4px 0; min-width: 160px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      position: fixed; z-index: var(--z-dropdown); background: var(--vscode-menu-background, var(--surface));
+      border: 1px solid var(--vscode-menu-border, var(--border)); border-radius: var(--radius);
+      padding: 4px 0; min-width: 160px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      color: var(--vscode-menu-foreground, var(--text));
     }
     .context-menu-item {
-      padding: 5px 12px; font-size: 12px; cursor: pointer; display: flex;
-      align-items: center; gap: 8px; transition: background 0.08s;
+      padding: 6px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px;
     }
-    .context-menu-item:hover { background: var(--accent); color: var(--bg); }
-    .context-menu-item.disabled { opacity: 0.4; pointer-events: none; }
-    .context-menu-sep { height: 1px; background: var(--border); margin: 4px 0; }
-
-    /* ── Drag Handles ────────────────────────────────────── */
-    .drag-handle { cursor: grab; color: var(--text-dim); }
-    .drag-handle:active { cursor: grabbing; }
+    .context-menu-item:hover { background: var(--vscode-menu-selectionBackground, var(--selection)); color: var(--vscode-menu-selectionForeground, var(--text-bright)); }
+    .context-menu-item.disabled { opacity: 0.5; pointer-events: none; }
+    .context-menu-sep { height: 1px; background: var(--vscode-menu-separatorBackground, var(--border)); margin: 4px 0; }
 
     /* ── Canvas Area ─────────────────────────────────────── */
     .canvas-area {
@@ -367,60 +383,47 @@ export function getSharedCss(): string {
 
     /* ── Splitter / Resize Handle ────────────────────────── */
     .splitter-h {
-      width: 3px; cursor: col-resize; background: transparent;
-      transition: background 0.15s; flex-shrink: 0;
+      width: 4px; cursor: col-resize; background: transparent;
+      transition: background 0.15s; flex-shrink: 0; border-left: 1px solid var(--border);
     }
     .splitter-h:hover, .splitter-h.dragging { background: var(--accent); }
     .splitter-v {
-      height: 3px; cursor: row-resize; background: transparent;
-      transition: background 0.15s; flex-shrink: 0;
+      height: 4px; cursor: row-resize; background: transparent;
+      transition: background 0.15s; flex-shrink: 0; border-top: 1px solid var(--border);
     }
     .splitter-v:hover, .splitter-v.dragging { background: var(--accent); }
-
-    /* ── Scrollbar Styling ───────────────────────────────── */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
-    ::-webkit-scrollbar-corner { background: transparent; }
 
     /* ── Utility ─────────────────────────────────────────── */
     .hidden { display: none !important; }
     .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .flex { display: flex; }
-    .flex-col { display: flex; flex-direction: column; }
+    .flex { display: flex; } .flex-col { display: flex; flex-direction: column; }
     .flex-1 { flex: 1; min-width: 0; min-height: 0; }
     .gap-2 { gap: 2px; } .gap-4 { gap: 4px; } .gap-8 { gap: 8px; }
     .p-4 { padding: 4px; } .p-8 { padding: 8px; }
-    .items-center { align-items: center; }
-    .justify-between { justify-content: space-between; }
+    .items-center { align-items: center; } .justify-between { justify-content: space-between; }
 
     /* ── Tooltip ──────────────────────────────────────────── */
     [data-tooltip] { position: relative; }
     [data-tooltip]:hover::after {
       content: attr(data-tooltip); position: absolute; bottom: calc(100% + 4px);
       left: 50%; transform: translateX(-50%); padding: 4px 8px;
-      background: var(--surface-3); color: var(--text-bright); font-size: 11px;
-      border-radius: var(--radius); white-space: nowrap; pointer-events: none;
-      border: 1px solid var(--border); z-index: var(--z-dropdown);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      background: var(--vscode-editorHoverWidget-background, var(--surface-3));
+      color: var(--vscode-editorHoverWidget-foreground, var(--text-bright)); font-size: 12px;
+      border: 1px solid var(--vscode-editorHoverWidget-border, var(--border));
+      white-space: nowrap; pointer-events: none; z-index: var(--z-dropdown); box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
-
-    /* ── Loading Spinner ─────────────────────────────────── */
-    .spinner {
-      width: 16px; height: 16px; border: 2px solid var(--border);
-      border-top-color: var(--accent); border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── Empty State ─────────────────────────────────────── */
-    .empty-state {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 8px; padding: 32px; color: var(--text-dim); text-align: center;
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px; color: var(--text-dim); text-align: center; }
+    .empty-state svg { width: 64px; height: 64px; opacity: 0.5; }
+    .empty-state p { max-width: 300px; line-height: 1.4; }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 980px) {
+      .toolbar { gap: 4px; }
+      .toolbar .group { flex-wrap: wrap; }
+      .status-bar { flex-wrap: wrap; }
     }
-    .empty-state svg { width: 48px; height: 48px; opacity: 0.3; }
-    .empty-state p { max-width: 280px; line-height: 1.5; }
   `;
 }
 
@@ -474,14 +477,410 @@ export function getSharedScripts(): string {
 
     // ── Keyboard Shortcuts ───────────────────────────────
     const _keyHandlers = {};
-    function registerShortcut(key, fn) { _keyHandlers[key.toLowerCase()] = fn; }
+    const _shortcutLabels = {};
+    function registerShortcut(key, fn, description = '') {
+      const normalized = String(key || '').toLowerCase();
+      if (!normalized) return;
+      _keyHandlers[normalized] = fn;
+      if (description && !_shortcutLabels[normalized]) {
+        _shortcutLabels[normalized] = description;
+      }
+    }
+
+    function normalizeKeyName(name) {
+      const n = String(name || '').toLowerCase();
+      if (n === ' ') return 'space';
+      if (n === 'esc') return 'escape';
+      if (n === 'arrowup') return 'up';
+      if (n === 'arrowdown') return 'down';
+      if (n === 'arrowleft') return 'left';
+      if (n === 'arrowright') return 'right';
+      return n;
+    }
+
+    function formatShortcut(key) {
+      return String(key || '')
+        .split('+')
+        .map((part) => {
+          const p = part.trim().toLowerCase();
+          if (p === 'ctrl') return 'Ctrl';
+          if (p === 'shift') return 'Shift';
+          if (p === 'alt') return 'Alt';
+          if (p === 'meta') return 'Meta';
+          if (p === 'space') return 'Space';
+          if (!p) return '';
+          return p.length === 1 ? p.toUpperCase() : (p.charAt(0).toUpperCase() + p.slice(1));
+        })
+        .filter(Boolean)
+        .join(' + ');
+    }
+
+    function parseShortcutFromTitle(title) {
+      const m = /\(([^)]+)\)/.exec(String(title || ''));
+      if (!m) return null;
+      return m[1].trim().toLowerCase();
+    }
+
+    function actionLabelFromElement(el) {
+      if (!el) return '';
+      const title = (el.getAttribute('title') || '').trim();
+      if (title) {
+        return title.replace(/\s*\([^)]*\)\s*$/, '').trim();
+      }
+      const aria = (el.getAttribute('aria-label') || '').trim();
+      if (aria) return aria;
+      const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (text) return text;
+      if (el.id) return el.id;
+      return 'Action';
+    }
+
+    function collectKnownShortcuts() {
+      const rows = {};
+
+      Object.keys(_keyHandlers).forEach((key) => {
+        rows[key] = rows[key] || { key, label: _shortcutLabels[key] || '' };
+      });
+
+      document.querySelectorAll('[title]').forEach((el) => {
+        const shortcut = parseShortcutFromTitle(el.getAttribute('title'));
+        if (!shortcut) return;
+        if (!rows[shortcut]) {
+          rows[shortcut] = {
+            key: shortcut,
+            label: el.getAttribute('aria-label') || el.getAttribute('title') || '',
+          };
+        }
+      });
+
+      const list = Object.values(rows)
+        .filter((row) => row.key && row.key !== '?' && row.key !== 'shift+/')
+        .sort((a, b) => a.key.localeCompare(b.key));
+
+      return list;
+    }
+
+    function collectActionButtons() {
+      const seen = {};
+      const actions = [];
+      const selector = '.toolbar button, .tool-rail button, .panel button, .properties button, .tabs button';
+
+      document.querySelectorAll(selector).forEach((btn) => {
+        if (!(btn instanceof HTMLButtonElement)) return;
+        if (btn.disabled) return;
+        if (!btn.offsetParent && btn.id !== 'btnHelpShortcuts') return;
+        const key = btn.id || actionLabelFromElement(btn);
+        if (!key || seen[key]) return;
+        seen[key] = true;
+
+        const rawTitle = (btn.getAttribute('title') || '').trim();
+        const shortcut = parseShortcutFromTitle(rawTitle);
+        actions.push({
+          key,
+          label: actionLabelFromElement(btn),
+          shortcut: shortcut ? formatShortcut(shortcut) : '',
+          run: () => btn.click(),
+        });
+      });
+
+      return actions.sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    let _shortcutModal = null;
+    function closeShortcutHelp() {
+      if (_shortcutModal) {
+        _shortcutModal.remove();
+        _shortcutModal = null;
+      }
+    }
+
+    function showShortcutHelp() {
+      closeShortcutHelp();
+      const rows = collectKnownShortcuts();
+
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+
+      const dialog = document.createElement('div');
+      dialog.className = 'modal';
+      dialog.setAttribute('role', 'dialog');
+      dialog.setAttribute('aria-label', 'Keyboard Shortcuts');
+      dialog.innerHTML = '<h2>Keyboard Shortcuts</h2>';
+
+      if (!rows.length) {
+        const empty = document.createElement('p');
+        empty.className = 'shortcut-help-empty';
+        empty.textContent = 'No shortcuts are registered in this editor.';
+        dialog.appendChild(empty);
+      } else {
+        const table = document.createElement('table');
+        table.className = 'shortcut-help-table';
+        const tbody = document.createElement('tbody');
+
+        rows.forEach((row) => {
+          const tr = document.createElement('tr');
+          const keyCell = document.createElement('td');
+          keyCell.innerHTML = '<kbd>' + formatShortcut(row.key) + '</kbd>';
+          const descCell = document.createElement('td');
+          descCell.textContent = row.label || 'Action';
+          tr.appendChild(keyCell);
+          tr.appendChild(descCell);
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        dialog.appendChild(table);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'modal-actions';
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'primary';
+      closeBtn.textContent = 'Close';
+      closeBtn.addEventListener('click', closeShortcutHelp);
+      actions.appendChild(closeBtn);
+      dialog.appendChild(actions);
+
+      overlay.appendChild(dialog);
+      overlay.addEventListener('click', (ev) => {
+        if (ev.target === overlay) closeShortcutHelp();
+      });
+      document.body.appendChild(overlay);
+      _shortcutModal = overlay;
+      closeBtn.focus();
+    }
+
+    let _actionPalette = null;
+    function closeActionPalette() {
+      if (_actionPalette) {
+        _actionPalette.remove();
+        _actionPalette = null;
+      }
+    }
+
+    function renderActionPaletteList(container, searchValue, onRun, onMove, selectedIdx) {
+      container.innerHTML = '';
+      const query = String(searchValue || '').trim().toLowerCase();
+      const actions = collectActionButtons().filter((a) => {
+        if (!query) return true;
+        return a.label.toLowerCase().includes(query) || a.shortcut.toLowerCase().includes(query);
+      });
+
+      if (!actions.length) {
+        const empty = document.createElement('div');
+        empty.className = 'action-palette-empty';
+        empty.textContent = 'No matching actions.';
+        container.appendChild(empty);
+        onMove(-1, []);
+        return;
+      }
+
+      actions.forEach((action, idx) => {
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'action-palette-item' + (idx === selectedIdx ? ' active' : '');
+        row.innerHTML = '<span>' + action.label + '</span>' + (action.shortcut ? '<span class="hint"><kbd>' + action.shortcut + '</kbd></span>' : '');
+        row.addEventListener('click', () => onRun(action));
+        container.appendChild(row);
+      });
+
+      onMove(selectedIdx, actions);
+    }
+
+    function showActionPalette() {
+      closeShortcutHelp();
+      closeActionPalette();
+
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+
+      const dialog = document.createElement('div');
+      dialog.className = 'modal';
+      dialog.setAttribute('role', 'dialog');
+      dialog.setAttribute('aria-label', 'Action Palette');
+      dialog.innerHTML = '<h2>Action Palette</h2>';
+
+      const search = document.createElement('input');
+      search.className = 'action-palette-search';
+      search.placeholder = 'Type action name...';
+
+      const list = document.createElement('div');
+      list.className = 'action-palette-list';
+
+      const actions = document.createElement('div');
+      actions.className = 'modal-actions';
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.textContent = 'Close';
+      closeBtn.addEventListener('click', closeActionPalette);
+      actions.appendChild(closeBtn);
+
+      dialog.appendChild(search);
+      dialog.appendChild(list);
+      dialog.appendChild(actions);
+      overlay.appendChild(dialog);
+
+      let selected = 0;
+      let currentActions = [];
+      const runAction = (action) => {
+        closeActionPalette();
+        action.run();
+      };
+      const setActions = (selectedIdx, actionsList) => {
+        currentActions = actionsList;
+        if (!currentActions.length) {
+          selected = -1;
+          return;
+        }
+        if (selectedIdx < 0 || selectedIdx >= currentActions.length) {
+          selected = 0;
+        } else {
+          selected = selectedIdx;
+        }
+      };
+
+      const rerender = () => {
+        renderActionPaletteList(list, search.value, runAction, setActions, selected);
+      };
+
+      search.addEventListener('input', () => {
+        selected = 0;
+        rerender();
+      });
+
+      search.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (!currentActions.length) return;
+          selected = (selected + 1) % currentActions.length;
+          rerender();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (!currentActions.length) return;
+          selected = (selected - 1 + currentActions.length) % currentActions.length;
+          rerender();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (currentActions[selected]) runAction(currentActions[selected]);
+        }
+      });
+
+      overlay.addEventListener('click', (ev) => {
+        if (ev.target === overlay) closeActionPalette();
+      });
+
+      document.body.appendChild(overlay);
+      _actionPalette = overlay;
+      rerender();
+      search.focus();
+    }
+
+    function wireAutoDirtyFromForms() {
+      const onFormChanged = (event) => {
+        const target = event && event.target;
+        if (!target || !(target instanceof HTMLElement)) return;
+        if (target.closest('[data-no-dirty]')) return;
+
+        const tag = target.tagName.toLowerCase();
+        const isInput = tag === 'input' || tag === 'textarea' || tag === 'select';
+        if (!isInput) return;
+        markDirty();
+      };
+
+      document.addEventListener('change', onFormChanged, true);
+      document.addEventListener('input', onFormChanged, true);
+    }
+
+    function injectHelpButton() {
+      const toolbar = document.querySelector('.toolbar');
+      if (!toolbar || document.getElementById('btnHelpShortcuts')) return;
+
+      const group = document.createElement('div');
+      group.className = 'group';
+      const btn = document.createElement('button');
+      btn.id = 'btnHelpShortcuts';
+      btn.type = 'button';
+      btn.className = 'icon-btn help-btn';
+      btn.textContent = '?';
+      btn.title = 'Keyboard shortcuts (?)';
+      btn.setAttribute('aria-label', 'Open keyboard shortcuts help');
+      btn.addEventListener('click', showShortcutHelp);
+      group.appendChild(btn);
+      toolbar.appendChild(group);
+    }
+
+    function createRailButtonFrom(originalBtn) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'icon-btn';
+      const title = originalBtn.getAttribute('title') || originalBtn.getAttribute('aria-label') || actionLabelFromElement(originalBtn);
+      b.setAttribute('title', title || 'Action');
+      b.setAttribute('aria-label', title || 'Action');
+
+      const svg = originalBtn.querySelector('svg');
+      if (svg) {
+        b.innerHTML = svg.outerHTML;
+      } else {
+        const text = (originalBtn.textContent || '').trim();
+        b.textContent = text ? text.substring(0, 2).toUpperCase() : '•';
+      }
+
+      const syncState = () => {
+        b.disabled = !!originalBtn.disabled;
+        b.classList.toggle('active', originalBtn.classList.contains('active') || originalBtn.getAttribute('aria-pressed') === 'true');
+      };
+
+      b.addEventListener('click', () => originalBtn.click());
+      syncState();
+      const observer = new MutationObserver(syncState);
+      observer.observe(originalBtn, { attributes: true, attributeFilter: ['class', 'aria-pressed', 'disabled'] });
+      return b;
+    }
+
+    function ensureVoxelStyleLayout() {
+      const toolbar = document.querySelector('.toolbar');
+      if (!toolbar) return;
+
+      const hasNativeRail = !!document.querySelector('.tool-rail');
+      if (hasNativeRail || document.querySelector('.auto-tool-rail')) return;
+
+      const candidates = Array.from(toolbar.querySelectorAll('button'))
+        .filter((btn) => btn instanceof HTMLButtonElement)
+        .filter((btn) => !btn.classList.contains('primary'))
+        .filter((btn) => btn.id !== 'btnExport' && btn.id !== 'btnHelpShortcuts')
+        .filter((btn) => !btn.closest('.spacer'));
+
+      if (!candidates.length) return;
+
+      const rail = document.createElement('div');
+      rail.className = 'auto-tool-rail';
+      const maxButtons = 10;
+      candidates.slice(0, maxButtons).forEach((btn, idx) => {
+        if (idx > 0 && idx % 4 === 0) {
+          const sep = document.createElement('div');
+          sep.className = 'tool-rail-sep';
+          rail.appendChild(sep);
+        }
+        rail.appendChild(createRailButtonFrom(btn));
+        btn.style.display = "none";
+      });
+
+      const layout = document.querySelector('.editor-layout'); if (layout) layout.appendChild(rail); else const layout = document.querySelector(".editor-layout"); if (layout) layout.insertBefore(rail, toolbar.nextSibling); else document.body.appendChild(rail);
+    }
 
     document.addEventListener('keydown', (e) => {
+      const tag = (e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '');
+      const isTypingTarget = tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable);
+      if (isTypingTarget && !(e.ctrlKey || e.metaKey || e.altKey)) {
+        return;
+      }
+
       const parts = [];
       if (e.ctrlKey || e.metaKey) parts.push('ctrl');
       if (e.shiftKey) parts.push('shift');
       if (e.altKey) parts.push('alt');
-      parts.push(e.key.toLowerCase());
+      parts.push(normalizeKeyName(e.key));
       const combo = parts.join('+');
       if (_keyHandlers[combo]) { e.preventDefault(); _keyHandlers[combo](e); }
     });
@@ -590,12 +989,30 @@ export function getSharedScripts(): string {
     registerShortcut('ctrl+shift+z', () => { document.getElementById('btnRedo')?.click(); });
     registerShortcut('ctrl+y', () => { document.getElementById('btnRedo')?.click(); });
     registerShortcut('ctrl+s', () => { document.getElementById('btnExport')?.click(); });
+    registerShortcut('f1', () => showShortcutHelp(), 'Show keyboard shortcuts');
+    registerShortcut('?', () => showShortcutHelp(), 'Show keyboard shortcuts');
+    registerShortcut('shift+/', () => showShortcutHelp(), 'Show keyboard shortcuts');
+    registerShortcut('ctrl+k', () => showActionPalette(), 'Open action palette');
+    registerShortcut('ctrl+.', () => showActionPalette(), 'Open action palette');
+    registerShortcut('escape', () => {
+      hideContextMenu();
+      closeShortcutHelp();
+      closeActionPalette();
+    });
 
     // Init collapsible sections when DOM ready
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initCollapsibleSections);
+      document.addEventListener('DOMContentLoaded', () => {
+        initCollapsibleSections();
+        injectHelpButton();
+        ensureVoxelStyleLayout();
+        wireAutoDirtyFromForms();
+      });
     } else {
       initCollapsibleSections();
+      injectHelpButton();
+      ensureVoxelStyleLayout();
+      wireAutoDirtyFromForms();
     }
   `;
 }
@@ -646,8 +1063,10 @@ export function iconButton(icon: keyof typeof ICONS, opts: {
   const cls = ['icon-btn', opts.className || ''].filter(Boolean).join(' ');
   const pressed = opts.ariaPressed ? ' aria-pressed="true"' : '';
   const idAttr = opts.id ? ` id="${opts.id}"` : '';
+  const escapedTitle = opts.title ? opts.title.replace(/"/g, '&quot;') : '';
   const titleAttr = opts.title ? ` title="${opts.title}" data-tooltip="${opts.title}"` : '';
-  return `<button class="${cls}"${idAttr}${titleAttr}${pressed}>${ICONS[icon]}</button>`;
+  const ariaAttr = escapedTitle ? ` aria-label="${escapedTitle}"` : '';
+  return `<button type="button" class="${cls}"${idAttr}${titleAttr}${ariaAttr}${pressed}>${ICONS[icon]}</button>`;
 }
 
 export function panelSection(title: string, bodyHtml: string, collapsed = false): string {
@@ -733,6 +1152,9 @@ export abstract class WebviewEditor {
         this.exportToml(msg.content as string, msg.name as string || "export.toml");
         break;
       case "exportJson":
+        this.exportJson(msg.content as string, msg.name as string || "export.json");
+        break;
+      case "exportFile":
         this.exportFile(msg.content as string, msg.name as string || "export.json", "JSON", "json");
         break;
       case "exportPng":
@@ -804,7 +1226,14 @@ export abstract class WebviewEditor {
     content: string,
     defaultName: string
   ): Promise<void> {
-    return this.exportFile(content, defaultName, "TOML", "toml");
+    await this.exportFile(content, defaultName, "TOML Files", "toml");
+  }
+
+  protected async exportJson(
+    content: string,
+    defaultName: string
+  ): Promise<void> {
+    await this.exportFile(content, defaultName, "JSON Files", "json");
   }
 
   dispose(): void {
