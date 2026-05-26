@@ -1,0 +1,10 @@
+[window]
+title = "Province Economy Demo — Lurek2D"
+width = 900
+height = 600
+min_width = 640
+min_height = 480
+vsync = true
+
+[engine]
+target_fps = 60

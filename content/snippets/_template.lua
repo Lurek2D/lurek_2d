@@ -1,0 +1,55 @@
+-- content/snippets/_template.lua
+-- Template file showing the correct snippet marker format.
+-- Copy this block, replace the placeholders, and paste it into the relevant
+-- module file (e.g. engine.lua, render.lua, input.lua …).
+--
+-- Marker order is STRICT:
+--   @snippet, @prefix, @module, @description, @body, @end
+-- Every marker line must start exactly as shown (two dashes, one space, @tag).
+
+-- @snippet lurek.module.my_snippet_name
+-- @prefix lk-module-my-prefix
+-- @module module_name
+-- @description Rationale: describe WHEN and WHY a developer would reach for this
+--              block. What problem does it solve? What is the minimal realistic
+--              usage scenario? Keep to 2-4 lines.
+-- @body
+-- Replace this with real Lua code that composes 2+ lurek.* API calls.
+-- Use placeholder tokens: SNIP_1_VARIABLE for tab-stop positions (optional).
+-- Keep examples concise and idiomatic. No bare print-only snippets.
+local SNIP_1_VARIABLE = lurek.engine.getVersion()
+print("engine version=" .. SNIP_1_VARIABLE)
+-- @end
+
+-- ─────────────────────────────────────────────────────────────
+-- MARKER FIELD REFERENCE
+-- ─────────────────────────────────────────────────────────────
+--
+-- @snippet  Full dotted API path (e.g. lurek.render.draw_circle_setup)
+--           Used as the unique snippet key. Must start with "lurek."
+--
+-- @prefix   VS Code trigger prefix (e.g. lk-render-circle)
+--           Keep lowercase, hyphen-separated, prefix with "lk-<module>-"
+--
+-- @module   Short module name (engine | input | render | ui | math | system | data)
+--
+-- @description  Free-text rationale. Parsed as a single multi-line string;
+--               continuation lines may be indented for readability.
+--
+-- @body     Begin of the snippet body. All lines between @body and @end
+--           are copied verbatim into the VS Code snippet.
+--           SNIP_<index>_<name> tokens are converted to $<index> placeholders.
+--
+-- @end      Closes the snippet block. Required.
+--
+-- ─────────────────────────────────────────────────────────────
+-- RULES
+-- ─────────────────────────────────────────────────────────────
+--
+-- 1. Every snippet must call at least 2 distinct lurek.* API functions.
+-- 2. No duplicate API combinations within the same module file.
+-- 3. Verify constructor signatures in src/lua_api/*_api.rs before writing
+--    calls with positional arguments.
+-- 4. Do not add ---@diagnostic disable or ---@cast workarounds.
+--    Fix the source in src/lua_api/*_api.rs and regenerate docs instead.
+-- 5. Use bit.bxor/bit.band etc. — not Lua 5.4 ~ operator — for LuaJIT compat.

@@ -1,0 +1,312 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "fps_text"
+    widget_type = "label"
+    x = 720
+    y = 8
+    text = "FPS: 0"
+
+    [[root.children.children]]
+    id = "gold_text"
+    widget_type = "label"
+    x = 20
+    y = 8
+    text = "Gold: 50"
+
+    [[root.children.children]]
+    id = "potions_text"
+    widget_type = "label"
+    x = 160
+    y = 8
+    text = "Potions: 0"
+
+    [[root.children.children]]
+    id = "discovered_text"
+    widget_type = "label"
+    x = 300
+    y = 8
+    text = "Discovered: 0/5"
+
+    [[root.children.children]]
+    id = "cauldron_elements"
+    widget_type = "panel"
+    x = 640
+    y = 100
+    w = 150
+    h = 80
+    visible = false
+        [[root.children.children.children]]
+        id = "cauldron_title"
+        widget_type = "label"
+        x = 0
+        y = 0
+        text = "Cauldron Elements:"
+        [[root.children.children.children]]
+        id = "elem_fire"
+        widget_type = "label"
+        x = 10
+        y = 16
+        text = "Fire:  0"
+        [[root.children.children.children]]
+        id = "elem_water"
+        widget_type = "label"
+        x = 10
+        y = 30
+        text = "Water: 0"
+        [[root.children.children.children]]
+        id = "elem_earth"
+        widget_type = "label"
+        x = 10
+        y = 44
+        text = "Earth: 0"
+        [[root.children.children.children]]
+        id = "elem_air"
+        widget_type = "label"
+        x = 10
+        y = 58
+        text = "Air:   0"
+
+    [[root.children.children]]
+    id = "recipe_book"
+    widget_type = "panel"
+    x = 640
+    y = 200
+    w = 150
+    h = 100
+        [[root.children.children.children]]
+        id = "recipe_title"
+        widget_type = "label"
+        x = 0
+        y = 0
+        text = "Recipe Book:"
+        [[root.children.children.children]]
+        id = "recipe_1"
+        widget_type = "label"
+        x = 5
+        y = 18
+        text = "??? Unknown ???"
+        [[root.children.children.children]]
+        id = "recipe_2"
+        widget_type = "label"
+        x = 5
+        y = 34
+        text = "??? Unknown ???"
+        [[root.children.children.children]]
+        id = "recipe_3"
+        widget_type = "label"
+        x = 5
+        y = 50
+        text = "??? Unknown ???"
+        [[root.children.children.children]]
+        id = "recipe_4"
+        widget_type = "label"
+        x = 5
+        y = 66
+        text = "??? Unknown ???"
+        [[root.children.children.children]]
+        id = "recipe_5"
+        widget_type = "label"
+        x = 5
+        y = 82
+        text = "??? Unknown ???"
+
+    [[root.children.children]]
+    id = "msg_panel"
+    widget_type = "panel"
+    x = 150
+    y = 560
+    w = 500
+    h = 30
+    visible = false
+        [[root.children.children.children]]
+        id = "msg_text"
+        widget_type = "label"
+        x = 20
+        y = 7
+        text = "Message"
+
+    [[root.children.children]]
+    id = "controls_hint"
+    widget_type = "label"
+    x = 140
+    y = 585
+    text = "1-6:Add  G:Grind  H:Heat  J:Cool  B:Bottle  S:Shop  Esc:Quit"
+
+[[root.children]]
+id = "shop_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "shop_bg"
+    widget_type = "panel"
+    x = 100
+    y = 60
+    w = 600
+    h = 480
+
+    [[root.children.children]]
+    id = "shop_title"
+    widget_type = "label"
+    x = 280
+    y = 80
+    text = "ALCHEMIST'S SHOP"
+
+    [[root.children.children]]
+    id = "shop_gold"
+    widget_type = "label"
+    x = 350
+    y = 115
+    text = "Gold: 0"
+
+    [[root.children.children]]
+    id = "shop_buy_title"
+    widget_type = "label"
+    x = 180
+    y = 150
+    text = "BUY INGREDIENTS (press 1-6):"
+
+    [[root.children.children]]
+    id = "shop_buy_1"
+    widget_type = "label"
+    x = 210
+    y = 177
+    text = "1. Ingredient   10g   Props   stock:0"
+
+    [[root.children.children]]
+    id = "shop_buy_2"
+    widget_type = "label"
+    x = 210
+    y = 213
+    text = "2. Ingredient   10g   Props   stock:0"
+
+    [[root.children.children]]
+    id = "shop_buy_3"
+    widget_type = "label"
+    x = 210
+    y = 249
+    text = "3. Ingredient   10g   Props   stock:0"
+
+    [[root.children.children]]
+    id = "shop_buy_4"
+    widget_type = "label"
+    x = 210
+    y = 285
+    text = "4. Ingredient   10g   Props   stock:0"
+
+    [[root.children.children]]
+    id = "shop_buy_5"
+    widget_type = "label"
+    x = 210
+    y = 321
+    text = "5. Ingredient   10g   Props   stock:0"
+
+    [[root.children.children]]
+    id = "shop_buy_6"
+    widget_type = "label"
+    x = 210
+    y = 357
+    text = "6. Ingredient   10g   Props   stock:0"
+
+    [[root.children.children]]
+    id = "shop_sell_title"
+    widget_type = "label"
+    x = 180
+    y = 400
+    text = "SELL POTIONS (press B):"
+
+    [[root.children.children]]
+    id = "shop_sell_none"
+    widget_type = "label"
+    x = 220
+    y = 425
+    text = "No potions to sell"
+
+    [[root.children.children]]
+    id = "shop_sell_1"
+    widget_type = "label"
+    x = 224
+    y = 420
+    text = "Potion — 10g"
+    visible = false
+
+    [[root.children.children]]
+    id = "shop_sell_2"
+    widget_type = "label"
+    x = 224
+    y = 444
+    text = "Potion — 10g"
+    visible = false
+
+    [[root.children.children]]
+    id = "shop_sell_3"
+    widget_type = "label"
+    x = 224
+    y = 468
+    text = "Potion — 10g"
+    visible = false
+
+    [[root.children.children]]
+    id = "shop_sell_4"
+    widget_type = "label"
+    x = 224
+    y = 492
+    text = "Potion — 10g"
+    visible = false
+
+    [[root.children.children]]
+    id = "shop_hint"
+    widget_type = "label"
+    x = 270
+    y = 520
+    text = "Press S or Esc to close shop"
+
+[[root.children]]
+id = "discovery_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "disc_title"
+    widget_type = "label"
+    x = 260
+    y = 230
+    text = "NEW DISCOVERY!"
+
+    [[root.children.children]]
+    id = "disc_name"
+    widget_type = "label"
+    x = 280
+    y = 300
+    text = "Potion Name"
+
+    [[root.children.children]]
+    id = "disc_count"
+    widget_type = "label"
+    x = 310
+    y = 350
+    text = "1 / 5 recipes found"

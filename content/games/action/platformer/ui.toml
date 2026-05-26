@@ -1,0 +1,153 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+
+[[root.children]]
+widget_type = "panel"
+id = "title_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_label"
+  text = "CLASSIC PLATFORMER"
+  x = 260
+  y = 240
+  color = [0.2, 0.4, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "start_label"
+  text = "PRESS ENTER"
+  x = 320
+  y = 320
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "controls_label"
+  text = "A/D or Arrows: Move  |  Space/W: Jump"
+  x = 230
+  y = 370
+  color = [0.7, 0.7, 0.7, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "SCORE: 0"
+  x = 10
+  y = 10
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lives_label"
+  text = "LIVES: 3"
+  x = 10
+  y = 34
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "level_label"
+  text = "LEVEL: 1/3"
+  x = 10
+  y = 58
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  x = 710
+  y = 10
+  color = [0.7, 0.7, 0.7, 0.7]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_pop_label"
+  text = "+100"
+  x = 380
+  y = 0
+  color = [1.0, 1.0, 0.2, 1.0]
+  visible = false
+
+[[root.children]]
+widget_type = "panel"
+id = "banner_panel"
+x = 0
+y = 250
+w = 800
+h = 100
+visible = false
+color = [0.0, 0.0, 0.0, 0.5]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "banner_label"
+  text = "LEVEL 1"
+  x = 300
+  y = 280
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "banner_enter"
+  text = "PRESS ENTER"
+  x = 330
+  y = 320
+  color = [0.8, 0.8, 0.8, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.6]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_title"
+  text = "GAME OVER"
+  x = 310
+  y = 260
+  color = [0.9, 0.2, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_score"
+  text = "FINAL SCORE: 0"
+  x = 320
+  y = 310
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_enter"
+  text = "PRESS ENTER"
+  x = 330
+  y = 350
+  color = [0.8, 0.8, 0.8, 1.0]

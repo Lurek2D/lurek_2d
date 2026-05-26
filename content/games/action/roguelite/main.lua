@@ -1,0 +1,1100 @@
+-- ============================================================================
+--  Roguelite — Hades-style top-down action dungeon crawler
+-- ----------------------------------------------------------------------------
+--  Category : action
+--  Run with : cargo run -- content/games/action/roguelite
+--
+--  Controls (bound as input actions — see lurek.init):
+--    up/down/left/right : W/A/S/D or arrow keys
+--    attack             : Left Click or J  (melee slash)
+--    ranged             : Right Click or K (ranged projectile)
+--    dash               : Shift            (invulnerable dash)
+--    perk1/perk2/perk3  : 1/2/3            (perk selection)
+--    restart            : R                (game over)
+--    quit               : Escape
+--
+--  lurek.* namespaces used:
+--    window, render, input, time, signal, particles, tween, camera
+-- ============================================================================
+
+-- ── Constants ─────────────────────────────────────────────────────────────
+local SCREEN_W, SCREEN_H = 800, 600
+local ARENA_W, ARENA_H   = 640, 480
+local ARENA_X = (SCREEN_W - ARENA_W) / 2
+local ARENA_Y = (SCREEN_H - ARENA_H) / 2
+
+local PLAYER_RADIUS   = 12
+local PLAYER_SPEED    = 200
+local PLAYER_MAX_HP   = 5
+local DASH_DISTANCE   = 100
+local DASH_COOLDOWN   = 0.5
+local DASH_DURATION   = 0.12
+local IFRAMES_DUR     = 0.8
+
+local MELEE_DAMAGE    = 10
+local MELEE_COOLDOWN  = 0.3
+local MELEE_RANGE     = 40
+local MELEE_ARC       = math.pi * 0.5 -- 90 degrees
+
+local RANGED_DAMAGE   = 15
+local RANGED_COOLDOWN = 0.8
+local RANGED_SPEED    = 400
+local RANGED_MAX_DIST = 300
+local PROJ_RADIUS     = 4
+
+local DOOR_W, DOOR_H  = 60, 20
+
+-- Enemy base stats
+local ENEMY_MELEE_HP   = 20
+local ENEMY_RANGED_HP  = 15
+local ENEMY_CHARGER_HP = 30
+local BOSS_HP_BASE     = 120
+
+-- ── States ────────────────────────────────────────────────────────────────
+local STATE = { TITLE = 1, COMBAT = 2, PERK_SELECT = 3, BOSS = 4, GAME_OVER = 5 }
+local state = STATE.COMBAT
+
+-- ── Perk definitions ──────────────────────────────────────────────────────
+local PERK_DEFS = {
+    { id = "dmg",    label = "+25% Attack Damage",  desc = "All attacks deal 25% more damage" },
+    { id = "speed",  label = "+20% Move Speed",     desc = "Move 20% faster"                  },
+    { id = "heal",   label = "+2 HP Heal",          desc = "Restore 2 hit points"             },
+    { id = "maxhp",  label = "+1 Max HP",           desc = "Increase maximum HP by 1"         },
+    { id = "cdr",    label = "-20% Cooldowns",      desc = "All cooldowns reduced by 20%"     },
+    { id = "arc",    label = "Wider Melee Arc",      desc = "Melee slash covers a wider arc"   },
+}
+
+-- ── Mutable game state ───────────────────────────────────────────────────
+local player = {
+    x = 0, y = 0,
+    hp = PLAYER_MAX_HP, max_hp = PLAYER_MAX_HP,
+    facing_x = 1, facing_y = 0,
+    speed = PLAYER_SPEED,
+    dash_cd = 0, dashing = false, dash_timer = 0,
+    dash_dx = 0, dash_dy = 0,
+    iframes = 0,
+    melee_cd = 0, ranged_cd = 0,
+    dmg_mult = 1.0, cd_mult = 1.0,
+    melee_arc = MELEE_ARC,
+    flash = 0,
+}
+
+local enemies       = {}
+local projectiles    = {}  -- player projectiles
+local enemy_projs    = {}  -- enemy projectiles
+local slash_effects  = {}  -- melee visual arcs
+local room_number    = 0
+local kills_total    = 0
+local score          = 0
+local perks_collected = {}
+local perk_choices   = {}  -- 3 offered perks
+local door_open      = false
+local door_pulse     = { alpha = 0 }
+local title_blink    = 0
+
+-- Boss state
+local boss = nil
+
+-- Particle emitters
+---@type LParticleSystem
+local death_burst    = nil
+---@type LParticleSystem
+local slash_sparks   = nil
+---@type LParticleSystem
+local dash_trail     = nil
+---@type LParticleSystem
+local proj_sparks    = nil
+
+-- Tween handles
+local dmg_flash_tw   = nil
+local perk_glow      = { alpha = 0 }
+local perk_glow_tw   = nil
+local door_pulse_tw  = nil
+local tween_api      = lurek.tween ---@type any
+
+-- ── Helpers ───────────────────────────────────────────────────────────────
+local function dist(x1, y1, x2, y2)
+    local dx, dy = x2 - x1, y2 - y1
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+local function clamp(v, lo, hi) return math.max(lo, math.min(hi, v)) end
+
+local function angle_of(dx, dy) return math.atan2(dy, dx) end
+
+local function normalize(dx, dy)
+    local len = math.sqrt(dx * dx + dy * dy)
+    if len < 0.001 then return 0, 0 end
+    return dx / len, dy / len
+end
+
+local function point_in_arena(x, y)
+    return x >= ARENA_X and x <= ARENA_X + ARENA_W
+       and y >= ARENA_Y and y <= ARENA_Y + ARENA_H
+end
+
+local function random_perk_choices()
+    local pool = {}
+    for i = 1, #PERK_DEFS do pool[i] = i end
+    -- shuffle first 3
+    for i = 1, 3 do
+        local j = math.random(i, #pool)
+        pool[i], pool[j] = pool[j], pool[i]
+    end
+    return { PERK_DEFS[pool[1]], PERK_DEFS[pool[2]], PERK_DEFS[pool[3]] }
+end
+
+local function apply_perk(perk)
+    perks_collected[#perks_collected + 1] = perk.label
+    if perk.id == "dmg" then
+        player.dmg_mult = player.dmg_mult * 1.25
+    elseif perk.id == "speed" then
+        player.speed = player.speed * 1.20
+    elseif perk.id == "heal" then
+        player.hp = math.min(player.hp + 2, player.max_hp)
+    elseif perk.id == "maxhp" then
+        player.max_hp = player.max_hp + 1
+        player.hp = player.hp + 1
+    elseif perk.id == "cdr" then
+        player.cd_mult = player.cd_mult * 0.80
+    elseif perk.id == "arc" then
+        player.melee_arc = player.melee_arc + math.pi * 0.15
+    end
+end
+
+-- ── Enemy spawn ───────────────────────────────────────────────────────────
+local function spawn_enemy(etype)
+    local side = math.random(1, 4)
+    local ex, ey
+    if side == 1 then     ex = ARENA_X + 20;              ey = ARENA_Y + math.random(20, ARENA_H - 20)
+    elseif side == 2 then ex = ARENA_X + ARENA_W - 20;    ey = ARENA_Y + math.random(20, ARENA_H - 20)
+    elseif side == 3 then ex = ARENA_X + math.random(20, ARENA_W - 20); ey = ARENA_Y + 20
+    else                  ex = ARENA_X + math.random(20, ARENA_W - 20); ey = ARENA_Y + ARENA_H - 20
+    end
+
+    local hp, radius, speed, dmg, color
+    if etype == "melee" then
+        hp = ENEMY_MELEE_HP; radius = 10; speed = 80; dmg = 1
+        color = {0.9, 0.2, 0.2}
+    elseif etype == "ranged" then
+        hp = ENEMY_RANGED_HP; radius = 9; speed = 50; dmg = 1
+        color = {0.9, 0.5, 0.1}
+    elseif etype == "charger" then
+        hp = ENEMY_CHARGER_HP; radius = 14; speed = 60; dmg = 2
+        color = {0.8, 0.1, 0.3}
+    end
+
+    enemies[#enemies + 1] = {
+        etype = etype, x = ex, y = ey,
+        hp = hp, max_hp = hp, radius = radius,
+        speed = speed, dmg = dmg, color = color,
+        shoot_cd = 0, charge_cd = 0,
+        charging = false, charge_dx = 0, charge_dy = 0, charge_timer = 0,
+        windup = 0,
+    }
+end
+
+local function spawn_boss()
+    boss = {
+        x = ARENA_X + ARENA_W / 2, y = ARENA_Y + 80,
+        hp = BOSS_HP_BASE + room_number * 10,
+        max_hp = BOSS_HP_BASE + room_number * 10,
+        radius = 28, phase = 1, phase_timer = 0,
+        shoot_cd = 0, charge_cd = 0, speed = 60,
+        charging = false, charge_dx = 0, charge_dy = 0, charge_timer = 0,
+        windup = 0, dmg = 2,
+        color = {0.7, 0.1, 0.6},
+    }
+end
+
+local function spawn_room_enemies()
+    enemies = {}
+    enemy_projs = {}
+    local count = math.min(3 + room_number, 12)
+    for _ = 1, count do
+        local roll = math.random(1, 100)
+        if roll <= 50 then spawn_enemy("melee")
+        elseif roll <= 80 then spawn_enemy("ranged")
+        else spawn_enemy("charger")
+        end
+    end
+end
+
+-- ── Room management ───────────────────────────────────────────────────────
+local function start_room()
+    room_number = room_number + 1
+    door_open = false
+    projectiles = {}
+    enemy_projs = {}
+    slash_effects = {}
+    player.x = ARENA_X + ARENA_W / 2
+    player.y = ARENA_Y + ARENA_H - 60
+
+    if room_number % 5 == 0 then
+        enemies = {}
+        spawn_boss()
+        state = STATE.BOSS
+    else
+        boss = nil
+        spawn_room_enemies()
+        state = STATE.COMBAT
+    end
+end
+
+local function open_door()
+    door_open = true
+    if door_pulse_tw then door_pulse_tw:cancel() end
+    door_pulse.alpha = 0
+    door_pulse_tw = tween_api.to(door_pulse, { alpha = 1 }, 0.6)
+    door_pulse_tw:setRepeat(-1)
+    door_pulse_tw:setYoyo(true)
+end
+
+local function enter_perk_select()
+    perk_choices = random_perk_choices()
+    perk_glow.alpha = 0
+    if perk_glow_tw then perk_glow_tw:cancel() end
+    perk_glow_tw = tween_api.to(perk_glow, { alpha = 1 }, 0.5)
+    perk_glow_tw:setRepeat(-1)
+    perk_glow_tw:setYoyo(true)
+    state = STATE.PERK_SELECT
+end
+
+-- ── Reset ─────────────────────────────────────────────────────────────────
+local function reset_game()
+    player.hp = PLAYER_MAX_HP
+    player.max_hp = PLAYER_MAX_HP
+    player.speed = PLAYER_SPEED
+    player.dmg_mult = 1.0
+    player.cd_mult = 1.0
+    player.melee_arc = MELEE_ARC
+    player.iframes = 0
+    player.dash_cd = 0
+    player.melee_cd = 0
+    player.ranged_cd = 0
+    player.dashing = false
+    player.flash = 0
+    room_number = 0
+    kills_total = 0
+    score = 0
+    perks_collected = {}
+    enemies = {}
+    projectiles = {}
+    enemy_projs = {}
+    slash_effects = {}
+    boss = nil
+    start_room()
+end
+
+-- ── Damage player ─────────────────────────────────────────────────────────
+local function damage_player(amount)
+    if player.iframes > 0 or player.dashing then return end
+    player.hp = player.hp - amount
+    player.iframes = IFRAMES_DUR
+    player.flash = 0.3
+
+    if dmg_flash_tw then dmg_flash_tw:cancel() end
+    dmg_flash_tw = tween_api.to(player, { flash = 0 }, 0.3)
+
+    if death_burst then
+        death_burst:moveTo(player.x, player.y)
+        death_burst:emit(8)
+    end
+
+    if player.hp <= 0 then
+        player.hp = 0
+        state = STATE.GAME_OVER
+    end
+end
+
+-- ── Damage enemy ──────────────────────────────────────────────────────────
+local function damage_enemy(e, amount)
+    e.hp = e.hp - amount * player.dmg_mult
+    if e.hp <= 0 then
+        kills_total = kills_total + 1
+        score = score + 100
+        if death_burst then
+            death_burst:moveTo(e.x, e.y)
+            death_burst:emit(15)
+        end
+        return true -- dead
+    end
+    return false
+end
+
+-- ── Player attacks ────────────────────────────────────────────────────────
+local function do_melee()
+    if player.melee_cd > 0 then return end
+    player.melee_cd = MELEE_COOLDOWN * player.cd_mult
+    local facing_a = angle_of(player.facing_x, player.facing_y)
+
+    -- visual slash arc
+    slash_effects[#slash_effects + 1] = {
+        x = player.x, y = player.y,
+        angle = facing_a, arc = player.melee_arc,
+        range = MELEE_RANGE, timer = 0.15,
+    }
+    if slash_sparks then
+        slash_sparks:moveTo(player.x + player.facing_x * 20, player.y + player.facing_y * 20)
+        slash_sparks:emit(6)
+    end
+
+    -- hit enemies in arc
+    local hit_list = enemies
+    if state == STATE.BOSS and boss and boss.hp > 0 then
+        hit_list = { boss }
+    end
+    for i = #hit_list, 1, -1 do
+        local e = hit_list[i]
+        local d = dist(player.x, player.y, e.x, e.y)
+        if d <= MELEE_RANGE + e.radius then
+            local ea = angle_of(e.x - player.x, e.y - player.y)
+            local diff = math.abs(ea - facing_a)
+            if diff > math.pi then diff = 2 * math.pi - diff end
+            if diff <= player.melee_arc / 2 then
+                if e == boss then
+                    damage_enemy(e, MELEE_DAMAGE)
+                else
+                    if damage_enemy(e, MELEE_DAMAGE) then
+                        table.remove(enemies, i)
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function do_ranged()
+    if player.ranged_cd > 0 then return end
+    player.ranged_cd = RANGED_COOLDOWN * player.cd_mult
+    local dx, dy = normalize(player.facing_x, player.facing_y)
+    if dx == 0 and dy == 0 then dx = 1 end
+    projectiles[#projectiles + 1] = {
+        x = player.x + dx * 16, y = player.y + dy * 16,
+        dx = dx, dy = dy, traveled = 0,
+    }
+end
+
+local function do_dash()
+    if player.dash_cd > 0 or player.dashing then return end
+    player.dash_cd = DASH_COOLDOWN * player.cd_mult
+    player.dashing = true
+    player.dash_timer = DASH_DURATION
+    local dx, dy = normalize(player.facing_x, player.facing_y)
+    if dx == 0 and dy == 0 then dx = 1 end
+    local spd = DASH_DISTANCE / DASH_DURATION
+    player.dash_dx = dx * spd
+    player.dash_dy = dy * spd
+end
+
+-- ── Enemy AI ──────────────────────────────────────────────────────────────
+local function update_enemy(e, dt)
+    local dx, dy = player.x - e.x, player.y - e.y
+    local d = dist(e.x, e.y, player.x, player.y)
+
+    if e.etype == "melee" then
+        local nx, ny = normalize(dx, dy)
+        e.x = e.x + nx * e.speed * dt
+        e.y = e.y + ny * e.speed * dt
+        if d < PLAYER_RADIUS + e.radius then
+            damage_player(e.dmg)
+        end
+
+    elseif e.etype == "ranged" then
+        -- keep distance 120-180
+        if d < 120 then
+            local nx, ny = normalize(-dx, -dy)
+            e.x = e.x + nx * e.speed * dt
+            e.y = e.y + ny * e.speed * dt
+        elseif d > 180 then
+            local nx, ny = normalize(dx, dy)
+            e.x = e.x + nx * e.speed * dt * 0.5
+            e.y = e.y + ny * e.speed * dt * 0.5
+        end
+        e.shoot_cd = e.shoot_cd - dt
+        if e.shoot_cd <= 0 then
+            e.shoot_cd = 1.5
+            local nx, ny = normalize(dx, dy)
+            enemy_projs[#enemy_projs + 1] = {
+                x = e.x, y = e.y, dx = nx * 200, dy = ny * 200, timer = 3,
+            }
+        end
+
+    elseif e.etype == "charger" then
+        if e.charging then
+            e.charge_timer = e.charge_timer - dt
+            e.x = e.x + e.charge_dx * 350 * dt
+            e.y = e.y + e.charge_dy * 350 * dt
+            if e.charge_timer <= 0 then
+                e.charging = false
+                e.charge_cd = 2.0
+            end
+            if d < PLAYER_RADIUS + e.radius then
+                damage_player(e.dmg)
+            end
+        elseif e.windup > 0 then
+            e.windup = e.windup - dt
+            if e.windup <= 0 then
+                e.charging = true
+                e.charge_timer = 0.4
+                e.charge_dx, e.charge_dy = normalize(dx, dy)
+            end
+        else
+            -- idle: slowly approach
+            local nx, ny = normalize(dx, dy)
+            e.x = e.x + nx * e.speed * 0.3 * dt
+            e.y = e.y + ny * e.speed * 0.3 * dt
+            e.charge_cd = e.charge_cd - dt
+            if e.charge_cd <= 0 and d < 200 then
+                e.windup = 0.5
+            end
+        end
+    end
+
+    -- clamp to arena
+    e.x = clamp(e.x, ARENA_X + e.radius, ARENA_X + ARENA_W - e.radius)
+    e.y = clamp(e.y, ARENA_Y + e.radius, ARENA_Y + ARENA_H - e.radius)
+end
+
+-- ── Boss AI ───────────────────────────────────────────────────────────────
+local function update_boss(b, dt)
+    if not b or b.hp <= 0 then return end
+    local dx, dy = player.x - b.x, player.y - b.y
+    local d = dist(b.x, b.y, player.x, player.y)
+
+    b.phase_timer = b.phase_timer + dt
+    -- Phase 2 at 50% HP
+    if b.hp <= b.max_hp * 0.5 and b.phase < 2 then
+        b.phase = 2
+        b.speed = 90
+        b.phase_timer = 0
+    end
+
+    if b.charging then
+        b.charge_timer = b.charge_timer - dt
+        b.x = b.x + b.charge_dx * 400 * dt
+        b.y = b.y + b.charge_dy * 400 * dt
+        if b.charge_timer <= 0 then b.charging = false; b.charge_cd = 3.0 end
+        if d < PLAYER_RADIUS + b.radius then damage_player(b.dmg) end
+    elseif b.windup > 0 then
+        b.windup = b.windup - dt
+        if b.windup <= 0 then
+            b.charging = true
+            b.charge_timer = 0.5
+            b.charge_dx, b.charge_dy = normalize(dx, dy)
+        end
+    else
+        local nx, ny = normalize(dx, dy)
+        b.x = b.x + nx * b.speed * dt
+        b.y = b.y + ny * b.speed * dt
+        if d < PLAYER_RADIUS + b.radius then damage_player(b.dmg) end
+
+        -- Shoot pattern
+        b.shoot_cd = b.shoot_cd - dt
+        local shoot_rate = (b.phase == 2) and 0.6 or 1.0
+        if b.shoot_cd <= 0 then
+            b.shoot_cd = shoot_rate
+            if b.phase == 2 then
+                -- spread shot
+                for a = -0.4, 0.4, 0.4 do
+                    local sa = angle_of(dx, dy) + a
+                    enemy_projs[#enemy_projs + 1] = {
+                        x = b.x, y = b.y,
+                        dx = math.cos(sa) * 220, dy = math.sin(sa) * 220,
+                        timer = 3,
+                    }
+                end
+            else
+                local enx, eny = normalize(dx, dy)
+                enemy_projs[#enemy_projs + 1] = {
+                    x = b.x, y = b.y, dx = enx * 200, dy = eny * 200, timer = 3,
+                }
+            end
+        end
+
+        -- Charge
+        b.charge_cd = b.charge_cd - dt
+        if b.charge_cd <= 0 and d < 250 then
+            b.windup = 0.6
+        end
+    end
+    b.x = clamp(b.x, ARENA_X + b.radius, ARENA_X + ARENA_W - b.radius)
+    b.y = clamp(b.y, ARENA_Y + b.radius, ARENA_Y + ARENA_H - b.radius)
+end
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  lurek.init — one-time setup
+-- ══════════════════════════════════════════════════════════════════════════
+
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
+local _cam = nil ---@type LCamera?
+
+function lurek.init()
+    lurek.window.setTitle("Roguelite — Lurek2D")
+    lurek.render.setBackgroundColor(0.08, 0.06, 0.04)
+    _cam = lurek.camera.new()
+
+    lurek.input.bind("up",     { "w", "up", "gamepad:0:10" })
+    lurek.input.bind("down",   { "s", "down", "gamepad:0:11" })
+    lurek.input.bind("left",   { "a", "left", "gamepad:0:12" })
+    lurek.input.bind("right",  { "d", "right", "gamepad:0:13" })
+    lurek.input.bind("attack", { "j", "mouse_left", "gamepad:0:2" })
+    lurek.input.bind("ranged", { "k", "mouse_right", "gamepad:0:1" })
+    lurek.input.bind("dash",   { "lshift", "rshift", "gamepad:0:5" })
+    lurek.input.bind("perk1",  "1")
+    lurek.input.bind("perk2",  "2")
+    lurek.input.bind("perk3",  "3")
+    lurek.input.bind("restart",{ "r", "gamepad:0:3" })
+    lurek.input.bind("quit",   { "escape", "gamepad:0:8" })
+
+    math.randomseed(os.time())
+    reset_game()
+
+    lurek.ui.loadLayoutFile("content/games/action/roguelite/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.go_rooms = ui_root:findById("go_rooms")
+    app_ui.go_kills = ui_root:findById("go_kills")
+    app_ui.go_score = ui_root:findById("go_score")
+    app_ui.go_perk_texts = {}
+    for i=1, 6 do app_ui.go_perk_texts[i] = ui_root:findById("go_perk_" .. i) end
+    
+    app_ui.perk_select_screen = ui_root:findById("perk_select_screen")
+    app_ui.ps_bgs = {}
+    app_ui.ps_titles = {}
+    app_ui.ps_descs = {}
+    for i=1, 3 do 
+        app_ui.ps_bgs[i] = ui_root:findById("ps_bg_" .. i)
+        app_ui.ps_titles[i] = ui_root:findById("ps_title_" .. i)
+        app_ui.ps_descs[i] = ui_root:findById("ps_desc_" .. i)
+    end
+    app_ui.ps_room_cleared = ui_root:findById("ps_room_cleared")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.hp_fill = ui_root:findById("hp_fill")
+    app_ui.hp_text = ui_root:findById("hp_text")
+    app_ui.room_text = ui_root:findById("room_text")
+    app_ui.score_text = ui_root:findById("score_text")
+    app_ui.kills_text = ui_root:findById("kills_text")
+    
+    app_ui.cd_melee = ui_root:findById("cd_melee")
+    app_ui.cd_ranged = ui_root:findById("cd_ranged")
+    app_ui.cd_dash = ui_root:findById("cd_dash")
+    
+    app_ui.perks_summary_title = ui_root:findById("perks_summary_title")
+    app_ui.hud_perk_texts = {}
+    for i=1, 6 do app_ui.hud_perk_texts[i] = ui_root:findById("hud_perk_" .. i) end
+    
+    app_ui.boss_hp_bg = ui_root:findById("boss_hp_bg")
+    app_ui.boss_hp_fill = ui_root:findById("boss_hp_fill")
+    app_ui.boss_text = ui_root:findById("boss_text")
+
+    app_ui.fps_text = ui_root:findById("fps_text")
+end
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  lurek.ready — create particles & tweens after GPU init
+-- ══════════════════════════════════════════════════════════════════════════
+local function _ready_setup()
+    death_burst = lurek.particle.newSystem({
+        maxParticles = 60,
+        emitRate     = 0,
+        lifetime     = { 0.3, 0.6 },
+        speed        = { 80, 180 },
+        direction    = { 0, 360 },
+        colors       = { {1,0.3,0.1,1}, {1,0.8,0.1,0} },
+        sizes        = { 4, 1 },
+    })
+
+    slash_sparks = lurek.particle.newSystem({
+        maxParticles = 30,
+        emitRate     = 0,
+        lifetime     = { 0.1, 0.25 },
+        speed        = { 60, 120 },
+        direction    = { 0, 360 },
+        colors       = { {0.6,0.8,1,1}, {0.2,0.4,1,0} },
+        sizes        = { 3, 1 },
+    })
+
+    dash_trail = lurek.particle.newSystem({
+        maxParticles = 40,
+        emitRate     = 0,
+        lifetime     = { 0.15, 0.3 },
+        speed        = { 10, 30 },
+        direction    = { 0, 360 },
+        colors       = { {0.3,0.6,1,0.8}, {0.1,0.2,0.5,0} },
+        sizes        = { 6, 2 },
+    })
+
+    proj_sparks = lurek.particle.newSystem({
+        maxParticles = 30,
+        emitRate     = 0,
+        lifetime     = { 0.1, 0.2 },
+        speed        = { 40, 80 },
+        direction    = { 0, 360 },
+        colors       = { {1,1,0.5,1}, {1,0.6,0,0} },
+        sizes        = { 3, 1 },
+    })
+
+    if _cam ~= nil then
+        _cam:setPosition(0, 0)
+    end
+end
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  lurek.process — game logic each frame
+-- ══════════════════════════════════════════════════════════════════════════
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    if lurek.input.wasActionPressed("quit") then lurek.event.quit() end
+
+    -- ── Title ─────────────────────────────────────────────────────────
+    if state == STATE.TITLE then
+        title_blink = title_blink + dt
+        if lurek.input.wasActionPressed("attack") or lurek.input.wasActionPressed("perk1") then
+            reset_game()
+        end
+        return
+    end
+
+    -- ── Game Over ─────────────────────────────────────────────────────
+    if state == STATE.GAME_OVER then
+        if lurek.input.wasActionPressed("restart") then
+            state = STATE.TITLE
+        end
+        return
+    end
+
+    -- ── Perk Select ───────────────────────────────────────────────────
+    if state == STATE.PERK_SELECT then
+        for i = 1, 3 do
+            if lurek.input.wasActionPressed("perk" .. i) and perk_choices[i] then
+                apply_perk(perk_choices[i])
+                if perk_glow_tw then perk_glow_tw:cancel() end
+                start_room()
+            end
+        end
+        return
+    end
+
+    -- ── Combat / Boss ─────────────────────────────────────────────────
+    -- Cooldown timers
+    player.melee_cd  = math.max(0, player.melee_cd - dt)
+    player.ranged_cd = math.max(0, player.ranged_cd - dt)
+    player.dash_cd   = math.max(0, player.dash_cd - dt)
+    player.iframes   = math.max(0, player.iframes - dt)
+
+    -- Player movement
+    if player.dashing then
+        player.dash_timer = player.dash_timer - dt
+        player.x = player.x + player.dash_dx * dt
+        player.y = player.y + player.dash_dy * dt
+        if dash_trail then
+            dash_trail:moveTo(player.x, player.y)
+            dash_trail:emit(3)
+        end
+        if player.dash_timer <= 0 then player.dashing = false end
+    else
+        local mx, my = 0, 0
+        if lurek.input.isActionDown("left")  then mx = mx - 1 end
+        if lurek.input.isActionDown("right") then mx = mx + 1 end
+        if lurek.input.isActionDown("up")    then my = my - 1 end
+        if lurek.input.isActionDown("down")  then my = my + 1 end
+        if mx ~= 0 or my ~= 0 then
+            local nx, ny = normalize(mx, my)
+            player.facing_x = nx
+            player.facing_y = ny
+            player.x = player.x + nx * player.speed * dt
+            player.y = player.y + ny * player.speed * dt
+        end
+    end
+
+    -- Clamp player to arena
+    player.x = clamp(player.x, ARENA_X + PLAYER_RADIUS, ARENA_X + ARENA_W - PLAYER_RADIUS)
+    player.y = clamp(player.y, ARENA_Y + PLAYER_RADIUS, ARENA_Y + ARENA_H - PLAYER_RADIUS)
+
+    -- Attacks
+    if lurek.input.wasActionPressed("attack") then do_melee() end
+    if lurek.input.wasActionPressed("ranged") then do_ranged() end
+    if lurek.input.wasActionPressed("dash")   then do_dash() end
+
+    -- Update player projectiles
+    for i = #projectiles, 1, -1 do
+        local p = projectiles[i]
+        local step = RANGED_SPEED * dt
+        p.x = p.x + p.dx * RANGED_SPEED * dt
+        p.y = p.y + p.dy * RANGED_SPEED * dt
+        p.traveled = p.traveled + step
+
+        -- Hit enemies
+        local hit = false
+        if state == STATE.BOSS and boss and boss.hp > 0 then
+            if dist(p.x, p.y, boss.x, boss.y) < boss.radius + PROJ_RADIUS then
+                damage_enemy(boss, RANGED_DAMAGE)
+                hit = true
+            end
+        else
+            for j = #enemies, 1, -1 do
+                local e = enemies[j]
+                if dist(p.x, p.y, e.x, e.y) < e.radius + PROJ_RADIUS then
+                    if damage_enemy(e, RANGED_DAMAGE) then
+                        table.remove(enemies, j)
+                    end
+                    hit = true
+                    break
+                end
+            end
+        end
+
+        if hit then
+            if proj_sparks then proj_sparks:moveTo(p.x, p.y) proj_sparks:emit(8) end
+            table.remove(projectiles, i)
+        elseif p.traveled > RANGED_MAX_DIST or not point_in_arena(p.x, p.y) then
+            table.remove(projectiles, i)
+        end
+    end
+
+    -- Update enemy projectiles
+    for i = #enemy_projs, 1, -1 do
+        local p = enemy_projs[i]
+        p.x = p.x + p.dx * dt
+        p.y = p.y + p.dy * dt
+        p.timer = p.timer - dt
+
+        if dist(p.x, p.y, player.x, player.y) < PLAYER_RADIUS + 4 then
+            damage_player(1)
+            table.remove(enemy_projs, i)
+        elseif p.timer <= 0 or not point_in_arena(p.x, p.y) then
+            table.remove(enemy_projs, i)
+        end
+    end
+
+    -- Update slash effects
+    for i = #slash_effects, 1, -1 do
+        slash_effects[i].timer = slash_effects[i].timer - dt
+        if slash_effects[i].timer <= 0 then table.remove(slash_effects, i) end
+    end
+
+    -- Update enemies
+    if state == STATE.COMBAT then
+        for i = #enemies, 1, -1 do
+            update_enemy(enemies[i], dt)
+        end
+        -- Check room clear
+        if #enemies == 0 and not door_open then
+            open_door()
+        end
+        -- Door interaction
+        if door_open then
+            local door_cx = ARENA_X + ARENA_W / 2
+            local door_cy = ARENA_Y
+            if dist(player.x, player.y, door_cx, door_cy + DOOR_H / 2) < 40 then
+                if door_pulse_tw then door_pulse_tw:cancel() end
+                enter_perk_select()
+            end
+        end
+    elseif state == STATE.BOSS then
+        update_boss(boss, dt)
+        if boss and boss.hp <= 0 then
+            score = score + 500
+            kills_total = kills_total + 1
+            boss = nil
+            open_door()
+            -- After boss door, go to perk select when player reaches door
+        end
+        if door_open and not boss then
+            local door_cx = ARENA_X + ARENA_W / 2
+            local door_cy = ARENA_Y
+            if dist(player.x, player.y, door_cx, door_cy + DOOR_H / 2) < 40 then
+                if door_pulse_tw then door_pulse_tw:cancel() end
+                enter_perk_select()
+            end
+        end
+    end
+
+    -- Update particles
+    if death_burst  then death_burst:update(dt) end
+    if slash_sparks then slash_sparks:update(dt) end
+    if dash_trail   then dash_trail:update(dt) end
+    if proj_sparks  then proj_sparks:update(dt) end
+
+    -- UI Sync
+    if app_ui then
+        app_ui.fps_text.text = string.format("FPS: %d", lurek.timer.getFPS())
+        app_ui.title_screen.visible = (state == STATE.TITLE)
+        if state == STATE.TITLE then
+            local show = math.floor(title_blink * 2) % 2 == 0
+            app_ui.press_start.visible = show
+        end
+
+        app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+        if state == STATE.GAME_OVER then
+            app_ui.go_rooms.text = string.format("Rooms Cleared: %d", room_number - 1)
+            app_ui.go_kills.text = string.format("Enemies Killed: %d", kills_total)
+            app_ui.go_score.text = string.format("Score: %d", score)
+            for i=1, 6 do
+                if perks_collected[i] then
+                    app_ui.go_perk_texts[i].text = "• " .. perks_collected[i]
+                    app_ui.go_perk_texts[i].visible = true
+                else
+                    app_ui.go_perk_texts[i].visible = false
+                end
+            end
+        end
+
+        app_ui.perk_select_screen.visible = (state == STATE.PERK_SELECT)
+        if state == STATE.PERK_SELECT then
+            for i=1, 3 do
+                local pk = perk_choices and perk_choices[i]
+                if pk then
+                    app_ui.ps_bgs[i].visible = true
+                    app_ui.ps_titles[i].text = string.format("[%d] %s", i, pk.label)
+                    app_ui.ps_descs[i].text = pk.desc
+                    local glow_a = perk_glow.alpha * 0.15
+                    app_ui.ps_bgs[i].background = {0.2 + glow_a, 0.18 + glow_a, 0.15, 0.9}
+                else
+                    app_ui.ps_bgs[i].visible = false
+                end
+            end
+            app_ui.ps_room_cleared.text = string.format("Room %d completed", room_number)
+        end
+
+        app_ui.hud.visible = (state == STATE.COMBAT or state == STATE.BOSS)
+        if app_ui.hud.visible then
+            local hp_frac = player.hp / player.max_hp
+            app_ui.hp_fill.width = 160 * hp_frac
+            app_ui.hp_text.text = string.format("HP %d/%d", player.hp, player.max_hp)
+            app_ui.room_text.text = string.format("Room %d", room_number)
+            app_ui.score_text.text = string.format("Score: %d", score)
+            app_ui.kills_text.text = string.format("Kills: %d", kills_total)
+            
+            if player.melee_cd > 0 then
+                app_ui.cd_melee.width = 50 * (player.melee_cd / (MELEE_COOLDOWN * player.cd_mult))
+            else app_ui.cd_melee.width = 0 end
+            if player.ranged_cd > 0 then
+                app_ui.cd_ranged.width = 50 * (player.ranged_cd / (RANGED_COOLDOWN * player.cd_mult))
+            else app_ui.cd_ranged.width = 0 end
+            if player.dash_cd > 0 then
+                app_ui.cd_dash.width = 50 * (player.dash_cd / (DASH_COOLDOWN * player.cd_mult))
+            else app_ui.cd_dash.width = 0 end
+            
+            if #perks_collected > 0 then
+                app_ui.perks_summary_title.visible = true
+                for i=1, 6 do
+                    if perks_collected[i] then
+                        app_ui.hud_perk_texts[i].text = "• " .. perks_collected[i]
+                        app_ui.hud_perk_texts[i].visible = true
+                    else
+                        app_ui.hud_perk_texts[i].visible = false
+                    end
+                end
+            else
+                app_ui.perks_summary_title.visible = false
+                for i=1, 6 do app_ui.hud_perk_texts[i].visible = false end
+            end
+            
+            if state == STATE.BOSS and boss and boss.hp > 0 then
+                app_ui.boss_hp_bg.visible = true
+                app_ui.boss_hp_fill.visible = true
+                app_ui.boss_text.visible = true
+                local bhp_frac = boss.hp / boss.max_hp
+                app_ui.boss_hp_fill.width = 300 * bhp_frac
+                local phase_txt = boss.phase == 2 and " [ENRAGED]" or ""
+                app_ui.boss_text.text = "BOSS" .. phase_txt
+            else
+                app_ui.boss_hp_bg.visible = false
+                app_ui.boss_hp_fill.visible = false
+                app_ui.boss_text.visible = false
+            end
+        end
+    end
+end
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  lurek.render — world-space drawing
+-- ══════════════════════════════════════════════════════════════════════════
+function lurek.draw()
+    if state == STATE.TITLE or state == STATE.GAME_OVER or state == STATE.PERK_SELECT then return end
+
+    -- ── Arena background ──────────────────────────────────────────────
+    lurek.render.setColor(0.12, 0.10, 0.08, 1)
+    rect("fill", ARENA_X, ARENA_Y, ARENA_W, ARENA_H)
+
+    -- Floor grid pattern
+    lurek.render.setColor(0.15, 0.13, 0.10, 1)
+    for gx = 0, ARENA_W - 1, 40 do
+        for gy = 0, ARENA_H - 1, 40 do
+            rect("line", ARENA_X + gx, ARENA_Y + gy, 40, 40)
+        end
+    end
+
+    -- Arena border
+    lurek.render.setColor(0.4, 0.35, 0.25, 1)
+    rect("line", ARENA_X, ARENA_Y, ARENA_W, ARENA_H)
+
+    -- ── Door ──────────────────────────────────────────────────────────
+    if door_open then
+        local da = 0.6 + door_pulse.alpha * 0.4
+        lurek.render.setColor(0.2, 0.9, 0.3, da)
+        local dx = ARENA_X + (ARENA_W - DOOR_W) / 2
+        rect("fill", dx, ARENA_Y - 2, DOOR_W, DOOR_H)
+    end
+
+    -- ── Enemies ───────────────────────────────────────────────────────
+    for _, e in ipairs(enemies) do
+        local c = e.color
+        lurek.render.setColor(c[1], c[2], c[3], 1)
+        if e.etype == "melee" then
+            circ("fill", e.x, e.y, e.radius)
+        elseif e.etype == "ranged" then
+            rect("fill", e.x - e.radius, e.y - e.radius, e.radius * 2, e.radius * 2)
+        elseif e.etype == "charger" then
+            -- triangle-like: draw as wider shape
+            circ("fill", e.x, e.y, e.radius)
+            if e.windup > 0 then
+                lurek.render.setColor(1, 1, 0, 0.5)
+                circ("line", e.x, e.y, e.radius + 4)
+            end
+        end
+        -- Enemy HP bar
+        local hp_frac = e.hp / e.max_hp
+        lurek.render.setColor(0.2, 0.2, 0.2, 0.7)
+        rect("fill", e.x - 12, e.y - e.radius - 8, 24, 4)
+        lurek.render.setColor(0.9, 0.2, 0.2, 0.9)
+        rect("fill", e.x - 12, e.y - e.radius - 8, 24 * hp_frac, 4)
+    end
+
+    -- ── Boss ──────────────────────────────────────────────────────────
+    if boss and boss.hp > 0 then
+        local c = boss.color
+        lurek.render.setColor(c[1], c[2], c[3], 1)
+        circ("fill", boss.x, boss.y, boss.radius)
+        if boss.phase == 2 then
+            lurek.render.setColor(1, 0.3, 0.8, 0.3)
+            circ("line", boss.x, boss.y, boss.radius + 6)
+        end
+        if boss.windup > 0 then
+            lurek.render.setColor(1, 1, 0, 0.6)
+            circ("line", boss.x, boss.y, boss.radius + 8)
+        end
+        -- Boss HP bar
+        local hp_frac = boss.hp / boss.max_hp
+        lurek.render.setColor(0.2, 0.2, 0.2, 0.8)
+        rect("fill", boss.x - 30, boss.y - boss.radius - 12, 60, 6)
+        lurek.render.setColor(0.8, 0.1, 0.6, 1)
+        rect("fill", boss.x - 30, boss.y - boss.radius - 12, 60 * hp_frac, 6)
+    end
+
+    -- ── Player projectiles ────────────────────────────────────────────
+    lurek.render.setColor(1, 1, 0.5, 1)
+    for _, p in ipairs(projectiles) do
+        circ("fill", p.x, p.y, PROJ_RADIUS)
+    end
+
+    -- ── Enemy projectiles ─────────────────────────────────────────────
+    lurek.render.setColor(1, 0.3, 0.1, 0.9)
+    for _, p in ipairs(enemy_projs) do
+        circ("fill", p.x, p.y, 4)
+    end
+
+    -- ── Slash effects ─────────────────────────────────────────────────
+    for _, s in ipairs(slash_effects) do
+        local alpha = s.timer / 0.15
+        lurek.render.setColor(0.6, 0.8, 1, alpha * 0.6)
+        -- draw arc as a thick line fan
+        local steps = 8
+        for i = 0, steps do
+            local a = s.angle - s.arc / 2 + (s.arc / steps) * i
+            local ex = s.x + math.cos(a) * s.range
+            local ey = s.y + math.sin(a) * s.range
+            ln(s.x, s.y, ex, ey)
+        end
+    end
+
+    -- ── Player ────────────────────────────────────────────────────────
+    if player.iframes > 0 and math.floor(player.iframes * 10) % 2 == 0 then
+        -- blink during iframes
+    else
+        local r, g, b = 0.3, 0.5, 1.0
+        if player.flash > 0 then
+            r = r + (1 - r) * (player.flash / 0.3)
+            g = g * (1 - player.flash / 0.3)
+            b = b * (1 - player.flash / 0.3)
+        end
+        if player.dashing then
+            lurek.render.setColor(0.5, 0.7, 1, 0.5)
+        else
+            lurek.render.setColor(r, g, b, 1)
+        end
+        circ("fill", player.x, player.y, PLAYER_RADIUS)
+
+        -- facing indicator
+        lurek.render.setColor(0.8, 0.9, 1, 0.7)
+        local fx = player.x + player.facing_x * (PLAYER_RADIUS + 5)
+        local fy = player.y + player.facing_y * (PLAYER_RADIUS + 5)
+        circ("fill", fx, fy, 3)
+    end
+
+    -- ── Particles ─────────────────────────────────────────────────────
+    if death_burst  then death_burst:render() end
+    if slash_sparks then slash_sparks:render() end
+    if dash_trail   then dash_trail:render() end
+    if proj_sparks  then proj_sparks:render() end
+end
+
+-- ══════════════════════════════════════════════════════════════════════════
+--  lurek.render_ui — screen-space HUD
+-- ══════════════════════════════════════════════════════════════════════════
+function lurek.draw_ui()
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
+end

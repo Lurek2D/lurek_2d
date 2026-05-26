@@ -1,0 +1,62 @@
+# household_finance_lab_tab_04_members.layout.toml
+# Viewport: 1200 x 800
+resolution = [1200, 800]
+
+[root]
+widget_type = "panel"
+id = "hfl_root_members"
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 800.0
+
+[[root.children]]
+widget_type = "label"
+id = "title"
+text = "Household Finance Lab"
+x = 16.0
+y = 16.0
+w = 272.0
+h = 32.0
+
+[[root.children]]
+widget_type = "tabbar"
+id = "tabs"
+text = "Widgets/API|Cashflow|Categories|[Members]|Payments|Anomalies|Transactions|Logs"
+x = 16.0
+y = 48.0
+w = 1168.0
+h = 32.0
+
+[[root.children]]
+widget_type = "panel"
+id = "members_chart_panel"
+x = 16.0
+y = 176.0
+w = 544.0
+h = 576.0
+
+[[root.children]]
+widget_type = "panel"
+id = "recent_transactions_panel"
+x = 576.0
+y = 176.0
+w = 608.0
+h = 576.0
+
+[[root.children]]
+widget_type = "guitable"
+id = "recent_transactions_table"
+x = 592.0
+y = 208.0
+w = 576.0
+h = 528.0
+
+[[root.children]]
+widget_type = "statusbar"
+id = "status"
+text = "src cache | rows 2626/2631 | sql 84 ms | Members"
+x = 0.0
+y = 768.0
+w = 1200.0
+h = 32.0

@@ -1,0 +1,13 @@
+[window]
+title = "Dyna Blaster — Lurek2D"
+width = 960
+height = 640
+resizable = false
+vsync = true
+
+[graphics]
+backend = "auto"
+power_preference = "low"
+
+[performance]
+target_fps = 60

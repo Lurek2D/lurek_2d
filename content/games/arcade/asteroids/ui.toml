@@ -1,0 +1,140 @@
+# Viewport: 800 x 600
+[root]
+widget_type = "panel"
+id = "main_ui"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+widget_type = "panel"
+id = "title_screen"
+x = 0
+y = 0
+w = 800
+h = 600
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_label"
+  text = "A S T E R O I D S"
+  x = 250
+  y = 160
+  w = 300
+  h = 50
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "subtitle_label"
+  text = "Navigate the asteroid field and survive"
+  x = 230
+  y = 230
+  w = 340
+  h = 30
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_enter_label"
+  text = "PRESS ENTER TO START"
+  x = 280
+  y = 320
+  w = 240
+  h = 40
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "controls_label"
+  text = "A/Left  D/Right  Rotate\nW/Up       Thrust\nSpace     Fire\nEscape    Quit"
+  x = 240
+  y = 420
+  w = 300
+  h = 100
+
+[[root.children]]
+widget_type = "panel"
+id = "hud"
+x = 0
+y = 0
+w = 800
+h = 600
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "SCORE  0"
+  x = 16
+  y = 12
+  w = 200
+  h = 30
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "wave_label"
+  text = "WAVE 0"
+  x = 370
+  y = 12
+  w = 100
+  h = 30
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lives_label"
+  text = "LIVES 3"
+  x = 700
+  y = 12
+  w = 100
+  h = 30
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  x = 8
+  y = 580
+  w = 100
+  h = 20
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_screen"
+x = 0
+y = 0
+w = 800
+h = 600
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "game_over_label"
+  text = "GAME OVER"
+  x = 300
+  y = 250
+  w = 200
+  h = 50
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "final_score_label"
+  text = "Final Score: 0"
+  x = 320
+  y = 310
+  w = 200
+  h = 30
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "final_wave_label"
+  text = "Wave: 0"
+  x = 360
+  y = 340
+  w = 100
+  h = 30
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "restart_label"
+  text = "Press R to restart"
+  x = 300
+  y = 390
+  w = 200
+  h = 30

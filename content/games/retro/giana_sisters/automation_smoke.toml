@@ -1,0 +1,22 @@
+[meta]
+description = "Smoke replay: run right and jump"
+
+[[steps]]
+time = 0.10
+action = "keypress"
+key = "right"
+
+[[steps]]
+time = 0.55
+action = "keypress"
+key = "space"
+
+[[steps]]
+time = 0.62
+action = "keyrelease"
+key = "space"
+
+[[steps]]
+time = 1.10
+action = "keyrelease"
+key = "right"

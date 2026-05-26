@@ -1,0 +1,298 @@
+[root]
+widget_type = "panel"
+id = "root_ui"
+w = 800
+h = 600
+bg_color = [0, 0, 0, 0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "title_screen"
+  w = 800
+  h = 600
+  visible = false
+  bg_color = [0, 0, 0, 0.5]
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "A N O T H E R   W O R L D"
+    font_size = 30
+    color = [0.85, 0.75, 0.95, 1]
+    anchor = "top_center"
+    y = 180
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "A Cinematic Platformer"
+    font_size = 20
+    color = [0.5, 0.45, 0.65, 0.8]
+    anchor = "top_center"
+    y = 220
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "press_start"
+    text = "Press ENTER to begin"
+    font_size = 20
+    color = [0.6, 0.55, 0.75, 0.6]
+    anchor = "top_center"
+    y = 340
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "F = shoot | hold F = shield | hold longer = super-shot"
+    font_size = 12
+    color = [0.4, 0.35, 0.5, 0.5]
+    anchor = "top_center"
+    y = 420
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "A/D = move  |  Space = jump  |  Escape = quit"
+    font_size = 12
+    color = [0.4, 0.35, 0.5, 0.5]
+    anchor = "top_center"
+    y = 445
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "intro_screen"
+  w = 800
+  h = 600
+  visible = false
+  bg_color = [0, 0, 0, 1]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_1"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 170
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_2"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 200
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_3"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 230
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_4"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 260
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_5"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 290
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_6"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 320
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_7"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 350
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_8"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 380
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_9"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 410
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "intro_line_10"
+    text = ""
+    color = [0.7, 0.65, 0.85, 1]
+    x = 180
+    y = 440
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "press_skip"
+    text = "Press ENTER to skip"
+    color = [0.4, 0.35, 0.5, 0.4]
+    anchor = "bottom_center"
+    y = -60
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "dead_screen"
+  w = 800
+  h = 600
+  visible = false
+  bg_color = [0.6, 0.1, 0.1, 0.4]
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "YOU DIED"
+    font_size = 30
+    color = [1, 0.3, 0.3, 1]
+    anchor = "center"
+    y = -20
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "dead_lives"
+    text = ""
+    font_size = 20
+    color = [0.8, 0.6, 0.6, 0.7]
+    anchor = "center"
+    y = 10
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "game_over_screen"
+  w = 800
+  h = 600
+  visible = false
+  bg_color = [0, 0, 0, 0.7]
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "G A M E   O V E R"
+    font_size = 30
+    color = [0.9, 0.2, 0.2, 1]
+    anchor = "center"
+    y = -30
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "press_restart"
+    text = "Press ENTER to restart"
+    font_size = 20
+    color = [0.7, 0.5, 0.5, 0.6]
+    anchor = "center"
+    y = 20
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "hud_screen"
+  w = 800
+  h = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "caption"
+    text = ""
+    font_size = 16
+    color = [0.7, 0.65, 0.85, 0.6]
+    x = 20
+    y = 12
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "fps_label"
+    text = ""
+    font_size = 12
+    color = [0.4, 0.4, 0.5, 0.4]
+    x = 10
+    y = 36
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "scene_indicator"
+    text = ""
+    font_size = 16
+    color = [0.5, 0.5, 0.7, 0.6]
+    x = 700
+    y = 575
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "shields_remaining"
+    text = ""
+    font_size = 16
+    color = [0.3, 0.6, 1.0, 0.7]
+    x = 20
+    y = 575
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "charge_bar_bg"
+    w = 60
+    h = 8
+    bg_color = [0.2, 0.2, 0.3, 0.7]
+    x = 20
+    y = 550
+    visible = false
+
+      [[root.children.children.children]]
+      widget_type = "panel"
+      id = "charge_bar_fill"
+      w = 0
+      h = 8
+      bg_color = [1, 0.9, 0.3, 0.9]
+      x = 0
+      y = 0
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "life_1"
+    w = 16
+    h = 16
+    bg_color = [0.9, 0.3, 0.3, 0.9]
+    x = 770
+    y = 20
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "life_2"
+    w = 16
+    h = 16
+    bg_color = [0.9, 0.3, 0.3, 0.9]
+    x = 740
+    y = 20
+
+    [[root.children.children]]
+    widget_type = "panel"
+    id = "life_3"
+    w = 16
+    h = 16
+    bg_color = [0.9, 0.3, 0.3, 0.9]
+    x = 710
+    y = 20
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "fade_panel"
+  w = 800
+  h = 600
+  visible = false
+  bg_color = [0, 0, 0, 0]

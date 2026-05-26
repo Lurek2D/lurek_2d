@@ -1,0 +1,8 @@
+[window]
+title = "Vending Lights — Lurek2D"
+width = 840
+height = 480
+vsync = true
+
+[engine]
+target_fps = 60

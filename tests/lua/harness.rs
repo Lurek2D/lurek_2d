@@ -1,0 +1,1545 @@
+//! Test harness that discovers and runs all Lua integration test scripts.
+//!
+//! # Running tests in parallel
+//! Cargo runs test executables serially, but libtest may run the `#[test]`
+//! functions inside this harness in parallel. Each function creates its own
+//! independent Lua VM, so those in-process runs stay isolated from each other.
+//!
+//! # Filtering
+//! Use a substring to filter: `cargo test lua_test_math` — runs only math tests.
+//! Use category prefix: `cargo test lua_unit` / `cargo test lua_integration` / `cargo test lua_stress`.
+//!
+//! # Parsing results
+//! Run `python tools/parse_test_log.py` on captured output to get a structured report.
+//! The SUMMARY line format is: `SUMMARY: total=N passed=N failed=N skipped=N`
+
+use std::cell::RefCell;
+use std::path::Path;
+use std::path::PathBuf;
+use std::rc::Rc;
+use std::time::Instant;
+
+use lurek2d::lua_api::{create_lua_vm, SharedState};
+use lurek2d::runtime::config::Config;
+
+fn create_test_vm() -> mlua::Lua {
+    let state = Rc::new(RefCell::new(SharedState::new(
+        800,
+        600,
+        "Test",
+        PathBuf::from("."),
+    )));
+    state.borrow_mut().load_default_fonts();
+    let lua = create_lua_vm(state, &Config::default().modules).expect("Failed to create Lua VM");
+
+    // Expose a safe read-only file helper for static-analysis tests.
+    // The sandbox removes io.open; this restores read-only access to workspace files.
+    let read_file_fn = lua
+        .create_function(|_, path: String| match std::fs::read_to_string(&path) {
+            Ok(s) => Ok(Some(s)),
+            Err(_) => Ok(None),
+        })
+        .expect("Failed to create read_file helper");
+    lua.globals()
+        .set("read_file", read_file_fn)
+        .expect("Failed to register read_file");
+
+    // Expose a write-only file helper for test evidence/reports to bypass GameFS save restriction.
+    let write_file_fn = lua
+        .create_function(|_, (path, data): (String, String)| {
+            if let Some(parent) = Path::new(&path).parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            std::fs::write(&path, &data).map_err(mlua::Error::external)
+        })
+        .expect("Failed to create write_file helper");
+    lua.globals()
+        .set("write_file", write_file_fn)
+        .expect("Failed to register write_file");
+
+    // Some Lua tests load shared helpers via dofile().
+    // The sandbox does not expose it by default, so provide a local test-only implementation.
+    let dofile_fn = lua
+        .create_function(|lua, path: String| {
+            let code = std::fs::read_to_string(&path).map_err(mlua::Error::external)?;
+            lua.load(&code)
+                .set_name(&path)
+                .exec()
+                .map_err(mlua::Error::external)?;
+            Ok(())
+        })
+        .expect("Failed to create dofile helper");
+    lua.globals()
+        .set("dofile", dofile_fn)
+        .expect("Failed to register dofile");
+
+    // Load test framework
+    let framework = include_str!("init.lua");
+    lua.load(framework)
+        .set_name("test_framework")
+        .exec()
+        .expect("Failed to load test framework");
+
+    lua
+}
+
+fn run_lua_test(filename: &str) {
+    let rooted = format!("tests/lua/{}", filename);
+    run_lua_test_at_path(filename, &rooted);
+}
+
+fn run_lua_workspace_test(path: &str) {
+    run_lua_test_at_path(path, path);
+}
+
+fn run_lua_test_at_path(display_name: &str, file_path: &str) {
+    let start = Instant::now();
+    let lua = create_test_vm();
+
+    let code = std::fs::read_to_string(file_path)
+        .unwrap_or_else(|e| panic!("Failed to read {}: {}", display_name, e));
+
+    lua.load(&code)
+        .set_name(display_name)
+        .exec()
+        .unwrap_or_else(|e| panic!("Lua error in {}: {}", display_name, e));
+
+    // Collect results from _test_results global
+    let results: mlua::Table = lua
+        .globals()
+        .get("_test_results")
+        .expect("Missing _test_results global");
+
+    let total: i64 = results.get("total").unwrap_or(0);
+    let passed: i64 = results.get("passed").unwrap_or(0);
+    let failed: i64 = results.get("failed").unwrap_or(0);
+    let skipped: i64 = results.get("skipped").unwrap_or(0);
+
+    let elapsed = start.elapsed();
+
+    // Print structured result line (parseable by parse_test_log.py)
+    println!(
+        "{}: {}/{} passed, {} failed, {} skipped [{:.2}s]",
+        display_name,
+        passed,
+        total,
+        failed,
+        skipped,
+        elapsed.as_secs_f64()
+    );
+
+    // Print all failures with FAIL: prefix (parseable by parse_test_log.py)
+    if failed > 0 {
+        if let Ok(errors) = results.get::<_, mlua::Table>("errors") {
+            for pair in errors.pairs::<i64, mlua::Table>() {
+                if let Ok((_, err_tbl)) = pair {
+                    let suite: String = err_tbl.get("suite").unwrap_or_default();
+                    let test: String = err_tbl.get("test").unwrap_or_default();
+                    let error: String = err_tbl.get("error").unwrap_or_default();
+                    eprintln!("  FAIL: [{}] {} - {}", suite, test, error);
+                }
+            }
+        }
+    }
+
+    assert_eq!(failed, 0, "{} Lua tests failed in {}", failed, display_name);
+    assert!(
+        total > 0 || skipped > 0,
+        "No tests were run in {}",
+        display_name
+    );
+}
+
+fn collect_colocated_game_tests(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+
+    for entry in entries.filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_dir() {
+            collect_colocated_game_tests(&path, out);
+        } else if path.file_name().map(|n| n == "test.lua").unwrap_or(false) {
+            out.push(path);
+        }
+    }
+}
+
+/// Collect `tests/lua/demos/test_*.lua` headless demo contract tests.
+fn collect_headless_demo_tests(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+
+    for entry in entries.filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if !path.is_file() {
+            continue;
+        }
+        let Some(name) = path.file_name().and_then(|n| n.to_str()) else {
+            continue;
+        };
+        if name.starts_with("test_") && name.ends_with(".lua") {
+            out.push(path);
+        }
+    }
+}
+
+// === lurek.log tests ===// === lurek.render.newShape / CompoundShape tests ===
+// === Stress Tests ===
+// === lurek.ui tests ===
+// === Validation Tests ===
+
+// === Cross-Module Integration Tests ===
+
+#[test]
+fn lua_integration_ai_physics() {
+    run_lua_test("integration/test_ai_physics.lua");
+}
+
+#[test]
+fn lua_integration_tilemap_physics() {
+    run_lua_test("integration/test_tilemap_physics.lua");
+}
+
+#[test]
+fn lua_integration_ecs_ai() {
+    run_lua_test("integration/test_ecs_ai.lua");
+}
+
+#[test]
+fn lua_integration_compute_dataframe() {
+    run_lua_test("integration/test_compute_dataframe.lua");
+}
+
+#[test]
+fn lua_integration_save_ecs() {
+    run_lua_test("integration/test_save_ecs.lua");
+}
+
+// === Additional Root Unit Tests ===
+#[test]
+fn lua_unit_module_registration() {
+    run_lua_test("unit/test_lua_module_registration.lua");
+}
+
+// === Additional Stress Tests ===// === Additional Integration Tests ===
+
+// === Library module tests (tests/lua/library/) ===
+#[test]
+fn lua_integration_math_physics() {
+    run_lua_test("integration/test_math_physics.lua");
+}
+#[test]
+fn lua_integration_timer_math() {
+    run_lua_test("integration/test_timer_math.lua");
+}
+
+// ─── Phase 2 Integration Tests ───────────────────────────────────────────────
+
+#[test]
+fn lua_integration_render_camera() {
+    run_lua_test("integration/test_render_camera.lua");
+}
+
+#[test]
+fn lua_integration_render_animation() {
+    run_lua_test("integration/test_render_animation.lua");
+}
+
+#[test]
+fn lua_integration_audio_event() {
+    run_lua_test("integration/test_audio_event.lua");
+}
+
+#[test]
+fn lua_integration_ai_ecs_scene() {
+    run_lua_test("integration/test_ai_ecs_scene.lua");
+}
+
+#[test]
+fn lua_integration_save_ecs_scene() {
+    run_lua_test("integration/test_save_ecs_scene.lua");
+}
+
+#[test]
+fn lua_integration_procgen_tilemap() {
+    run_lua_test("integration/test_procgen_tilemap.lua");
+}
+
+#[test]
+fn lua_integration_pathfind_ecs() {
+    run_lua_test("integration/test_pathfind_ecs.lua");
+}
+
+#[test]
+fn lua_integration_data_compute() {
+    run_lua_test("integration/test_data_compute.lua");
+}
+
+// ─── Golden ──────────────────────────────────────────────────────────────────
+// ─── Security ─────────────────────────────────────────────────────────────────// ─── Stress ───────────────────────────────────────────────────────────────────// ─── Property-Based ──────────────────────────────────────────────────────────
+// ─── Unit library tests (battle / crafting / dialog) ─────────────────────────
+
+// ─── Phase 3 Integration Tests ───────────────────────────────────────────────
+
+#[test]
+fn lua_integration_ecs_physics() {
+    run_lua_test("integration/test_ecs_physics.lua");
+}
+
+#[test]
+fn lua_integration_ecs_render() {
+    run_lua_test("integration/test_ecs_render.lua");
+}
+
+#[test]
+fn lua_integration_scene_camera() {
+    run_lua_test("integration/test_scene_camera.lua");
+}
+
+#[test]
+fn lua_integration_tilemap_camera() {
+    run_lua_test("integration/test_tilemap_camera.lua");
+}
+
+#[test]
+fn lua_integration_ai_pathfind() {
+    run_lua_test("integration/test_ai_pathfind.lua");
+}
+
+#[test]
+fn lua_integration_data_filesystem() {
+    run_lua_test("integration/test_data_filesystem.lua");
+}
+
+#[test]
+fn lua_integration_save_tilemap() {
+    run_lua_test("integration/test_save_tilemap.lua");
+}
+
+#[test]
+fn lua_integration_event_entity() {
+    run_lua_test("integration/test_event_entity.lua");
+}
+
+#[test]
+fn lua_integration_tilemap_pathfind() {
+    run_lua_test("integration/test_tilemap_pathfind.lua");
+}
+
+#[test]
+fn lua_integration_thread_data() {
+    run_lua_test("integration/test_thread_data.lua");
+}
+
+#[test]
+fn lua_integration_tween_camera() {
+    run_lua_test("integration/test_tween_camera.lua");
+}
+
+#[test]
+fn lua_integration_tween_ecs() {
+    run_lua_test("integration/test_tween_ecs.lua");
+}
+
+#[test]
+fn lua_integration_particle_timer() {
+    run_lua_test("integration/test_particle_timer.lua");
+}
+
+#[test]
+fn lua_integration_parallax_camera() {
+    run_lua_test("integration/test_parallax_camera.lua");
+}
+
+#[test]
+fn lua_integration_i18n_ui() {
+    run_lua_test("integration/test_i18n_ui.lua");
+}
+
+// ─── Phase 3 Golden Tests ────────────────────────────────────────────────────
+// ─── Phase 3 Stress Tests ─────────────────────────────────────────────────────
+// ─── Evidence Tests ───────────────────────────────────────────────────────────
+// Tests in tests/lua/evidence/ verify observable API state and save PNG/JSON
+// artefacts to tests/lua/evidence/output/ for human inspection.// ─── Evidence: Math, Noise, Procgen, Effects ──────────────────────────────// ─── Phase 4: Math / Pathfinding / Procgen / Graph expansion ─────────────────
+
+#[test]
+fn lua_integration_pathfind_graph() {
+    run_lua_test("integration/test_pathfind_graph.lua");
+}
+
+#[test]
+fn lua_integration_math_pathfind() {
+    run_lua_test("integration/test_math_pathfind.lua");
+}
+
+#[test]
+fn lua_integration_graph_pathfind() {
+    run_lua_test("integration/test_graph_pathfind.lua");
+}
+
+// ── config layer ──
+
+#[test]
+fn lua_config_config() {
+    run_lua_test("config/test_config.lua");
+}
+
+// ── unit layer ──
+
+#[test]
+fn lua_unit_ai_unit() {
+    run_lua_test("unit/test_ai_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_animation_unit() {
+    run_lua_test("unit/test_animation_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_audio_unit() {
+    run_lua_test("unit/test_audio_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_automation_unit() {
+    run_lua_test("unit/test_automation_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_battle_unit() {
+    run_lua_test("unit/test_battle_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_camera_unit() {
+    run_lua_test("unit/test_camera_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_charts_unit() {
+    run_lua_test("unit/test_charts_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_color_unit() {
+    run_lua_test("unit/test_color_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_compute_unit() {
+    run_lua_test("unit/test_compute_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_crafting_unit() {
+    run_lua_test("unit/test_crafting_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_data_unit() {
+    run_lua_test("unit/test_data_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_dataframe_unit() {
+    run_lua_test("unit/test_dataframe_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_debugbridge_unit() {
+    run_lua_test("unit/test_debugbridge_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_debugbridge_api_unit() {
+    run_lua_test("unit/test_debugbridge_api_unit.lua");
+}
+
+#[test]
+fn lua_unit_devtools_unit() {
+    run_lua_test("unit/test_devtools_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_devtools_api_unit() {
+    run_lua_test("unit/test_devtools_api_unit.lua");
+}
+
+#[test]
+fn lua_unit_dialog_unit() {
+    run_lua_test("unit/test_dialog_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_docs_unit() {
+    run_lua_test("unit/test_docs_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_docs_api_unit() {
+    run_lua_test("unit/test_docs_api_unit.lua");
+}
+
+#[test]
+fn lua_unit_drawlayer_unit() {
+    run_lua_test("unit/test_render_drawlayer_unit.lua");
+}
+
+#[test]
+fn lua_unit_drawlayer_api_unit() {
+    run_lua_test("unit/test_render_drawlayer_api_unit.lua");
+}
+
+#[test]
+fn lua_unit_ecs_unit() {
+    run_lua_test("unit/test_ecs_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_ecs_scene_unit() {
+    run_lua_test("unit/test_ecs_scene_unit.lua");
+}
+
+#[test]
+fn lua_unit_effect_unit() {
+    run_lua_test("unit/test_effect_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_event_unit() {
+    run_lua_test("unit/test_event_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_filesystem_unit() {
+    run_lua_test("unit/test_filesystem_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_font_unit() {
+    run_lua_test("unit/test_render_font_unit.lua");
+}
+
+#[test]
+fn lua_unit_font_core_unit() {
+    run_lua_test("unit/test_font_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_globe_unit() {
+    run_lua_test("unit/test_globe_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_graph_unit() {
+    run_lua_test("unit/test_graph_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_i18n_unit() {
+    run_lua_test("unit/test_i18n_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_image_unit() {
+    run_lua_test("unit/test_image_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_input_unit() {
+    run_lua_test("unit/test_input_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_light_unit() {
+    run_lua_test("unit/test_light_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_light_render_unit() {
+    run_lua_test("unit/test_light_render_unit.lua");
+}
+
+#[test]
+fn lua_unit_log_unit() {
+    run_lua_test("unit/test_log_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_math_unit() {
+    run_lua_test("unit/test_math_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_math_render_unit() {
+    run_lua_test("unit/test_math_render_unit.lua");
+}
+
+#[test]
+fn lua_unit_minimap_unit() {
+    run_lua_test("unit/test_minimap_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_province_unit() {
+    run_lua_test("unit/test_province_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_province_properties_unit() {
+    run_lua_test("unit/test_province_properties_unit.lua");
+}
+
+#[test]
+fn lua_unit_visibility_unit() {
+    run_lua_test("unit/test_visibility_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_procgen_noise_unit() {
+    run_lua_test("unit/test_procgen_noise_unit.lua");
+}
+
+#[test]
+fn lua_unit_mods_unit() {
+    run_lua_test("unit/test_mods_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_network_unit() {
+    run_lua_test("unit/test_network_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_net_unit() {
+    run_lua_test("unit/test_net_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_parallax_unit() {
+    run_lua_test("unit/test_parallax_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_particle_unit() {
+    run_lua_test("unit/test_particle_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_particle_render_unit() {
+    run_lua_test("unit/test_particle_render_unit.lua");
+}
+
+#[test]
+fn lua_unit_pathfind_unit() {
+    run_lua_test("unit/test_pathfind_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_pathfind_hex_unit() {
+    run_lua_test("unit/test_pathfind_hex_unit.lua");
+}
+
+#[test]
+fn lua_unit_pathfind_ai_unit() {
+    run_lua_test("unit/test_pathfind_ai_unit.lua");
+}
+
+#[test]
+fn lua_unit_patterns_unit() {
+    run_lua_test("unit/test_patterns_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_physics_unit() {
+    run_lua_test("unit/test_physics_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_physics_platformer_unit() {
+    run_lua_test("unit/test_physics_platformer_unit.lua");
+}
+
+#[test]
+fn lua_unit_physics_worms_unit() {
+    run_lua_test("unit/test_physics_worms_unit.lua");
+}
+
+#[test]
+fn lua_unit_physics_tanks_unit() {
+    run_lua_test("unit/test_physics_tanks_unit.lua");
+}
+
+#[test]
+fn lua_unit_physics_space_unit() {
+    run_lua_test("unit/test_physics_space_unit.lua");
+}
+
+#[test]
+fn lua_unit_physics_world_sim_unit() {
+    run_lua_test("unit/test_physics_world_sim_unit.lua");
+}
+
+#[test]
+fn lua_unit_physics_timer_unit() {
+    run_lua_test("unit/test_physics_timer_unit.lua");
+}
+
+#[test]
+fn lua_unit_pipeline_unit() {
+    run_lua_test("unit/test_pipeline_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_procgen_unit() {
+    run_lua_test("unit/test_procgen_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_procgen_ai_unit() {
+    run_lua_test("unit/test_procgen_ai_unit.lua");
+}
+
+#[test]
+fn lua_unit_raycaster_unit() {
+    run_lua_test("unit/test_raycaster_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_render_unit() {
+    run_lua_test("unit/test_render_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_repl_unit() {
+    run_lua_test("unit/test_repl_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_runtime_unit() {
+    run_lua_test("unit/test_runtime_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_runtime_api_unit() {
+    run_lua_test("unit/test_runtime_api_unit.lua");
+}
+
+#[test]
+fn lua_unit_save_unit() {
+    run_lua_test("unit/test_save_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_scene_unit() {
+    run_lua_test("unit/test_scene_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_serialize_unit() {
+    run_lua_test("unit/test_serialize_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_shape_unit() {
+    run_lua_test("unit/test_shape_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_spine_unit() {
+    run_lua_test("unit/test_spine_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_sprite_unit() {
+    run_lua_test("unit/test_sprite_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_terminal_unit() {
+    run_lua_test("unit/test_terminal_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_thread_unit() {
+    run_lua_test("unit/test_thread_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_tilemap_unit() {
+    run_lua_test("unit/test_tilemap_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_timer_unit() {
+    run_lua_test("unit/test_timer_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_tween_unit() {
+    run_lua_test("unit/test_tween_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_tween_animation_unit() {
+    run_lua_test("unit/test_tween_animation_unit.lua");
+}
+
+#[test]
+fn lua_unit_ui_unit() {
+    run_lua_test("unit/test_ui_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_ui_font_unit() {
+    run_lua_test("unit/test_ui_font_unit.lua");
+}
+
+#[test]
+fn lua_unit_ui_input_unit() {
+    run_lua_test("unit/test_ui_input_unit.lua");
+}
+
+#[test]
+fn lua_unit_ui_features_unit() {
+    run_lua_test("unit/test_ui_features_unit.lua");
+}
+
+#[test]
+fn lua_unit_html_unit() {
+    run_lua_test("unit/test_html_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_window_unit() {
+    run_lua_test("unit/test_window_core_unit.lua");
+}
+
+// ── evidence layer ──
+
+#[test]
+fn lua_evidence_animation_evidence() {
+    run_lua_test("evidence/test_animation_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_audio_evidence() {
+    run_lua_test("evidence/test_audio_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_bezier_evidence() {
+    run_lua_test("evidence/test_bezier_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_camera_evidence() {
+    run_lua_test("evidence/test_camera_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_canvas_evidence() {
+    run_lua_test("evidence/test_canvas_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_cellular_sand_evidence() {
+    run_lua_test("evidence/test_cellular_sand_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_charts_evidence() {
+    run_lua_test("evidence/test_charts_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_easing_evidence() {
+    run_lua_test("evidence/test_easing_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_effect_evidence() {
+    run_lua_test("evidence/test_effect_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_geometry_evidence() {
+    run_lua_test("evidence/test_geometry_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_graph_evidence() {
+    run_lua_test("evidence/test_graph_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_gui_evidence() {
+    run_lua_test("evidence/test_gui_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_html_evidence() {
+    run_lua_test("evidence/test_html_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_image_evidence() {
+    run_lua_test("evidence/test_image_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_imagedata_evidence() {
+    run_lua_test("evidence/test_imagedata_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_layers_evidence() {
+    run_lua_test("evidence/test_layers_evidence.lua");
+}
+
+
+#[test]
+fn lua_evidence_math_evidence() {
+    run_lua_test("evidence/test_math_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_minimap_evidence() {
+    run_lua_test("evidence/test_minimap_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_noise_evidence() {
+    run_lua_test("evidence/test_noise_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_particle_evidence() {
+    run_lua_test("evidence/test_particle_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_pathfind_evidence() {
+    run_lua_test("evidence/test_pathfind_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_physics_evidence() {
+    run_lua_test("evidence/test_physics_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_procgen_evidence() {
+    run_lua_test("evidence/test_procgen_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_raycaster_evidence() {
+    run_lua_test("evidence/test_raycaster_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_render_evidence() {
+    run_lua_test("evidence/test_render_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_scene_evidence() {
+    run_lua_test("evidence/test_scene_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_shapes_evidence() {
+    run_lua_test("evidence/test_shapes_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_spine_evidence() {
+    run_lua_test("evidence/test_spine_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_globe_evidence() {
+    run_lua_test("evidence/test_globe_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_render_advanced_evidence() {
+    run_lua_test("evidence/test_render_advanced_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_tilemap_advanced_evidence() {
+    run_lua_test("evidence/test_tilemap_advanced_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_ui_advanced_evidence() {
+    run_lua_test("evidence/test_ui_advanced_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_light_advanced_evidence() {
+    run_lua_test("evidence/test_light_advanced_evidence.lua");
+}
+
+// ── golden layer ──
+
+#[test]
+fn lua_golden_ai_golden() {
+    run_lua_test("golden/test_ai_golden.lua");
+}
+
+#[test]
+fn lua_golden_animation_golden() {
+    run_lua_test("golden/test_animation_golden.lua");
+}
+
+#[test]
+fn lua_golden_compute_golden() {
+    run_lua_test("golden/test_compute_golden.lua");
+}
+
+#[test]
+fn lua_golden_data_golden() {
+    run_lua_test("golden/test_data_golden.lua");
+}
+
+#[test]
+fn lua_golden_dataframe_golden() {
+    run_lua_test("golden/test_dataframe_golden.lua");
+}
+
+#[test]
+fn lua_golden_ecs_golden() {
+    run_lua_test("golden/test_ecs_golden.lua");
+}
+
+#[test]
+fn lua_golden_graph_golden() {
+    run_lua_test("golden/test_graph_golden.lua");
+}
+
+#[test]
+fn lua_golden_image_golden() {
+    run_lua_test("golden/test_image_golden.lua");
+}
+
+#[test]
+fn lua_golden_math_golden() {
+    run_lua_test("golden/test_math_golden.lua");
+}
+
+#[test]
+fn lua_golden_minimap_golden() {
+    run_lua_test("golden/test_minimap_golden.lua");
+}
+
+#[test]
+fn lua_golden_pathfind_golden() {
+    run_lua_test("golden/test_pathfind_golden.lua");
+}
+
+#[test]
+fn lua_golden_physics_golden() {
+    run_lua_test("golden/test_physics_golden.lua");
+}
+
+#[test]
+fn lua_golden_procgen_golden() {
+    run_lua_test("golden/test_procgen_golden.lua");
+}
+
+#[test]
+fn lua_golden_raycaster_golden() {
+    run_lua_test("golden/test_raycaster_golden.lua");
+}
+
+#[test]
+fn lua_golden_render_golden() {
+    run_lua_test("golden/test_render_golden.lua");
+}
+
+#[test]
+fn lua_golden_serialize_golden() {
+    run_lua_test("golden/test_serialize_golden.lua");
+}
+
+#[test]
+fn lua_golden_tilemap_golden() {
+    run_lua_test("golden/test_tilemap_golden.lua");
+}
+
+// ── stress layer ──
+
+#[test]
+fn lua_stress_ai_stress() {
+    run_lua_test("stress/test_ai_stress.lua");
+}
+
+#[test]
+fn lua_stress_animation_stress() {
+    run_lua_test("stress/test_animation_stress.lua");
+}
+
+#[test]
+fn lua_stress_camera_stress() {
+    run_lua_test("stress/test_camera_stress.lua");
+}
+
+#[test]
+fn lua_stress_compute_stress() {
+    run_lua_test("stress/test_compute_stress.lua");
+}
+
+#[test]
+fn lua_stress_data_stress() {
+    run_lua_test("stress/test_data_stress.lua");
+}
+
+#[test]
+fn lua_stress_dataframe_stress() {
+    run_lua_test("stress/test_dataframe_stress.lua");
+}
+
+#[test]
+fn lua_stress_ecs_stress() {
+    run_lua_test("stress/test_ecs_stress.lua");
+}
+
+#[test]
+fn lua_stress_event_stress() {
+    run_lua_test("stress/test_event_stress.lua");
+}
+
+#[test]
+fn lua_stress_filesystem_stress() {
+    run_lua_test("stress/test_filesystem_stress.lua");
+}
+
+#[test]
+fn lua_stress_graph_stress() {
+    run_lua_test("stress/test_graph_stress.lua");
+}
+
+#[test]
+fn lua_stress_image_stress() {
+    run_lua_test("stress/test_image_stress.lua");
+}
+
+#[test]
+fn lua_stress_light_stress() {
+    run_lua_test("stress/test_light_stress.lua");
+}
+
+#[test]
+fn lua_stress_math_stress() {
+    run_lua_test("stress/test_math_stress.lua");
+}
+
+#[test]
+fn lua_stress_particle_stress() {
+    run_lua_test("stress/test_particle_stress.lua");
+}
+
+#[test]
+fn lua_stress_pathfind_stress() {
+    run_lua_test("stress/test_pathfind_stress.lua");
+}
+
+#[test]
+fn lua_stress_patterns_stress() {
+    run_lua_test("stress/test_patterns_stress.lua");
+}
+
+#[test]
+fn lua_stress_physics_stress() {
+    run_lua_test("stress/test_physics_stress.lua");
+}
+
+#[test]
+fn lua_stress_procgen_stress() {
+    run_lua_test("stress/test_procgen_stress.lua");
+}
+
+#[test]
+fn lua_stress_learning_stress() {
+    run_lua_test("stress/test_learning_stress.lua");
+}
+
+#[test]
+fn lua_stress_render_stress() {
+    run_lua_test("stress/test_render_stress.lua");
+}
+
+#[test]
+fn lua_stress_save_stress() {
+    run_lua_test("stress/test_save_stress.lua");
+}
+
+#[test]
+fn lua_stress_scene_stress() {
+    run_lua_test("stress/test_scene_stress.lua");
+}
+
+#[test]
+fn lua_stress_serialize_stress() {
+    run_lua_test("stress/test_serialize_stress.lua");
+}
+
+#[test]
+fn lua_stress_thread_stress() {
+    run_lua_test("stress/test_thread_stress.lua");
+}
+
+#[test]
+fn lua_stress_tilemap_stress() {
+    run_lua_test("stress/test_tilemap_stress.lua");
+}
+
+#[test]
+fn lua_stress_timer_stress() {
+    run_lua_test("stress/test_timer_stress.lua");
+}
+
+#[test]
+fn lua_stress_tween_stress() {
+    run_lua_test("stress/test_tween_stress.lua");
+}
+
+// ── security layer ──
+
+#[test]
+fn lua_security_filesystem() {
+    run_lua_test("security/test_filesystem.lua");
+}
+
+#[test]
+fn lua_security_network() {
+    run_lua_test("security/test_network.lua");
+}
+
+#[test]
+fn lua_security_render() {
+    run_lua_test("security/test_render.lua");
+}
+
+#[test]
+fn lua_security_runtime() {
+    run_lua_test("security/test_runtime.lua");
+}
+
+// ─── demo layer: headless contract tests (tests/lua/demos/test_*.lua) ───────
+
+#[test]
+fn lua_demos_headless_all() {
+    let dir = Path::new("tests/lua/demos");
+    let mut paths = Vec::new();
+    collect_headless_demo_tests(dir, &mut paths);
+    paths.sort();
+
+    assert!(
+        !paths.is_empty(),
+        "No headless demo tests found under tests/lua/demos/test_*.lua"
+    );
+
+    for path in paths {
+        let display = path
+            .to_str()
+            .unwrap_or_else(|| panic!("Non-UTF8 path in demo tests: {:?}", path));
+        run_lua_test_at_path(display, display);
+    }
+}
+
+// ─── demo layer: colocated game tests (content/games/**/test.lua) ───────────
+
+#[test]
+fn lua_demo_colocated_games() {
+    let mut paths = Vec::new();
+    collect_colocated_game_tests(Path::new("content/games"), &mut paths);
+    paths.sort();
+
+    assert!(
+        !paths.is_empty(),
+        "No colocated game tests found under content/games/**/test.lua"
+    );
+
+    for path in paths {
+        let display = path
+            .to_str()
+            .unwrap_or_else(|| panic!("Non-UTF8 path in game tests: {:?}", path));
+        run_lua_workspace_test(display);
+    }
+}
+
+#[test]
+fn lua_security_save() {
+    run_lua_test("security/test_save.lua");
+}
+
+// ── integration layer ──
+
+#[test]
+fn lua_integration_animation_tween() {
+    run_lua_test("integration/test_animation_tween.lua");
+}
+
+#[test]
+fn lua_integration_audio_scene() {
+    run_lua_test("integration/test_audio_scene.lua");
+}
+
+#[test]
+fn lua_integration_automation_event() {
+    run_lua_test("integration/test_automation_event.lua");
+}
+
+#[test]
+fn lua_integration_dialog_event_integration() {
+    run_lua_test("integration/test_dialog_event_integration.lua");
+}
+
+#[test]
+fn lua_integration_effect_camera() {
+    run_lua_test("integration/test_effect_camera.lua");
+}
+
+#[test]
+fn lua_integration_effect_light() {
+    run_lua_test("integration/test_effect_light.lua");
+}
+
+#[test]
+fn lua_integration_image_dataframe() {
+    run_lua_test("integration/test_image_dataframe.lua");
+}
+
+#[test]
+fn lua_integration_minimap_pathfind() {
+    run_lua_test("integration/test_minimap_pathfind.lua");
+}
+
+#[test]
+fn lua_integration_network_save() {
+    run_lua_test("integration/test_network_save.lua");
+}
+
+#[test]
+fn lua_integration_mods_filesystem() {
+    run_lua_test("integration/test_mods_filesystem.lua");
+}
+
+#[test]
+fn lua_integration_serialize_filesystem() {
+    run_lua_test("integration/test_serialize_filesystem.lua");
+}
+
+#[test]
+fn lua_integration_raycaster_render() {
+    run_lua_test("integration/test_raycaster_render.lua");
+}
+
+#[test]
+fn lua_integration_terminal_input() {
+    run_lua_test("integration/test_terminal_input.lua");
+}
+
+#[test]
+fn lua_integration_timer_event() {
+    run_lua_test("integration/test_timer_event.lua");
+}
+
+#[test]
+fn lua_integration_ai_scene_camera() {
+    run_lua_test("integration/test_ai_scene_camera.lua");
+}
+
+#[test]
+fn lua_integration_ui_localization_data() {
+    run_lua_test("integration/test_ui_localization_data.lua");
+}
+
+#[test]
+fn lua_integration_postfx_camera() {
+    run_lua_test("integration/test_postfx_camera.lua");
+}
+
+#[test]
+fn lua_integration_minimap_tilemap_camera() {
+    run_lua_test("integration/test_minimap_tilemap_camera.lua");
+}
+
+#[test]
+fn lua_integration_raycaster_tilemap() {
+    run_lua_test("integration/test_raycaster_tilemap.lua");
+}
+
+#[test]
+fn lua_integration_province_integration() {
+    run_lua_test("integration/test_province_integration.lua");
+}
+
+// ── library layer ──
+
+#[test]
+fn lua_library_audio_manager() {
+    run_lua_test("library/test_library_audio_manager.lua");
+}
+
+#[test]
+fn lua_library_battle() {
+    run_lua_test("library/test_library_battle.lua");
+}
+
+#[test]
+fn lua_library_camera_follow() {
+    run_lua_test("library/test_library_camera_follow.lua");
+}
+
+#[test]
+fn lua_library_cardgame() {
+    run_lua_test("library/test_library_cardgame.lua");
+}
+
+#[test]
+fn lua_library_cinematic() {
+    run_lua_test("library/test_library_cinematic.lua");
+}
+
+#[test]
+fn lua_library_combat() {
+    run_lua_test("library/test_library_combat.lua");
+}
+
+#[test]
+fn lua_library_crafting() {
+    run_lua_test("library/test_library_crafting.lua");
+}
+
+#[test]
+fn lua_library_dialog() {
+    run_lua_test("library/test_library_dialog.lua");
+}
+
+#[test]
+fn lua_library_doll() {
+    run_lua_test("library/test_library_doll.lua");
+}
+
+#[test]
+fn lua_library_economy() {
+    run_lua_test("library/test_library_economy.lua");
+}
+
+#[test]
+fn lua_library_input_action_map() {
+    run_lua_test("library/test_library_input_action_map.lua");
+}
+
+#[test]
+fn lua_library_inventory() {
+    run_lua_test("library/test_library_inventory.lua");
+}
+
+#[test]
+fn lua_library_item() {
+    run_lua_test("library/test_library_item.lua");
+}
+
+#[test]
+fn lua_library_lobby() {
+    run_lua_test("library/test_library_lobby.lua");
+}
+
+#[test]
+fn lua_library_loot() {
+    run_lua_test("library/test_library_loot.lua");
+}
+
+#[test]
+fn lua_library_narrative() {
+    run_lua_test("library/test_library_narrative.lua");
+}
+
+#[test]
+fn lua_library_netstate() {
+    run_lua_test("library/test_library_netstate.lua");
+}
+
+#[test]
+fn lua_library_patterns() {
+    run_lua_test("library/test_library_patterns.lua");
+}
+
+#[test]
+fn lua_library_province_map() {
+    run_lua_test("library/test_library_province_map.lua");
+}
+
+#[test]
+fn lua_library_quest() {
+    run_lua_test("library/test_library_quest.lua");
+}
+
+#[test]
+fn lua_library_rhythm() {
+    run_lua_test("library/test_library_rhythm.lua");
+}
+
+#[test]
+fn lua_library_roguelike() {
+    run_lua_test("library/test_library_roguelike.lua");
+}
+
+#[test]
+fn lua_library_rpc() {
+    run_lua_test("library/test_library_rpc.lua");
+}
+
+#[test]
+fn lua_library_stats() {
+    run_lua_test("library/test_library_stats.lua");
+}
+
+#[test]
+fn lua_library_tween_chain() {
+    run_lua_test("library/test_library_tween_chain.lua");
+}
+
+#[test]
+fn lua_library_window_config() {
+    run_lua_test("library/test_library_window_config.lua");
+}
+
+#[test]
+fn lua_library_scheduler() {
+    run_lua_test("library/test_library_scheduler.lua");
+}
+
+#[test]
+fn lua_library_scene_objects() {
+    run_lua_test("library/test_library_scene_objects.lua");
+}
+
+#[test]
+fn lua_library_sprite() {
+    run_lua_test("library/test_library_sprite.lua");
+}
+
+#[test]
+fn lua_unit_engine_unit() {
+    run_lua_test("unit/test_engine_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_system_unit() {
+    run_lua_test("unit/test_system_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_collision_unit() {
+    run_lua_test("unit/test_collision_core_unit.lua");
+}

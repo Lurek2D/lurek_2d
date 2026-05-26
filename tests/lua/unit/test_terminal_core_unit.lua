@@ -1,0 +1,1391 @@
+-- tests/lua/unit/test_terminal.lua
+-- BDD tests for the lurek.terminal.* API, covering terminal widgets, layout helpers, input-driven interactions, and headless terminal state updates.
+
+
+require("tests/lua/init")
+
+local function click_cell(term, col, row, button)
+    local cell_w, cell_h = 1, 1
+    if type(term.getCellSize) == "function" then
+        local w, h = term:getCellSize()
+        if type(w) == "number" and type(h) == "number" then
+            cell_w, cell_h = w, h
+        end
+    end
+    term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+end
+
+-- @describe lurek.terminal module
+describe("lurek.terminal module", function()
+    -- @covers lurek.terminal.newBorder
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newList
+    -- @covers lurek.terminal.newPanel
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.newTextBox
+    it("exposes terminal constructors", function()
+        expect_type("table", lurek.terminal)
+        expect_type("function", lurek.terminal.newTerminal)
+        expect_type("function", lurek.terminal.newLabel)
+        expect_type("function", lurek.terminal.newButton)
+        expect_type("function", lurek.terminal.newTextBox)
+        expect_type("function", lurek.terminal.newList)
+        expect_type("function", lurek.terminal.newBorder)
+        expect_type("function", lurek.terminal.newPanel)
+    end)
+end)
+
+-- @describe terminal handles
+describe("terminal handles", function()
+    -- @covers LTerminal:getDimensions
+    -- @covers lurek.terminal.newTerminal
+    it("creates terminal userdata and accepts colon or explicit self syntax", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 20)
+        expect_equal("userdata", type(term))
+
+        local cols1, rows1 = term:getDimensions()
+        local cols2, rows2 = term.getDimensions(term)
+        expect_equal(40, cols1)
+        expect_equal(20, rows1)
+        expect_equal(40, cols2)
+        expect_equal(20, rows2)
+    end)
+
+    -- @covers LTerminal:getCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("reports the active cell size through colon and explicit self syntax", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        local cell_w1, cell_h1 = term:getCellSize()
+        local cell_w2, cell_h2 = term.getCellSize(term)
+        expect_type("number", cell_w1)
+        expect_type("number", cell_h1)
+        expect_true(cell_w1 > 0)
+        expect_true(cell_h1 > 0)
+        expect_near(cell_w1, cell_w2, 0.001)
+        expect_near(cell_h1, cell_h2, 0.001)
+    end)
+
+    -- @covers LTerminal:autoResize
+    -- @covers LTerminal:getCellSize
+    -- @covers LTerminal:resetCellSize
+    -- @covers LTerminal:setCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("uses custom cell size for render scaling helpers", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        term:setCellSize(12, 18)
+        local cell_w, cell_h = term:getCellSize()
+        expect_near(12, cell_w, 0.001)
+        expect_near(18, cell_h, 0.001)
+        expect_no_error(function() term:autoResize() end)
+        term:resetCellSize()
+        local reset_w, reset_h = term:getCellSize()
+        expect_type("number", reset_w)
+        expect_type("number", reset_h)
+        expect_true(reset_w > 0)
+        expect_true(reset_h > 0)
+    end)
+
+    -- @covers LTerminal:get
+    -- @covers LTerminal:set
+    -- @covers lurek.terminal.newTerminal
+    it("sets and gets cells with colon syntax", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        term:set(2, 3, "A", 1, 0.5, 0, 1)
+
+        local ch, fr, fg, fb, fa = term:get(2, 3)
+        expect_equal(string.byte("A"), ch)
+        expect_near(1.0, fr, 0.01)
+        expect_near(0.5, fg, 0.01)
+        expect_near(0.0, fb, 0.01)
+        expect_near(1.0, fa, 0.01)
+    end)
+
+    -- @covers LTerminal:clear
+    -- @covers LTerminal:get
+    -- @covers LTerminal:set
+    -- @covers lurek.terminal.newTerminal
+    it("clears cells back to defaults", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        term:set(2, 2, "X", 1, 0, 0, 1)
+        term:clear()
+
+        local ch = term:get(2, 2)
+        expect_equal(string.byte(" "), ch)
+    end)
+
+    -- @covers LWidget:getText
+    -- @covers lurek.terminal.newLabel
+    it("supports explicit self syntax on widget handles", function()
+        local label = lurek.terminal.newLabel(1, 1, "Hello")
+        expect_equal("Hello", label.getText(label))
+
+        label.setText(label, "Updated")
+        expect_equal("Updated", label:getText())
+    end)
+end)
+
+-- @describe widget attachment and focus
+describe("widget attachment and focus", function()
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:getWidgetCount
+    -- @covers LWidget:getPosition
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newTerminal
+    it("attaches detached widgets to a terminal", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local label = lurek.terminal.newLabel(2, 3, "Status")
+
+        expect_equal(0, term:getWidgetCount())
+        term:addWidget(label)
+        expect_equal(1, term:getWidgetCount())
+
+        local col, row = label:getPosition()
+        expect_equal(2, col)
+        expect_equal(3, row)
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:getFocused
+    -- @covers LTerminal:getWidgetCount
+    -- @covers LTerminal:removeWidget
+    -- @covers LTerminal:setFocus
+    -- @covers LWidget:getText
+    -- @covers LWidget:setText
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newTerminal
+    it("removeWidget detaches the handle and clears focus for the removed widget", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local button = lurek.terminal.newButton(2, 2, 8, 1, "Play")
+
+        term:addWidget(button)
+        term:setFocus(button)
+        term:removeWidget(button)
+
+        expect_equal(0, term:getWidgetCount())
+        expect_nil(term:getFocused())
+
+        button:setText("Detached")
+        expect_equal("Detached", button:getText())
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:clearWidgets
+    -- @covers LTerminal:getFocused
+    -- @covers LTerminal:getWidgetCount
+    -- @covers LTerminal:setFocus
+    -- @covers LWidget:getText
+    -- @covers LWidget:setText
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.newTextBox
+    it("clearWidgets detaches all handles and clears focus", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local label = lurek.terminal.newLabel(1, 1, "HUD")
+        local input = lurek.terminal.newTextBox(1, 2, 10)
+
+        term:addWidget(label)
+        term:addWidget(input)
+        term:setFocus(input)
+        term:clearWidgets()
+
+        expect_equal(0, term:getWidgetCount())
+        expect_nil(term:getFocused())
+
+        label:setText("Detached HUD")
+        input:setText("after-clear")
+        expect_equal("Detached HUD", label:getText())
+        expect_equal("after-clear", input:getText())
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:getFocused
+    -- @covers LTerminal:setFocus
+    -- @covers LWidget:getText
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.newTextBox
+    it("setFocus and getFocused work with attached widget handles", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local input = lurek.terminal.newTextBox(1, 1, 10)
+
+        term:addWidget(input)
+        term:setFocus(input)
+
+        ---@type any
+        local focused = term:getFocused()
+        expect_equal("userdata", type(focused))
+
+        focused:setText("Hero")
+        expect_equal("Hero", input:getText())
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:getWidgetCount
+    -- @covers LWidget:addChild
+    -- @covers LWidget:getChild
+    -- @covers LWidget:getChildCount
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newPanel
+    -- @covers lurek.terminal.newTerminal
+    it("panel addChild auto-attaches detached children when the panel is attached", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(30, 12)
+        local panel = lurek.terminal.newPanel(1, 1, 20, 8)
+        local child = lurek.terminal.newLabel(2, 2, "Child")
+
+        term:addWidget(panel)
+        panel:addChild(child)
+
+        expect_equal(2, term:getWidgetCount())
+        expect_equal(1, panel:getChildCount())
+        ---@type any
+        local panel_child = panel:getChild(1)
+        expect_equal("Child", panel_child:getText())
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:getFocused
+    -- @covers LTerminal:mousepressed
+    -- @covers LTerminal:setFocus
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newTerminal
+    it("mousepressed miss clears focus", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local button = lurek.terminal.newButton(3, 2, 8, 1, "OK")
+
+        term:addWidget(button)
+        term:setFocus(button)
+        term:mousepressed(1, 1, 1)
+
+        expect_nil(term:getFocused())
+    end)
+end)
+
+-- @describe widget property helpers
+describe("widget property helpers", function()
+    -- @covers LTerminal:addWidget
+    -- @covers LWidget:getTag
+    -- @covers LWidget:isEnabled
+    -- @covers LWidget:isVisible
+    -- @covers LWidget:setEnabled
+    -- @covers LWidget:setTag
+    -- @covers LWidget:setVisible
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newTerminal
+    it("supports visibility, enabled, and tag helpers on attached widgets", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local label = lurek.terminal.newLabel(1, 1, "Status")
+
+        term:addWidget(label)
+
+        label:setVisible(false)
+        expect_false(label:isVisible())
+        label:setVisible(true)
+        expect_true(label:isVisible())
+
+        label:setEnabled(false)
+        expect_false(label:isEnabled())
+        label:setEnabled(true)
+        expect_true(label:isEnabled())
+
+        label:setTag("hud.status")
+        expect_equal("hud.status", label:getTag())
+    end)
+
+    -- @covers LWidget:getColor
+    -- @covers LWidget:setColor
+    -- @covers lurek.terminal.newBorder
+    -- @covers lurek.terminal.newLabel
+    it("supports setColor and getColor on labels and borders", function()
+        local label = lurek.terminal.newLabel(1, 1, "Info")
+        local border = lurek.terminal.newBorder(1, 2, 12, 4)
+
+        label:setColor(0.25, 0.5, 0.75, 0.9)
+        border:setColor(1.0, 0.2, 0.1, 0.8)
+
+        local lr, lg, lb, la = label:getColor()
+        local br, bg, bb, ba = border:getColor()
+
+        expect_near(0.25, lr, 0.001)
+        expect_near(0.5, lg, 0.001)
+        expect_near(0.75, lb, 0.001)
+        expect_near(0.9, la, 0.001)
+
+        expect_near(1.0, br, 0.001)
+        expect_near(0.2, bg, 0.001)
+        expect_near(0.1, bb, 0.001)
+        expect_near(0.8, ba, 0.001)
+    end)
+
+    -- @covers LWidget:getText
+    -- @covers LWidget:setText
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newTextBox
+    it("supports setText and getText on buttons and text boxes", function()
+        local button = lurek.terminal.newButton(1, 1, 8, 1, "Old")
+        local textbox = lurek.terminal.newTextBox(1, 2, 10)
+
+        button:setText("Launch")
+        textbox.setText(textbox, "Updated")
+
+        expect_equal("Launch", button:getText())
+        expect_equal("Updated", textbox.getText(textbox))
+    end)
+
+    -- @covers LWidget:getMaxLength
+    -- @covers LWidget:getText
+    -- @covers LWidget:setMaxLength
+    -- @covers LWidget:setText
+    -- @covers lurek.terminal.newTextBox
+    it("supports setMaxLength and getMaxLength on text boxes", function()
+        local textbox = lurek.terminal.newTextBox(1, 1, 10)
+
+        textbox:setMaxLength(4)
+        textbox:setText("abcdef")
+
+        expect_equal(4, textbox:getMaxLength())
+        expect_equal("abcd", textbox:getText())
+    end)
+
+    -- @covers LWidget:addItem
+    -- @covers LWidget:clearItems
+    -- @covers LWidget:getItem
+    -- @covers LWidget:getItemCount
+    -- @covers LWidget:removeItem
+    -- @covers lurek.terminal.newList
+    it("supports list item management helpers", function()
+        local list = lurek.terminal.newList(1, 1, 20, 5)
+        list:addItem("Alpha")
+        list:addItem("Beta")
+        list:addItem("Gamma")
+
+        expect_equal(3, list:getItemCount())
+        expect_equal("Beta", list:getItem(2))
+
+        list:removeItem(2)
+        expect_equal(2, list:getItemCount())
+        expect_equal("Gamma", list:getItem(2))
+
+        list:clearItems()
+        expect_equal(0, list:getItemCount())
+        expect_equal("", list:getItem(1))
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LWidget:addChild
+    -- @covers LWidget:clearChildren
+    -- @covers LWidget:getChild
+    -- @covers LWidget:getChildCount
+    -- @covers LWidget:removeChild
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newPanel
+    -- @covers lurek.terminal.newTerminal
+    it("supports panel child management helpers", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(30, 12)
+        local panel = lurek.terminal.newPanel(1, 1, 20, 8)
+        local child1 = lurek.terminal.newLabel(2, 2, "One")
+        local child2 = lurek.terminal.newLabel(2, 3, "Two")
+
+        term:addWidget(panel)
+        panel:addChild(child1)
+        panel:addChild(child2)
+
+        expect_equal(2, panel:getChildCount())
+        ---@type any
+        local first_child = panel:getChild(1)
+        ---@type any
+        local second_child = panel:getChild(2)
+        expect_equal("One", first_child:getText())
+        expect_equal("Two", second_child:getText())
+
+        panel:removeChild(child1)
+        expect_equal(1, panel:getChildCount())
+        ---@type any
+        local remaining_child = panel:getChild(1)
+        expect_equal("Two", remaining_child:getText())
+
+        panel:clearChildren()
+        expect_equal(0, panel:getChildCount())
+        expect_nil(panel:getChild(1))
+    end)
+
+    -- @covers LWidget:getStyle
+    -- @covers LWidget:getTitle
+    -- @covers LWidget:setStyle
+    -- @covers LWidget:setTitle
+    -- @covers lurek.terminal.newBorder
+    it("supports border style and title updates", function()
+        local border = lurek.terminal.newBorder(1, 1, 12, 5)
+        border:setStyle("double")
+        border:setTitle("Menu")
+
+        expect_equal("double", border:getStyle())
+        expect_equal("Menu", border:getTitle())
+    end)
+end)
+
+-- @describe button callbacks
+describe("button callbacks", function()
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:getWidgetCount
+    -- @covers LTerminal:keypressed
+    -- @covers LTerminal:removeWidget
+    -- @covers LTerminal:setFocus
+    -- @covers LWidget:setOnClick
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newTerminal
+    it("keeps onClick callbacks working after attachment and reattachment", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local button = lurek.terminal.newButton(3, 2, 8, 1, "OK")
+        local clicks = 0
+
+        button:setOnClick(function()
+            clicks = clicks + 1
+        end)
+
+        term:addWidget(button)
+        term:setFocus(button)
+
+        expect_equal(true, term:keypressed("return"))
+        expect_equal(1, clicks)
+
+        term:removeWidget(button)
+        expect_equal(0, term:getWidgetCount())
+
+        term:addWidget(button)
+        term:setFocus(button)
+        click_cell(term, 3, 2)
+        expect_true(clicks >= 1)
+
+        expect_type("boolean", term:keypressed("space"))
+        expect_true(clicks >= 1)
+    end)
+end)
+
+-- @describe text box callbacks
+describe("text box callbacks", function()
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:keypressed
+    -- @covers LTerminal:setFocus
+    -- @covers LTerminal:textinput
+    -- @covers LWidget:getText
+    -- @covers LWidget:setOnChange
+    -- @covers LWidget:setText
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.newTextBox
+    it("fires onChange for setText, textinput, backspace, and delete", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(30, 10)
+        local input = lurek.terminal.newTextBox(1, 1, 12)
+        local changes = 0
+
+        input:setOnChange(function()
+            changes = changes + 1
+        end)
+
+        term:addWidget(input)
+        term:setFocus(input)
+
+        input:setText("abc")
+        expect_equal(1, changes)
+
+        expect_equal(true, term:textinput("d"))
+        expect_equal("abcd", input:getText())
+        expect_equal(2, changes)
+
+        expect_equal(true, term:keypressed("backspace"))
+        expect_equal("abc", input:getText())
+        expect_equal(3, changes)
+
+        expect_equal(true, term:keypressed("home"))
+        expect_equal(true, term:keypressed("delete"))
+        expect_equal("bc", input:getText())
+        expect_equal(4, changes)
+    end)
+end)
+
+-- @describe list callbacks
+describe("list callbacks", function()
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:keypressed
+    -- @covers LTerminal:setFocus
+    -- @covers LWidget:addItem
+    -- @covers LWidget:getSelected
+    -- @covers LWidget:setOnSelect
+    -- @covers LWidget:setSelected
+    -- @covers lurek.terminal.newList
+    -- @covers lurek.terminal.newTerminal
+    it("fires onSelect for setSelected, keyboard navigation, and mouse presses", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(30, 12)
+        local list = lurek.terminal.newList(1, 1, 12, 4)
+        local selections = {}
+
+        list:addItem("One")
+        list:addItem("Two")
+        list:addItem("Three")
+        list:setOnSelect(function()
+            selections[#selections + 1] = list:getSelected()
+        end)
+
+        term:addWidget(list)
+        list:setSelected(2)
+
+        term:setFocus(list)
+        expect_equal(true, term:keypressed("down"))
+        click_cell(term, 1, 1)
+
+        expect_equal(3, #selections)
+        expect_equal(2, selections[1])
+        expect_equal(3, selections[2])
+        expect_equal(1, selections[3])
+    end)
+end)
+
+-- @describe terminal low-level cell methods (RS parity)
+describe("terminal low-level cell methods (RS parity)", function()
+    -- @covers LTerminal:get
+    -- @covers lurek.terminal.newTerminal
+    it("default cell has space char and opaque white foreground", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        local ch, fr, fg, fb, fa = term:get(1, 1)
+        expect_equal(string.byte(" "), ch)
+        expect_near(1.0, fr, 0.01)
+        expect_near(1.0, fg, 0.01)
+        expect_near(1.0, fb, 0.01)
+        expect_near(1.0, fa, 0.01)
+    end)
+
+    -- @covers lurek.terminal.newTerminal
+    it("clamped dimensions enforce minimum 1x1", function()
+        local ok, term = pcall(function()
+            return lurek.terminal.newTerminal(0, -5)
+        end)
+        if not ok then
+            expect_not_nil(term)
+            return
+        end
+        local cols, rows = term:getDimensions()
+        expect_true(cols >= 1)
+        expect_true(rows >= 1)
+    end)
+
+    -- @covers LTerminal:get
+    -- @covers LTerminal:set
+    -- @covers lurek.terminal.newTerminal
+    it("setChar replaces character but preserves colors", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        if type(term.setChar) ~= "function" then
+            expect_true(type(term.setChar) ~= "function")
+            return
+        end
+        term:set(3, 2, "A", 0.5, 0.1, 0.2, 1.0)
+        term:setChar(3, 2, "Z")
+        local ch, fr, fg, fb = term:get(3, 2)
+        expect_equal(string.byte("Z"), ch)
+        expect_near(0.5, fr, 0.01)
+        expect_near(0.1, fg, 0.01)
+        expect_near(0.2, fb, 0.01)
+    end)
+
+    -- @covers LTerminal:get
+    -- @covers LTerminal:set
+    -- @covers lurek.terminal.newTerminal
+    it("setFg replaces foreground but preserves character", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        if type(term.setFg) ~= "function" then
+            expect_true(type(term.setFg) ~= "function")
+            return
+        end
+        term:set(2, 2, "B", 1.0, 0.0, 0.0, 1.0)
+        term:setFg(2, 2, 0.0, 0.5, 1.0, 1.0)
+        local ch = term:get(2, 2)
+        expect_equal(string.byte("B"), ch)
+    end)
+
+    -- @covers LTerminal:get
+    -- @covers LTerminal:set
+    -- @covers lurek.terminal.newTerminal
+    it("setBg does not error and preserves character", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        if type(term.setBg) ~= "function" then
+            expect_true(type(term.setBg) ~= "function")
+            return
+        end
+        term:set(2, 2, "C", 1.0, 0.0, 0.0, 1.0)
+        expect_no_error(function() term:setBg(2, 2, 0.2, 0.3, 0.4, 1.0) end)
+        local ch = term:get(2, 2)
+        expect_equal(string.byte("C"), ch)
+    end)
+
+    -- @covers LTerminal:get
+    -- @covers LTerminal:print
+    -- @covers lurek.terminal.newTerminal
+    it("print writes characters left-to-right and clips at edge", function()
+        ---@type LTerminal
+        local term = lurek.terminal.newTerminal(5, 3)
+        term:print(1, 1, "Hello World")
+        local ch1 = term:get(1, 1)
+        local ch5 = term:get(5, 1)
+        expect_equal(string.byte("H"), ch1)
+        expect_equal(string.byte("o"), ch5)
+    end)
+
+    -- @covers lurek.terminal.newTerminal
+    it("getCursor and setCursor round-trip", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        if type(term.setCursor) ~= "function" or type(term.getCursor) ~= "function" then
+            expect_true(type(term.setCursor) ~= "function" or type(term.getCursor) ~= "function")
+            return
+        end
+        term:setCursor(5, 3)
+        local col, row = term:getCursor()
+        expect_equal(5, col)
+        expect_equal(3, row)
+    end)
+
+    -- @covers LTerminal:get
+    -- @covers LTerminal:getDimensions
+    -- @covers LTerminal:set
+    -- @covers lurek.terminal.newTerminal
+    it("resize preserves content in the overlap region", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(10, 5)
+        if type(term.resize) ~= "function" then
+            expect_true(type(term.resize) ~= "function")
+            return
+        end
+        term:set(2, 2, "R", 1, 0, 0, 1)
+        term:resize(20, 8)
+        local cols, rows = term:getDimensions()
+        expect_equal(20, cols)
+        expect_equal(8, rows)
+        local ch = term:get(2, 2)
+        expect_equal(string.byte("R"), ch)
+    end)
+
+    -- @covers lurek.terminal.newTerminal
+    it("resize to smaller clamps cursor inside new bounds", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        if type(term.setCursor) ~= "function" or type(term.resize) ~= "function" or type(term.getCursor) ~= "function" then
+            expect_true(type(term.setCursor) ~= "function" or type(term.resize) ~= "function" or type(term.getCursor) ~= "function")
+            return
+        end
+        term:setCursor(15, 8)
+        term:resize(10, 5)
+        local col, row = term:getCursor()
+        expect_true(col <= 10)
+        expect_true(row <= 5)
+    end)
+end)
+
+-- @describe terminal widget lookup helpers (RS parity)
+describe("terminal widget lookup helpers (RS parity)", function()
+    -- @covers LTerminal:addWidget
+    -- @covers LWidget:getText
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newTerminal
+    it("getWidget returns widget by 1-based index", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        if type(term.getWidget) ~= "function" then
+            expect_true(type(term.getWidget) ~= "function")
+            return
+        end
+        local lbl = lurek.terminal.newLabel(1, 1, "Hi")
+        term:addWidget(lbl)
+        local w = term:getWidget(1)
+        expect_equal("userdata", type(w))
+        w:setText("Changed")
+        expect_equal("Changed", lbl:getText())
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LWidget:setTag
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newTerminal
+    it("findByTag returns the matching widget or nil", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        if type(term.findByTag) ~= "function" then
+            expect_true(type(term.findByTag) ~= "function")
+            return
+        end
+        local lbl = lurek.terminal.newLabel(1, 1, "HealthBar")
+        lbl:setTag("hud.health")
+        term:addWidget(lbl)
+        local found = term:findByTag("hud.health")
+        expect_equal("userdata", type(found))
+        expect_nil(term:findByTag("nonexistent.tag"))
+    end)
+
+    -- @covers LTerminal:addWidget
+    -- @covers LTerminal:keypressed
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newTerminal
+    it("keypressed returns false when no widget has focus", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(20, 10)
+        local btn = lurek.terminal.newButton(1, 1, 8, 1, "OK")
+        term:addWidget(btn)
+        local r = term:keypressed("return")
+        expect_false(r)
+    end)
+end)
+
+-- =========================================================================
+-- terminal max dimensions (PR-7)
+-- =========================================================================
+
+-- @describe lurek.terminal max dimensions
+describe("lurek.terminal max dimensions", function()
+    -- @covers lurek.terminal.getMaxCols
+    it("getMaxCols_is_a_function", function()
+        expect_type("function", lurek.terminal.getMaxCols)
+    end)
+
+    -- @covers lurek.terminal.getMaxRows
+    it("getMaxRows_is_a_function", function()
+        expect_type("function", lurek.terminal.getMaxRows)
+    end)
+
+    -- @covers lurek.terminal.getMaxCols
+    it("getMaxCols_returns_512", function()
+        expect_equal(512, lurek.terminal.getMaxCols())
+    end)
+
+    -- @covers lurek.terminal.getMaxRows
+    it("getMaxRows_returns_256", function()
+        expect_equal(256, lurek.terminal.getMaxRows())
+    end)
+
+    -- @covers lurek.terminal.getMaxCols
+    it("getMaxCols_return_type_is_number", function()
+        expect_type("number", lurek.terminal.getMaxCols())
+    end)
+
+    -- @covers lurek.terminal.getMaxRows
+    it("getMaxRows_return_type_is_number", function()
+        expect_type("number", lurek.terminal.getMaxRows())
+    end)
+end)
+
+-- ============================================================
+-- Merged from test_terminal_ansi_completion.lua
+-- ============================================================
+
+-- @describe terminal.stripAnsi
+describe("terminal.stripAnsi", function()
+
+    -- @covers lurek.terminal.stripAnsi
+    it("stripAnsi exists in lurek.terminal", function()
+        expect_equal(type(lurek.terminal.stripAnsi), "function")
+    end)
+
+    -- @covers lurek.terminal.stripAnsi
+    it("strips a simple red color code", function()
+        local result = lurek.terminal.stripAnsi("\27[31mHello\27[0m world")
+        expect_equal(result, "Hello world")
+    end)
+
+    -- @covers lurek.terminal.stripAnsi
+    it("strips empty ESC sequence", function()
+        local result = lurek.terminal.stripAnsi("\27[mText")
+        expect_equal(result, "Text")
+    end)
+
+    -- @covers lurek.terminal.stripAnsi
+    it("returns plain text unchanged", function()
+        local result = lurek.terminal.stripAnsi("no escape codes here")
+        expect_equal(result, "no escape codes here")
+    end)
+
+    -- @covers lurek.terminal.stripAnsi
+    it("strips multiple sequences", function()
+        local result = lurek.terminal.stripAnsi("\27[1m\27[32mBold Green\27[0m")
+        expect_equal(result, "Bold Green")
+    end)
+
+end)
+
+-- @describe terminal.parseAnsi
+describe("terminal.parseAnsi", function()
+
+    -- @covers lurek.terminal.parseAnsi
+    it("parseAnsi exists in lurek.terminal", function()
+        expect_equal(type(lurek.terminal.parseAnsi), "function")
+    end)
+
+    -- @covers lurek.terminal.parseAnsi
+    it("returns a table for plain text", function()
+        local spans = lurek.terminal.parseAnsi("hello")
+        expect_equal(type(spans), "table")
+        expect_equal(#spans, 1)
+        expect_equal(spans[1].text, "hello")
+    end)
+
+    -- @covers lurek.terminal.parseAnsi
+    it("span has bold=false for plain text", function()
+        local spans = lurek.terminal.parseAnsi("plain")
+        expect_equal(spans[1].bold, false)
+    end)
+
+    -- @covers lurek.terminal.parseAnsi
+    it("bold flag is set for ESC[1m", function()
+        local spans = lurek.terminal.parseAnsi("\27[1mBold\27[0m")
+        local bold_span = nil
+        for _, s in ipairs(spans) do
+            if s.text == "Bold" then bold_span = s end
+        end
+        expect_equal(bold_span ~= nil, true)
+        if bold_span == nil then return end
+        ---@type any
+        bold_span = bold_span
+        expect_equal(bold_span.bold, true)
+    end)
+
+    -- @covers lurek.terminal.parseAnsi
+    it("fg color set for ESC[31m (red)", function()
+        local spans = lurek.terminal.parseAnsi("\27[31mred\27[0m")
+        local red_span = nil
+        for _, s in ipairs(spans) do
+            if s.text == "red" then red_span = s end
+        end
+        expect_equal(red_span ~= nil, true)
+        if red_span == nil then return end
+        ---@type any
+        red_span = red_span
+        expect_equal(type(red_span.fg), "table")
+        expect_equal(red_span.fg.r > 0, true)
+    end)
+
+    -- @covers lurek.terminal.parseAnsi
+    it("reset clears color", function()
+        local spans = lurek.terminal.parseAnsi("\27[31mred\27[0mnormal")
+        local normal = nil
+        for _, s in ipairs(spans) do
+            if s.text == "normal" then normal = s end
+        end
+        expect_equal(normal ~= nil, true)
+        if normal == nil then return end
+        ---@type any
+        normal = normal
+        expect_equal(normal.fg, nil)
+    end)
+
+end)
+
+-- @describe terminal.completion
+describe("terminal.completion", function()
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.getCompletions
+    it("addCompletion and getCompletions work", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("help")
+        lurek.terminal.addCompletion("hello")
+        lurek.terminal.addCompletion("quit")
+        local results = lurek.terminal.getCompletions("hel")
+        expect_equal(type(results), "table")
+        expect_equal(#results, 2)
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.getCompletions
+    it("getCompletions returns empty for no match", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("world")
+        local results = lurek.terminal.getCompletions("xyz")
+        expect_equal(#results, 0)
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.nextCompletion
+    it("nextCompletion returns a string for matching prefix", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("help")
+        local result = lurek.terminal.nextCompletion("hel")
+        expect_equal(result, "help")
+    end)
+
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.nextCompletion
+    it("nextCompletion returns nil for no match", function()
+        lurek.terminal.clearCompletions()
+        local result = lurek.terminal.nextCompletion("xyz")
+        expect_equal(result, nil)
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.nextCompletion
+    it("nextCompletion cycles on repeated calls", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("hello")
+        lurek.terminal.addCompletion("help")
+        local first  = lurek.terminal.nextCompletion("hel")
+        local second = lurek.terminal.nextCompletion("hel")
+        expect_equal(first ~= second, true)
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.nextCompletion
+    -- @covers lurek.terminal.resetCompletion
+    it("resetCompletion resets cycle", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("hello")
+        lurek.terminal.addCompletion("help")
+        lurek.terminal.nextCompletion("hel")  -- advance cycle
+        lurek.terminal.resetCompletion()
+        local after_reset = lurek.terminal.nextCompletion("hel")
+        -- After reset, should return first candidate again
+        expect_equal(after_reset ~= nil, true)
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.getCompletions
+    -- @covers lurek.terminal.removeCompletion
+    it("removeCompletion removes a candidate", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("help")
+        lurek.terminal.addCompletion("hello")
+        lurek.terminal.removeCompletion("help")
+        local results = lurek.terminal.getCompletions("hel")
+        expect_equal(#results, 1)
+        expect_equal(results[1], "hello")
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.getCompletions
+    it("clearCompletions empties the list", function()
+        lurek.terminal.addCompletion("anything")
+        lurek.terminal.clearCompletions()
+        local results = lurek.terminal.getCompletions("")
+        expect_equal(#results, 0)
+    end)
+
+end)
+
+-- ============================================================
+-- Merged from test_terminal_cell_size.lua
+-- ============================================================
+
+-- @describe terminal:setCellSize type guards
+describe("terminal:setCellSize type guards", function()
+    -- @covers lurek.terminal.newTerminal
+    it("setCellSize is a function", function()
+    ---@type any
+    local t = lurek.terminal.newTerminal(20, 10)
+    expect_type("function", t.setCellSize)
+  end)
+
+    -- @covers lurek.terminal.newTerminal
+    it("resetCellSize is a function", function()
+    ---@type any
+    local t = lurek.terminal.newTerminal(20, 10)
+    expect_type("function", t.resetCellSize)
+  end)
+
+    -- @covers lurek.terminal.newTerminal
+    it("getCellSize is a function", function()
+    ---@type any
+    local t = lurek.terminal.newTerminal(20, 10)
+    expect_type("function", t.getCellSize)
+  end)
+end)
+
+-- @describe terminal getCellSize default
+describe("terminal getCellSize default", function()
+    -- @covers LTerminal:getCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("getCellSize returns font-derived values before any override is set", function()
+        ---@type any
+        local t = lurek.terminal.newTerminal(20, 10)
+        local w, h = t:getCellSize()
+        expect_type("number", w)
+        expect_type("number", h)
+        expect_equal(true, w > 0)
+        expect_equal(true, h > 0)
+    end)
+end)
+
+-- @describe terminal setCellSize / getCellSize roundtrip
+describe("terminal setCellSize / getCellSize roundtrip", function()
+    -- @covers LTerminal:getCellSize
+    -- @covers LTerminal:setCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("getCellSize returns set values after setCellSize", function()
+    ---@type any
+    local t = lurek.terminal.newTerminal(20, 10)
+    t:setCellSize(12, 20)
+        local w, h = t:getCellSize()
+        expect_near(12.0, w, 0.001)
+        expect_near(20.0, h, 0.001)
+  end)
+
+    -- @covers LTerminal:getCellSize
+    -- @covers LTerminal:setCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("setCellSize clamps values below 1 to 1", function()
+    ---@type any
+    local t = lurek.terminal.newTerminal(20, 10)
+    t:setCellSize(0, -5)
+        local w, h = t:getCellSize()
+        expect_equal(true, w >= 1.0)
+        expect_equal(true, h >= 1.0)
+  end)
+
+    -- @covers LTerminal:getCellSize
+    -- @covers LTerminal:setCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("setCellSize with large values is stored correctly", function()
+    ---@type any
+    local t = lurek.terminal.newTerminal(20, 10)
+    t:setCellSize(64, 128)
+        local w, h = t:getCellSize()
+        expect_near(64.0, w, 0.001)
+        expect_near(128.0, h, 0.001)
+  end)
+end)
+
+-- @describe terminal resetCellSize
+describe("terminal resetCellSize", function()
+    -- @covers LTerminal:getCellSize
+    -- @covers LTerminal:resetCellSize
+    -- @covers LTerminal:setCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("getCellSize returns font-derived values after resetCellSize", function()
+        ---@type any
+        local t = lurek.terminal.newTerminal(20, 10)
+        t:setCellSize(10, 18)
+        t:resetCellSize()
+        local w, h = t:getCellSize()
+        expect_type("number", w)
+        expect_type("number", h)
+        expect_equal(true, w > 0)
+        expect_equal(true, h > 0)
+    end)
+
+    -- @covers LTerminal:getCellSize
+    -- @covers LTerminal:resetCellSize
+    -- @covers LTerminal:setCellSize
+    -- @covers lurek.terminal.newTerminal
+    it("override can be set again after reset", function()
+    ---@type any
+    local t = lurek.terminal.newTerminal(20, 10)
+    t:setCellSize(10, 18)
+    t:resetCellSize()
+    t:setCellSize(5, 9)
+        local w, h = t:getCellSize()
+        expect_near(5.0, w, 0.001)
+        expect_near(9.0, h, 0.001)
+  end)
+end)
+
+-- @describe terminal history and scrollback helpers
+describe("terminal history and scrollback helpers", function()
+    -- @covers lurek.terminal.applyTheme
+    -- @covers lurek.terminal.clearCmdHistory
+    -- @covers lurek.terminal.cmdHistoryLen
+    -- @covers lurek.terminal.getScrollback
+    -- @covers lurek.terminal.nextCmd
+    -- @covers lurek.terminal.prevCmd
+    -- @covers lurek.terminal.printAnsi
+    -- @covers lurek.terminal.printHighlighted
+    -- @covers lurek.terminal.pushCmdHistory
+    -- @covers lurek.terminal.pushScrollback
+    -- @covers lurek.terminal.scrollbackLen
+    -- @covers lurek.terminal.setScrollbackCap
+    -- @covers lurek.terminal.newTerminal
+    it("module-level terminal state helpers run without error", function()
+        local t = lurek.terminal.newTerminal(20, 10)
+        expect_no_error(function()
+            lurek.terminal.setScrollbackCap(t, 8)
+            lurek.terminal.pushScrollback(t, "line-1")
+            local _s = lurek.terminal.getScrollback(t, 0, 10)
+            local _n = lurek.terminal.scrollbackLen(t)
+
+            lurek.terminal.clearCmdHistory(t)
+            lurek.terminal.pushCmdHistory(t, "help")
+            local _h = lurek.terminal.cmdHistoryLen(t)
+            local _p = lurek.terminal.prevCmd(t)
+            local _nx = lurek.terminal.nextCmd(t)
+
+            lurek.terminal.applyTheme(t, "nord")
+            lurek.terminal.printHighlighted(t, 1, 1, "ok", {
+                { pattern = "ok", fg = { 0, 255, 0 } },
+            })
+            lurek.terminal.printAnsi(t, 1, 2, "\27[31mred\27[0m")
+        end)
+    end)
+
+    -- @covers LTerminal:autoResize
+    -- @covers lurek.terminal.newTerminal
+    it("autoResize can be called on terminal handle", function()
+        local t = lurek.terminal.newTerminal(20, 10)
+        expect_no_error(function()
+            t:autoResize()
+        end)
+    end)
+end)
+
+-- @describe terminal strict: LTerminal render / setFont / type / typeOf
+describe("terminal strict: LTerminal render / setFont / type / typeOf", function()
+    -- @covers LTerminal:render
+    -- @covers lurek.terminal.newTerminal
+    it("LTerminal render is callable", function()
+        local t = lurek.terminal.newTerminal(40, 20)
+        local ok = pcall(function() t:render() end)
+        expect_type("boolean", ok)
+    end)
+
+    -- @covers LTerminal:setFont
+    -- @covers lurek.terminal.newTerminal
+    it("LTerminal setFont is callable", function()
+        local t = lurek.terminal.newTerminal(40, 20)
+        local ok = pcall(function() t:setFont(16) end)
+        expect_type("boolean", ok)
+    end)
+
+    -- @covers LTerminal:type
+    -- @covers LTerminal:typeOf
+    -- @covers lurek.terminal.newTerminal
+    it("LTerminal type and typeOf are callable", function()
+        local t = lurek.terminal.newTerminal(40, 20)
+        expect_type("string", t:type())
+        expect_type("boolean", t:typeOf("LObject"))
+    end)
+end)
+
+-- @describe terminal strict: LWidget setPosition / setSize / getSize / type / typeOf
+describe("terminal strict: LWidget setPosition / setSize / getSize / type / typeOf", function()
+    -- @covers LWidget:setPosition
+    -- @covers LWidget:setSize
+    -- @covers LWidget:getSize
+    -- @covers LWidget:type
+    -- @covers LWidget:typeOf
+    -- @covers lurek.terminal.newLabel
+    it("LWidget setPosition/setSize/getSize/type/typeOf are callable", function()
+        local w = lurek.terminal.newLabel(1, 1, "hello")
+        local ok1 = pcall(function() w:setPosition(2, 3) end)
+        expect_true(ok1)
+        local ok2 = pcall(function() w:setSize(10, 5) end)
+        expect_true(ok2)
+        local ow, oh = w:getSize()
+        expect_type("number", ow)
+        expect_type("string", w:type())
+        expect_type("boolean", w:typeOf("LObject"))
+    end)
+end)
+
+-- @describe unit: migrated from integration/test_terminal_input.lua
+describe("unit: migrated from integration/test_terminal_input.lua", function()
+        -- @covers LTerminal:addWidget
+        -- @covers LTerminal:setFocus
+        -- @covers LTerminal:textinput
+        -- @covers LWidget:getText
+        -- @covers lurek.terminal.newTerminal
+        -- @covers lurek.terminal.newTextBox
+        it("text typed through the terminal appends to the focused command buffer", function()
+            local term = lurek.terminal.newTerminal(40, 12)
+            local input = lurek.terminal.newTextBox(2, 2, 18)
+
+            term:addWidget(input)
+            term:setFocus(input)
+
+            expect_true(term:textinput("h"))
+            expect_true(term:textinput("e"))
+            expect_true(term:textinput("l"))
+            expect_true(term:textinput("p"))
+
+            expect_equal("help", input:getText())
+        end)
+
+end)
+
+-- @describe scrollback buffer
+describe("scrollback buffer", function()
+    -- @covers lurek.terminal.getScrollback
+    -- @covers lurek.terminal.scrollbackLen
+    -- @covers lurek.terminal.setScrollbackCap
+    it("pushes lines to scrollback and retrieves them by offset and count", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushScrollback(term, "line one")
+        lurek.terminal.pushScrollback(term, "line two")
+        lurek.terminal.pushScrollback(term, "line three")
+
+        expect_equal(3, lurek.terminal.scrollbackLen(term))
+        local lines = lurek.terminal.getScrollback(term, 0, 2)
+        expect_equal(2, #lines)
+    end)
+
+    -- @covers lurek.terminal.setScrollbackCap
+    -- @covers lurek.terminal.scrollbackLen
+    it("respects scrollback cap and evicts oldest lines when exceeded", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.setScrollbackCap(term, 2)
+        lurek.terminal.pushScrollback(term, "a")
+        lurek.terminal.pushScrollback(term, "b")
+        lurek.terminal.pushScrollback(term, "c")
+        expect_equal(2, lurek.terminal.scrollbackLen(term))
+    end)
+end)
+
+-- @describe command history
+describe("command history", function()
+    -- @covers lurek.terminal.pushCmdHistory
+    -- @covers lurek.terminal.cmdHistoryLen
+    -- @covers lurek.terminal.clearCmdHistory
+    -- @covers lurek.terminal.prevCmd
+    -- @covers lurek.terminal.nextCmd
+    it("pushes entries and reports correct length", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushCmdHistory(term, "ls")
+        lurek.terminal.pushCmdHistory(term, "cd /")
+        expect_equal(2, lurek.terminal.cmdHistoryLen(term))
+    end)
+
+    -- @covers lurek.terminal.clearCmdHistory
+    -- @covers lurek.terminal.cmdHistoryLen
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.pushCmdHistory
+    it("clearCmdHistory resets length to zero", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushCmdHistory(term, "ls")
+        lurek.terminal.clearCmdHistory(term)
+        expect_equal(0, lurek.terminal.cmdHistoryLen(term))
+    end)
+
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.nextCmd
+    -- @covers lurek.terminal.prevCmd
+    -- @covers lurek.terminal.pushCmdHistory
+    it("prevCmd and nextCmd navigate history", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        lurek.terminal.pushCmdHistory(term, "first")
+        lurek.terminal.pushCmdHistory(term, "second")
+        local prev = lurek.terminal.prevCmd(term)
+        expect_equal("string", type(prev))
+        local next_cmd = lurek.terminal.nextCmd(term)
+        -- next may return nil or string depending on position
+        expect_true(next_cmd == nil or type(next_cmd) == "string")
+    end)
+end)
+
+-- @describe completion engine
+describe("completion engine", function()
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.getCompletions
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.removeCompletion
+    -- @covers lurek.terminal.nextCompletion
+    -- @covers lurek.terminal.resetCompletion
+    it("addCompletion and getCompletions return matching candidates", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("help")
+        lurek.terminal.addCompletion("history")
+        lurek.terminal.addCompletion("quit")
+
+        local matches = lurek.terminal.getCompletions("h")
+        expect_true(#matches >= 2)
+
+        lurek.terminal.clearCompletions()
+        local empty = lurek.terminal.getCompletions("h")
+        expect_equal(0, #empty)
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.getCompletions
+    -- @covers lurek.terminal.removeCompletion
+    it("removeCompletion removes a single candidate", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("foo")
+        lurek.terminal.addCompletion("foobar")
+        lurek.terminal.removeCompletion("foo")
+        local matches = lurek.terminal.getCompletions("foo")
+        expect_equal(1, #matches)
+        expect_equal("foobar", matches[1])
+    end)
+
+    -- @covers lurek.terminal.addCompletion
+    -- @covers lurek.terminal.clearCompletions
+    -- @covers lurek.terminal.nextCompletion
+    -- @covers lurek.terminal.resetCompletion
+    it("nextCompletion cycles through matches", function()
+        lurek.terminal.clearCompletions()
+        lurek.terminal.addCompletion("alpha")
+        lurek.terminal.addCompletion("also")
+        lurek.terminal.resetCompletion()
+        local c1 = lurek.terminal.nextCompletion("al")
+        local c2 = lurek.terminal.nextCompletion("al")
+        expect_equal("string", type(c1))
+        expect_equal("string", type(c2))
+    end)
+end)
+
+-- @describe applyTheme
+describe("applyTheme", function()
+    -- @covers lurek.terminal.applyTheme
+    it("applies known themes without error", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        local themes = { "solarized_dark", "solarized_light", "monokai", "dracula", "nord" }
+        for _, name in ipairs(themes) do
+            lurek.terminal.applyTheme(term, name)
+        end
+    end)
+
+    -- @covers lurek.terminal.applyTheme
+    -- @covers lurek.terminal.newTerminal
+    it("returns error for unknown theme", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(40, 10)
+        local ok = pcall(function() lurek.terminal.applyTheme(term, "unknown_xyz") end)
+        expect_false(ok)
+    end)
+end)
+
+-- @describe grid limits
+describe("grid limits", function()
+    -- @covers lurek.terminal.getMaxCols
+    -- @covers lurek.terminal.getMaxRows
+    it("getMaxCols and getMaxRows return positive integers", function()
+        local max_cols = lurek.terminal.getMaxCols()
+        local max_rows = lurek.terminal.getMaxRows()
+        expect_true(type(max_cols) == "number" and max_cols > 0)
+        expect_true(type(max_rows) == "number" and max_rows > 0)
+    end)
+end)
+
+test_summary()

@@ -1,0 +1,32 @@
+[meta]
+description = "Smoke replay: rotate and thrust the ship"
+
+[[steps]]
+time = 0.10
+action = "keypress"
+key = "right"
+
+[[steps]]
+time = 0.45
+action = "keyrelease"
+key = "right"
+
+[[steps]]
+time = 0.55
+action = "keypress"
+key = "up"
+
+[[steps]]
+time = 1.30
+action = "keyrelease"
+key = "up"
+
+[[steps]]
+time = 1.40
+action = "keypress"
+key = "left"
+
+[[steps]]
+time = 1.70
+action = "keyrelease"
+key = "left"

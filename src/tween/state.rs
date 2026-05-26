@@ -1,0 +1,107 @@
+//! Per-tween progress state tracking elapsed time, duration, pause flag, and resolved easing function.
+//!
+//! - Case-insensitive easing name resolution with fallback aliases for common naming conventions (camelCase, LÖVE-style).
+//! - Built-in easing catalog query used by tooling and Lua autocomplete.
+
+use crate::math::easing;
+
+/// Per-tween progress tracker storing elapsed time, duration, easing function, and pause state.
+pub struct TweenState {
+    /// Total duration of the tween in seconds; clamped to >= 0.0001.
+    pub duration: f64,
+    /// Seconds elapsed since the tween started.
+    pub elapsed: f64,
+    /// Resolved easing function `f(t: f32) -> f32` in [0,1] → [0,1].
+    easing_fn: fn(f32) -> f32,
+    /// True when `tick` should not advance `elapsed`.
+    pub paused: bool,
+}
+
+impl TweenState {
+    /// Create a new state with the given `duration` and easing name; falls back to linear on unknown names.
+    pub fn new(duration: f64, easing_name: &str) -> Self {
+        let easing_fn = match resolve_easing(easing_name) {
+            Some(f) => f,
+            None => {
+                log::warn!("Unknown easing function '{}', falling back to linear", easing_name);
+                easing::linear
+            }
+        };
+        Self {
+            duration: duration.max(0.0001),
+            elapsed: 0.0,
+            easing_fn,
+            paused: false,
+        }
+    }
+
+    /// Advance elapsed time by `dt` when not paused; return true if the tween has reached or passed its duration.
+    pub fn tick(&mut self, dt: f64) -> bool {
+        if self.paused {
+            return false;
+        }
+        self.elapsed += dt;
+        self.elapsed >= self.duration
+    }
+
+    /// Reset `elapsed` to zero so the tween plays from the beginning.
+    pub fn reset(&mut self) {
+        self.elapsed = 0.0;
+    }
+
+    /// Return raw (uneased) progress in [0.0, 1.0]; returns 1.0 when duration is zero.
+    pub fn t_raw(&self) -> f32 {
+        if self.duration <= 0.0 {
+            return 1.0;
+        }
+        (self.elapsed / self.duration).clamp(0.0, 1.0) as f32
+    }
+
+    /// Return eased progress in [0.0, 1.0] by applying the resolved easing function to `t_raw`.
+    pub fn t_eased(&self) -> f64 {
+        (self.easing_fn)(self.t_raw()) as f64
+    }
+
+    /// Return `start + (end - start) * t_eased()`.
+    pub fn lerp(&self, start: f64, end: f64) -> f64 {
+        start + (end - start) * self.t_eased()
+    }
+
+    /// Return true when elapsed >= duration.
+    pub fn is_complete(&self) -> bool {
+        self.elapsed >= self.duration
+    }
+}
+
+/// Resolve an easing name string to a function pointer; return `None` for unknown names.
+pub fn resolve_easing(name: &str) -> Option<fn(f32) -> f32> {
+    easing::resolve_easing_fn(name)
+}
+
+/// Return a static slice of all built-in easing names recognised by `resolve_easing`.
+pub fn builtin_easing_names() -> &'static [&'static str] {
+    &[
+        "linear",
+        "quadIn",
+        "quadOut",
+        "quadInOut",
+        "cubicIn",
+        "cubicOut",
+        "cubicInOut",
+        "quartIn",
+        "quartOut",
+        "quartInOut",
+        "sineIn",
+        "sineOut",
+        "sineInOut",
+        "expoIn",
+        "expoOut",
+        "expoInOut",
+        "elasticIn",
+        "elasticOut",
+        "bounceIn",
+        "bounceOut",
+        "backIn",
+        "backOut",
+    ]
+}

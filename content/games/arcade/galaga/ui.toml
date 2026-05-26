@@ -1,0 +1,194 @@
+[root]
+widget_type = "panel"
+w = 800
+h = 600
+bg_color = [0.0, 0.0, 0.0, 0.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "title_screen"
+anchor = "top_left"
+x = 0
+y = 0
+w = 800
+h = 600
+bg_color = [0.0, 0.0, 0.0, 0.0]
+visible = true
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "GALAGA"
+  font_size = 30
+  color = [0.2, 0.4, 1.0, 1.0]
+  anchor = "top_left"
+  x = 312
+  y = 96
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_enter"
+  text = "PLAY"
+  font_size = 20
+  color = [0.9, 0.95, 1.0, 1.0]
+  anchor = "top_left"
+  x = 260
+  y = 220
+  w = 280
+  h = 44
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_quit"
+  text = "QUIT"
+  font_size = 20
+  color = [0.85, 0.88, 0.95, 1.0]
+  anchor = "top_left"
+  x = 260
+  y = 276
+  w = 280
+  h = 44
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "PRESS ENTER OR CLICK PLAY"
+  font_size = 16
+  color = [0.9, 0.9, 0.95, 1.0]
+  anchor = "top_left"
+  x = 252
+  y = 350
+
+[[root.children]]
+widget_type = "panel"
+id = "hud"
+anchor = "top_left"
+x = 0
+y = 0
+w = 800
+h = 600
+bg_color = [0.0, 0.0, 0.0, 0.0]
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "SCORE: 0"
+  font_size = 20
+  x = 10
+  y = 10
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hi_score_label"
+  text = "HI: 0"
+  font_size = 20
+  anchor = "top_center"
+  y = 10
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lives_label"
+  text = "LIVES: 3"
+  font_size = 20
+  anchor = "top_right"
+  x = -10
+  y = 10
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "wave_label"
+  text = "WAVE 1"
+  font_size = 20
+  anchor = "top_right"
+  x = -10
+  y = 38
+  color = [0.6, 0.6, 0.6, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "dual_fire"
+  text = "DUAL FIRE"
+  font_size = 20
+  anchor = "top_center"
+  y = 38
+  color = [0.3, 1.0, 0.3, 1.0]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "challenge_msg1"
+  text = "-- CHALLENGING STAGE --"
+  font_size = 24
+  color = [1.0, 1.0, 0.0, 1.0]
+  anchor = "center"
+  y = -40
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "challenge_msg2"
+  text = "Hit all enemies for bonus!"
+  font_size = 16
+  color = [0.8, 0.8, 0.8, 1.0]
+  anchor = "center"
+  y = -4
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 16
+  anchor = "bottom_left"
+  x = 10
+  y = -26
+  color = [0.4, 0.4, 0.4, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_screen"
+anchor = "top_left"
+x = 0
+y = 0
+w = 800
+h = 600
+bg_color = [0, 0, 0, 0.65]
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "GAME OVER"
+  font_size = 30
+  color = [1.0, 0.2, 0.2, 1.0]
+  anchor = "top_center"
+  y = 190
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_restart"
+  text = "PLAY AGAIN"
+  font_size = 20
+  color = [0.9, 0.95, 1.0, 1.0]
+  anchor = "top_center"
+  y = 270
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_quit_over"
+  text = "BACK TO TITLE"
+  font_size = 20
+  color = [0.85, 0.9, 0.95, 1.0]
+  anchor = "top_center"
+  y = 325
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "challenge_result"
+  text = "CHALLENGE: 0/0"
+  font_size = 20
+  color = [1.0, 1.0, 0.0, 1.0]
+  anchor = "top_center"
+  y = 385
+  visible = false

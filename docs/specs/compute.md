@@ -1,0 +1,313 @@
+# compute
+
+## TL;DR
+
+- The `compute` module is a dense N-dimensional numerical array library forming a core component of the Foundations tier.
+
+## General Info
+
+- Module group: `Foundations`
+- Source path: `src/compute/`
+- Lua API path(s): `src/lua_api/compute_api.rs`
+- Primary Lua namespace: `lurek.compute`
+- Rust test path(s): tests/rust/unit/compute_tests.rs; tests/rust/stress/compute_stress_tests.rs; inline tests in src/compute/array.rs, src/compute/spatial.rs
+- Lua test path(s): tests/lua/unit/test_compute.lua; tests/lua/stress/test_compute_stress.lua; tests/lua/integration/test_data_compute.lua; tests/lua/integration/test_compute_dataframe.lua; tests/lua/golden/test_compute_golden.lua
+
+## Summary
+
+ Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
+
+The module offers a vast mathematical operations suite accessible via `ops.rs`. This includes element-wise arithmetic, boolean comparisons, bitwise logic, and reduction operations (sum, mean, min, max) that can be applied globally or along specific array axes. Many of these operations feature in-place mutation variants and support row-broadcasting to optimize memory usage. For large array processing, the module leverages the `rayon` crate to automatically dispatch operations concurrently across threads when workloads exceed a tunable parallelization threshold.
+
+Beyond basic arithmetic, `compute` includes specialized submodules for advanced mathematics. `fft.rs` provides Radix-2 in-place Fast Fourier Transforms (FFT) and Inverse FFTs for frequency domain analysis, including magnitude spectrum extraction. `linalg.rs` implements essential linear algebra primitives, offering 2D transformations (rotation, affine matrices), Sobel edge detection, Gaussian convolution kernels, LU decomposition for linear system solving, and dominant eigenpair estimation via power iteration. `spatial.rs` extends these capabilities with 2D image-processing functions such as Manhattan-distance morphological operations (dilate/erode), flood filling, sub-region extraction, and 2D convolution with zero-padded boundary handling.
+
+Finally, the `analytics.rs` module provides statistical and analytical tools, including histogram binning, percentile extraction, cumulative sums, cross-correlation, and data normalization (range scaling and z-score standardization). The entire API surface is fully exposed to Lua via the `lurek.compute.*` namespace, allowing script developers to write highly performant data processing algorithms without leaving Lua. The documentation contract strictly enforces that all polymorphic parameter types and return shapes are meticulously detailed in `src/lua_api/compute_api.rs` to guarantee accurate generated bindings.
+
+## Source Documentation
+
+### `analytics.rs`
+- Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d)
+- Histogram binning with configurable range and bin count
+- Percentile extraction with linear interpolation
+- Pairwise statistical measures (covariance, Pearson correlation)
+- Value normalization helpers (range scaling, z-score standardization)
+
+### `array.rs`
+- Dense n-dimensional array container with typed storage (float32, float64, int32)
+- Shape validation, stride computation, and flat-index addressing
+- Constructors for zeros, ones, range, and from-slice initialization
+- Element access by flat index or multidimensional coordinates
+- Utility iterators, fill, map, and display formatting
+
+### `fft.rs`
+- Radix-2 in-place FFT and inverse FFT for power-of-two length buffers
+- Real-to-complex forward transform with automatic zero-padding
+- Complex-to-real inverse transform for spectrum reconstruction
+- Magnitude spectrum extraction from complex bin pairs
+
+### `linalg.rs`
+- Vector operations (normalize, cross2d, outer product, dot via spatial)
+- 2D transformation matrices (rotation, affine, point transform)
+- Convolution kernels (Gaussian) and edge detection (Sobel)
+- Linear system solving via Gaussian elimination with partial pivoting
+- LU decomposition with row permutation and determinant sign tracking
+- Dominant eigenpair estimation via power iteration
+
+### `mod.rs`
+- N-dimensional array container, element-wise and reduction operations
+- FFT, linear algebra, spatial filtering, and statistical analytics
+- Configurable parallel dispatch threshold for large arrays
+
+### `ops.rs`
+- Element-wise arithmetic, comparison, and bitwise operations on NdArray
+- Scalar and array binary operations with row-broadcast support
+- Reduction operations (sum, mean, min, max) globally and along axes
+- In-place mutation variants for add, sub, mul, div
+- Reshape, transpose, clone, fill, threshold, and conditional select
+- Configurable parallel dispatch via rayon above a tunable threshold
+- Argmin, argmax, count_nonzero, any, all logical queries
+
+### `spatial.rs`
+- 2D convolution with zero-padded boundary handling
+- Binary morphology operators (dilate, erode) using Manhattan radius
+- Flood fill with 4-connected BFS propagation
+- Sub-region extraction and insertion for 2D arrays
+- Matrix multiplication and 1D dot product
+
+## Types
+
+- `DataType` (`enum`, `array.rs`): Declares the supported element representations: `Float32`, `Float64`, and `Int32`. The restricted dtype set keeps the implementation small and predictable for Lua callers.
+- `NdArray` (`struct`, `array.rs`): Core dense numeric array type. It owns the contiguous row-major buffer and is the foundation every compute operation works against.
+- `LuDecomp` (`struct`, `linalg.rs`): Result of an LU decomposition with partial pivoting.
+
+## Functions
+
+- `cumsum` (`analytics.rs`): Cumulative sum along a 1D array (or flattened elements if axis is None).
+- `diff` (`analytics.rs`): Discrete difference: `out[i] = a[i+1] - a[i]` (order `n = 1`, 1D or flat).
+- `histogram` (`analytics.rs`): Compute a histogram with `bins` equal-width bins.
+- `percentile` (`analytics.rs`): Compute the `p`-th percentile (0–100) of all elements.
+- `covariance` (`analytics.rs`): Population covariance of two 1D (or flat) arrays of equal size.
+- `pearson_corr` (`analytics.rs`): Pearson correlation coefficient of two 1D (or flat) arrays.
+- `normalize_range` (`analytics.rs`): Linearly rescale all elements to [out_min, out_max].
+- `zscore` (`analytics.rs`): Standardise all elements to zero mean and unit variance (z-score).
+- `convolve1d` (`analytics.rs`): 1D convolution of `signal` with `kernel` (full output length).
+- `correlate1d` (`analytics.rs`): 1D cross-correlation: slide `template` over `signal` (valid output).
+- `DataType::parse` (`array.rs`): Parse dtype string and return matching DataType or parse error.
+- `DataType::byte_size` (`array.rs`): Return byte width of dtype element representation.
+- `DataType::name` (`array.rs`): Return canonical dtype name string.
+- `NdArray::new` (`array.rs`): Create zero-initialized array and return it for shape and dtype.
+- `NdArray::zeros` (`array.rs`): Allocate zero-filled array and return it after validating shape limits.
+- `NdArray::ones` (`array.rs`): Allocate one-filled array and return initialized values.
+- `NdArray::range` (`array.rs`): Build 1D range array and return values from start to stop with step.
+- `NdArray::from_slice` (`array.rs`): Build array from f64 slice and return typed array with requested shape.
+- `NdArray::get_f64` (`array.rs`): Read element by flat index and return value converted to f64.
+- `NdArray::set_f64` (`array.rs`): Write f64 value by flat index and return after dtype conversion.
+- `NdArray::get_i32` (`array.rs`): Read element as i32 by flat index and return integer value.
+- `NdArray::set_i32` (`array.rs`): Write i32 value by flat index and return after byte update.
+- `NdArray::flat_index` (`array.rs`): Convert multidimensional indices to flat index and return offset.
+- `NdArray::shape` (`array.rs`): Read shape slice and return axis lengths.
+- `NdArray::dtype` (`array.rs`): Read scalar dtype and return DataType value.
+- `NdArray::size` (`array.rs`): Read element count and return total number of elements.
+- `NdArray::ndim` (`array.rs`): Read number of dimensions and return ndim value.
+- `NdArray::strides` (`array.rs`): Read stride slice and return per-axis element strides.
+- `NdArray::data` (`array.rs`): Read immutable byte buffer and return raw data slice.
+- `NdArray::data_mut` (`array.rs`): Read mutable byte buffer and return raw mutable data slice.
+- `NdArray::set_shape` (`array.rs`): Replace shape and stride metadata and return after metadata update.
+- `NdArray::compute_strides` (`array.rs`): Compute row-major strides and return stride vector for provided shape.
+- `NdArray::get_by_indices` (`array.rs`): Read element by multidimensional indices and return f64 value.
+- `NdArray::set_by_indices` (`array.rs`): Write element by multidimensional indices and return success status.
+- `NdArray::to_f64_vec` (`array.rs`): Convert all elements to f64 and return copied vector.
+- `NdArray::fill` (`array.rs`): Fill all elements with scalar value and return after mutation.
+- `NdArray::map` (`array.rs`): Map function over elements and return new array with mapped values.
+- `NdArray::iter_f64` (`array.rs`): Iterate elements as f64 values and return lazy iterator.
+- `NdArray::display_string` (`array.rs`): Format array summary and return short display string.
+- `next_power_of_two` (`fft.rs`): Returns the smallest power of two ≥ `n`.
+- `fft` (`fft.rs`): Computes the discrete Fourier transform (DFT) of `data`.
+- `ifft` (`fft.rs`): Computes the inverse discrete Fourier transform.
+- `fft_magnitude` (`fft.rs`): Returns the magnitude spectrum of `data` as `|X[k]|` values.
+- `normalize_vec` (`linalg.rs`): L2-normalise a 1D vector.
+- `cross2d` (`linalg.rs`): 2D cross product (returns signed scalar area of the parallelogram).
+- `outer` (`linalg.rs`): Outer product of two 1D vectors: result shape is [m, n].
+- `rotate2d_matrix` (`linalg.rs`): Build a 2×2 rotation matrix for `angle_rad` radians.
+- `affine2d` (`linalg.rs`): Build a 3×3 homogeneous affine matrix combining translation, rotation, and scale.
+- `transform_points` (`linalg.rs`): Apply a 2×2 or 3×3 (homogeneous) matrix to a list of 2D points.
+- `gaussian_kernel` (`linalg.rs`): Generate a `size × size` Gaussian kernel with the given `sigma`.
+- `sobel` (`linalg.rs`): Apply Sobel edge detection to a 2D Float32/Float64 array.
+- `linsolve` (`linalg.rs`): Solve the linear system A·x = b using Gaussian elimination with partial pivoting.
+- `lu_decompose` (`linalg.rs`): Decomposes a square matrix `a` into P·A = L·U using partial pivoting.
+- `eigenvalue_power` (`linalg.rs`): Computes the dominant eigenvalue and its eigenvector of a square matrix using the power-iteration method.
+- `get_par_threshold` (`ops.rs`): Returns the current parallelization threshold for element-wise and reduction operations (default 10,000).
+- `set_par_threshold` (`ops.rs`): Sets the parallelization threshold for element-wise and reduction operations, returning the previous value.
+- `add` (`ops.rs`): Element-wise addition of two arrays (same shape and dtype).
+- `add_scalar` (`ops.rs`): Add a scalar to every element.
+- `sub` (`ops.rs`): Element-wise subtraction of two arrays (same shape and dtype).
+- `sub_scalar` (`ops.rs`): Subtract a scalar from every element.
+- `mul` (`ops.rs`): Element-wise multiplication of two arrays (same shape and dtype).
+- `mul_scalar` (`ops.rs`): Multiply every element by a scalar.
+- `div` (`ops.rs`): Element-wise division of two arrays (same shape and dtype).
+- `div_scalar` (`ops.rs`): Divide every element by a scalar.
+- `pow_scalar` (`ops.rs`): Raise every element to a scalar exponent.
+- `sqrt` (`ops.rs`): Element-wise square root.
+- `abs` (`ops.rs`): Element-wise absolute value.
+- `neg` (`ops.rs`): Element-wise negation.
+- `clamp` (`ops.rs`): Clamp every element to `[min_val, max_val]`.
+- `eq` (`ops.rs`): Element-wise equality comparison of two arrays.
+- `eq_scalar` (`ops.rs`): Element-wise equality comparison against a scalar.
+- `neq` (`ops.rs`): Element-wise not-equal comparison of two arrays.
+- `neq_scalar` (`ops.rs`): Element-wise not-equal comparison against a scalar.
+- `gt` (`ops.rs`): Element-wise greater-than comparison of two arrays.
+- `gt_scalar` (`ops.rs`): Element-wise greater-than comparison against a scalar.
+- `lt` (`ops.rs`): Element-wise less-than comparison of two arrays.
+- `lt_scalar` (`ops.rs`): Element-wise less-than comparison against a scalar.
+- `gte` (`ops.rs`): Element-wise greater-than-or-equal comparison of two arrays.
+- `gte_scalar` (`ops.rs`): Element-wise greater-than-or-equal comparison against a scalar.
+- `lte` (`ops.rs`): Element-wise less-than-or-equal comparison of two arrays.
+- `lte_scalar` (`ops.rs`): Element-wise less-than-or-equal comparison against a scalar.
+- `threshold` (`ops.rs`): Threshold mask: returns Float32 array with 1.0 where `a >= val`, 0.0 otherwise.
+- `where_mask` (`ops.rs`): Conditional selection: where `cond != 0`, choose from `a`; otherwise from `b`.
+- `count_nonzero` (`ops.rs`): Count the number of non-zero elements.
+- `argmin` (`ops.rs`): Return the flat index of the minimum element (0-based).
+- `argmax` (`ops.rs`): Return the flat index of the maximum element (0-based).
+- `any` (`ops.rs`): Returns `true` if any element is non-zero.
+- `all` (`ops.rs`): Returns `true` if all elements are non-zero.
+- `sum` (`ops.rs`): Sum of all elements.
+- `mean` (`ops.rs`): Mean of all elements.
+- `min_val` (`ops.rs`): Minimum value across all elements.
+- `max_val` (`ops.rs`): Maximum value across all elements.
+- `sum_axis` (`ops.rs`): Sum along a given axis, producing an array with that axis removed.
+- `mean_axis` (`ops.rs`): Mean along a given axis.
+- `min_axis` (`ops.rs`): Minimum along a given axis.
+- `max_axis` (`ops.rs`): Maximum along a given axis.
+- `reshape` (`ops.rs`): Reshape an array to a new shape with the same total element count.
+- `transpose_2d` (`ops.rs`): Transpose a 2D array (swap rows and columns).
+- `fill` (`ops.rs`): Fill all elements of an array with a value (in-place).
+- `add_inplace` (`ops.rs`): Add second array into first array in place and return success status.
+- `sub_inplace` (`ops.rs`): Subtract second array from first array in place and return success status.
+- `mul_inplace` (`ops.rs`): Multiply first array by second array in place and return success status.
+- `div_inplace` (`ops.rs`): Divide first array by second array in place and return success status.
+- `clone_array` (`ops.rs`): Clone an array (convenience wrapper).
+- `bitwise_and` (`ops.rs`): Bitwise AND of two Int32 arrays.
+- `bitwise_or` (`ops.rs`): Bitwise OR of two Int32 arrays.
+- `bitwise_xor` (`ops.rs`): Bitwise XOR of two Int32 arrays.
+- `bitwise_not` (`ops.rs`): Bitwise NOT of an Int32 array.
+- `bitwise_lshift` (`ops.rs`): Bitwise left shift of an Int32 array by `amount` bits.
+- `bitwise_rshift` (`ops.rs`): Bitwise right shift (arithmetic) of an Int32 array by `amount` bits.
+- `convolve2d` (`spatial.rs`): 2D convolution with zero-padding (same-size output).
+- `dilate` (`spatial.rs`): Morphological dilation with a Manhattan-diamond structuring element.
+- `erode` (`spatial.rs`): Morphological erosion with a Manhattan-diamond structuring element.
+- `flood_fill` (`spatial.rs`): Flood fill using BFS with 4-connectivity.
+- `get_region` (`spatial.rs`): Extract a rectangular sub-region from a 2D array.
+- `set_region` (`spatial.rs`): Copy a source 2D array into a target 2D array at position `(row, col)`.
+- `matmul` (`spatial.rs`): Matrix multiplication of two 2D arrays: (m,k) × (k,n) → (m,n).
+- `dot` (`spatial.rs`): Dot product of two 1D arrays (same length).
+
+## Lua API Reference
+
+- Binding path(s): `src/lua_api/compute_api.rs`
+- Namespace: `lurek.compute`
+
+### Module Functions
+- `lurek.compute.newArray`: Creates a zero-filled array with the requested shape and data type.
+- `lurek.compute.zeros`: Creates a zero-filled array with the requested shape and data type.
+- `lurek.compute.ones`: Creates a one-filled array with the requested shape and data type.
+- `lurek.compute.range`: Creates a one-dimensional range array.
+- `lurek.compute.fromTable`: Creates an array from a flat Lua table and optional shape.
+- `lurek.compute.gaussianKernel`: Creates a square Gaussian kernel array.
+- `lurek.compute.rotate2dMatrix`: Creates a 2D rotation matrix from an angle in radians.
+- `lurek.compute.affine2d`: Creates a 2D affine transform matrix.
+- `lurek.compute.fft`: Computes the FFT of real-valued samples.
+- `lurek.compute.ifft`: Computes the inverse FFT of complex frequency pairs.
+- `lurek.compute.fftMagnitude`: Computes FFT magnitudes for real-valued samples.
+- `lurek.compute.getParThreshold`: Returns the global compute parallelism threshold.
+- `lurek.compute.setParThreshold`: Sets the global compute parallelism threshold and returns the previous value.
+
+### `LArray` Methods
+- `LArray:getShape`: Returns the array shape as one-based dimension table.
+- `LArray:getDimensions`: Returns the number of array dimensions.
+- `LArray:getSize`: Returns the total number of array elements.
+- `LArray:getDataType`: Returns the element data type name as a string.
+- `LArray:isOnGPU`: Returns whether this array is currently stored on the GPU.
+- `LArray:get`: Reads an array element using one-based indices.
+- `LArray:set`: Writes an array element using one-based indices followed by the value.
+- `LArray:toTable`: Returns array values flattened into a Lua table.
+- `LArray:reshape`: Returns a reshaped copy of this array.
+- `LArray:clone`: Returns an independent deep copy of this array.
+- `LArray:transpose`: Returns a transposed copy of a two-dimensional array.
+- `LArray:fill`: Fills this array in place with one value.
+- `LArray:addInplace`: Adds another array into this array in place.
+- `LArray:subInplace`: Subtracts another array from this array in place.
+- `LArray:mulInplace`: Multiplies this array by another array in place.
+- `LArray:divInplace`: Divides this array by another array in place.
+- `LArray:add`: Returns element-wise addition with an array or scalar.
+- `LArray:sub`: Returns element-wise subtraction with an array or scalar.
+- `LArray:mul`: Returns element-wise multiplication with an array or scalar.
+- `LArray:div`: Returns element-wise division with an array or scalar.
+- `LArray:pow`: Returns this array raised element-wise to a scalar exponent.
+- `LArray:sqrt`: Returns element-wise square roots.
+- `LArray:abs`: Returns element-wise absolute values.
+- `LArray:neg`: Returns element-wise negated values.
+- `LArray:clamp`: Returns values clamped between minimum and maximum bounds.
+- `LArray:eq`: Returns element-wise equality comparison with an array or scalar.
+- `LArray:neq`: Returns element-wise inequality comparison with an array or scalar.
+- `LArray:gt`: Returns element-wise greater-than comparison with an array or scalar.
+- `LArray:lt`: Returns element-wise less-than comparison with an array or scalar.
+- `LArray:gte`: Returns element-wise greater-or-equal comparison with an array or scalar.
+- `LArray:lte`: Returns element-wise less-or-equal comparison with an array or scalar.
+- `LArray:threshold`: Returns a mask array where values above a threshold are selected.
+- `LArray:where`: Selects values from this array or another array using a mask array.
+- `LArray:countNonZero`: Counts the number of non-zero elements in this array.
+- `LArray:argmin`: Returns the one-based flat index of the minimum value.
+- `LArray:argmax`: Returns the one-based flat index of the maximum value.
+- `LArray:any`: Returns whether any element is non-zero.
+- `LArray:all`: Returns whether all elements are non-zero.
+- `LArray:sum`: Returns total sum or a summed array along a one-based axis.
+- `LArray:mean`: Returns total mean or a mean array along a one-based axis.
+- `LArray:min`: Returns total minimum or a minimum array along a one-based axis.
+- `LArray:max`: Returns total maximum or a maximum array along a one-based axis.
+- `LArray:matmul`: Returns matrix multiplication of this array and another array.
+- `LArray:dot`: Returns dot product with another array.
+- `LArray:bitwiseAnd`: Returns element-wise bitwise AND with another array.
+- `LArray:bitwiseOr`: Returns element-wise bitwise OR with another array.
+- `LArray:bitwiseXor`: Returns element-wise bitwise XOR with another array.
+- `LArray:bitwiseNot`: Returns element-wise bitwise NOT.
+- `LArray:bitwiseLShift`: Returns element-wise left shift by a bit count.
+- `LArray:bitwiseRShift`: Returns element-wise right shift by a bit count.
+- `LArray:convolve2D`: Returns two-dimensional convolution with a kernel array.
+- `LArray:dilate`: Returns morphological dilation with a radius.
+- `LArray:erode`: Returns morphological erosion with a radius.
+- `LArray:floodFill`: Returns a flood-filled copy starting at a one-based row and column.
+- `LArray:getRegion`: Returns a rectangular region from this array.
+- `LArray:setRegion`: Writes a source array into this array at a one-based row and column.
+- `LArray:cumsum`: Returns cumulative sum over the flattened array.
+- `LArray:diff`: Returns finite differences over the flattened array.
+- `LArray:histogram`: Returns histogram bins for the array values.
+- `LArray:percentile`: Returns a percentile value from the array.
+- `LArray:covariance`: Returns covariance with another array.
+- `LArray:pearsonCorr`: Returns Pearson correlation with another array.
+- `LArray:normalizeRange`: Returns array values normalized into a target range.
+- `LArray:zscore`: Returns z-score normalized array values.
+- `LArray:convolve1d`: Returns one-dimensional convolution with a kernel array.
+- `LArray:correlate1d`: Returns one-dimensional correlation with a template array.
+- `LArray:normalizeVec`: Returns this vector normalized to unit length.
+- `LArray:outer`: Returns outer product with another vector array.
+- `LArray:cross2d`: Returns two-dimensional cross product with another vector.
+- `LArray:transformPoints`: Transforms a point array by this transform matrix.
+- `LArray:sobel`: Computes Sobel gradients for this array.
+- `LArray:linsolve`: Solves a linear system using this matrix and a right-hand side array.
+- `LArray:luDecompose`: Decomposes this matrix into LU data and permutation metadata.
+- `LArray:eigenPower`: Estimates dominant eigenvalue and eigenvector using power iteration.
+- `LArray:map`: Maps each element through a Lua function and returns a new array.
+- `LArray:eval`: Maps each element through a Lua expression compiled as `function(x) return expression end`.
+- `LArray:reduce`: Reduces array values with a Lua accumulator function.
+- `LArray:scan`: Produces prefix accumulator values with a Lua function.
+- `LArray:type`: Returns the Lua-visible type name for this array handle.
+- `LArray:typeOf`: Returns whether this array handle matches a supported type name.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- Keep this module reference synchronized with `src/compute/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

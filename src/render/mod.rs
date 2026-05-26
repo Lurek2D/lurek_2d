@@ -1,0 +1,48 @@
+//! GPU rendering pipeline: wgpu device, passes, command encoding, and post-fx chain.
+//!
+//! - Draw primitives: sprites, shapes, meshes, text, decals, and canvas pixel ops.
+//! - Font rasterisation, shader management, and image-effect descriptors.
+//! - Draw-layer ordering and blend/stencil/depth state per command.
+
+/// CPU-side canvas API: paint-style pixel and shape commands on an `ImageData` surface.
+pub mod canvas;
+/// Decal surface for projecting persistent paint-style marks onto world geometry.
+pub mod decal_surface;
+/// Draw-layer abstraction: ordered buckets of `RenderCommand`s flushed each frame.
+pub mod draw_layer;
+/// Fontdue-backed font rasterisation and glyph atlas management.
+pub mod font;
+/// wgpu device/queue wrapper, pipeline creation, render-pass execution.
+pub mod gpu_renderer;
+/// Per-frame image post-processing effect descriptors and shader parameter blocks.
+pub mod image_effect;
+/// GPU-uploadable mesh geometry: vertices, indices, and draw modes.
+pub mod mesh;
+/// Wavefront OBJ parser producing `Mesh` instances from `.obj` text data.
+#[cfg(feature = "obj-loader")]
+pub mod obj_loader;
+/// Post-effect pipeline: chain of `ShaderPassDescriptor`s applied after the main pass.
+pub mod postfx_pipeline;
+/// Fullscreen province map shader pipeline and bind-group setup.
+pub mod province_map_pipeline;
+/// `RenderCommand` enum and all draw-state types consumed by `GpuRenderer`.
+pub mod renderer;
+/// User-uploaded WGSL shader wrappers and `UniformValue` binding types.
+pub mod shader;
+/// Compound 2D shape builder using `ShapeCommand` sequences.
+pub mod shape;
+pub use canvas::Canvas;
+pub use decal_surface::DecalSurface;
+pub use draw_layer::DrawLayer;
+pub use font::Font;
+pub use gpu_renderer::GpuRenderer;
+pub use image_effect::ShaderPassDescriptor;
+pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
+pub use postfx_pipeline::PostFxPipeline;
+pub use province_map_pipeline::ProvinceMapPipeline;
+pub use renderer::{
+    BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand, StencilAction,
+    StencilMode, TextAlign, TextureData,
+};
+pub use shader::{Shader, UniformValue};
+pub use shape::{CompoundShape, ShapeCommand};

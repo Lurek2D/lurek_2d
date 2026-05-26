@@ -1,0 +1,486 @@
+//! Row filtering by column predicate with comparison and contains operators
+//!
+//! - Column sorting in ascending or descending order
+//! - Head, tail, and inclusive slice row selection
+//! - Column projection and unique value extraction
+//! - Group-by partitioning and inner/left join merging
+//! - Frame merge, count-by, drop-nil, and deterministic sampling
+//! - Aggregate statistics: sum, mean, min, max, median, stddev, variance
+//! - Descriptive statistics frame generation
+//! - Nil fill, batch row append, and column f64 import/export
+
+use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
+use crate::dataframe::rng::Xorshift64;
+impl DataFrame {
+    /// Filter rows by column predicate and return matching frame.
+    pub fn filter(&self, col: ColRef, op: &str, val: &CellValue) -> Result<DataFrame, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        let mut keep = Vec::new();
+        for (row, cell) in data[ci].iter().enumerate() {
+            let passes = match op {
+                "==" => cell == val,
+                "!=" => cell != val,
+                "<" => cell.cmp_for_sort(val) == std::cmp::Ordering::Less,
+                "<=" => {
+                    let ord = cell.cmp_for_sort(val);
+                    ord == std::cmp::Ordering::Less || ord == std::cmp::Ordering::Equal
+                }
+                ">" => cell.cmp_for_sort(val) == std::cmp::Ordering::Greater,
+                ">=" => {
+                    let ord = cell.cmp_for_sort(val);
+                    ord == std::cmp::Ordering::Greater || ord == std::cmp::Ordering::Equal
+                }
+                "contains" => {
+                    if let (CellValue::Text(haystack), CellValue::Text(needle)) = (cell, val) {
+                        haystack.contains(needle.as_str())
+                    } else {
+                        false
+                    }
+                }
+                _ => return Err(format!("unsupported filter op: {op}")),
+            };
+            if passes {
+                keep.push(row);
+            }
+        }
+        Ok(self.extract_rows(&keep))
+    }
+    /// Parallel filter — uses rayon to scan rows when frame exceeds threshold.
+    /// Falls back to sequential filter for small frames (< 10_000 rows).
+    pub fn par_filter(&self, col: ColRef, op: &str, val: &CellValue) -> Result<DataFrame, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        let col_data = &data[ci];
+        let row_count = col_data.len();
+
+        const PAR_THRESHOLD: usize = 10_000;
+
+        let keep: Vec<usize> = if row_count >= PAR_THRESHOLD {
+            use rayon::prelude::*;
+            (0..row_count)
+                .into_par_iter()
+                .filter(|&row| Self::cell_matches(&col_data[row], op, val))
+                .collect()
+        } else {
+            (0..row_count)
+                .filter(|&row| Self::cell_matches(&col_data[row], op, val))
+                .collect()
+        };
+
+        Ok(self.extract_rows(&keep))
+    }
+    /// Compare a cell against an operator and value.
+    fn cell_matches(cell: &CellValue, op: &str, val: &CellValue) -> bool {
+        match op {
+            "==" => cell == val,
+            "!=" => cell != val,
+            "<" => cell.cmp_for_sort(val) == std::cmp::Ordering::Less,
+            "<=" => {
+                let ord = cell.cmp_for_sort(val);
+                ord == std::cmp::Ordering::Less || ord == std::cmp::Ordering::Equal
+            }
+            ">" => cell.cmp_for_sort(val) == std::cmp::Ordering::Greater,
+            ">=" => {
+                let ord = cell.cmp_for_sort(val);
+                ord == std::cmp::Ordering::Greater || ord == std::cmp::Ordering::Equal
+            }
+            "contains" => {
+                if let (CellValue::Text(haystack), CellValue::Text(needle)) = (cell, val) {
+                    haystack.contains(needle.as_str())
+                } else {
+                    false
+                }
+            }
+            _ => false,
+        }
+    }
+    /// Sort rows by column and return sorted frame.
+    pub fn sort(&self, col: ColRef, ascending: bool) -> Result<DataFrame, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        let nrows = self.nrows();
+        let mut indices: Vec<usize> = (0..nrows).collect();
+        indices.sort_by(|&a, &b| {
+            let ord = data[ci][a].cmp_for_sort(&data[ci][b]);
+            if ascending {
+                ord
+            } else {
+                ord.reverse()
+            }
+        });
+        Ok(self.extract_rows(&indices))
+    }
+    /// Return first n rows as new frame.
+    pub fn head(&self, n: usize) -> DataFrame {
+        let take = n.min(self.nrows());
+        self.extract_rows(&(0..take).collect::<Vec<_>>())
+    }
+    /// Return last n rows as new frame.
+    pub fn tail(&self, n: usize) -> DataFrame {
+        let nrows = self.nrows();
+        let skip = nrows.saturating_sub(n);
+        self.extract_rows(&(skip..nrows).collect::<Vec<_>>())
+    }
+    /// Return inclusive row slice as new frame.
+    pub fn slice(&self, start: usize, end: usize) -> Result<DataFrame, String> {
+        let nrows = self.nrows();
+        if start >= nrows {
+            return Err(format!("start index {start} out of range (0..{nrows})"));
+        }
+        let end = end.min(nrows.saturating_sub(1));
+        if start > end {
+            return Ok(DataFrame::from_raw(
+                self.columns().to_vec(),
+                vec![Vec::new(); self.ncols()],
+            ));
+        }
+        Ok(self.extract_rows(&(start..=end).collect::<Vec<_>>()))
+    }
+    /// Select subset of columns and return new frame.
+    pub fn select_columns(&self, cols: &[ColRef]) -> Result<DataFrame, String> {
+        let mut new_names = Vec::new();
+        let mut new_data = Vec::new();
+        let data = self.raw_data();
+        for col in cols {
+            let ci = self.resolve_col(col.clone())?;
+            new_names.push(self.columns()[ci].clone());
+            new_data.push(data[ci].clone());
+        }
+        Ok(DataFrame::from_raw(new_names, new_data))
+    }
+    /// Return unique values from selected column.
+    pub fn unique(&self, col: ColRef) -> Result<Vec<CellValue>, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        let mut result: Vec<CellValue> = Vec::new();
+        for val in &data[ci] {
+            if !result.iter().any(|v| v == val) {
+                result.push(val.clone());
+            }
+        }
+        Ok(result)
+    }
+    /// Group rows by key column and return grouped frames.
+    pub fn group_by(&self, col: ColRef) -> Result<Vec<(CellValue, DataFrame)>, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        let mut groups: Vec<(CellValue, Vec<usize>)> = Vec::new();
+        for (row, key) in data[ci].iter().enumerate() {
+            if let Some(g) = groups.iter_mut().find(|(k, _)| k == key) {
+                g.1.push(row);
+            } else {
+                groups.push((key.clone(), vec![row]));
+            }
+        }
+        Ok(groups
+            .into_iter()
+            .map(|(key, rows)| (key, self.extract_rows(&rows)))
+            .collect())
+    }
+    /// Join two frames by key columns and return merged frame.
+    pub fn join(
+        &self,
+        other: &DataFrame,
+        this_col: ColRef,
+        other_col: ColRef,
+        join_type: &str,
+    ) -> Result<DataFrame, String> {
+        if join_type == "right" {
+            log::warn!("dataframe: right join not implemented; returning empty DataFrame");
+            let mut all_cols: Vec<String> = self.columns().to_vec();
+            for name in other.columns() {
+                if !all_cols.contains(name) {
+                    all_cols.push(name.clone());
+                }
+            }
+            return Ok(DataFrame::from_raw(
+                all_cols.clone(),
+                vec![Vec::new(); all_cols.len()],
+            ));
+        }
+        let tci = self.resolve_col(this_col)?;
+        let oci = other.resolve_col(other_col)?;
+        let t_data = self.raw_data();
+        let o_data = other.raw_data();
+        let mut col_names: Vec<String> = self.columns().to_vec();
+        let mut other_col_indices: Vec<usize> = Vec::new();
+        for (oi, name) in other.columns().iter().enumerate() {
+            if !col_names.contains(name) {
+                col_names.push(name.clone());
+                other_col_indices.push(oi);
+            }
+        }
+        let total_cols = col_names.len();
+        let mut new_data: Vec<Vec<CellValue>> = vec![Vec::new(); total_cols];
+        for (t_row, t_key) in t_data[tci].iter().enumerate() {
+            let mut matched = false;
+            #[allow(clippy::needless_range_loop)]
+            for o_row in 0..o_data[oci].len() {
+                if *t_key == o_data[oci][o_row] {
+                    matched = true;
+                    for ci in 0..self.ncols() {
+                        new_data[ci].push(t_data[ci][t_row].clone());
+                    }
+                    for (extra_i, &oi) in other_col_indices.iter().enumerate() {
+                        new_data[self.ncols() + extra_i].push(o_data[oi][o_row].clone());
+                    }
+                }
+            }
+            if !matched && join_type == "left" {
+                for ci in 0..self.ncols() {
+                    new_data[ci].push(t_data[ci][t_row].clone());
+                }
+                for extra_i in 0..other_col_indices.len() {
+                    new_data[self.ncols() + extra_i].push(CellValue::Nil);
+                }
+            }
+        }
+        Ok(DataFrame::from_raw(col_names, new_data))
+    }
+    /// Append columns and rows from other frame into self.
+    pub fn merge(&mut self, other: &DataFrame) {
+        let my_nrows = self.nrows();
+        let other_nrows = other.nrows();
+        let other_data = other.raw_data();
+        for (oi, name) in other.columns().iter().enumerate() {
+            if !self.columns().contains(name) {
+                let mut col = vec![CellValue::Nil; my_nrows];
+                col.extend(other_data[oi].iter().cloned());
+                self.column_names.push(name.clone());
+                self.data.push(col);
+            }
+        }
+        for (ci, name) in self.columns().to_vec().iter().enumerate() {
+            if let Some(oi) = other.columns().iter().position(|n| n == name) {
+                self.data[ci].extend(other_data[oi].iter().cloned());
+            } else {
+                self.data[ci].extend(std::iter::repeat_n(CellValue::Nil, other_nrows));
+            }
+        }
+    }
+    /// Count occurrences by key column and return two-column frame.
+    pub fn count_by(&self, col: ColRef) -> Result<DataFrame, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        let mut counts: Vec<(CellValue, usize)> = Vec::new();
+        for val in &data[ci] {
+            if let Some(entry) = counts.iter_mut().find(|(k, _)| k == val) {
+                entry.1 += 1;
+            } else {
+                counts.push((val.clone(), 1));
+            }
+        }
+        let (value_col, count_col): (Vec<_>, Vec<_>) = counts
+            .into_iter()
+            .map(|(v, c)| (v, CellValue::Number(c as f64)))
+            .unzip();
+        Ok(DataFrame::from_raw(
+            vec!["value".to_string(), "count".to_string()],
+            vec![value_col, count_col],
+        ))
+    }
+    /// Drop rows where selected column is nil.
+    pub fn drop_nil(&self, col: ColRef) -> Result<DataFrame, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        let indices: Vec<usize> = (0..self.nrows())
+            .filter(|&row| !data[ci][row].is_nil())
+            .collect();
+        Ok(self.extract_rows(&indices))
+    }
+    /// Sample up to n rows using deterministic optional seed.
+    pub fn sample(&self, n: usize, seed: Option<u64>) -> DataFrame {
+        let nrows = self.nrows();
+        if nrows == 0 || n == 0 {
+            return DataFrame::from_raw(self.columns().to_vec(), vec![Vec::new(); self.ncols()]);
+        }
+        let mut rng = Xorshift64::new(seed.unwrap_or(0));
+        let mut indices: Vec<usize> = (0..nrows).collect();
+        for i in (1..nrows).rev() {
+            let j = rng.next_usize(i + 1);
+            indices.swap(i, j);
+        }
+        let take = n.min(nrows);
+        self.extract_rows(&indices[..take])
+    }
+    /// Sum numeric values from selected column.
+    pub fn sum(&self, col: ColRef) -> Result<f64, String> {
+        Ok(self.collect_numbers(col)?.iter().sum())
+    }
+    /// Compute mean of numeric values from selected column.
+    pub fn mean(&self, col: ColRef) -> Result<f64, String> {
+        let nums = self.collect_numbers(col)?;
+        if nums.is_empty() {
+            return Err("no numeric values for mean".to_string());
+        }
+        Ok(nums.iter().sum::<f64>() / nums.len() as f64)
+    }
+    /// Return minimum numeric value from selected column.
+    pub fn min_val(&self, col: ColRef) -> Result<f64, String> {
+        let nums = self.collect_numbers(col)?;
+        nums.iter()
+            .cloned()
+            .min_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .ok_or_else(|| "no numeric values for min".to_string())
+    }
+    /// Return maximum numeric value from selected column.
+    pub fn max_val(&self, col: ColRef) -> Result<f64, String> {
+        let nums = self.collect_numbers(col)?;
+        nums.iter()
+            .cloned()
+            .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .ok_or_else(|| "no numeric values for max".to_string())
+    }
+    /// Compute median of numeric values from selected column.
+    pub fn median(&self, col: ColRef) -> Result<f64, String> {
+        let mut nums = self.collect_numbers(col)?;
+        if nums.is_empty() {
+            return Err("no numeric values for median".to_string());
+        }
+        nums.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let n = nums.len();
+        Ok(if n % 2 == 0 {
+            (nums[n / 2 - 1] + nums[n / 2]) / 2.0
+        } else {
+            nums[n / 2]
+        })
+    }
+    /// Compute standard deviation of numeric values from column.
+    pub fn stddev(&self, col: ColRef) -> Result<f64, String> {
+        Ok(self.variance(col)?.sqrt())
+    }
+    /// Compute variance of numeric values from column.
+    pub fn variance(&self, col: ColRef) -> Result<f64, String> {
+        let nums = self.collect_numbers(col)?;
+        if nums.is_empty() {
+            return Err("no numeric values for variance".to_string());
+        }
+        let mean = nums.iter().sum::<f64>() / nums.len() as f64;
+        Ok(nums.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / nums.len() as f64)
+    }
+    /// Build descriptive statistics frame for numeric columns.
+    pub fn describe(&self) -> DataFrame {
+        let cols = self.columns();
+        let data = self.raw_data();
+        let num_cols: Vec<(usize, String)> = cols
+            .iter()
+            .enumerate()
+            .filter(|(ci, _)| data[*ci].iter().any(|v| matches!(v, CellValue::Number(_))))
+            .map(|(ci, n)| (ci, n.clone()))
+            .collect();
+        if num_cols.is_empty() {
+            return DataFrame::new();
+        }
+        let stat_labels = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"];
+        let mut result_cols: Vec<String> = vec!["stat".to_string()];
+        let mut result_data: Vec<Vec<CellValue>> = vec![stat_labels
+            .iter()
+            .map(|s| CellValue::Text(s.to_string()))
+            .collect()];
+        for (ci, name) in &num_cols {
+            result_cols.push(name.clone());
+            let mut nums: Vec<f64> = data[*ci].iter().filter_map(|v| v.as_number()).collect();
+            nums.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+            let count = nums.len() as f64;
+            let mean = if nums.is_empty() {
+                0.0
+            } else {
+                nums.iter().sum::<f64>() / count
+            };
+            let variance = if nums.is_empty() {
+                0.0
+            } else {
+                nums.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / count
+            };
+            let std = variance.sqrt();
+            let min = nums.first().copied().unwrap_or(0.0);
+            let max = nums.last().copied().unwrap_or(0.0);
+            let q25 = super::analytics::percentile(&nums, 25.0);
+            let q50 = super::analytics::percentile(&nums, 50.0);
+            let q75 = super::analytics::percentile(&nums, 75.0);
+            result_data.push(vec![
+                CellValue::Number(count),
+                CellValue::Number(mean),
+                CellValue::Number(std),
+                CellValue::Number(min),
+                CellValue::Number(q25),
+                CellValue::Number(q50),
+                CellValue::Number(q75),
+                CellValue::Number(max),
+            ]);
+        }
+        DataFrame::from_raw(result_cols, result_data)
+    }
+    /// Replace nil values in selected column with provided value.
+    pub fn fill_nil(&mut self, col: ColRef, val: CellValue) -> Result<(), String> {
+        let ci = self.resolve_col(col)?;
+        let nrows = self.nrows();
+        for row in 0..nrows {
+            if self.data[ci][row].is_nil() {
+                self.data[ci][row] = val.clone();
+            }
+        }
+        Ok(())
+    }
+    /// Extract rows by indices and return new frame.
+    pub(super) fn extract_rows(&self, indices: &[usize]) -> DataFrame {
+        let data = self.raw_data();
+        let new_data: Vec<Vec<CellValue>> = (0..self.ncols())
+            .map(|ci| indices.iter().map(|&row| data[ci][row].clone()).collect())
+            .collect();
+        DataFrame::from_raw(self.columns().to_vec(), new_data)
+    }
+    /// Collect numeric values from selected column.
+    pub(super) fn collect_numbers(&self, col: ColRef) -> Result<Vec<f64>, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        Ok(data[ci].iter().filter_map(|v| v.as_number()).collect())
+    }
+    /// Append batch of rows to frame and return error on width mismatch.
+    pub fn add_row_batch(&mut self, rows: Vec<Vec<CellValue>>) -> Result<(), String> {
+        let nc = self.ncols();
+        for row in rows {
+            if row.len() != nc {
+                return Err(format!(
+                    "add_row_batch: row has {} elements but DataFrame has {} columns",
+                    row.len(),
+                    nc
+                ));
+            }
+            for (ci, val) in row.into_iter().enumerate() {
+                self.data[ci].push(val);
+            }
+        }
+        Ok(())
+    }
+    /// Export selected column as f64 vector with nil as NaN.
+    pub fn get_column_as_f64(&self, col: ColRef) -> Result<Vec<f64>, String> {
+        let ci = self.resolve_col(col)?;
+        let data = self.raw_data();
+        Ok(data[ci]
+            .iter()
+            .map(|v| v.as_number().unwrap_or(f64::NAN))
+            .collect())
+    }
+    /// Set selected column from f64 vector with NaN mapped to nil.
+    pub fn set_column_from_f64(&mut self, col: ColRef, values: Vec<f64>) -> Result<(), String> {
+        let ci = self.resolve_col(col)?;
+        let n = self.nrows();
+        if values.len() != n {
+            return Err(format!(
+                "set_column_from_f64: values length {} ≠ nrows {}",
+                values.len(),
+                n
+            ));
+        }
+        for (i, v) in values.into_iter().enumerate() {
+            self.data[ci][i] = if v.is_nan() {
+                CellValue::Nil
+            } else {
+                CellValue::Number(v)
+            };
+        }
+        Ok(())
+    }
+}

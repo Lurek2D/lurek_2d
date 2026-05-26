@@ -1,0 +1,267 @@
+//! Mutable globe state combining topology, fog, markers, labels, layers, and arcs.
+//!
+//! - Region add/remove/get and sector grouping operations.
+//! - Heat-layer and arc overlay management with add/replace/remove.
+//! - Orbit camera integration and screen-space region picking.
+//! - Frame emission producing render commands for the full globe state.
+//! - Named globe registry for storing and retrieving multiple globes by name.
+//! - Reachability caching per faction for path-cost queries.
+
+use crate::globe::draw::emit_globe_frame;
+use crate::globe::fog::FogStore;
+use crate::globe::label::LabelStore;
+use crate::globe::layer::LayerStore;
+use crate::globe::marker::MarkerStore;
+use crate::globe::picking::{pick, PickResult};
+use crate::globe::projection::OrbitCamera;
+use crate::globe::topology::RegionGraph;
+use crate::globe::types::{
+    Arc as GlobeArc, GlobeError, GlobeSpec, HeatLayer, Region, RegionId, MAX_REGIONS,
+};
+use crate::render::renderer::RenderCommand;
+use crate::runtime::resource_keys::FontKey;
+use std::collections::{HashMap, HashSet};
+/// Mutable globe state used by the renderer and sync layers.
+#[derive(Debug, Default)]
+pub struct Globe {
+    /// Globe name used for lookup.
+    pub name: String,
+    /// Shared render and simulation parameters.
+    pub spec: GlobeSpec,
+    /// Orbit camera used for projection.
+    pub camera: OrbitCamera,
+    /// Province topology and cached adjacency.
+    pub graph: RegionGraph,
+    /// Fog state per viewer.
+    pub fog: FogStore,
+    /// Marker collection for the globe.
+    pub markers: MarkerStore,
+    /// Label collection for the globe.
+    pub labels: LabelStore,
+    /// Overlay layer collection.
+    pub layers: LayerStore,
+    /// Arc render data keyed by id.
+    pub arcs: HashMap<u32, GlobeArc>,
+    /// Next arc id to assign.
+    pub arc_next_id: u32,
+    /// Active viewer name used for fog lookups.
+    pub active_viewer: Option<String>,
+    /// Heat overlays currently applied to the globe.
+    pub heat_layers: Vec<HeatLayer>,
+    /// Region ids grouped by sector name.
+    pub sectors: HashMap<String, HashSet<RegionId>>,
+    /// Cached reachability per faction name.
+    pub reachability_cache: HashMap<String, HashMap<RegionId, f64>>,
+    /// Simulation time in seconds.
+    pub sim_time_sec: f32,
+}
+impl Globe {
+    /// Create a globe with the supplied name and spec.
+    pub fn new(name: impl Into<String>, spec: GlobeSpec) -> Self {
+        Self {
+            name: name.into(),
+            spec,
+            ..Default::default()
+        }
+    }
+    /// Insert a region or return TooManyRegions when the graph is full.
+    pub fn add_region(&mut self, region: Region) -> Result<(), GlobeError> {
+        if self.graph.len() >= MAX_REGIONS {
+            return Err(GlobeError::TooManyRegions);
+        }
+        self.graph.insert(region)?;
+        Ok(())
+    }
+    /// Remove a region by id and return it when present.
+    pub fn remove_region(&mut self, id: RegionId) -> Option<Region> {
+        self.graph.remove(id)
+    }
+    /// Return a shared region reference when the id exists.
+    pub fn get_region(&self, id: RegionId) -> Option<&Region> {
+        self.graph.get(id)
+    }
+    /// Return a mutable region reference when the id exists.
+    pub fn get_region_mut(&mut self, id: RegionId) -> Option<&mut Region> {
+        self.graph.get_mut(id)
+    }
+    /// Return the number of stored regions.
+    pub fn region_count(&self) -> usize {
+        self.graph.len()
+    }
+    /// Backward compatibility: insert a region.
+    #[inline]
+    pub fn add_province(&mut self, province: Region) -> Result<(), GlobeError> {
+        self.add_region(province)
+    }
+    /// Backward compatibility: remove a region by id.
+    #[inline]
+    pub fn remove_province(&mut self, id: RegionId) -> Option<Region> {
+        self.remove_region(id)
+    }
+    /// Backward compatibility: get a region reference.
+    #[inline]
+    pub fn get_province(&self, id: RegionId) -> Option<&Region> {
+        self.get_region(id)
+    }
+    /// Backward compatibility: get a mutable region reference.
+    #[inline]
+    pub fn get_province_mut(&mut self, id: RegionId) -> Option<&mut Region> {
+        self.get_region_mut(id)
+    }
+    /// Backward compatibility: return region count.
+    #[inline]
+    pub fn province_count(&self) -> usize {
+        self.region_count()
+    }
+    /// Insert an arc and return its assigned id.
+    pub fn add_arc(&mut self, arc: GlobeArc) -> u32 {
+        let id = self.arc_next_id;
+        self.arc_next_id += 1;
+        self.arcs.insert(id, arc);
+        id
+    }
+    /// Remove an arc by id and return true when it existed.
+    pub fn remove_arc(&mut self, id: u32) -> bool {
+        self.arcs.remove(&id).is_some()
+    }
+    /// Advance simulation time and update the globe clock and rotation.
+    pub fn update(&mut self, dt: f32) {
+        let speed = 1.0;
+        self.spec.time_of_day = (self.spec.time_of_day + dt * speed / 3600.0) % 24.0;
+        self.spec.rotation_deg =
+            (self.spec.rotation_deg + dt * self.spec.auto_rotation_deg_per_sec) % 360.0;
+        self.sim_time_sec += dt.max(0.0);
+    }
+    /// Pick a province at screen coordinates or return None when no province matches.
+    pub fn pick_screen(&self, sx: f32, sy: f32) -> Option<PickResult> {
+        pick(sx, sy, &self.spec, &self.camera, &self.graph)
+    }
+    /// Emit render commands for the current globe state.
+    pub fn emit_frame(&self, default_font: Option<FontKey>) -> Vec<RenderCommand> {
+        emit_globe_frame(
+            &self.spec,
+            &self.camera,
+            &self.graph,
+            &self.fog,
+            &self.markers,
+            &self.labels,
+            &self.layers,
+            &self.heat_layers,
+            &self.arcs,
+            self.active_viewer.as_deref(),
+            default_font,
+            self.sim_time_sec,
+        )
+    }
+    /// Add or replace a heat layer by name.
+    pub fn set_heat_layer(&mut self, layer: HeatLayer) {
+        if let Some(existing) = self.heat_layers.iter_mut().find(|l| l.name == layer.name) {
+            *existing = layer;
+            return;
+        }
+        self.heat_layers.push(layer);
+    }
+    /// Remove a heat layer by name and return true when one was removed.
+    pub fn remove_heat_layer(&mut self, name: &str) -> bool {
+        let before = self.heat_layers.len();
+        self.heat_layers.retain(|l| l.name != name);
+        self.heat_layers.len() != before
+    }
+    /// Assign a region to a named sector.
+    pub fn set_region_sector(&mut self, id: RegionId, sector: impl Into<String>) {
+        let sector = sector.into();
+        for ids in self.sectors.values_mut() {
+            ids.remove(&id);
+        }
+        self.sectors.entry(sector).or_default().insert(id);
+    }
+    /// Return the sector name that contains a region when one exists.
+    pub fn region_sector(&self, id: RegionId) -> Option<&str> {
+        self.sectors.iter().find_map(|(name, ids)| {
+            if ids.contains(&id) {
+                Some(name.as_str())
+            } else {
+                None
+            }
+        })
+    }
+    /// Return all region ids for a named sector.
+    pub fn sector_regions(&self, sector: &str) -> Vec<RegionId> {
+        self.sectors
+            .get(sector)
+            .map(|set| set.iter().copied().collect())
+            .unwrap_or_default()
+    }
+    /// Backward compatibility: assign a region to a sector.
+    #[inline]
+    pub fn set_province_sector(&mut self, id: RegionId, sector: impl Into<String>) {
+        self.set_region_sector(id, sector)
+    }
+    /// Backward compatibility: get sector for a region.
+    #[inline]
+    pub fn province_sector(&self, id: RegionId) -> Option<&str> {
+        self.region_sector(id)
+    }
+    /// Backward compatibility: get region ids in a sector.
+    #[inline]
+    pub fn sector_provinces(&self, sector: &str) -> Vec<RegionId> {
+        self.sector_regions(sector)
+    }
+    /// Cache default reachability for a faction name.
+    pub fn cache_reachability_default(
+        &mut self,
+        faction: impl Into<String>,
+        start: RegionId,
+        max_cost: f64,
+    ) {
+        let map = self.graph.reachable_default(start, max_cost);
+        self.reachability_cache.insert(faction.into(), map);
+    }
+    /// Return cached reachability for a faction when present.
+    pub fn cached_reachability(&self, faction: &str) -> Option<&HashMap<RegionId, f64>> {
+        self.reachability_cache.get(faction)
+    }
+}
+/// Named globe registry keyed by globe name.
+#[derive(Debug, Default)]
+pub struct GlobeRegistry {
+    /// Stored globes by name.
+    globes: HashMap<String, Globe>,
+}
+impl GlobeRegistry {
+    /// Create an empty globe registry.
+    pub fn new() -> Self {
+        Self::default()
+    }
+    /// Create or replace a globe and return a mutable reference to it.
+    pub fn create(&mut self, name: impl Into<String>, spec: GlobeSpec) -> &mut Globe {
+        let name = name.into();
+        self.globes
+            .insert(name.clone(), Globe::new(name.clone(), spec));
+        self.globes.get_mut(&name).expect("just inserted")
+    }
+    /// Return a shared globe reference when the name exists.
+    pub fn get(&self, name: &str) -> Option<&Globe> {
+        self.globes.get(name)
+    }
+    /// Return a mutable globe reference when the name exists.
+    pub fn get_mut(&mut self, name: &str) -> Option<&mut Globe> {
+        self.globes.get_mut(name)
+    }
+    /// Remove a globe by name and return it when found.
+    pub fn remove(&mut self, name: &str) -> Option<Globe> {
+        self.globes.remove(name)
+    }
+    /// Return all globe names in arbitrary order.
+    pub fn names(&self) -> Vec<String> {
+        self.globes.keys().cloned().collect()
+    }
+    /// Return the number of stored globes.
+    pub fn len(&self) -> usize {
+        self.globes.len()
+    }
+    /// Return true when no globes are stored.
+    pub fn is_empty(&self) -> bool {
+        self.globes.is_empty()
+    }
+}

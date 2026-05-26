@@ -1,0 +1,369 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "title_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "title_text"
+    widget_type = "label"
+    x = 300
+    y = 240
+    text = "ROGUELITE"
+
+    [[root.children.children]]
+    id = "press_start"
+    widget_type = "label"
+    x = 290
+    y = 310
+    text = "PRESS ENTER OR CLICK"
+
+    [[root.children.children]]
+    id = "controls_text"
+    widget_type = "label"
+    x = 220
+    y = 350
+    text = "WASD move | J melee | K ranged | Shift dash"
+
+[[root.children]]
+id = "game_over_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "died_text"
+    widget_type = "label"
+    x = 320
+    y = 120
+    text = "YOU DIED"
+
+    [[root.children.children]]
+    id = "go_rooms"
+    widget_type = "label"
+    x = 320
+    y = 200
+    text = "Rooms Cleared: 0"
+
+    [[root.children.children]]
+    id = "go_kills"
+    widget_type = "label"
+    x = 320
+    y = 225
+    text = "Enemies Killed: 0"
+
+    [[root.children.children]]
+    id = "go_score"
+    widget_type = "label"
+    x = 320
+    y = 250
+    text = "Score: 0"
+
+    [[root.children.children]]
+    id = "go_perks_title"
+    widget_type = "label"
+    x = 320
+    y = 290
+    text = "Perks collected:"
+
+    [[root.children.children]]
+    id = "go_perk_1"
+    widget_type = "label"
+    x = 330
+    y = 308
+    text = ""
+    [[root.children.children]]
+    id = "go_perk_2"
+    widget_type = "label"
+    x = 330
+    y = 326
+    text = ""
+    [[root.children.children]]
+    id = "go_perk_3"
+    widget_type = "label"
+    x = 330
+    y = 344
+    text = ""
+    [[root.children.children]]
+    id = "go_perk_4"
+    widget_type = "label"
+    x = 330
+    y = 362
+    text = ""
+    [[root.children.children]]
+    id = "go_perk_5"
+    widget_type = "label"
+    x = 330
+    y = 380
+    text = ""
+    [[root.children.children]]
+    id = "go_perk_6"
+    widget_type = "label"
+    x = 330
+    y = 398
+    text = ""
+
+    [[root.children.children]]
+    id = "go_return"
+    widget_type = "label"
+    x = 300
+    y = 540
+    text = "Press R to return to title"
+
+[[root.children]]
+id = "perk_select_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "ps_title"
+    widget_type = "label"
+    x = 310
+    y = 100
+    text = "CHOOSE A PERK"
+
+    [[root.children.children]]
+    id = "ps_bg_1"
+    widget_type = "panel"
+    x = 250
+    y = 170
+    w = 300
+    h = 70
+        [[root.children.children.children]]
+        id = "ps_title_1"
+        widget_type = "label"
+        x = 15
+        y = 15
+        text = "[1]"
+        [[root.children.children.children]]
+        id = "ps_desc_1"
+        widget_type = "label"
+        x = 15
+        y = 40
+        text = "Desc"
+
+    [[root.children.children]]
+    id = "ps_bg_2"
+    widget_type = "panel"
+    x = 250
+    y = 260
+    w = 300
+    h = 70
+        [[root.children.children.children]]
+        id = "ps_title_2"
+        widget_type = "label"
+        x = 15
+        y = 15
+        text = "[2]"
+        [[root.children.children.children]]
+        id = "ps_desc_2"
+        widget_type = "label"
+        x = 15
+        y = 40
+        text = "Desc"
+
+    [[root.children.children]]
+    id = "ps_bg_3"
+    widget_type = "panel"
+    x = 250
+    y = 350
+    w = 300
+    h = 70
+        [[root.children.children.children]]
+        id = "ps_title_3"
+        widget_type = "label"
+        x = 15
+        y = 15
+        text = "[3]"
+        [[root.children.children.children]]
+        id = "ps_desc_3"
+        widget_type = "label"
+        x = 15
+        y = 40
+        text = "Desc"
+
+    [[root.children.children]]
+    id = "ps_room_cleared"
+    widget_type = "label"
+    x = 330
+    y = 550
+    text = "Room X completed"
+
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "hp_bg"
+    widget_type = "panel"
+    x = 10
+    y = 10
+    w = 160
+    h = 18
+
+    [[root.children.children]]
+    id = "hp_fill"
+    widget_type = "panel"
+    x = 10
+    y = 10
+    w = 160
+    h = 18
+
+    [[root.children.children]]
+    id = "hp_text"
+    widget_type = "label"
+    x = 15
+    y = 12
+    text = "HP"
+
+    [[root.children.children]]
+    id = "room_text"
+    widget_type = "label"
+    x = 10
+    y = 36
+    text = "Room 1"
+
+    [[root.children.children]]
+    id = "score_text"
+    widget_type = "label"
+    x = 10
+    y = 56
+    text = "Score: 0"
+
+    [[root.children.children]]
+    id = "kills_text"
+    widget_type = "label"
+    x = 10
+    y = 74
+    text = "Kills: 0"
+
+    [[root.children.children]]
+    id = "controls_hud"
+    widget_type = "label"
+    x = 10
+    y = 560
+    text = "J:Melee  K:Ranged  Shift:Dash"
+
+    [[root.children.children]]
+    id = "cd_melee"
+    widget_type = "panel"
+    x = 10
+    y = 574
+    w = 0
+    h = 4
+
+    [[root.children.children]]
+    id = "cd_ranged"
+    widget_type = "panel"
+    x = 80
+    y = 574
+    w = 0
+    h = 4
+
+    [[root.children.children]]
+    id = "cd_dash"
+    widget_type = "panel"
+    x = 170
+    y = 574
+    w = 0
+    h = 4
+
+    [[root.children.children]]
+    id = "perks_summary_title"
+    widget_type = "label"
+    x = 600
+    y = 10
+    text = "Perks:"
+    visible = false
+
+    [[root.children.children]]
+    id = "hud_perk_1"
+    widget_type = "label"
+    x = 600
+    y = 24
+    text = ""
+    [[root.children.children]]
+    id = "hud_perk_2"
+    widget_type = "label"
+    x = 600
+    y = 38
+    text = ""
+    [[root.children.children]]
+    id = "hud_perk_3"
+    widget_type = "label"
+    x = 600
+    y = 52
+    text = ""
+    [[root.children.children]]
+    id = "hud_perk_4"
+    widget_type = "label"
+    x = 600
+    y = 66
+    text = ""
+    [[root.children.children]]
+    id = "hud_perk_5"
+    widget_type = "label"
+    x = 600
+    y = 80
+    text = ""
+    [[root.children.children]]
+    id = "hud_perk_6"
+    widget_type = "label"
+    x = 600
+    y = 94
+    text = ""
+
+    [[root.children.children]]
+    id = "boss_hp_bg"
+    widget_type = "panel"
+    x = 250
+    y = 10
+    w = 300
+    h = 20
+    visible = false
+    [[root.children.children]]
+    id = "boss_hp_fill"
+    widget_type = "panel"
+    x = 250
+    y = 10
+    w = 300
+    h = 20
+    visible = false
+    [[root.children.children]]
+    id = "boss_text"
+    widget_type = "label"
+    x = 255
+    y = 13
+    text = "BOSS"
+    visible = false
+
+[[root.children]]
+id = "fps_text"
+widget_type = "label"
+x = 10
+y = 580
+text = "FPS:"

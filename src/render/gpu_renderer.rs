@@ -1,0 +1,6195 @@
+//! wgpu-based GPU renderer: vertex batching, draw-call encoding, pipeline caching, and frame presentation.
+//!
+//! - Flat-color and textured geometry paths with per-frame vertex/index buffer management.
+//! - User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
+//! - Off-screen canvas render targets with lazy depth/stencil attachment creation.
+//! - Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
+//! - Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
+//! - Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
+//! - Stencil write/test pipeline variants with configurable compare and operation modes.
+//! - Bitmap font fallback renderer and thick-line geometry generation utilities.
+//! - Frustum culling via 2-D AABB visibility test against the camera transform.
+//! - Automatic geometry buffer growth when frame vertex/index demand exceeds current capacity.
+//! - Texture upload, font atlas rebuild, and canvas lifecycle tied to slot-map resource pruning.
+
+use crate::log_msg;
+use crate::math::{Mat3, Vec2};
+use crate::render::mesh::Mesh;
+use crate::render::renderer::{
+    BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, ParticleRenderShape,
+    PathSegment, RenderCommand, TextAlign, TextureData,
+};
+use crate::render::shader::{Shader, ShaderFragmentInput, UniformValue};
+use crate::runtime::log_messages::{
+    G002_SCREENSHOT_ZERO_SIZE, G003_SCREENSHOT_MAP_FAIL, G004_SCREENSHOT_RECV_FAIL,
+    G005_SCREENSHOT_DATA_FAIL,
+};
+use crate::runtime::resource_keys::{
+    CanvasKey, FontKey, MeshKey, ShaderKey, SpriteBatchKey, TextureKey,
+};
+use bytemuck::{Pod, Zeroable};
+use slotmap::{SlotMap, SparseSecondaryMap};
+use std::collections::{HashMap, HashSet};
+use std::f32::consts::PI;
+use std::sync::mpsc;
+use std::time::Instant;
+/// Flat-shaded vertex with `position` and per-vertex `color`.
+#[repr(C)]
+#[derive(Copy, Clone, Pod, Zeroable)]
+struct ColorVertex {
+    /// NDC/screen-space XY position.
+    position: [f32; 2],
+    /// RGBA vertex color.
+    color: [f32; 4],
+}
+/// Textured vertex with position, UV, RGBA tint, and homogeneous W depth for perspective correction.
+#[repr(C)]
+#[derive(Copy, Clone, Pod, Zeroable)]
+struct TexVertex {
+    /// NDC/screen-space XY position.
+    position: [f32; 2],
+    /// Texture UV coordinates.
+    uv: [f32; 2],
+    /// Per-vertex RGBA tint.
+    color: [f32; 4],
+    /// Homogeneous W value for perspective-correct UV interpolation.
+    w_depth: f32,
+    /// Padding to meet `Pod` alignment requirements.
+    _pad: [f32; 3],
+}
+/// Light-pass vertex with position, UV, RGBA tint, shadow map value, and shadow parameters.
+#[repr(C)]
+#[derive(Copy, Clone, Pod, Zeroable)]
+struct LightVertex {
+    /// NDC/screen-space XY position.
+    position: [f32; 2],
+    /// Light-quad UV coordinates.
+    uv: [f32; 2],
+    /// Per-vertex RGBA tint.
+    color: [f32; 4],
+    /// Normalised 0..1 shadow map value for this vertex.
+    shadow_v: f32,
+    /// Shadow sampling parameters: `[radius, mode, texel_size, _pad]`.
+    shadow_params: [f32; 4],
+}
+/// Horizontal resolution of the 1-D shadow map texture.
+const SHADOW_MAP_RES: usize = 256;
+/// Maximum number of shadow-casting point lights rendered per frame.
+const MAX_SHADOW_LIGHTS: usize = 128;
+/// Per-frame viewport uniform uploaded to the GPU: pixel dimensions, time, and camera transform.
+#[repr(C)]
+#[derive(Copy, Clone, Pod, Zeroable)]
+struct ViewportUniform {
+    /// Framebuffer pixel dimensions `[width, height]`.
+    size: [f32; 2],
+    /// Engine time in seconds, passed to shaders.
+    time: f32,
+    /// Alignment padding.
+    _pad: f32,
+    /// Column 0 of the 3×3 view transform.
+    view_col0: [f32; 4],
+    /// Column 1 of the 3×3 view transform.
+    view_col1: [f32; 4],
+    /// Column 2 of the 3×3 view transform.
+    view_col2: [f32; 4],
+}
+/// GPU texture with its bind group; held in slot-maps keyed by `TextureKey` / `CanvasKey` / `FontKey`.
+struct GpuTexture {
+    /// Owned wgpu texture object (prefixed with `_` to avoid unused-field warnings).
+    _texture: wgpu::Texture,
+    /// View used as shader resource.
+    view: wgpu::TextureView,
+    /// Bind group pairing `view` with its sampler.
+    bind_group: wgpu::BindGroup,
+    /// Pixel width.
+    width: u32,
+    /// Pixel height.
+    height: u32,
+}
+/// Combined depth/stencil render attachment; created lazily per render target.
+struct DepthStencilTarget {
+    /// Owned texture (unused directly after view creation).
+    _texture: wgpu::Texture,
+    /// View bound as depth/stencil attachment.
+    view: wgpu::TextureView,
+    /// Pixel width matching its render target.
+    width: u32,
+    /// Pixel height matching its render target.
+    height: u32,
+}
+/// Mapped readback buffer pending async `device.poll` before screenshot bytes are copied.
+struct PendingSurfaceReadback {
+    /// Mappable output buffer.
+    buffer: wgpu::Buffer,
+    /// Row stride in bytes including wgpu alignment padding.
+    padded_bytes_per_row: u32,
+    /// Image width in pixels.
+    width: u32,
+    /// Image height in pixels.
+    height: u32,
+}
+/// Identifies a GPU texture source during draw batching.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum TexRef {
+    /// A sprite/image texture uploaded via `upload_texture`.
+    Texture(TextureKey),
+    /// An off-screen canvas render target.
+    Canvas(CanvasKey),
+    /// A bitmap font glyph atlas.
+    FontAtlas(FontKey),
+}
+/// Maximum flat-color vertex count before the buffer must grow.
+const MAX_COLOR_VERTS: u64 = 1 << 19;
+/// Maximum flat-color index count before the buffer must grow.
+const MAX_COLOR_IDXS: u64 = 1 << 21;
+/// Maximum textured vertex count before the buffer must grow.
+const MAX_TEX_VERTS: u64 = 1 << 14;
+/// Maximum textured index count before the buffer must grow.
+const MAX_TEX_IDXS: u64 = 1 << 16;
+/// Maximum number of light quads batched per frame.
+const MAX_LIGHT_QUADS: usize = 128;
+/// Per-frame GPU draw statistics exposed to the Lua profiler API.
+#[derive(Debug, Default, Clone)]
+pub struct RenderStats {
+    /// Total number of GPU draw calls issued this frame.
+    pub draw_calls: u32,
+    /// Number of texture bind-group switches this frame.
+    pub texture_switches: u32,
+    /// Number of canvas render-target switches this frame.
+    pub canvas_switches: u32,
+    /// Number of shader pipeline switches this frame.
+    pub shader_switches: u32,
+    /// Number of draw calls merged into batches this frame.
+    pub batched_draws: u32,
+    /// CPU time spent in `render_frame` this frame in milliseconds.
+    pub cpu_render_ms: f32,
+}
+/// Optional pixel-space scissor rectangle `(x, y, width, height)`.
+type ScissorRect = Option<(u32, u32, u32, u32)>;
+/// Identifies the active render target during a frame.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum RenderTargetId {
+    /// The main window surface.
+    Screen,
+    /// An off-screen canvas texture.
+    Canvas(CanvasKey),
+}
+/// Selects the GPU vertex layout for a draw call.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum GeometryKind {
+    /// Flat-color `ColorVertex` layout.
+    Color,
+    /// Textured `TexVertex` layout with UV and W depth.
+    Texture,
+}
+/// Stencil operation mode for a draw call; used as part of the pipeline cache key.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum StencilMode {
+    /// Stencil testing and writing are both disabled.
+    Disabled,
+    /// Write the stencil reference value using the given action.
+    Write(crate::render::renderer::StencilAction),
+    /// Discard fragments that fail the given compare test against the stencil buffer.
+    Test(crate::render::renderer::CompareMode),
+}
+/// Composite key used to look up or create a cached `wgpu::RenderPipeline`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+struct PipelineKey {
+    /// Alpha/additive/multiply/etc. blend state.
+    blend_mode: BlendMode,
+    /// Channel write-mask encoded as a bitmask (R=1, G=2, B=4, A=8).
+    color_mask_bits: u32,
+    /// Stencil operation or test applied by this pipeline.
+    stencil_mode: StencilMode,
+}
+/// Full pipeline selection key: default vs. custom shader, plus geometry kind and blend/stencil state.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum PipelineSelectionKey {
+    /// Use the built-in color or texture shader.
+    Default {
+        /// Vertex layout to use.
+        geometry: GeometryKind,
+        /// Blend/stencil pipeline variant.
+        pipeline: PipelineKey,
+    },
+    /// Use a user-supplied WGSL shader.
+    Custom {
+        /// Registered shader key.
+        shader: ShaderKey,
+        /// Vertex layout to use.
+        geometry: GeometryKind,
+        /// Blend/stencil pipeline variant.
+        pipeline: PipelineKey,
+    },
+}
+/// A fully resolved draw call ready to be encoded in the GPU render pass.
+#[derive(Debug, Clone, Copy)]
+struct PreparedDraw {
+    /// Render target this draw writes to.
+    target: RenderTargetId,
+    /// Vertex layout (color or texture).
+    geometry: GeometryKind,
+    /// Texture bound for this draw, or `None` for flat-color.
+    texture_ref: Option<TexRef>,
+    /// First index in the shared index buffer.
+    idx_start: u32,
+    /// Number of indices for this draw call.
+    idx_count: u32,
+    /// Blend mode for this draw.
+    blend_mode: BlendMode,
+    /// Optional scissor rectangle in pixels.
+    scissor: ScissorRect,
+    /// Channel write-mask bitmask.
+    color_mask_bits: u32,
+    /// User shader override, or `None` for the built-in shader.
+    shader: Option<ShaderKey>,
+    /// Stencil operation mode.
+    stencil_mode: StencilMode,
+    /// Stencil reference value used by `Write` and `Test` modes.
+    stencil_reference: u32,
+}
+/// WGSL uniform value type tag; used to select the correct buffer layout.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum ShaderUniformKind {
+    /// 32-bit float scalar.
+    Float,
+    /// Two-component float vector.
+    Vec2,
+    /// Three-component float vector.
+    Vec3,
+    /// Four-component float vector.
+    Vec4,
+    /// 32-bit signed integer.
+    Int,
+    /// Boolean mapped to u32.
+    Bool,
+}
+/// Compiled user WGSL shader with cached render pipelines for each `PipelineKey`.
+struct GpuShader {
+    /// Original WGSL source string retained for hot-reload.
+    source: String,
+    /// Ordered list of uniform names and their value types.
+    uniform_signature: Vec<(String, ShaderUniformKind)>,
+    /// Per-uniform GPU buffers, one per `uniform_signature` entry.
+    uniform_buffers: Vec<wgpu::Buffer>,
+    /// Bind group holding all uniform buffers for this shader.
+    uniform_bind_group: Option<wgpu::BindGroup>,
+    /// Compiled shader module for the flat-color vertex path.
+    color_module: wgpu::ShaderModule,
+    /// Compiled shader module for the textured vertex path.
+    texture_module: wgpu::ShaderModule,
+    /// Pipeline layout for the color module.
+    color_layout: wgpu::PipelineLayout,
+    /// Pipeline layout for the texture module.
+    texture_layout: wgpu::PipelineLayout,
+    /// Cached color render pipelines keyed by blend/stencil state.
+    color_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    /// Cached texture render pipelines keyed by blend/stencil state.
+    texture_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+}
+/// Return the wgpu `BlendState` for a given `BlendMode`.
+fn blend_state_for(mode: BlendMode) -> wgpu::BlendState {
+    match mode {
+        BlendMode::Alpha => wgpu::BlendState::ALPHA_BLENDING,
+        BlendMode::Add => wgpu::BlendState {
+            color: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::SrcAlpha,
+                dst_factor: wgpu::BlendFactor::One,
+                operation: wgpu::BlendOperation::Add,
+            },
+            alpha: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::One,
+                dst_factor: wgpu::BlendFactor::One,
+                operation: wgpu::BlendOperation::Add,
+            },
+        },
+        BlendMode::Multiply => wgpu::BlendState {
+            color: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::Dst,
+                dst_factor: wgpu::BlendFactor::Zero,
+                operation: wgpu::BlendOperation::Add,
+            },
+            alpha: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::DstAlpha,
+                dst_factor: wgpu::BlendFactor::Zero,
+                operation: wgpu::BlendOperation::Add,
+            },
+        },
+        BlendMode::Replace => wgpu::BlendState {
+            color: wgpu::BlendComponent::REPLACE,
+            alpha: wgpu::BlendComponent::REPLACE,
+        },
+        BlendMode::Screen => wgpu::BlendState {
+            color: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::One,
+                dst_factor: wgpu::BlendFactor::OneMinusSrc,
+                operation: wgpu::BlendOperation::Add,
+            },
+            alpha: wgpu::BlendComponent {
+                src_factor: wgpu::BlendFactor::One,
+                dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                operation: wgpu::BlendOperation::Add,
+            },
+        },
+    }
+}
+const COLOR_SHADER: &str = r#"
+struct VertexInput {
+    @location(0) position: vec2<f32>,
+    @location(1) color:    vec4<f32>,
+}
+struct VertexOutput {
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0)       color:         vec4<f32>,
+}
+struct Viewport {
+    size: vec2<f32>,
+    time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}
+@group(0) @binding(0) var<uniform> viewport: Viewport;
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        viewport.view_col0.xyz,
+        viewport.view_col1.xyz,
+        viewport.view_col2.xyz,
+    );
+    let cam_pos = view * vec3<f32>(in.position, 1.0);
+    out.clip_position = vec4<f32>(
+        (cam_pos.x / viewport.size.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / viewport.size.y) * 2.0,
+        0.0, 1.0
+    );
+    out.color = in.color;
+    return out;
+}
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> { return in.color; }
+"#;
+const TEXTURE_SHADER: &str = r#"
+struct VertexInput {
+    @location(0) position: vec2<f32>,
+    @location(1) uv:       vec2<f32>,
+    @location(2) color:    vec4<f32>,
+    @location(3) w_depth:  f32,
+}
+struct VertexOutput {
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0)       uv:            vec2<f32>,
+    @location(1)       color:         vec4<f32>,
+}
+struct Viewport {
+    size: vec2<f32>,
+    time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}
+@group(0) @binding(0) var<uniform>  viewport:   Viewport;
+@group(1) @binding(0) var           t_diffuse:  texture_2d<f32>;
+@group(1) @binding(1) var           s_diffuse:  sampler;
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        viewport.view_col0.xyz,
+        viewport.view_col1.xyz,
+        viewport.view_col2.xyz,
+    );
+    let cam_pos = view * vec3<f32>(in.position, 1.0);
+    let w = max(in.w_depth, 0.001);
+    let ndc_x = (cam_pos.x / viewport.size.x) * 2.0 - 1.0;
+    let ndc_y = 1.0 - (cam_pos.y / viewport.size.y) * 2.0;
+    out.clip_position = vec4<f32>(ndc_x * w, ndc_y * w, 0.0, w);
+    out.uv    = in.uv;
+    out.color = in.color;
+    return out;
+}
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
+    return textureSample(t_diffuse, s_diffuse, in.uv) * in.color;
+}
+"#;
+const LIGHT_SHADER: &str = r#"
+struct VertexInput {
+    @location(0) position: vec2<f32>,
+    @location(1) uv:       vec2<f32>,
+    @location(2) color:    vec4<f32>,
+    @location(3) shadow_v: f32,
+    @location(4) shadow_params: vec4<f32>,
+}
+struct VertexOutput {
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0)       uv:            vec2<f32>,
+    @location(1)       color:         vec4<f32>,
+    @location(2)       shadow_v:      f32,
+    @location(3)       shadow_params: vec4<f32>,
+}
+struct Viewport {
+    size: vec2<f32>,
+    time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}
+@group(0) @binding(0) var<uniform> viewport: Viewport;
+@group(1) @binding(0) var shadow_atlas: texture_2d<f32>;
+@group(1) @binding(1) var shadow_sampler: sampler;
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        viewport.view_col0.xyz,
+        viewport.view_col1.xyz,
+        viewport.view_col2.xyz,
+    );
+    let cam_pos = view * vec3<f32>(in.position, 1.0);
+    out.clip_position = vec4<f32>(
+        (cam_pos.x / viewport.size.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / viewport.size.y) * 2.0,
+        0.0, 1.0
+    );
+    out.uv       = in.uv;
+    out.color    = in.color;
+    out.shadow_v = in.shadow_v;
+    out.shadow_params = in.shadow_params;
+    return out;
+}
+fn sample_shadow_row(u: f32, v: f32, mode: f32, texel_size: f32) -> f32 {
+    if mode < 0.5 {
+        return textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u, v)).r;
+    }
+    if mode < 1.5 {
+        var acc = 0.0;
+        acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 2.0 * texel_size, v)).r;
+        acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 1.0 * texel_size, v)).r;
+        acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u, v)).r;
+        acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 1.0 * texel_size, v)).r;
+        acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 2.0 * texel_size, v)).r;
+        return acc / 5.0;
+    }
+    var acc = 0.0;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 6.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 5.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 4.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 3.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 2.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u - 1.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 1.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 2.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 3.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 4.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 5.0 * texel_size, v)).r;
+    acc += textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u + 6.0 * texel_size, v)).r;
+    return acc / 13.0;
+}
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
+    let center = vec2<f32>(0.5, 0.5);
+    let delta  = in.uv - center;
+    let dist   = length(delta) * 2.0;
+    let falloff = clamp(1.0 - dist, 0.0, 1.0);
+    let intensity = falloff * falloff;
+    var shadow = 1.0;
+    if in.shadow_v >= 0.0 {
+        let angle = atan2(delta.y, delta.x);
+        let u     = (angle + 3.14159265) / (2.0 * 3.14159265);
+        let shadow_dist = sample_shadow_row(
+            u,
+            in.shadow_v,
+            in.shadow_params.x,
+            in.shadow_params.z,
+        );
+        let frag_dist   = dist * 0.5;
+        let edge = max(1e-4, in.shadow_params.y * 0.05);
+        shadow = 1.0 - smoothstep(shadow_dist - edge, shadow_dist + edge, frag_dist);
+    }
+    return vec4<f32>(in.color.rgb * intensity * shadow, 1.0);
+}
+"#;
+/// GPU state for the additive light accumulation and shadow-atlas composite pass.
+struct LightGpuState {
+    #[allow(dead_code)]
+    /// Light accumulation RGBA texture (kept alive for its view).
+    accum_texture: wgpu::Texture,
+    /// View bound as the accumulation render-attachment.
+    accum_view: wgpu::TextureView,
+    /// Bind group for sampling the accumulation texture in the composite pass.
+    accum_bind_group: wgpu::BindGroup,
+    /// Additive light blending pipeline.
+    additive_pipeline: wgpu::RenderPipeline,
+    /// Final composite (multiply) pipeline.
+    composite_pipeline: wgpu::RenderPipeline,
+    /// Vertex buffer for light quads.
+    vertex_buffer: wgpu::Buffer,
+    /// Index buffer for light quads.
+    index_buffer: wgpu::Buffer,
+    /// Shadow atlas texture storing 1-D shadow maps for each light.
+    shadow_atlas_texture: wgpu::Texture,
+    #[allow(dead_code)]
+    /// View of the shadow atlas (kept alive; bind group holds a reference).
+    shadow_atlas_view: wgpu::TextureView,
+    /// Bind group for sampling the shadow atlas in the light pass shader.
+    shadow_atlas_bind_group: wgpu::BindGroup,
+    /// Pixel width of accumulation and shadow-atlas textures.
+    width: u32,
+    /// Pixel height of the accumulation texture.
+    height: u32,
+}
+/// Core wgpu renderer owning all GPU resources; used by the engine runtime each frame.
+pub struct GpuRenderer {
+    /// wgpu logical device handle.
+    pub(crate) device: wgpu::Device,
+    /// wgpu submission queue.
+    pub(crate) queue: wgpu::Queue,
+    /// Bind-group layout for the viewport uniform buffer.
+    viewport_bind_group_layout: wgpu::BindGroupLayout,
+    /// Compiled WGSL module for the built-in flat-color shader.
+    default_color_shader: wgpu::ShaderModule,
+    /// Compiled WGSL module for the built-in textured shader.
+    default_texture_shader: wgpu::ShaderModule,
+    /// Pipeline layout for the built-in color shader.
+    default_color_layout: wgpu::PipelineLayout,
+    /// Pipeline layout for the built-in texture shader.
+    default_texture_layout: wgpu::PipelineLayout,
+    /// Cached default color pipelines keyed by blend/stencil state.
+    default_color_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    /// Cached default texture pipelines keyed by blend/stencil state.
+    default_texture_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    /// User-uploaded shader cache keyed by `ShaderKey`.
+    shader_cache: SparseSecondaryMap<ShaderKey, GpuShader>,
+    /// GPU buffer holding the current-frame `ViewportUniform`.
+    viewport_buffer: wgpu::Buffer,
+    /// Bind group binding `viewport_buffer` to binding 0.
+    viewport_bind_group: wgpu::BindGroup,
+    /// Shared bind-group layout for all texture+sampler pairs.
+    texture_bind_group_layout: wgpu::BindGroupLayout,
+    /// Pre-allocated flat-color vertex buffer.
+    color_vertex_buffer: wgpu::Buffer,
+    /// Pre-allocated flat-color index buffer.
+    color_index_buffer: wgpu::Buffer,
+    /// Pre-allocated textured vertex buffer.
+    tex_vertex_buffer: wgpu::Buffer,
+    /// Pre-allocated textured index buffer.
+    tex_index_buffer: wgpu::Buffer,
+    /// Current capacity of `color_vertex_buffer` in vertex units.
+    color_vertex_capacity: u64,
+    /// Current capacity of `color_index_buffer` in index units.
+    color_index_capacity: u64,
+    /// Current capacity of `tex_vertex_buffer` in vertex units.
+    tex_vertex_capacity: u64,
+    /// Current capacity of `tex_index_buffer` in index units.
+    tex_index_capacity: u64,
+    /// GPU textures keyed by `TextureKey`.
+    gpu_textures: SparseSecondaryMap<TextureKey, GpuTexture>,
+    /// Font atlas GPU textures keyed by `FontKey`.
+    font_atlas_textures: SparseSecondaryMap<FontKey, GpuTexture>,
+    /// Canvas render-target textures keyed by `CanvasKey`.
+    canvas_gpu_textures: SparseSecondaryMap<CanvasKey, GpuTexture>,
+    /// Lazily created depth/stencil attachment for the main screen target.
+    screen_stencil_target: Option<DepthStencilTarget>,
+    /// Per-canvas depth/stencil attachments created on first stencil use.
+    canvas_stencil_targets: SparseSecondaryMap<CanvasKey, DepthStencilTarget>,
+    /// Tracks which canvases still need a clear at the start of the next frame.
+    canvas_needs_clear: SparseSecondaryMap<CanvasKey, bool>,
+    /// Surface texture format negotiated at creation.
+    surface_format: wgpu::TextureFormat,
+    /// Current framebuffer width in pixels.
+    pub width: u32,
+    /// Current framebuffer height in pixels.
+    pub height: u32,
+    /// Per-frame rendering statistics updated by `render_frame`.
+    pub render_stats: RenderStats,
+    /// Optional light accumulation and shadow-atlas GPU state.
+    light_gpu: Option<LightGpuState>,
+    /// Optional post-processing pipeline chain applied after the main pass.
+    postfx_pipeline: Option<crate::render::postfx_pipeline::PostFxPipeline>,
+    /// Per-effect capture textures for multi-pass post-fx.
+    postfx_capture: HashMap<u64, crate::render::postfx_pipeline::PostFxTexture>,
+}
+/// Compute the normalised 1-D shadow map for a point light at `(light_x, light_y)` with `light_radius`.
+fn compute_1d_shadow_map(
+    light_x: f32,
+    light_y: f32,
+    light_radius: f32,
+    shadow_mask: u16,
+    occluders: impl IntoIterator<Item = impl std::borrow::Borrow<crate::light::occluder::Occluder>>,
+) -> Vec<f32> {
+    let mut map = vec![1.0f32; SHADOW_MAP_RES];
+    let inv_res = 1.0 / SHADOW_MAP_RES as f32;
+    struct Edge {
+        ax: f32,
+        ay: f32,
+        sx: f32,
+        sy: f32,
+    }
+    let mut edges: Vec<Edge> = Vec::new();
+    for occ_ref in occluders {
+        let occ = occ_ref.borrow();
+        if !occ.enabled {
+            continue;
+        }
+        if occ.light_mask & shadow_mask == 0 {
+            continue;
+        }
+        let verts = occ.get_vertices();
+        let n = verts.len();
+        if n < 2 {
+            continue;
+        }
+        for j in 0..n {
+            let a = verts[j];
+            let b = verts[(j + 1) % n];
+            let ax = a.x + occ.position.x - light_x;
+            let ay = a.y + occ.position.y - light_y;
+            let bx = b.x + occ.position.x - light_x;
+            let by = b.y + occ.position.y - light_y;
+            edges.push(Edge {
+                ax,
+                ay,
+                sx: bx - ax,
+                sy: by - ay,
+            });
+        }
+    }
+    if edges.is_empty() {
+        return map;
+    }
+    let inv_radius = 1.0 / light_radius;
+    #[allow(clippy::needless_range_loop)]
+    for i in 0..SHADOW_MAP_RES {
+        let angle = (i as f32 * inv_res) * std::f32::consts::TAU - PI;
+        let dir_x = angle.cos();
+        let dir_y = angle.sin();
+        let mut min_dist = 1.0f32;
+        for e in &edges {
+            let cross_ds = dir_x * e.sy - dir_y * e.sx;
+            if cross_ds.abs() < 1e-8 {
+                continue;
+            }
+            let inv_cross = 1.0 / cross_ds;
+            let t = (e.ax * e.sy - e.ay * e.sx) * inv_cross;
+            let u = (e.ax * dir_y - e.ay * dir_x) * inv_cross;
+            if t > 0.0 && (0.0..=1.0).contains(&u) {
+                let norm_dist = t * inv_radius;
+                if norm_dist < min_dist && norm_dist < 1.0 {
+                    min_dist = norm_dist;
+                }
+            }
+        }
+        map[i] = min_dist;
+    }
+    map
+}
+impl GpuRenderer {
+    /// Create a `GpuRenderer` from an already-acquired wgpu device/queue pair and surface format.
+    pub fn new(
+        device: wgpu::Device,
+        queue: wgpu::Queue,
+        surface_format: wgpu::TextureFormat,
+        width: u32,
+        height: u32,
+    ) -> Self {
+        let viewport_data = ViewportUniform {
+            size: [width as f32, height as f32],
+            time: 0.0,
+            _pad: 0.0,
+            view_col0: [1.0, 0.0, 0.0, 0.0],
+            view_col1: [0.0, 1.0, 0.0, 0.0],
+            view_col2: [0.0, 0.0, 1.0, 0.0],
+        };
+        let viewport_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("viewport_uniform"),
+            size: std::mem::size_of::<ViewportUniform>() as u64,
+            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        queue.write_buffer(&viewport_buffer, 0, bytemuck::bytes_of(&viewport_data));
+        let viewport_bgl = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+            label: Some("viewport_bgl"),
+            entries: &[wgpu::BindGroupLayoutEntry {
+                binding: 0,
+                visibility: wgpu::ShaderStages::VERTEX,
+                ty: wgpu::BindingType::Buffer {
+                    ty: wgpu::BufferBindingType::Uniform,
+                    has_dynamic_offset: false,
+                    min_binding_size: None,
+                },
+                count: None,
+            }],
+        });
+        let texture_bgl = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+            label: Some("texture_bgl"),
+            entries: &[
+                wgpu::BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Texture {
+                        sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                        view_dimension: wgpu::TextureViewDimension::D2,
+                        multisampled: false,
+                    },
+                    count: None,
+                },
+                wgpu::BindGroupLayoutEntry {
+                    binding: 1,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+                    count: None,
+                },
+            ],
+        });
+        let viewport_bg = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("viewport_bg"),
+            layout: &viewport_bgl,
+            entries: &[wgpu::BindGroupEntry {
+                binding: 0,
+                resource: viewport_buffer.as_entire_binding(),
+            }],
+        });
+        let color_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: Some("color_shader"),
+            source: wgpu::ShaderSource::Wgsl(COLOR_SHADER.into()),
+        });
+        let texture_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: Some("texture_shader"),
+            source: wgpu::ShaderSource::Wgsl(TEXTURE_SHADER.into()),
+        });
+        let color_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+            label: Some("color_layout"),
+            bind_group_layouts: &[&viewport_bgl],
+            push_constant_ranges: &[],
+        });
+        let texture_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+            label: Some("texture_layout"),
+            bind_group_layouts: &[&viewport_bgl, &texture_bgl],
+            push_constant_ranges: &[],
+        });
+        let color_vertex_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("color_vbo"),
+            size: MAX_COLOR_VERTS * std::mem::size_of::<ColorVertex>() as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let color_index_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("color_ibo"),
+            size: MAX_COLOR_IDXS * std::mem::size_of::<u32>() as u64,
+            usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let tex_vertex_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("tex_vbo"),
+            size: MAX_TEX_VERTS * std::mem::size_of::<TexVertex>() as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let tex_index_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("tex_ibo"),
+            size: MAX_TEX_IDXS * std::mem::size_of::<u32>() as u64,
+            usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        GpuRenderer {
+            device,
+            queue,
+            viewport_bind_group_layout: viewport_bgl,
+            default_color_shader: color_shader,
+            default_texture_shader: texture_shader,
+            default_color_layout: color_layout,
+            default_texture_layout: texture_layout,
+            default_color_pipelines: HashMap::new(),
+            default_texture_pipelines: HashMap::new(),
+            shader_cache: SparseSecondaryMap::new(),
+            viewport_buffer,
+            viewport_bind_group: viewport_bg,
+            texture_bind_group_layout: texture_bgl,
+            color_vertex_buffer,
+            color_index_buffer,
+            tex_vertex_buffer,
+            tex_index_buffer,
+            color_vertex_capacity: MAX_COLOR_VERTS,
+            color_index_capacity: MAX_COLOR_IDXS,
+            tex_vertex_capacity: MAX_TEX_VERTS,
+            tex_index_capacity: MAX_TEX_IDXS,
+            gpu_textures: SparseSecondaryMap::new(),
+            font_atlas_textures: SparseSecondaryMap::new(),
+            canvas_gpu_textures: SparseSecondaryMap::new(),
+            screen_stencil_target: None,
+            canvas_stencil_targets: SparseSecondaryMap::new(),
+            canvas_needs_clear: SparseSecondaryMap::new(),
+            surface_format,
+            width,
+            height,
+            render_stats: RenderStats::default(),
+            light_gpu: None,
+            postfx_pipeline: None,
+            postfx_capture: HashMap::new(),
+        }
+    }
+    /// Update viewport dimensions after a window resize; recreates stencil targets and clears light GPU state.
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.width = width;
+        self.height = height;
+        let data = ViewportUniform {
+            size: [width as f32, height as f32],
+            time: 0.0,
+            _pad: 0.0,
+            view_col0: [1.0, 0.0, 0.0, 0.0],
+            view_col1: [0.0, 1.0, 0.0, 0.0],
+            view_col2: [0.0, 0.0, 1.0, 0.0],
+        };
+        self.queue
+            .write_buffer(&self.viewport_buffer, 0, bytemuck::bytes_of(&data));
+        self.screen_stencil_target = None;
+        self.light_gpu = None;
+    }
+    /// Compute the next power-of-two capacity that satisfies `needed`.
+    fn grow_capacity(current: u64, needed: u64) -> u64 {
+        let mut cap = current.max(1);
+        while cap < needed {
+            cap = cap.saturating_mul(2);
+            if cap == u64::MAX {
+                break;
+            }
+        }
+        cap.max(needed)
+    }
+    /// Grow vertex and index buffers when their capacity is exceeded by the current frame.
+    fn ensure_geometry_buffer_capacity(
+        &mut self,
+        color_verts_needed: usize,
+        color_idxs_needed: usize,
+        tex_verts_needed: usize,
+        tex_idxs_needed: usize,
+    ) {
+        let color_v_needed = color_verts_needed as u64;
+        if color_v_needed > self.color_vertex_capacity {
+            let new_cap = Self::grow_capacity(self.color_vertex_capacity, color_v_needed);
+            self.color_vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some("color_vbo"),
+                size: new_cap * std::mem::size_of::<ColorVertex>() as u64,
+                usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+            self.color_vertex_capacity = new_cap;
+        }
+        let color_i_needed = color_idxs_needed as u64;
+        if color_i_needed > self.color_index_capacity {
+            let new_cap = Self::grow_capacity(self.color_index_capacity, color_i_needed);
+            self.color_index_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some("color_ibo"),
+                size: new_cap * std::mem::size_of::<u32>() as u64,
+                usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+            self.color_index_capacity = new_cap;
+        }
+        let tex_v_needed = tex_verts_needed as u64;
+        if tex_v_needed > self.tex_vertex_capacity {
+            let new_cap = Self::grow_capacity(self.tex_vertex_capacity, tex_v_needed);
+            self.tex_vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some("tex_vbo"),
+                size: new_cap * std::mem::size_of::<TexVertex>() as u64,
+                usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+            self.tex_vertex_capacity = new_cap;
+            log::warn!(
+                "[G003] grew tex vertex buffer capacity to {} vertices",
+                self.tex_vertex_capacity
+            );
+        }
+        let tex_i_needed = tex_idxs_needed as u64;
+        if tex_i_needed > self.tex_index_capacity {
+            let new_cap = Self::grow_capacity(self.tex_index_capacity, tex_i_needed);
+            self.tex_index_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some("tex_ibo"),
+                size: new_cap * std::mem::size_of::<u32>() as u64,
+                usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+            self.tex_index_capacity = new_cap;
+            log::warn!(
+                "[G003] grew tex index buffer capacity to {} indices",
+                self.tex_index_capacity
+            );
+        }
+    }
+    /// Create a wgpu sampler from the default filter configuration triple.
+    fn create_sampler(&self, default_filter: &(String, String, u32)) -> wgpu::Sampler {
+        let min_filter = parse_filter_mode(&default_filter.0);
+        let mag_filter = parse_filter_mode(&default_filter.1);
+        let anisotropy =
+            if min_filter == wgpu::FilterMode::Linear && mag_filter == wgpu::FilterMode::Linear {
+                default_filter.2.clamp(1, u16::MAX as u32) as u16
+            } else {
+                1
+            };
+        self.device.create_sampler(&wgpu::SamplerDescriptor {
+            address_mode_u: wgpu::AddressMode::ClampToEdge,
+            address_mode_v: wgpu::AddressMode::ClampToEdge,
+            mag_filter,
+            min_filter,
+            mipmap_filter: min_filter,
+            anisotropy_clamp: anisotropy,
+            ..Default::default()
+        })
+    }
+    /// Create a texture+sampler bind group using the shared layout.
+    fn create_texture_bind_group(
+        &self,
+        view: &wgpu::TextureView,
+        sampler: &wgpu::Sampler,
+        label: &'static str,
+    ) -> wgpu::BindGroup {
+        self.device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some(label),
+            layout: &self.texture_bind_group_layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::TextureView(view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: wgpu::BindingResource::Sampler(sampler),
+                },
+            ],
+        })
+    }
+    /// Upload raw RGBA pixel data to a new GPU texture and return the wrapped handle.
+    fn create_gpu_texture_raw(
+        &self,
+        pixels: &[u8],
+        width: u32,
+        height: u32,
+        color_space: crate::image::TextureColorSpace,
+        default_filter: &(String, String, u32),
+    ) -> GpuTexture {
+        let size = wgpu::Extent3d {
+            width,
+            height,
+            depth_or_array_layers: 1,
+        };
+        let texture = self.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("sprite_texture"),
+            size,
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: match color_space {
+                crate::image::TextureColorSpace::Srgb => wgpu::TextureFormat::Rgba8UnormSrgb,
+                crate::image::TextureColorSpace::Linear => wgpu::TextureFormat::Rgba8Unorm,
+            },
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+        self.queue.write_texture(
+            wgpu::ImageCopyTexture {
+                texture: &texture,
+                mip_level: 0,
+                origin: wgpu::Origin3d::ZERO,
+                aspect: wgpu::TextureAspect::All,
+            },
+            pixels,
+            wgpu::ImageDataLayout {
+                offset: 0,
+                bytes_per_row: Some(4 * width),
+                rows_per_image: Some(height),
+            },
+            size,
+        );
+        let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let sampler = self.create_sampler(default_filter);
+        let bind_group = self.create_texture_bind_group(&view, &sampler, "sprite_bg");
+        GpuTexture {
+            _texture: texture,
+            view,
+            bind_group,
+            width,
+            height,
+        }
+    }
+    /// Upload RGBA pixel data for `key` to the GPU, replacing any previously uploaded texture.
+    pub fn upload_texture(
+        &mut self,
+        key: TextureKey,
+        pixels: &[u8],
+        width: u32,
+        height: u32,
+        color_space: crate::image::TextureColorSpace,
+        default_filter: &(String, String, u32),
+    ) {
+        let gt = self.create_gpu_texture_raw(pixels, width, height, color_space, default_filter);
+        self.gpu_textures.insert(key, gt);
+    }
+    /// Rebuild the GPU font atlas texture if the font is dirty or not yet uploaded.
+    fn ensure_font_atlas(
+        &mut self,
+        font_key: FontKey,
+        font: &mut crate::render::Font,
+        default_filter: &(String, String, u32),
+    ) -> bool {
+        let (data, w, h) = font.atlas_data();
+        if font.is_dirty() || !self.font_atlas_textures.contains_key(font_key) {
+            let gt = self.create_gpu_texture_raw(
+                data,
+                w,
+                h,
+                crate::image::TextureColorSpace::Srgb,
+                default_filter,
+            );
+            self.font_atlas_textures.insert(font_key, gt);
+            font.mark_clean();
+        }
+        self.font_atlas_textures.contains_key(font_key)
+    }
+    /// Create an off-screen render-target canvas texture for `key` at `width`×`height`.
+    pub fn create_canvas(
+        &mut self,
+        key: CanvasKey,
+        width: u32,
+        height: u32,
+        default_filter: &(String, String, u32),
+    ) {
+        let texture = self.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("canvas_texture"),
+            size: wgpu::Extent3d {
+                width,
+                height,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: self.surface_format,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING,
+            view_formats: &[],
+        });
+        let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let sampler = self.create_sampler(default_filter);
+        let bind_group = self.create_texture_bind_group(&view, &sampler, "canvas_bg");
+        self.canvas_gpu_textures.insert(
+            key,
+            GpuTexture {
+                _texture: texture,
+                view,
+                bind_group,
+                width,
+                height,
+            },
+        );
+        self.canvas_needs_clear.insert(key, true);
+    }
+    /// Allocate a depth/stencil texture at the given dimensions.
+    fn create_depth_stencil_target(
+        &self,
+        width: u32,
+        height: u32,
+        label: &'static str,
+    ) -> DepthStencilTarget {
+        let texture = self.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some(label),
+            size: wgpu::Extent3d {
+                width,
+                height,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Depth24PlusStencil8,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            view_formats: &[],
+        });
+        let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+        DepthStencilTarget {
+            _texture: texture,
+            view,
+            width,
+            height,
+        }
+    }
+    /// Recreate the screen depth/stencil target if dimensions changed.
+    fn ensure_screen_stencil_target(&mut self) {
+        let needs_recreate = self
+            .screen_stencil_target
+            .as_ref()
+            .map(|target| target.width != self.width || target.height != self.height)
+            .unwrap_or(true);
+        if needs_recreate {
+            self.screen_stencil_target = Some(self.create_depth_stencil_target(
+                self.width,
+                self.height,
+                "screen_stencil_target",
+            ));
+        }
+    }
+    /// Recreate the per-canvas depth/stencil target if dimensions changed.
+    fn ensure_canvas_stencil_target(&mut self, key: CanvasKey, width: u32, height: u32) {
+        let needs_recreate = self
+            .canvas_stencil_targets
+            .get(key)
+            .map(|target| target.width != width || target.height != height)
+            .unwrap_or(true);
+        if needs_recreate {
+            self.canvas_stencil_targets.insert(
+                key,
+                self.create_depth_stencil_target(width, height, "canvas_stencil_target"),
+            );
+        }
+    }
+    /// Remove GPU resources whose slot-map keys have been freed.
+    fn prune_released_resources(
+        &mut self,
+        textures: &SlotMap<TextureKey, TextureData>,
+        fonts: &SlotMap<FontKey, crate::render::Font>,
+        canvases: &SlotMap<CanvasKey, crate::render::Canvas>,
+        shaders: &SlotMap<ShaderKey, Shader>,
+    ) {
+        let stale_textures: Vec<TextureKey> = self
+            .gpu_textures
+            .iter()
+            .map(|(key, _)| key)
+            .filter(|key| !textures.contains_key(*key))
+            .collect();
+        for key in stale_textures {
+            self.gpu_textures.remove(key);
+        }
+        let stale_fonts: Vec<FontKey> = self
+            .font_atlas_textures
+            .iter()
+            .map(|(key, _)| key)
+            .filter(|key| !fonts.contains_key(*key))
+            .collect();
+        for key in stale_fonts {
+            self.font_atlas_textures.remove(key);
+        }
+        let stale_canvases: Vec<CanvasKey> = self
+            .canvas_gpu_textures
+            .iter()
+            .map(|(key, _)| key)
+            .filter(|key| !canvases.contains_key(*key))
+            .collect();
+        for key in stale_canvases {
+            self.canvas_gpu_textures.remove(key);
+            self.canvas_stencil_targets.remove(key);
+            self.canvas_needs_clear.remove(key);
+        }
+        let stale_shaders: Vec<ShaderKey> = self
+            .shader_cache
+            .iter()
+            .map(|(key, _)| key)
+            .filter(|key| !shaders.contains_key(*key))
+            .collect();
+        for key in stale_shaders {
+            self.shader_cache.remove(key);
+        }
+    }
+    /// Allocate or recreate the light accumulation texture, shadow atlas, and light pipelines.
+    fn ensure_light_resources(&mut self) {
+        let needs_recreate = match &self.light_gpu {
+            Some(lg) => lg.width != self.width || lg.height != self.height,
+            None => true,
+        };
+        if !needs_recreate {
+            return;
+        }
+        let w = self.width;
+        let h = self.height;
+        let accum_texture = self.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("light_accum_texture"),
+            size: wgpu::Extent3d {
+                width: w,
+                height: h,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: self.surface_format,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING,
+            view_formats: &[],
+        });
+        let accum_view = accum_texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let sampler = self.device.create_sampler(&wgpu::SamplerDescriptor {
+            mag_filter: wgpu::FilterMode::Linear,
+            min_filter: wgpu::FilterMode::Linear,
+            ..Default::default()
+        });
+        let accum_bind_group =
+            self.create_texture_bind_group(&accum_view, &sampler, "light_accum_bg");
+        let shadow_atlas_texture = self.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("shadow_atlas_texture"),
+            size: wgpu::Extent3d {
+                width: SHADOW_MAP_RES as u32,
+                height: MAX_SHADOW_LIGHTS as u32,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::R32Float,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+        let shadow_atlas_view =
+            shadow_atlas_texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let shadow_bgl = self
+            .device
+            .create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                label: Some("shadow_atlas_bgl"),
+                entries: &[
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 0,
+                        visibility: wgpu::ShaderStages::FRAGMENT,
+                        ty: wgpu::BindingType::Texture {
+                            sample_type: wgpu::TextureSampleType::Float { filterable: false },
+                            view_dimension: wgpu::TextureViewDimension::D2,
+                            multisampled: false,
+                        },
+                        count: None,
+                    },
+                    wgpu::BindGroupLayoutEntry {
+                        binding: 1,
+                        visibility: wgpu::ShaderStages::FRAGMENT,
+                        ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::NonFiltering),
+                        count: None,
+                    },
+                ],
+            });
+        let shadow_sampler = self.device.create_sampler(&wgpu::SamplerDescriptor {
+            mag_filter: wgpu::FilterMode::Nearest,
+            min_filter: wgpu::FilterMode::Nearest,
+            ..Default::default()
+        });
+        let shadow_atlas_bind_group = self.device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("shadow_atlas_bg"),
+            layout: &shadow_bgl,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::TextureView(&shadow_atlas_view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: wgpu::BindingResource::Sampler(&shadow_sampler),
+                },
+            ],
+        });
+        let light_pipeline_layout =
+            self.device
+                .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                    label: Some("light_pipeline_layout"),
+                    bind_group_layouts: &[&self.viewport_bind_group_layout, &shadow_bgl],
+                    push_constant_ranges: &[],
+                });
+        let light_module = self
+            .device
+            .create_shader_module(wgpu::ShaderModuleDescriptor {
+                label: Some("light_shader"),
+                source: wgpu::ShaderSource::Wgsl(LIGHT_SHADER.into()),
+            });
+        let additive_pipeline =
+            self.device
+                .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+                    label: Some("light_additive_pipeline"),
+                    layout: Some(&light_pipeline_layout),
+                    vertex: wgpu::VertexState {
+                        module: &light_module,
+                        entry_point: "vs_main",
+                        compilation_options: Default::default(),
+                        buffers: &[wgpu::VertexBufferLayout {
+                            array_stride: std::mem::size_of::<LightVertex>() as wgpu::BufferAddress,
+                            step_mode: wgpu::VertexStepMode::Vertex,
+                            attributes: &wgpu::vertex_attr_array![
+                                0 => Float32x2,
+                                1 => Float32x2,
+                                2 => Float32x4,
+                                3 => Float32,
+                                4 => Float32x4
+                            ],
+                        }],
+                    },
+                    fragment: Some(wgpu::FragmentState {
+                        module: &light_module,
+                        entry_point: "fs_main",
+                        compilation_options: Default::default(),
+                        targets: &[Some(wgpu::ColorTargetState {
+                            format: self.surface_format,
+                            blend: Some(blend_state_for(BlendMode::Add)),
+                            write_mask: wgpu::ColorWrites::ALL,
+                        })],
+                    }),
+                    primitive: wgpu::PrimitiveState {
+                        topology: wgpu::PrimitiveTopology::TriangleList,
+                        ..Default::default()
+                    },
+                    depth_stencil: None,
+                    multisample: wgpu::MultisampleState::default(),
+                    multiview: None,
+                    cache: None,
+                });
+        // The composite quad is stored in the same LightVertex buffer (52-byte stride).
+        // Using create_render_pipeline(GeometryKind::Texture) would declare TexVertex stride
+        // (48 bytes), misaligning every composite vertex read.  Build the pipeline manually
+        // so the buffer layout matches the actual data.
+        let composite_pipeline = {
+            let device = &self.device;
+            let layout = &self.default_texture_layout;
+            let shader = &self.default_texture_shader;
+            let fmt = self.surface_format;
+            device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+                label: Some("light_composite_pipeline"),
+                layout: Some(layout),
+                vertex: wgpu::VertexState {
+                    module: shader,
+                    entry_point: "vs_main",
+                    compilation_options: Default::default(),
+                    buffers: &[wgpu::VertexBufferLayout {
+                        array_stride: std::mem::size_of::<LightVertex>() as wgpu::BufferAddress,
+                        step_mode: wgpu::VertexStepMode::Vertex,
+                        attributes: &wgpu::vertex_attr_array![
+                            0 => Float32x2, // position
+                            1 => Float32x2, // uv
+                            2 => Float32x4, // color
+                            3 => Float32,   // shadow_v → read as w_depth by TEXTURE_SHADER
+                            4 => Float32x4, // shadow_params (unused by TEXTURE_SHADER)
+                        ],
+                    }],
+                },
+                fragment: Some(wgpu::FragmentState {
+                    module: shader,
+                    entry_point: "fs_main",
+                    compilation_options: Default::default(),
+                    targets: &[Some(wgpu::ColorTargetState {
+                        format: fmt,
+                        blend: Some(blend_state_for(BlendMode::Multiply)),
+                        write_mask: wgpu::ColorWrites::ALL,
+                    })],
+                }),
+                primitive: wgpu::PrimitiveState {
+                    topology: wgpu::PrimitiveTopology::TriangleList,
+                    ..Default::default()
+                },
+                depth_stencil: Some(depth_stencil_state(StencilMode::Disabled)),
+                multisample: wgpu::MultisampleState::default(),
+                multiview: None,
+                cache: None,
+            })
+        };
+        let max_verts = (MAX_LIGHT_QUADS + 1) * 4;
+        let max_idxs = (MAX_LIGHT_QUADS + 1) * 6;
+        let vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("light_vbo"),
+            size: (max_verts * std::mem::size_of::<LightVertex>()) as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let index_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("light_ibo"),
+            size: (max_idxs * std::mem::size_of::<u32>()) as u64,
+            usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        self.light_gpu = Some(LightGpuState {
+            accum_texture,
+            accum_view,
+            accum_bind_group,
+            additive_pipeline,
+            composite_pipeline,
+            vertex_buffer,
+            index_buffer,
+            shadow_atlas_texture,
+            shadow_atlas_view,
+            shadow_atlas_bind_group,
+            width: w,
+            height: h,
+        });
+    }
+    /// Return whether an axis-aligned bounding box is visible after model+camera transform.
+    #[inline]
+    #[allow(clippy::too_many_arguments)]
+    fn aabb_visible_2d(
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        model: &Mat3,
+        camera: &Mat3,
+        vp_w: f32,
+        vp_h: f32,
+    ) -> bool {
+        let corners = [
+            crate::math::Vec2 { x, y },
+            crate::math::Vec2 { x: x + w, y },
+            crate::math::Vec2 { x, y: y + h },
+            crate::math::Vec2 { x: x + w, y: y + h },
+        ];
+        let mvp = *camera * *model;
+        let mut min_x = f32::INFINITY;
+        let mut max_x = f32::NEG_INFINITY;
+        let mut min_y = f32::INFINITY;
+        let mut max_y = f32::NEG_INFINITY;
+        for c in &corners {
+            let s = mvp.transform_point(*c);
+            if s.x < min_x {
+                min_x = s.x;
+            }
+            if s.x > max_x {
+                max_x = s.x;
+            }
+            if s.y < min_y {
+                min_y = s.y;
+            }
+            if s.y > max_y {
+                max_y = s.y;
+            }
+        }
+        const MARGIN: f32 = 4.0;
+        max_x >= -MARGIN && min_x <= vp_w + MARGIN && max_y >= -MARGIN && min_y <= vp_h + MARGIN
+    }
+    #[allow(clippy::too_many_arguments)]
+    /// Execute all queued `RenderCommand`s for one frame and present the frame.
+    pub fn render_frame(
+        &mut self,
+        surface: &wgpu::Surface<'static>,
+        commands: &[RenderCommand],
+        textures: &SlotMap<TextureKey, TextureData>,
+        fonts: &mut SlotMap<FontKey, crate::render::Font>,
+        light_world: &crate::light::light_world::LightWorld,
+        sprite_batches: &SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>,
+        canvases: &SlotMap<CanvasKey, crate::render::Canvas>,
+        meshes: &SlotMap<MeshKey, Mesh>,
+        shaders: &SlotMap<ShaderKey, Shader>,
+        default_filter: &(String, String, u32),
+        background_color: [f32; 4],
+        camera_matrix: &Mat3,
+        frame_time: f32,
+        frame_count: u64,
+        capture_screenshot: bool,
+    ) -> Result<Option<(u32, u32, Vec<u8>)>, wgpu::SurfaceError> {
+        let frame_start = Instant::now();
+        self.prune_released_resources(textures, fonts, canvases, shaders);
+        for (key, tex_data) in textures.iter() {
+            if !self.gpu_textures.contains_key(key) {
+                self.upload_texture(
+                    key,
+                    &tex_data.pixels,
+                    tex_data.width,
+                    tex_data.height,
+                    tex_data.color_space,
+                    default_filter,
+                );
+            }
+        }
+        for (key, canvas) in canvases.iter() {
+            if !self.canvas_gpu_textures.contains_key(key) {
+                self.create_canvas(key, canvas.width, canvas.height, default_filter);
+            }
+        }
+        self.render_stats = RenderStats::default();
+        let mut all_color_verts: Vec<ColorVertex> = Vec::new();
+        let mut all_color_idxs: Vec<u32> = Vec::new();
+        let mut all_tex_verts: Vec<TexVertex> = Vec::new();
+        let mut all_tex_idxs: Vec<u32> = Vec::new();
+        let mut draws: Vec<PreparedDraw> = Vec::new();
+        let mut current_target = RenderTargetId::Screen;
+        let mut current_blend_mode = BlendMode::Alpha;
+        let mut current_scissor: Option<(f32, f32, f32, f32)> = None;
+        let mut current_color = [1.0f32, 1.0, 1.0, 1.0];
+        let mut color_mask_bits = color_write_mask_bits((true, true, true, true));
+        let mut wireframe = false;
+        let mut line_width = 1.0f32;
+        let mut point_size = 1.0f32;
+        let mut transform_stack: Vec<Mat3> = vec![Mat3::identity()];
+        let mut stencil_mode = StencilMode::Disabled;
+        let mut stencil_reference = 0u8;
+        let mut active_shader: Option<ShaderKey> = None;
+        let mut pending_postfx: Vec<(u64, Vec<crate::render::renderer::PostFxPass>, u32, u32)> =
+            Vec::new();
+        for cmd in commands {
+            match cmd {
+                RenderCommand::SetColor(r, g, b, a) => {
+                    current_color = [*r, *g, *b, *a];
+                }
+                RenderCommand::SetLineWidth(w) => {
+                    line_width = *w;
+                }
+                RenderCommand::PushTransform => {
+                    let top = *transform_stack.last().unwrap();
+                    transform_stack.push(top);
+                }
+                RenderCommand::PopTransform => {
+                    if transform_stack.len() > 1 {
+                        transform_stack.pop();
+                    }
+                }
+                RenderCommand::Translate { x, y } => {
+                    let m = Mat3::from_translation(Vec2 { x: *x, y: *y });
+                    let top = transform_stack.last_mut().unwrap();
+                    *top = *top * m;
+                }
+                RenderCommand::Rotate { angle } => {
+                    let m = Mat3::from_rotation(*angle);
+                    let top = transform_stack.last_mut().unwrap();
+                    *top = *top * m;
+                }
+                RenderCommand::Scale { sx, sy } => {
+                    let m = Mat3::from_scale(Vec2 { x: *sx, y: *sy });
+                    let top = transform_stack.last_mut().unwrap();
+                    *top = *top * m;
+                }
+                RenderCommand::Shear { kx, ky } => {
+                    let m = Mat3::from_shear(*kx, *ky);
+                    let top = transform_stack.last_mut().unwrap();
+                    *top = *top * m;
+                }
+                RenderCommand::Origin => {
+                    let top = transform_stack.last_mut().unwrap();
+                    *top = Mat3::identity();
+                }
+                RenderCommand::ApplyTransform { matrix } => {
+                    let m = Mat3::from_row_major(matrix);
+                    let top = transform_stack.last_mut().unwrap();
+                    *top = *top * m;
+                }
+                RenderCommand::Rectangle { mode, x, y, w, h } => {
+                    let mode = if wireframe { &DrawMode::Line } else { mode };
+                    let t = transform_stack.last().unwrap();
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            *x,
+                            *y,
+                            *w,
+                            *h,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    self.tess_rect(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        *x,
+                        *y,
+                        *w,
+                        *h,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::RoundedRectangle {
+                    mode,
+                    x,
+                    y,
+                    w,
+                    h,
+                    rx,
+                    ry,
+                } => {
+                    let mode = if wireframe { &DrawMode::Line } else { mode };
+                    let t = transform_stack.last().unwrap();
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            *x,
+                            *y,
+                            *w,
+                            *h,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    self.tess_rounded_rect(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        *x,
+                        *y,
+                        *w,
+                        *h,
+                        *rx,
+                        *ry,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::Circle { mode, x, y, r } => {
+                    let mode = if wireframe { &DrawMode::Line } else { mode };
+                    let t = transform_stack.last().unwrap();
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            x - r,
+                            y - r,
+                            r * 2.0,
+                            r * 2.0,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    self.tess_ellipse(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        *x,
+                        *y,
+                        *r,
+                        *r,
+                        32,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::Ellipse { mode, x, y, rx, ry } => {
+                    let mode = if wireframe { &DrawMode::Line } else { mode };
+                    let t = transform_stack.last().unwrap();
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            x - rx,
+                            y - ry,
+                            rx * 2.0,
+                            ry * 2.0,
+                            t,
+                            camera_matrix,
+                            self.width as f32,
+                            self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    self.tess_ellipse(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        *x,
+                        *y,
+                        *rx,
+                        *ry,
+                        32,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::Triangle {
+                    mode,
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    x3,
+                    y3,
+                } => {
+                    let mode = if wireframe { &DrawMode::Line } else { mode };
+                    let t = transform_stack.last().unwrap();
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    self.tess_triangle(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        *x1,
+                        *y1,
+                        *x2,
+                        *y2,
+                        *x3,
+                        *y3,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::Polygon { mode, vertices } => {
+                    let mode = if wireframe { &DrawMode::Line } else { mode };
+                    let t = transform_stack.last().unwrap();
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    self.tess_polygon(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        vertices,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::Line { x1, y1, x2, y2 } => {
+                    let t = transform_stack.last().unwrap();
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    push_thick_line(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        *x1,
+                        *y1,
+                        *x2,
+                        *y2,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::Polyline { points } => {
+                    if points.len() >= 4 {
+                        let t = transform_stack.last().unwrap();
+                        let mut verts = Vec::new();
+                        let mut idxs = Vec::new();
+                        let mut i = 0;
+                        while i + 3 < points.len() {
+                            push_thick_line(
+                                &mut verts,
+                                &mut idxs,
+                                t,
+                                current_color,
+                                points[i],
+                                points[i + 1],
+                                points[i + 2],
+                                points[i + 3],
+                                line_width,
+                            );
+                            i += 2;
+                        }
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_color_draw(
+                            &mut draws,
+                            &mut all_color_verts,
+                            &mut all_color_idxs,
+                            current_target,
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::Arc {
+                    mode,
+                    x,
+                    y,
+                    radius,
+                    angle1,
+                    angle2,
+                    segments,
+                } => {
+                    let t = transform_stack.last().unwrap();
+                    let segs = if *segments == 0 { 32 } else { *segments };
+                    let mode = if wireframe { &DrawMode::Line } else { mode };
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    self.tess_arc(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        *x,
+                        *y,
+                        *radius,
+                        *angle1,
+                        *angle2,
+                        segs,
+                        line_width,
+                    );
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::SetBlendMode(mode) => {
+                    current_blend_mode = *mode;
+                }
+                RenderCommand::Print {
+                    font_key,
+                    ref text,
+                    x,
+                    y,
+                    scale,
+                } => {
+                    if let Some(font) = fonts.get_mut(*font_key) {
+                        if self.ensure_font_atlas(*font_key, font, default_filter) {
+                            let t = transform_stack.last().unwrap();
+                            let font_size = font.size();
+                            let ratio = *scale;
+                            let (target_width, target_height) =
+                                self.target_dimensions(current_target, canvases);
+                            let scissor =
+                                normalize_scissor(current_scissor, target_width, target_height);
+                            let mut cursor_x = *x;
+                            for ch in text.chars() {
+                                if let Some(glyph) = font.glyph(ch) {
+                                    if glyph.width > 0 && glyph.height > 0 {
+                                        let gw = glyph.width as f32 * ratio;
+                                        let gh = glyph.height as f32 * ratio;
+                                        let gx = cursor_x + glyph.offset_x * ratio;
+                                        let gy = *y
+                                            + (font_size - glyph.offset_y - glyph.height as f32)
+                                                * ratio;
+                                        let mut verts = Vec::with_capacity(4);
+                                        let mut idxs = Vec::with_capacity(6);
+                                        push_tex_quad(
+                                            &mut verts,
+                                            &mut idxs,
+                                            t,
+                                            current_color,
+                                            gx,
+                                            gy,
+                                            0.0,
+                                            1.0,
+                                            1.0,
+                                            0.0,
+                                            0.0,
+                                            gw,
+                                            gh,
+                                            glyph.uv_x,
+                                            glyph.uv_y,
+                                            glyph.uv_x + glyph.uv_w,
+                                            glyph.uv_y + glyph.uv_h,
+                                        );
+                                        append_tex_draw(
+                                            &mut draws,
+                                            &mut all_tex_verts,
+                                            &mut all_tex_idxs,
+                                            current_target,
+                                            TexRef::FontAtlas(*font_key),
+                                            current_blend_mode,
+                                            scissor,
+                                            color_mask_bits,
+                                            active_shader.filter(|key| shaders.contains_key(*key)),
+                                            stencil_mode,
+                                            stencil_reference,
+                                            verts,
+                                            idxs,
+                                        );
+                                    }
+                                    cursor_x += glyph.advance_width * ratio;
+                                }
+                            }
+                        }
+                    }
+                }
+                RenderCommand::DrawImage {
+                    texture_key,
+                    x,
+                    y,
+                    effect: _,
+                } => {
+                    if let Some(gt) = self.gpu_textures.get(*texture_key) {
+                        let w = gt.width as f32;
+                        let h = gt.height as f32;
+                        let t = transform_stack.last().unwrap();
+                        if current_target == RenderTargetId::Screen
+                            && !Self::aabb_visible_2d(
+                                *x,
+                                *y,
+                                w,
+                                h,
+                                t,
+                                camera_matrix,
+                                self.width as f32,
+                                self.height as f32,
+                            )
+                        {
+                            continue;
+                        }
+                        let mut verts = Vec::with_capacity(4);
+                        let mut idxs = Vec::with_capacity(6);
+                        push_tex_quad(
+                            &mut verts,
+                            &mut idxs,
+                            t,
+                            current_color,
+                            *x,
+                            *y,
+                            0.0,
+                            1.0,
+                            1.0,
+                            0.0,
+                            0.0,
+                            w,
+                            h,
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0,
+                        );
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_tex_draw(
+                            &mut draws,
+                            &mut all_tex_verts,
+                            &mut all_tex_idxs,
+                            current_target,
+                            TexRef::Texture(*texture_key),
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::DrawImageEx {
+                    texture_key,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                    effect: _,
+                } => {
+                    if let Some(gt) = self.gpu_textures.get(*texture_key) {
+                        let w = gt.width as f32;
+                        let h = gt.height as f32;
+                        let t = transform_stack.last().unwrap();
+                        if current_target == RenderTargetId::Screen
+                            && !Self::aabb_visible_2d(
+                                *x - *ox * sx.abs(),
+                                *y - *oy * sy.abs(),
+                                w * sx.abs(),
+                                h * sy.abs(),
+                                t,
+                                camera_matrix,
+                                self.width as f32,
+                                self.height as f32,
+                            )
+                        {
+                            continue;
+                        }
+                        let mut verts = Vec::with_capacity(4);
+                        let mut idxs = Vec::with_capacity(6);
+                        push_tex_quad(
+                            &mut verts,
+                            &mut idxs,
+                            t,
+                            current_color,
+                            *x,
+                            *y,
+                            *rotation,
+                            *sx,
+                            *sy,
+                            *ox,
+                            *oy,
+                            w,
+                            h,
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0,
+                        );
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_tex_draw(
+                            &mut draws,
+                            &mut all_tex_verts,
+                            &mut all_tex_idxs,
+                            current_target,
+                            TexRef::Texture(*texture_key),
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::DrawQuad {
+                    texture_key,
+                    quad_x,
+                    quad_y,
+                    quad_w,
+                    quad_h,
+                    tex_w,
+                    tex_h,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                    effect: _,
+                } => {
+                    if let Some(_gt) = self.gpu_textures.get(*texture_key) {
+                        let t = transform_stack.last().unwrap();
+                        let mut verts = Vec::with_capacity(4);
+                        let mut idxs = Vec::with_capacity(6);
+                        let u0 = quad_x / tex_w;
+                        let v0 = quad_y / tex_h;
+                        let u1 = (quad_x + quad_w) / tex_w;
+                        let v1 = (quad_y + quad_h) / tex_h;
+                        push_tex_quad(
+                            &mut verts,
+                            &mut idxs,
+                            t,
+                            current_color,
+                            *x,
+                            *y,
+                            *rotation,
+                            *sx,
+                            *sy,
+                            *ox,
+                            *oy,
+                            *quad_w,
+                            *quad_h,
+                            u0,
+                            v0,
+                            u1,
+                            v1,
+                        );
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_tex_draw(
+                            &mut draws,
+                            &mut all_tex_verts,
+                            &mut all_tex_idxs,
+                            current_target,
+                            TexRef::Texture(*texture_key),
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::DrawTexturedQuad {
+                    corners,
+                    uvs,
+                    corner_w,
+                    texture_key,
+                    color,
+                } => {
+                    if self.gpu_textures.contains_key(*texture_key) {
+                        let t = transform_stack.last().unwrap();
+                        let mut verts = Vec::with_capacity(4);
+                        let mut idxs = Vec::with_capacity(6);
+                        push_tex_quad_corners(
+                            &mut verts, &mut idxs, t, *color, corners, uvs, corner_w,
+                        );
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_tex_draw(
+                            &mut draws,
+                            &mut all_tex_verts,
+                            &mut all_tex_idxs,
+                            current_target,
+                            TexRef::Texture(*texture_key),
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::DrawBatch { batch_key } => {
+                    if let Some(batch) = sprite_batches.get(*batch_key) {
+                        let tex_key = batch.texture_key();
+                        if let Some(gt) = self.gpu_textures.get(tex_key) {
+                            let tex_w = gt.width as f32;
+                            let tex_h = gt.height as f32;
+                            let t = transform_stack.last().unwrap();
+                            let mut verts = Vec::with_capacity(batch.len() * 4);
+                            let mut idxs = Vec::with_capacity(batch.len() * 6);
+                            for entry in batch.entries() {
+                                let qw = if entry.quad_w > 0.0 {
+                                    entry.quad_w
+                                } else {
+                                    tex_w
+                                };
+                                let qh = if entry.quad_h > 0.0 {
+                                    entry.quad_h
+                                } else {
+                                    tex_h
+                                };
+                                let u0 = entry.quad_x / tex_w;
+                                let v0 = entry.quad_y / tex_h;
+                                let u1 = (entry.quad_x + qw) / tex_w;
+                                let v1 = (entry.quad_y + qh) / tex_h;
+                                if current_target == RenderTargetId::Screen
+                                    && !Self::aabb_visible_2d(
+                                        entry.x - entry.ox * entry.sx.abs(),
+                                        entry.y - entry.oy * entry.sy.abs(),
+                                        qw * entry.sx.abs(),
+                                        qh * entry.sy.abs(),
+                                        t,
+                                        camera_matrix,
+                                        self.width as f32,
+                                        self.height as f32,
+                                    )
+                                {
+                                    continue;
+                                }
+                                push_tex_quad(
+                                    &mut verts,
+                                    &mut idxs,
+                                    t,
+                                    current_color,
+                                    entry.x,
+                                    entry.y,
+                                    entry.rotation,
+                                    entry.sx,
+                                    entry.sy,
+                                    entry.ox,
+                                    entry.oy,
+                                    qw,
+                                    qh,
+                                    u0,
+                                    v0,
+                                    u1,
+                                    v1,
+                                );
+                            }
+                            let (target_width, target_height) =
+                                self.target_dimensions(current_target, canvases);
+                            append_tex_draw(
+                                &mut draws,
+                                &mut all_tex_verts,
+                                &mut all_tex_idxs,
+                                current_target,
+                                TexRef::Texture(tex_key),
+                                current_blend_mode,
+                                normalize_scissor(current_scissor, target_width, target_height),
+                                color_mask_bits,
+                                active_shader.filter(|key| shaders.contains_key(*key)),
+                                stencil_mode,
+                                stencil_reference,
+                                verts,
+                                idxs,
+                            );
+                        }
+                    }
+                }
+                RenderCommand::SetCanvas(canvas) => {
+                    current_target = match canvas {
+                        Some(key) => RenderTargetId::Canvas(*key),
+                        None => RenderTargetId::Screen,
+                    };
+                    self.render_stats.canvas_switches += 1;
+                }
+                RenderCommand::RegisterCanvas { .. } => {}
+                RenderCommand::ResetCanvas(key) => {
+                    self.canvas_needs_clear.insert(*key, true);
+                }
+                RenderCommand::DrawCanvas {
+                    canvas_key,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                } => {
+                    if let Some(gt) = self.canvas_gpu_textures.get(*canvas_key) {
+                        let w = gt.width as f32;
+                        let h = gt.height as f32;
+                        let t = transform_stack.last().unwrap();
+                        let mut verts = Vec::with_capacity(4);
+                        let mut idxs = Vec::with_capacity(6);
+                        push_tex_quad(
+                            &mut verts,
+                            &mut idxs,
+                            t,
+                            current_color,
+                            *x,
+                            *y,
+                            *rotation,
+                            *sx,
+                            *sy,
+                            *ox,
+                            *oy,
+                            w,
+                            h,
+                            0.0,
+                            0.0,
+                            1.0,
+                            1.0,
+                        );
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_tex_draw(
+                            &mut draws,
+                            &mut all_tex_verts,
+                            &mut all_tex_idxs,
+                            current_target,
+                            TexRef::Canvas(*canvas_key),
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::SetPointSize(size) => {
+                    point_size = *size;
+                }
+                RenderCommand::SetScissor(rect) => {
+                    current_scissor = *rect;
+                }
+                RenderCommand::SetColorMask(r, g, b, a) => {
+                    color_mask_bits = color_write_mask_bits((*r, *g, *b, *a));
+                }
+                RenderCommand::SetWireframe(enabled) => {
+                    wireframe = *enabled;
+                }
+                RenderCommand::Points { points } => {
+                    let t = transform_stack.last().unwrap();
+                    let mut verts = Vec::new();
+                    let mut idxs = Vec::new();
+                    let half = point_size * 0.5;
+                    for &(px, py) in points {
+                        let pts = [
+                            apply(t, px - half, py - half),
+                            apply(t, px + half, py - half),
+                            apply(t, px + half, py + half),
+                            apply(t, px - half, py + half),
+                        ];
+                        push_quad_verts(&mut verts, &mut idxs, &pts, current_color);
+                    }
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::PrintFormatted {
+                    font_key,
+                    ref text,
+                    x,
+                    y,
+                    limit,
+                    align,
+                    scale,
+                } => {
+                    if let Some(font) = fonts.get_mut(*font_key) {
+                        let ratio = *scale;
+                        let wrapped = font.wrap_text(text, *limit / ratio);
+                        let lh = font.line_height() * ratio;
+                        let font_size = font.size();
+                        if self.ensure_font_atlas(*font_key, font, default_filter) {
+                            let t = transform_stack.last().unwrap();
+                            let (target_width, target_height) =
+                                self.target_dimensions(current_target, canvases);
+                            let scissor =
+                                normalize_scissor(current_scissor, target_width, target_height);
+                            for (i, line) in wrapped.iter().enumerate() {
+                                let line_w = font.text_width(line) * ratio;
+                                let x_offset = match align {
+                                    TextAlign::Center => (*limit - line_w) * 0.5,
+                                    TextAlign::Right => *limit - line_w,
+                                    _ => 0.0,
+                                };
+                                let line_x = *x + x_offset;
+                                let line_y = *y + i as f32 * lh;
+                                let mut cursor_x = line_x;
+                                for ch in line.chars() {
+                                    if let Some(glyph) = font.glyph(ch) {
+                                        if glyph.width > 0 && glyph.height > 0 {
+                                            let gw = glyph.width as f32 * ratio;
+                                            let gh = glyph.height as f32 * ratio;
+                                            let gx = cursor_x + glyph.offset_x * ratio;
+                                            let gy = line_y
+                                                + (font_size
+                                                    - glyph.offset_y
+                                                    - glyph.height as f32)
+                                                    * ratio;
+                                            let mut verts = Vec::with_capacity(4);
+                                            let mut idxs = Vec::with_capacity(6);
+                                            push_tex_quad(
+                                                &mut verts,
+                                                &mut idxs,
+                                                t,
+                                                current_color,
+                                                gx,
+                                                gy,
+                                                0.0,
+                                                1.0,
+                                                1.0,
+                                                0.0,
+                                                0.0,
+                                                gw,
+                                                gh,
+                                                glyph.uv_x,
+                                                glyph.uv_y,
+                                                glyph.uv_x + glyph.uv_w,
+                                                glyph.uv_y + glyph.uv_h,
+                                            );
+                                            append_tex_draw(
+                                                &mut draws,
+                                                &mut all_tex_verts,
+                                                &mut all_tex_idxs,
+                                                current_target,
+                                                TexRef::FontAtlas(*font_key),
+                                                current_blend_mode,
+                                                scissor,
+                                                color_mask_bits,
+                                                active_shader
+                                                    .filter(|key| shaders.contains_key(*key)),
+                                                stencil_mode,
+                                                stencil_reference,
+                                                verts,
+                                                idxs,
+                                            );
+                                        }
+                                        cursor_x += glyph.advance_width * ratio;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                RenderCommand::StencilBegin { action, value } => {
+                    stencil_mode = StencilMode::Write(*action);
+                    stencil_reference = *value;
+                }
+                RenderCommand::StencilEnd => {
+                    stencil_mode = StencilMode::Disabled;
+                }
+                RenderCommand::SetStencilTest(test) => match test {
+                    Some((compare, value)) => {
+                        stencil_mode = StencilMode::Test(*compare);
+                        stencil_reference = *value;
+                    }
+                    None => {
+                        stencil_mode = StencilMode::Disabled;
+                        stencil_reference = 0;
+                    }
+                },
+                RenderCommand::DrawMesh {
+                    mesh_key,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                } => {
+                    if let Some(mesh) = meshes.get(*mesh_key) {
+                        let cos_r = rotation.cos();
+                        let sin_r = rotation.sin();
+                        let parent = transform_stack.last().unwrap();
+                        let tri_indices = mesh.triangulate();
+                        if let Some(tex_key) = mesh.texture {
+                            if self.gpu_textures.contains_key(tex_key) {
+                                let mut verts = Vec::with_capacity(tri_indices.len());
+                                let mut idxs = Vec::with_capacity(tri_indices.len());
+                                let base_idx = 0u32;
+                                for (i, &vi) in tri_indices.iter().enumerate() {
+                                    if let Some(mv) = mesh.vertices.get(vi) {
+                                        let lx = (mv.x - ox) * sx;
+                                        let ly = (mv.y - oy) * sy;
+                                        let rx = lx * cos_r - ly * sin_r + x;
+                                        let ry = lx * sin_r + ly * cos_r + y;
+                                        let (wx, wy) = apply(parent, rx, ry);
+                                        verts.push(TexVertex {
+                                            position: [wx, wy],
+                                            uv: [mv.u, mv.v],
+                                            color: [
+                                                mv.r * current_color[0],
+                                                mv.g * current_color[1],
+                                                mv.b * current_color[2],
+                                                mv.a * current_color[3],
+                                            ],
+                                            w_depth: 1.0,
+                                            _pad: [0.0; 3],
+                                        });
+                                        idxs.push(base_idx + i as u32);
+                                    }
+                                }
+                                let (target_width, target_height) =
+                                    self.target_dimensions(current_target, canvases);
+                                append_tex_draw(
+                                    &mut draws,
+                                    &mut all_tex_verts,
+                                    &mut all_tex_idxs,
+                                    current_target,
+                                    TexRef::Texture(tex_key),
+                                    current_blend_mode,
+                                    normalize_scissor(current_scissor, target_width, target_height),
+                                    color_mask_bits,
+                                    active_shader.filter(|key| shaders.contains_key(*key)),
+                                    stencil_mode,
+                                    stencil_reference,
+                                    verts,
+                                    idxs,
+                                );
+                            }
+                        } else {
+                            let mut verts = Vec::with_capacity(tri_indices.len());
+                            let mut idxs = Vec::with_capacity(tri_indices.len());
+                            for &vi in &tri_indices {
+                                if let Some(mv) = mesh.vertices.get(vi) {
+                                    let lx = (mv.x - ox) * sx;
+                                    let ly = (mv.y - oy) * sy;
+                                    let rx = lx * cos_r - ly * sin_r + x;
+                                    let ry = lx * sin_r + ly * cos_r + y;
+                                    let (wx, wy) = apply(parent, rx, ry);
+                                    let base = verts.len() as u32;
+                                    verts.push(ColorVertex {
+                                        position: [wx, wy],
+                                        color: [
+                                            mv.r * current_color[0],
+                                            mv.g * current_color[1],
+                                            mv.b * current_color[2],
+                                            mv.a * current_color[3],
+                                        ],
+                                    });
+                                    idxs.push(base);
+                                }
+                            }
+                            let (target_width, target_height) =
+                                self.target_dimensions(current_target, canvases);
+                            append_color_draw(
+                                &mut draws,
+                                &mut all_color_verts,
+                                &mut all_color_idxs,
+                                current_target,
+                                current_blend_mode,
+                                normalize_scissor(current_scissor, target_width, target_height),
+                                color_mask_bits,
+                                active_shader.filter(|key| shaders.contains_key(*key)),
+                                stencil_mode,
+                                stencil_reference,
+                                verts,
+                                idxs,
+                            );
+                        }
+                    }
+                }
+                RenderCommand::DrawMeshTransient {
+                    mesh,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                } => {
+                    let cos_r = rotation.cos();
+                    let sin_r = rotation.sin();
+                    let parent = transform_stack.last().unwrap();
+                    let tri_indices = mesh.triangulate();
+                    if let Some(tex_key) = mesh.texture {
+                        if self.gpu_textures.contains_key(tex_key) {
+                            let mut verts = Vec::with_capacity(tri_indices.len());
+                            let mut idxs = Vec::with_capacity(tri_indices.len());
+                            let base_idx = 0u32;
+                            for (i, &vi) in tri_indices.iter().enumerate() {
+                                if let Some(mv) = mesh.vertices.get(vi) {
+                                    let lx = (mv.x - ox) * sx;
+                                    let ly = (mv.y - oy) * sy;
+                                    let rx = lx * cos_r - ly * sin_r + x;
+                                    let ry = lx * sin_r + ly * cos_r + y;
+                                    let (wx, wy) = apply(parent, rx, ry);
+                                    verts.push(TexVertex {
+                                        position: [wx, wy],
+                                        uv: [mv.u, mv.v],
+                                        color: [
+                                            mv.r * current_color[0],
+                                            mv.g * current_color[1],
+                                            mv.b * current_color[2],
+                                            mv.a * current_color[3],
+                                        ],
+                                        w_depth: 1.0,
+                                        _pad: [0.0; 3],
+                                    });
+                                    idxs.push(base_idx + i as u32);
+                                }
+                            }
+                            let (target_width, target_height) =
+                                self.target_dimensions(current_target, canvases);
+                            append_tex_draw(
+                                &mut draws,
+                                &mut all_tex_verts,
+                                &mut all_tex_idxs,
+                                current_target,
+                                TexRef::Texture(tex_key),
+                                current_blend_mode,
+                                normalize_scissor(current_scissor, target_width, target_height),
+                                color_mask_bits,
+                                active_shader.filter(|key| shaders.contains_key(*key)),
+                                stencil_mode,
+                                stencil_reference,
+                                verts,
+                                idxs,
+                            );
+                        }
+                    } else {
+                        let mut verts = Vec::with_capacity(tri_indices.len());
+                        let mut idxs = Vec::with_capacity(tri_indices.len());
+                        for &vi in &tri_indices {
+                            if let Some(mv) = mesh.vertices.get(vi) {
+                                let lx = (mv.x - ox) * sx;
+                                let ly = (mv.y - oy) * sy;
+                                let rx = lx * cos_r - ly * sin_r + x;
+                                let ry = lx * sin_r + ly * cos_r + y;
+                                let (wx, wy) = apply(parent, rx, ry);
+                                let base = verts.len() as u32;
+                                verts.push(ColorVertex {
+                                    position: [wx, wy],
+                                    color: [
+                                        mv.r * current_color[0],
+                                        mv.g * current_color[1],
+                                        mv.b * current_color[2],
+                                        mv.a * current_color[3],
+                                    ],
+                                });
+                                idxs.push(base);
+                            }
+                        }
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_color_draw(
+                            &mut draws,
+                            &mut all_color_verts,
+                            &mut all_color_idxs,
+                            current_target,
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::SyncMesh { .. } => {}
+                RenderCommand::DrawNineSlice {
+                    texture_key,
+                    tex_w,
+                    tex_h,
+                    top,
+                    right,
+                    bottom,
+                    left,
+                    x,
+                    y,
+                    w,
+                    h,
+                } => {
+                    if self.gpu_textures.get(*texture_key).is_some() {
+                        let t = transform_stack.last().unwrap();
+                        let ns = crate::sprite::NineSlice::new(
+                            *texture_key,
+                            *top,
+                            *right,
+                            *bottom,
+                            *left,
+                            *tex_w,
+                            *tex_h,
+                        );
+                        let patches = ns.patches(*x, *y, *w, *h);
+                        let mut verts = Vec::with_capacity(4 * 9);
+                        let mut idxs = Vec::with_capacity(6 * 9);
+                        for &(sx, sy, sw, sh, dx, dy, dw, dh) in &patches {
+                            if sw <= 0.0 || sh <= 0.0 || dw <= 0.0 || dh <= 0.0 {
+                                continue;
+                            }
+                            let u0 = sx / tex_w;
+                            let v0 = sy / tex_h;
+                            let u1 = (sx + sw) / tex_w;
+                            let v1 = (sy + sh) / tex_h;
+                            push_tex_quad(
+                                &mut verts,
+                                &mut idxs,
+                                t,
+                                current_color,
+                                dx,
+                                dy,
+                                0.0,
+                                1.0,
+                                1.0,
+                                0.0,
+                                0.0,
+                                dw,
+                                dh,
+                                u0,
+                                v0,
+                                u1,
+                                v1,
+                            );
+                        }
+                        let (target_width, target_height) =
+                            self.target_dimensions(current_target, canvases);
+                        append_tex_draw(
+                            &mut draws,
+                            &mut all_tex_verts,
+                            &mut all_tex_idxs,
+                            current_target,
+                            TexRef::Texture(*texture_key),
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, target_width, target_height),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::SetShader(shader) => {
+                    active_shader = shader.filter(|key| shaders.contains_key(*key));
+                }
+                RenderCommand::DrawShape { .. } => {}
+                RenderCommand::DrawParticleSystem { ref particles } => {
+                    if particles.is_empty() {
+                        continue;
+                    }
+                    let t = transform_stack.last().unwrap();
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    let scissor = normalize_scissor(current_scissor, target_width, target_height);
+                    let mut pverts: Vec<ColorVertex> = Vec::with_capacity(particles.len() * 6);
+                    let mut pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
+                    use std::f32::consts::PI;
+                    for inst in particles {
+                        let color = [inst.r, inst.g, inst.b, inst.a];
+                        let half = inst.size * 0.5;
+                        match &inst.shape {
+                            ParticleRenderShape::Square | ParticleRenderShape::Diamond => {
+                                let cos_r = inst.rotation.cos();
+                                let sin_r = inst.rotation.sin();
+                                let corners =
+                                    [(-half, -half), (half, -half), (half, half), (-half, half)];
+                                let base = pverts.len() as u32;
+                                for (lx, ly) in corners {
+                                    let (sx, sy) = apply(
+                                        t,
+                                        inst.x + lx * cos_r - ly * sin_r,
+                                        inst.y + lx * sin_r + ly * cos_r,
+                                    );
+                                    pverts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color,
+                                    });
+                                }
+                                pidxs.extend_from_slice(&[
+                                    base,
+                                    base + 1,
+                                    base + 2,
+                                    base,
+                                    base + 2,
+                                    base + 3,
+                                ]);
+                            }
+                            ParticleRenderShape::Circle => {
+                                self.tess_ellipse(
+                                    &mut pverts,
+                                    &mut pidxs,
+                                    t,
+                                    color,
+                                    &DrawMode::Fill,
+                                    inst.x,
+                                    inst.y,
+                                    half,
+                                    half,
+                                    12,
+                                    0.0,
+                                );
+                            }
+                            ParticleRenderShape::Puff => {
+                                self.tess_ellipse(
+                                    &mut pverts,
+                                    &mut pidxs,
+                                    t,
+                                    color,
+                                    &DrawMode::Fill,
+                                    inst.x,
+                                    inst.y,
+                                    half,
+                                    half,
+                                    24,
+                                    0.0,
+                                );
+                            }
+                            ParticleRenderShape::Triangle => {
+                                let base = pverts.len() as u32;
+                                for i in 0..3u32 {
+                                    let a = inst.rotation - PI * 0.5 + i as f32 * (2.0 * PI / 3.0);
+                                    let (sx, sy) =
+                                        apply(t, inst.x + a.cos() * half, inst.y + a.sin() * half);
+                                    pverts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color,
+                                    });
+                                }
+                                pidxs.extend_from_slice(&[base, base + 1, base + 2]);
+                            }
+                            ParticleRenderShape::Spark => {
+                                let len = inst.size * 1.5;
+                                let dx = inst.rotation.cos() * len;
+                                let dy = inst.rotation.sin() * len;
+                                push_thick_line(
+                                    &mut pverts,
+                                    &mut pidxs,
+                                    t,
+                                    color,
+                                    inst.x - dx,
+                                    inst.y - dy,
+                                    inst.x + dx,
+                                    inst.y + dy,
+                                    1.5,
+                                );
+                            }
+                            ParticleRenderShape::Shrapnel { edges, seed } => {
+                                let n = (*edges).clamp(3, 12) as usize;
+                                let center_idx = pverts.len() as u32;
+                                let (csx, csy) = apply(t, inst.x, inst.y);
+                                pverts.push(ColorVertex {
+                                    position: [csx, csy],
+                                    color,
+                                });
+                                let mut rng = u64::from(*seed);
+                                for i in 0..n {
+                                    let base_angle =
+                                        inst.rotation + i as f32 * (2.0 * PI / n as f32);
+                                    rng = rng
+                                        .wrapping_mul(6_364_136_223_846_793_005)
+                                        .wrapping_add(1_442_695_040_888_963_407);
+                                    let jitter_a = (rng >> 33) as f32 / u32::MAX as f32 * 0.4 - 0.2;
+                                    rng = rng
+                                        .wrapping_mul(6_364_136_223_846_793_005)
+                                        .wrapping_add(1_442_695_040_888_963_407);
+                                    let jitter_r = 0.5 + (rng >> 33) as f32 / u32::MAX as f32 * 0.5;
+                                    let angle = base_angle + jitter_a * (2.0 * PI / n as f32);
+                                    let (sx, sy) = apply(
+                                        t,
+                                        inst.x + angle.cos() * half * jitter_r,
+                                        inst.y + angle.sin() * half * jitter_r,
+                                    );
+                                    pverts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color,
+                                    });
+                                }
+                                for i in 0..n as u32 {
+                                    let c = center_idx;
+                                    let b = center_idx + 1 + i;
+                                    let d = center_idx + 1 + (i + 1) % n as u32;
+                                    pidxs.extend_from_slice(&[c, b, d]);
+                                }
+                            }
+                            ParticleRenderShape::Ray { aspect } => {
+                                let a = if *aspect <= 0.0 { 4.0_f32 } else { *aspect };
+                                let half_len = half * a;
+                                let cos_r = inst.rotation.cos();
+                                let sin_r = inst.rotation.sin();
+                                let corners = [
+                                    (-half_len, -half),
+                                    (half_len, -half),
+                                    (half_len, half),
+                                    (-half_len, half),
+                                ];
+                                let base = pverts.len() as u32;
+                                for (lx, ly) in corners {
+                                    let (sx, sy) = apply(
+                                        t,
+                                        inst.x + lx * cos_r - ly * sin_r,
+                                        inst.y + lx * sin_r + ly * cos_r,
+                                    );
+                                    pverts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color,
+                                    });
+                                }
+                                pidxs.extend_from_slice(&[
+                                    base,
+                                    base + 1,
+                                    base + 2,
+                                    base,
+                                    base + 2,
+                                    base + 3,
+                                ]);
+                            }
+                            ParticleRenderShape::Ring { thickness } => {
+                                let outer = half;
+                                let inner = outer * (1.0 - (*thickness).clamp(0.05, 1.0));
+                                const N: usize = 20;
+                                let base = pverts.len() as u32;
+                                for i in 0..N {
+                                    let angle = i as f32 * (2.0 * PI / N as f32);
+                                    let (sx, sy) = apply(
+                                        t,
+                                        inst.x + angle.cos() * outer,
+                                        inst.y + angle.sin() * outer,
+                                    );
+                                    pverts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color,
+                                    });
+                                    let (sx, sy) = apply(
+                                        t,
+                                        inst.x + angle.cos() * inner,
+                                        inst.y + angle.sin() * inner,
+                                    );
+                                    pverts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color,
+                                    });
+                                }
+                                for i in 0..N as u32 {
+                                    let j = (i + 1) % N as u32;
+                                    let o0 = base + i * 2;
+                                    let i0 = base + i * 2 + 1;
+                                    let o1 = base + j * 2;
+                                    let i1 = base + j * 2 + 1;
+                                    pidxs.extend_from_slice(&[o0, o1, i0, i0, o1, i1]);
+                                }
+                            }
+                            ParticleRenderShape::Capsule => {
+                                let half_len = half;
+                                let cap_r = half * 0.4;
+                                let cos_r = inst.rotation.cos();
+                                let sin_r = inst.rotation.sin();
+                                let corners = [
+                                    (-half_len, -cap_r),
+                                    (half_len, -cap_r),
+                                    (half_len, cap_r),
+                                    (-half_len, cap_r),
+                                ];
+                                let base = pverts.len() as u32;
+                                for (lx, ly) in corners {
+                                    let (sx, sy) = apply(
+                                        t,
+                                        inst.x + lx * cos_r - ly * sin_r,
+                                        inst.y + lx * sin_r + ly * cos_r,
+                                    );
+                                    pverts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color,
+                                    });
+                                }
+                                pidxs.extend_from_slice(&[
+                                    base,
+                                    base + 1,
+                                    base + 2,
+                                    base,
+                                    base + 2,
+                                    base + 3,
+                                ]);
+                                const N: usize = 8;
+                                for side in [1.0_f32, -1.0] {
+                                    let cap_cx = inst.x + cos_r * half_len * side;
+                                    let cap_cy = inst.y + sin_r * half_len * side;
+                                    let center_idx = pverts.len() as u32;
+                                    let (csx, csy) = apply(t, cap_cx, cap_cy);
+                                    pverts.push(ColorVertex {
+                                        position: [csx, csy],
+                                        color,
+                                    });
+                                    let start_a = inst.rotation
+                                        + if side > 0.0 { -PI * 0.5 } else { PI * 0.5 };
+                                    for i in 0..=N {
+                                        let a = start_a + i as f32 * PI / N as f32;
+                                        let (sx, sy) = apply(
+                                            t,
+                                            cap_cx + a.cos() * cap_r,
+                                            cap_cy + a.sin() * cap_r,
+                                        );
+                                        pverts.push(ColorVertex {
+                                            position: [sx, sy],
+                                            color,
+                                        });
+                                    }
+                                    for i in 0..N as u32 {
+                                        pidxs.extend_from_slice(&[
+                                            center_idx,
+                                            center_idx + 1 + i,
+                                            center_idx + 1 + i + 1,
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if !pverts.is_empty() {
+                        append_color_draw(
+                            &mut draws,
+                            &mut all_color_verts,
+                            &mut all_color_idxs,
+                            current_target,
+                            current_blend_mode,
+                            scissor,
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            pverts,
+                            pidxs,
+                        );
+                    }
+                }
+                RenderCommand::DrawQuadBezier {
+                    start,
+                    control,
+                    end,
+                    segments,
+                } => {
+                    let n = (*segments).clamp(4, 256) as usize;
+                    let t = transform_stack.last().unwrap();
+                    let mut verts: Vec<ColorVertex> = Vec::new();
+                    let mut idxs: Vec<u32> = Vec::new();
+                    let mut prev = *start;
+                    for i in 1..=n {
+                        let tv = i as f32 / n as f32;
+                        let mt = 1.0 - tv;
+                        let nx = mt * mt * start.x + 2.0 * mt * tv * control.x + tv * tv * end.x;
+                        let ny = mt * mt * start.y + 2.0 * mt * tv * control.y + tv * tv * end.y;
+                        push_thick_line(
+                            &mut verts,
+                            &mut idxs,
+                            t,
+                            current_color,
+                            prev.x,
+                            prev.y,
+                            nx,
+                            ny,
+                            line_width,
+                        );
+                        prev = Vec2::new(nx, ny);
+                    }
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, tw, th),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::DrawCubicBezier {
+                    start,
+                    c1,
+                    c2,
+                    end,
+                    segments,
+                } => {
+                    let n = (*segments).clamp(4, 256) as usize;
+                    let t = transform_stack.last().unwrap();
+                    let mut verts: Vec<ColorVertex> = Vec::new();
+                    let mut idxs: Vec<u32> = Vec::new();
+                    let mut prev = *start;
+                    for i in 1..=n {
+                        let tv = i as f32 / n as f32;
+                        let mt = 1.0 - tv;
+                        let nx = mt * mt * mt * start.x
+                            + 3.0 * mt * mt * tv * c1.x
+                            + 3.0 * mt * tv * tv * c2.x
+                            + tv * tv * tv * end.x;
+                        let ny = mt * mt * mt * start.y
+                            + 3.0 * mt * mt * tv * c1.y
+                            + 3.0 * mt * tv * tv * c2.y
+                            + tv * tv * tv * end.y;
+                        push_thick_line(
+                            &mut verts,
+                            &mut idxs,
+                            t,
+                            current_color,
+                            prev.x,
+                            prev.y,
+                            nx,
+                            ny,
+                            line_width,
+                        );
+                        prev = Vec2::new(nx, ny);
+                    }
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, tw, th),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::DrawPath {
+                    segments: path_segs,
+                    mode,
+                    close,
+                } => {
+                    let t = transform_stack.last().unwrap();
+                    let mut verts: Vec<ColorVertex> = Vec::new();
+                    let mut idxs: Vec<u32> = Vec::new();
+                    let mut points: Vec<[f32; 2]> = Vec::new();
+                    let mut pen = [0.0f32; 2];
+                    let mut anchor = [0.0f32; 2];
+                    for seg in path_segs {
+                        match seg {
+                            PathSegment::MoveTo { x, y } => {
+                                if !points.is_empty() {
+                                    if *close {
+                                        points.push(anchor);
+                                    }
+                                    for w in points.windows(2) {
+                                        push_thick_line(
+                                            &mut verts,
+                                            &mut idxs,
+                                            t,
+                                            current_color,
+                                            w[0][0],
+                                            w[0][1],
+                                            w[1][0],
+                                            w[1][1],
+                                            line_width,
+                                        );
+                                    }
+                                    points.clear();
+                                }
+                                pen = [*x, *y];
+                                anchor = pen;
+                                points.push(pen);
+                            }
+                            PathSegment::LineTo { x, y } => {
+                                pen = [*x, *y];
+                                points.push(pen);
+                            }
+                            PathSegment::QuadTo { cx, cy, x, y } => {
+                                let s = Vec2::new(pen[0], pen[1]);
+                                let c = Vec2::new(*cx, *cy);
+                                let e = Vec2::new(*x, *y);
+                                for i in 1..=8usize {
+                                    let tv = i as f32 / 8.0;
+                                    let mt = 1.0 - tv;
+                                    let nx = mt * mt * s.x + 2.0 * mt * tv * c.x + tv * tv * e.x;
+                                    let ny = mt * mt * s.y + 2.0 * mt * tv * c.y + tv * tv * e.y;
+                                    points.push([nx, ny]);
+                                }
+                                pen = [*x, *y];
+                            }
+                            PathSegment::CubicTo {
+                                cx1,
+                                cy1,
+                                cx2,
+                                cy2,
+                                x,
+                                y,
+                            } => {
+                                let s = Vec2::new(pen[0], pen[1]);
+                                let cp1 = Vec2::new(*cx1, *cy1);
+                                let cp2 = Vec2::new(*cx2, *cy2);
+                                let ep = Vec2::new(*x, *y);
+                                for i in 1..=8usize {
+                                    let tv = i as f32 / 8.0;
+                                    let mt = 1.0 - tv;
+                                    let nx = mt * mt * mt * s.x
+                                        + 3.0 * mt * mt * tv * cp1.x
+                                        + 3.0 * mt * tv * tv * cp2.x
+                                        + tv * tv * tv * ep.x;
+                                    let ny = mt * mt * mt * s.y
+                                        + 3.0 * mt * mt * tv * cp1.y
+                                        + 3.0 * mt * tv * tv * cp2.y
+                                        + tv * tv * tv * ep.y;
+                                    points.push([nx, ny]);
+                                }
+                                pen = [*x, *y];
+                            }
+                        }
+                    }
+                    if !points.is_empty() {
+                        if *close {
+                            points.push(anchor);
+                        }
+                        match mode {
+                            DrawMode::Line => {
+                                for w in points.windows(2) {
+                                    push_thick_line(
+                                        &mut verts,
+                                        &mut idxs,
+                                        t,
+                                        current_color,
+                                        w[0][0],
+                                        w[0][1],
+                                        w[1][0],
+                                        w[1][1],
+                                        line_width,
+                                    );
+                                }
+                            }
+                            DrawMode::Fill => {
+                                let flat: Vec<f32> =
+                                    points.iter().flat_map(|p| [p[0], p[1]]).collect();
+                                self.tess_polygon(
+                                    &mut verts,
+                                    &mut idxs,
+                                    t,
+                                    current_color,
+                                    &DrawMode::Fill,
+                                    &flat,
+                                    line_width,
+                                );
+                            }
+                        }
+                    }
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, tw, th),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::DrawGradientRect {
+                    x,
+                    y,
+                    w,
+                    h,
+                    color1,
+                    color2,
+                    direction,
+                } => {
+                    let lerp = |a: &[f32; 4], b: &[f32; 4], f: f32| -> [f32; 4] {
+                        [
+                            a[0] + (b[0] - a[0]) * f,
+                            a[1] + (b[1] - a[1]) * f,
+                            a[2] + (b[2] - a[2]) * f,
+                            a[3] + (b[3] - a[3]) * f,
+                        ]
+                    };
+                    let corner_colors: [[f32; 4]; 4] = match direction {
+                        GradientDirection::Horizontal => [*color1, *color2, *color2, *color1],
+                        GradientDirection::Vertical => [*color1, *color1, *color2, *color2],
+                        GradientDirection::DiagDown => {
+                            let mid = lerp(color1, color2, 0.5);
+                            [*color1, mid, *color2, mid]
+                        }
+                        GradientDirection::DiagUp => {
+                            let mid = lerp(color1, color2, 0.5);
+                            [mid, *color1, mid, *color2]
+                        }
+                        GradientDirection::Radial => [*color1, *color1, *color2, *color2],
+                    };
+                    let t = transform_stack.last().unwrap();
+                    let corner_pts = [(*x, *y), (*x + w, *y), (*x + w, *y + h), (*x, *y + h)];
+                    let mut verts: Vec<ColorVertex> = Vec::with_capacity(4);
+                    let mut idxs: Vec<u32> = Vec::with_capacity(6);
+                    let base = verts.len() as u32;
+                    for (i, (px, py)) in corner_pts.iter().enumerate() {
+                        let (sx, sy) = apply(t, *px, *py);
+                        verts.push(ColorVertex {
+                            position: [sx, sy],
+                            color: corner_colors[i],
+                        });
+                    }
+                    idxs.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, tw, th),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::DrawColoredPolygon {
+                    vertices,
+                    colors,
+                    mode,
+                } => {
+                    let n = vertices.len() / 2;
+                    if n >= 3 && colors.len() >= n {
+                        let t = transform_stack.last().unwrap();
+                        let mut verts: Vec<ColorVertex> = Vec::with_capacity(n);
+                        let mut idxs: Vec<u32> = Vec::new();
+                        match mode {
+                            DrawMode::Fill => {
+                                let base = verts.len() as u32;
+                                for i in 0..n {
+                                    let (sx, sy) = apply(t, vertices[i * 2], vertices[i * 2 + 1]);
+                                    verts.push(ColorVertex {
+                                        position: [sx, sy],
+                                        color: colors[i],
+                                    });
+                                }
+                                for i in 1..(n as u32 - 1) {
+                                    idxs.extend_from_slice(&[base, base + i, base + i + 1]);
+                                }
+                            }
+                            DrawMode::Line => {
+                                for i in 0..n {
+                                    let j = (i + 1) % n;
+                                    push_thick_line(
+                                        &mut verts,
+                                        &mut idxs,
+                                        t,
+                                        colors[i],
+                                        vertices[i * 2],
+                                        vertices[i * 2 + 1],
+                                        vertices[j * 2],
+                                        vertices[j * 2 + 1],
+                                        line_width,
+                                    );
+                                }
+                            }
+                        }
+                        let (tw, th) = self.target_dimensions(current_target, canvases);
+                        append_color_draw(
+                            &mut draws,
+                            &mut all_color_verts,
+                            &mut all_color_idxs,
+                            current_target,
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, tw, th),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            verts,
+                            idxs,
+                        );
+                    }
+                }
+                RenderCommand::DrawIsoCubeTile {
+                    screen_x,
+                    screen_y,
+                    half_w,
+                    half_h,
+                    depth: _,
+                    top_color,
+                    top_texture,
+                    left_color,
+                    left_texture,
+                    right_color,
+                    right_texture,
+                } => {
+                    let t = transform_stack.last().unwrap();
+                    let sx = *screen_x;
+                    let sy = *screen_y;
+                    let hw = *half_w;
+                    let hh = *half_h;
+                    let top_corners = [
+                        Vec2::new(sx, sy - hh),
+                        Vec2::new(sx + hw, sy),
+                        Vec2::new(sx, sy + hh / 2.0),
+                        Vec2::new(sx - hw, sy),
+                    ];
+                    let left_corners = [
+                        Vec2::new(sx - hw, sy),
+                        Vec2::new(sx, sy + hh / 2.0),
+                        Vec2::new(sx, sy + hh * 1.5),
+                        Vec2::new(sx - hw, sy + hh),
+                    ];
+                    let right_corners = [
+                        Vec2::new(sx, sy + hh / 2.0),
+                        Vec2::new(sx + hw, sy),
+                        Vec2::new(sx + hw, sy + hh),
+                        Vec2::new(sx, sy + hh * 1.5),
+                    ];
+                    let full_uvs = [
+                        Vec2::new(0.0, 0.0),
+                        Vec2::new(1.0, 0.0),
+                        Vec2::new(1.0, 1.0),
+                        Vec2::new(0.0, 1.0),
+                    ];
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    let scissor = normalize_scissor(current_scissor, tw, th);
+                    for (corners, color, tex_opt) in [
+                        (&top_corners, top_color, top_texture),
+                        (&left_corners, left_color, left_texture),
+                        (&right_corners, right_color, right_texture),
+                    ] {
+                        if let Some(key) = tex_opt {
+                            if self.gpu_textures.contains_key(*key) {
+                                let mut tv: Vec<TexVertex> = Vec::with_capacity(4);
+                                let mut ti: Vec<u32> = Vec::with_capacity(6);
+                                push_tex_quad_corners(
+                                    &mut tv,
+                                    &mut ti,
+                                    t,
+                                    *color,
+                                    corners,
+                                    &full_uvs,
+                                    &[1.0, 1.0, 1.0, 1.0],
+                                );
+                                append_tex_draw(
+                                    &mut draws,
+                                    &mut all_tex_verts,
+                                    &mut all_tex_idxs,
+                                    current_target,
+                                    TexRef::Texture(*key),
+                                    current_blend_mode,
+                                    scissor,
+                                    color_mask_bits,
+                                    active_shader.filter(|key| shaders.contains_key(*key)),
+                                    stencil_mode,
+                                    stencil_reference,
+                                    tv,
+                                    ti,
+                                );
+                            }
+                        } else {
+                            let flat: Vec<f32> = corners.iter().flat_map(|v| [v.x, v.y]).collect();
+                            let mut cv: Vec<ColorVertex> = Vec::new();
+                            let mut ci: Vec<u32> = Vec::new();
+                            self.tess_polygon(
+                                &mut cv,
+                                &mut ci,
+                                t,
+                                *color,
+                                &DrawMode::Fill,
+                                &flat,
+                                line_width,
+                            );
+                            append_color_draw(
+                                &mut draws,
+                                &mut all_color_verts,
+                                &mut all_color_idxs,
+                                current_target,
+                                current_blend_mode,
+                                scissor,
+                                color_mask_bits,
+                                active_shader.filter(|key| shaders.contains_key(*key)),
+                                stencil_mode,
+                                stencil_reference,
+                                cv,
+                                ci,
+                            );
+                        }
+                    }
+                }
+                RenderCommand::DrawHexTile {
+                    cx,
+                    cy,
+                    size,
+                    orientation,
+                    mode,
+                } => {
+                    let t = transform_stack.last().unwrap();
+                    let angle_offset = match orientation {
+                        HexOrientation::PointyTop => PI / 6.0,
+                        HexOrientation::FlatTop => 0.0,
+                    };
+                    let mut flat = Vec::with_capacity(12);
+                    for k in 0..6u32 {
+                        let a = k as f32 * PI / 3.0 + angle_offset;
+                        flat.push(*cx + *size * a.cos());
+                        flat.push(*cy + *size * a.sin());
+                    }
+                    let mut verts: Vec<ColorVertex> = Vec::new();
+                    let mut idxs: Vec<u32> = Vec::new();
+                    self.tess_polygon(
+                        &mut verts,
+                        &mut idxs,
+                        t,
+                        current_color,
+                        mode,
+                        &flat,
+                        line_width,
+                    );
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, tw, th),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::BeginSortGroup { .. } => {}
+                RenderCommand::PushSortKey(_) => {}
+                RenderCommand::FlushSortGroup { .. } => {}
+                RenderCommand::DrawPhysicsDebug { shapes, config } => {
+                    let t = transform_stack.last().unwrap();
+                    let lw = config.line_width;
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    for shape in shapes {
+                        let color = if shape.is_sensor {
+                            config.sensor_color
+                        } else if shape.is_sleeping {
+                            config.sleep_color
+                        } else if shape.is_static {
+                            config.static_color
+                        } else {
+                            config.body_color
+                        };
+                        let mut cv: Vec<ColorVertex> = Vec::new();
+                        let mut ci: Vec<u32> = Vec::new();
+                        if shape.is_circle {
+                            self.tess_ellipse(
+                                &mut cv,
+                                &mut ci,
+                                t,
+                                color,
+                                &DrawMode::Line,
+                                shape.x,
+                                shape.y,
+                                shape.half_w,
+                                shape.half_w,
+                                24,
+                                lw,
+                            );
+                        } else if !shape.hull_verts.is_empty() {
+                            let cos_a = shape.angle.cos();
+                            let sin_a = shape.angle.sin();
+                            let flat: Vec<f32> = shape
+                                .hull_verts
+                                .iter()
+                                .flat_map(|[lx, ly]| {
+                                    let wx = shape.x + lx * cos_a - ly * sin_a;
+                                    let wy = shape.y + lx * sin_a + ly * cos_a;
+                                    [wx, wy]
+                                })
+                                .collect();
+                            self.tess_polygon(
+                                &mut cv,
+                                &mut ci,
+                                t,
+                                color,
+                                &DrawMode::Line,
+                                &flat,
+                                lw,
+                            );
+                        } else {
+                            let cos_a = shape.angle.cos();
+                            let sin_a = shape.angle.sin();
+                            let corners: [[f32; 2]; 4] = [
+                                [-shape.half_w, -shape.half_h],
+                                [shape.half_w, -shape.half_h],
+                                [shape.half_w, shape.half_h],
+                                [-shape.half_w, shape.half_h],
+                            ];
+                            let flat: Vec<f32> = corners
+                                .iter()
+                                .flat_map(|[lx, ly]| {
+                                    let wx = shape.x + lx * cos_a - ly * sin_a;
+                                    let wy = shape.y + lx * sin_a + ly * cos_a;
+                                    [wx, wy]
+                                })
+                                .collect();
+                            self.tess_polygon(
+                                &mut cv,
+                                &mut ci,
+                                t,
+                                color,
+                                &DrawMode::Line,
+                                &flat,
+                                lw,
+                            );
+                        }
+                        append_color_draw(
+                            &mut draws,
+                            &mut all_color_verts,
+                            &mut all_color_idxs,
+                            current_target,
+                            current_blend_mode,
+                            normalize_scissor(current_scissor, tw, th),
+                            color_mask_bits,
+                            active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference,
+                            cv,
+                            ci,
+                        );
+                    }
+                }
+                RenderCommand::DrawSpineSkeleton { slots } => {
+                    let t = transform_stack.last().unwrap();
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    let scissor = normalize_scissor(current_scissor, tw, th);
+                    for slot in slots {
+                        if self.gpu_textures.contains_key(slot.texture_key) {
+                            let mut tv: Vec<TexVertex> = Vec::with_capacity(4);
+                            let mut ti: Vec<u32> = Vec::with_capacity(6);
+                            push_tex_quad_corners(
+                                &mut tv,
+                                &mut ti,
+                                t,
+                                slot.color,
+                                &slot.corners,
+                                &slot.uvs,
+                                &[1.0, 1.0, 1.0, 1.0],
+                            );
+                            append_tex_draw(
+                                &mut draws,
+                                &mut all_tex_verts,
+                                &mut all_tex_idxs,
+                                current_target,
+                                TexRef::Texture(slot.texture_key),
+                                slot.blend_mode,
+                                scissor,
+                                color_mask_bits,
+                                active_shader.filter(|key| shaders.contains_key(*key)),
+                                stencil_mode,
+                                stencil_reference,
+                                tv,
+                                ti,
+                            );
+                        }
+                    }
+                }
+                RenderCommand::DrawBevelRect {
+                    x,
+                    y,
+                    w,
+                    h,
+                    bevel_w,
+                    style,
+                    highlight,
+                    shadow,
+                    fill_color,
+                } => {
+                    let t = transform_stack.last().unwrap();
+                    let bw = *bevel_w;
+                    let ix = *x + bw;
+                    let iy = *y + bw;
+                    let iw = *w - 2.0 * bw;
+                    let ih = *h - 2.0 * bw;
+                    let (top_c, left_c, bottom_c, right_c) = match style {
+                        BevelStyle::Raised => (*highlight, *highlight, *shadow, *shadow),
+                        BevelStyle::Sunken => (*shadow, *shadow, *highlight, *highlight),
+                        BevelStyle::Ridge => (*highlight, *highlight, *shadow, *shadow),
+                        BevelStyle::Groove => (*shadow, *shadow, *highlight, *highlight),
+                        BevelStyle::Flat => (*fill_color, *fill_color, *fill_color, *fill_color),
+                    };
+                    let mut verts: Vec<ColorVertex> = Vec::new();
+                    let mut idxs: Vec<u32> = Vec::new();
+                    if iw > 0.0 && ih > 0.0 {
+                        self.tess_rect(
+                            &mut verts,
+                            &mut idxs,
+                            t,
+                            *fill_color,
+                            &DrawMode::Fill,
+                            ix,
+                            iy,
+                            iw,
+                            ih,
+                            line_width,
+                        );
+                    }
+                    let push_bevel_quad =
+                        |cv: &mut Vec<ColorVertex>,
+                         ci: &mut Vec<u32>,
+                         pts: &[(f32, f32); 4],
+                         colors: &[[f32; 4]; 4]| {
+                            let base = cv.len() as u32;
+                            for (i, &(px, py)) in pts.iter().enumerate() {
+                                let (sx, sy) = apply(t, px, py);
+                                cv.push(ColorVertex {
+                                    position: [sx, sy],
+                                    color: colors[i],
+                                });
+                            }
+                            ci.extend_from_slice(&[
+                                base,
+                                base + 1,
+                                base + 2,
+                                base,
+                                base + 2,
+                                base + 3,
+                            ]);
+                        };
+                    push_bevel_quad(
+                        &mut verts,
+                        &mut idxs,
+                        &[(*x, *y), (*x + *w, *y), (ix + iw, iy), (ix, iy)],
+                        &[top_c, top_c, top_c, top_c],
+                    );
+                    push_bevel_quad(
+                        &mut verts,
+                        &mut idxs,
+                        &[
+                            (ix, iy + ih),
+                            (ix + iw, iy + ih),
+                            (*x + *w, *y + *h),
+                            (*x, *y + *h),
+                        ],
+                        &[bottom_c, bottom_c, bottom_c, bottom_c],
+                    );
+                    push_bevel_quad(
+                        &mut verts,
+                        &mut idxs,
+                        &[(*x, *y), (ix, iy), (ix, iy + ih), (*x, *y + *h)],
+                        &[left_c, left_c, left_c, left_c],
+                    );
+                    push_bevel_quad(
+                        &mut verts,
+                        &mut idxs,
+                        &[
+                            (ix + iw, iy),
+                            (*x + *w, *y),
+                            (*x + *w, *y + *h),
+                            (ix + iw, iy + ih),
+                        ],
+                        &[right_c, right_c, right_c, right_c],
+                    );
+                    let (tw, th) = self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        current_blend_mode,
+                        normalize_scissor(current_scissor, tw, th),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+                RenderCommand::PushLayer { .. } => {}
+                RenderCommand::PopLayer { .. } => {}
+                RenderCommand::BeginPostFx { stack_id } => {
+                    if self.postfx_pipeline.is_none() {
+                        self.postfx_pipeline =
+                            Some(crate::render::postfx_pipeline::PostFxPipeline::new(
+                                &self.device,
+                                self.surface_format,
+                            ));
+                    }
+                    let (w, h) = (self.width, self.height);
+                    let fmt = self.surface_format;
+                    let dev = &self.device;
+                    self.postfx_capture.entry(*stack_id).or_insert_with(|| {
+                        crate::render::postfx_pipeline::PostFxTexture::new(
+                            dev,
+                            w,
+                            h,
+                            "postfx_capture",
+                            fmt,
+                        )
+                    });
+                }
+                RenderCommand::EndPostFx { .. } => {}
+                RenderCommand::ApplyPostFx {
+                    stack_id,
+                    passes,
+                    width,
+                    height,
+                } => {
+                    pending_postfx.push((*stack_id, passes.clone(), *width, *height));
+                }
+                RenderCommand::DrawRichText { .. } => {}
+                RenderCommand::DrawConvexFan {
+                    vertices,
+                    tint,
+                    blend,
+                    ..
+                } => {
+                    if vertices.len() < 3 {
+                        continue;
+                    }
+                    let t = transform_stack.last().unwrap();
+                    let mut verts = Vec::with_capacity(vertices.len());
+                    for v in vertices {
+                        let (px, py) = apply(t, v.x, v.y);
+                        verts.push(ColorVertex {
+                            position: [px, py],
+                            color: *tint,
+                        });
+                    }
+                    let mut idxs = Vec::with_capacity((vertices.len() - 2) * 3);
+                    for i in 1..(vertices.len() as u32 - 1) {
+                        idxs.extend_from_slice(&[0, i, i + 1]);
+                    }
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        *blend,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
+                }
+            }
+        }
+        {
+            let before = draws.len();
+            let mut merged = Vec::with_capacity(draws.len());
+            for d in draws {
+                if let Some(last) = merged.last_mut() {
+                    let l: &mut PreparedDraw = last;
+                    if l.target == d.target
+                        && l.geometry == d.geometry
+                        && l.texture_ref == d.texture_ref
+                        && l.blend_mode == d.blend_mode
+                        && l.scissor == d.scissor
+                        && l.color_mask_bits == d.color_mask_bits
+                        && l.shader == d.shader
+                        && l.stencil_mode == d.stencil_mode
+                        && l.stencil_reference == d.stencil_reference
+                        && d.idx_start == l.idx_start + l.idx_count
+                    {
+                        l.idx_count += d.idx_count;
+                        continue;
+                    }
+                }
+                merged.push(d);
+            }
+            let after = merged.len();
+            if before > after {
+                self.render_stats.batched_draws += (before - after) as u32;
+            }
+            draws = merged;
+        }
+        {
+            let color_v_pct = all_color_verts.len() * 100 / self.color_vertex_capacity as usize;
+            if color_v_pct >= 90 {
+                log::warn!(
+                    "[G003] color vertex buffer at {}% capacity ({}/{}) — consider reducing draw calls or increasing MAX_COLOR_VERTS",
+                    color_v_pct, all_color_verts.len(), self.color_vertex_capacity
+                );
+            }
+            let color_i_pct = all_color_idxs.len() * 100 / self.color_index_capacity as usize;
+            if color_i_pct >= 90 {
+                log::warn!(
+                    "[G003] color index buffer at {}% capacity ({}/{}) — consider reducing draw calls or increasing MAX_COLOR_IDXS",
+                    color_i_pct, all_color_idxs.len(), self.color_index_capacity
+                );
+            }
+            let tex_v_pct = all_tex_verts.len() * 100 / self.tex_vertex_capacity as usize;
+            if tex_v_pct >= 90 {
+                log::warn!(
+                    "[G003] tex vertex buffer at {}% capacity ({}/{}) — consider reducing sprite draws or increasing MAX_TEX_VERTS",
+                    tex_v_pct, all_tex_verts.len(), self.tex_vertex_capacity
+                );
+            }
+            let tex_i_pct = all_tex_idxs.len() * 100 / self.tex_index_capacity as usize;
+            if tex_i_pct >= 90 {
+                log::warn!(
+                    "[G003] tex index buffer at {}% capacity ({}/{}) — consider reducing sprite draws or increasing MAX_TEX_IDXS",
+                    tex_i_pct, all_tex_idxs.len(), self.tex_index_capacity
+                );
+            }
+        }
+        self.ensure_geometry_buffer_capacity(
+            all_color_verts.len(),
+            all_color_idxs.len(),
+            all_tex_verts.len(),
+            all_tex_idxs.len(),
+        );
+        if !all_color_verts.is_empty() {
+            self.queue.write_buffer(
+                &self.color_vertex_buffer,
+                0,
+                bytemuck::cast_slice(&all_color_verts),
+            );
+            self.queue.write_buffer(
+                &self.color_index_buffer,
+                0,
+                bytemuck::cast_slice(&all_color_idxs),
+            );
+        }
+        if !all_tex_verts.is_empty() {
+            self.queue.write_buffer(
+                &self.tex_vertex_buffer,
+                0,
+                bytemuck::cast_slice(&all_tex_verts),
+            );
+            self.queue.write_buffer(
+                &self.tex_index_buffer,
+                0,
+                bytemuck::cast_slice(&all_tex_idxs),
+            );
+        }
+        let output = surface.get_current_texture()?;
+        let view = output
+            .texture
+            .create_view(&wgpu::TextureViewDescriptor::default());
+        self.ensure_screen_stencil_target();
+        let mut encoder = self
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("render_encoder"),
+            });
+        let mut screen_started = false;
+        let mut touched_canvases: HashSet<CanvasKey> = HashSet::new();
+        let mut cursor = 0usize;
+        while cursor < draws.len() {
+            let target = draws[cursor].target;
+            match target {
+                RenderTargetId::Screen => {}
+                RenderTargetId::Canvas(key) => {
+                    let Some(canvas) = canvases.get(key) else {
+                        while cursor < draws.len() && draws[cursor].target == target {
+                            cursor += 1;
+                        }
+                        continue;
+                    };
+                    self.ensure_canvas_stencil_target(key, canvas.width, canvas.height);
+                }
+            }
+            let (target_width, target_height) = self.target_dimensions(target, canvases);
+            self.update_viewport_uniform(target_width, target_height, camera_matrix, frame_time);
+            let (color_view, color_load, stencil_view, stencil_load, clear_canvas_after_pass) =
+                match target {
+                    RenderTargetId::Screen => {
+                        let stencil_view = &self.screen_stencil_target.as_ref().unwrap().view;
+                        let color_load = if screen_started {
+                            wgpu::LoadOp::Load
+                        } else {
+                            wgpu::LoadOp::Clear(wgpu::Color {
+                                r: background_color[0] as f64,
+                                g: background_color[1] as f64,
+                                b: background_color[2] as f64,
+                                a: background_color[3] as f64,
+                            })
+                        };
+                        let stencil_load = if screen_started {
+                            wgpu::LoadOp::Load
+                        } else {
+                            wgpu::LoadOp::Clear(0)
+                        };
+                        (&view, color_load, stencil_view, stencil_load, None)
+                    }
+                    RenderTargetId::Canvas(key) => {
+                        let canvas_view = &self.canvas_gpu_textures.get(key).unwrap().view;
+                        let stencil_view = &self.canvas_stencil_targets.get(key).unwrap().view;
+                        let first_use_this_frame = touched_canvases.insert(key);
+                        let needs_clear = self.canvas_needs_clear.get(key).copied().unwrap_or(true);
+                        let color_load = if needs_clear {
+                            wgpu::LoadOp::Clear(wgpu::Color::TRANSPARENT)
+                        } else {
+                            wgpu::LoadOp::Load
+                        };
+                        let stencil_load = if first_use_this_frame {
+                            wgpu::LoadOp::Clear(0)
+                        } else {
+                            wgpu::LoadOp::Load
+                        };
+                        (
+                            canvas_view,
+                            color_load,
+                            stencil_view,
+                            stencil_load,
+                            if needs_clear { Some(key) } else { None },
+                        )
+                    }
+                };
+            {
+                let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                    label: Some("ordered_render_pass"),
+                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                        view: color_view,
+                        resolve_target: None,
+                        ops: wgpu::Operations {
+                            load: color_load,
+                            store: wgpu::StoreOp::Store,
+                        },
+                    })],
+                    depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                        view: stencil_view,
+                        depth_ops: None,
+                        stencil_ops: Some(wgpu::Operations {
+                            load: stencil_load,
+                            store: wgpu::StoreOp::Store,
+                        }),
+                    }),
+                    ..Default::default()
+                });
+                let mut previous_pipeline: Option<PipelineSelectionKey> = None;
+                let mut previous_texture: Option<TexRef> = None;
+                while cursor < draws.len() && draws[cursor].target == target {
+                    let draw = draws[cursor];
+                    let pipeline_key = self.pipeline_selection_key(draw);
+                    if previous_pipeline != Some(pipeline_key) {
+                        self.render_stats.shader_switches += 1;
+                        previous_pipeline = Some(pipeline_key);
+                    }
+                    if draw.geometry == GeometryKind::Texture
+                        && previous_texture != draw.texture_ref
+                    {
+                        self.render_stats.texture_switches += 1;
+                        previous_texture = draw.texture_ref;
+                    }
+                    if self.issue_draw(&mut pass, draw, shaders) {
+                        self.render_stats.draw_calls += 1;
+                    }
+                    cursor += 1;
+                }
+            }
+            if let Some(key) = clear_canvas_after_pass {
+                self.canvas_needs_clear.insert(key, false);
+            }
+            if target == RenderTargetId::Screen {
+                screen_started = true;
+            }
+        }
+        if !screen_started {
+            self.update_viewport_uniform(self.width, self.height, camera_matrix, frame_time);
+            let screen_stencil_view = &self.screen_stencil_target.as_ref().unwrap().view;
+            let _pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("screen_clear_pass"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: &view,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(wgpu::Color {
+                            r: background_color[0] as f64,
+                            g: background_color[1] as f64,
+                            b: background_color[2] as f64,
+                            a: background_color[3] as f64,
+                        }),
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: screen_stencil_view,
+                    depth_ops: None,
+                    stencil_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(0),
+                        store: wgpu::StoreOp::Store,
+                    }),
+                }),
+                ..Default::default()
+            });
+        }
+        if light_world.enabled && !light_world.lights.is_empty() {
+            self.ensure_light_resources();
+            let mut shadow_row = 0usize;
+            let occluder_list: Vec<&crate::light::occluder::Occluder> =
+                light_world.occluders.values().collect();
+            let mut light_shadow_rows: Vec<Option<usize>> = Vec::new();
+            let mut shadow_rows_data: Vec<(usize, Vec<f32>)> = Vec::new();
+            for (_, light) in light_world.lights.iter() {
+                if !light.enabled || light.radius * light.energy <= 0.0 {
+                    light_shadow_rows.push(None);
+                    continue;
+                }
+                if light.shadow_enabled && shadow_row < MAX_SHADOW_LIGHTS {
+                    let map = compute_1d_shadow_map(
+                        light.x,
+                        light.y,
+                        light.radius * light.energy,
+                        light.shadow_mask,
+                        occluder_list.iter().copied(),
+                    );
+                    shadow_rows_data.push((shadow_row, map));
+                    light_shadow_rows.push(Some(shadow_row));
+                    shadow_row += 1;
+                } else {
+                    light_shadow_rows.push(None);
+                }
+            }
+            if let Some(lg) = self.light_gpu.as_ref() {
+                for (row, data) in &shadow_rows_data {
+                    self.queue.write_texture(
+                        wgpu::ImageCopyTexture {
+                            texture: &lg.shadow_atlas_texture,
+                            mip_level: 0,
+                            origin: wgpu::Origin3d {
+                                x: 0,
+                                y: *row as u32,
+                                z: 0,
+                            },
+                            aspect: wgpu::TextureAspect::All,
+                        },
+                        bytemuck::cast_slice(data),
+                        wgpu::ImageDataLayout {
+                            offset: 0,
+                            bytes_per_row: Some((SHADOW_MAP_RES * 4) as u32),
+                            rows_per_image: None,
+                        },
+                        wgpu::Extent3d {
+                            width: SHADOW_MAP_RES as u32,
+                            height: 1,
+                            depth_or_array_layers: 1,
+                        },
+                    );
+                }
+            }
+            let mut light_verts: Vec<LightVertex> = Vec::new();
+            let mut light_idxs: Vec<u32> = Vec::new();
+            let mut light_count = 0usize;
+            let atlas_height = MAX_SHADOW_LIGHTS as f32;
+            for ((_, light), shadow_opt) in light_world.lights.iter().zip(light_shadow_rows.iter())
+            {
+                if !light.enabled {
+                    continue;
+                }
+                if light_count >= MAX_LIGHT_QUADS {
+                    break;
+                }
+                let r = light.radius * light.energy;
+                if r <= 0.0 {
+                    continue;
+                }
+                let ci = light.intensity * light.energy;
+                let c = [
+                    light.color.r * ci,
+                    light.color.g * ci,
+                    light.color.b * ci,
+                    1.0,
+                ];
+                let sv = match shadow_opt {
+                    Some(row) => (*row as f32 + 0.5) / atlas_height,
+                    None => -1.0,
+                };
+                let filter_mode = match light.shadow_filter {
+                    crate::light::ShadowFilter::None => 0.0,
+                    crate::light::ShadowFilter::Pcf5 => 1.0,
+                    crate::light::ShadowFilter::Pcf13 => 2.0,
+                };
+                let softness = (light.shadow_smooth * light.shadow_softness).max(0.0);
+                let shadow_params = [filter_mode, softness, 1.0 / SHADOW_MAP_RES as f32, 0.0];
+                let base = light_verts.len() as u32;
+                light_verts.push(LightVertex {
+                    position: [light.x - r, light.y - r],
+                    uv: [0.0, 0.0],
+                    color: c,
+                    shadow_v: sv,
+                    shadow_params,
+                });
+                light_verts.push(LightVertex {
+                    position: [light.x + r, light.y - r],
+                    uv: [1.0, 0.0],
+                    color: c,
+                    shadow_v: sv,
+                    shadow_params,
+                });
+                light_verts.push(LightVertex {
+                    position: [light.x + r, light.y + r],
+                    uv: [1.0, 1.0],
+                    color: c,
+                    shadow_v: sv,
+                    shadow_params,
+                });
+                light_verts.push(LightVertex {
+                    position: [light.x - r, light.y + r],
+                    uv: [0.0, 1.0],
+                    color: c,
+                    shadow_v: sv,
+                    shadow_params,
+                });
+                light_idxs.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
+                light_count += 1;
+            }
+            let composite_base = light_verts.len() as u32;
+            let sw = self.width as f32;
+            let sh = self.height as f32;
+            light_verts.push(LightVertex {
+                position: [0.0, 0.0],
+                uv: [0.0, 0.0],
+                color: [1.0; 4],
+                shadow_v: -1.0,
+                shadow_params: [0.0; 4],
+            });
+            light_verts.push(LightVertex {
+                position: [sw, 0.0],
+                uv: [1.0, 0.0],
+                color: [1.0; 4],
+                shadow_v: -1.0,
+                shadow_params: [0.0; 4],
+            });
+            light_verts.push(LightVertex {
+                position: [sw, sh],
+                uv: [1.0, 1.0],
+                color: [1.0; 4],
+                shadow_v: -1.0,
+                shadow_params: [0.0; 4],
+            });
+            light_verts.push(LightVertex {
+                position: [0.0, sh],
+                uv: [0.0, 1.0],
+                color: [1.0; 4],
+                shadow_v: -1.0,
+                shadow_params: [0.0; 4],
+            });
+            light_idxs.extend_from_slice(&[
+                composite_base,
+                composite_base + 1,
+                composite_base + 2,
+                composite_base,
+                composite_base + 2,
+                composite_base + 3,
+            ]);
+            let composite_idx_start = (light_count * 6) as u32;
+            {
+                let lg = self.light_gpu.as_ref().unwrap();
+                self.queue
+                    .write_buffer(&lg.vertex_buffer, 0, bytemuck::cast_slice(&light_verts));
+                self.queue
+                    .write_buffer(&lg.index_buffer, 0, bytemuck::cast_slice(&light_idxs));
+            }
+            self.update_viewport_uniform(self.width, self.height, camera_matrix, frame_time);
+            {
+                let lg = self.light_gpu.as_ref().unwrap();
+                let ambient = &light_world.ambient;
+                let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                    label: Some("light_accum_pass"),
+                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                        view: &lg.accum_view,
+                        resolve_target: None,
+                        ops: wgpu::Operations {
+                            load: wgpu::LoadOp::Clear(wgpu::Color {
+                                r: ambient.r as f64,
+                                g: ambient.g as f64,
+                                b: ambient.b as f64,
+                                a: 1.0,
+                            }),
+                            store: wgpu::StoreOp::Store,
+                        },
+                    })],
+                    depth_stencil_attachment: None,
+                    ..Default::default()
+                });
+                if light_count > 0 {
+                    pass.set_pipeline(&lg.additive_pipeline);
+                    pass.set_bind_group(0, &self.viewport_bind_group, &[]);
+                    pass.set_bind_group(1, &lg.shadow_atlas_bind_group, &[]);
+                    pass.set_vertex_buffer(0, lg.vertex_buffer.slice(..));
+                    pass.set_index_buffer(lg.index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+                    pass.draw_indexed(0..(light_count * 6) as u32, 0, 0..1);
+                }
+            }
+            self.update_viewport_uniform(self.width, self.height, &Mat3::identity(), frame_time);
+            {
+                let lg = self.light_gpu.as_ref().unwrap();
+                let screen_stencil_view = &self.screen_stencil_target.as_ref().unwrap().view;
+                let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                    label: Some("light_composite_pass"),
+                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                        view: &view,
+                        resolve_target: None,
+                        ops: wgpu::Operations {
+                            load: wgpu::LoadOp::Load,
+                            store: wgpu::StoreOp::Store,
+                        },
+                    })],
+                    depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                        view: screen_stencil_view,
+                        depth_ops: None,
+                        stencil_ops: Some(wgpu::Operations {
+                            load: wgpu::LoadOp::Load,
+                            store: wgpu::StoreOp::Store,
+                        }),
+                    }),
+                    ..Default::default()
+                });
+                pass.set_pipeline(&lg.composite_pipeline);
+                pass.set_bind_group(0, &self.viewport_bind_group, &[]);
+                pass.set_bind_group(1, &lg.accum_bind_group, &[]);
+                pass.set_vertex_buffer(0, lg.vertex_buffer.slice(..));
+                pass.set_index_buffer(lg.index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+                pass.set_scissor_rect(0, 0, self.width, self.height);
+                pass.set_stencil_reference(0);
+                pass.draw_indexed(composite_idx_start..composite_idx_start + 6, 0, 0..1);
+            }
+            self.update_viewport_uniform(self.width, self.height, camera_matrix, frame_time);
+        }
+        let pending_readback = if capture_screenshot {
+            self.begin_surface_readback(&mut encoder, &output.texture, self.width, self.height)
+        } else {
+            None
+        };
+        for (stack_id, passes, w, h) in &pending_postfx {
+            if let (Some(pipeline), Some(capture)) =
+                (&self.postfx_pipeline, self.postfx_capture.get(stack_id))
+            {
+                pipeline.apply(
+                    &self.device,
+                    &self.queue,
+                    &mut encoder,
+                    &capture.view,
+                    &view,
+                    passes,
+                    *w,
+                    *h,
+                    frame_time,
+                    frame_count,
+                );
+            }
+        }
+        self.queue.submit(std::iter::once(encoder.finish()));
+        output.present();
+        self.render_stats.cpu_render_ms = frame_start.elapsed().as_secs_f32() * 1000.0;
+        Ok(pending_readback.and_then(|readback| self.complete_surface_readback(readback)))
+    }
+    /// Copy the surface texture into a mappable readback buffer for screenshot capture.
+    fn begin_surface_readback(
+        &self,
+        encoder: &mut wgpu::CommandEncoder,
+        texture: &wgpu::Texture,
+        width: u32,
+        height: u32,
+    ) -> Option<PendingSurfaceReadback> {
+        if width == 0 || height == 0 {
+            log_msg!(error, G002_SCREENSHOT_ZERO_SIZE);
+            return None;
+        }
+        let unpadded_bytes_per_row = width.saturating_mul(4);
+        let alignment = wgpu::COPY_BYTES_PER_ROW_ALIGNMENT;
+        let padded_bytes_per_row = unpadded_bytes_per_row.div_ceil(alignment) * alignment;
+        let buffer_size = padded_bytes_per_row as u64 * height as u64;
+        let buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("surface_readback_buffer"),
+            size: buffer_size,
+            usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
+            mapped_at_creation: false,
+        });
+        encoder.copy_texture_to_buffer(
+            wgpu::ImageCopyTexture {
+                texture,
+                mip_level: 0,
+                origin: wgpu::Origin3d::ZERO,
+                aspect: wgpu::TextureAspect::All,
+            },
+            wgpu::ImageCopyBuffer {
+                buffer: &buffer,
+                layout: wgpu::ImageDataLayout {
+                    offset: 0,
+                    bytes_per_row: Some(padded_bytes_per_row),
+                    rows_per_image: Some(height),
+                },
+            },
+            wgpu::Extent3d {
+                width,
+                height,
+                depth_or_array_layers: 1,
+            },
+        );
+        Some(PendingSurfaceReadback {
+            buffer,
+            padded_bytes_per_row,
+            width,
+            height,
+        })
+    }
+    /// Map the readback buffer and extract RGBA pixel data for the screenshot.
+    fn complete_surface_readback(
+        &self,
+        readback: PendingSurfaceReadback,
+    ) -> Option<(u32, u32, Vec<u8>)> {
+        let slice = readback.buffer.slice(..);
+        let (sender, receiver) = mpsc::channel();
+        slice.map_async(wgpu::MapMode::Read, move |result| {
+            let _ = sender.send(result.map_err(|err| err.to_string()));
+        });
+        let _ = self.device.poll(wgpu::Maintain::Wait);
+        match receiver.recv() {
+            Ok(Ok(())) => {}
+            Ok(Err(err)) => {
+                log_msg!(error, G003_SCREENSHOT_MAP_FAIL, "{}", err);
+                return None;
+            }
+            Err(err) => {
+                log_msg!(error, G004_SCREENSHOT_RECV_FAIL, "{}", err);
+                return None;
+            }
+        }
+        let mut pixels = vec![0u8; (readback.width * readback.height * 4) as usize];
+        {
+            let mapped = slice.get_mapped_range();
+            let row_len = (readback.width * 4) as usize;
+            for row in 0..readback.height as usize {
+                let src_start = row * readback.padded_bytes_per_row as usize;
+                let dst_start = row * row_len;
+                pixels[dst_start..dst_start + row_len]
+                    .copy_from_slice(&mapped[src_start..src_start + row_len]);
+            }
+        }
+        readback.buffer.unmap();
+        match self.surface_format {
+            wgpu::TextureFormat::Bgra8Unorm | wgpu::TextureFormat::Bgra8UnormSrgb => {
+                for pixel in pixels.chunks_exact_mut(4) {
+                    pixel.swap(0, 2);
+                }
+            }
+            wgpu::TextureFormat::Rgba8Unorm | wgpu::TextureFormat::Rgba8UnormSrgb => {}
+            _other => {
+                log_msg!(error, G005_SCREENSHOT_DATA_FAIL, "pixel data error");
+                return None;
+            }
+        }
+        Some((readback.width, readback.height, pixels))
+    }
+    /// Write the per-frame viewport dimensions, time, and camera matrix to the GPU uniform buffer.
+    fn update_viewport_uniform(
+        &mut self,
+        width: u32,
+        height: u32,
+        camera_matrix: &Mat3,
+        frame_time: f32,
+    ) {
+        let data = ViewportUniform {
+            size: [width as f32, height as f32],
+            time: frame_time,
+            _pad: 0.0,
+            view_col0: [
+                camera_matrix.m[0][0],
+                camera_matrix.m[1][0],
+                camera_matrix.m[2][0],
+                0.0,
+            ],
+            view_col1: [
+                camera_matrix.m[0][1],
+                camera_matrix.m[1][1],
+                camera_matrix.m[2][1],
+                0.0,
+            ],
+            view_col2: [
+                camera_matrix.m[0][2],
+                camera_matrix.m[1][2],
+                camera_matrix.m[2][2],
+                0.0,
+            ],
+        };
+        self.queue
+            .write_buffer(&self.viewport_buffer, 0, bytemuck::bytes_of(&data));
+    }
+    /// Return the pixel dimensions of a render target from the logical canvas store.
+    fn target_dimensions(
+        &self,
+        target: RenderTargetId,
+        canvases: &SlotMap<CanvasKey, crate::render::Canvas>,
+    ) -> (u32, u32) {
+        match target {
+            RenderTargetId::Screen => (self.width, self.height),
+            RenderTargetId::Canvas(key) => canvases
+                .get(key)
+                .map(|canvas| (canvas.width, canvas.height))
+                .unwrap_or((self.width, self.height)),
+        }
+    }
+    /// Return the pixel dimensions of a render target from the GPU texture store.
+    fn target_dimensions_from_gpu(&self, target: RenderTargetId) -> (u32, u32) {
+        match target {
+            RenderTargetId::Screen => (self.width, self.height),
+            RenderTargetId::Canvas(key) => self
+                .canvas_gpu_textures
+                .get(key)
+                .map(|canvas| (canvas.width, canvas.height))
+                .unwrap_or((self.width, self.height)),
+        }
+    }
+    /// Build the full pipeline selection key for a prepared draw call.
+    fn pipeline_selection_key(&self, draw: PreparedDraw) -> PipelineSelectionKey {
+        let geometry = draw.geometry;
+        let pipeline = PipelineKey {
+            blend_mode: draw.blend_mode,
+            color_mask_bits: draw.color_mask_bits,
+            stencil_mode: draw.stencil_mode,
+        };
+        match shader_for_draw(draw) {
+            Some(shader) => PipelineSelectionKey::Custom {
+                shader,
+                geometry,
+                pipeline,
+            },
+            None => PipelineSelectionKey::Default { geometry, pipeline },
+        }
+    }
+    /// Return or create the default render pipeline for the given geometry and blend/stencil key.
+    fn default_pipeline(
+        &mut self,
+        geometry: GeometryKind,
+        key: PipelineKey,
+    ) -> &wgpu::RenderPipeline {
+        let missing = match geometry {
+            GeometryKind::Color => !self.default_color_pipelines.contains_key(&key),
+            GeometryKind::Texture => !self.default_texture_pipelines.contains_key(&key),
+        };
+        if missing {
+            let pipeline = match geometry {
+                GeometryKind::Color => create_render_pipeline(
+                    &self.device,
+                    self.surface_format,
+                    &self.default_color_layout,
+                    &self.default_color_shader,
+                    geometry,
+                    key,
+                    "fs_main",
+                ),
+                GeometryKind::Texture => create_render_pipeline(
+                    &self.device,
+                    self.surface_format,
+                    &self.default_texture_layout,
+                    &self.default_texture_shader,
+                    geometry,
+                    key,
+                    "fs_main",
+                ),
+            };
+            match geometry {
+                GeometryKind::Color => {
+                    self.default_color_pipelines.insert(key, pipeline);
+                }
+                GeometryKind::Texture => {
+                    self.default_texture_pipelines.insert(key, pipeline);
+                }
+            }
+        }
+        match geometry {
+            GeometryKind::Color => self.default_color_pipelines.get(&key).unwrap(),
+            GeometryKind::Texture => self.default_texture_pipelines.get(&key).unwrap(),
+        }
+    }
+    /// Compile and cache a user shader if its source or uniform signature changed.
+    fn ensure_shader_cache(&mut self, shader_key: ShaderKey, shader: &Shader) {
+        let ordered_uniforms = shader.ordered_uniforms();
+        let uniform_signature: Vec<(String, ShaderUniformKind)> = ordered_uniforms
+            .iter()
+            .map(|(name, value)| ((*name).to_string(), uniform_kind(value)))
+            .collect();
+        let needs_rebuild = self
+            .shader_cache
+            .get(shader_key)
+            .map(|cached| {
+                cached.source != shader.source || cached.uniform_signature != uniform_signature
+            })
+            .unwrap_or(true);
+        if needs_rebuild {
+            let uniform_bind_group_layout = if uniform_signature.is_empty() {
+                None
+            } else {
+                Some(
+                    self.device
+                        .create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                            label: Some("custom_shader_uniform_bgl"),
+                            entries: &uniform_signature
+                                .iter()
+                                .enumerate()
+                                .map(|(binding, (_, _))| wgpu::BindGroupLayoutEntry {
+                                    binding: binding as u32,
+                                    visibility: wgpu::ShaderStages::FRAGMENT,
+                                    ty: wgpu::BindingType::Buffer {
+                                        ty: wgpu::BufferBindingType::Uniform,
+                                        has_dynamic_offset: false,
+                                        min_binding_size: None,
+                                    },
+                                    count: None,
+                                })
+                                .collect::<Vec<_>>(),
+                        }),
+                )
+            };
+            let uniform_buffers = uniform_signature
+                .iter()
+                .map(|_| {
+                    self.device.create_buffer(&wgpu::BufferDescriptor {
+                        label: Some("custom_shader_uniform_buffer"),
+                        size: 16,
+                        usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+                        mapped_at_creation: false,
+                    })
+                })
+                .collect::<Vec<_>>();
+            let uniform_bind_group = uniform_bind_group_layout.as_ref().map(|layout| {
+                self.device.create_bind_group(&wgpu::BindGroupDescriptor {
+                    label: Some("custom_shader_uniform_bg"),
+                    layout,
+                    entries: &uniform_buffers
+                        .iter()
+                        .enumerate()
+                        .map(|(binding, buffer)| wgpu::BindGroupEntry {
+                            binding: binding as u32,
+                            resource: buffer.as_entire_binding(),
+                        })
+                        .collect::<Vec<_>>(),
+                })
+            });
+            let color_source = build_custom_color_shader_source(shader, &uniform_signature);
+            let texture_source = build_custom_texture_shader_source(shader, &uniform_signature);
+            let color_module = self
+                .device
+                .create_shader_module(wgpu::ShaderModuleDescriptor {
+                    label: Some("custom_color_shader"),
+                    source: wgpu::ShaderSource::Wgsl(color_source.into()),
+                });
+            let texture_module = self
+                .device
+                .create_shader_module(wgpu::ShaderModuleDescriptor {
+                    label: Some("custom_texture_shader"),
+                    source: wgpu::ShaderSource::Wgsl(texture_source.into()),
+                });
+            let color_layout = {
+                let bind_group_layouts = match uniform_bind_group_layout.as_ref() {
+                    Some(uniform_layout) => vec![&self.viewport_bind_group_layout, uniform_layout],
+                    None => vec![&self.viewport_bind_group_layout],
+                };
+                self.device
+                    .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                        label: Some("custom_color_layout"),
+                        bind_group_layouts: &bind_group_layouts,
+                        push_constant_ranges: &[],
+                    })
+            };
+            let texture_layout = {
+                let bind_group_layouts = match uniform_bind_group_layout.as_ref() {
+                    Some(uniform_layout) => vec![
+                        &self.viewport_bind_group_layout,
+                        &self.texture_bind_group_layout,
+                        uniform_layout,
+                    ],
+                    None => vec![
+                        &self.viewport_bind_group_layout,
+                        &self.texture_bind_group_layout,
+                    ],
+                };
+                self.device
+                    .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                        label: Some("custom_texture_layout"),
+                        bind_group_layouts: &bind_group_layouts,
+                        push_constant_ranges: &[],
+                    })
+            };
+            self.shader_cache.insert(
+                shader_key,
+                GpuShader {
+                    source: shader.source.clone(),
+                    uniform_signature,
+                    uniform_buffers,
+                    uniform_bind_group,
+                    color_module,
+                    texture_module,
+                    color_layout,
+                    texture_layout,
+                    color_pipelines: HashMap::new(),
+                    texture_pipelines: HashMap::new(),
+                },
+            );
+        }
+        if let Some(cache) = self.shader_cache.get(shader_key) {
+            for ((_, value), buffer) in ordered_uniforms.iter().zip(cache.uniform_buffers.iter()) {
+                let bytes = uniform_bytes(value);
+                self.queue.write_buffer(buffer, 0, &bytes);
+            }
+        }
+    }
+    /// Return or create a user-shader render pipeline for the given geometry and blend/stencil key.
+    fn custom_pipeline(
+        &mut self,
+        shader_key: ShaderKey,
+        shader: &Shader,
+        geometry: GeometryKind,
+        key: PipelineKey,
+    ) -> &wgpu::RenderPipeline {
+        self.ensure_shader_cache(shader_key, shader);
+        let missing = {
+            let cache = self.shader_cache.get(shader_key).unwrap();
+            match geometry {
+                GeometryKind::Color => !cache.color_pipelines.contains_key(&key),
+                GeometryKind::Texture => !cache.texture_pipelines.contains_key(&key),
+            }
+        };
+        if missing {
+            let pipeline = {
+                let cache = self.shader_cache.get(shader_key).unwrap();
+                match geometry {
+                    GeometryKind::Color => create_render_pipeline(
+                        &self.device,
+                        self.surface_format,
+                        &cache.color_layout,
+                        &cache.color_module,
+                        geometry,
+                        key,
+                        "lurek_fragment_main",
+                    ),
+                    GeometryKind::Texture => create_render_pipeline(
+                        &self.device,
+                        self.surface_format,
+                        &cache.texture_layout,
+                        &cache.texture_module,
+                        geometry,
+                        key,
+                        "lurek_fragment_main",
+                    ),
+                }
+            };
+            let cache = self.shader_cache.get_mut(shader_key).unwrap();
+            match geometry {
+                GeometryKind::Color => {
+                    cache.color_pipelines.insert(key, pipeline);
+                }
+                GeometryKind::Texture => {
+                    cache.texture_pipelines.insert(key, pipeline);
+                }
+            }
+        }
+        let cache = self.shader_cache.get(shader_key).unwrap();
+        match geometry {
+            GeometryKind::Color => cache.color_pipelines.get(&key).unwrap(),
+            GeometryKind::Texture => cache.texture_pipelines.get(&key).unwrap(),
+        }
+    }
+    /// Return the uniform bind group for a cached user shader, if present.
+    fn shader_bind_group(&self, shader_key: ShaderKey) -> Option<&wgpu::BindGroup> {
+        self.shader_cache
+            .get(shader_key)
+            .and_then(|cache| cache.uniform_bind_group.as_ref())
+    }
+    /// Resolve a `TexRef` to its GPU bind group for texture sampling.
+    fn texture_bind_group(&self, texture_ref: TexRef) -> Option<&wgpu::BindGroup> {
+        match texture_ref {
+            TexRef::Texture(key) => self
+                .gpu_textures
+                .get(key)
+                .map(|texture| &texture.bind_group),
+            TexRef::Canvas(key) => self
+                .canvas_gpu_textures
+                .get(key)
+                .map(|texture| &texture.bind_group),
+            TexRef::FontAtlas(key) => self
+                .font_atlas_textures
+                .get(key)
+                .map(|texture| &texture.bind_group),
+        }
+    }
+    /// Encode a single prepared draw call into the active render pass.
+    fn issue_draw(
+        &mut self,
+        pass: &mut wgpu::RenderPass<'_>,
+        draw: PreparedDraw,
+        shaders: &SlotMap<ShaderKey, Shader>,
+    ) -> bool {
+        if let (RenderTargetId::Canvas(active_canvas), Some(TexRef::Canvas(source_canvas))) =
+            (draw.target, draw.texture_ref)
+        {
+            if active_canvas == source_canvas {
+                return false;
+            }
+        }
+        let pipeline_key = PipelineKey {
+            blend_mode: draw.blend_mode,
+            color_mask_bits: draw.color_mask_bits,
+            stencil_mode: draw.stencil_mode,
+        };
+        let effective_shader = shader_for_draw(draw);
+        pass.set_bind_group(0, &self.viewport_bind_group, &[]);
+        match draw.geometry {
+            GeometryKind::Color => {
+                pass.set_vertex_buffer(0, self.color_vertex_buffer.slice(..));
+                pass.set_index_buffer(self.color_index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+                if let Some(shader_key) = effective_shader {
+                    if let Some(shader) = shaders.get(shader_key) {
+                        {
+                            let pipeline = self.custom_pipeline(
+                                shader_key,
+                                shader,
+                                draw.geometry,
+                                pipeline_key,
+                            );
+                            pass.set_pipeline(pipeline);
+                        }
+                        if let Some(bind_group) = self.shader_bind_group(shader_key) {
+                            pass.set_bind_group(1, bind_group, &[]);
+                        }
+                    } else {
+                        let pipeline = self.default_pipeline(draw.geometry, pipeline_key);
+                        pass.set_pipeline(pipeline);
+                    }
+                } else {
+                    let pipeline = self.default_pipeline(draw.geometry, pipeline_key);
+                    pass.set_pipeline(pipeline);
+                }
+            }
+            GeometryKind::Texture => {
+                let Some(texture_ref) = draw.texture_ref else {
+                    return false;
+                };
+                pass.set_vertex_buffer(0, self.tex_vertex_buffer.slice(..));
+                pass.set_index_buffer(self.tex_index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+                if let Some(shader_key) = effective_shader {
+                    if let Some(shader) = shaders.get(shader_key) {
+                        {
+                            let pipeline = self.custom_pipeline(
+                                shader_key,
+                                shader,
+                                draw.geometry,
+                                pipeline_key,
+                            );
+                            pass.set_pipeline(pipeline);
+                        }
+                        {
+                            let Some(texture_bind_group) = self.texture_bind_group(texture_ref)
+                            else {
+                                return false;
+                            };
+                            pass.set_bind_group(1, texture_bind_group, &[]);
+                        }
+                        if let Some(bind_group) = self.shader_bind_group(shader_key) {
+                            pass.set_bind_group(2, bind_group, &[]);
+                        }
+                    } else {
+                        let pipeline = self.default_pipeline(draw.geometry, pipeline_key);
+                        pass.set_pipeline(pipeline);
+                        let Some(texture_bind_group) = self.texture_bind_group(texture_ref) else {
+                            return false;
+                        };
+                        pass.set_bind_group(1, texture_bind_group, &[]);
+                    }
+                } else {
+                    let pipeline = self.default_pipeline(draw.geometry, pipeline_key);
+                    pass.set_pipeline(pipeline);
+                    let Some(texture_bind_group) = self.texture_bind_group(texture_ref) else {
+                        return false;
+                    };
+                    pass.set_bind_group(1, texture_bind_group, &[]);
+                }
+            }
+        }
+        let (target_width, target_height) = self.target_dimensions_from_gpu(draw.target);
+        match draw.scissor {
+            Some((sx, sy, sw, sh)) => pass.set_scissor_rect(sx, sy, sw, sh),
+            None => pass.set_scissor_rect(0, 0, target_width, target_height),
+        }
+        pass.set_stencil_reference(draw.stencil_reference);
+        pass.draw_indexed(draw.idx_start..draw.idx_start + draw.idx_count, 0, 0..1);
+        true
+    }
+    /// Tessellate a rectangle into flat-color vertices and indices.
+    #[allow(clippy::too_many_arguments)]
+    fn tess_rect(
+        &self,
+        cv: &mut Vec<ColorVertex>,
+        ci: &mut Vec<u32>,
+        t: &Mat3,
+        color: [f32; 4],
+        mode: &DrawMode,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        lw: f32,
+    ) {
+        match mode {
+            DrawMode::Fill => {
+                let pts = [
+                    apply(t, x, y),
+                    apply(t, x + w, y),
+                    apply(t, x + w, y + h),
+                    apply(t, x, y + h),
+                ];
+                push_quad_verts(cv, ci, &pts, color);
+            }
+            DrawMode::Line => {
+                push_thick_line(cv, ci, t, color, x, y, x + w, y, lw);
+                push_thick_line(cv, ci, t, color, x + w, y, x + w, y + h, lw);
+                push_thick_line(cv, ci, t, color, x + w, y + h, x, y + h, lw);
+                push_thick_line(cv, ci, t, color, x, y + h, x, y, lw);
+            }
+        }
+    }
+    /// Tessellate a rounded rectangle into flat-color vertices and indices.
+    #[allow(clippy::too_many_arguments)]
+    fn tess_rounded_rect(
+        &self,
+        cv: &mut Vec<ColorVertex>,
+        ci: &mut Vec<u32>,
+        t: &Mat3,
+        color: [f32; 4],
+        mode: &DrawMode,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        rx: f32,
+        ry: f32,
+        lw: f32,
+    ) {
+        let rx = rx.min(w * 0.5).max(0.0);
+        let ry = ry.min(h * 0.5).max(0.0);
+        const CORNER_SEGS: u32 = 8;
+        let path = build_rounded_rect_path(x, y, w, h, rx, ry, CORNER_SEGS);
+        match mode {
+            DrawMode::Fill => {
+                push_fan_fill(cv, ci, t, color, x + w * 0.5, y + h * 0.5, &path);
+            }
+            DrawMode::Line => {
+                for i in 0..path.len() {
+                    let j = (i + 1) % path.len();
+                    push_thick_line(
+                        cv, ci, t, color, path[i].0, path[i].1, path[j].0, path[j].1, lw,
+                    );
+                }
+            }
+        }
+    }
+    /// Tessellate an ellipse into flat-color vertices and indices.
+    #[allow(clippy::too_many_arguments)]
+    fn tess_ellipse(
+        &self,
+        cv: &mut Vec<ColorVertex>,
+        ci: &mut Vec<u32>,
+        t: &Mat3,
+        color: [f32; 4],
+        mode: &DrawMode,
+        cx: f32,
+        cy: f32,
+        rx: f32,
+        ry: f32,
+        segs: u32,
+        lw: f32,
+    ) {
+        match mode {
+            DrawMode::Fill => {
+                let base = cv.len() as u32;
+                let c = apply(t, cx, cy);
+                cv.push(ColorVertex {
+                    position: [c.0, c.1],
+                    color,
+                });
+                for i in 0..=segs {
+                    let a = (i as f32 / segs as f32) * 2.0 * PI;
+                    let p = apply(t, cx + rx * a.cos(), cy + ry * a.sin());
+                    cv.push(ColorVertex {
+                        position: [p.0, p.1],
+                        color,
+                    });
+                }
+                for i in 1..=segs {
+                    ci.extend_from_slice(&[base, base + i, base + i + 1]);
+                }
+            }
+            DrawMode::Line => {
+                for i in 0..segs {
+                    let a0 = (i as f32 / segs as f32) * 2.0 * PI;
+                    let a1 = ((i + 1) as f32 / segs as f32) * 2.0 * PI;
+                    push_thick_line(
+                        cv,
+                        ci,
+                        t,
+                        color,
+                        cx + rx * a0.cos(),
+                        cy + ry * a0.sin(),
+                        cx + rx * a1.cos(),
+                        cy + ry * a1.sin(),
+                        lw,
+                    );
+                }
+            }
+        }
+    }
+    /// Tessellate a triangle into flat-color vertices and indices.
+    #[allow(clippy::too_many_arguments)]
+    fn tess_triangle(
+        &self,
+        cv: &mut Vec<ColorVertex>,
+        ci: &mut Vec<u32>,
+        t: &Mat3,
+        color: [f32; 4],
+        mode: &DrawMode,
+        x1: f32,
+        y1: f32,
+        x2: f32,
+        y2: f32,
+        x3: f32,
+        y3: f32,
+        lw: f32,
+    ) {
+        match mode {
+            DrawMode::Fill => {
+                let base = cv.len() as u32;
+                for &(px, py) in &[(x1, y1), (x2, y2), (x3, y3)] {
+                    let p = apply(t, px, py);
+                    cv.push(ColorVertex {
+                        position: [p.0, p.1],
+                        color,
+                    });
+                }
+                ci.extend_from_slice(&[base, base + 1, base + 2]);
+            }
+            DrawMode::Line => {
+                push_thick_line(cv, ci, t, color, x1, y1, x2, y2, lw);
+                push_thick_line(cv, ci, t, color, x2, y2, x3, y3, lw);
+                push_thick_line(cv, ci, t, color, x3, y3, x1, y1, lw);
+            }
+        }
+    }
+    /// Tessellate a polygon from a flat vertex array into flat-color geometry.
+    #[allow(clippy::too_many_arguments)]
+    fn tess_polygon(
+        &self,
+        cv: &mut Vec<ColorVertex>,
+        ci: &mut Vec<u32>,
+        t: &Mat3,
+        color: [f32; 4],
+        mode: &DrawMode,
+        vertices: &[f32],
+        lw: f32,
+    ) {
+        if vertices.len() < 6 {
+            return;
+        }
+        let n = vertices.len() / 2;
+        match mode {
+            DrawMode::Fill => {
+                let base = cv.len() as u32;
+                for i in 0..n {
+                    let p = apply(t, vertices[i * 2], vertices[i * 2 + 1]);
+                    cv.push(ColorVertex {
+                        position: [p.0, p.1],
+                        color,
+                    });
+                }
+                for i in 1..(n as u32 - 1) {
+                    ci.extend_from_slice(&[base, base + i, base + i + 1]);
+                }
+            }
+            DrawMode::Line => {
+                for i in 0..n {
+                    let j = (i + 1) % n;
+                    push_thick_line(
+                        cv,
+                        ci,
+                        t,
+                        color,
+                        vertices[i * 2],
+                        vertices[i * 2 + 1],
+                        vertices[j * 2],
+                        vertices[j * 2 + 1],
+                        lw,
+                    );
+                }
+            }
+        }
+    }
+    /// Tessellate an arc segment into flat-color vertices and indices.
+    #[allow(clippy::too_many_arguments)]
+    fn tess_arc(
+        &self,
+        cv: &mut Vec<ColorVertex>,
+        ci: &mut Vec<u32>,
+        t: &Mat3,
+        color: [f32; 4],
+        mode: &DrawMode,
+        cx: f32,
+        cy: f32,
+        r: f32,
+        a1: f32,
+        a2: f32,
+        segs: u32,
+        lw: f32,
+    ) {
+        match mode {
+            DrawMode::Fill => {
+                let base = cv.len() as u32;
+                let c = apply(t, cx, cy);
+                cv.push(ColorVertex {
+                    position: [c.0, c.1],
+                    color,
+                });
+                for i in 0..=segs {
+                    let a = a1 + (a2 - a1) * (i as f32 / segs as f32);
+                    let p = apply(t, cx + r * a.cos(), cy + r * a.sin());
+                    cv.push(ColorVertex {
+                        position: [p.0, p.1],
+                        color,
+                    });
+                }
+                for i in 1..=segs {
+                    ci.extend_from_slice(&[base, base + i, base + i + 1]);
+                }
+            }
+            DrawMode::Line => {
+                for i in 0..segs {
+                    let a0 = a1 + (a2 - a1) * (i as f32 / segs as f32);
+                    let a_next = a1 + (a2 - a1) * ((i + 1) as f32 / segs as f32);
+                    push_thick_line(
+                        cv,
+                        ci,
+                        t,
+                        color,
+                        cx + r * a0.cos(),
+                        cy + r * a0.sin(),
+                        cx + r * a_next.cos(),
+                        cy + r * a_next.sin(),
+                        lw,
+                    );
+                }
+            }
+        }
+    }
+}
+/// Append a flat-color draw call — vertices and indices — to the frame-local draw list.
+#[allow(clippy::too_many_arguments)]
+fn append_color_draw(
+    draws: &mut Vec<PreparedDraw>,
+    all_verts: &mut Vec<ColorVertex>,
+    all_idxs: &mut Vec<u32>,
+    target: RenderTargetId,
+    blend_mode: BlendMode,
+    scissor: ScissorRect,
+    color_mask_bits: u32,
+    shader: Option<ShaderKey>,
+    stencil_mode: StencilMode,
+    stencil_reference: u8,
+    verts: Vec<ColorVertex>,
+    idxs: Vec<u32>,
+) {
+    if idxs.is_empty() {
+        return;
+    }
+    let base = all_verts.len() as u32;
+    let idx_start = all_idxs.len() as u32;
+    all_verts.extend_from_slice(&verts);
+    all_idxs.extend(idxs.iter().map(|&idx| idx + base));
+    draws.push(PreparedDraw {
+        target,
+        geometry: GeometryKind::Color,
+        texture_ref: None,
+        idx_start,
+        idx_count: idxs.len() as u32,
+        blend_mode,
+        scissor,
+        color_mask_bits,
+        shader,
+        stencil_mode,
+        stencil_reference: stencil_reference as u32,
+    });
+}
+/// Append a textured draw call — vertices and indices — to the frame-local draw list.
+#[allow(clippy::too_many_arguments)]
+fn append_tex_draw(
+    draws: &mut Vec<PreparedDraw>,
+    all_verts: &mut Vec<TexVertex>,
+    all_idxs: &mut Vec<u32>,
+    target: RenderTargetId,
+    texture_ref: TexRef,
+    blend_mode: BlendMode,
+    scissor: ScissorRect,
+    color_mask_bits: u32,
+    shader: Option<ShaderKey>,
+    stencil_mode: StencilMode,
+    stencil_reference: u8,
+    verts: Vec<TexVertex>,
+    idxs: Vec<u32>,
+) {
+    if idxs.is_empty() {
+        return;
+    }
+    let base = all_verts.len() as u32;
+    let idx_start = all_idxs.len() as u32;
+    all_verts.extend_from_slice(&verts);
+    all_idxs.extend(idxs.iter().map(|&idx| idx + base));
+    draws.push(PreparedDraw {
+        target,
+        geometry: GeometryKind::Texture,
+        texture_ref: Some(texture_ref),
+        idx_start,
+        idx_count: idxs.len() as u32,
+        blend_mode,
+        scissor,
+        color_mask_bits,
+        shader,
+        stencil_mode,
+        stencil_reference: stencil_reference as u32,
+    });
+}
+/// Clamp and convert a float scissor rect to integer pixel bounds clamped to `[0, width/height]`.
+fn normalize_scissor(rect: Option<(f32, f32, f32, f32)>, width: u32, height: u32) -> ScissorRect {
+    rect.and_then(|(x, y, w, h)| {
+        let left = x.max(0.0).floor() as u32;
+        let top = y.max(0.0).floor() as u32;
+        let right = (x + w).max(0.0).ceil() as u32;
+        let bottom = (y + h).max(0.0).ceil() as u32;
+        if right <= left || bottom <= top {
+            return None;
+        }
+        let clamped_left = left.min(width);
+        let clamped_top = top.min(height);
+        let clamped_right = right.min(width);
+        let clamped_bottom = bottom.min(height);
+        if clamped_right <= clamped_left || clamped_bottom <= clamped_top {
+            None
+        } else {
+            Some((
+                clamped_left,
+                clamped_top,
+                clamped_right - clamped_left,
+                clamped_bottom - clamped_top,
+            ))
+        }
+    })
+}
+/// Encode `(R, G, B, A)` bool channel mask as a wgpu `ColorWrites` bitmask.
+fn color_write_mask_bits(mask: (bool, bool, bool, bool)) -> u32 {
+    let mut bits = 0;
+    if mask.0 {
+        bits |= wgpu::ColorWrites::RED.bits();
+    }
+    if mask.1 {
+        bits |= wgpu::ColorWrites::GREEN.bits();
+    }
+    if mask.2 {
+        bits |= wgpu::ColorWrites::BLUE.bits();
+    }
+    if mask.3 {
+        bits |= wgpu::ColorWrites::ALPHA.bits();
+    }
+    bits
+}
+/// Reconstruct a `wgpu::ColorWrites` from a bitmask stored in a `PipelineKey`.
+fn color_write_mask_from_bits(bits: u32) -> wgpu::ColorWrites {
+    wgpu::ColorWrites::from_bits_truncate(bits)
+}
+/// Return the custom shader key for a draw call, suppressed to `None` during stencil writes.
+fn shader_for_draw(draw: PreparedDraw) -> Option<ShaderKey> {
+    if matches!(draw.stencil_mode, StencilMode::Write(_)) {
+        None
+    } else {
+        draw.shader
+    }
+}
+/// Parse a filter-mode string `"linear"` or anything else → `Nearest`.
+fn parse_filter_mode(value: &str) -> wgpu::FilterMode {
+    match value {
+        "linear" => wgpu::FilterMode::Linear,
+        _ => wgpu::FilterMode::Nearest,
+    }
+}
+/// Map a `UniformValue` to its `ShaderUniformKind` type tag.
+fn uniform_kind(value: &UniformValue) -> ShaderUniformKind {
+    match value {
+        UniformValue::Float(_) => ShaderUniformKind::Float,
+        UniformValue::Vec2(_) => ShaderUniformKind::Vec2,
+        UniformValue::Vec3(_) => ShaderUniformKind::Vec3,
+        UniformValue::Vec4(_) => ShaderUniformKind::Vec4,
+        UniformValue::Int(_) => ShaderUniformKind::Int,
+        UniformValue::Bool(_) => ShaderUniformKind::Bool,
+    }
+}
+/// Serialize a `UniformValue` into a 16-byte std140-aligned buffer for a wgpu uniform upload.
+fn uniform_bytes(value: &UniformValue) -> [u8; 16] {
+    let mut bytes = [0u8; 16];
+    match value {
+        UniformValue::Float(v) => {
+            bytes[..4].copy_from_slice(&v.to_ne_bytes());
+        }
+        UniformValue::Vec2(v) => {
+            bytes[..8].copy_from_slice(bytemuck::cast_slice(v));
+        }
+        UniformValue::Vec3(v) => {
+            bytes[..12].copy_from_slice(bytemuck::cast_slice(v));
+        }
+        UniformValue::Vec4(v) => {
+            bytes.copy_from_slice(bytemuck::cast_slice(v));
+        }
+        UniformValue::Int(v) => {
+            bytes[..4].copy_from_slice(&v.to_ne_bytes());
+        }
+        UniformValue::Bool(v) => {
+            let raw = if *v { 1u32 } else { 0u32 };
+            bytes[..4].copy_from_slice(&raw.to_ne_bytes());
+        }
+    }
+    bytes
+}
+/// Return the WGSL type name string for a shader uniform kind.
+fn uniform_wgsl_type(kind: ShaderUniformKind) -> &'static str {
+    match kind {
+        ShaderUniformKind::Float => "f32",
+        ShaderUniformKind::Vec2 => "vec2<f32>",
+        ShaderUniformKind::Vec3 => "vec3<f32>",
+        ShaderUniformKind::Vec4 => "vec4<f32>",
+        ShaderUniformKind::Int => "i32",
+        ShaderUniformKind::Bool => "u32",
+    }
+}
+/// Generate WGSL `@group/@binding var<uniform>` declarations for all shader uniforms.
+fn custom_uniform_declarations(
+    uniform_signature: &[(String, ShaderUniformKind)],
+    group_index: u32,
+) -> String {
+    uniform_signature
+        .iter()
+        .enumerate()
+        .map(|(binding, (name, kind))| {
+            format!(
+                "@group({group_index}) @binding({binding}) var<uniform> {name}: {};\n",
+                uniform_wgsl_type(*kind)
+            )
+        })
+        .collect::<String>()
+}
+/// Build the comma-separated argument string for the user fragment entry call.
+fn custom_fragment_call_args(
+    inputs: &[ShaderFragmentInput],
+    color_expr: &str,
+    uv_expr: &str,
+) -> String {
+    inputs
+        .iter()
+        .map(|input| match input {
+            ShaderFragmentInput::Color => color_expr,
+            ShaderFragmentInput::Uv => uv_expr,
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+/// Assemble the full WGSL source for a custom flat-color shader pipeline.
+fn build_custom_color_shader_source(
+    shader: &Shader,
+    uniform_signature: &[(String, ShaderUniformKind)],
+) -> String {
+    let uniform_decls = custom_uniform_declarations(uniform_signature, 1);
+    let fragment_call_args =
+        custom_fragment_call_args(shader.fragment_inputs(), "in.color", "in.uv");
+    format!(
+        r#"
+struct VertexInput {{
+    @location(0) position: vec2<f32>,
+    @location(1) color: vec4<f32>,
+}}
+struct VertexOutput {{
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+}}
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}}
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
+{uniform_decls}
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {{
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
+    );
+    let cam_pos = view * vec3<f32>(in.position, 1.0);
+    out.clip_position = vec4<f32>(
+        (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0,
+        0.0,
+        1.0
+    );
+    out.color = in.color;
+    out.uv = vec2<f32>(0.0, 0.0);
+    return out;
+}}
+{user_source}
+@fragment
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+    return {fragment_entry}({fragment_call_args});
+}}
+"#,
+        user_source = shader.wrapper_source(),
+        fragment_entry = shader.fragment_entry_name(),
+        fragment_call_args = fragment_call_args,
+    )
+}
+/// Assemble the full WGSL source for a custom textured shader pipeline.
+fn build_custom_texture_shader_source(
+    shader: &Shader,
+    uniform_signature: &[(String, ShaderUniformKind)],
+) -> String {
+    let uniform_decls = custom_uniform_declarations(uniform_signature, 2);
+    let fragment_call_args =
+        custom_fragment_call_args(shader.fragment_inputs(), "sampled", "in.uv");
+    format!(
+        r#"
+struct VertexInput {{
+    @location(0) position: vec2<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) color: vec4<f32>,
+    @location(3) w_depth: f32,
+}}
+struct VertexOutput {{
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+}}
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}}
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
+@group(1) @binding(0) var t_diffuse: texture_2d<f32>;
+@group(1) @binding(1) var s_diffuse: sampler;
+{uniform_decls}
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {{
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
+    );
+    let cam_pos = view * vec3<f32>(in.position, 1.0);
+    let w = max(in.w_depth, 0.001);
+    let ndc_x = (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0;
+    let ndc_y = 1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0;
+    out.clip_position = vec4<f32>(ndc_x * w, ndc_y * w, 0.0, w);
+    out.color = in.color;
+    out.uv = in.uv;
+    return out;
+}}
+{user_source}
+@fragment
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+    let sampled = textureSample(t_diffuse, s_diffuse, in.uv) * in.color;
+    return {fragment_entry}({fragment_call_args});
+}}
+"#,
+        user_source = shader.wrapper_source(),
+        fragment_entry = shader.fragment_entry_name(),
+        fragment_call_args = fragment_call_args,
+    )
+}
+/// Create a wgpu render pipeline for the given geometry kind, blend/stencil key, and shader module.
+fn create_render_pipeline(
+    device: &wgpu::Device,
+    surface_format: wgpu::TextureFormat,
+    layout: &wgpu::PipelineLayout,
+    module: &wgpu::ShaderModule,
+    geometry: GeometryKind,
+    key: PipelineKey,
+    fragment_entry: &str,
+) -> wgpu::RenderPipeline {
+    let primitive = wgpu::PrimitiveState {
+        topology: wgpu::PrimitiveTopology::TriangleList,
+        strip_index_format: None,
+        front_face: wgpu::FrontFace::Ccw,
+        cull_mode: None,
+        polygon_mode: wgpu::PolygonMode::Fill,
+        unclipped_depth: false,
+        conservative: false,
+    };
+    let target = Some(wgpu::ColorTargetState {
+        format: surface_format,
+        blend: Some(blend_state_for(key.blend_mode)),
+        write_mask: if matches!(key.stencil_mode, StencilMode::Write(_)) {
+            wgpu::ColorWrites::empty()
+        } else {
+            color_write_mask_from_bits(key.color_mask_bits)
+        },
+    });
+    match geometry {
+        GeometryKind::Color => device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("color_pipeline"),
+            layout: Some(layout),
+            vertex: wgpu::VertexState {
+                module,
+                entry_point: "vs_main",
+                compilation_options: Default::default(),
+                buffers: &[wgpu::VertexBufferLayout {
+                    array_stride: std::mem::size_of::<ColorVertex>() as wgpu::BufferAddress,
+                    step_mode: wgpu::VertexStepMode::Vertex,
+                    attributes: &wgpu::vertex_attr_array![0 => Float32x2, 1 => Float32x4],
+                }],
+            },
+            fragment: Some(wgpu::FragmentState {
+                module,
+                entry_point: fragment_entry,
+                compilation_options: Default::default(),
+                targets: &[target],
+            }),
+            primitive,
+            depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
+            multisample: wgpu::MultisampleState::default(),
+            multiview: None,
+            cache: None,
+        }),
+        GeometryKind::Texture => device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("texture_pipeline"),
+            layout: Some(layout),
+            vertex: wgpu::VertexState {
+                module,
+                entry_point: "vs_main",
+                compilation_options: Default::default(),
+                buffers: &[wgpu::VertexBufferLayout {
+                    array_stride: std::mem::size_of::<TexVertex>() as wgpu::BufferAddress,
+                    step_mode: wgpu::VertexStepMode::Vertex,
+                    attributes: &wgpu::vertex_attr_array![0 => Float32x2, 1 => Float32x2, 2 => Float32x4, 3 => Float32],
+                }],
+            },
+            fragment: Some(wgpu::FragmentState {
+                module,
+                entry_point: fragment_entry,
+                compilation_options: Default::default(),
+                targets: &[target],
+            }),
+            primitive,
+            depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
+            multisample: wgpu::MultisampleState::default(),
+            multiview: None,
+            cache: None,
+        }),
+    }
+}
+/// Build the depth/stencil descriptor for a given stencil mode.
+fn depth_stencil_state(stencil_mode: StencilMode) -> wgpu::DepthStencilState {
+    wgpu::DepthStencilState {
+        format: wgpu::TextureFormat::Depth24PlusStencil8,
+        depth_write_enabled: false,
+        depth_compare: wgpu::CompareFunction::Always,
+        stencil: wgpu::StencilState {
+            front: stencil_face_state(stencil_mode),
+            back: stencil_face_state(stencil_mode),
+            read_mask: if matches!(stencil_mode, StencilMode::Disabled) {
+                0
+            } else {
+                0xFF
+            },
+            write_mask: if matches!(stencil_mode, StencilMode::Write(_)) {
+                0xFF
+            } else {
+                0
+            },
+        },
+        bias: wgpu::DepthBiasState::default(),
+    }
+}
+/// Build a stencil face-state for the given stencil mode.
+fn stencil_face_state(stencil_mode: StencilMode) -> wgpu::StencilFaceState {
+    match stencil_mode {
+        StencilMode::Disabled => wgpu::StencilFaceState {
+            compare: wgpu::CompareFunction::Always,
+            fail_op: wgpu::StencilOperation::Keep,
+            depth_fail_op: wgpu::StencilOperation::Keep,
+            pass_op: wgpu::StencilOperation::Keep,
+        },
+        StencilMode::Write(action) => wgpu::StencilFaceState {
+            compare: wgpu::CompareFunction::Always,
+            fail_op: wgpu::StencilOperation::Keep,
+            depth_fail_op: wgpu::StencilOperation::Keep,
+            pass_op: stencil_operation(action),
+        },
+        StencilMode::Test(compare) => wgpu::StencilFaceState {
+            compare: compare_function(compare),
+            fail_op: wgpu::StencilOperation::Keep,
+            depth_fail_op: wgpu::StencilOperation::Keep,
+            pass_op: wgpu::StencilOperation::Keep,
+        },
+    }
+}
+/// Map a renderer `CompareMode` to a wgpu `CompareFunction`.
+fn compare_function(compare: crate::render::renderer::CompareMode) -> wgpu::CompareFunction {
+    match compare {
+        crate::render::renderer::CompareMode::Equal => wgpu::CompareFunction::Equal,
+        crate::render::renderer::CompareMode::NotEqual => wgpu::CompareFunction::NotEqual,
+        crate::render::renderer::CompareMode::Less => wgpu::CompareFunction::Less,
+        crate::render::renderer::CompareMode::LessEqual => wgpu::CompareFunction::LessEqual,
+        crate::render::renderer::CompareMode::Greater => wgpu::CompareFunction::Greater,
+        crate::render::renderer::CompareMode::GreaterEqual => wgpu::CompareFunction::GreaterEqual,
+        crate::render::renderer::CompareMode::Always => wgpu::CompareFunction::Always,
+        crate::render::renderer::CompareMode::Never => wgpu::CompareFunction::Never,
+    }
+}
+/// Map a renderer `StencilAction` to a wgpu `StencilOperation`.
+fn stencil_operation(action: crate::render::renderer::StencilAction) -> wgpu::StencilOperation {
+    match action {
+        crate::render::renderer::StencilAction::Replace => wgpu::StencilOperation::Replace,
+        crate::render::renderer::StencilAction::Increment => wgpu::StencilOperation::IncrementClamp,
+        crate::render::renderer::StencilAction::Decrement => wgpu::StencilOperation::DecrementClamp,
+        crate::render::renderer::StencilAction::IncrementWrap => {
+            wgpu::StencilOperation::IncrementWrap
+        }
+        crate::render::renderer::StencilAction::DecrementWrap => {
+            wgpu::StencilOperation::DecrementWrap
+        }
+        crate::render::renderer::StencilAction::Keep => wgpu::StencilOperation::Keep,
+        crate::render::renderer::StencilAction::Zero => wgpu::StencilOperation::Zero,
+        crate::render::renderer::StencilAction::Invert => wgpu::StencilOperation::Invert,
+    }
+}
+/// Transform a point by a `Mat3` and return the screen-space `(x, y)` pair.
+#[inline]
+fn apply(t: &Mat3, x: f32, y: f32) -> (f32, f32) {
+    let p = t.transform_point(Vec2 { x, y });
+    (p.x, p.y)
+}
+/// Generate a thick line as a transformed quad from `(x1,y1)` to `(x2,y2)`.
+#[allow(clippy::too_many_arguments)]
+fn push_thick_line(
+    cv: &mut Vec<ColorVertex>,
+    ci: &mut Vec<u32>,
+    t: &Mat3,
+    color: [f32; 4],
+    x1: f32,
+    y1: f32,
+    x2: f32,
+    y2: f32,
+    width: f32,
+) {
+    let dx = x2 - x1;
+    let dy = y2 - y1;
+    let len = (dx * dx + dy * dy).sqrt();
+    if len < 1e-4 {
+        return;
+    }
+    let hw = width * 0.5;
+    let nx = -dy / len * hw;
+    let ny = dx / len * hw;
+    let pts = [
+        apply(t, x1 + nx, y1 + ny),
+        apply(t, x1 - nx, y1 - ny),
+        apply(t, x2 - nx, y2 - ny),
+        apply(t, x2 + nx, y2 + ny),
+    ];
+    push_quad_verts(cv, ci, &pts, color);
+}
+/// Push four pre-transformed corner positions as a two-triangle quad.
+fn push_quad_verts(
+    cv: &mut Vec<ColorVertex>,
+    ci: &mut Vec<u32>,
+    pts: &[(f32, f32); 4],
+    color: [f32; 4],
+) {
+    let base = cv.len() as u32;
+    for &(x, y) in pts {
+        cv.push(ColorVertex {
+            position: [x, y],
+            color,
+        });
+    }
+    ci.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
+}
+/// Fill a convex polygon as a triangle fan from a centre point.
+fn push_fan_fill(
+    cv: &mut Vec<ColorVertex>,
+    ci: &mut Vec<u32>,
+    t: &Mat3,
+    color: [f32; 4],
+    cx: f32,
+    cy: f32,
+    path: &[(f32, f32)],
+) {
+    if path.len() < 2 {
+        return;
+    }
+    let base = cv.len() as u32;
+    let c = apply(t, cx, cy);
+    cv.push(ColorVertex {
+        position: [c.0, c.1],
+        color,
+    });
+    for &(px, py) in path {
+        let p = apply(t, px, py);
+        cv.push(ColorVertex {
+            position: [p.0, p.1],
+            color,
+        });
+    }
+    let n = path.len() as u32;
+    for i in 0..n {
+        ci.extend_from_slice(&[base, base + 1 + i, base + 1 + (i + 1) % n]);
+    }
+}
+/// Generate a rounded rectangle outline path as a series of arc-sampled points.
+fn build_rounded_rect_path(
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    rx: f32,
+    ry: f32,
+    segs: u32,
+) -> Vec<(f32, f32)> {
+    let mut pts = Vec::new();
+    let corners = [
+        (x + rx, y + ry, PI, 1.5 * PI),
+        (x + w - rx, y + ry, 1.5 * PI, 2.0 * PI),
+        (x + w - rx, y + h - ry, 0.0, 0.5 * PI),
+        (x + rx, y + h - ry, 0.5 * PI, PI),
+    ];
+    for &(cx, cy, a_start, a_end) in &corners {
+        for i in 0..=segs {
+            let a = a_start + (a_end - a_start) * (i as f32 / segs as f32);
+            pts.push((cx + rx * a.cos(), cy + ry * a.sin()));
+        }
+    }
+    pts
+}
+/// Push a textured quad with position, rotation, scale, and origin offset.
+#[allow(clippy::too_many_arguments)]
+fn push_tex_quad(
+    tv: &mut Vec<TexVertex>,
+    ti: &mut Vec<u32>,
+    t: &Mat3,
+    tint: [f32; 4],
+    x: f32,
+    y: f32,
+    rot: f32,
+    sx: f32,
+    sy: f32,
+    ox: f32,
+    oy: f32,
+    w: f32,
+    h: f32,
+    u0: f32,
+    v0: f32,
+    u1: f32,
+    v1: f32,
+) {
+    let local = [(0.0, 0.0), (w, 0.0), (w, h), (0.0, h)];
+    let uv = [(u0, v0), (u1, v0), (u1, v1), (u0, v1)];
+    let cos_r = rot.cos();
+    let sin_r = rot.sin();
+    let base = tv.len() as u32;
+    for (i, &(lx, ly)) in local.iter().enumerate() {
+        let sx2 = (lx - ox) * sx;
+        let sy2 = (ly - oy) * sy;
+        let rx = sx2 * cos_r - sy2 * sin_r + x;
+        let ry = sx2 * sin_r + sy2 * cos_r + y;
+        let (wx, wy) = apply(t, rx, ry);
+        tv.push(TexVertex {
+            position: [wx, wy],
+            uv: [uv[i].0, uv[i].1],
+            color: tint,
+            w_depth: 1.0,
+            _pad: [0.0; 3],
+        });
+    }
+    ti.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
+}
+/// Push a textured quad defined by explicit corner positions and per-vertex W depths.
+fn push_tex_quad_corners(
+    tv: &mut Vec<TexVertex>,
+    ti: &mut Vec<u32>,
+    t: &Mat3,
+    tint: [f32; 4],
+    corners: &[crate::math::Vec2; 4],
+    uvs: &[crate::math::Vec2; 4],
+    corner_w: &[f32; 4],
+) {
+    let base = tv.len() as u32;
+    for i in 0..4 {
+        let (wx, wy) = apply(t, corners[i].x, corners[i].y);
+        tv.push(TexVertex {
+            position: [wx, wy],
+            uv: [uvs[i].x, uvs[i].y],
+            color: tint,
+            w_depth: corner_w[i].max(0.001),
+            _pad: [0.0; 3],
+        });
+    }
+    ti.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
+}
+/// Return the 5×7 bitmap pattern for a single character.
+#[allow(dead_code)]
+fn bitmap_char(ch: char) -> [u8; 7] {
+    match ch.to_ascii_uppercase() {
+        'A' => [
+            0b01110, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001, 0b10001,
+        ],
+        'B' => [
+            0b11110, 0b10001, 0b11110, 0b10001, 0b10001, 0b10001, 0b11110,
+        ],
+        'C' => [
+            0b01110, 0b10001, 0b10000, 0b10000, 0b10000, 0b10001, 0b01110,
+        ],
+        'D' => [
+            0b11100, 0b10010, 0b10001, 0b10001, 0b10001, 0b10010, 0b11100,
+        ],
+        'E' => [
+            0b11111, 0b10000, 0b10000, 0b11110, 0b10000, 0b10000, 0b11111,
+        ],
+        'F' => [
+            0b11111, 0b10000, 0b10000, 0b11110, 0b10000, 0b10000, 0b10000,
+        ],
+        'G' => [
+            0b01110, 0b10001, 0b10000, 0b10111, 0b10001, 0b10001, 0b01110,
+        ],
+        'H' => [
+            0b10001, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001, 0b10001,
+        ],
+        'I' => [
+            0b01110, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110,
+        ],
+        'J' => [
+            0b00111, 0b00010, 0b00010, 0b00010, 0b00010, 0b10010, 0b01100,
+        ],
+        'K' => [
+            0b10001, 0b10010, 0b10100, 0b11000, 0b10100, 0b10010, 0b10001,
+        ],
+        'L' => [
+            0b10000, 0b10000, 0b10000, 0b10000, 0b10000, 0b10000, 0b11111,
+        ],
+        'M' => [
+            0b10001, 0b11011, 0b10101, 0b10101, 0b10001, 0b10001, 0b10001,
+        ],
+        'N' => [
+            0b10001, 0b11001, 0b10101, 0b10011, 0b10001, 0b10001, 0b10001,
+        ],
+        'O' => [
+            0b01110, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110,
+        ],
+        'P' => [
+            0b11110, 0b10001, 0b10001, 0b11110, 0b10000, 0b10000, 0b10000,
+        ],
+        'Q' => [
+            0b01110, 0b10001, 0b10001, 0b10001, 0b10101, 0b10010, 0b01101,
+        ],
+        'R' => [
+            0b11110, 0b10001, 0b10001, 0b11110, 0b10100, 0b10010, 0b10001,
+        ],
+        'S' => [
+            0b01110, 0b10001, 0b10000, 0b01110, 0b00001, 0b10001, 0b01110,
+        ],
+        'T' => [
+            0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100,
+        ],
+        'U' => [
+            0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110,
+        ],
+        'V' => [
+            0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01010, 0b00100,
+        ],
+        'W' => [
+            0b10001, 0b10001, 0b10001, 0b10101, 0b10101, 0b11011, 0b10001,
+        ],
+        'X' => [
+            0b10001, 0b10001, 0b01010, 0b00100, 0b01010, 0b10001, 0b10001,
+        ],
+        'Y' => [
+            0b10001, 0b10001, 0b01010, 0b00100, 0b00100, 0b00100, 0b00100,
+        ],
+        'Z' => [
+            0b11111, 0b00001, 0b00010, 0b00100, 0b01000, 0b10000, 0b11111,
+        ],
+        '0' => [
+            0b01110, 0b10011, 0b10101, 0b10101, 0b11001, 0b10001, 0b01110,
+        ],
+        '1' => [
+            0b00100, 0b01100, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110,
+        ],
+        '2' => [
+            0b01110, 0b10001, 0b00001, 0b00110, 0b01000, 0b10000, 0b11111,
+        ],
+        '3' => [
+            0b01110, 0b10001, 0b00001, 0b00110, 0b00001, 0b10001, 0b01110,
+        ],
+        '4' => [
+            0b00010, 0b00110, 0b01010, 0b10010, 0b11111, 0b00010, 0b00010,
+        ],
+        '5' => [
+            0b11111, 0b10000, 0b11110, 0b00001, 0b00001, 0b10001, 0b01110,
+        ],
+        '6' => [
+            0b01110, 0b10000, 0b10000, 0b11110, 0b10001, 0b10001, 0b01110,
+        ],
+        '7' => [
+            0b11111, 0b00001, 0b00010, 0b00100, 0b01000, 0b01000, 0b01000,
+        ],
+        '8' => [
+            0b01110, 0b10001, 0b10001, 0b01110, 0b10001, 0b10001, 0b01110,
+        ],
+        '9' => [
+            0b01110, 0b10001, 0b10001, 0b01111, 0b00001, 0b00001, 0b01110,
+        ],
+        '!' => [
+            0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00000, 0b00100,
+        ],
+        '.' => [
+            0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00100,
+        ],
+        ',' => [
+            0b00000, 0b00000, 0b00000, 0b00000, 0b00000, 0b00100, 0b01000,
+        ],
+        ':' => [
+            0b00000, 0b00100, 0b00000, 0b00000, 0b00000, 0b00100, 0b00000,
+        ],
+        '-' => [
+            0b00000, 0b00000, 0b00000, 0b11111, 0b00000, 0b00000, 0b00000,
+        ],
+        '/' => [
+            0b00001, 0b00010, 0b00010, 0b00100, 0b01000, 0b01000, 0b10000,
+        ],
+        _ => [
+            0b01110, 0b01010, 0b01010, 0b01010, 0b01010, 0b00000, 0b01010,
+        ],
+    }
+}
+/// Render a string of text using the built-in 5×7 bitmap font.
+#[allow(dead_code)]
+#[allow(clippy::too_many_arguments)]
+fn render_text(
+    cv: &mut Vec<ColorVertex>,
+    ci: &mut Vec<u32>,
+    t: &Mat3,
+    color: [f32; 4],
+    text: &str,
+    x: f32,
+    y: f32,
+    scale: f32,
+) {
+    let char_w = 6.0 * scale;
+    let px_w = char_w / 5.0;
+    let px_h = (8.0 * scale) / 7.0;
+    for (i, ch) in text.chars().enumerate() {
+        if ch == ' ' {
+            continue;
+        }
+        let cx = x + i as f32 * char_w;
+        let pattern = bitmap_char(ch);
+        for (row, &bits) in pattern.iter().enumerate() {
+            for col in 0..5u8 {
+                if bits & (1 << (4 - col)) != 0 {
+                    let px = cx + col as f32 * px_w;
+                    let py = y + row as f32 * px_h;
+                    let pts = [
+                        apply(t, px, py),
+                        apply(t, px + px_w, py),
+                        apply(t, px + px_w, py + px_h),
+                        apply(t, px, py + px_h),
+                    ];
+                    push_quad_verts(cv, ci, &pts, color);
+                }
+            }
+        }
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::render::renderer::{CompareMode, StencilAction};
+    use std::convert::TryInto;
+    const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+) -> @location(0) vec4<f32> {
+    return color + vec4<f32>(uv, 0.0, 0.0);
+}
+"#;
+    #[test]
+    fn test_phase02_live_scissor_normalization_clamps_to_target_bounds() {
+        assert_eq!(
+            normalize_scissor(Some((-1.2, 2.8, 20.1, 100.0)), 10, 8),
+            Some((0, 2, 10, 6))
+        );
+    }
+    #[test]
+    fn test_phase02_live_scissor_normalization_discards_fully_offscreen_rects() {
+        assert_eq!(normalize_scissor(Some((11.0, 0.0, 2.0, 2.0)), 10, 8), None);
+    }
+    #[test]
+    fn test_phase02_live_color_mask_bits_round_trip_selected_channels() {
+        let bits = color_write_mask_bits((true, false, true, false));
+        let mask = color_write_mask_from_bits(bits);
+        assert_eq!(mask, wgpu::ColorWrites::RED | wgpu::ColorWrites::BLUE);
+    }
+    #[test]
+    fn test_phase02_live_filter_mode_maps_linear_and_defaults_to_nearest() {
+        assert_eq!(parse_filter_mode("linear"), wgpu::FilterMode::Linear);
+        assert_eq!(parse_filter_mode("nearest"), wgpu::FilterMode::Nearest);
+        assert_eq!(parse_filter_mode("unsupported"), wgpu::FilterMode::Nearest);
+    }
+    #[test]
+    fn test_phase02_live_uniform_bytes_pack_bool_and_vec4_values() {
+        let bool_bytes = uniform_bytes(&UniformValue::Bool(true));
+        let vec4_bytes = uniform_bytes(&UniformValue::Vec4([1.0, 2.0, 3.0, 4.0]));
+        assert_eq!(u32::from_ne_bytes(bool_bytes[..4].try_into().unwrap()), 1);
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[0..4].try_into().unwrap()),
+            1.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[4..8].try_into().unwrap()),
+            2.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[8..12].try_into().unwrap()),
+            3.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[12..16].try_into().unwrap()),
+            4.0
+        );
+    }
+    #[test]
+    fn test_phase02_live_custom_color_shader_source_is_parseable_with_uniforms() {
+        let uniform_signature = vec![
+            ("tint".to_string(), ShaderUniformKind::Vec4),
+            ("time_scale".to_string(), ShaderUniformKind::Float),
+        ];
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_color_shader_source(&shader, &uniform_signature);
+        assert!(source.contains("@group(1) @binding(0) var<uniform> tint: vec4<f32>;"));
+        assert!(source.contains("@group(1) @binding(1) var<uniform> time_scale: f32;"));
+        assert!(source.contains("fn lurek_fragment_main"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped color shader source should remain valid WGSL");
+    }
+    #[test]
+    fn test_phase02_live_custom_texture_shader_source_is_parseable_with_uniforms() {
+        let uniform_signature = vec![("uv_scale".to_string(), ShaderUniformKind::Vec2)];
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_texture_shader_source(&shader, &uniform_signature);
+        assert!(source.contains("@group(1) @binding(0) var t_diffuse: texture_2d<f32>;"));
+        assert!(source.contains("@group(1) @binding(1) var s_diffuse: sampler;"));
+        assert!(source.contains("@group(2) @binding(0) var<uniform> uv_scale: vec2<f32>;"));
+        assert!(source.contains("textureSample(t_diffuse, s_diffuse, in.uv) * in.color"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped texture shader source should remain valid WGSL");
+    }
+    #[test]
+    fn test_phase02_live_stencil_write_depth_state_enables_writes_and_action() {
+        let state = depth_stencil_state(StencilMode::Write(StencilAction::IncrementWrap));
+        assert_eq!(state.format, wgpu::TextureFormat::Depth24PlusStencil8);
+        assert_eq!(state.depth_compare, wgpu::CompareFunction::Always);
+        assert_eq!(state.stencil.read_mask, 0xFF);
+        assert_eq!(state.stencil.write_mask, 0xFF);
+        assert_eq!(state.stencil.front.compare, wgpu::CompareFunction::Always);
+        assert_eq!(
+            state.stencil.front.pass_op,
+            wgpu::StencilOperation::IncrementWrap
+        );
+        assert_eq!(
+            state.stencil.back.pass_op,
+            wgpu::StencilOperation::IncrementWrap
+        );
+    }
+    #[test]
+    fn test_phase02_live_stencil_test_depth_state_reads_without_writing() {
+        let state = depth_stencil_state(StencilMode::Test(CompareMode::GreaterEqual));
+        assert_eq!(state.stencil.read_mask, 0xFF);
+        assert_eq!(state.stencil.write_mask, 0);
+        assert_eq!(
+            state.stencil.front.compare,
+            wgpu::CompareFunction::GreaterEqual
+        );
+        assert_eq!(state.stencil.front.pass_op, wgpu::StencilOperation::Keep);
+        assert_eq!(
+            state.stencil.back.compare,
+            wgpu::CompareFunction::GreaterEqual
+        );
+    }
+}

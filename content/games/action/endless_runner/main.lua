@@ -1,0 +1,727 @@
+-- Universal render helpers (handles all legacy and current call signatures)
+local app_ui = {}
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
+-- ============================================================================
+--  Endless Runner — Sprint through an infinite landscape, dodge or die
+-- ----------------------------------------------------------------------------
+--  Category : action
+--  Run with : cargo run -- content/games/action/endless_runner
+--
+--  Controls (bound as input actions — see lurek.init):
+--    jump   : Space / W / Up           (double jump after 500m)
+--    slide  : S / Down                 (duck under low barriers)
+--    quit   : Escape
+--
+--  lurek.* namespaces used:
+--    window, render, input, time, signal, particles, tween
+-- ============================================================================
+
+-- ── Constants ─────────────────────────────────────────────────────────────
+
+local SCREEN_W, SCREEN_H = 800, 600
+local GROUND_Y            = 500
+local PLAYER_X            = 120
+local GRAVITY             = 1800
+local JUMP_FORCE          = -620
+local PLAYER_W, PLAYER_H  = 28, 48
+local SLIDE_H             = 20
+local COIN_SIZE           = 12
+local COIN_SCORE          = 50
+local SPEED_START         = 300
+local SPEED_INC           = 20
+local SPEED_INC_INTERVAL  = 500
+local SPEED_CAP           = 600
+local DOUBLE_JUMP_DIST    = 500
+local OBSTACLE_GAP_MIN    = 220
+local OBSTACLE_GAP_MAX    = 380
+
+-- ── Scene state ───────────────────────────────────────────────────────────
+local STATE = { TITLE = 1, PLAYING = 2, DEAD = 3 }
+local scene = STATE.TITLE
+
+-- ── Parallax layers ───────────────────────────────────────────────────────
+local layers = {
+    { speed = 0.15, y = 180, h = 200, color = {0.35, 0.45, 0.65, 0.6}, shapes = {} },  -- mountains
+    { speed = 0.35, y = 300, h = 150, color = {0.2,  0.5,  0.25, 0.7}, shapes = {} },  -- trees
+    { speed = 0.7,  y = 440, h = 60,  color = {0.45, 0.55, 0.35, 0.5}, shapes = {} },  -- ground detail
+}
+
+-- ── Player state ──────────────────────────────────────────────────────────
+local player = {
+    y       = GROUND_Y - PLAYER_H,
+    vy      = 0,
+    on_ground = true,
+    sliding = false,
+    jumps   = 0,
+    alive   = true,
+    stumble_timer = 0,
+    rotation = 0,
+}
+
+-- ── World state ───────────────────────────────────────────────────────────
+local scroll_speed   = SPEED_START
+local distance       = 0
+local coins_collected = 0
+local high_score     = 0
+local obstacles      = {}
+local coins          = {}
+local world_offset   = 0
+local next_obstacle  = 300
+
+-- ── Particles ─────────────────────────────────────────────────────────────
+local dust_ps       = nil  ---@type LParticleSystem
+local coin_ps       = nil  ---@type LParticleSystem
+local death_ps      = nil  ---@type LParticleSystem
+
+-- ── Tween targets ─────────────────────────────────────────────────────────
+local coin_flash    = { scale = 1 }
+local speed_flash   = { alpha = 0 }
+local title_blink   = 0
+-- ── Parallax init ─────────────────────────────────────────────────────────
+local function generate_layer_shapes(layer)
+    layer.shapes = {}
+    local x = 0
+    while x < SCREEN_W + 200 do
+        local w = math.random(40, 120)
+        local h = math.random(20, layer.h)
+        layer.shapes[#layer.shapes + 1] = { x = x, w = w, h = h }
+        x = x + w + math.random(10, 60)
+    end
+end
+
+-- ── Obstacle types ────────────────────────────────────────────────────────
+-- tall: must jump over   low: must slide under   gap: must jump across
+local OBS_TYPES = { "tall", "low", "gap" }
+
+local function spawn_obstacle()
+    local kind = OBS_TYPES[math.random(1, #OBS_TYPES)]
+    local obs = { x = SCREEN_W + 50, kind = kind }
+    if kind == "tall" then
+        obs.w = 30
+        obs.h = 60
+        obs.y = GROUND_Y - obs.h
+    elseif kind == "low" then
+        obs.w = 50
+        obs.h = 25
+        obs.y = GROUND_Y - 55
+    else -- gap
+        obs.w = 80
+        obs.h = 20
+        obs.y = GROUND_Y
+        obs.is_gap = true
+    end
+    obstacles[#obstacles + 1] = obs
+end
+
+local function spawn_coin(obs_x)
+    local cy = math.random(GROUND_Y - 120, GROUND_Y - 50)
+    local cx = obs_x + math.random(-40, 80)
+    coins[#coins + 1] = { x = cx, y = cy, collected = false }
+end
+
+-- ── Collision helpers ─────────────────────────────────────────────────────
+local function rects_overlap(ax, ay, aw, ah, bx, by, bw, bh)
+    return ax < bx + bw and ax + aw > bx and ay < by + bh and ay + ah > by
+end
+
+local function get_player_rect()
+    local h = player.sliding and SLIDE_H or PLAYER_H
+    local y = player.sliding and (GROUND_Y - SLIDE_H) or player.y
+    return PLAYER_X, y, PLAYER_W, h
+end
+
+-- ── Reset / new game ─────────────────────────────────────────────────────
+local function reset_game()
+    player.y         = GROUND_Y - PLAYER_H
+    player.vy        = 0
+    player.on_ground = true
+    player.sliding   = false
+    player.jumps     = 0
+    player.alive     = true
+    player.stumble_timer = 0
+    player.rotation  = 0
+
+    scroll_speed    = SPEED_START
+    distance        = 0
+    coins_collected = 0
+    obstacles       = {}
+    coins           = {}
+    world_offset    = 0
+    next_obstacle   = 300
+    scene           = STATE.PLAYING
+
+    coin_flash.scale  = 1
+    speed_flash.alpha = 0
+
+    for _, layer in ipairs(layers) do generate_layer_shapes(layer) end
+end
+
+-- ── Player physics ────────────────────────────────────────────────────────
+local function update_player(dt)
+    if not player.alive then
+        -- Death stumble animation
+        player.stumble_timer = player.stumble_timer + dt
+        player.rotation = player.rotation + dt * 8
+        player.y = player.y + 200 * dt
+        if player.y > SCREEN_H + 100 then
+            if distance > high_score then high_score = distance end
+            scene = STATE.DEAD
+        end
+        return
+    end
+
+    -- Jump input
+    local max_jumps = distance >= DOUBLE_JUMP_DIST and 2 or 1
+    if lurek.input.wasActionPressed("jump") then
+        if player.jumps < max_jumps then
+            player.vy = JUMP_FORCE
+            player.on_ground = false
+            player.jumps = player.jumps + 1
+        end
+    end
+
+    -- Slide input
+    player.sliding = lurek.input.isActionDown("slide") and player.on_ground
+
+    -- Gravity
+    if not player.on_ground then
+        player.vy = player.vy + GRAVITY * dt
+        player.y  = player.y + player.vy * dt
+    end
+
+    -- Land on ground
+    if player.y >= GROUND_Y - PLAYER_H then
+        player.y = GROUND_Y - PLAYER_H
+        player.vy = 0
+        if not player.on_ground then
+            player.on_ground = true
+            player.jumps = 0
+            -- Landing dust
+            if dust_ps then
+                dust_ps:setPosition(PLAYER_X + PLAYER_W / 2, GROUND_Y)
+                dust_ps:emit(8)
+            end
+        end
+    end
+end
+
+-- ── Gap death check ───────────────────────────────────────────────────────
+local function check_gap_death()
+    if not player.on_ground then return false end
+    local px, _, pw, _ = get_player_rect()
+    for _, obs in ipairs(obstacles) do
+        if obs.is_gap then
+            local pcx = px + pw / 2
+            if pcx > obs.x + 10 and pcx < obs.x + obs.w - 10 then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+-- ── Obstacle / coin update ────────────────────────────────────────────────
+local function update_world(dt)
+    local move = scroll_speed * dt
+    distance = distance + move
+    world_offset = world_offset + move
+
+    -- Speed increase
+    local speed_tier = math.floor(distance / SPEED_INC_INTERVAL)
+    local target_speed = math.min(SPEED_START + speed_tier * SPEED_INC, SPEED_CAP)
+    if target_speed > scroll_speed then
+        scroll_speed = target_speed
+        speed_flash.alpha = 1
+        lurek.tween.to(speed_flash, { alpha = 0 }, 1.0, "outQuad")
+    end
+
+    -- Scroll obstacles
+    for i = #obstacles, 1, -1 do
+        obstacles[i].x = obstacles[i].x - move
+        if obstacles[i].x + (obstacles[i].w or 80) < -50 then
+            table.remove(obstacles, i)
+        end
+    end
+
+    -- Scroll coins
+    for i = #coins, 1, -1 do
+        coins[i].x = coins[i].x - move
+        if coins[i].x < -30 then
+            table.remove(coins, i)
+        end
+    end
+
+    -- Spawn obstacles
+    next_obstacle = next_obstacle - move
+    if next_obstacle <= 0 then
+        spawn_obstacle()
+        if math.random() < 0.6 then
+            spawn_coin(SCREEN_W + 50)
+        end
+        next_obstacle = math.random(OBSTACLE_GAP_MIN, OBSTACLE_GAP_MAX)
+    end
+
+    -- Parallax scrolling
+    for _, layer in ipairs(layers) do
+        for _, s in ipairs(layer.shapes) do
+            s.x = s.x - move * layer.speed
+        end
+        -- Recycle shapes that scroll off left
+        while #layer.shapes > 0 and layer.shapes[1].x + layer.shapes[1].w < -20 do
+            table.remove(layer.shapes, 1)
+        end
+        -- Add new shapes on right
+        local last = layer.shapes[#layer.shapes]
+        local edge = last and (last.x + last.w) or 0
+        while edge < SCREEN_W + 200 do
+            local w = math.random(40, 120)
+            local h = math.random(20, layer.h)
+            local gap = math.random(10, 60)
+            layer.shapes[#layer.shapes + 1] = { x = edge + gap, w = w, h = h }
+            edge = edge + gap + w
+        end
+    end
+end
+
+-- ── Collision detection ───────────────────────────────────────────────────
+local function check_collisions()
+    local px, py, pw, ph = get_player_rect()
+
+    -- vs obstacles
+    for _, obs in ipairs(obstacles) do
+        if not obs.is_gap then
+            if rects_overlap(px, py, pw, ph, obs.x, obs.y, obs.w, obs.h) then
+                player.alive = false
+                player.stumble_timer = 0
+                player.rotation = 0
+                if death_ps then
+                    death_ps:setPosition(PLAYER_X + PLAYER_W / 2, player.y + PLAYER_H / 2)
+                    death_ps:emit(20)
+                end
+                return
+            end
+        end
+    end
+
+    -- Gap death
+    if check_gap_death() then
+        player.alive = false
+        player.stumble_timer = 0
+        player.rotation = 0
+        if death_ps then
+            death_ps:setPosition(PLAYER_X + PLAYER_W / 2, GROUND_Y)
+            death_ps:emit(15)
+        end
+        return
+    end
+
+    -- vs coins
+    for _, c in ipairs(coins) do
+        if not c.collected then
+            local cdist_x = (PLAYER_X + PLAYER_W / 2) - c.x
+            local cdist_y = (py + ph / 2) - c.y
+            if cdist_x * cdist_x + cdist_y * cdist_y < (COIN_SIZE + pw / 2) * (COIN_SIZE + pw / 2) then
+                c.collected = true
+                coins_collected = coins_collected + 1
+                if coin_ps then
+                    coin_ps:setPosition(c.x, c.y)
+                    coin_ps:emit(10)
+                end
+                coin_flash.scale = 1.8
+                lurek.tween.to(coin_flash, { scale = 1.0 }, 0.3, "outBack")
+            end
+        end
+    end
+end
+
+-- ── Draw helpers ──────────────────────────────────────────────────────────
+local function draw_parallax()
+    for _, layer in ipairs(layers) do
+        local c = layer.color
+        lurek.render.setColor(c[1], c[2], c[3], c[4])
+        for _, s in ipairs(layer.shapes) do
+            local base_y = layer.y + (layer.h - s.h)
+            rect("fill", s.x, base_y, s.w, s.h)
+        end
+    end
+end
+
+local function draw_ground()
+    lurek.render.setColor(0.35, 0.25, 0.15, 1)
+    rect("fill", 0, GROUND_Y, SCREEN_W, SCREEN_H - GROUND_Y)
+    lurek.render.setColor(0.5, 0.4, 0.2, 1)
+    rect("fill", 0, GROUND_Y, SCREEN_W, 3)
+end
+
+local function draw_player_char()
+    if not player.alive then
+        -- Stumble + fall rotation
+        local cx = PLAYER_X + PLAYER_W / 2
+        local cy = player.y + PLAYER_H / 2
+        lurek.render.setColor(0.9, 0.3, 0.2, 1)
+        local s = math.sin(player.rotation)
+        local co = math.cos(player.rotation)
+        local hw, hh = PLAYER_W / 2, PLAYER_H / 2
+        local x1, y1 = cx + (-hw * co - (-hh) * s), cy + (-hw * s + (-hh) * co)
+        local x2, y2 = cx + ( hw * co - (-hh) * s), cy + ( hw * s + (-hh) * co)
+        local x3, y3 = cx + ( hw * co -   hh  * s), cy + ( hw * s +   hh  * co)
+        local x4, y4 = cx + (-hw * co -   hh  * s), cy + (-hw * s +   hh  * co)
+        ln(x1, y1, x2, y2)
+        ln(x2, y2, x3, y3)
+        ln(x3, y3, x4, y4)
+        ln(x4, y4, x1, y1)
+        return
+    end
+
+    if player.sliding then
+        lurek.render.setColor(0.2, 0.7, 1.0, 1)
+        rect("fill", PLAYER_X, GROUND_Y - SLIDE_H, PLAYER_W + 8, SLIDE_H)
+        lurek.render.setColor(1, 1, 1, 1)
+        rect("fill", PLAYER_X + PLAYER_W - 2, GROUND_Y - SLIDE_H + 4, 8, 6)
+    else
+        -- Body
+        lurek.render.setColor(0.2, 0.7, 1.0, 1)
+        rect("fill", PLAYER_X, player.y, PLAYER_W, PLAYER_H)
+        -- Head
+        lurek.render.setColor(0.9, 0.75, 0.6, 1)
+        circ("fill", PLAYER_X + PLAYER_W / 2, player.y - 6, 10)
+        -- Eye
+        lurek.render.setColor(1, 1, 1, 1)
+        circ("fill", PLAYER_X + PLAYER_W / 2 + 4, player.y - 8, 3)
+        lurek.render.setColor(0, 0, 0, 1)
+        circ("fill", PLAYER_X + PLAYER_W / 2 + 5, player.y - 8, 1.5)
+        -- Animated legs
+        local leg_phase = math.sin(distance * 0.08) * 6
+        lurek.render.setColor(0.15, 0.5, 0.85, 1)
+        rect("fill", PLAYER_X + 4,  player.y + PLAYER_H, 6, 8 + leg_phase)
+        rect("fill", PLAYER_X + 18, player.y + PLAYER_H, 6, 8 - leg_phase)
+    end
+end
+
+local function draw_obstacles()
+    for _, obs in ipairs(obstacles) do
+        if obs.is_gap then
+            lurek.render.setColor(0.1, 0.08, 0.05, 1)
+            rect("fill", obs.x, obs.y, obs.w, SCREEN_H - obs.y)
+            lurek.render.setColor(0.9, 0.2, 0.1, 0.7)
+            rect("fill", obs.x, obs.y, 4, 20)
+            rect("fill", obs.x + obs.w - 4, obs.y, 4, 20)
+        elseif obs.kind == "tall" then
+            lurek.render.setColor(0.7, 0.15, 0.1, 1)
+            rect("fill", obs.x, obs.y, obs.w, obs.h)
+            lurek.render.setColor(0.9, 0.8, 0.1, 0.8)
+            rect("fill", obs.x + 4, obs.y + obs.h / 2 - 3, obs.w - 8, 6)
+        elseif obs.kind == "low" then
+            lurek.render.setColor(0.6, 0.4, 0.1, 1)
+            rect("fill", obs.x, obs.y, obs.w, obs.h)
+            lurek.render.setColor(0.5, 0.35, 0.1, 1)
+            rect("fill", obs.x, obs.y + obs.h, 4, GROUND_Y - obs.y - obs.h)
+            rect("fill", obs.x + obs.w - 4, obs.y + obs.h, 4, GROUND_Y - obs.y - obs.h)
+        end
+    end
+end
+
+local function draw_coins()
+    for _, c in ipairs(coins) do
+        if not c.collected then
+            local wobble = math.abs(math.sin(distance * 0.05 + c.x * 0.1))
+            local w = COIN_SIZE * (0.4 + 0.6 * wobble)
+            lurek.render.setColor(1.0, 0.85, 0.1, 1)
+            circ("fill", c.x, c.y, w)
+            lurek.render.setColor(0.9, 0.7, 0.0, 1)
+            circ("fill", c.x, c.y, w * 0.6)
+        end
+    end
+end
+
+-- ── load ──────────────────────────────────────────────────────────────────
+
+function lurek.init()
+    lurek.window.setTitle("Endless Runner — Lurek2D")
+    lurek.render.setBackgroundColor(0.4, 0.6, 0.9)
+
+    lurek.ui.loadLayoutFile("content/games/action/endless_runner/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.app_ui.best_score = ui_root:findById("app_ui.best_score")
+    app_ui.app_ui.coins_val = ui_root:findById("app_ui.coins_val")
+    app_ui.app_ui.dead_panel = ui_root:findById("app_ui.dead_panel")
+    app_ui.app_ui.dist_val = ui_root:findById("app_ui.dist_val")
+    app_ui.app_ui.fps_label = ui_root:findById("app_ui.fps_label")
+    app_ui.app_ui.go_coins = ui_root:findById("app_ui.go_coins")
+    app_ui.app_ui.go_dist = ui_root:findById("app_ui.go_dist")
+    app_ui.app_ui.go_restart = ui_root:findById("app_ui.go_restart")
+    app_ui.app_ui.go_total = ui_root:findById("app_ui.go_total")
+    app_ui.app_ui.high_score_title = ui_root:findById("app_ui.high_score_title")
+    app_ui.app_ui.hud_panel = ui_root:findById("app_ui.hud_panel")
+    app_ui.app_ui.jump_2x = ui_root:findById("app_ui.jump_2x")
+    app_ui.app_ui.score_val = ui_root:findById("app_ui.score_val")
+    app_ui.app_ui.speed_up = ui_root:findById("app_ui.speed_up")
+    app_ui.app_ui.speed_val = ui_root:findById("app_ui.speed_val")
+    app_ui.app_ui.start_label = ui_root:findById("app_ui.start_label")
+    app_ui.app_ui.title_panel = ui_root:findById("app_ui.title_panel")
+
+
+    lurek.input.bind("jump",  "space"); lurek.input.bind("jump",  "w"); lurek.input.bind("jump",  "up")
+    lurek.input.bind("slide", "s");     lurek.input.bind("slide", "down")
+    lurek.input.bind("quit",  "escape")
+    lurek.input.bind("start", "return")
+
+    -- Particle: landing dust
+    dust_ps = lurek.particle.newSystem({
+        maxParticles = 40,
+        emissionRate = 0,
+        lifetimeMin  = 0.15,
+        lifetimeMax  = 0.4,
+        speedMin     = 20,
+        speedMax     = 60,
+        direction    = 4.71,
+        spread       = 1.2,
+        gravityY     = 50,
+        sizes        = {4, 1},
+        colors       = {0.6, 0.5, 0.3, 0.8,  0.6, 0.5, 0.3, 0},
+    })
+
+    -- Particle: coin collect sparkle
+    coin_ps = lurek.particle.newSystem({
+        maxParticles = 50,
+        emissionRate = 0,
+        lifetimeMin  = 0.2,
+        lifetimeMax  = 0.5,
+        speedMin     = 40,
+        speedMax     = 100,
+        direction    = 0,
+        spread       = 6.28,
+        gravityY     = -20,
+        sizes        = {5, 1},
+        colors       = {1, 0.9, 0.2, 1,  1, 0.7, 0.0, 0},
+    })
+
+    -- Particle: death poof
+    death_ps = lurek.particle.newSystem({
+        maxParticles = 60,
+        emissionRate = 0,
+        lifetimeMin  = 0.3,
+        lifetimeMax  = 0.7,
+        speedMin     = 30,
+        speedMax     = 90,
+        direction    = 0,
+        spread       = 6.28,
+        gravityY     = 30,
+        sizes        = {6, 2},
+        colors       = {0.8, 0.2, 0.1, 1,  0.4, 0.1, 0.05, 0},
+    })
+
+    for _, layer in ipairs(layers) do generate_layer_shapes(layer) end
+    math.randomseed(os.time())
+end
+
+-- ── update ────────────────────────────────────────────────────────────────
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    lurek.tween.update(dt)
+    dust_ps:update(dt)
+    coin_ps:update(dt)
+    death_ps:update(dt)
+
+    if lurek.input.wasActionPressed("quit") then lurek.event.quit() end
+
+    if scene == STATE.TITLE then
+        title_blink = title_blink + dt
+        -- Scroll parallax gently on title
+        for _, layer in ipairs(layers) do
+            for _, s in ipairs(layer.shapes) do
+                s.x = s.x - 60 * layer.speed * dt
+            end
+            while #layer.shapes > 0 and layer.shapes[1].x + layer.shapes[1].w < -20 do
+                table.remove(layer.shapes, 1)
+            end
+            local last = layer.shapes[#layer.shapes]
+            local edge = last and (last.x + last.w) or 0
+            while edge < SCREEN_W + 200 do
+                local w = math.random(40, 120)
+                local h = math.random(20, layer.h)
+                local gap = math.random(10, 60)
+                layer.shapes[#layer.shapes + 1] = { x = edge + gap, w = w, h = h }
+                edge = edge + gap + w
+            end
+        end
+        if lurek.input.wasActionPressed("start") then reset_game() end
+        return
+    end
+
+    if scene == STATE.DEAD then
+        title_blink = title_blink + dt
+        if lurek.input.wasActionPressed("start") then reset_game() end
+        return
+    end
+
+    -- PLAYING
+    update_player(dt)
+    if player.alive then
+        update_world(dt)
+        check_collisions()
+    end
+
+    -- ── UI Update ─────────────────────────────────────────────────────────────
+    
+    
+    
+    
+
+    app_ui.title_panel.visible = (scene == STATE.TITLE)
+    app_ui.hud_panel.visible = (scene == STATE.PLAYING)
+    app_ui.dead_panel.visible = (scene == STATE.DEAD)
+
+    local current_fps = tostring(lurek.timer.getFPS()) .. " FPS"
+    app_ui.fps_label.text = current_fps
+
+    if scene == STATE.TITLE then
+        
+        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2.5))
+        app_ui.start_label.color = {1.0, 1.0, 0.3, alpha}
+
+        
+        if high_score > 0 then
+            app_ui.high_score_title.visible = true
+            app_ui.high_score_title.text = "HIGH SCORE: " .. math.floor(high_score) .. "m"
+        else
+            app_ui.high_score_title.visible = false
+        end
+
+        app_ui.fps_label.x = SCREEN_W - 80
+        app_ui.fps_label.y = SCREEN_H - 18
+    elseif scene == STATE.PLAYING then
+        
+        
+        
+        
+        
+        
+        
+
+        app_ui.dist_val.text = math.floor(distance) .. "m"
+        app_ui.coins_val.text = tostring(coins_collected)
+        local total = math.floor(distance) + coins_collected * COIN_SCORE
+        app_ui.score_val.text = tostring(total)
+        app_ui.speed_val.text = math.floor(scroll_speed)
+        app_ui.speed_val.color = {1, 0.5 + 0.5 * (scroll_speed / SPEED_CAP), 0.2, 1}
+
+        if speed_flash.alpha > 0.01 then
+            app_ui.speed_up.visible = true
+            app_ui.speed_up.color = {1.0, 1.0, 0.3, speed_flash.alpha}
+        else
+            app_ui.speed_up.visible = false
+        end
+
+        if distance >= DOUBLE_JUMP_DIST then
+            app_ui.jump_2x.visible = true
+        else
+            app_ui.jump_2x.visible = false
+        end
+
+        if high_score > 0 then
+            app_ui.best_score.visible = true
+            app_ui.best_score.text = "BEST: " .. math.floor(high_score) .. "m"
+        else
+            app_ui.best_score.visible = false
+        end
+
+        app_ui.fps_label.x = 10
+        app_ui.fps_label.y = SCREEN_H - 18
+    elseif scene == STATE.DEAD then
+        
+        
+        
+        
+
+        app_ui.go_dist.text = "Distance: " .. math.floor(distance) .. "m"
+        app_ui.go_coins.text = "Coins: " .. coins_collected .. " (+" .. coins_collected * COIN_SCORE .. ")"
+        local final_score = math.floor(distance) + coins_collected * COIN_SCORE
+        app_ui.go_total.text = "TOTAL: " .. final_score
+
+        local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 3))
+        app_ui.go_restart.color = {1.0, 1.0, 0.3, alpha}
+
+        app_ui.fps_label.x = 10
+        app_ui.fps_label.y = SCREEN_H - 18
+    end
+end
+
+-- ── render (world space — parallax + player + obstacles) ──────────────────
+function lurek.draw()
+    -- Sky gradient band near horizon
+    lurek.render.setColor(0.55, 0.75, 1.0, 0.3)
+    rect("fill", 0, GROUND_Y - 80, SCREEN_W, 80)
+
+    draw_parallax()
+
+    if scene == STATE.TITLE then
+        draw_ground()
+        return
+    end
+
+    draw_ground()
+    draw_obstacles()
+    draw_coins()
+    draw_player_char()
+
+    -- Particles (world space)
+    lurek.render.setColor(1, 1, 1, 1)
+    dust_ps:render()
+    coin_ps:render()
+    death_ps:render()
+end
+
+-- ── render_ui (screen space — HUD, title, death) ──────────────────────────
+function lurek.draw_ui()
+end
+
+-- ── keypressed (fallback) ─────────────────────────────────────────────────
+function lurek.keypressed(key)
+    if key == "escape" then lurek.event.quit() end
+end

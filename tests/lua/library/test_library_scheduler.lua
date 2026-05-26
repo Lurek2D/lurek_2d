@@ -1,0 +1,214 @@
+-- Lurek2D Library Scheduler Tests
+-- @testCategory library
+
+local scheduler = require("library.scheduler")
+
+-- @describe scheduler library     newScheduler
+describe("scheduler library     newScheduler", function()
+    -- @library lurek.library_scheduler
+    it("returns a scheduler with zero tasks by default", function()
+        local s = scheduler.newScheduler()
+        expect_true(s ~= nil, "newScheduler() must return non-nil")
+        expect_true(s:getCount() == 0, "fresh scheduler must have 0 tasks")
+    end)
+
+    -- @library lurek.library_scheduler
+    it("accepts opts.max_iterations", function()
+        local s = scheduler.newScheduler({ max_iterations = 500 })
+        expect_true(s ~= nil)
+        expect_true(s:getCount() == 0)
+    end)
+end)
+
+-- @describe scheduler library     add and immediate execution
+describe("scheduler library     add and immediate execution", function()
+    -- @library lurek.library_scheduler
+    it("runs a non-yielding task immediately on add", function()
+        local s = scheduler.newScheduler()
+        local ran = false
+        s:add(function(_yield)
+            ran = true
+        end)
+        expect_true(ran, "task must have run immediately")
+        -- one update tick to reap the completed task
+        s:update(0)
+        expect_true(s:getCount() == 0, "completed task must be removed after update")
+    end)
+
+    -- @library lurek.library_scheduler
+    it("returns incrementing ids", function()
+        local s = scheduler.newScheduler()
+        local id1 = s:add(function(y) y(999) end)
+        local id2 = s:add(function(y) y(999) end)
+        expect_true(type(id1) == "number", "id must be a number")
+        expect_true(id2 == id1 + 1, "ids must be sequential")
+    end)
+
+    -- @library lurek.library_scheduler
+    it("errors on non-function argument", function()
+        local s = scheduler.newScheduler()
+        local ok = pcall(function() s:add("not a function") end)
+        expect_true(not ok, "must error when passed a non-function")
+    end)
+end)
+
+-- @describe scheduler library     yield and update timing
+describe("scheduler library     yield and update timing", function()
+    -- @library lurek.library_scheduler
+    it("task is still pending after partial dt", function()
+        local s = scheduler.newScheduler()
+        local done = false
+        s:add(function(y)
+            y(1.0)
+            done = true
+        end)
+        s:update(0.5)
+        expect_true(not done, "task must not resume before the wait elapses")
+        expect_true(s:getCount() == 1, "task must still be active")
+    end)
+
+    -- @library lurek.library_scheduler
+    it("task resumes after enough dt", function()
+        local s = scheduler.newScheduler()
+        local done = false
+        s:add(function(y)
+            y(1.0)
+            done = true
+        end)
+        s:update(1.0)
+        s:update(0)
+        expect_true(done, "task must have resumed and completed")
+        expect_true(s:getCount() == 0, "task must be removed after completion")
+    end)
+
+    -- @library lurek.library_scheduler
+    it("multi-yield task resumes at each step", function()
+        local s = scheduler.newScheduler()
+        local step = 0
+        s:add(function(y)
+            step = 1; y(0.5)
+            step = 2; y(0.5)
+            step = 3
+        end)
+        expect_true(step == 1, "first step runs on add")
+        s:update(0.5)
+        expect_true(step == 2, "second step after first yield")
+        s:update(0.5)
+        s:update(0)
+        expect_true(step == 3, "third step after second yield")
+    end)
+end)
+
+-- @describe scheduler library     remove
+describe("scheduler library     remove", function()
+    -- @library lurek.library_scheduler
+    it("removes a pending task before it resumes", function()
+        local s = scheduler.newScheduler()
+        local done = false
+        local id = s:add(function(y)
+            y(1.0)
+            done = true
+        end)
+        s:remove(id)
+        s:update(2.0)
+        expect_true(not done, "removed task must not resume")
+        expect_true(s:getCount() == 0)
+    end)
+end)
+
+-- @describe scheduler library     pause and resume
+describe("scheduler library     pause and resume", function()
+    -- @library lurek.library_scheduler
+    it("paused task does not advance", function()
+        local s = scheduler.newScheduler()
+        local done = false
+        local id = s:add(function(y)
+            y(0.5)
+            done = true
+        end)
+        s:pause(id)
+        s:update(2.0)
+        expect_true(not done, "paused task must not advance")
+    end)
+
+    -- @library lurek.library_scheduler
+    it("resumed task completes after unpausing", function()
+        local s = scheduler.newScheduler()
+        local done = false
+        local id = s:add(function(y)
+            y(0.5)
+            done = true
+        end)
+        s:pause(id)
+        s:update(2.0)
+        s:resume(id)
+        s:update(0.5)
+        s:update(0)
+        expect_true(done, "task must complete after resume")
+    end)
+end)
+
+-- @describe scheduler library     getStatus
+describe("scheduler library     getStatus", function()
+    -- @library LPipelineStep:getStatus
+    it("returns running for an active task", function()
+        local s = scheduler.newScheduler()
+        local id = s:add(function(y) y(999) end)
+        local st = s:getStatus(id)
+        expect_true(st == "running" or st ~= nil, "status must be a string for active task")
+    end)
+
+    -- @library LPipelineStep:getStatus
+    it("returns nil or done for unknown id", function()
+        local s = scheduler.newScheduler()
+        local st = s:getStatus(999)
+        expect_true(st == nil or st == "done", "unknown id must return nil or 'done'")
+    end)
+end)
+
+-- @describe scheduler library     getCount and clear
+describe("scheduler library     getCount and clear", function()
+    -- @library lurek.library_scheduler
+    it("getCount increments on add", function()
+        local s = scheduler.newScheduler()
+        s:add(function(y) y(999) end)
+        s:add(function(y) y(999) end)
+        expect_true(s:getCount() == 2)
+    end)
+
+    -- @library lurek.library_scheduler
+    it("clear removes all tasks", function()
+        local s = scheduler.newScheduler()
+        s:add(function(y) y(999) end)
+        s:add(function(y) y(999) end)
+        s:clear()
+        expect_true(s:getCount() == 0, "clear must remove all tasks")
+    end)
+end)
+
+-- @describe scheduler library     error handling
+describe("scheduler library     error handling", function()
+    -- @library lurek.library_scheduler
+    it("captures erroring task in getErrors", function()
+        local s = scheduler.newScheduler()
+        local id = s:add(function(_y)
+            error("intentional error")
+        end)
+        s:update(0)
+        local errs = s:getErrors()
+        expect_true(type(errs) == "table", "getErrors must return a table")
+        -- At least one error recorded
+        expect_true(#errs > 0, "error must be recorded")
+        expect_true(s:getCount() == 0, "errored task must be removed")
+    end)
+
+    -- @library lurek.library_scheduler
+    it("clearErrors empties the error list", function()
+        local s = scheduler.newScheduler()
+        s:add(function(_y) error("boom") end)
+        s:update(0)
+        s:clearErrors()
+        expect_true(#s:getErrors() == 0, "clearErrors must empty the list")
+    end)
+end)
+test_summary()

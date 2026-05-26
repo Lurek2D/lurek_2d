@@ -1,0 +1,91 @@
+//! Screen-space region picking via ray-polygon intersection.
+//!
+//! - Projects region polygons from 3D globe to 2D screen for hit testing.
+//! - Selects the front-most visible region under a pointer position.
+
+use crate::globe::projection::{build_view_matrix, OrbitCamera};
+use crate::globe::topology::RegionGraph;
+use crate::globe::types::{GlobeSpec, RegionId};
+use super::sphere::lat_lon_to_unit;
+use crate::math::Vec2;
+/// Region selection result returned by globe picking.
+#[derive(Debug, Clone)]
+pub struct PickResult {
+    /// Picked region id.
+    pub region_id: RegionId,
+    /// Screen-space pointer position used for the hit test.
+    pub screen_pos: (f32, f32),
+    /// Projected screen-space centroid for the picked province.
+    pub centroid_screen: Vec2,
+}
+/// Return true when a point lies inside a polygon.
+fn point_in_polygon(pt: Vec2, verts: &[Vec2]) -> bool {
+    if verts.len() < 3 {
+        return false;
+    }
+    let mut inside = false;
+    let n = verts.len();
+    let mut j = n - 1;
+    for i in 0..n {
+        let vi = verts[i];
+        let vj = verts[j];
+        if ((vi.y > pt.y) != (vj.y > pt.y))
+            && (pt.x < (vj.x - vi.x) * (pt.y - vi.y) / (vj.y - vi.y) + vi.x)
+        {
+            inside = !inside;
+        }
+        j = i;
+    }
+    inside
+}
+/// Pick the topmost region under a screen-space point or return None when no region matches.
+pub fn pick(
+    sx: f32,
+    sy: f32,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+    graph: &RegionGraph,
+) -> Option<PickResult> {
+    let view = build_view_matrix(spec, camera);
+    let r = spec.radius * camera.zoom;
+    let cx = camera.screen_cx;
+    let cy = camera.screen_cy;
+    let pt = Vec2::new(sx, sy);
+    let mut best: Option<(f32, PickResult)> = None;
+    for region in graph.regions.values() {
+        let c_world = lat_lon_to_unit(region.centroid.0, region.centroid.1);
+        let c_cam = view.mul_vec(c_world);
+        if c_cam.z <= 0.0 {
+            continue;
+        }
+        let centroid_screen = Vec2::new(cx + c_cam.x * r, cy - c_cam.y * r);
+        let mut screen_verts = Vec::with_capacity(region.vertices.len());
+        let mut all_visible = true;
+        for &(lat, lon) in &region.vertices {
+            let w = lat_lon_to_unit(lat, lon);
+            let v = view.mul_vec(w);
+            if v.z <= 0.0 {
+                all_visible = false;
+                break;
+            }
+            screen_verts.push(Vec2::new(cx + v.x * r, cy - v.y * r));
+        }
+        if !all_visible || screen_verts.len() < 3 {
+            continue;
+        }
+        if point_in_polygon(pt, &screen_verts) {
+            let z = c_cam.z;
+            if best.as_ref().is_none_or(|(prev_z, _)| z > *prev_z) {
+                best = Some((
+                    z,
+                    PickResult {
+                        region_id: region.id,
+                        screen_pos: (sx, sy),
+                        centroid_screen,
+                    },
+                ));
+            }
+        }
+    }
+    best.map(|(_, result)| result)
+}

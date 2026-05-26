@@ -1,0 +1,207 @@
+[ui]
+name = "retro_turrican_ui"
+version = "1.0"
+
+[[elements]]
+type = "panel"
+id = "title_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "title_label"
+  text = "TURRICAN"
+  x = 300
+  y = 200
+  color = [0.4, 0.85, 1.0, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "subtitle_label"
+  text = "A Lurek2D Tribute"
+  x = 320
+  y = 260
+  color = [0.7, 0.7, 0.8, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "start_label"
+  text = "PRESS F OR SPACE TO START"
+  x = 280
+  y = 340
+  color = [0.9, 0.9, 0.5, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "credit_label"
+  text = "Inspired by Manfred Trenz (1990)"
+  x = 280
+  y = 520
+  color = [0.5, 0.5, 0.6, 1.0]
+
+[[elements]]
+type = "panel"
+id = "game_over_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "go_title"
+  text = "GAME OVER"
+  x = 320
+  y = 200
+  color = [0.9, 0.2, 0.2, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "go_score"
+  text = "Score: 0"
+  x = 340
+  y = 300
+  color = [0.8, 0.8, 0.8, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "go_high"
+  text = "High Score: 0"
+  x = 320
+  y = 340
+  color = [0.8, 0.8, 0.8, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "go_restart"
+  text = "Press F to return to title"
+  x = 300
+  y = 400
+  color = [0.6, 0.6, 0.7, 1.0]
+
+[[elements]]
+type = "panel"
+id = "level_complete_panel"
+x = 0
+y = -60
+w = 800
+h = 200
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "lc_title"
+  text = "LEVEL 1 COMPLETE!"
+  x = 280
+  y = 0
+  color = [0.1, 0.7, 0.3, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "lc_cont"
+  text = "Press F to continue"
+  x = 320
+  y = 50
+  color = [0.8, 0.8, 0.9, 1.0]
+
+[[elements]]
+type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[elements.children]]
+  type = "panel"
+  id = "hp_bg"
+  x = 10
+  y = 10
+  w = 110
+  h = 18
+  color = [0.2, 0.2, 0.2, 0.7]
+
+  [[elements.children]]
+  type = "panel"
+  id = "hp_fill"
+  x = 12
+  y = 12
+  w = 106
+  h = 14
+  color = [0.2, 0.8, 0.3, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "hp_text"
+  text = "HP"
+  x = 14
+  y = 12
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[elements.children]]
+  type = "panel"
+  id = "ammo_bg"
+  x = 10
+  y = 32
+  w = 110
+  h = 18
+  color = [0.2, 0.2, 0.2, 0.7]
+
+  [[elements.children]]
+  type = "panel"
+  id = "ammo_fill"
+  x = 12
+  y = 34
+  w = 106
+  h = 14
+  color = [0.3, 0.6, 1.0, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "ammo_text"
+  text = "AMMO"
+  x = 14
+  y = 34
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "weapon_text"
+  text = "NORMAL"
+  x = 14
+  y = 56
+  color = [0.8, 0.8, 0.3, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "score_text"
+  text = "SCORE: 0"
+  x = 620
+  y = 12
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "level_text"
+  text = "LEVEL 1"
+  x = 620
+  y = 34
+  color = [0.7, 0.7, 0.8, 1.0]
+
+  [[elements.children]]
+  type = "label"
+  id = "fps_text"
+  text = "FPS: 60"
+  x = 710
+  y = 580
+  color = [0.5, 0.5, 0.5, 0.7]

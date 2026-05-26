@@ -1,0 +1,228 @@
+; Lurek2D NSIS Installer Script
+; =============================================================================
+;
+; Requirements:
+;   - NSIS 3.x (https://nsis.sourceforge.io/Download)
+;   - Built dist binary at:     build\dist\lurek2d.exe
+;   - Icon at:                  assets\icon.ico
+;   - Run from workspace root:  makensis tools\installer.nsi
+;
+; Usage:
+;   makensis tools\installer.nsi
+;
+; Output:
+;   dist\lurek2d-<Version>-setup.exe
+; =============================================================================
+
+!define APP_NAME     "Lurek2D"
+!define APP_VERSION  "1.0.0"
+!define APP_PUBLISHER "Lurek2D Project"
+!define APP_URL      "https://github.com/RandomBladeDude/lurek2d"
+!define APP_EXE      "lurek2d.exe"
+!define APP_ICON     "..\..\assets\favicon.ico"
+
+; Output installer filename
+!define OUT_FILE     "..\..\dist\lurek2d-${APP_VERSION}-setup.exe"
+
+; ── NSIS Settings ────────────────────────────────────────────────────────────
+Name                "${APP_NAME} ${APP_VERSION}"
+OutFile             "${OUT_FILE}"
+InstallDir          "$PROGRAMFILES64\${APP_NAME}"
+InstallDirRegKey    HKLM "Software\${APP_NAME}" "Install_Dir"
+RequestExecutionLevel admin
+
+; Compression
+SetCompressor       /SOLID lzma
+
+; Nice installer visuals
+!include "MUI2.nsh"
+
+!define MUI_ICON    "${APP_ICON}"
+!define MUI_UNICON  "${APP_ICON}"
+!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
+!define MUI_ABORTWARNING
+
+; Pages
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+; Uninstall pages
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Language
+!insertmacro MUI_LANGUAGE "English"
+
+; ── Version Info ─────────────────────────────────────────────────────────────
+VIProductVersion "${APP_VERSION}.0"
+VIAddVersionKey "ProductName"      "${APP_NAME}"
+VIAddVersionKey "ProductVersion"   "${APP_VERSION}"
+VIAddVersionKey "CompanyName"      "${APP_PUBLISHER}"
+VIAddVersionKey "FileDescription"  "${APP_NAME} Installer"
+VIAddVersionKey "FileVersion"      "${APP_VERSION}"
+VIAddVersionKey "LegalCopyright"   "MIT Licence"
+
+; ── Install Sections ─────────────────────────────────────────────────────────
+Section "Engine (required)" SecEngine
+    SectionIn RO  ; cannot be deselected
+
+    SetOutPath "$INSTDIR"
+
+    ; Core binary — use dist-profile binary if present, else release
+    File "..\..\build\dist\lurek2d.exe"
+
+    ; Engine assets
+    SetOutPath "$INSTDIR\assets"
+    File /nonfatal "..\..\assets\splash.png"
+    File /nonfatal "..\..\assets\favicon.ico"
+    File /nonfatal "..\..\assets\icon.png"
+    File /nonfatal "..\..\assets\icon-large.png"
+    File /nonfatal "..\..\assets\banner.png"
+
+    ; API example scripts
+    SetOutPath "$INSTDIR\examples"
+    File /r "..\..\content\examples\*.lua"
+
+    ; Demos (playable game demos)
+    SetOutPath "$INSTDIR\games"
+    File /r "..\..\content\games\*.*"
+
+    ; Docs
+    SetOutPath "$INSTDIR"
+    File "..\..\README.md"
+    File "..\..\LICENSE"
+
+    ; Lureksome standard libraries — recurse entire library/ tree
+    SetOutPath "$INSTDIR\library"
+    File /r "..\..\library\*.*"
+
+    ; Windows distribution helpers (.lurek packers and association repair script)
+    SetOutPath "$INSTDIR\tools\dist"
+    File "..\..\tools\dist\pack.ps1"
+    File "..\..\tools\dist\pack.py"
+    File "..\..\tools\dist\package_games.py"
+    File "..\..\tools\dist\register_lurek_filetype.ps1"
+
+    ; API docs (lurek.md, lurek.lua LuaCATS stubs)
+    SetOutPath "$INSTDIR\docs"
+    File "..\..\docs\api\lurek.md"
+    File "..\..\docs\api\lurek.lua"
+    File "..\..\docs\api\lureksome.md"
+    File "..\..\docs\api\lureksome.lua"
+    WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName"          "${APP_NAME} ${APP_VERSION}"
+    WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion"       "${APP_VERSION}"
+    WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "Publisher"            "${APP_PUBLISHER}"
+    WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "URLInfoAbout"         "${APP_URL}"
+    WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "InstallLocation"      "$INSTDIR"
+    WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString"      "$INSTDIR\uninstall.exe"
+    WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayIcon"          "$INSTDIR\${APP_EXE}"
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoModify"             1
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoRepair"             1
+
+    ; Register Install_Dir
+    WriteRegStr   HKLM "Software\${APP_NAME}" "Install_Dir" "$INSTDIR"
+
+    ; Write uninstaller
+    WriteUninstaller "$INSTDIR\uninstall.exe"
+
+    ; Add $INSTDIR to user PATH via registry (append only if not already present)
+    !include "LogicLib.nsh"
+    ReadRegStr $1 HKCU "Environment" "Path"
+    ${If} $1 == ""
+        WriteRegStr HKCU "Environment" "Path" "$INSTDIR"
+    ${Else}
+        WriteRegStr HKCU "Environment" "Path" "$1;$INSTDIR"
+    ${EndIf}
+    ; Broadcast WM_SETTINGCHANGE so running shells pick up the new PATH
+    SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
+
+SectionEnd
+
+; ── .lua File Association ───────────────────────────────────────────────────
+; Registers .lua so double-clicking a Lua script runs it with Lurek2D.
+; Note: only steals the association if no existing handler is registered,
+; so it won't break a user's existing Lua installation (LuaRocks, etc.).
+Section ".lua File Association" SecFileAssoc
+    ; Map .lua extension → ProgID
+    WriteRegStr HKCR ".lua"                           ""            "Lurek2DScript"
+    WriteRegStr HKCR ".lua"                           "Content Type" "text/x-lua"
+
+    ; ProgID display name and icon
+    WriteRegStr HKCR "Lurek2DScript"                  ""            "Lurek2D Script"
+    WriteRegStr HKCR "Lurek2DScript\DefaultIcon"      ""            "$INSTDIR\${APP_EXE},0"
+
+    ; Open verb: lurek2d.exe treats a .lua file path as its game argument
+    WriteRegStr HKCR "Lurek2DScript\shell\open"       ""            "Run with Lurek2D"
+    WriteRegStr HKCR "Lurek2DScript\shell\open\command" ""          '"$INSTDIR\${APP_EXE}" "%1"'
+
+    ; Edit verb: open the script in the default text editor
+    WriteRegStr HKCR "Lurek2DScript\shell\edit"       ""            "Edit"
+    WriteRegStr HKCR "Lurek2DScript\shell\edit\command" ""          'notepad.exe "%1"'
+
+    ; Notify Windows that file associations have changed
+    System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+SectionEnd
+
+; ── .lurek File Association ─────────────────────────────────────────────────
+Section ".lurek File Association" SecArchiveAssoc
+    WriteRegStr HKCR ".lurek"                            ""            "Lurek2D.Game"
+    WriteRegStr HKCR "Lurek2D.Game"                     ""            "Lurek2D Game Archive"
+    WriteRegStr HKCR "Lurek2D.Game\DefaultIcon"         ""            "$INSTDIR\${APP_EXE},0"
+    WriteRegStr HKCR "Lurek2D.Game\shell\open"         ""            "Open with Lurek2D"
+    WriteRegStr HKCR "Lurek2D.Game\shell\open\command" ""           '"$INSTDIR\${APP_EXE}" "%1"'
+
+    ; Notify Windows that file associations have changed
+    System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+SectionEnd
+
+Section "Start Menu Shortcuts" SecStartMenu
+    CreateDirectory "$SMPROGRAMS\${APP_NAME}"
+    CreateShortcut  "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk"             "$INSTDIR\${APP_EXE}"  ""                                      "$INSTDIR\${APP_EXE}"
+    CreateShortcut  "$SMPROGRAMS\${APP_NAME}\API Reference.lnk"           "$INSTDIR\docs\lurek.md"
+    CreateShortcut  "$SMPROGRAMS\${APP_NAME}\Uninstall ${APP_NAME}.lnk"   "$INSTDIR\uninstall.exe"
+SectionEnd
+
+Section "Desktop Shortcut" SecDesktop
+    CreateShortcut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\${APP_EXE}"
+SectionEnd
+
+; ── Uninstall Section ─────────────────────────────────────────────────────────
+Section "Uninstall"
+    ; Remove from PATH
+    ; Remove $INSTDIR from user PATH via PowerShell
+    nsExec::ExecToLog 'powershell -WindowStyle Hidden -Command "[Environment]::SetEnvironmentVariable(\"Path\",([Environment]::GetEnvironmentVariable(\"Path\",\"User\") -split \";\" | Where-Object {$$_ -ne \"$INSTDIR\"}) -join \";\",\"User\")"'
+
+    ; Remove files
+    Delete "$INSTDIR\lurek2d.exe"
+    Delete "$INSTDIR\uninstall.exe"
+    Delete "$INSTDIR\README.md"
+    Delete "$INSTDIR\LICENSE"
+
+    RMDir /r "$INSTDIR\assets"
+    RMDir /r "$INSTDIR\examples"
+    RMDir /r "$INSTDIR\games"
+    RMDir /r "$INSTDIR\library"
+    RMDir /r "$INSTDIR\docs"
+    RMDir /r "$INSTDIR\tools"
+    RMDir    "$INSTDIR"
+
+    ; Remove shortcuts
+    Delete "$SMPROGRAMS\${APP_NAME}\*.*"
+    RMDir  "$SMPROGRAMS\${APP_NAME}"
+    Delete "$DESKTOP\${APP_NAME}.lnk"
+
+    ; Remove .lua file association
+    DeleteRegKey HKCR ".lua"
+    DeleteRegKey HKCR "Lurek2DScript"
+    DeleteRegKey HKCR ".lurek"
+    DeleteRegKey HKCR "Lurek2D.Game"
+
+    ; Remove registry keys
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
+    DeleteRegKey HKLM "Software\${APP_NAME}"
+
+    ; Notify Windows that file associations have changed
+    System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+SectionEnd

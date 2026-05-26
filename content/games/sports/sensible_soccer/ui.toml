@@ -1,0 +1,102 @@
+[[widget]]
+type = "panel"
+id = "hud"
+anchor = "top_center"
+w = 180
+h = 30
+bg_color = [0, 0, 0, 0.55]
+y = 4
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  id = "score_1_label"
+  text = "0"
+  font_size = 30
+  color = [0.9, 0.15, 0.15, 1]
+  x = 25
+  y = 4
+
+  [[widget.children]]
+  type = "label"
+  text = "-"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 4
+
+  [[widget.children]]
+  type = "label"
+  id = "score_2_label"
+  text = "0"
+  font_size = 30
+  color = [0.15, 0.3, 0.9, 1]
+  anchor = "top_right"
+  x = -25
+  y = 4
+
+[[widget]]
+type = "label"
+id = "clock_label"
+text = "90'"
+font_size = 20
+color = [1, 1, 1, 1]
+anchor = "bottom_center"
+y = -24
+visible = true
+
+[[widget]]
+type = "panel"
+id = "kickoff_overlay"
+anchor = "center"
+w = 300
+h = 50
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "KICK OFF - press Space"
+  font_size = 24
+  color = [1, 1, 0, 0.9]
+  anchor = "center"
+
+[[widget]]
+type = "panel"
+id = "goal_overlay"
+anchor = "center"
+w = 300
+h = 60
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "G O A L !"
+  font_size = 30
+  color = [1, 0.9, 0, 0.95]
+  anchor = "center"
+
+[[widget]]
+type = "panel"
+id = "ft_overlay"
+anchor = "center"
+w = 260
+h = 60
+bg_color = [0, 0, 0, 0.7]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "FULL TIME"
+  font_size = 30
+  color = [1, 1, 0, 1]
+  anchor = "top_center"
+  y = 8
+
+  [[widget.children]]
+  type = "label"
+  id = "ft_score_label"
+  text = "Final: 0 - 0  (Esc to quit)"
+  font_size = 16
+  color = [1, 1, 1, 1]
+  anchor = "bottom_center"
+  y = -10

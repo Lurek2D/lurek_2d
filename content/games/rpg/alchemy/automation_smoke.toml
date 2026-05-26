@@ -1,0 +1,52 @@
+[meta]
+description = "Smoke replay: add ingredient, grind, heat, bottle"
+
+[[steps]]
+time = 0.10
+action = "keypress"
+key = "1"
+
+[[steps]]
+time = 0.16
+action = "keyrelease"
+key = "1"
+
+[[steps]]
+time = 0.40
+action = "keypress"
+key = "g"
+
+[[steps]]
+time = 0.46
+action = "keyrelease"
+key = "g"
+
+[[steps]]
+time = 1.60
+action = "keypress"
+key = "g"
+
+[[steps]]
+time = 1.66
+action = "keyrelease"
+key = "g"
+
+[[steps]]
+time = 1.90
+action = "keypress"
+key = "h"
+
+[[steps]]
+time = 1.96
+action = "keyrelease"
+key = "h"
+
+[[steps]]
+time = 2.20
+action = "keypress"
+key = "b"
+
+[[steps]]
+time = 2.26
+action = "keyrelease"
+key = "b"

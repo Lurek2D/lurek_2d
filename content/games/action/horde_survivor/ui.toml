@@ -1,0 +1,307 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+
+[[root.children]]
+widget_type = "panel"
+id = "title_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_label"
+  text = "HORDE SURVIVOR"
+  x = 280
+  y = 180
+  color = [1.0, 0.9, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "subtitle_label"
+  text = "Survive the endless horde!"
+  x = 290
+  y = 230
+  color = [0.8, 0.8, 0.8, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "start_label"
+  text = "Press 1, 2, or 3 to start"
+  x = 300
+  y = 320
+  color = [0.6, 0.9, 0.6, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "controls_label"
+  text = "WASD = move  |  Auto-attack"
+  x = 290
+  y = 370
+  color = [0.5, 0.5, 0.5, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.6]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_title"
+  text = "GAME OVER"
+  x = 320
+  y = 150
+  color = [1.0, 0.3, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_time"
+  text = "Time: 0:00"
+  x = 340
+  y = 220
+  color = [0.9, 0.9, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_kills"
+  text = "Kills: 0"
+  x = 340
+  y = 250
+  color = [0.9, 0.9, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_level"
+  text = "Level: 0"
+  x = 340
+  y = 280
+  color = [0.9, 0.9, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_restart"
+  text = "Press 1 to restart"
+  x = 320
+  y = 340
+  color = [0.6, 0.9, 0.6, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "level_up_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.65]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lu_title"
+  text = "LEVEL UP!"
+  x = 330
+  y = 120
+  color = [1.0, 1.0, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lu_subtitle"
+  text = "Choose an upgrade:"
+  x = 320
+  y = 170
+  color = [0.9, 0.9, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "panel"
+  id = "card_1"
+  x = 240
+  y = 210
+  w = 320
+  h = 65
+  color = [0.15, 0.2, 0.15, 0.9]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_1_num"
+    text = "1"
+    x = 250
+    y = 222
+    color = [1.0, 0.9, 0.3, 1.0]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_1_name"
+    text = "Upgrade 1"
+    x = 285
+    y = 222
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_1_desc"
+    text = "Description 1"
+    x = 285
+    y = 248
+    color = [0.7, 0.7, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "panel"
+  id = "card_2"
+  x = 240
+  y = 290
+  w = 320
+  h = 65
+  color = [0.15, 0.2, 0.15, 0.9]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_2_num"
+    text = "2"
+    x = 250
+    y = 302
+    color = [1.0, 0.9, 0.3, 1.0]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_2_name"
+    text = "Upgrade 2"
+    x = 285
+    y = 302
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_2_desc"
+    text = "Description 2"
+    x = 285
+    y = 328
+    color = [0.7, 0.7, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "panel"
+  id = "card_3"
+  x = 240
+  y = 370
+  w = 320
+  h = 65
+  color = [0.15, 0.2, 0.15, 0.9]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_3_num"
+    text = "3"
+    x = 250
+    y = 382
+    color = [1.0, 0.9, 0.3, 1.0]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_3_name"
+    text = "Upgrade 3"
+    x = 285
+    y = 382
+    color = [1.0, 1.0, 1.0, 1.0]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "card_3_desc"
+    text = "Description 3"
+    x = 285
+    y = 408
+    color = [0.7, 0.7, 0.7, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hp_label"
+  text = "HP 100/100"
+  x = 10
+  y = 10
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hp_bar"
+  text = "██████████"
+  x = 10
+  y = 26
+  color = [0.1, 0.9, 0.1, 0.9]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "xp_label"
+  text = "XP 0/50"
+  x = 10
+  y = 46
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "xp_bar"
+  text = "██████████"
+  x = 10
+  y = 62
+  color = [0.3, 0.8, 1.0, 0.9]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "level_label"
+  text = "Lv 1"
+  x = 220
+  y = 10
+  color = [1.0, 0.9, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "kills_label"
+  text = "Kills: 0"
+  x = 670
+  y = 10
+  color = [0.9, 0.5, 0.5, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "time_label"
+  text = "0:00"
+  x = 380
+  y = 10
+  color = [0.9, 0.9, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "stats_label"
+  text = "DMG:5  ORB:3  SPD:100%  PIERCE:1"
+  x = 10
+  y = 578
+  color = [0.6, 0.6, 0.6, 1.0]
+
+[[root.children]]
+widget_type = "label"
+id = "fps_label"
+text = "FPS: 60"
+x = 720
+y = 580
+color = [0.4, 0.4, 0.4, 1.0]

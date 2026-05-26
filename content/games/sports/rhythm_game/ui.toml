@@ -1,0 +1,284 @@
+[[widget]]
+type = "panel"
+id = "title_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "title_rhythm"
+  text = "RHYTHM GAME"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 180
+
+  [[widget.children]]
+  type = "label"
+  id = "title_feel"
+  text = "FEEL THE BEAT"
+  font_size = 24
+  color = [0.7, 0.5, 0.9, 1]
+  anchor = "top_center"
+  y = 250
+
+  [[widget.children]]
+  type = "button"
+  id = "press_start"
+  text = "Press ENTER to start"
+  font_size = 16
+  color = [0.6, 0.6, 0.6, 0.5]
+  anchor = "top_center"
+  y = 400
+
+[[widget]]
+type = "panel"
+id = "song_select_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "SELECT A SONG"
+  font_size = 30
+  color = [0.9, 0.8, 1, 1]
+  anchor = "top_center"
+  y = 80
+
+  [[widget.children]]
+  type = "label"
+  id = "song_1"
+  text = "  Easy Beat"
+  font_size = 30
+  color = [0.5, 0.5, 0.5, 1]
+  anchor = "top_center"
+  y = 180
+
+  [[widget.children]]
+  type = "label"
+  id = "song_1_stats"
+  text = "  60 notes  |  200px/s"
+  font_size = 16
+  color = [0.5, 0.5, 0.6, 0.8]
+  anchor = "top_center"
+  y = 212
+
+  [[widget.children]]
+  type = "label"
+  id = "song_2"
+  text = "  Medium Groove"
+  font_size = 30
+  color = [0.5, 0.5, 0.5, 1]
+  anchor = "top_center"
+  y = 260
+
+  [[widget.children]]
+  type = "label"
+  id = "song_2_stats"
+  text = "  100 notes  |  300px/s"
+  font_size = 16
+  color = [0.5, 0.5, 0.6, 0.8]
+  anchor = "top_center"
+  y = 292
+
+  [[widget.children]]
+  type = "label"
+  id = "song_3"
+  text = "  Hard Rush"
+  font_size = 30
+  color = [0.5, 0.5, 0.5, 1]
+  anchor = "top_center"
+  y = 340
+
+  [[widget.children]]
+  type = "label"
+  id = "song_3_stats"
+  text = "  150 notes  |  400px/s"
+  font_size = 16
+  color = [0.5, 0.5, 0.6, 0.8]
+  anchor = "top_center"
+  y = 372
+
+  [[widget.children]]
+  type = "label"
+  text = "Up/Down to select, Enter to play"
+  font_size = 16
+  color = [0.4, 0.4, 0.5, 0.7]
+  anchor = "bottom_center"
+  y = -60
+
+  [[widget.children]]
+  type = "button"
+  id = "press_select"
+  text = "Play Selected"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  anchor = "bottom_center"
+  y = -20
+
+[[widget]]
+type = "panel"
+id = "results_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "RESULTS"
+  font_size = 30
+  color = [0.9, 0.9, 1, 1]
+  anchor = "top_center"
+  y = 60
+
+  [[widget.children]]
+  type = "label"
+  id = "grade_label"
+  text = "F"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 120
+
+  [[widget.children]]
+  type = "label"
+  id = "score_result_label"
+  text = "Score: 0"
+  font_size = 24
+  color = [1, 1, 1, 0.9]
+  anchor = "top_center"
+  y = 220
+
+  [[widget.children]]
+  type = "label"
+  id = "max_combo_label"
+  text = "Max Combo: 0"
+  font_size = 20
+  color = [0.8, 0.8, 0.8, 0.8]
+  anchor = "top_center"
+  y = 260
+
+  [[widget.children]]
+  type = "label"
+  id = "hits_label"
+  text = "Perfect: 0  Good: 0  Miss: 0"
+  font_size = 16
+  color = [0.7, 0.7, 0.7, 0.8]
+  anchor = "top_center"
+  y = 300
+
+  [[widget.children]]
+  type = "label"
+  id = "best_mult_label"
+  text = "Best Multiplier: 1x"
+  font_size = 16
+  color = [0.6, 0.6, 0.7, 0.7]
+  anchor = "top_center"
+  y = 340
+
+  [[widget.children]]
+  type = "button"
+  id = "press_results"
+  text = "Press ENTER to continue"
+  font_size = 16
+  color = [0.5, 0.5, 0.6, 0.6]
+  anchor = "bottom_center"
+  y = -60
+
+[[widget]]
+type = "panel"
+id = "hud"
+anchor = "top_left"
+w = 800
+h = 600
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  id = "score_label"
+  text = "SCORE: 0"
+  font_size = 24
+  color = [1, 1, 1, 0.9]
+  x = 10
+  y = 10
+
+  [[widget.children]]
+  type = "label"
+  id = "combo_label"
+  text = "0 COMBO"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  x = -50
+  y = 20
+  visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "combo_mult_label"
+  text = "1x"
+  font_size = 20
+  color = [1, 1, 1, 0.8]
+  anchor = "top_center"
+  x = 50
+  y = 24
+  visible = false
+
+  [[widget.children]]
+  type = "panel"
+  id = "life_bg"
+  anchor = "top_right"
+  w = 200
+  h = 14
+  bg_color = [0.2, 0.2, 0.2, 0.7]
+  x = -220
+  y = 12
+
+    [[widget.children.children]]
+    type = "panel"
+    id = "life_fill"
+    anchor = "left_center"
+    w = 200
+    h = 14
+    bg_color = [0.2, 0.8, 0.3, 0.9]
+
+    [[widget.children.children]]
+    type = "label"
+    text = "LIFE"
+    font_size = 12
+    color = [0.8, 0.8, 0.8, 0.7]
+    anchor = "left_center"
+    x = -40
+
+  [[widget.children]]
+  type = "panel"
+  id = "progress_bg"
+  anchor = "bottom_left"
+  w = 780
+  h = 6
+  bg_color = [0, 0, 0, 0]
+  x = 10
+  y = -26
+
+    [[widget.children.children]]
+    type = "panel"
+    id = "progress_fill"
+    anchor = "left_center"
+    w = 0
+    h = 6
+    bg_color = [0.4, 0.4, 0.8, 0.5]
+
+  [[widget.children]]
+  type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 12
+  color = [0.4, 0.4, 0.4, 0.5]
+  anchor = "bottom_right"
+  x = -80
+  y = -32

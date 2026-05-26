@@ -1,0 +1,133 @@
+[[widget]]
+type = "panel"
+id = "root_ui"
+w = 800
+h = 600
+bg_color = [0, 0, 0, 0]
+
+  [[widget.children]]
+  type = "panel"
+  id = "title_screen"
+  w = 800
+  h = 600
+  visible = false
+
+    [[widget.children.children]]
+    type = "label"
+    text = "SHADOW OF THE BEAST"
+    font_size = 30
+    color = [0.85, 0.7, 0.95, 1]
+    anchor = "center"
+    y = -120
+
+    [[widget.children.children]]
+    type = "label"
+    text = "A Lurek2D Tribute to Psygnosis"
+    font_size = 16
+    color = [0.6, 0.45, 0.7, 0.8]
+    anchor = "center"
+    y = -75
+
+    [[widget.children.children]]
+    type = "label"
+    text = "A/D  Move   |   SPACE  Jump   |   F  Attack"
+    font_size = 12
+    color = [0.5, 0.4, 0.6, 0.7]
+    anchor = "center"
+    y = 40
+
+    [[widget.children.children]]
+    type = "label"
+    id = "title_press_start"
+    text = "Press ENTER to begin"
+    font_size = 16
+    color = [0.8, 0.6, 0.9, 1]
+    anchor = "center"
+    y = 120
+
+  [[widget.children]]
+  type = "panel"
+  id = "game_over_screen"
+  w = 800
+  h = 600
+  bg_color = [0, 0, 0, 0.6]
+  visible = false
+
+    [[widget.children.children]]
+    type = "label"
+    text = "GAME OVER"
+    font_size = 30
+    color = [0.9, 0.3, 0.3, 1]
+    anchor = "center"
+    y = -80
+
+    [[widget.children.children]]
+    type = "label"
+    id = "go_score"
+    text = "Score: 0"
+    font_size = 20
+    color = [0.7, 0.5, 0.8, 1]
+    anchor = "center"
+    y = -20
+
+    [[widget.children.children]]
+    type = "label"
+    id = "go_dist"
+    text = "Distance: 0"
+    font_size = 16
+    color = [0.7, 0.5, 0.8, 1]
+    anchor = "center"
+    y = 10
+
+    [[widget.children.children]]
+    type = "label"
+    id = "go_press_start"
+    text = "Press ENTER to try again"
+    font_size = 16
+    color = [0.6, 0.5, 0.7, 1]
+    anchor = "center"
+    y = 80
+
+  [[widget.children]]
+  type = "panel"
+  id = "hud_screen"
+  w = 800
+  h = 600
+  visible = false
+
+    [[widget.children.children]]
+    type = "label"
+    id = "hud_hp"
+    text = "HP: 5 / 5"
+    font_size = 16
+    color = [0.9, 0.2, 0.2, 1]
+    x = 10
+    y = 10
+
+    [[widget.children.children]]
+    type = "label"
+    id = "hud_score"
+    text = "SCORE: 0"
+    font_size = 16
+    color = [0.8, 0.7, 0.9, 1]
+    x = 620
+    y = 12
+
+    [[widget.children.children]]
+    type = "label"
+    id = "hud_dist"
+    text = "DIST: 0"
+    font_size = 12
+    color = [0.6, 0.5, 0.7, 0.8]
+    x = 620
+    y = 32
+
+    [[widget.children.children]]
+    type = "label"
+    id = "hud_boss_warning"
+    text = "!! BOSS !!"
+    font_size = 20
+    color = [1.0, 0.2, 0.1, 1]
+    anchor = "center"
+    y = -250
+    visible = false

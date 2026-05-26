@@ -1,0 +1,561 @@
+//! `lurek.system` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
+
+use super::SharedState;
+use crate::log_msg;
+use crate::runtime::log_messages::{
+    self, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL,
+    LA06_CLIPBOARD_READ_FAIL,
+};
+use crate::runtime::messages;
+use crate::runtime::os::*;
+use mlua::prelude::*;
+use std::cell::RefCell;
+use std::rc::Rc;
+
+
+/// Registers all `lurek.system` functions into the Lua runtime table.
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    let system = lua.create_table()?;
+
+    // -- getOS --
+    /// Returns the name of the host operating system as a string.
+    /// @return | string | Operating system name: `"Windows"`, `"Linux"`, `"macOS"`, `"Android"`, `"iOS"`, or `"Unknown"`.
+    system.set(
+        "getOS",
+        lua.create_function(|_, ()| {
+            Ok(get_os_name())
+        })?,
+    )?;
+
+    // -- getVersion --
+    /// Returns the semantic version string of the Lurek2D engine.
+    /// @return | string | Engine version in `"MAJOR.MINOR.PATCH"` format.
+    system.set(
+        "getVersion",
+        lua.create_function(|_, ()| Ok(env!("CARGO_PKG_VERSION").to_string()))?,
+    )?;
+
+    // -- getProcessorCount --
+    /// Returns the number of logical processors available on the host machine.
+    /// @return | number | Logical processor count (minimum 1).
+    system.set(
+        "getProcessorCount",
+        lua.create_function(|_, ()| Ok(get_processor_count()))?,
+    )?;
+
+    // -- getMemorySize --
+    /// Returns the total physical memory of the host system in megabytes.
+    /// @return | number | Total RAM in MB.
+    system.set(
+        "getMemorySize",
+        lua.create_function(|_, ()| Ok(get_memory_size()))?,
+    )?;
+
+    // -- openURL --
+    /// Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
+    /// @param | url | string | The URL to open.
+    /// @return | boolean | `true` if the URL was accepted and the open command launched successfully.
+    system.set(
+        "openURL",
+        lua.create_function(|_, url: String| Ok(open_url(&url)))?,
+    )?;
+
+    // -- getPreferredLocales --
+    /// Returns a list of the user's preferred locale identifiers from the operating system.
+    /// @return | string[] | Locale strings (e.g. `{"en_US", "pl_PL"}`). Falls back to `{"en_US"}` if detection fails.
+    system.set(
+        "getPreferredLocales",
+        lua.create_function(|_, ()| Ok(get_preferred_locales()))?,
+    )?;
+
+    // -- getPowerInfo --
+    /// Returns the current power supply state, battery percentage, and estimated time remaining.
+    /// @return | string | Power state: `"unknown"`, `"battery"`, `"nobattery"`, `"charging"`, or `"charged"`.
+    /// @return | integer | Battery charge percentage from 0 to 100. This value may be `nil` when the platform does not provide battery data.
+    /// @return | integer | Estimated battery life remaining in seconds. This value may be `nil` when the platform does not provide battery data.
+    system.set(
+        "getPowerInfo",
+        lua.create_function(|_, ()| {
+            let (state, percent, seconds) = get_power_info();
+            Ok((state.as_str().to_string(), percent, seconds))
+        })?,
+    )?;
+
+    // -- getInfo --
+    /// Returns a table with comprehensive engine and host information.
+    /// @return | table | Table with fields: `engine` (string), `version` (string), `lua_version` (string), `renderer` (string), `os` (string), `processors` (number), `memory` (number).
+    /// @field | engine | string | Engine name.
+    /// @field | version | string | Engine version string.
+    /// @field | lua_version | string | Lua version string.
+    /// @field | renderer | string | Renderer backend name.
+    /// @field | os | string | Host operating system name.
+    /// @field | processors | integer | Number of logical processors.
+    /// @field | memory | number | Total physical memory in MiB.
+    system.set(
+        "getInfo",
+        lua.create_function(|lua, ()| {
+            let info = lua.create_table()?;
+            /// Performs the 'engine' operation.
+            info.set("engine", "Lurek2D")?;
+            /// Performs the 'version' operation.
+            info.set("version", env!("CARGO_PKG_VERSION"))?;
+            /// Performs the 'lua_version' operation.
+            info.set("lua_version", "Lua 5.4")?;
+            /// Performs the 'renderer' operation.
+            info.set("renderer", "wgpu")?;
+            info.set("os", get_os_name())?;
+            /// Performs the 'processors' operation.
+            info.set("processors", get_processor_count())?;
+            /// Performs the 'memory' operation.
+            info.set("memory", get_memory_size())?;
+            Ok(info)
+        })?,
+    )?;
+
+    // -- getMessage --
+    /// Resolves a message string by its identifier from the engine message catalog.
+    /// @param | id | string | The message identifier to look up.
+    /// @return | string | The resolved message text. Returns `nil` when the identifier is not found.
+    system.set(
+        "getMessage",
+        lua.create_function(|_, id: String| Ok(messages::resolve_message(&id)))?,
+    )?;
+
+    // -- hasMessage --
+    /// Checks whether a message identifier exists in the engine message catalog.
+    /// @param | id | string | The message identifier to check.
+    /// @return | boolean | `true` if the message identifier is registered.
+    system.set(
+        "hasMessage",
+        lua.create_function(|_, id: String| Ok(messages::has_message(&id)))?,
+    )?;
+
+    // -- getMessageCount --
+    /// Returns the total number of messages registered in the engine message catalog.
+    /// @return | number | Count of registered message identifiers.
+    system.set(
+        "getMessageCount",
+        lua.create_function(|_, ()| Ok(messages::message_count()))?,
+    )?;
+
+    // -- setClipboardText --
+    /// Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
+    /// @param | text | string | The text to place on the clipboard.
+    system.set(
+        "setClipboardText",
+        lua.create_function(|_, text: String| {
+            match arboard::Clipboard::new() {
+                Ok(mut cb) => {
+                    if let Err(e) = cb.set_text(text) {
+                        log_msg!(warn, LA04_CLIPBOARD_WRITE_FAIL, "{}", e);
+                    }
+                }
+                Err(e) => {
+                    log_msg!(warn, LA05_CLIPBOARD_UNAVAIL, "setClipboardText: {}", e);
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+
+    // -- getClipboardText --
+    /// Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.
+    /// @return | string | The clipboard text, or `""` on failure.
+    system.set(
+        "getClipboardText",
+        lua.create_function(|_, ()| match arboard::Clipboard::new() {
+            Ok(mut cb) => match cb.get_text() {
+                Ok(text) => Ok(text),
+                Err(e) => {
+                    log_msg!(warn, LA06_CLIPBOARD_READ_FAIL, "{}", e);
+                    Ok(String::new())
+                }
+            },
+            Err(e) => {
+                log_msg!(warn, LA05_CLIPBOARD_UNAVAIL, "getClipboardText: {}", e);
+                Ok(String::new())
+            }
+        })?,
+    )?;
+    let state_for_error = state.clone();
+    let s = state.clone();
+
+    // -- reloadConfig --
+    /// Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.
+    system.set(
+        "reloadConfig",
+        lua.create_function(move |_, ()| {
+            s.borrow_mut().pending_config_reload = true;
+            Ok(())
+        })?,
+    )?;
+
+    let s = state.clone();
+
+    // -- getConfig --
+    /// Returns a table containing the current engine runtime configuration values.
+    /// @return | table | Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `default_font_size` (integer), `default_font_bold` (boolean), `config_reload_revision` (number).
+    /// @field | runtime_mode | string | Runtime mode.
+    /// @field | physics_tick_rate | number | Physics tick rate.
+    /// @field | fixed_update_tick_rate | number | Fixed update tick rate.
+    /// @field | frame_budget_warn_ms | number | Frame budget warn ms.
+    /// @field | lua_callback_timeout_ms | number | Lua callback timeout ms.
+    /// @field | vsync | boolean | Vsync.
+    /// @field | log_level | string | Log level.
+    /// @field | default_font_size | integer | Configured built-in default render font point size.
+    /// @field | default_font_bold | boolean | Configured bold variant flag for the default render font.
+    /// @field | config_reload_revision | integer | Config reload revision.
+    system.set(
+        "getConfig",
+        lua.create_function(move |lua, ()| {
+            let st = s.borrow();
+            let tbl = lua.create_table()?;
+            /// Performs the 'runtime_mode' operation.
+            tbl.set("runtime_mode", st.runtime_mode.as_str())?;
+            let fixed_dt = st.physics_run.fixed_dt;
+            let physics_tick_rate = if fixed_dt > 0.0 { 1.0 / fixed_dt } else { 0.0 };
+            /// Performs the 'physics_tick_rate' operation.
+            tbl.set("physics_tick_rate", physics_tick_rate)?;
+            let fixed_update_dt = st.physics_run.fixed_update_dt;
+            if fixed_update_dt > 0.0 {
+                /// Performs the 'fixed_update_tick_rate' operation.
+                tbl.set("fixed_update_tick_rate", 1.0 / fixed_update_dt)?;
+            } else {
+                /// Performs the 'fixed_update_tick_rate' operation.
+                tbl.set("fixed_update_tick_rate", mlua::Value::Nil)?;
+            }
+            if let Some(ms) = st.frame_budget_warn_ms {
+                // frame_budget_warn_ms: per-frame time budget threshold in milliseconds
+                /// Performs the 'frame_budget_warn_ms' operation.
+                tbl.set("frame_budget_warn_ms", ms)?;
+            } else {
+                // frame_budget_warn_ms: not configured
+                /// Performs the 'frame_budget_warn_ms' operation.
+                tbl.set("frame_budget_warn_ms", mlua::Value::Nil)?;
+            }
+            if let Some(ms) = st.lua_callback_timeout_ms {
+                // lua_callback_timeout_ms: per-callback Lua execution time limit in milliseconds
+                /// Performs the 'lua_callback_timeout_ms' operation.
+                tbl.set("lua_callback_timeout_ms", ms)?;
+            } else {
+                // lua_callback_timeout_ms: not configured
+                /// Performs the 'lua_callback_timeout_ms' operation.
+                tbl.set("lua_callback_timeout_ms", mlua::Value::Nil)?;
+            }
+            // vsync: whether vertical sync is currently enabled
+            /// Performs the 'vsync' operation.
+            tbl.set("vsync", st.window_state.vsync_mode != 0)?;
+            // log_level: current logging verbosity level string
+            /// Performs the 'log_level' operation.
+            tbl.set("log_level", log_messages::get_log_level().to_string())?;
+            // default_font_size: configured built-in default render font point size
+            /// Performs the 'default_font_size' operation.
+            tbl.set("default_font_size", st.default_font_size)?;
+            // default_font_bold: whether the configured default render font uses the bold variant
+            /// Performs the 'default_font_bold' operation.
+            tbl.set("default_font_bold", st.default_font_bold)?;
+            // config_reload_revision: number of times the engine config has been reloaded
+            /// Performs the 'config_reload_revision' operation.
+            tbl.set("config_reload_revision", st.config_reload_revision)?;
+            Ok(tbl)
+        })?,
+    )?;
+
+    let s = state.clone();
+
+    // -- setDebugOverlay --
+    /// Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
+    /// @param | enabled | boolean | `true` to show the debug overlay, `false` to hide it.
+    system.set(
+        "setDebugOverlay",
+        lua.create_function(move |_, enabled: bool| {
+            s.borrow_mut().debug_overlay_enabled = enabled;
+            Ok(())
+        })?,
+    )?;
+
+    let s = state;
+
+    // -- getDebugOverlay --
+    /// Returns whether the on-screen debug overlay is currently enabled.
+    /// @return | boolean | `true` if the debug overlay is visible.
+    system.set(
+        "getDebugOverlay",
+        lua.create_function(move |_, ()| Ok(s.borrow().debug_overlay_enabled))?,
+    )?;
+
+    // -- setLogLevel --
+    /// Sets the engine-wide log verbosity level at runtime.
+    /// @param | level | string | Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
+    #[allow(unused_doc_comments)]
+    system.set(
+        "setLogLevel",
+        lua.create_function(|_, level: String| {
+            log_messages::set_log_level(&level);
+            Ok(())
+        })?,
+    )?;
+
+    // -- getLogLevel --
+    /// Returns the current engine log verbosity level as a string.
+    /// @return | string | Current log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
+    #[allow(unused_doc_comments)]
+    system.set(
+        "getLogLevel",
+        lua.create_function(|_, ()| Ok(log_messages::get_log_level().to_string()))?,
+    )?;
+
+    // -- log --
+    /// Writes a message to the engine log at the specified severity level.
+    /// @param | level | string | Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`. Defaults to `"info"` if unrecognized.
+    /// @param | message | string | The message text to log.
+    #[allow(unused_doc_comments)]
+    system.set(
+        "log",
+        lua.create_function(|_, (level, message): (String, String)| {
+            match level.to_lowercase().as_str() {
+                "error" => log::error!("[Lua] {}", message),
+                "warn" | "warning" => log::warn!("[Lua] {}", message),
+                "info" => log::info!("[Lua] {}", message),
+                "debug" => log::debug!("[Lua] {}", message),
+                "trace" => log::trace!("[Lua] {}", message),
+                _ => log::info!("[Lua] {}", message),
+            }
+            Ok(())
+        })?,
+    )?;
+    // -- getLastError --
+    /// Returns the most recent engine error as a table, or `nil` if no error has occurred.
+    /// @return | table | Table with fields: `message` (string), `code` (string), `category` (string), and optional `hint` (string). Returns `nil` when no error is recorded.
+    /// @field | message | string | Error message.
+    /// @field | code | string | Error code.
+    /// @field | category | string | Error category.
+    /// @field | hint | string? | Optional hint for resolution.
+    #[allow(unused_doc_comments)]
+    {
+        let s = state_for_error.clone();
+        /// Returns the last error for Lua scripts in this module.
+        /// @return | table | Table result returned by this call.
+        /// @field | message | string | Error message.
+        /// @field | code | string | Error code.
+        /// @field | category | string | Error category.
+        /// @field | hint | string? | Optional hint for resolution.
+        system.set(
+            "getLastError",
+            lua.create_function(move |lua, ()| {
+                let state = s.borrow();
+                if let Some(ref err_info) = state.last_error {
+                    let tbl = lua.create_table()?;
+                    /// Performs the 'message' operation.
+                    tbl.set("message", err_info.message.as_str())?;
+                    /// Performs the 'code' operation.
+                    tbl.set("code", err_info.code.as_str())?;
+                    /// Performs the 'category' operation.
+                    tbl.set("category", err_info.category.as_str())?;
+                    if let Some(ref hint) = err_info.hint {
+                        /// Performs the 'hint' operation.
+                        tbl.set("hint", hint.as_str())?;
+                    }
+                    Ok(mlua::Value::Table(tbl))
+                } else {
+                    Ok(mlua::Value::Nil)
+                }
+            })?,
+        )?;
+    }
+
+    // -- errorSnapshot --
+    /// Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
+    /// @param | msg | string | The error message to capture.
+    /// @return | string | JSON string containing the error snapshot with stack and context information.
+    system.set(
+        "errorSnapshot",
+        lua.create_function(|_, msg: String| {
+            use crate::runtime::EngineError;
+            let snap = EngineError::LuaError(msg).snapshot();
+            Ok(snap.to_json())
+        })?,
+    )?;
+
+    // -- getArch --
+    /// Returns the CPU architecture of the host system.
+    /// @return | string | Architecture identifier (e.g. `"x86_64"`, `"aarch64"`).
+    system.set(
+        "getArch",
+        lua.create_function(|_, ()| Ok(std::env::consts::ARCH.to_string()))?,
+    )?;
+
+    // -- getEnv --
+    /// Reads an environment variable by name. Returns `nil` if the variable is not set.
+    /// @param | name | string | The environment variable name.
+    /// @return | string | The variable value. Returns `nil` when the variable is not set.
+    system.set(
+        "getEnv",
+        lua.create_function(|_, name: String| match std::env::var(&name) {
+            Ok(val) => Ok(Some(val)),
+            Err(_) => Ok(None),
+        })?,
+    )?;
+
+    // -- getArgs --
+    /// Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
+    /// @return | string[] | Argument strings.
+    system.set(
+        "getArgs",
+        lua.create_function(|lua, ()| {
+            let args: Vec<String> = std::env::args().collect();
+            let tbl = lua.create_table()?;
+            for (i, arg) in args.iter().enumerate() {
+                tbl.set(i as i64 + 1, arg.as_str())?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
+
+    // -- parseArgs --
+    /// Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.
+    /// @param | args | table? | Optional table of argument strings. Uses `os.args` if omitted.
+    /// @return | table | Table with fields: `flags` (table of boolean), `options` (table of string), `positional` (array of string).
+    /// @field | flags | table | Boolean flags indexed by name.
+    /// @field | options | table | String options indexed by name.
+    /// @field | positional | string[] | Positional argument values.
+    system.set(
+        "parseArgs",
+        lua.create_function(|lua, args: Option<LuaTable>| {
+            let raw_args: Vec<String> = if let Some(tbl) = args {
+                let mut v = Vec::new();
+                for i in 1..=tbl.len()? {
+                    if let Ok(s) = tbl.get::<_, String>(i) {
+                        v.push(s);
+                    }
+                }
+                v
+            } else {
+                std::env::args().collect()
+            };
+            let flags = lua.create_table()?;
+            let options = lua.create_table()?;
+            let positional = lua.create_table()?;
+            let mut pos_idx = 1i64;
+            let mut end_of_options = false;
+            let mut i = 0;
+            while i < raw_args.len() {
+                let arg = &raw_args[i];
+                if end_of_options {
+                    positional.set(pos_idx, arg.as_str())?;
+                    pos_idx += 1;
+                } else if arg == "--" {
+                    end_of_options = true;
+                } else if let Some(rest) = arg.strip_prefix("--") {
+                    if let Some(eq_pos) = rest.find('=') {
+                        let key = &rest[..eq_pos];
+                        let val = &rest[eq_pos + 1..];
+                        options.set(key, val)?;
+                    } else if i + 1 < raw_args.len() && !raw_args[i + 1].starts_with('-') {
+                        options.set(rest, raw_args[i + 1].as_str())?;
+                        i += 1;
+                    } else {
+                        flags.set(rest, true)?;
+                    }
+                } else if let Some(rest) = arg.strip_prefix('-') {
+                    if !rest.is_empty() {
+                        flags.set(rest, true)?;
+                    }
+                } else {
+                    positional.set(pos_idx, arg.as_str())?;
+                    pos_idx += 1;
+                }
+                i += 1;
+            }
+            let result = lua.create_table()?;
+            /// Performs the 'flags' operation.
+            result.set("flags", flags)?;
+            /// Performs the 'options' operation.
+            result.set("options", options)?;
+            /// Performs the 'positional' operation.
+            result.set("positional", positional)?;
+            Ok(result)
+        })?,
+    )?;
+
+    // -- runBatch --
+    /// Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.
+    /// @param | tasks | table | Table mapping task names (string) to task functions (function).
+    /// @param | opts | table? | Options table. Set `stopOnError = true` to skip remaining tasks after the first failure.
+    /// @return | table | Table mapping each task name to a result table.
+    /// @field | status | string | Task status: `passed`, `failed`, or `skipped`.
+    /// @field | time | number | Elapsed time in seconds.
+    /// @field | error | string? | Error message when status is `failed`.
+    system.set(
+        "runBatch",
+        lua.create_function(|lua, (tasks, opts): (LuaTable, Option<LuaTable>)| {
+            let stop_on_error = opts
+                .as_ref()
+                .and_then(|o| o.get::<_, bool>("stopOnError").ok())
+                .unwrap_or(false);
+            let results = lua.create_table()?;
+            let mut had_error = false;
+            for pair in tasks.pairs::<String, LuaFunction>() {
+                let (name, func) = pair?;
+                if had_error && stop_on_error {
+                    let entry = lua.create_table()?;
+                    /// Performs the 'status' operation.
+                    entry.set("status", "skipped")?;
+                    /// Performs the 'time' operation.
+                    entry.set("time", 0.0)?;
+                    results.set(name, entry)?;
+                    continue;
+                }
+                let start = std::time::Instant::now();
+                let entry = lua.create_table()?;
+                match func.call::<_, LuaMultiValue>(()) {
+                    Ok(_) => {
+                        /// Performs the 'status' operation.
+                        entry.set("status", "passed")?;
+                    }
+                    Err(e) => {
+                        /// Performs the 'status' operation.
+                        entry.set("status", "failed")?;
+                        /// Performs the 'error' operation.
+                        entry.set("error", e.to_string())?;
+                        had_error = true;
+                    }
+                }
+                /// Performs the 'time' operation.
+                entry.set("time", start.elapsed().as_secs_f64())?;
+                results.set(name, entry)?;
+            }
+            Ok(results)
+        })?,
+    )?;
+
+    // -- getBatchResults --
+    /// Summarizes batch results by counting passed, failed, and skipped tasks.
+    /// @param | results | table | The results table returned by `runBatch`.
+    /// @return | number | Count of passed tasks.
+    /// @return | number | Count of failed tasks.
+    /// @return | number | Count of skipped tasks.
+    system.set(
+        "getBatchResults",
+        lua.create_function(|_, results: LuaTable| {
+            let mut passed = 0i64;
+            let mut failed = 0i64;
+            let mut skipped = 0i64;
+            for pair in results.pairs::<LuaValue, LuaTable>() {
+                let (_, entry) = pair?;
+                if let Ok(s) = entry.get::<_, String>("status") {
+                    match s.as_str() {
+                        "passed" => passed += 1,
+                        "failed" => failed += 1,
+                        "skipped" => skipped += 1,
+                        _ => {}
+                    }
+                }
+            }
+            Ok((passed, failed, skipped))
+        })?,
+    )?;
+    /// Performs the 'runtime' operation.
+    lurek.set("runtime", system)?;
+    Ok(())
+}

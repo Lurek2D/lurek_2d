@@ -1,0 +1,200 @@
+[root]
+widget_type = "panel"
+w = 800
+h = 600
+
+[[root.children]]
+widget_type = "panel"
+id = "title_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "T E T R I S"
+  font_size = 30
+  color = [0.0, 0.9, 0.9, 1]
+  anchor = "center"
+  y = -120
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "Rotate and stack falling tetrominoes"
+  font_size = 24
+  color = [0.7, 0.7, 0.9, 1]
+  anchor = "center"
+  y = -60
+
+  [[root.children.children]]
+  widget_type = "button"
+  id = "press_start"
+  text = "PRESS ENTER TO START"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 40
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "Ă˘â€ ÂĂ˘â€ â€™ / AD   Move\nĂ˘â€ â€  / W    Rotate\nĂ˘â€ â€ś  / S    Soft drop\nSpace     Hard drop\nC         Hold\nEscape    Quit"
+  font_size = 20
+  color = [0.4, 0.4, 0.5, 1]
+  anchor = "center"
+  y = 180
+
+[[root.children]]
+widget_type = "panel"
+id = "hud"
+anchor = "top_left"
+w = 800
+h = 600
+visible = true
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "SCORE"
+  font_size = 24
+  color = [0.7, 0.7, 0.9, 1]
+  x = 584
+  y = 50
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "0"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  x = 584
+  y = 70
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "LEVEL"
+  font_size = 24
+  color = [0.7, 0.7, 0.9, 1]
+  x = 584
+  y = 110
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "level_label"
+  text = "1"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  x = 584
+  y = 130
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "LINES"
+  font_size = 24
+  color = [0.7, 0.7, 0.9, 1]
+  x = 584
+  y = 170
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lines_label"
+  text = "0"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  x = 584
+  y = 190
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "NEXT"
+  font_size = 24
+  color = [0.7, 0.7, 0.9, 1]
+  x = 584
+  y = 235
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "HOLD"
+  font_size = 24
+  color = [0.7, 0.7, 0.9, 1]
+  x = 584
+  y = 340
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hold_empty_label"
+  text = "(empty)"
+  font_size = 16
+  color = [0.3, 0.3, 0.4, 1]
+  x = 584
+  y = 365
+
+  [[root.children.children]]
+  widget_type = "label"
+  text = "Ă˘â€ ÂĂ˘â€ â€™  Move\nĂ˘â€ â€   Rotate\nĂ˘â€ â€ś   Soft drop\nSPC Hard drop\nC   Hold\nESC Quit"
+  font_size = 16
+  color = [0.4, 0.4, 0.5, 1]
+  x = 584
+  y = 460
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 16
+  color = [0.4, 0.4, 0.5, 1]
+  anchor = "bottom_left"
+  x = 8
+  y = -20
+
+[[root.children]]
+type = "panel"
+id = "game_over_screen"
+anchor = "center"
+w = 800
+h = 600
+bg_color = [0, 0, 0, 0.7]
+visible = false
+
+  [[root.children.children]]
+  type = "label"
+  text = "GAME OVER"
+  font_size = 30
+  color = [1, 0.2, 0.2, 1]
+  anchor = "center"
+  y = -40
+
+  [[root.children.children]]
+  type = "label"
+  id = "final_score"
+  text = "Score: 0"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 10
+
+  [[root.children.children]]
+  type = "label"
+  id = "final_level"
+  text = "Level: 0"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 35
+
+  [[root.children.children]]
+  type = "label"
+  id = "final_lines"
+  text = "Lines: 0"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 60
+
+  [[root.children.children]]
+  type = "button"
+  id = "press_restart"
+  text = "Press R to restart"
+  font_size = 30
+  color = [0.7, 0.7, 0.7, 1]
+  anchor = "center"
+  y = 100

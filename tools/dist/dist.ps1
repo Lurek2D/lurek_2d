@@ -1,0 +1,307 @@
+#Requires -Version 5.1
+<#
+.SYNOPSIS
+    Build and package Lurek2D for Windows distribution.
+
+.DESCRIPTION
+    Runs a full release build, then assembles a portable distribution folder and
+    a ZIP archive ready to ship alongside game projects.
+
+    Output layout:
+        dist/
+          lurek2d-windows-x86_64/
+            lurek2d.exe           � engine binary
+            assets/              � engine assets (splash, icon)
+            content/demos/            � bundled example games
+            LICENSE
+            README.md
+            HOW-TO-RUN.txt
+          lurek2d-windows-x86_64.zip   � ready to upload / distribute
+
+.PARAMETER OutDir
+    Root output folder.  Default: dist/ inside the workspace.
+
+.PARAMETER SkipBuild
+    Skip the wrapper-backed release build (use an already-compiled binary).  Useful for CI.
+
+.EXAMPLE
+    .\tools\dist.ps1
+    .\tools\dist.ps1 -SkipBuild
+    .\tools\dist.ps1 -OutDir "C:\releases"
+#>
+
+param(
+    [string]$OutDir = "",
+    [switch]$SkipBuild
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+$WorkspaceRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+if (-not $OutDir) { $OutDir = Join-Path $WorkspaceRoot 'dist' }
+
+$Version = "1.0.0"
+$ArchName = "lurek2d-windows-x86_64"
+$PackageDir = Join-Path $OutDir $ArchName
+$ZipPath = Join-Path $OutDir "$ArchName.zip"
+# Release binary lives in build/dist/ (cargo build --profile dist)
+$BinarySource = Join-Path $WorkspaceRoot 'build\dist\lurek2d.exe'
+
+# -- Helpers -------------------------------------------------------------------
+function Write-Step([string]$Msg) { Write-Host "[dist] $Msg" -ForegroundColor Cyan }
+function Write-OK  ([string]$Msg) { Write-Host "[ OK ] $Msg" -ForegroundColor Green }
+function Write-Fail([string]$Msg) { Write-Host "[FAIL] $Msg" -ForegroundColor Red; exit 1 }
+
+# -- 0. Verify workspace -------------------------------------------------------
+if (-not (Test-Path (Join-Path $WorkspaceRoot 'Cargo.toml'))) {
+    Write-Fail "Must be run from the lurek2d workspace root."
+}
+
+# -- 1. Verify branding assets ------------------------------------------------
+Write-Step "Checking branding assets ..."
+$SplashPng = Join-Path $WorkspaceRoot 'assets\splash.png'
+$FaviconIco = Join-Path $WorkspaceRoot 'assets\favicon.ico'
+
+if (-not (Test-Path $SplashPng)) {
+    Write-Host "[warn] Missing assets\splash.png." -ForegroundColor Yellow
+}
+if (-not (Test-Path $FaviconIco)) {
+    Write-Host "[warn] Missing assets\favicon.ico." -ForegroundColor Yellow
+}
+
+# -- 2. Release build ----------------------------------------------------------
+if (-not $SkipBuild) {
+    Write-Step "Building Lurek2D (dist -- size-optimised) -- this may take several minutes ..."
+    Push-Location $WorkspaceRoot
+    try {
+        # Do NOT pipe through ForEach-Object — cargo writes to stderr and
+        # $ErrorActionPreference='Stop' would treat piped stderr as a fatal error.
+        python tools/dev/parallel_cargo.py build dist
+        if ($LASTEXITCODE -ne 0) { Write-Fail "parallel_cargo.py build dist failed (exit $LASTEXITCODE)." }
+    }
+    finally { Pop-Location }
+    Write-OK "Build succeeded."
+}
+else {
+    Write-Step "Skipping build (--SkipBuild set)."
+}
+
+if (-not (Test-Path $BinarySource)) {
+    Write-Fail "Binary not found at '$BinarySource'. Run without -SkipBuild."
+}
+
+# -- 3. Assemble package directory --------------------------------------------
+Write-Step "Assembling distribution package at '$PackageDir' ..."
+if (Test-Path $PackageDir) { Remove-Item $PackageDir -Recurse -Force }
+New-Item -ItemType Directory -Path $PackageDir -Force | Out-Null
+
+# Copy binary
+$DestBinary = Join-Path $PackageDir 'lurek2d.exe'
+Copy-Item $BinarySource -Destination $DestBinary -Force
+$SizeBefore = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
+Write-OK "Copied lurek2d.exe ($SizeBefore MB)"
+
+# -- Optional UPX compression --------------------------------------------------
+# UPX --best uses UCL/NRV compression (no LZMA): ~40% of original size.
+# Faster startup decompression than --lzma. Targets ~8 MB from a 20 MB binary.
+# Install: https://upx.github.io/  (place upx.exe anywhere on PATH)
+# Caveats: some AV scanners flag UPX'd bins.
+$upx = Get-Command upx -ErrorAction SilentlyContinue
+if ($upx) {
+    Write-Step "UPX found -- compressing lurek2d.exe ..."
+    # --best = maximum UCL compression (no LZMA): faster startup, ~8 MB result
+    & upx --best $DestBinary 2>&1 | ForEach-Object { Write-Host "    $_" }
+    if ($LASTEXITCODE -eq 0) {
+        $SizeAfter = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
+        Write-OK "UPX compressed: $SizeBefore MB � $SizeAfter MB"
+    }
+    else {
+        Write-Host "[warn] UPX returned non-zero; binary unchanged." -ForegroundColor Yellow
+    }
+}
+else {
+    Write-Host "[dist] UPX not found on PATH -- skipping compression (add upx to PATH to enable)." -ForegroundColor DarkGray
+}
+
+# Copy lurekc.bat launcher (no-console shortcut)
+$LunecBat = Join-Path $WorkspaceRoot 'lurekc.bat'
+if (Test-Path $LunecBat) {
+    Copy-Item $LunecBat -Destination (Join-Path $PackageDir 'lurekc.bat') -Force
+    Write-OK "Copied lurekc.bat"
+}
+
+# Copy engine assets (splash, icons)
+$AssetsSource = Join-Path $WorkspaceRoot 'assets'
+if (Test-Path $AssetsSource) {
+    $AssetsDest = Join-Path $PackageDir 'assets'
+    if (Test-Path $AssetsDest) { Remove-Item $AssetsDest -Recurse -Force }
+    Copy-Item $AssetsSource -Destination $AssetsDest -Recurse -Force
+    Write-OK "Copied assets/"
+}
+
+# Copy examples
+$ExamplesSource = Join-Path $WorkspaceRoot 'content\examples'
+if (Test-Path $ExamplesSource) {
+    $ExamplesDest = Join-Path $PackageDir 'examples'
+    if (Test-Path $ExamplesDest) { Remove-Item $ExamplesDest -Recurse -Force }
+    Copy-Item $ExamplesSource -Destination $ExamplesDest -Recurse -Force
+    Write-OK "Copied content/examples/"
+}
+
+# Copy Windows packaging helpers for .lurek archives and file association setup
+$DistToolsDest = Join-Path $PackageDir 'tools\dist'
+New-Item -ItemType Directory -Path $DistToolsDest -Force | Out-Null
+foreach ($toolFile in @('pack.ps1', 'pack.py', 'package_games.py', 'register_lurek_filetype.ps1')) {
+    $src = Join-Path $WorkspaceRoot "tools\dist\$toolFile"
+    if (Test-Path $src) {
+        Copy-Item $src -Destination (Join-Path $DistToolsDest $toolFile) -Force
+        Write-OK "Copied tools/dist/$toolFile"
+    }
+}
+
+# Copy demos (playable game demos)
+$DemosSource = Join-Path $WorkspaceRoot 'content\games'
+if (Test-Path $DemosSource) {
+    $DemosDest = Join-Path $PackageDir 'games'
+    if (Test-Path $DemosDest) { Remove-Item $DemosDest -Recurse -Force }
+    Copy-Item $DemosSource -Destination $DemosDest -Recurse -Force
+    Write-OK "Copied content/games/"
+}
+
+# Copy library (Lureksome pure-Lua standard libraries)
+$LibrarySource = Join-Path $WorkspaceRoot 'library'
+if (Test-Path $LibrarySource) {
+    $LibraryDest = Join-Path $PackageDir 'library'
+    if (Test-Path $LibraryDest) { Remove-Item $LibraryDest -Recurse -Force }
+    Copy-Item $LibrarySource -Destination $LibraryDest -Recurse -Force
+    Write-OK "Copied library/"
+}
+
+# Copy API docs  (lurek.md, lurek.lua LuaCATS stubs)
+$ApiDocsDest = Join-Path $PackageDir 'docs'
+New-Item -ItemType Directory -Path $ApiDocsDest -Force | Out-Null
+foreach ($apiFile in @('lurek.md', 'lurek.lua', 'lureksome.md', 'lureksome.lua')) {
+    $src = Join-Path $WorkspaceRoot "docs\api\$apiFile"
+    if (Test-Path $src) {
+        Copy-Item $src -Destination (Join-Path $ApiDocsDest $apiFile) -Force
+        Write-OK "Copied docs/$apiFile"
+    }
+}
+
+# Copy docs
+foreach ($f in @('README.md', 'LICENSE')) {
+    $src = Join-Path $WorkspaceRoot $f
+    if (Test-Path $src) {
+        Copy-Item $src -Destination (Join-Path $PackageDir $f) -Force
+    }
+}
+
+# Write how-to-run
+$HowTo = @"
+LUREK2D $Version -- Windows Portable Distribution
+=================================================
+
+How to run a game
+-----------------
+  lurek2d.exe  my_game\     (with console window -- for developers)
+  lurekc.bat   my_game\     (no console window  -- for end users)
+  lurekc.lnk                (shortcut with Lurek2D icon -- drag-drop a game folder)
+
+How to show the splash screen (no game)
+----------------------------------------
+  lurek2d.exe
+  lurekc.bat
+
+Bundled examples
+----------------
+  examples\   -- single-file API usage scripts (one per lurek.* module)
+
+  Use any example as a starting point:
+    lurekc.bat examples\physics
+
+Lureksome standard libraries (library\)
+----------------------------------------
+  Pure-Lua game modules you can require from your game scripts.
+  Available: battle, cardgame, combat, crafting, dialog, economy,
+             inventory, item, quest, stats, and more.
+
+  Usage in your game:
+    local inventory = require("library.inventory")
+    local quest     = require("library.quest")
+
+API Reference (docs\)
+----------------------
+  docs\lurek.md     -- lurek.* Lua API reference (Markdown)
+  docs\lurek.lua     -- LuaCATS type stubs for IDE autocompletion
+                      (copy to your project root or configure in .luarc.json)
+    docs\lureksome.md -- Lureksome library reference (Markdown)
+    docs\lureksome.lua -- LuaCATS stubs for bundled library modules
+
+Packaging helpers (tools\dist\)
+--------------------------------
+    tools\dist\pack.ps1   -- pack a game folder into a .lurek archive
+    tools\dist\pack.py    -- cross-platform .lurek packer
+    tools\dist\package_games.py -- batch-pack content\games into .lurek files
+    tools\dist\register_lurek_filetype.ps1 -- register .lurek double-click handling
+
+Writing your own game
+---------------------
+  1. Create a folder, e.g. my_game\
+  2. Add a main.lua with lurek.load() / lurek.update(dt) / lurek.draw()
+  3. Optionally add a conf.lua for window title, width, height
+  4. Run:  lurekc.bat my_game   (or drag the folder onto lurekc.lnk)
+
+Opening .lurek game archives
+----------------------------
+    1. Pack your game folder so main.lua is at the ZIP root
+    2. Rename or output the archive with a .lurek extension
+    3. Run tools\dist\register_lurek_filetype.ps1 once to enable double-click launch
+    4. Double-click the .lurek archive or run: lurek2d.exe my_game.lurek
+
+Full docs & source:  https://github.com/RandomBladeDude/lurek2d
+"@
+Set-Content -Path (Join-Path $PackageDir 'HOW-TO-RUN.txt') -Value $HowTo -Encoding UTF8
+Write-OK "Written HOW-TO-RUN.txt"
+
+# -- 3b. Create lurekc.lnk shortcut with Lurek2D icon ---------------------------
+$IcoPath = Join-Path $PackageDir 'assets\favicon.ico'
+if (-not (Test-Path $IcoPath)) {
+    $IcoPath = Join-Path $PackageDir 'assets\icon.png'  # fallback: no icon in shortcut
+}
+if (Test-Path $IcoPath) {
+    Write-Step "Creating lurekc.lnk shortcut with Lurek2D icon ..."
+    $ws = New-Object -ComObject WScript.Shell
+    $lnk = $ws.CreateShortcut((Join-Path $PackageDir 'lurekc.lnk'))
+    $lnk.TargetPath = Join-Path $PackageDir 'lurekc.bat'
+    $lnk.WorkingDirectory = $PackageDir
+    $lnk.IconLocation = "$IcoPath,0"
+    $lnk.Description = "Lurek2D -- launch game without console window"
+    $lnk.WindowStyle = 1
+    $lnk.Save()
+    Write-OK "Created lurekc.lnk (double-click to run a game, drag-and-drop supported)"
+}
+
+# -- 4. Create ZIP -------------------------------------------------------------
+Write-Step "Creating ZIP archive at '$ZipPath' ..."
+if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
+
+# Use .NET ZipFile — reads files as streams so VS Code file locks don't block it.
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::CreateFromDirectory(
+    $PackageDir,
+    $ZipPath,
+    [System.IO.Compression.CompressionLevel]::Optimal,
+    $true   # $true = include top-level dir name in entry paths
+)
+$ZipSizeKB = [math]::Round((Get-Item $ZipPath).Length / 1024)
+Write-OK "ZIP created ($ZipSizeKB KB) → $ZipPath"
+
+# -- 5. Summary ----------------------------------------------------------------
+Write-Host ""
+Write-OK "Distribution package ready:"
+Write-Host "  Folder : $PackageDir" -ForegroundColor White
+Write-Host "  ZIP    : $ZipPath"    -ForegroundColor White
+Write-Host ""
+Write-Host "  Distribute the ZIP or the folder contents to end users." -ForegroundColor Yellow
+Write-Host "  For a full installer, run:  makensis tools\installer.nsi" -ForegroundColor Yellow

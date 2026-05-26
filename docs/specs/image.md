@@ -1,0 +1,531 @@
+# image
+
+## TL;DR
+
+- The `image` module is an extensive Platform Services tier component responsible for CPU-side pixel buffer operations, providing a robust suite of tools for loading, manipulating, and exporting image data.
+
+## General Info
+
+- Module group: `Platform Services`
+- Source path: `src/image/`
+- Lua API path(s): `src/lua_api/image_api.rs`
+- Primary Lua namespace: `lurek.image`
+- Rust test path(s): tests/rust/unit/image_tests.rs, tests/rust/stress/image_stress_tests.rs
+- Lua test path(s): tests/lua/unit/test_image_core_unit.lua, tests/lua/unit/test_image.lua, tests/lua/unit/test_image_effect.lua, tests/lua/unit/test_render_core_unit.lua, tests/lua/stress/test_image_stress.lua, tests/lua/evidence/test_evidence_image_drawing.lua, tests/lua/evidence/test_evidence_imagedata.lua, tests/lua/evidence/test_evidence_image_effects.lua, tests/lua/evidence/test_evidence_imagedata_effects.lua
+
+## Summary
+
+ The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
+
+Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
+
+The `image` module features specialized systems for game development, most notably the `ProvinceGrid`. This system performs high-speed flood-fill analysis on color-coded PNG maps to generate optimized spatial indexes, identifying distinct provinces, calculating adjacencies, tracing polygonal borders, and exporting compressed shape data for Geoscape-style games. Additionally, `PaletteLUT` provides hardware-accelerated color remapping for retro palette-swapping effects. The module also contains an extensive set of debug visualization renderers for animation, audio, camera bounds, easing curves, and procedural generation (Voronoi, noise, cellular automata). The entire API, including CPU-to-GPU texture upload helpers, is fully exposed to Lua via the `lurek.image.*` namespace.
+
+## Architecture Boundary
+
+**Tier**: Platform Services
+
+**Dependents**:
+- `province` module imports `ProvinceGrid` and `ImageData` from image (correct: Feature → Platform direction)
+
+The image module provides province-grid parsing utilities (`image/province_grid.rs`) that the
+province module consumes. This is intentional shared infrastructure, not a boundary violation.
+
+## Source Documentation
+
+### `compressed.rs`
+- DDS compressed-texture parsing: header validation, mipmap extraction, format detection.
+- Recognized block-compression families: BC1–BC7 (desktop) and ETC1/ETC2 (mobile).
+- Dual detection path: DXGI format field for DX10+ files, D3DFormat for legacy DDS.
+- File-level helpers for magic-byte checks and full-file decode via GameFS or std I/O.
+- Data carrier (`CompressedImageData`) holding dimensions, format tag, and raw mip payloads.
+
+### `effects.rs`
+- Pixel-level color adjustments: brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, and posterize applied via parallel pixel mapping.
+- Alpha channel masking and deterministic per-pixel noise injection with repeatable seed.
+- Geometric transforms: horizontal and vertical flip, 90-degree clockwise rotation, and rectangular crop with bounds validation.
+- Resize operations using nearest-neighbor sampling, bilinear interpolation, and Lanczos3 windowed-sinc filtering.
+- Separable box blur with configurable radius and 3x3 unsharp-mask sharpening kernel.
+- General-purpose NxN kernel convolution with clamped-edge boundary handling and validation of odd kernel dimensions.
+- Compositing via alpha-blended blit with fast-path for fully opaque sources and nine-slice stretch drawing.
+- Bytewise image difference scoring across same-sized and differently-sized images for test comparison.
+- `ResizeFilter` enum for selecting resampling kernels via string parsing at the Lua boundary.
+
+### `image_data.rs`
+- Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
+- Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
+- Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
+- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
+- PNG encoding for serialization and export.
+
+### `layers.rs`
+- Named image layers with opacity, visibility, and RGBA pixel data.
+- Layered image stack that composites layers front-to-back with alpha blending.
+- Layer manipulation: add, remove, reorder, swap, rename, set opacity/visibility.
+- Final merge produces a single `ImageData` using standard Porter-Duff over compositing.
+
+### `mod.rs`
+- RGBA image storage, pixel manipulation, and CPU-side drawing helpers.
+- Compressed format decoding (PNG, QOI, BMP, TGA, WebP) and texture upload.
+- Layered compositing, palette remapping, and image-space effects.
+- Texture atlas packing, nine-slice metadata, and province-grid extraction.
+
+### `palette_lut.rs`
+- Source-to-target color remapping via indexed palette lookup tables.
+- Hash-accelerated pixel matching for large palettes, linear scan for small ones.
+- In-place image rewrite and cyclic rotation of replacement colors.
+
+### `province_grid.rs`
+- Province grid construction from color-mapped images, assigning unique ids per distinct RGB color.
+- Pixel-level province id lookup and reverse color retrieval by id.
+- Adjacency detection between neighboring provinces with shared-border-pixel counts.
+- Horizontal span extraction for contiguous province row segments.
+- Border segment detection returning line segments between differing province regions.
+- Polygon tracing from directed cell edges into closed point loops per province.
+- Polygon simplification removing collinear vertices and 45-degree staircase patterns.
+- Binary serialization and deserialization of span and border segment shape data.
+- Adjacency pair struct exposing province relationships for map graph queries.
+
+### `render.rs`
+- Convert an image buffer into GPU render commands for on-screen display.
+- Provide cloning helpers to snapshot pixel data as standalone values.
+- Bridge between ImageData and the engine's RenderCommand pipeline.
+
+### `serial.rs`
+- Serialize and deserialize flat and layered images in the LIMG binary format.
+- Provide zlib compression and decompression for pixel payloads.
+- Validate headers, version tags, and type flags on load.
+- Encode layer metadata (name, opacity, visibility) alongside pixel data.
+- Expose both file-path and raw-byte entry points for flexible I/O.
+
+### `texture.rs`
+- CPU-side texture loading, decoding, and storage into the SlotMap pool.
+- Premultiplied-alpha conversion for correct blending on the GPU.
+- Color-space tagging (sRGB vs linear) carried alongside pixel data.
+- Construction from file paths or raw RGBA byte buffers.
+- Dimension validation for caller-supplied pixel buffers.
+
+### `texture_atlas.rs`
+- Shelf-based rectangle packing for combining multiple images into a single atlas texture.
+- Nine-slice inset metadata attached per region for scalable UI sprites.
+- Name-keyed region lookup, clearing, and dimension queries.
+
+### `visualization/animation.rs`
+- Frame grid rendering for animation debug overlays.
+- Playback timeline preview with active frame highlighting.
+- Playback control state visualization with run, idle, pause, and resume.
+- Default cell-dimension wrapper for quick animation preview.
+- Color-coded frame indicators for current vs inactive frames.
+
+### `visualization/audio.rs`
+- Mono waveform preview with axis grid and peak normalization.
+- Stereo waveform rendering with channel separation.
+- Zoomed waveform with interpolated sample detail.
+- Labeled waveform strip with custom color mapping.
+- Shared peak normalization and column-based rendering.
+
+### `visualization/camera.rs`
+- Camera debug overlay with viewport rectangle and position crosshair.
+- Zoom level comparison panel across multiple scale factors.
+- Rotation preview grid with world-to-screen coordinate transforms.
+- Camera bounds display with labeled position list.
+- Follow and dead-zone trail visualization.
+- Shake displacement trail with center and moved-position markers.
+- Full-size camera debug wrapper for quick usage.
+- HSV color helpers for hue-based visual differentiation.
+
+### `visualization/easing.rs`
+- Easing curve gallery rendered in a labeled grid layout.
+- Overlaid easing comparison chart with colored traces.
+- Bézier curve rendering with control-point markers.
+- Advanced Bézier demo with derivatives, segments, and edit operations.
+- Grid background and axis rendering for chart context.
+
+### `visualization/facade.rs`
+- HSV to RGB conversion for visualization color mapping.
+- Hue-based palette generation for chart and graph elements.
+- Shared color utility used across all visualization submodules.
+
+### `visualization/geometry.rs`
+- Polygon gallery with regular shapes of varying side counts.
+- Archimedes spiral rendering with HSV ring colors.
+- Filled primitive samples: rectangles, circles, brightness grid.
+- Convex hull computation and overlay drawing.
+- Point-in-polygon, centroid, and area visualization.
+- Bresenham line rasterization proof.
+- Segment-segment and circle-line intersection tests.
+- Circle-segment and line intersection proof rendering.
+
+### `visualization/graph.rs`
+- Node-edge graph rendering with labels and colored vertices.
+- Removed-edge overlay with dimmed styling.
+- Item-flow graph with directional arrows and node items.
+- Stats text and title label placement.
+- Circle node rendering with adjacency-list edges.
+
+### `visualization/image_ops.rs`
+- Side-by-side labeled image comparison composite.
+- Pixel transform grid: original, inverted, grayscale, sepia columns.
+- HSV color wheel rendering from angle and distance.
+- Slot-based layout with automatic scaling and padding.
+- Label placement beneath each comparison slot.
+
+### `visualization/mod.rs`
+- Submodule declarations for all visualization categories.
+- Wildcard re-exports providing a flat public API.
+- Shared facade helpers scoped to crate visibility.
+
+### `visualization/noise.rs`
+- Noise function rendering as scaled grayscale.
+- Raw noise mapping without range normalization.
+- Terrain biome coloring from noise elevation bands.
+- Heightmap slice visualization with elevation gradient.
+- Noise comparison strip with multiple tiles side by side.
+
+### `visualization/procgen.rs`
+- Cellular automata grid rendering with alive and dead colors.
+- Voronoi region visualization from seed partitions.
+- Point sample rendering as colored dots or circles.
+- Dungeon grid display with wall and floor tile scaling.
+- Delaunay triangulation overlay with triangle edges and vertices.
+
+### `visualization/ui.rs`
+- Settings panel layout with controls, sliders, and buttons.
+- HUD bar rendering for health, mana, stamina, and XP.
+- Skill cooldown arcs with radial fill indicators.
+- Color swatch palette with selection highlight.
+- Progress bars and percentage label formatting.
+
+## Types
+
+- `CompressedFormat` (`enum`, `compressed.rs`): Identifies which GPU-compressed format a DDS asset uses and gives the Lua side a stable format name.
+- `CompressedImageData` (`struct`, `compressed.rs`): Holds DDS payloads and mip data in compressed form so the engine can defer expansion and upload decisions to the renderer.
+- `ResizeFilter` (`enum`, `effects.rs`): Resize kernels supported by the image resampler.
+- `ImageData` (`struct`, `image_data.rs`): The main CPU image container. It is the module's central type for pixel storage, file decode/encode, primitive drawing, and effect application.
+- `ImageLayer` (`struct`, `layers.rs`): Represents a single named layer with visibility, opacity, and its own `ImageData` backing store.
+- `LayeredImage` (`struct`, `layers.rs`): Owns an ordered stack of `ImageLayer` values and merges them into a flat image when callers need a composited result.
+- `PaletteLUT` (`struct`, `palette_lut.rs`): Describes palette remapping tables for effects that replace source colors with target colors.
+- `AdjacencyPair` (`struct`, `province_grid.rs`): Records that `province_a` and `province_b` share a border of `border_pixels` length (public fields).
+- `ProvinceShapeCacheEntry` (`struct`, `province_grid.rs`): Cached province polygon draw data with color, bounds, and flattened vertices.
+- `ProvinceGrid` (`struct`, `province_grid.rs`): Flat `Vec<u32>` spatial index for province-colour maps. Built from an `ImageData` in a single O(w×h) scan; each unique non-black RGB is assigned a sequential province ID (1..n).
+- `TextureColorSpace` (`enum`, `texture.rs`): Texture color space stored alongside decoded pixels.
+- `Texture` (`struct`, `texture.rs`): A lightweight texture handle and metadata wrapper used when CPU image data is inserted into renderer-owned texture storage.
+- `NineSliceInsets` (`struct`, `texture_atlas.rs`): Nine-slice border distances used to preserve corners and edges.
+- `AtlasRegion` (`struct`, `texture_atlas.rs`): Describes the packed rectangle for one atlas entry.# `image` — Agent Reference
+- `TextureAtlas` (`struct`, `texture_atlas.rs`): Owns atlas dimensions and packed regions for named sub-images that share one backing texture.
+
+## Functions
+
+- `CompressedFormat::as_str` (`compressed.rs`): Return the lowercase format label string for this variant.
+- `CompressedImageData::from_dds` (`compressed.rs`): Decode DDS bytes into compressed image data or return a file-system error.
+- `CompressedImageData::get_dimensions` (`compressed.rs`): Return the base image dimensions.
+- `CompressedImageData::get_mipmap_count` (`compressed.rs`): Return the number of mipmap levels stored in this image.
+- `CompressedImageData::get_format` (`compressed.rs`): Return the detected compressed format string.
+- `CompressedImageData::is_dds_magic` (`compressed.rs`): Return whether the byte slice starts with the DDS magic header.
+- `CompressedImageData::from_file` (`compressed.rs`): Read a DDS file from disk and decode it into compressed image data.
+- `CompressedImageData::is_dds_file` (`compressed.rs`): Return whether a file on disk starts with the DDS magic header.
+- `ResizeFilter::parse` (`effects.rs`): Parse a resize filter name and return the selected filter when recognized.
+- `ImageData::brightness` (`effects.rs`): Scale RGB channels by a factor in place.
+- `ImageData::contrast` (`effects.rs`): Adjust contrast around the midpoint in place.
+- `ImageData::saturation` (`effects.rs`): Blend RGB channels toward luminance by the given factor.
+- `ImageData::gamma` (`effects.rs`): Apply gamma correction to RGB channels in place.
+- `ImageData::tint` (`effects.rs`): Blend RGB channels toward a tint color by the given factor.
+- `ImageData::grayscale` (`effects.rs`): Convert the image to grayscale in place.
+- `ImageData::sepia` (`effects.rs`): Apply a sepia tone in place.
+- `ImageData::invert` (`effects.rs`): Invert the RGB channels in place.
+- `ImageData::threshold` (`effects.rs`): Convert the image to a hard thresholded grayscale image.
+- `ImageData::posterize` (`effects.rs`): Reduce color depth to the requested number of levels.
+- `ImageData::fill` (`effects.rs`): Fill the whole image with a solid color.
+- `ImageData::noise` (`effects.rs`): Add repeatable random noise to RGB channels.
+- `ImageData::alpha_mask` (`effects.rs`): Scale the alpha channel by a factor in place.
+- `ImageData::flip_horizontal` (`effects.rs`): Flip the image horizontally in place.
+- `ImageData::flip_vertical` (`effects.rs`): Flip the image vertically in place.
+- `ImageData::rotate_90_cw` (`effects.rs`): Return a new image rotated 90 degrees clockwise.
+- `ImageData::crop` (`effects.rs`): Return a cropped copy of the image or `None` when the region is invalid.
+- `ImageData::resize_nearest` (`effects.rs`): Resize the image with nearest-neighbor sampling.
+- `ImageData::blur` (`effects.rs`): Blur the image with a separable box kernel and return a new image.
+- `ImageData::sharpen` (`effects.rs`): Sharpen the image with a 3x3 kernel and return a new image.
+- `ImageData::resize` (`effects.rs`): Resize the image with bilinear interpolation by default.
+- `ImageData::resize_with_filter` (`effects.rs`): Resize the image with the requested filter and return `None` for zero-sized output.
+- `ImageData::blit` (`effects.rs`): Blend another image into this image using alpha or overwrite when fully opaque.
+- `ImageData::draw_nine_slice` (`effects.rs`): Draw a nine-slice region from a source image into this image.
+- `ImageData::get_region` (`effects.rs`): Return a copied rectangular region or `None` when out of bounds.
+- `ImageData::diff` (`effects.rs`): Compute a bytewise difference score between two images.
+- `ImageData::convolve` (`effects.rs`): Convolve the image with a square kernel and return an error on invalid input.
+- `ImageData::new` (`image_data.rs`): Create a zero-filled RGBA image buffer of the given size.
+- `ImageData::from_file` (`image_data.rs`): Load an image from disk and return decoded RGBA bytes, or an error on failure.
+- `ImageData::from_encoded_bytes` (`image_data.rs`): Decode an image from memory and return RGBA bytes, or an error on failure.
+- `ImageData::from_bytes` (`image_data.rs`): Build an image from exact RGBA bytes, or return an error on length mismatch.
+- `ImageData::width` (`image_data.rs`): Return the image width in pixels.
+- `ImageData::height` (`image_data.rs`): Return the image height in pixels.
+- `ImageData::dimensions` (`image_data.rs`): Return the image dimensions as width and height.
+- `ImageData::get_pixel` (`image_data.rs`): Return the RGBA pixel at a coordinate, or `None` when out of bounds.
+- `ImageData::set_pixel` (`image_data.rs`): Set a pixel at a coordinate and return false when the point is out of bounds.
+- `ImageData::paste` (`image_data.rs`): Copy pixels from a source image into this image at the given offset.
+- `ImageData::map_pixel` (`image_data.rs`): Map every pixel through a callback in place.
+- `ImageData::draw_rect` (`image_data.rs`): Fill an axis-aligned rectangle with a solid color and alpha.
+- `ImageData::draw_circle` (`image_data.rs`): Fill a circle with a solid color and alpha.
+- `ImageData::draw_line` (`image_data.rs`): Draw a line with Bresenham's algorithm using a solid color and alpha.
+- `ImageData::draw_label` (`image_data.rs`): Draw a compact 5x7 bitmap label for ASCII letters, digits, and UI punctuation.
+- `ImageData::draw_text_with_font` (`image_data.rs`): Draw `text` into this image using a bitmap font atlas produced by `crate::render::font::Font`.
+- `ImageData::encode_png` (`image_data.rs`): Encode the image as PNG bytes and return an error on encode failure.
+- `ImageData::as_bytes` (`image_data.rs`): Return a slice of the raw RGBA pixel bytes.
+- `ImageData::get_string` (`image_data.rs`): Return a cloned copy of the raw RGBA pixel bytes.
+- `ImageData::set_raw_data` (`image_data.rs`): Replace pixel data with new raw bytes and return an error on length mismatch.
+- `ImageData::map_pixel_par` (`image_data.rs`): Map every pixel through a callback in place using parallel rows above the threshold.
+- `ImageLayer::new` (`layers.rs`): Create a visible opaque layer with a blank canvas of the given size.
+- `LayeredImage::new` (`layers.rs`): Create an empty layered image with the given canvas size.
+- `LayeredImage::width` (`layers.rs`): Return the canvas width in pixels.
+- `LayeredImage::height` (`layers.rs`): Return the canvas height in pixels.
+- `LayeredImage::layer_count` (`layers.rs`): Return the number of layers in the stack.
+- `LayeredImage::add_layer` (`layers.rs`): Append a new blank layer and return its index.
+- `LayeredImage::remove_layer` (`layers.rs`): Remove a layer by index and return it when present.
+- `LayeredImage::get_layer` (`layers.rs`): Return a layer by index.
+- `LayeredImage::get_layer_mut` (`layers.rs`): Return a mutable layer by index.
+- `LayeredImage::set_opacity` (`layers.rs`): Set a layer opacity and clamp it to the valid range.
+- `LayeredImage::set_visible` (`layers.rs`): Set a layer visibility flag and return whether the layer existed.
+- `LayeredImage::set_name` (`layers.rs`): Rename a layer and return whether the layer existed.
+- `LayeredImage::set_layer_image` (`layers.rs`): Replace a layer image with a copied source image or a pasted canvas copy.
+- `LayeredImage::swap_layers` (`layers.rs`): Swap two layers and return false when either index is invalid.
+- `LayeredImage::move_layer` (`layers.rs`): Move a layer to another position and return false when either index is invalid.
+- `LayeredImage::merge` (`layers.rs`): Merge visible layers front-to-back into a new image.
+- `PaletteLUT::new` (`palette_lut.rs`): Create an empty palette lookup table.
+- `PaletteLUT::get_color_count` (`palette_lut.rs`): Return the number of color pairs stored in the table.
+- `PaletteLUT::set_color` (`palette_lut.rs`): Set a color pair at an index and grow the table when needed.
+- `PaletteLUT::get_from_color` (`palette_lut.rs`): Return the source color at an index.
+- `PaletteLUT::get_to_color` (`palette_lut.rs`): Return the replacement color at an index.
+- `PaletteLUT::clear` (`palette_lut.rs`): Clear all stored color pairs.
+- `PaletteLUT::cycle_to_colors` (`palette_lut.rs`): Rotate replacement colors by the requested offset.
+- `PaletteLUT::apply` (`palette_lut.rs`): Apply the palette lookup to an image buffer in place.
+- `ProvinceGrid::from_image` (`province_grid.rs`): Build a province grid from an image where non-black pixels define province ids.
+- `ProvinceGrid::from_file` (`province_grid.rs`): Load an image from disk and derive province ids from it.
+- `ProvinceGrid::width` (`province_grid.rs`): Return the grid width in pixels.
+- `ProvinceGrid::height` (`province_grid.rs`): Return the grid height in pixels.
+- `ProvinceGrid::get_at` (`province_grid.rs`): Return the province id at a coordinate, or `0` when out of bounds.
+- `ProvinceGrid::province_count` (`province_grid.rs`): Return the highest province id present in the grid.
+- `ProvinceGrid::province_color` (`province_grid.rs`): Return the RGB color associated with a province id, or `None` for id 0.
+- `ProvinceGrid::adjacencies` (`province_grid.rs`): Return cached adjacency triples for the grid.
+- `ProvinceGrid::province_spans` (`province_grid.rs`): Return horizontal spans for each province row segment.
+- `ProvinceGrid::border_segments` (`province_grid.rs`): Return contiguous border segments between differing provinces.
+- `ProvinceGrid::province_polygons` (`province_grid.rs`): Trace province polygons as ordered point loops.
+- `ProvinceGrid::province_polygons_simplified` (`province_grid.rs`): Return simplified province polygons with redundant vertices removed.
+- `ProvinceGrid::build_shape_cache` (`province_grid.rs`): Build a simplified polygon shape cache for efficient drawing.
+- `ProvinceGrid::serialize_shape_data` (`province_grid.rs`): Serialize spans and border segments into a compact binary blob.
+- `ProvinceGrid::deserialize_shape_data` (`province_grid.rs`): Decode serialized spans and border segments from a shape-data blob.
+- `ImageData::generate_render_commands` (`render.rs`): Generate draw commands for this image buffer at the given screen position.
+- `ImageData::draw_to_image` (`render.rs`): Clone the image buffer into a standalone image value.
+- `save_image` (`serial.rs`): Save a flat [`ImageData`] to a LIMG binary file at the given path.
+- `load_image` (`serial.rs`): Load a flat [`ImageData`] from a LIMG binary file.
+- `load_image_from_bytes` (`serial.rs`): Load a flat image from raw LIMG bytes and validate the type flag.
+- `save_layered` (`serial.rs`): Save a [`LayeredImage`] to a LIMG binary file at the given path.
+- `load_layered` (`serial.rs`): Load a [`LayeredImage`] from a LIMG binary file.
+- `load_layered_from_bytes` (`serial.rs`): Load a layered image from raw LIMG bytes and validate the type flag.
+- `encode_flat` (`serial.rs`): Encode a flat [`ImageData`] into a complete LIMG binary blob.
+- `decode_flat` (`serial.rs`): Decode the payload section of a flat LIMG blob.
+- `parse_header` (`serial.rs`): Validate the LIMG header and return `(type_flag, payload_slice)`.
+- `premultiply_alpha_rgba8_in_place` (`texture.rs`): Canonical CPU helper for premultiplying RGBA8 before texture upload.
+- `Texture::parse_color_space` (`texture.rs`): Parse a texture color-space label and return the matching enum value.
+- `Texture::load` (`texture.rs`): Load a texture with sRGB color space by default.
+- `Texture::load_with_color_space` (`texture.rs`): Load a texture from disk, premultiply alpha, and store it in the texture pool.
+- `Texture::from_rgba` (`texture.rs`): Create a texture from RGBA bytes using sRGB color space.
+- `Texture::from_rgba_with_color_space` (`texture.rs`): Create a texture from RGBA bytes and store it in the texture pool.
+- `TextureAtlas::new` (`texture_atlas.rs`): Create an empty atlas with the given dimensions and padding.
+- `TextureAtlas::pack` (`texture_atlas.rs`): Pack a region without nine-slice metadata and return whether it fit.
+- `TextureAtlas::pack_with_nine_slice` (`texture_atlas.rs`): Pack a region with optional nine-slice metadata and return whether it fit.
+- `TextureAtlas::set_nine_slice` (`texture_atlas.rs`): Update the nine-slice metadata for a packed region and return whether it fit.
+- `TextureAtlas::get_region` (`texture_atlas.rs`): Return a packed region by name.
+- `TextureAtlas::get_region_count` (`texture_atlas.rs`): Return the number of packed regions.
+- `TextureAtlas::get_dimensions` (`texture_atlas.rs`): Return the atlas dimensions.
+- `TextureAtlas::get_regions` (`texture_atlas.rs`): Return all packed regions as borrowed values.
+- `TextureAtlas::clear` (`texture_atlas.rs`): Remove all packed regions and shelves.
+- `draw_animation_frame_grid_to_image` (`visualization/animation.rs`): Render an animation's frame grid as a strip of numbered cells.
+- `draw_animation_playback_to_image` (`visualization/animation.rs`): Render an animation playback strip as snapshot columns.
+- `animation_playback_control_to_image` (`visualization/animation.rs`): Render an animation playback-control timeline diagram.
+- `draw_animation_to_image` (`visualization/animation.rs`): Render an animation as a CPU image for headless testing.
+- `waveform_to_image` (`visualization/audio.rs`): Render audio samples as a waveform visualization.
+- `waveform_stereo_to_image` (`visualization/audio.rs`): Render interleaved stereo audio samples as a two-channel waveform.
+- `waveform_zoomed_to_image` (`visualization/audio.rs`): Render a zoomed-in waveform showing individual sample cycles.
+- `draw_sound_waveform_to_image` (`visualization/audio.rs`): Draw a single waveform as a colored plot on a dark background.
+- `draw_camera_debug_to_image` (`visualization/camera.rs`): Render a camera debug visualization showing viewport, position, and zoom.
+- `draw_camera_zoom_comparison_to_image` (`visualization/camera.rs`): Render a zoom comparison showing the world at multiple zoom levels.
+- `camera_rotation_to_image` (`visualization/camera.rs`): Render six camera rotation steps in a 3-column grid.
+- `camera_bounds_to_image` (`visualization/camera.rs`): Render a camera bounds-clamping summary panel.
+- `camera_follow_to_image` (`visualization/camera.rs`): Render a camera follow-and-deadzone trail diagram.
+- `camera_shake_to_image` (`visualization/camera.rs`): Render a camera shake trail and move-by result.
+- `draw_camera_rotation_grid_to_image` (`visualization/camera.rs`): Render a grid of camera rotation panels, each showing 8 coloured dots transformed through the rotation.
+- `draw_camera_bounds_to_image` (`visualization/camera.rs`): Render a set of camera positions as labelled coloured rectangles.
+- `draw_camera_follow_trail_to_image` (`visualization/camera.rs`): Render a camera follow trail with target points and dead-zone rectangle.
+- `draw_camera_shake_trail_to_image` (`visualization/camera.rs`): Render a camera shake trail with fading circles and reference markers.
+- `draw_camera_to_image` (`visualization/camera.rs`): Render a camera as a CPU image for headless testing.
+- `easing_gallery_to_image` (`visualization/easing.rs`): Render a gallery of easing curves as a grid of small charts.
+- `easing_comparison_to_image` (`visualization/easing.rs`): Render multiple easing curves overlaid on a single chart.
+- `bezier_curves_to_image` (`visualization/easing.rs`): Render multiple cubic Bezier curves with control-point overlays.
+- `draw_bezier_advanced_to_image` (`visualization/easing.rs`): Draw a bezier advanced operations overview.
+- `hsv_to_rgb_viz` (`visualization/facade.rs`): Convert HSV colour to RGB bytes.
+- `polygon_gallery_to_image` (`visualization/geometry.rs`): Render a gallery of regular polygons (triangle→dodecagon), a five-pointed star, and an arrow shape using `draw_line`.
+- `spiral_to_image` (`visualization/geometry.rs`): Render concentric colored circles to demonstrate angular segment drawing.
+- `filled_primitives_to_image` (`visualization/geometry.rs`): Render filled rectangle and circle primitives with HSV-coloured fills.
+- `draw_geometry_shapes_to_image` (`visualization/geometry.rs`): Draw a comprehensive geometry shapes & queries visualization.
+- `draw_geometry_intersections_to_image` (`visualization/geometry.rs`): Draw geometry intersection tests visualization.
+- `draw_graph_operations_to_image` (`visualization/graph.rs`): Render a graph with explicit node positions, labels, edge list, and stats.
+- `draw_graph_item_flow_to_image` (`visualization/graph.rs`): Render a pipeline graph with nodes, directional pipes, and item indicators.
+- `draw_image_comparison_to_image` (`visualization/image_ops.rs`): Draw a side-by-side comparison of multiple images.
+- `draw_pixel_transform_grid_to_image` (`visualization/image_ops.rs`): Draw a 4-column pixel transform grid: original, invert, grayscale, sepia.
+- `draw_color_wheel_to_image` (`visualization/image_ops.rs`): Draw an HSV colour wheel.
+- `noise_to_image` (`visualization/noise.rs`): Render a 2D noise function to a grayscale image.
+- `noise_raw_to_image` (`visualization/noise.rs`): Render a 2D noise function where the output is already in `[0,1]` range.
+- `noise_terrain_to_image` (`visualization/noise.rs`): Render a 2D noise function as a terrain-colored image.
+- `heightmap_to_image` (`visualization/noise.rs`): Render a flat heightmap buffer as a colored elevation image.
+- `terrain_elevation_to_image` (`visualization/noise.rs`): Render a flat heightmap buffer with terrain-band coloring.
+- `noise_map_to_image` (`visualization/noise.rs`): Render a noise map buffer as a grayscale image (normalised `[-1,1]` → `[0,255]`).
+- `noise_comparison_to_image` (`visualization/noise.rs`): Render multiple noise maps side by side as a horizontal strip.
+- `cellular_grid_to_image` (`visualization/procgen.rs`): Render a cellular automata grid (1=alive, 0=dead) as a scaled image.
+- `voronoi_to_image` (`visualization/procgen.rs`): Render a Voronoi region map as a colored image.
+- `points_to_image` (`visualization/procgen.rs`): Render a set of 2D points as dots on a dark background.
+- `dungeon_grid_to_image` (`visualization/procgen.rs`): Render a BSP dungeon grid (0=floor, 1=wall) as a scaled tile image.
+- `colored_points_to_image` (`visualization/procgen.rs`): Render a set of 2-D points, each colored by its index in the list.
+- `draw_delaunay_to_image` (`visualization/procgen.rs`): Draw Delaunay triangulation visualization.
+- `panel_layout_to_image` (`visualization/ui.rs`): Render a mock settings panel with title bar, sliders, checkboxes, radio buttons, progress bar, colour swatches, and action buttons.
+- `hud_bars_to_image` (`visualization/ui.rs`): Render a game HUD with HP/MP/Stamina/XP bars and skill cooldown indicators.
+
+## Lua API Reference
+
+- Binding path(s): `src/lua_api/image_api.rs`
+- Namespace: `lurek.image`
+
+### Module Functions
+- `lurek.image.newImageData`: Creates empty image data from dimensions or decodes image data from a GameFS filename.
+- `lurek.image.newImageDataFromBytes`: Creates image data from raw RGBA bytes and explicit dimensions.
+- `lurek.image.newCompressedData`: Loads DDS compressed image data from GameFS.
+- `lurek.image.isCompressed`: Returns whether a GameFS image file begins with DDS compressed image magic bytes.
+- `lurek.image.newLayeredImage`: Creates a layered image stack with one or more blank layers.
+- `lurek.image.saveImage`: Saves an image data object to a path under the current game directory.
+- `lurek.image.savePNG`: Encodes image data as PNG and writes it under the current game directory.
+- `lurek.image.loadImage`: Loads and decodes image data from GameFS.
+- `lurek.image.loadLayered`: Loads a serialized layered image stack from GameFS.
+- `lurek.image.newPaletteLut`: Creates an empty palette lookup table.
+- `lurek.image.newProvinceGrid`: Loads a province id grid from an image file under the current game directory.
+- `lurek.image.fromScreen`: Returns a completed screen capture image or requests one for a future call.
+
+### `LCompressedImageData` Methods
+- `LCompressedImageData:getWidth`: Returns compressed image width. This method is available to Lua scripts.
+- `LCompressedImageData:getHeight`: Returns compressed image height. This method is available to Lua scripts.
+- `LCompressedImageData:getDimensions`: Returns compressed image dimensions.
+- `LCompressedImageData:getMipmapCount`: Returns the number of mipmap levels in this compressed image.
+- `LCompressedImageData:getFormat`: Returns the compressed image format name.
+- `LCompressedImageData:type`: Returns the Lua-visible type name for this compressed image handle.
+- `LCompressedImageData:typeOf`: Returns whether this compressed image handle matches a supported type name.
+
+### `LImageData` Methods
+- `LImageData:getWidth`: Returns image width. This method is available to Lua scripts.
+- `LImageData:getHeight`: Returns image height. This method is available to Lua scripts.
+- `LImageData:getDimensions`: Returns image dimensions. This method is available to Lua scripts.
+- `LImageData:getPixel`: Returns RGBA channels at a pixel coordinate.
+- `LImageData:setPixel`: Sets RGBA channels at a pixel coordinate.
+- `LImageData:encode`: Encodes image data in a supported format.
+- `LImageData:getString`: Returns raw image bytes as a Lua string.
+- `LImageData:mapPixel`: Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+- `LImageData:brightness`: Applies a brightness factor to this image in place.
+- `LImageData:contrast`: Applies a contrast factor to this image in place.
+- `LImageData:saturation`: Applies a saturation factor to this image in place.
+- `LImageData:gamma`: Applies gamma correction to this image in place.
+- `LImageData:tint`: Blends this image toward a tint color in place.
+- `LImageData:grayscale`: Converts this image to grayscale in place.
+- `LImageData:sepia`: Applies a sepia filter to this image in place.
+- `LImageData:invert`: Inverts image color channels in place.
+- `LImageData:threshold`: Applies a threshold filter to this image in place.
+- `LImageData:posterize`: Reduces image colors to a fixed number of levels in place.
+- `LImageData:fill`: Fills the whole image with one RGBA color.
+- `LImageData:noise`: Adds noise to this image in place. This method is available to Lua scripts.
+- `LImageData:alphaMask`: Multiplies this image alpha channel by a factor in place.
+- `LImageData:flipHorizontal`: Flips this image horizontally in place.
+- `LImageData:flipVertical`: Flips this image vertically in place.
+- `LImageData:rotate90cw`: Returns a new image rotated ninety degrees clockwise.
+- `LImageData:crop`: Returns a cropped image region. This method is available to Lua scripts.
+- `LImageData:resizeNearest`: Returns a resized image using nearest-neighbor sampling.
+- `LImageData:blur`: Returns a blurred copy of this image.
+- `LImageData:sharpen`: Returns a sharpened copy of this image.
+- `LImageData:drawRect`: Draws a filled rectangle into this image.
+- `LImageData:drawCircle`: Draws a filled circle into this image.
+- `LImageData:drawLine`: Draws a line into this image. This method is available to Lua scripts.
+- `LImageData:resize`: Returns a resized image using an optional named filter.
+- `LImageData:blit`: Copies a source image into this image at a destination coordinate.
+- `LImageData:drawNineSlice`: Draws a nine-slice region from a source image into this image.
+- `LImageData:getRegion`: Returns an image region when the requested rectangle is inside bounds.
+- `LImageData:getRawBytes`: Returns raw image bytes as a Lua string.
+- `LImageData:diff`: Computes a difference metric against another image.
+- `LImageData:mapPixels`: Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+- `LImageData:convolve`: Applies a convolution kernel and returns the filtered image.
+- `LImageData:applyPaletteLut`: Applies a palette lookup table to this image in place.
+- `LImageData:setRawData`: Replaces the image byte buffer with raw bytes.
+- `LImageData:paste`: Pastes a source image into this image at unsigned destination coordinates.
+- `LImageData:type`: Returns the Lua-visible type name for this image data handle.
+- `LImageData:typeOf`: Returns whether this image data handle matches the `LImageData` type name.
+
+### `LLayeredImage` Methods
+- `LLayeredImage:getWidth`: Returns the layered image width. This method is available to Lua scripts.
+- `LLayeredImage:getHeight`: Returns the layered image height. This method is available to Lua scripts.
+- `LLayeredImage:layerCount`: Returns the number of layers in the stack.
+- `LLayeredImage:addLayer`: Adds a blank layer with an optional name.
+- `LLayeredImage:removeLayer`: Removes a layer by one-based index.
+- `LLayeredImage:getLayer`: Returns image data for a layer by one-based index.
+- `LLayeredImage:setLayer`: Replaces a layer's image data by one-based index.
+- `LLayeredImage:getOpacity`: Returns a layer opacity by one-based index.
+- `LLayeredImage:setOpacity`: Sets a layer opacity by one-based index.
+- `LLayeredImage:isVisible`: Returns layer visibility by one-based index.
+- `LLayeredImage:setVisible`: Sets layer visibility by one-based index.
+- `LLayeredImage:getName`: Returns a layer name by one-based index.
+- `LLayeredImage:setName`: Sets a layer name by one-based index.
+- `LLayeredImage:swapLayers`: Swaps two layers by one-based indices.
+- `LLayeredImage:moveLayer`: Moves a layer from one one-based index to another.
+- `LLayeredImage:merge`: Merges visible layers into a single image data object.
+- `LLayeredImage:save`: Saves the layered image stack to a file.
+- `LLayeredImage:type`: Returns the Lua-visible type name for this layered image handle.
+- `LLayeredImage:typeOf`: Returns whether this layered image handle matches a supported type name.
+
+### `LPaletteLUT` Methods
+- `LPaletteLUT:setColor`: Adds a color mapping from source RGBA channels to destination RGBA channels.
+- `LPaletteLUT:getColorCount`: Returns the number of color mappings in this palette lookup table.
+- `LPaletteLUT:clear`: Removes every color mapping from this palette lookup table.
+- `LPaletteLUT:cycle`: Cycles palette mappings by an offset.
+- `LPaletteLUT:type`: Returns the Lua-visible type name for this palette lookup table handle.
+- `LPaletteLUT:typeOf`: Returns whether this palette lookup table handle matches a supported type name.
+
+### `LProvinceGrid` Methods
+- `LProvinceGrid:getWidth`: Returns the province grid width. This method is available to Lua scripts.
+- `LProvinceGrid:getHeight`: Returns the province grid height. This method is available to Lua scripts.
+- `LProvinceGrid:getAt`: Returns the province id stored at grid coordinates.
+- `LProvinceGrid:provinceCount`: Returns the number of distinct provinces in the grid.
+- `LProvinceGrid:adjacencies`: Returns province adjacency records and shared border pixel counts.
+- `LProvinceGrid:provinceSpans`: Returns horizontal province spans by row.
+- `LProvinceGrid:borderSegments`: Returns border line segments between neighboring provinces.
+- `LProvinceGrid:getPolygons`: Returns polygon rings for every province.
+- `LProvinceGrid:getPolygonsSimplified`: Returns simplified polygon rings for every province.
+- `LProvinceGrid:drawShapes`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+- `LProvinceGrid:type`: Returns the Lua-visible type name for this province grid handle.
+- `LProvinceGrid:typeOf`: Returns whether this province grid handle matches a supported type name.
+- `LProvinceGrid:serializeShapeData`: Serializes province span and border shape data into a binary Lua string.
+- `LProvinceGrid:deserializeShapeData`: Decodes serialized province shape data into span and segment tables.
+
+## References
+
+- `animation`: Imports or references `animation` from `src/animation/`.
+- `camera`: Imports or references `camera` from `src/camera/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- Keep this module reference synchronized with `src/image/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+### New in 0.14.2
+
+- `ProvinceGrid` — new type in `province_grid.rs`. Flat `Vec<u32>` spatial index built from a province-colour PNG in a single O(w×h) scan. Replaces the 2–8 s Lua `pixel_lookup` hash construction with ~15–30 ms Rust scan for 2400×1200 maps.
+- `lurek.image.newProvinceGrid(filename)` — registered in `image_api.rs`, returns `LuaProvinceGrid` userdata with `getWidth`, `getHeight`, `getAt`, `provinceCount`, `adjacencies` methods.
+- `content/library/province_map`: new `M.newFromPng(png_path, defs)` constructor uses `lurek.image.newProvinceGrid` when available; all prior constructors and logic unchanged.
+### New in 0.14.1
+
+- 11 pixel transforms now use `map_pixel_par` (rayon, 65 536-pixel threshold): `brightness`, `contrast`, `saturation`, `gamma`, `tint`, `grayscale`, `sepia`, `invert`, `threshold`, `posterize`, `fill`.
+- `tint()` refactored to inline closure for `Send + Sync` compliance.
+- `threshold()` and `posterize()` use `move` closures to capture `Copy` values.

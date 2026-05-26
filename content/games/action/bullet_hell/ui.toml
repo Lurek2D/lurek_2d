@@ -1,0 +1,182 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+
+[[root.children]]
+widget_type = "panel"
+id = "title_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_label"
+  text = "BULLET HELL"
+  x = 345
+  y = 120
+  color = [1.0, 0.2, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "warning_label"
+  text = "WARNING: INTENSE BULLET PATTERNS"
+  x = 260
+  y = 180
+  color = [0.8, 0.8, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "controls_1"
+  text = "WASD — Move    Space — Fire    Shift — Focus"
+  x = 220
+  y = 260
+  color = [0.7, 0.7, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "controls_2"
+  text = "X — Bomb       ESC — Quit"
+  x = 290
+  y = 290
+  color = [0.7, 0.7, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "start_label"
+  text = "PRESS ENTER TO START"
+  x = 310
+  y = 380
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hint_label"
+  text = "Graze bullets for bonus points!"
+  x = 280
+  y = 440
+  color = [0.5, 0.5, 0.5, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "SCORE: 0"
+  x = 10
+  y = 10
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hi_label"
+  text = "HI: 0"
+  x = 370
+  y = 10
+  color = [0.7, 0.7, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "wave_label"
+  text = "WAVE 1"
+  x = 710
+  y = 10
+  color = [0.6, 0.8, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lives_label"
+  text = "███"
+  x = 10
+  y = 30
+  color = [0.3, 0.5, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "bombs_label"
+  text = "●●●"
+  x = 10
+  y = 50
+  color = [1.0, 0.8, 0.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "mult_label"
+  text = "x1.0"
+  x = 10
+  y = 68
+  color = [1.0, 1.0, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "graze_label"
+  text = "Graze: 0"
+  x = 10
+  y = 86
+  color = [0.8, 0.8, 0.8, 0.6]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  x = 720
+  y = 580
+  color = [0.5, 0.5, 0.5, 0.7]
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.6]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_title"
+  text = "GAME OVER"
+  x = 355
+  y = 260
+  color = [1.0, 0.2, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_score"
+  text = "Score: 0"
+  x = 360
+  y = 300
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_wave"
+  text = "Wave: 0"
+  x = 370
+  y = 320
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_restart"
+  text = "PRESS ENTER TO RESTART"
+  x = 300
+  y = 360
+  color = [0.7, 0.7, 0.7, 1.0]

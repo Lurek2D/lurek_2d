@@ -1,0 +1,15 @@
+{
+  "captured_at": "2026-04-29T18:13:43.143878+00:00",
+  "keys": [],
+  "scanned": {
+    "agent": 27,
+    "prompt": 58,
+    "skill": 36,
+    "system_prompt": 1
+  },
+  "summary": {
+    "by_rule": {},
+    "errors": 0,
+    "warnings": 0
+  }
+}

@@ -1,0 +1,156 @@
+[root]
+widget_type = "panel"
+id = "root_ui"
+w = 960
+h = 540
+bg_color = [0, 0, 0, 0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "title_screen"
+  w = 960
+  h = 540
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "RAYCASTER FPS"
+    font_size = 30
+    color = [0.8, 0.15, 0.1, 1]
+    anchor = "center"
+    y = -110
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Wolfenstein 3D-style raycaster with 6 wall types"
+    font_size = 16
+    color = [0.6, 0.6, 0.7, 1]
+    anchor = "center"
+    y = -40
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "WASD = Move/Strafe   Q/E = Rotate   Space = Fire"
+    font_size = 12
+    color = [0.6, 0.6, 0.7, 1]
+    anchor = "center"
+    y = -10
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "F1-F3 = Weather   Esc = Quit"
+    font_size = 12
+    color = [0.6, 0.6, 0.7, 1]
+    anchor = "center"
+    y = 15
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "title_press_start"
+    text = "PRESS ENTER"
+    font_size = 20
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = 90
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "game_over_screen"
+  w = 960
+  h = 540
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "GAME OVER"
+    font_size = 30
+    color = [0.8, 0.1, 0.1, 1]
+    anchor = "center"
+    y = -70
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_score"
+    text = "Score: 0"
+    font_size = 20
+    color = [0.9, 0.9, 1.0, 1]
+    anchor = "center"
+    y = -10
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_press_start"
+    text = "PRESS ENTER TO RESTART"
+    font_size = 16
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = 60
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "hud_screen"
+  w = 960
+  h = 540
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 204
+    h = 24
+    bg_color = [0.15, 0.15, 0.2, 0.8]
+    x = 10
+    y = 500
+
+      [[root.children.children.children]]
+      widget_type = "panel"
+      id = "hud_hp_bar"
+      w = 200
+      h = 20
+      bg_color = [0.2, 0.8, 0.1, 1]
+      x = 2
+      y = 2
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_hp_text"
+      text = "HP: 100"
+      font_size = 12
+      color = [1, 1, 1, 1]
+      x = 5
+      y = 2
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "hud_ammo"
+    text = "AMMO: 30"
+    font_size = 12
+    color = [1.0, 0.8, 0.1, 1]
+    x = 230
+    y = 502
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "hud_score"
+    text = "SCORE: 0"
+    font_size = 12
+    color = [1, 1, 1, 1]
+    x = 380
+    y = 502
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "hud_weather"
+    text = "Weather: clear  (F1/F2/F3)"
+    font_size = 12
+    color = [0.5, 0.5, 0.6, 1]
+    x = 10
+    y = 10
+
+  [[root.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 12
+  color = [0.3, 0.3, 0.4, 1]
+  x = 10
+  y = 520

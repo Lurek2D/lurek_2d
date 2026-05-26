@@ -1,0 +1,908 @@
+-- ============================================================================
+--  Stealth — Top-down stealth game with vision cones and suspicion
+-- ----------------------------------------------------------------------------
+--  Category : action
+--  Run with : cargo run -- content/games/action/stealth
+--
+--  Controls (bound as input actions — see lurek.init):
+--    up/down/left/right : W/A/S/D or ↑←↓→
+--    crouch             : Shift (slower, harder to detect)
+--    interact           : E (enter/exit hide spots)
+--    quit               : Escape
+--
+--  lurek.* namespaces used:
+--    window, render, input, time, signal, particles, tween, camera
+-- ============================================================================
+
+-- ── Constants ─────────────────────────────────────────────────────────────
+local SCREEN_W, SCREEN_H = 800, 600
+local TILE               = 40
+local MAP_COLS           = 20
+local MAP_ROWS           = 15
+local MAP_W              = MAP_COLS * TILE  -- 800
+local MAP_H              = MAP_ROWS * TILE  -- 600
+
+local PLAYER_R           = 8
+local WALK_SPEED         = 120
+local CROUCH_SPEED       = 60
+
+local VISION_RANGE       = 5 * TILE   -- 200 px
+local VISION_HALF_ANGLE  = math.pi / 6  -- 30° half = 60° total
+local CROUCH_RANGE_MULT  = 0.6
+
+local SUSPICION_FILL     = 40   -- per second when visible
+local SUSPICION_DRAIN    = 20   -- per second when hidden
+local SUSPICION_INVESTIGATE = 50
+local SUSPICION_ALERT    = 100
+
+local GUARD_PATROL_SPEED = 60
+local GUARD_CHASE_SPEED  = 100
+local GUARD_INVEST_SPEED = 80
+local NOISE_RADIUS       = 3 * TILE
+local NOISE_ATTRACT_DIST = 4 * TILE
+
+-- Tile codes
+local T_FLOOR  = 0
+local T_WALL   = 1
+local T_HIDE   = 2
+local T_KEY    = 3
+local T_EXIT   = 4
+local T_SPAWN  = 5
+
+-- ── State enum ────────────────────────────────────────────────────────────
+local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3, LEVEL_COMPLETE = 4 }
+local game_state = STATE.TITLE
+
+-- ── Game state ────────────────────────────────────────────────────────────
+---@type any
+local player = {
+    x = 0, y = 0, r = PLAYER_R,
+    crouching = false, hidden = false, hide_spot = nil,
+    keys_collected = 0, alive = true,
+    noise_timer = 0,
+}
+local guards       = {}
+local keycards     = {}
+local hide_spots   = {}
+local tiles        = {}
+local exit_pos     = { x = 0, y = 0 }
+local current_level = 1
+local title_blink  = 0
+local message      = { text = "", alpha = 0 }
+
+-- Particles
+---@type any
+local noise_ps     = nil
+---@type any
+local alert_ps     = nil
+---@type any
+local sparkle_ps   = nil
+
+-- Tween state
+local susp_bar     = { value = 0 }
+local alert_flash  = { alpha = 0 }
+
+-- ── Level data ────────────────────────────────────────────────────────────
+-- 0=floor, 1=wall, 2=hide, 3=keycard, 4=exit, 5=player spawn
+-- Guards defined separately per level
+local LEVELS = {}
+
+LEVELS[1] = {
+    map = {
+        "11111111111111111111",
+        "15000001100000000001",
+        "10000001100000020001",
+        "10000000000000000001",
+        "10001110011100001001",
+        "10001000000100001001",
+        "10001003000100000001",
+        "10000000000000011101",
+        "10011100001110000001",
+        "10010000000010000001",
+        "10010002000010030001",
+        "10000000000000000001",
+        "10001111000011110001",
+        "10000000002000000041",
+        "11111111111111111111",
+    },
+    guards = {
+        { path = {{5,3},{5,7},{5,3}}, dir = math.pi/2 },
+        { path = {{14,5},{14,10},{14,5}}, dir = -math.pi/2 },
+        { path = {{10,8},{15,8},{10,8}}, dir = 0 },
+    },
+}
+
+LEVELS[2] = {
+    map = {
+        "11111111111111111111",
+        "15000000010000000001",
+        "10000020010000030001",
+        "10000000010000000001",
+        "11101110000011101111",
+        "10000000000000000001",
+        "10003000011000020001",
+        "10000000011000000001",
+        "10011100000001110001",
+        "10000000000000000001",
+        "11100011000110001101",
+        "10000010000010000001",
+        "10020010003010000001",
+        "10000000000000000041",
+        "11111111111111111111",
+    },
+    guards = {
+        { path = {{4,2},{4,6},{4,2}}, dir = math.pi/2 },
+        { path = {{8,5},{8,9},{8,5}}, dir = math.pi/2 },
+        { path = {{14,2},{14,7},{14,2}}, dir = math.pi/2 },
+        { path = {{12,10},{17,10},{12,10}}, dir = 0 },
+    },
+}
+
+LEVELS[3] = {
+    map = {
+        "11111111111111111111",
+        "15000110000011000001",
+        "10000110000011002001",
+        "10000000000000000001",
+        "11100001111000011101",
+        "10000001001000000001",
+        "10030001001000030001",
+        "10000000000000000001",
+        "10011100001110010001",
+        "10000000000000010001",
+        "10000200000020010001",
+        "10111001110011000001",
+        "10000000000000000001",
+        "10000020000000000041",
+        "11111111111111111111",
+    },
+    guards = {
+        { path = {{3,2},{3,6},{3,2}}, dir = math.pi/2 },
+        { path = {{9,1},{9,6},{9,1}}, dir = math.pi/2 },
+        { path = {{16,2},{16,6},{16,2}}, dir = math.pi/2 },
+        { path = {{6,8},{6,12},{6,8}}, dir = math.pi/2 },
+        { path = {{14,8},{14,12},{14,8}}, dir = math.pi/2 },
+    },
+}
+
+-- ── Helpers ───────────────────────────────────────────────────────────────
+
+--- Get tile type at grid col, row (0-indexed)
+local function tile_at(col, row)
+    if col < 0 or col >= MAP_COLS or row < 0 or row >= MAP_ROWS then return T_WALL end
+    return tiles[row * MAP_COLS + col + 1] or T_WALL
+end
+
+--- Check if a world position is a wall
+local function is_wall(wx, wy)
+    local col = math.floor(wx / TILE)
+    local row = math.floor(wy / TILE)
+    return tile_at(col, row) == T_WALL
+end
+
+--- Line of sight check between two points (Bresenham on tile grid)
+local function has_line_of_sight(x1, y1, x2, y2)
+    local c1, r1 = math.floor(x1 / TILE), math.floor(y1 / TILE)
+    local c2, r2 = math.floor(x2 / TILE), math.floor(y2 / TILE)
+    local dc = math.abs(c2 - c1)
+    local dr = math.abs(r2 - r1)
+    local sc = c1 < c2 and 1 or -1
+    local sr = r1 < r2 and 1 or -1
+    local err = dc - dr
+    while true do
+        if tile_at(c1, r1) == T_WALL then return false end
+        if c1 == c2 and r1 == r2 then break end
+        local e2 = 2 * err
+        if e2 > -dr then err = err - dr; c1 = c1 + sc end
+        if e2 < dc  then err = err + dc; r1 = r1 + sr end
+    end
+    return true
+end
+
+--- Angle between two points
+local function angle_to(x1, y1, x2, y2)
+    return math.atan2(y2 - y1, x2 - x1)
+end
+
+--- Distance between two points
+local function dist(x1, y1, x2, y2)
+    local dx, dy = x2 - x1, y2 - y1
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+--- Normalize angle to [-pi, pi]
+local function norm_angle(a)
+    while a > math.pi  do a = a - 2 * math.pi end
+    while a < -math.pi do a = a + 2 * math.pi end
+    return a
+end
+
+--- Check if angle b is within half_angle of angle a
+local function angle_in_cone(a, b, half_angle)
+    return math.abs(norm_angle(b - a)) <= half_angle
+end
+
+--- Move entity with wall collision, returns new x, y
+local function move_with_collision(x, y, dx, dy, r)
+    local nx = x + dx
+    if is_wall(nx - r, y) or is_wall(nx + r, y) then nx = x end
+    local ny = y + dy
+    if is_wall(nx, ny - r) or is_wall(nx, ny + r) then ny = y end
+    -- clamp to map
+    nx = math.max(r, math.min(MAP_W - r, nx))
+    ny = math.max(r, math.min(MAP_H - r, ny))
+    return nx, ny
+end
+
+--- Load a level by index
+local function load_level(idx)
+    local lvl = LEVELS[idx]
+    if not lvl then return end
+
+    tiles = {}
+    keycards = {}
+    hide_spots = {}
+    guards = {}
+    player.keys_collected = 0
+    player.hidden = false
+    player.hide_spot = nil
+    player.alive = true
+    player.crouching = false
+
+    -- Parse map
+    for row = 0, MAP_ROWS - 1 do
+        local line = lvl.map[row + 1]
+        for col = 0, MAP_COLS - 1 do
+            local ch = tonumber(line:sub(col + 1, col + 1)) or 0
+            local ti = row * MAP_COLS + col + 1
+            if ch == T_SPAWN then
+                player.x = col * TILE + TILE / 2
+                player.y = row * TILE + TILE / 2
+                tiles[ti] = T_FLOOR
+            elseif ch == T_KEY then
+                keycards[#keycards + 1] = {
+                    x = col * TILE + TILE / 2,
+                    y = row * TILE + TILE / 2,
+                    collected = false,
+                }
+                tiles[ti] = T_FLOOR
+            elseif ch == T_HIDE then
+                hide_spots[#hide_spots + 1] = {
+                    x = col * TILE, y = row * TILE,
+                    w = TILE, h = TILE, occupied = false,
+                }
+                tiles[ti] = T_FLOOR
+            elseif ch == T_EXIT then
+                exit_pos.x = col * TILE
+                exit_pos.y = row * TILE
+                tiles[ti] = T_EXIT
+            else
+                tiles[ti] = ch
+            end
+        end
+    end
+
+    -- Setup guards
+    for _, gd in ipairs(lvl.guards) do
+        local wp = gd.path[1]
+        guards[#guards + 1] = {
+            x = wp[1] * TILE + TILE / 2,
+            y = wp[2] * TILE + TILE / 2,
+            dir = gd.dir,
+            path = gd.path,
+            path_idx = 1,
+            suspicion = 0,
+            mode = "patrol",   -- patrol | investigate | chase
+            last_seen_x = 0, last_seen_y = 0,
+            return_timer = 0,
+        }
+    end
+
+    game_state = STATE.PLAYING
+end
+
+--- Show a timed message
+local function show_message(text)
+    message.text = text
+    message.alpha = 1.0
+    lurek.tween.tween(2.0, message, { alpha = 0 }, "linear")
+end
+
+-- ── Engine callbacks ──────────────────────────────────────────────────────
+
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
+---@type any
+local _cam = nil
+
+function lurek.init()
+    lurek.window.setTitle("Stealth — Lurek2D")
+    lurek.render.setBackgroundColor(0.05, 0.08, 0.05)
+    _cam = lurek.camera.new()
+
+    -- Input actions
+    lurek.input.bind("up",       "w");    lurek.input.bind("up",       "up")
+    lurek.input.bind("down",     "s");    lurek.input.bind("down",     "down")
+    lurek.input.bind("left",     "a");    lurek.input.bind("left",     "left")
+    lurek.input.bind("right",    "d");    lurek.input.bind("right",    "right")
+    lurek.input.bind("crouch",   "lshift"); lurek.input.bind("crouch",   "rshift")
+    lurek.input.bind("interact", "e")
+    lurek.input.bind("start",    "return")
+    lurek.input.bind("quit",     "escape")
+
+    -- Particle systems
+    noise_ps = lurek.particle.newSystem({
+        maxParticles = 30, lifetime = 0.6,
+        speed = 50, spread = 6.28,
+        sizeStart = 6, sizeEnd = 12,
+        colorStart = {0.8, 0.8, 0.6, 0.4},
+        colorEnd   = {0.8, 0.8, 0.6, 0.0},
+    })
+    alert_ps = lurek.particle.newSystem({
+        maxParticles = 20, lifetime = 0.4,
+        speed = 80, spread = 6.28,
+        sizeStart = 4, sizeEnd = 2,
+        colorStart = {1.0, 0.3, 0.1, 1.0},
+        colorEnd   = {1.0, 0.1, 0.0, 0.0},
+    })
+    sparkle_ps = lurek.particle.newSystem({
+        maxParticles = 15, lifetime = 0.5,
+        speed = 60, spread = 6.28,
+        sizeStart = 3, sizeEnd = 1,
+        colorStart = {1.0, 0.95, 0.3, 1.0},
+        colorEnd   = {1.0, 0.85, 0.1, 0.0},
+    })
+
+    load_level(1)
+    
+    lurek.ui.loadLayoutFile("content/games/action/stealth/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui = {}
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.press_start = ui_root:findById("press_start")
+    
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.keys_text = ui_root:findById("keys_text")
+    app_ui.level_text = ui_root:findById("level_text")
+    app_ui.suspicion_bg = ui_root:findById("suspicion_bg")
+    app_ui.suspicion_fill = ui_root:findById("suspicion_fill")
+    app_ui.suspicion_text = ui_root:findById("suspicion_text")
+    app_ui.crouch_text = ui_root:findById("crouch_text")
+    app_ui.hidden_text = ui_root:findById("hidden_text")
+    app_ui.message_text = ui_root:findById("message_text")
+    
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.level_complete_screen = ui_root:findById("level_complete_screen")
+    app_ui.lc_text = ui_root:findById("lc_text")
+end
+
+-- ── Process ───────────────────────────────────────────────────────────────
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    -- Quit
+    if lurek.input.wasActionPressed("quit") then
+        lurek.event.quit()
+        return
+    end
+
+    -- Title screen
+    if game_state == STATE.TITLE then
+        title_blink = title_blink + dt
+        if lurek.input.wasActionPressed("start") then
+            current_level = 1
+            load_level(1)
+        end
+        return
+    end
+
+    -- Game over / level complete — press Enter to restart/continue
+    if game_state == STATE.GAME_OVER or game_state == STATE.LEVEL_COMPLETE then
+        if lurek.input.wasActionPressed("start") then
+            if game_state == STATE.LEVEL_COMPLETE then
+                current_level = current_level + 1
+                if current_level > #LEVELS then
+                    game_state = STATE.TITLE
+                else
+                    load_level(current_level)
+                end
+            else
+                game_state = STATE.TITLE
+            end
+        end
+        return
+    end
+
+    if not player.alive then return end
+
+    -- ── Player movement ──
+    local spd = WALK_SPEED
+    player.crouching = lurek.input.isActionDown("crouch")
+    if player.crouching then spd = CROUCH_SPEED end
+
+    local moving = false
+    if not player.hidden then
+        local dx, dy = 0, 0
+        if lurek.input.isActionDown("left")  then dx = dx - 1 end
+        if lurek.input.isActionDown("right") then dx = dx + 1 end
+        if lurek.input.isActionDown("up")    then dy = dy - 1 end
+        if lurek.input.isActionDown("down")  then dy = dy + 1 end
+
+        -- Normalize diagonal
+        if dx ~= 0 and dy ~= 0 then
+            local inv = 1 / math.sqrt(2)
+            dx, dy = dx * inv, dy * inv
+        end
+
+        if dx ~= 0 or dy ~= 0 then
+            moving = true
+            player.x, player.y = move_with_collision(
+                player.x, player.y, dx * spd * dt, dy * spd * dt, PLAYER_R
+            )
+        end
+    end
+
+    -- Noise generation (walking, not crouching)
+    if moving and not player.crouching and not player.hidden then
+        player.noise_timer = player.noise_timer + dt
+        if player.noise_timer >= 0.4 then
+            player.noise_timer = 0
+            noise_ps:moveTo(player.x, player.y)
+            noise_ps:emit(8)
+            -- Attract nearby guards
+            for _, g in ipairs(guards) do
+                if dist(player.x, player.y, g.x, g.y) < NOISE_ATTRACT_DIST then
+                    if g.mode == "patrol" then
+                        g.mode = "investigate"
+                        g.last_seen_x = player.x
+                        g.last_seen_y = player.y
+                        g.return_timer = 3.0
+                    end
+                end
+            end
+        end
+    else
+        player.noise_timer = 0
+    end
+
+    -- Interact — enter/exit hide spots
+    if lurek.input.wasActionPressed("interact") then
+        if player.hidden then
+            player.hidden = false
+            ---@type any
+            local hide_spot = player.hide_spot
+            if hide_spot ~= nil then hide_spot.occupied = false end
+            player.hide_spot = nil
+        else
+            for _, hs in ipairs(hide_spots) do
+                local cx = hs.x + hs.w / 2
+                local cy = hs.y + hs.h / 2
+                if dist(player.x, player.y, cx, cy) < TILE then
+                    player.hidden = true
+                    player.hide_spot = hs
+                    hs.occupied = true
+                    player.x = cx
+                    player.y = cy
+                    break
+                end
+            end
+        end
+    end
+
+    -- Keycard collection
+    for _, kc in ipairs(keycards) do
+        if not kc.collected and not player.hidden then
+            if dist(player.x, player.y, kc.x, kc.y) < TILE * 0.6 then
+                kc.collected = true
+                player.keys_collected = player.keys_collected + 1
+                sparkle_ps:moveTo(kc.x, kc.y)
+                sparkle_ps:emit(12)
+                show_message("Keycard " .. player.keys_collected .. "/3")
+            end
+        end
+    end
+
+    -- Exit check
+    if player.keys_collected >= 3 and not player.hidden then
+        local ecx = exit_pos.x + TILE / 2
+        local ecy = exit_pos.y + TILE / 2
+        if dist(player.x, player.y, ecx, ecy) < TILE * 0.7 then
+            game_state = STATE.LEVEL_COMPLETE
+            if current_level >= #LEVELS then
+                show_message("YOU WIN! All levels complete!")
+            else
+                show_message("Level " .. current_level .. " complete!")
+            end
+            return
+        end
+    end
+
+    -- ── Guard AI ──
+    for _, g in ipairs(guards) do
+        -- Vision detection
+        local can_see = false
+        if not player.hidden then
+            local d = dist(g.x, g.y, player.x, player.y)
+            local range = VISION_RANGE
+            if player.crouching then range = range * CROUCH_RANGE_MULT end
+
+            if d < range then
+                local a = angle_to(g.x, g.y, player.x, player.y)
+                if angle_in_cone(g.dir, a, VISION_HALF_ANGLE) then
+                    if has_line_of_sight(g.x, g.y, player.x, player.y) then
+                        can_see = true
+                    end
+                end
+            end
+        end
+
+        -- Suspicion update
+        if can_see then
+            g.suspicion = math.min(SUSPICION_ALERT, g.suspicion + SUSPICION_FILL * dt)
+            g.last_seen_x = player.x
+            g.last_seen_y = player.y
+        else
+            g.suspicion = math.max(0, g.suspicion - SUSPICION_DRAIN * dt)
+        end
+
+        -- Mode transitions
+        if g.suspicion >= SUSPICION_ALERT then
+            if g.mode ~= "chase" then
+                g.mode = "chase"
+                alert_ps:moveTo(g.x, g.y - 12)
+                alert_ps:emit(15)
+                alert_flash.alpha = 0.4
+                lurek.tween.tween(0.5, alert_flash, { alpha = 0 }, "linear")
+            end
+        elseif g.suspicion >= SUSPICION_INVESTIGATE then
+            if g.mode == "patrol" then
+                g.mode = "investigate"
+                g.return_timer = 4.0
+            end
+        elseif g.suspicion <= 5 and g.mode == "investigate" then
+            g.return_timer = g.return_timer - dt
+            if g.return_timer <= 0 then
+                g.mode = "patrol"
+            end
+        end
+
+        -- Reset from chase when suspicion drops
+        if g.mode == "chase" and g.suspicion <= 10 then
+            g.mode = "investigate"
+            g.return_timer = 3.0
+        end
+
+        -- Movement
+        if g.mode == "patrol" then
+            -- Follow patrol path
+            local wp = g.path[g.path_idx]
+            local tx = wp[1] * TILE + TILE / 2
+            local ty = wp[2] * TILE + TILE / 2
+            local d = dist(g.x, g.y, tx, ty)
+            if d < 4 then
+                g.path_idx = g.path_idx + 1
+                if g.path_idx > #g.path then g.path_idx = 1 end
+                wp = g.path[g.path_idx]
+                tx = wp[1] * TILE + TILE / 2
+                ty = wp[2] * TILE + TILE / 2
+            end
+            local a = angle_to(g.x, g.y, tx, ty)
+            g.dir = a
+            g.x = g.x + math.cos(a) * GUARD_PATROL_SPEED * dt
+            g.y = g.y + math.sin(a) * GUARD_PATROL_SPEED * dt
+
+        elseif g.mode == "investigate" then
+            local d = dist(g.x, g.y, g.last_seen_x, g.last_seen_y)
+            if d > 6 then
+                local a = angle_to(g.x, g.y, g.last_seen_x, g.last_seen_y)
+                g.dir = a
+                g.x = g.x + math.cos(a) * GUARD_INVEST_SPEED * dt
+                g.y = g.y + math.sin(a) * GUARD_INVEST_SPEED * dt
+            else
+                g.return_timer = g.return_timer - dt
+                if g.return_timer <= 0 then g.mode = "patrol" end
+            end
+
+        elseif g.mode == "chase" then
+            local a = angle_to(g.x, g.y, player.x, player.y)
+            g.dir = a
+            g.x = g.x + math.cos(a) * GUARD_CHASE_SPEED * dt
+            g.y = g.y + math.sin(a) * GUARD_CHASE_SPEED * dt
+
+            -- Catch player
+            if dist(g.x, g.y, player.x, player.y) < TILE * 0.5 then
+                player.alive = false
+                game_state = STATE.GAME_OVER
+                alert_ps:moveTo(player.x, player.y)
+                alert_ps:emit(20)
+                show_message("DETECTED! Game Over")
+                return
+            end
+        end
+    end
+
+    -- Update particles
+    noise_ps:update(dt)
+    alert_ps:update(dt)
+    sparkle_ps:update(dt)
+
+    -- Suspicion bar tween target
+    local max_susp = 0
+    for _, g in ipairs(guards) do
+        if g.suspicion > max_susp then max_susp = g.suspicion end
+    end
+    susp_bar.value = max_susp
+
+    -- Camera
+    local cam_x = math.max(0, math.min(MAP_W - SCREEN_W, player.x - SCREEN_W * 0.5))
+    local cam_y = math.max(0, math.min(MAP_H - SCREEN_H, player.y - SCREEN_H * 0.5))
+    _cam:setPosition(cam_x, cam_y)
+
+    -- FPS in title
+    local fps = lurek.timer.getFPS()
+    lurek.window.setTitle("Stealth — Lurek2D [FPS: " .. fps .. "]")
+
+    -- UI Sync
+    if app_ui then
+        app_ui.title_screen.visible = (game_state == STATE.TITLE)
+        if game_state == STATE.TITLE then
+            local show = math.floor(title_blink * 2) % 2 == 0
+            app_ui.press_start.visible = show
+        end
+        
+        app_ui.hud.visible = (game_state == STATE.PLAYING)
+        if app_ui.hud.visible then
+            app_ui.keys_text.text = "KEYS: " .. player.keys_collected .. "/3"
+            app_ui.level_text.text = "LEVEL " .. current_level
+            
+            if susp_bar.value > 0 then
+                app_ui.suspicion_bg.visible = true
+                app_ui.suspicion_fill.visible = true
+                app_ui.suspicion_text.visible = true
+                
+                local fill = (susp_bar.value / SUSPICION_ALERT) * 100
+                app_ui.suspicion_fill.width = fill
+                if susp_bar.value >= SUSPICION_ALERT then
+                    app_ui.suspicion_fill.background = {1, 0.1, 0.1, 1}
+                elseif susp_bar.value >= SUSPICION_INVESTIGATE then
+                    app_ui.suspicion_fill.background = {1, 0.8, 0.1, 1}
+                else
+                    app_ui.suspicion_fill.background = {0.2, 0.8, 0.2, 1}
+                end
+            else
+                app_ui.suspicion_bg.visible = false
+                app_ui.suspicion_fill.visible = false
+                app_ui.suspicion_text.visible = false
+            end
+            
+            app_ui.crouch_text.visible = (player.crouching and not player.hidden)
+            app_ui.hidden_text.visible = player.hidden
+            
+            app_ui.message_text.text = message.text
+            app_ui.message_text.color = {1, 1, 1, message.alpha}
+        end
+        
+        app_ui.game_over_screen.visible = (game_state == STATE.GAME_OVER)
+        
+        app_ui.level_complete_screen.visible = (game_state == STATE.LEVEL_COMPLETE)
+        if game_state == STATE.LEVEL_COMPLETE then
+            if current_level >= #LEVELS then
+                app_ui.lc_text.text = "ALL LEVELS COMPLETE!"
+                app_ui.lc_text.x = 325
+            else
+                app_ui.lc_text.text = "LEVEL " .. current_level .. " COMPLETE!"
+                app_ui.lc_text.x = 335
+            end
+        end
+    end
+end
+
+-- ── Render (world) ────────────────────────────────────────────────────────
+function lurek.draw()
+    if game_state == STATE.TITLE then return end
+
+    -- Draw tiles
+    for row = 0, MAP_ROWS - 1 do
+        for col = 0, MAP_COLS - 1 do
+            local t = tile_at(col, row)
+            local tx = col * TILE
+            local ty = row * TILE
+
+            if t == T_WALL then
+                lurek.render.setColor(0.2, 0.2, 0.25, 1)
+                rect(tx, ty, TILE, TILE)
+            elseif t == T_EXIT then
+                if player.keys_collected >= 3 then
+                    lurek.render.setColor(0.1, 0.8, 0.2, 0.8)
+                else
+                    lurek.render.setColor(0.1, 0.4, 0.15, 0.5)
+                end
+                rect(tx, ty, TILE, TILE)
+            else
+                lurek.render.setColor(0.08, 0.12, 0.08, 1)
+                rect(tx, ty, TILE, TILE)
+                -- Grid lines
+                lurek.render.setColor(0.1, 0.15, 0.1, 1)
+                ln(tx, ty, tx + TILE, ty, 1)
+                ln(tx, ty, tx, ty + TILE, 1)
+            end
+        end
+    end
+
+    -- Draw hide spots
+    for _, hs in ipairs(hide_spots) do
+        lurek.render.setColor(0.4, 0.28, 0.12, 0.9)
+        rect(hs.x + 2, hs.y + 2, hs.w - 4, hs.h - 4)
+        -- Crate marks
+        lurek.render.setColor(0.3, 0.2, 0.08, 1)
+        ln(hs.x + 4, hs.y + 4, hs.x + hs.w - 4, hs.y + hs.h - 4, 1)
+        ln(hs.x + hs.w - 4, hs.y + 4, hs.x + 4, hs.y + hs.h - 4, 1)
+    end
+
+    -- Draw keycards
+    for _, kc in ipairs(keycards) do
+        if not kc.collected then
+            lurek.render.setColor(1.0, 0.9, 0.15, 1)
+            rect(kc.x - 6, kc.y - 4, 12, 8)
+            -- Key notch
+            lurek.render.setColor(0.8, 0.7, 0.1, 1)
+            rect(kc.x + 3, kc.y - 2, 4, 4)
+        end
+    end
+
+    -- Draw guard vision cones
+    for _, g in ipairs(guards) do
+        local cone_r = VISION_RANGE
+        local cr, cg_col, cb, ca
+
+        if g.mode == "chase" or g.suspicion >= SUSPICION_ALERT then
+            cr, cg_col, cb, ca = 0.9, 0.15, 0.1, 0.2
+        elseif g.suspicion >= SUSPICION_INVESTIGATE then
+            cr, cg_col, cb, ca = 0.9, 0.8, 0.1, 0.15
+        else
+            cr, cg_col, cb, ca = 0.2, 0.7, 0.2, 0.1
+        end
+
+        -- Draw cone as a filled triangle fan
+        local segments = 12
+        local step = (VISION_HALF_ANGLE * 2) / segments
+        local start_a = g.dir - VISION_HALF_ANGLE
+
+        lurek.render.setColor(cr, cg_col, cb, ca)
+        for i = 0, segments - 1 do
+            local a1 = start_a + i * step
+            local a2 = start_a + (i + 1) * step
+            lurek.render.polygon(
+                "fill",
+                g.x, g.y,
+                g.x + math.cos(a1) * cone_r, g.y + math.sin(a1) * cone_r,
+                g.x + math.cos(a2) * cone_r, g.y + math.sin(a2) * cone_r
+            )
+        end
+
+        -- Cone edge lines
+        lurek.render.setColor(cr, cg_col, cb, ca + 0.15)
+        local la = g.dir - VISION_HALF_ANGLE
+        local ra = g.dir + VISION_HALF_ANGLE
+        ln(g.x, g.y, g.x + math.cos(la) * cone_r, g.y + math.sin(la) * cone_r, 1)
+        ln(g.x, g.y, g.x + math.cos(ra) * cone_r, g.y + math.sin(ra) * cone_r, 1)
+    end
+
+    -- Draw guards
+    for _, g in ipairs(guards) do
+        -- Body
+        if g.mode == "chase" then
+            lurek.render.setColor(1.0, 0.2, 0.1, 1)
+        elseif g.mode == "investigate" then
+            lurek.render.setColor(0.9, 0.7, 0.1, 1)
+        else
+            lurek.render.setColor(0.8, 0.2, 0.2, 1)
+        end
+        rect(g.x - 10, g.y - 10, 20, 20)
+
+        -- Direction indicator
+        lurek.render.setColor(1, 1, 1, 0.9)
+        local dx = math.cos(g.dir) * 12
+        local dy = math.sin(g.dir) * 12
+        ln(g.x, g.y, g.x + dx, g.y + dy, 2)
+
+        -- Suspicion indicator above guard
+        if g.suspicion > 5 then
+            local bw = 20
+            local bh = 3
+            local bx = g.x - bw / 2
+            local by = g.y - 18
+            lurek.render.setColor(0.3, 0.3, 0.3, 0.7)
+            rect(bx, by, bw, bh)
+            local fill = (g.suspicion / SUSPICION_ALERT) * bw
+            if g.suspicion >= SUSPICION_ALERT then
+                lurek.render.setColor(1, 0.1, 0.1, 0.9)
+            elseif g.suspicion >= SUSPICION_INVESTIGATE then
+                lurek.render.setColor(1, 0.8, 0.1, 0.9)
+            else
+                lurek.render.setColor(0.2, 0.8, 0.2, 0.9)
+            end
+            rect(bx, by, fill, bh)
+        end
+
+        -- Exclamation mark when alert
+        if g.mode == "chase" then
+            lurek.render.setColor(1, 0.2, 0.1, 1)
+            text_("!", g.x - 3, g.y - 26)
+        elseif g.mode == "investigate" then
+            lurek.render.setColor(1, 0.9, 0.2, 1)
+            text_("?", g.x - 3, g.y - 26)
+        end
+    end
+
+    -- Draw player
+    if not player.hidden then
+        if player.crouching then
+            lurek.render.setColor(0.3, 0.7, 0.4, 0.8)
+            circ(player.x, player.y, PLAYER_R - 2)
+        else
+            lurek.render.setColor(0.3, 0.85, 0.4, 1)
+            circ(player.x, player.y, PLAYER_R)
+        end
+    end
+
+    -- Draw particles (world-space)
+    noise_ps:render()
+    alert_ps:render()
+    sparkle_ps:render()
+
+    -- Alert flash overlay
+    if alert_flash.alpha > 0 then
+        lurek.render.setColor(1, 0.1, 0.05, alert_flash.alpha)
+        rect(0, 0, SCREEN_W, SCREEN_H)
+    end
+end
+
+-- ── Render UI ─────────────────────────────────────────────────────────────
+function lurek.draw_ui()
+    -- Emptied: UI layout TOML and lurek.process handles rendering now.
+end

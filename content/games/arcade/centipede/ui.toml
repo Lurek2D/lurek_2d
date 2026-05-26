@@ -1,0 +1,124 @@
+[[widget]]
+type = "panel"
+id = "title_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  text = "CENTIPEDE"
+  font_size = 30
+  color = [0.2, 0.9, 0.3, 1]
+  anchor = "top_center"
+  y = 160
+
+  [[widget.children]]
+  type = "label"
+  text = "Blast the centipede through a mushroom field"
+  font_size = 16
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "top_center"
+  y = 230
+
+  [[widget.children]]
+  type = "button"
+  id = "press_space"
+  text = "Press SPACE to start"
+  font_size = 20
+  color = [1, 1, 0.3, 1]
+  anchor = "top_center"
+  y = 340
+
+  [[widget.children]]
+  type = "label"
+  text = "Move: WASD / Arrows   Fire: Space   Quit: Escape"
+  font_size = 16
+  color = [0.5, 0.5, 0.5, 1]
+  anchor = "top_center"
+  y = 420
+
+[[widget]]
+type = "panel"
+id = "hud"
+anchor = "top_left"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "SCORE"
+  x = 10
+  y = 4
+  color = [1, 1, 1, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "score_label"
+  text = "0"
+  x = 70
+  y = 4
+  color = [0.3, 1, 0.3, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "wave_label"
+  text = "WAVE 1"
+  anchor = "top_center"
+  y = 4
+  color = [1, 1, 1, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "lives_label"
+  text = "LIVES: 3"
+  anchor = "top_right"
+  x = -30
+  y = 12
+  color = [1, 0.3, 0.3, 1]
+
+  [[widget.children]]
+  type = "label"
+  id = "fps_label"
+  text = "60 FPS"
+  anchor = "bottom_right"
+  x = -80
+  y = -18
+  color = [0.4, 0.4, 0.4, 1]
+
+[[widget]]
+type = "panel"
+id = "game_over_screen"
+anchor = "center"
+w = 320
+h = 120
+bg_color = [0, 0, 0, 0.6]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "GAME OVER"
+  font_size = 30
+  color = [0.9, 0.2, 0.2, 1]
+  anchor = "top_center"
+  y = 20
+
+  [[widget.children]]
+  type = "label"
+  id = "final_score"
+  text = "Final Score: 0"
+  font_size = 16
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 70
+
+  [[widget.children]]
+  type = "button"
+  id = "press_r"
+  text = "Press R to restart"
+  font_size = 16
+  color = [1, 1, 0.3, 1]
+  anchor = "top_center"
+  y = 100

@@ -1,0 +1,479 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "title_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "title_main"
+    widget_type = "label"
+    x = 200
+    y = 160
+    text = "COURTROOM DRAMA"
+
+    [[root.children.children]]
+    id = "title_sub"
+    widget_type = "label"
+    x = 260
+    y = 230
+    text = "ORDER IN THE COURT!"
+
+    [[root.children.children]]
+    id = "title_desc1"
+    widget_type = "label"
+    x = 220
+    y = 310
+    text = "Present evidence. Question witnesses."
+
+    [[root.children.children]]
+    id = "title_desc2"
+    widget_type = "label"
+    x = 225
+    y = 335
+    text = "Expose contradictions. Win the case."
+
+    [[root.children.children]]
+    id = "title_start"
+    widget_type = "label"
+    x = 300
+    y = 420
+    text = "Press SPACE to begin"
+
+    [[root.children.children]]
+    id = "title_hints"
+    widget_type = "label"
+    x = 155
+    y = 520
+    text = "O=Objection  E=Evidence  Q=Question  1/2/3=Choose"
+
+[[root.children]]
+id = "game_over_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "go_title"
+    widget_type = "label"
+    x = 270
+    y = 150
+    text = "CASE CLOSED!"
+
+    [[root.children.children]]
+    id = "go_desc"
+    widget_type = "label"
+    x = 140
+    y = 260
+    text = "Description"
+
+    [[root.children.children]]
+    id = "go_hint"
+    widget_type = "label"
+    x = 260
+    y = 420
+    text = "Press SPACE to return to title"
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "case_info_bg"
+    widget_type = "panel"
+    x = 0
+    y = 0
+    w = 800
+    h = 32
+
+    [[root.children.children]]
+    id = "case_info_text"
+    widget_type = "label"
+    x = 10
+    y = 8
+    text = "Case X: Name"
+
+    [[root.children.children]]
+    id = "jury_bg"
+    widget_type = "panel"
+    x = 500
+    y = 6
+    w = 180
+    h = 18
+        [[root.children.children.children]]
+        id = "jury_fill"
+        widget_type = "panel"
+        x = 0
+        y = 0
+        w = 90
+        h = 18
+        [[root.children.children.children]]
+        id = "jury_text"
+        widget_type = "label"
+        x = 5
+        y = 2
+        text = "Jury: 0%"
+
+    [[root.children.children]]
+    id = "cred_bg"
+    widget_type = "panel"
+    x = 695
+    y = 6
+    w = 95
+    h = 18
+        [[root.children.children.children]]
+        id = "cred_fill"
+        widget_type = "panel"
+        x = 0
+        y = 0
+        w = 95
+        h = 18
+        [[root.children.children.children]]
+        id = "cred_text"
+        widget_type = "label"
+        x = 3
+        y = 2
+        text = "Cred:100"
+
+    [[root.children.children]]
+    id = "stmt_text"
+    widget_type = "label"
+    x = 10
+    y = 580
+    text = "Statement X/Y"
+    visible = false
+
+    [[root.children.children]]
+    id = "main_box_bg"
+    widget_type = "panel"
+    x = 40
+    y = 460
+    w = 720
+    h = 110
+        [[root.children.children.children]]
+        id = "main_box_border_t"
+        widget_type = "panel"
+        x = 0
+        y = 0
+        w = 720
+        h = 2
+        [[root.children.children.children]]
+        id = "main_box_border_b"
+        widget_type = "panel"
+        x = 0
+        y = 108
+        w = 720
+        h = 2
+        [[root.children.children.children]]
+        id = "main_box_border_l"
+        widget_type = "panel"
+        x = 0
+        y = 0
+        w = 2
+        h = 110
+        [[root.children.children.children]]
+        id = "main_box_border_r"
+        widget_type = "panel"
+        x = 718
+        y = 0
+        w = 2
+        h = 110
+
+    [[root.children.children]]
+    id = "speaker_text"
+    widget_type = "label"
+    x = 55
+    y = 468
+    text = "Speaker:"
+
+    [[root.children.children]]
+    id = "typewriter_text"
+    widget_type = "label"
+    x = 55
+    y = 490
+    text = "Text..."
+
+    [[root.children.children]]
+    id = "advance_prompt"
+    widget_type = "label"
+    x = 730
+    y = 548
+    text = "▼"
+    visible = false
+
+    [[root.children.children]]
+    id = "controls_hint"
+    widget_type = "label"
+    x = 210
+    y = 580
+    text = "O=Object  E=Evidence  Q=Question  Space=Next"
+    visible = false
+
+[[root.children]]
+id = "question_panel"
+widget_type = "panel"
+x = 260
+y = 300
+w = 320
+h = 140
+visible = false
+
+    [[root.children.children]]
+    id = "qp_border_t"
+    widget_type = "panel"
+    x = 260
+    y = 300
+    w = 320
+    h = 2
+
+    [[root.children.children]]
+    id = "qp_border_b"
+    widget_type = "panel"
+    x = 260
+    y = 438
+    w = 320
+    h = 2
+
+    [[root.children.children]]
+    id = "qp_border_l"
+    widget_type = "panel"
+    x = 260
+    y = 300
+    w = 2
+    h = 140
+
+    [[root.children.children]]
+    id = "qp_border_r"
+    widget_type = "panel"
+    x = 578
+    y = 300
+    w = 2
+    h = 140
+
+    [[root.children.children]]
+    id = "qp_title"
+    widget_type = "label"
+    x = 310
+    y = 308
+    text = "QUESTION WITNESS"
+
+    [[root.children.children]]
+    id = "qp_opt_1"
+    widget_type = "label"
+    x = 275
+    y = 325
+    text = "1. Opt"
+
+    [[root.children.children]]
+    id = "qp_opt_2"
+    widget_type = "label"
+    x = 275
+    y = 353
+    text = "2. Opt"
+
+    [[root.children.children]]
+    id = "qp_opt_3"
+    widget_type = "label"
+    x = 275
+    y = 381
+    text = "3. Opt"
+
+[[root.children]]
+id = "objection_panel"
+widget_type = "panel"
+x = 180
+y = 180
+w = 440
+h = 180
+visible = false
+
+    [[root.children.children]]
+    id = "op_border_t"
+    widget_type = "panel"
+    x = 180
+    y = 180
+    w = 440
+    h = 2
+
+    [[root.children.children]]
+    id = "op_border_b"
+    widget_type = "panel"
+    x = 180
+    y = 358
+    w = 440
+    h = 2
+
+    [[root.children.children]]
+    id = "op_border_l"
+    widget_type = "panel"
+    x = 180
+    y = 180
+    w = 2
+    h = 180
+
+    [[root.children.children]]
+    id = "op_border_r"
+    widget_type = "panel"
+    x = 618
+    y = 180
+    w = 2
+    h = 180
+
+    [[root.children.children]]
+    id = "op_title"
+    widget_type = "label"
+    x = 310
+    y = 188
+    text = "PRESENT EVIDENCE"
+
+    [[root.children.children]]
+    id = "op_ev_n_1"
+    widget_type = "label"
+    x = 200
+    y = 215
+    text = "1. Ev"
+    [[root.children.children]]
+    id = "op_ev_d_1"
+    widget_type = "label"
+    x = 200
+    y = 233
+    text = "   Desc"
+
+    [[root.children.children]]
+    id = "op_ev_n_2"
+    widget_type = "label"
+    x = 200
+    y = 257
+    text = "2. Ev"
+    [[root.children.children]]
+    id = "op_ev_d_2"
+    widget_type = "label"
+    x = 200
+    y = 275
+    text = "   Desc"
+
+    [[root.children.children]]
+    id = "op_ev_n_3"
+    widget_type = "label"
+    x = 200
+    y = 299
+    text = "3. Ev"
+    [[root.children.children]]
+    id = "op_ev_d_3"
+    widget_type = "label"
+    x = 200
+    y = 317
+    text = "   Desc"
+
+[[root.children]]
+id = "evidence_panel"
+widget_type = "panel"
+x = 500
+y = 40
+w = 280
+h = 200
+visible = false
+
+    [[root.children.children]]
+    id = "ep_border_t"
+    widget_type = "panel"
+    x = 500
+    y = 40
+    w = 280
+    h = 2
+
+    [[root.children.children]]
+    id = "ep_border_b"
+    widget_type = "panel"
+    x = 500
+    y = 238
+    w = 280
+    h = 2
+
+    [[root.children.children]]
+    id = "ep_border_l"
+    widget_type = "panel"
+    x = 500
+    y = 40
+    w = 2
+    h = 200
+
+    [[root.children.children]]
+    id = "ep_border_r"
+    widget_type = "panel"
+    x = 778
+    y = 40
+    w = 2
+    h = 200
+
+    [[root.children.children]]
+    id = "ep_title"
+    widget_type = "label"
+    x = 590
+    y = 48
+    text = "EVIDENCE"
+
+    [[root.children.children]]
+    id = "ep_ev_n_1"
+    widget_type = "label"
+    x = 515
+    y = 68
+    text = "1. Ev"
+    [[root.children.children]]
+    id = "ep_ev_d_1"
+    widget_type = "label"
+    x = 525
+    y = 86
+    text = "Desc"
+
+    [[root.children.children]]
+    id = "ep_ev_n_2"
+    widget_type = "label"
+    x = 515
+    y = 118
+    text = "2. Ev"
+    [[root.children.children]]
+    id = "ep_ev_d_2"
+    widget_type = "label"
+    x = 525
+    y = 136
+    text = "Desc"
+
+    [[root.children.children]]
+    id = "ep_ev_n_3"
+    widget_type = "label"
+    x = 515
+    y = 168
+    text = "3. Ev"
+    [[root.children.children]]
+    id = "ep_ev_d_3"
+    widget_type = "label"
+    x = 525
+    y = 186
+    text = "Desc"
+
+[[root.children]]
+id = "verdict_text"
+widget_type = "label"
+x = 270
+y = 200
+text = "NOT GUILTY"
+visible = false

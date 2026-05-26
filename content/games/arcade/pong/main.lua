@@ -1,0 +1,352 @@
+-- ============================================================================
+--  Pong — Classic two-player paddle game
+-- ----------------------------------------------------------------------------
+--  Category : arcade
+--  Source   : ../../../../content/demos/arcade/pong   (original demo)
+--  Run with : cargo run -- content/games/arcade/pong
+--
+--  Upgrade  : action-based input, scene states, particle sparks on paddle
+--             hits, tween score pop, render/render_ui split, FPS counter
+-- ============================================================================
+
+-- ── Constants ────────────────────────────────────────────────────────────
+
+
+local W, H          = 800, 600
+local PADDLE_W      = 14
+local PADDLE_H      = 80
+local BALL_SIZE     = 12
+local PADDLE_SPEED  = 320
+local BASE_BALL_SPEED = 280
+local MAX_BALL_SPEED  = 620
+local WIN_SCORE     = 7
+
+-- ── Scene states ─────────────────────────────────────────────────────────
+
+local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
+local state = STATE.PLAYING
+
+-- ── Game objects ──────────────────────────────────────────────────────────
+
+local p1 = { x = 20, y = H / 2 - PADDLE_H / 2, score = 0 }
+local p2 = { x = W - 20 - PADDLE_W, y = H / 2 - PADDLE_H / 2, score = 0 }
+local ball = { x = W / 2, y = H / 2, vx = 0, vy = 0 }
+local winner = 0
+local flash_timer = 0
+local app_ui = {}
+
+-- ── Score pop tween state ────────────────────────────────────────────────
+
+local score_pop = { scale = 1.0 }
+
+-- ── Particle system handle ───────────────────────────────────────────────
+
+local sparks = nil
+
+-- ── Title screen blink ───────────────────────────────────────────────────
+
+local title_blink = 0
+
+-- ── Helpers ──────────────────────────────────────────────────────────────
+
+local function clamp(v, lo, hi)
+    return math.max(lo, math.min(hi, v))
+end
+
+local function ball_reset(dir)
+    ball.x = W / 2
+    ball.y = H / 2
+    local angle = math.random() * 0.6 - 0.3
+    ball.vx = BASE_BALL_SPEED * dir
+    ball.vy = BASE_BALL_SPEED * math.sin(angle)
+    flash_timer = 0.5
+end
+
+local function rect_overlap(ax, ay, aw, ah, bx, by, bw, bh)
+    return ax < bx + bw and ax + aw > bx and ay < by + bh and ay + ah > by
+end
+
+local function full_reset()
+    p1.score = 0
+    p2.score = 0
+    p1.y = H / 2 - PADDLE_H / 2
+    p2.y = H / 2 - PADDLE_H / 2
+    winner = 0
+    flash_timer = 0
+    score_pop.scale = 1.0
+    ball_reset(1)
+end
+
+-- ── Init ─────────────────────────────────────────────────────────────────
+
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
+function lurek.init()
+    lurek.window.setTitle("Pong — Lurek2D")
+    lurek.render.setBackgroundColor(0.05, 0.05, 0.05)
+
+    -- Action-based input bindings
+    lurek.input.bind("p1_up",   {"w"})
+    lurek.input.bind("p1_down", {"s"})
+    lurek.input.bind("p2_up",   {"up"})
+    lurek.input.bind("p2_down", {"down"})
+    lurek.input.bind("start",   {"return"})
+    lurek.input.bind("restart", {"r"})
+
+    -- Particle system for paddle-hit sparks
+    sparks = lurek.particle.newSystem({
+        maxParticles   = 64,
+        emissionRate   = 0,
+        lifetime       = { 0.15, 0.4 },
+        speed          = { 80, 220 },
+        spread         = math.pi * 0.5,
+        sizeStart      = 4,
+        sizeEnd        = 1,
+        colorStart     = { 1, 1, 0.5, 1 },
+        colorEnd       = { 1, 0.4, 0, 0 },
+    })
+
+    lurek.ui.loadLayoutFile("content/games/arcade/pong/ui.toml")
+    local ui_root = lurek.ui.getRoot()
+    app_ui.title_screen = ui_root:findById("title_screen")
+    app_ui.hud = ui_root:findById("hud")
+    app_ui.game_over_screen = ui_root:findById("game_over_screen")
+    app_ui.p1_score = ui_root:findById("p1_score")
+    app_ui.p2_score = ui_root:findById("p2_score")
+    app_ui.fps_label = ui_root:findById("fps_label")
+    app_ui.winner_label = ui_root:findById("winner_label")
+    app_ui.press_start = ui_root:findById("press_start")
+    app_ui.press_restart = ui_root:findById("press_restart")
+    
+    local function handle_start_click()
+        if state == STATE.TITLE then
+            state = STATE.PLAYING
+            full_reset()
+        elseif state == STATE.GAME_OVER then
+            full_reset()
+            state = STATE.PLAYING
+        end
+    end
+    
+    if app_ui.press_start then app_ui.press_start:setOnClick(handle_start_click) end
+    if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_start_click) end
+
+    ball_reset(1)
+end
+
+-- ── Update ───────────────────────────────────────────────────────────────
+
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    -- Tween update (runs in all states for smooth finish)
+    lurek.tween.update(dt)
+
+    -- Particle update
+    if sparks then
+        sparks:update(dt)
+    end
+
+    -- UI sync
+    app_ui.title_screen.visible = (state == STATE.TITLE)
+    app_ui.hud.visible = (state == STATE.PLAYING or state == STATE.GAME_OVER)
+    app_ui.game_over_screen.visible = (state == STATE.GAME_OVER)
+    app_ui.fps_label.text = "FPS: " .. math.floor(lurek.timer.getFPS())
+    app_ui.p1_score.text = tostring(p1.score)
+    app_ui.p2_score.text = tostring(p2.score)
+    
+    if state == STATE.GAME_OVER then
+        app_ui.winner_label.text = "Player " .. winner .. " Wins!"
+    end
+    
+    -- Blinking
+    local blink = math.floor(title_blink * 2) % 2 == 0
+    if app_ui.press_start then app_ui.press_start.color = blink and {0.8, 0.8, 0.8, 1} or {0.8, 0.8, 0.8, 0} end
+    if app_ui.press_restart then app_ui.press_restart.color = blink and {0.7, 0.7, 0.7, 1} or {0.7, 0.7, 0.7, 0} end
+
+    -- ── TITLE state ──────────────────────────────────────────────────────
+    if state == STATE.TITLE then
+        title_blink = title_blink + dt
+        if lurek.input.wasActionPressed("start") then
+            state = STATE.PLAYING
+            full_reset()
+        end
+        return
+    end
+
+    -- ── GAME_OVER state ──────────────────────────────────────────────────
+    if state == STATE.GAME_OVER then
+        title_blink = title_blink + dt
+        if lurek.input.wasActionPressed("restart") then
+            full_reset()
+            state = STATE.PLAYING
+        end
+        return
+    end
+
+    -- ── PLAYING state ────────────────────────────────────────────────────
+    flash_timer = math.max(0, flash_timer - dt)
+
+    -- Player 1 input
+    if lurek.input.isActionDown("p1_up")   then p1.y = p1.y - PADDLE_SPEED * dt end
+    if lurek.input.isActionDown("p1_down") then p1.y = p1.y + PADDLE_SPEED * dt end
+
+    -- Player 2 input
+    if lurek.input.isActionDown("p2_up")   then p2.y = p2.y - PADDLE_SPEED * dt end
+    if lurek.input.isActionDown("p2_down") then p2.y = p2.y + PADDLE_SPEED * dt end
+
+    p1.y = clamp(p1.y, 0, H - PADDLE_H)
+    p2.y = clamp(p2.y, 0, H - PADDLE_H)
+
+    -- Ball movement
+    ball.x = ball.x + ball.vx * dt
+    ball.y = ball.y + ball.vy * dt
+
+    -- Top / bottom bounce
+    if ball.y <= 0 then
+        ball.y = 0
+        ball.vy = math.abs(ball.vy)
+    end
+    if ball.y + BALL_SIZE >= H then
+        ball.y = H - BALL_SIZE
+        ball.vy = -math.abs(ball.vy)
+    end
+
+    -- Paddle 1 collision (ball moving left)
+    if ball.vx < 0 and rect_overlap(ball.x, ball.y, BALL_SIZE, BALL_SIZE,
+                                     p1.x, p1.y, PADDLE_W, PADDLE_H) then
+        ball.vx = math.min(math.abs(ball.vx) * 1.06, MAX_BALL_SPEED)
+        local rel = (ball.y + BALL_SIZE / 2 - (p1.y + PADDLE_H / 2)) / (PADDLE_H / 2)
+        ball.vy = rel * BASE_BALL_SPEED
+
+        -- Emit sparks at contact point
+        if sparks then
+            sparks:setPosition(p1.x + PADDLE_W, ball.y + BALL_SIZE / 2)
+            sparks:setDirection(0)  -- right
+            sparks:emit(12)
+        end
+    end
+
+    -- Paddle 2 collision (ball moving right)
+    if ball.vx > 0 and rect_overlap(ball.x, ball.y, BALL_SIZE, BALL_SIZE,
+                                     p2.x, p2.y, PADDLE_W, PADDLE_H) then
+        ball.vx = -math.min(math.abs(ball.vx) * 1.06, MAX_BALL_SPEED)
+        local rel = (ball.y + BALL_SIZE / 2 - (p2.y + PADDLE_H / 2)) / (PADDLE_H / 2)
+        ball.vy = rel * BASE_BALL_SPEED
+
+        -- Emit sparks at contact point
+        if sparks then
+            sparks:setPosition(p2.x, ball.y + BALL_SIZE / 2)
+            sparks:setDirection(math.pi)  -- left
+            sparks:emit(12)
+        end
+    end
+
+    -- Scoring
+    if ball.x < 0 then
+        p2.score = p2.score + 1
+        -- Tween UI scale if implemented, here we skip UI tween or use old global
+        if p2.score >= WIN_SCORE then
+            state = STATE.GAME_OVER
+            winner = 2
+        else
+            ball_reset(-1)
+        end
+    end
+    if ball.x > W then
+        p1.score = p1.score + 1
+        if p1.score >= WIN_SCORE then
+            state = STATE.GAME_OVER
+            winner = 1
+        else
+            ball_reset(1)
+        end
+    end
+end
+
+-- ── World rendering ──────────────────────────────────────────────────────
+
+function lurek.draw()
+    if state == STATE.TITLE then return end
+
+    -- Center dashed line
+    lurek.render.setColor(0.25, 0.25, 0.25)
+    for i = 0, H, 24 do
+        rect("fill", W / 2 - 2, i, 4, 12)
+    end
+
+    -- Paddles
+    lurek.render.setColor(1, 1, 1)
+    rect("fill", p1.x, p1.y, PADDLE_W, PADDLE_H)
+    rect("fill", p2.x, p2.y, PADDLE_W, PADDLE_H)
+
+    -- Ball (flash yellow after score)
+    if flash_timer > 0 then
+        lurek.render.setColor(1, 1, 0)
+    else
+        lurek.render.setColor(1, 1, 1)
+    end
+    rect("fill", ball.x, ball.y, BALL_SIZE, BALL_SIZE)
+
+    -- Particle sparks
+    if sparks then
+        sparks:render()
+    end
+end
+
+-- ── HUD / overlay rendering ─────────────────────────────────────────────
+
+function lurek.draw_ui()
+end
+
+-- ── Input events ─────────────────────────────────────────────────────────
+
+function lurek.keypressed(key)
+    if key == "escape" then
+        lurek.event.quit()
+    end
+end

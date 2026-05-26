@@ -1,0 +1,331 @@
+-- ============================================================
+-- Logic Game — Robot programming puzzle
+-- Category: strategy
+-- Engine:   Lurek2D
+-- Run with: cargo run -- content/games/strategy/logic_game
+-- ============================================================
+
+local COLS, ROWS = 10, 8
+local CELL = 56
+local OX   = 40  -- grid X offset
+local OY   = 60  -- grid Y offset
+
+-- Cell types
+local EMPTY = 0
+local WALL  = 1
+local GOAL  = 2
+local CRATE = 3
+
+-- Directions
+local DIR = {
+    up    = { dx = 0,  dy = -1, name = "UP" },
+    down  = { dx = 0,  dy = 1,  name = "DOWN" },
+    left  = { dx = -1, dy = 0,  name = "LEFT" },
+    right = { dx = 1,  dy = 0,  name = "RIGHT" },
+}
+local CMD_ORDER = { "up","down","left","right","wait" }
+
+-- Levels
+local LEVELS = {
+    {
+        title = "Get to the goal",
+        map = {
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,0,0,0,0,0,1},
+            {1,1,1,1,1,1,1,1,1,1},
+        },
+        robot = { x = 2, y = 2 },
+        goal  = { x = 8, y = 6 },
+        maxCmds = 8,
+    },
+    {
+        title = "Avoid the walls",
+        map = {
+            {1,1,1,1,1,1,1,1,1,1},
+            {1,0,0,0,1,0,0,0,0,1},
+            {1,0,1,0,1,0,1,0,0,1},
+            {1,0,1,0,0,0,1,0,0,1},
+            {1,0,0,0,1,0,0,0,0,1},
+            {1,0,1,1,1,0,1,1,0,1},
+            {1,0,0,0,0,0,0,0,0,1},
+            {1,1,1,1,1,1,1,1,1,1},
+        },
+        robot = { x = 1, y = 1 },
+        goal  = { x = 8, y = 6 },
+        maxCmds = 12,
+    },
+}
+
+local level_idx  = 1
+local program    = {}        -- list of command strings
+local robot      = {}
+local goal       = {}
+local grid       = {}
+local running    = false
+local run_timer  = 0
+local run_step   = 0
+local run_done   = false
+local run_win    = false
+local selected   = 1         -- selected program slot
+local msg        = ""
+local msg_timer  = 0.0
+
+---@type LParticleSystem
+local step_particles = nil
+---@type LParticleSystem
+local win_particles  = nil
+
+local function load_level(idx)
+    local lv = LEVELS[idx]
+    robot = { x = lv.robot.x, y = lv.robot.y }
+    goal  = { x = lv.goal.x,  y = lv.goal.y  }
+    grid  = {}
+    for r, row in ipairs(lv.map) do
+        grid[r] = {}
+        for c, val in ipairs(row) do grid[r][c] = val end
+    end
+    grid[goal.y][goal.x] = GOAL
+    program  = {}
+    for _ = 1, lv.maxCmds do program[#program + 1] = "wait" end
+    running  = false
+    run_done = false
+    run_win  = false
+    selected = 1
+    msg      = ""
+end
+
+local function cell_color(v)
+    if v == WALL  then return {0.3,0.3,0.3,1} end
+    if v == GOAL  then return {0.2,0.8,0.4,1} end
+    return {0.12,0.12,0.18,1}
+end
+
+local function set_msg(s, t) msg = s ; msg_timer = t or 2.0 end
+
+-- ── Input bindings ────────────────────────────────────────
+lurek.input.bind("cmd_up",    "w")
+lurek.input.bind("cmd_down",  "s")
+lurek.input.bind("cmd_left",  "a")
+lurek.input.bind("cmd_right", "d")
+lurek.input.bind("cmd_wait",  "space")
+lurek.input.bind("slot_prev", "left")
+lurek.input.bind("slot_next", "right")
+lurek.input.bind("run",       "return")
+lurek.input.bind("reset",     "r")
+lurek.input.bind("next_lvl",  "n")
+lurek.input.bind("quit",      "escape")
+
+-- ── Init ──────────────────────────────────────────────────
+
+-- Universal render helpers (handles all legacy and current call signatures)
+local _gfx = lurek.render
+local function _sc(c)
+    if type(c) == "table" then
+        local col = c.color or c
+        if type(col) == "table" then
+            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
+        end
+    end
+end
+local function rect(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        _gfx.rectangle(a, b, c, d, e)
+    elseif type(e) == "table" then
+        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
+    elseif type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
+    else
+        _gfx.rectangle("fill", a, b, c, d)
+    end
+end
+local function circ(a, b, c, d, e, f, g, h)
+    if type(a) == "string" then
+        if type(e) == "table" then _sc(e)
+        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
+        _gfx.circle(a, b, c, d)
+    elseif type(d) == "table" then
+        _sc(d); _gfx.circle("fill", a, b, c)
+    elseif type(d) == "number" then
+        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
+    else
+        _gfx.circle("fill", a, b, c)
+    end
+end
+local function text_(a, b, c, d, e, f, g, h)
+    if type(d) == "table" then
+        _sc(d)
+    elseif type(d) == "number" and type(e) == "number" then
+        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
+    end
+    _gfx.print(tostring(a), b, c)
+end
+local function ln(x1, y1, x2, y2, c)
+    if type(c) == "table" then _sc(c) end
+    _gfx.line(x1, y1, x2, y2)
+end
+
+function lurek.init()
+    lurek.window.setTitle("Logic Game — Lurek2D")
+    lurek.render.setBackgroundColor(0.06, 0.06, 0.12)
+
+    step_particles = lurek.particle.newSystem({
+        maxParticles = 16,
+        emitRate     = 0,
+        lifetime     = { 0.2, 0.5 },
+        speed        = { 20, 60 },
+        startColor   = { 0.4, 0.8, 1.0, 1.0 },
+        endColor     = { 0.2, 0.4, 0.8, 0.0 },
+        startSize    = 4, endSize = 1,
+        spread       = math.pi * 2,
+    })
+
+    win_particles = lurek.particle.newSystem({
+        maxParticles = 80,
+        emitRate     = 0,
+        lifetime     = { 0.4, 1.0 },
+        speed        = { 60, 200 },
+        startColor   = { 1.0, 0.9, 0.2, 1.0 },
+        endColor     = { 0.8, 0.3, 0.0, 0.0 },
+        startSize    = 6, endSize = 1,
+        spread       = math.pi * 2,
+    })
+
+    load_level(level_idx)
+end
+
+-- ── Process ───────────────────────────────────────────────
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    if step_particles then step_particles:update(dt) end
+    if win_particles  then win_particles:update(dt)  end
+
+    if msg_timer > 0 then msg_timer = msg_timer - dt end
+
+    if lurek.input.wasActionPressed("quit") then lurek.event.quit() return end
+
+    if run_done then
+        if lurek.input.wasActionPressed("reset") then
+            load_level(level_idx)
+        elseif run_win and lurek.input.wasActionPressed("next_lvl") then
+            level_idx = level_idx < #LEVELS and level_idx + 1 or 1
+            load_level(level_idx)
+        end
+        return
+    end
+
+    if running then
+        run_timer = run_timer - dt
+        if run_timer <= 0 then
+            run_timer = 0.4
+            run_step  = run_step + 1
+            if run_step > #program then
+                running  = true
+                run_done = true
+                if robot.x == goal.x and robot.y == goal.y then
+                    run_win = true
+                    set_msg("Level complete! N=next level, R=restart", 60)
+                    if win_particles then
+                        win_particles:moveTo(OX + goal.x * CELL, OY + goal.y * CELL)
+                        win_particles:emit(40)
+                    end
+                else
+                    set_msg("Program ended — goal not reached. R to reset.", 60)
+                end
+                return
+            end
+            local cmd = program[run_step]
+            if cmd ~= "wait" then
+                local d = DIR[cmd]
+                local nx, ny = robot.x + d.dx, robot.y + d.dy
+                if grid[ny] and grid[ny][nx] and grid[ny][nx] ~= WALL then
+                    robot.x, robot.y = nx, ny
+                    if step_particles then
+                        step_particles:moveTo(OX + robot.x * CELL + CELL/2, OY + robot.y * CELL + CELL/2)
+                        step_particles:emit(4)
+                    end
+                else
+                    set_msg("Blocked by wall!", 1.5)
+                end
+            end
+        end
+        return
+    end
+
+    -- Edit mode
+    if lurek.input.wasActionPressed("slot_prev") then
+        selected = math.max(1, selected - 1)
+    elseif lurek.input.wasActionPressed("slot_next") then
+        selected = math.min(#program, selected + 1)
+    end
+
+    local cmd_map = {
+        cmd_up    = "up",
+        cmd_down  = "down",
+        cmd_left  = "left",
+        cmd_right = "right",
+        cmd_wait  = "wait",
+    }
+    for key, val in pairs(cmd_map) do
+        if lurek.input.wasActionPressed(key) then
+            program[selected] = val
+            if selected < #program then selected = selected + 1 end
+        end
+    end
+
+    if lurek.input.wasActionPressed("run") then
+        running   = true
+        run_timer = 0.0
+        run_step  = 0
+        robot     = { x = LEVELS[level_idx].robot.x, y = LEVELS[level_idx].robot.y }
+    end
+
+    if lurek.input.wasActionPressed("reset") then
+        load_level(level_idx)
+    end
+end
+
+-- ── Render world ──────────────────────────────────────────
+function lurek.draw()
+    -- Grid
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            local v = grid[r][c]
+            local col = cell_color(v)
+            rect(OX + (c-1)*CELL, OY + (r-1)*CELL, CELL-2, CELL-2, { color = col })
+        end
+    end
+    -- Robot
+    rect(OX + (robot.x-1)*CELL + 8, OY + (robot.y-1)*CELL + 8, CELL-18, CELL-18, { color = {0.3,0.7,1.0,1} })
+
+    if step_particles then step_particles:render() end
+    if win_particles  then win_particles:render()  end
+end
+
+-- ── Render UI ─────────────────────────────────────────────
+function lurek.draw_ui()
+    local lv = LEVELS[level_idx]
+    text_("Level " .. level_idx .. ": " .. lv.title, 40, 14, { color = {1,0.9,0.3,1}, size = 16 })
+    text_("Program (" .. #program .. " slots):", 40, 520, { color = {0.7,0.7,0.9,1}, size = 14 })
+
+    local px = 40
+    for i, cmd in ipairs(program) do
+        local sel  = i == selected
+        local bg   = sel and {0.4,0.3,0.6,1} or {0.2,0.2,0.3,1}
+        local step = running and (i == run_step)
+        if step then bg = {0.7,0.5,0.1,1} end
+        rect(px, 540, 48, 28, { color = bg })
+        text_(string.upper(cmd):sub(1,2), px+14, 548, { color = {1,1,1,1}, size = 12 })
+        px = px + 52
+    end
+
+    text_("W/A/S/D=set cmd  ←/→=slot  Enter=run  R=reset", 40, 578, { color = {0.4,0.4,0.4,1}, size = 11 })
+
+    if msg_timer > 0 and msg ~= "" then
+        text_(msg, 40, 494, { color = {1,0.9,0.4,1}, size = 13 })
+    end
+end

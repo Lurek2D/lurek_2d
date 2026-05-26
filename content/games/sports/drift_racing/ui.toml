@@ -1,0 +1,253 @@
+[[widget]]
+type = "panel"
+id = "title_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "DRIFT RACING"
+  font_size = 30
+  color = [1, 0.85, 0.1, 1]
+  anchor = "center"
+  y = -60
+
+  [[widget.children]]
+  type = "label"
+  text = "SLIDE TO WIN"
+  font_size = 24
+  color = [0.8, 0.8, 0.8, 1]
+  anchor = "center"
+  y = 10
+
+  [[widget.children]]
+  type = "button"
+  id = "press_start"
+  text = "Press W to start"
+  font_size = 24
+  color = [0.6, 0.6, 0.6, 1]
+  anchor = "center"
+  y = 60
+
+[[widget]]
+type = "panel"
+id = "track_select_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "SELECT TRACK"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  y = 80
+
+  [[widget.children]]
+  type = "label"
+  text = "[1] Coastal Loop"
+  font_size = 24
+  color = [0.9, 0.9, 0.3, 1]
+  anchor = "top_center"
+  y = 180
+
+  [[widget.children]]
+  type = "label"
+  text = "Difficulty: Easy"
+  font_size = 16
+  color = [0.6, 0.6, 0.6, 1]
+  anchor = "top_center"
+  y = 210
+
+  [[widget.children]]
+  type = "label"
+  text = "[2] Mountain Pass"
+  font_size = 24
+  color = [0.9, 0.9, 0.3, 1]
+  anchor = "top_center"
+  y = 260
+
+  [[widget.children]]
+  type = "label"
+  text = "Difficulty: Medium"
+  font_size = 16
+  color = [0.6, 0.6, 0.6, 1]
+  anchor = "top_center"
+  y = 290
+
+  [[widget.children]]
+  type = "label"
+  text = "[3] Drift City"
+  font_size = 24
+  color = [0.9, 0.9, 0.3, 1]
+  anchor = "top_center"
+  y = 340
+
+  [[widget.children]]
+  type = "label"
+  text = "Difficulty: Hard"
+  font_size = 16
+  color = [0.6, 0.6, 0.6, 1]
+  anchor = "top_center"
+  y = 370
+
+[[widget]]
+type = "panel"
+id = "hud"
+anchor = "top_left"
+w = 800
+h = 600
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  id = "speed_label"
+  text = "Speed: 0"
+  font_size = 16
+  color = [1, 1, 1, 1]
+  x = 20
+  y = 20
+
+  [[widget.children]]
+  type = "label"
+  id = "lap_label"
+  text = "Lap 1 / 3"
+  font_size = 24
+  color = [1, 1, 0.3, 1]
+  x = 20
+  y = 50
+
+  [[widget.children]]
+  type = "label"
+  id = "time_label"
+  text = "Time: 0.0s"
+  font_size = 16
+  color = [1, 1, 1, 0.9]
+  anchor = "top_right"
+  x = -160
+  y = 20
+
+  [[widget.children]]
+  type = "label"
+  id = "best_lap_label"
+  text = "Best Lap: 0.0s"
+  font_size = 16
+  color = [0.3, 1, 0.3, 1]
+  anchor = "top_right"
+  x = -180
+  y = 45
+  visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "position_label"
+  text = "1st"
+  font_size = 30
+  color = [1, 0.85, 0, 1]
+  anchor = "top_center"
+  y = 15
+
+  [[widget.children]]
+  type = "label"
+  id = "drift_event_label"
+  text = "DRIFT! +0"
+  font_size = 20
+  color = [1, 0.5, 0, 0.9]
+  anchor = "top_center"
+  y = 55
+  visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "drift_score_label"
+  text = "Drift: 0 pts"
+  font_size = 16
+  color = [0.7, 0.7, 0.7, 0.6]
+  x = 20
+  y = 80
+
+  [[widget.children]]
+  type = "label"
+  id = "boost_fuel_label"
+  text = "Boost: 0"
+  font_size = 16
+  color = [1, 0.9, 0.1, 1]
+  x = 20
+  y = 105
+  visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "boost_event_label"
+  text = "BOOST!"
+  font_size = 24
+  color = [1, 0.4, 0, 0.8]
+  anchor = "top_center"
+  y = 80
+  visible = false
+
+[[widget]]
+type = "panel"
+id = "results_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "RACE COMPLETE!"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = -100
+
+  [[widget.children]]
+  type = "label"
+  id = "results_pos_label"
+  text = "Position: 1st"
+  font_size = 30
+  color = [1, 0.85, 0, 1]
+  anchor = "center"
+  y = -30
+
+  [[widget.children]]
+  type = "label"
+  id = "results_time_label"
+  text = "Total Time: 0.0s"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 20
+
+  [[widget.children]]
+  type = "label"
+  id = "results_best_lap_label"
+  text = "Best Lap: 0.0s"
+  font_size = 20
+  color = [0.3, 1, 0.3, 1]
+  anchor = "center"
+  y = 50
+  visible = false
+
+  [[widget.children]]
+  type = "label"
+  id = "results_drift_label"
+  text = "Drift Score: 0 pts"
+  font_size = 20
+  color = [1, 0.5, 0, 1]
+  anchor = "center"
+  y = 80
+
+  [[widget.children]]
+  type = "button"
+  id = "press_track_select"
+  text = "Press W for track select"
+  font_size = 20
+  color = [0.6, 0.6, 0.6, 1]
+  anchor = "center"
+  y = 140

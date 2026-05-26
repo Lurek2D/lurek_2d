@@ -1,0 +1,354 @@
+# filesystem
+
+## TL;DR
+
+- The `filesystem` module resides in the Core Runtime tier and implements `GameFS`, a strictly sandboxed virtual filesystem.
+
+## General Info
+
+- Module group: `Core Runtime`
+- Source path: `src/filesystem/`
+- Lua API path(s): `src/lua_api/filesystem_api.rs`
+- Primary Lua namespace: `lurek.filesystem`
+- Rust test path(s): tests/rust/unit/filesystem_tests.rs
+- Lua test path(s): tests/lua/unit/test_filesystem_core_unit.lua, tests/lua/stress/test_filesystem_stress.lua
+
+## Summary
+
+ It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
+
+Beyond security, the module offers a robust suite of filesystem operations. It supports synchronous and asynchronous file reads/writes, directory creation, flat and recursive listing, glob matching, and file copy/move operations. A notable feature is its support for virtual mount overlays: directories or read-only `.zip` archives (`ZipMount`) can be layered into the virtual filesystem at specified prefixes. When a file is requested, `GameFS` queries these layered mounts seamlessly, enabling modding, content patching, and asset packing without altering game logic.
+
+To prevent blocking the main engine thread during expensive I/O operations, the module includes an `AsyncLoader`. This loader dispatches read and write requests to a dedicated background worker thread, returning opaque handles that scripts can poll for completion. For fine-grained file manipulation, `FileHandle` provides a buffered, cursor-based streaming API with discrete read, write, and append modes. Additionally, for hot-reload development workflows, a poll-based `FileWatcher` tracks modification-time (`mtime`) changes across registered paths, enabling real-time asset updates. The full functionality of the virtual filesystem, including JSON validation helpers and file metadata queries, is exposed to scripts via the `lurek.filesystem.*` API.
+
+## Source Documentation
+
+### `async_loader.rs`
+- Background file I/O via a dedicated worker thread and bounded request queue.
+- Non-blocking read and write requests returning opaque handles for polling.
+- Capacity-limited channel with graceful overflow reporting.
+- Thread-safe result storage consumed by callers through poll methods.
+- Automatic worker shutdown and join on drop.
+
+### `file_data.rs`
+- Pair raw file bytes with the logical path they were loaded from.
+- Provide length, emptiness, and UTF-8 decode helpers on the cached payload.
+- Serve as the common return type for GameFS load operations.
+
+### `file_handle.rs`
+- Buffered file handle abstraction for GameFS read, write, and append streams.
+- Mode-based state machine: Read, Write, Append, or Closed.
+- Resolves logical game paths through GameFS before opening OS files.
+- Provides line-oriented and byte-oriented read APIs with EOF detection.
+- Seek, tell, flush, and auto-close on drop for safe resource cleanup.
+
+### `mod.rs`
+- Virtual filesystem with layered mounts (directory, ZIP archive).
+- Async file loading queue with handle-based status polling.
+- Buffered file I/O with read, write, and append modes.
+- File modification watcher for hot-reload workflows.
+
+### `vfs.rs`
+- Virtual filesystem (GameFS) rooted at a game directory with read and write operations.
+- Overlay mount system that layers additional source directories under virtual prefixes.
+- Path-traversal rejection and save-directory write confinement for sandboxed access.
+- JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
+- Recursive and flat directory listing with merged overlay results.
+- File handle creation, copy, move, and remove operations within the save boundary.
+
+### `watcher.rs`
+- Poll-based file watcher that detects modification-time changes on registered paths.
+- Maintains a path→mtime cache and reports diffs on each poll cycle.
+- Supports watch/unwatch, forced invalidation, and empty-state queries.
+
+### `zip_mount.rs`
+- ZIP-backed virtual filesystem mount with path-indexed entry lookup.
+- Reads individual files from a ZIP archive on demand without full extraction.
+- Normalizes virtual paths and rejects directory-traversal attempts.
+
+## Types
+
+- `LoadHandle` (`struct`, `async_loader.rs`): Opaque handle returned to callers (and to Lua) that identifies a pending load.
+- `LoadResult` (`enum`, `async_loader.rs`): Outcome of a completed load request.
+- `LoadStatus` (`enum`, `async_loader.rs`): Status returned by [`AsyncLoader::poll`].
+- `WriteResult` (`enum`, `async_loader.rs`): Outcome of a completed write request.
+- `WriteStatus` (`enum`, `async_loader.rs`): Status returned by [`AsyncLoader::poll_write`].
+- `AsyncLoader` (`struct`, `async_loader.rs`): A single-threaded background file reader.
+- `FileData` (`struct`, `file_data.rs`): Raw bytes loaded from the virtual filesystem.
+- `FileMode` (`enum`, `file_handle.rs`): File access mode.
+- `FileHandle` (`struct`, `file_handle.rs`): A sandboxed file handle for reading or writing game files.
+- `FileInfo` (`struct`, `vfs.rs`): File metadata returned by `get_info()`.
+- `FileType` (`enum`, `vfs.rs`): File type classification for `FileInfo`.
+- `MountLayer` (`struct`, `vfs.rs`): A virtual filesystem mount layer overlaid on top of the game directory.
+- `GameFS` (`struct`, `vfs.rs`): Sandboxed filesystem rooted at the game directory; prevents path-traversal attacks.
+- `FileWatcher` (`struct`, `watcher.rs`): Polling file watcher that detects modification-time changes.
+- `ZipMount` (`struct`, `zip_mount.rs`): A read-only mount backed by a `.zip` file.
+
+## Functions
+
+- `AsyncLoader::new` (`async_loader.rs`): Create a loader with a background worker thread.
+- `AsyncLoader::request_load` (`async_loader.rs`): Queue a read request and return its handle even when the queue is full.
+- `AsyncLoader::request_write` (`async_loader.rs`): Queue a write request and return its handle even when the queue is full.
+- `AsyncLoader::poll` (`async_loader.rs`): Poll a read request and return its current status.
+- `AsyncLoader::pending_results` (`async_loader.rs`): Return the number of completed read results waiting to be consumed.
+- `AsyncLoader::poll_write` (`async_loader.rs`): Poll a write request and return its current status.
+- `FileData::new` (`file_data.rs`): Create a file payload from a path and raw bytes.
+- `FileData::len` (`file_data.rs`): Return the payload length in bytes.
+- `FileData::is_empty` (`file_data.rs`): Return true when the payload has no bytes.
+- `FileData::as_str` (`file_data.rs`): Decode the payload as UTF-8 or return the decode error.
+- `FileMode::parse_mode` (`file_handle.rs`): Parse a mode string into a file mode or error on unsupported input.
+- `FileMode::as_str` (`file_handle.rs`): Return the single-letter mode string used by Lua and save data.
+- `FileHandle::open` (`file_handle.rs`): Open a GameFS file handle or error on path resolution, access, or OS failure.
+- `FileHandle::read` (`file_handle.rs`): Read bytes from the open reader or error if the handle is not readable.
+- `FileHandle::read_line` (`file_handle.rs`): Read the next line without its trailing newline or return None at EOF.
+- `FileHandle::write` (`file_handle.rs`): Write bytes to the open writer or error if the handle is not writable.
+- `FileHandle::seek` (`file_handle.rs`): Seek the active stream to an absolute byte offset or error when closed.
+- `FileHandle::tell` (`file_handle.rs`): Read the current absolute byte offset or error when closed.
+- `FileHandle::get_size` (`file_handle.rs`): Return the captured file size in bytes.
+- `FileHandle::get_mode` (`file_handle.rs`): Return the current file mode.
+- `FileHandle::get_path` (`file_handle.rs`): Return the logical path used to open the handle.
+- `FileHandle::flush` (`file_handle.rs`): Flush buffered writes and return an error on write failure.
+- `FileHandle::close` (`file_handle.rs`): Close the handle, flush pending writes, and release both buffered streams.
+- `FileHandle::is_eof` (`file_handle.rs`): Check whether the reader has no buffered bytes left or error if unreadable.
+- `FileType::as_str` (`vfs.rs`): Return the lowercase type label used in metadata output.
+- `GameFS::new` (`vfs.rs`): Create a new filesystem rooted at the supplied base directory.
+- `GameFS::base_dir` (`vfs.rs`): Return the root directory used for path resolution.
+- `GameFS::read_string` (`vfs.rs`): Read a UTF-8 file through the mounted filesystem or return a filesystem error.
+- `GameFS::read_bytes` (`vfs.rs`): Read a file as raw bytes or return a filesystem error.
+- `GameFS::write_string` (`vfs.rs`): Write UTF-8 content into the save filesystem or return a filesystem error.
+- `GameFS::write_bytes` (`vfs.rs`): Write raw bytes into the save filesystem or return a filesystem error.
+- `GameFS::read_json` (`vfs.rs`): Validate JSON content and return the original string on success.
+- `GameFS::write_json` (`vfs.rs`): Validate JSON text and write it to the save filesystem.
+- `GameFS::read_or_write_json` (`vfs.rs`): Read existing JSON or create it from the default payload when missing.
+- `GameFS::exists` (`vfs.rs`): Return true when the base filesystem path exists.
+- `GameFS::list` (`vfs.rs`): List entries in a directory without recursion.
+- `GameFS::list_recursive` (`vfs.rs`): List directory entries recursively under the resolved read path.
+- `GameFS::get_directory_items` (`vfs.rs`): Return sorted directory entries from the resolved read path.
+- `GameFS::is_file` (`vfs.rs`): Return true when the resolved path points to a file.
+- `GameFS::is_directory` (`vfs.rs`): Return true when the resolved path points to a directory.
+- `GameFS::create_directory` (`vfs.rs`): Create a directory tree in the save filesystem or return a filesystem error.
+- `GameFS::remove` (`vfs.rs`): Remove a file or directory from the save filesystem or return a filesystem error.
+- `GameFS::get_info` (`vfs.rs`): Read metadata for a path and return a normalized file info record.
+- `GameFS::append_string` (`vfs.rs`): Append UTF-8 content into a file in the save filesystem.
+- `GameFS::get_source` (`vfs.rs`): Return the base directory as a string for reporting.
+- `GameFS::get_save_directory` (`vfs.rs`): Return the save directory path under the base directory.
+- `GameFS::get_working_directory` (`vfs.rs`): Return the current working directory as a string or filesystem error.
+- `GameFS::get_user_directory` (`vfs.rs`): Return the user home directory string or fall back to the current directory.
+- `GameFS::get_identity` (`vfs.rs`): Return the current identity string assigned to the filesystem.
+- `GameFS::set_identity` (`vfs.rs`): Set the identity string used by filesystem callers.
+- `GameFS::mount` (`vfs.rs`): Mount a source directory under a virtual mountpoint or return an error.
+- `GameFS::mount_full` (`vfs.rs`): Mount an already validated path under a virtual mountpoint or return an error.
+- `GameFS::unmount` (`vfs.rs`): Remove a mountpoint and return true when one was removed.
+- `GameFS::load_chunk` (`vfs.rs`): Read a chunk path from the newest matching mount layer or from the base filesystem.
+- `GameFS::get_directory_items_merged` (`vfs.rs`): Merge directory entries from the base path and any mounted overlays.
+- `GameFS::resolve_read_path` (`vfs.rs`): Resolve a readable path into a canonical host path or return a filesystem error.
+- `GameFS::resolve_save_path` (`vfs.rs`): Resolve a writable path inside save/ or return a filesystem error.
+- `GameFS::read_lines` (`vfs.rs`): Read a file and split it into owned lines.
+- `GameFS::open_file` (`vfs.rs`): Open a file handle from a mode string or return a filesystem error.
+- `GameFS::copy_file` (`vfs.rs`): Copy a file into the save filesystem or return a filesystem error.
+- `GameFS::move_file` (`vfs.rs`): Move a file inside the save filesystem or return a filesystem error.
+- `GameFS::remove_dir` (`vfs.rs`): Remove a directory tree from the save filesystem or return a filesystem error.
+- `GameFS::glob` (`vfs.rs`): Return sorted matches for a glob pattern within a readable directory.
+- `GameFS::stat` (`vfs.rs`): Return size and kind flags for the resolved path.
+- `GameFS::create_temp_file` (`vfs.rs`): Create a unique temporary file under save/ and return its logical path.
+- `FileWatcher::new` (`watcher.rs`): Create an empty file watcher.
+- `FileWatcher::watch` (`watcher.rs`): Start watching a path and cache its current modification time.
+- `FileWatcher::unwatch` (`watcher.rs`): Stop watching a path if it is present.
+- `FileWatcher::is_watching` (`watcher.rs`): Return true when the watcher contains the path.
+- `FileWatcher::poll` (`watcher.rs`): Poll all watched paths and return the ones whose modification time changed.
+- `FileWatcher::len` (`watcher.rs`): Return the number of watched paths.
+- `FileWatcher::is_empty` (`watcher.rs`): Return true when no paths are watched.
+- `FileWatcher::force_changed` (`watcher.rs`): Force all watched paths to report a change on the next poll.
+- `read_mtime` (`watcher.rs`): Read the last modification time for a path or return None on metadata failure.
+- `ZipMount::new` (`zip_mount.rs`): Build a ZIP mount index or return an error on archive open or parse failure.
+- `ZipMount::read_file` (`zip_mount.rs`): Read a virtual file from the archive or return an error when missing or invalid.
+- `ZipMount::contains` (`zip_mount.rs`): Return true when the virtual path is indexed in the archive.
+- `ZipMount::list_files` (`zip_mount.rs`): Return all indexed virtual paths in sorted order.
+- `normalise` (`zip_mount.rs`): Normalise a path: collapse duplicate slashes, strip leading slash.
+- `is_traversal` (`zip_mount.rs`): Returns `true` if any path component is `..`, or if the path starts with a drive letter (Windows absolute), to prevent traversal attacks.
+
+## Lua API Reference
+
+- Binding path(s): `src/lua_api/filesystem_api.rs`
+- Namespace: `lurek.filesystem`
+
+### Module Functions
+- `lurek.filesystem.mountZip`: Opens a ZIP archive and exposes it through a virtual prefix.
+- `lurek.filesystem.watchPath`: Adds a path to the module-local file watcher.
+- `lurek.filesystem.unwatchPath`: Removes a path from the module-local file watcher.
+- `lurek.filesystem.pollWatchers`: Polls watched paths and returns paths that changed since the previous poll.
+- `lurek.filesystem.read`: Reads a UTF-8 text file from GameFS.
+- `lurek.filesystem.write`: Writes a UTF-8 text file through GameFS.
+- `lurek.filesystem.readJson`: Reads a JSON document as text from GameFS.
+- `lurek.filesystem.writeJson`: Writes JSON text through the GameFS layer.
+- `lurek.filesystem.readOrWriteJson`: Reads a JSON file or writes and returns default JSON when the file is absent.
+- `lurek.filesystem.readBytes`: Reads a binary file from GameFS and returns the bytes as a Lua string.
+- `lurek.filesystem.writeBytes`: Writes binary data through GameFS.
+- `lurek.filesystem.exists`: Returns whether a path exists in GameFS.
+- `lurek.filesystem.append`: Appends UTF-8 text to a GameFS file.
+- `lurek.filesystem.openFile`: Opens a GameFS file handle in a requested mode.
+- `lurek.filesystem.getDirectoryItems`: Lists immediate entries in a GameFS directory.
+- `lurek.filesystem.isFile`: Returns whether a GameFS path is a regular file.
+- `lurek.filesystem.isDirectory`: Returns whether a GameFS path is a directory.
+- `lurek.filesystem.createDirectory`: Creates a GameFS directory and any missing parents.
+- `lurek.filesystem.remove`: Removes a GameFS file or supported path.
+- `lurek.filesystem.getInfo`: Returns file metadata for a GameFS path when available.
+- `lurek.filesystem.getSource`: Returns the GameFS source root string.
+- `lurek.filesystem.getSaveDirectory`: Returns the save directory path used by GameFS.
+- `lurek.filesystem.getWorkingDirectory`: Returns the process working directory.
+- `lurek.filesystem.getUserDirectory`: Returns the current user's directory path.
+- `lurek.filesystem.getIdentity`: Returns the current filesystem identity string.
+- `lurek.filesystem.setIdentity`: Sets the filesystem identity string used by save paths.
+- `lurek.filesystem.lines`: Creates an iterator function over lines in a text file.
+- `lurek.filesystem.readAsync`: Starts an asynchronous file load request.
+- `lurek.filesystem.pollAsync`: Polls an asynchronous file load request.
+- `lurek.filesystem.writeAsync`: Starts an asynchronous file write request.
+- `lurek.filesystem.pollAsyncWrite`: Polls an asynchronous file write request.
+- `lurek.filesystem.mount`: Mounts an external source path at a GameFS mount point.
+- `lurek.filesystem.unmount`: Removes a GameFS mount point by its name.
+- `lurek.filesystem.load`: Loads a Lua chunk from GameFS and returns it as a Lua function.
+- `lurek.filesystem.newFileData`: Loads a file into an immutable file data handle.
+- `lurek.filesystem.copy`: Copies one GameFS file to another path.
+- `lurek.filesystem.move`: Moves or renames one GameFS file to another path.
+- `lurek.filesystem.removeDir`: Removes a GameFS directory by its path.
+- `lurek.filesystem.glob`: Returns GameFS paths matching a glob pattern.
+- `lurek.filesystem.listRecursive`: Lists all paths under a GameFS directory recursively.
+- `lurek.filesystem.stat`: Returns size and file/directory flags for a GameFS path.
+- `lurek.filesystem.createTempFile`: Creates a temporary file through GameFS.
+- `lurek.filesystem.mkdir`: Creates a directory under the GameFS base directory.
+- `lurek.filesystem.toAbsolutePath`: Resolves a GameFS-relative path against the filesystem base directory.
+
+### `LFileData` Methods
+- `LFileData:getSize`: Returns the byte length of this file data.
+- `LFileData:getString`: Returns file data bytes as a Lua string without UTF-8 validation.
+- `LFileData:getFilename`: Returns the path associated with this file data object.
+- `LFileData:type`: Returns the Lua-visible type name for this file data handle.
+- `LFileData:typeOf`: Returns whether this file data handle matches a supported type name.
+
+### `LFileHandle` Methods
+- `LFileHandle:read`: Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
+- `LFileHandle:readLine`: Reads the next line from this file handle.
+- `LFileHandle:write`: Writes a string to this file handle.
+- `LFileHandle:seek`: Moves the file cursor to an absolute byte position.
+- `LFileHandle:tell`: Returns the current file cursor position.
+- `LFileHandle:getSize`: Returns the size of the open file in bytes.
+- `LFileHandle:getMode`: Returns the mode used to open this file handle.
+- `LFileHandle:flush`: Flushes pending writes on this file handle.
+- `LFileHandle:close`: Closes this file handle on this object.
+- `LFileHandle:isEOF`: Returns whether the file cursor is at end of file.
+- `LFileHandle:type`: Returns the Lua-visible type name for this file handle.
+- `LFileHandle:typeOf`: Returns whether this file handle matches a supported type name.
+
+### `LZipMount` Methods
+- `LZipMount:readFile`: Reads a file from the ZIP mount by virtual path.
+- `LZipMount:contains`: Returns whether a virtual path exists in the ZIP mount.
+- `LZipMount:listFiles`: Returns every virtual file path in the ZIP mount.
+- `LZipMount:prefix`: Returns the virtual prefix used by this ZIP mount.
+- `LZipMount:type`: Returns the Lua-visible type name for this ZIP mount handle.
+- `LZipMount:typeOf`: Returns whether this ZIP mount handle matches a supported type name.
+
+### Core Function Reference
+
+The following six operations cover the most common game file I/O needs. Read access resolves through all mounted layers; write access is always restricted to `save/`.
+
+#### `lurek.filesystem.read(path) → string`
+
+Read a UTF-8 text file from GameFS.
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `path` | `string` | GameFS path relative to the game base directory. |
+
+**Returns** `string` — file contents as text.
+**Errors** Raises a Lua error when the path cannot be found or read.
+
+```lua
+local data = lurek.filesystem.read("data/config.toml")
+```
+
+#### `lurek.filesystem.write(path, data)`
+
+Write a UTF-8 text file. The path **must** begin with `save/`.
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `path` | `string` | Destination path; must start with `save/`. |
+| `data` | `string` | Text content to write. |
+
+**Errors** Raises when the path is outside `save/` or on OS write failure.
+
+```lua
+lurek.filesystem.write("save/settings.txt", "volume=80")
+```
+
+#### `lurek.filesystem.exists(path) → boolean`
+
+Test whether a path exists in GameFS (file or directory).
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `path` | `string` | GameFS path to test. |
+
+**Returns** `boolean` — `true` when the path exists.
+
+```lua
+if not lurek.filesystem.exists("save/progress.dat") then
+    lurek.filesystem.write("save/progress.dat", "level=1")
+end
+```
+
+#### `lurek.filesystem.getDirectoryItems(path) → string[]`
+
+List immediate (non-recursive) entries inside a directory. Returns entry names only, not full paths. This is the standard directory-listing operation. For a recursive walk use `listRecursive`; for pattern matching use `glob`.
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `path` | `string` | Directory path to list. |
+
+**Returns** `string[]` — array of entry name strings.
+**Errors** Raises when the directory cannot be read.
+
+```lua
+for _, name in ipairs(lurek.filesystem.getDirectoryItems("data/maps")) do
+    print(name)
+end
+```
+
+#### `lurek.filesystem.mkdir(path)`
+
+Create a directory tree under the GameFS base directory. Unlike `createDirectory`, this function is **not** sandboxed to `save/` — it creates directories relative to the game base folder.
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `path` | `string` | Relative directory path to create. |
+
+**Errors** Raises on OS failure (e.g. permission denied).
+
+```lua
+lurek.filesystem.mkdir("save/screenshots")
+```
+
+#### `lurek.filesystem.remove(path)`
+
+Remove a file from the GameFS save directory. To remove an entire directory tree use `removeDir`.
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `path` | `string` | Path of the file to remove. |
+
+**Errors** Raises when the file cannot be removed.
+
+```lua
+lurek.filesystem.remove("save/old_slot.dat")
+```
+
+## References
+
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- Keep this module reference synchronized with `src/filesystem/` and any matching Lua bindings.
+- Idea-file clarification: `lurek.filesystem` is the generic sandboxed filesystem I/O namespace. Use its existing `exists`, `getDirectoryItems`/`listRecursive`/`glob`, `mkdir`/`createDirectory`, `remove`/`removeDir`, `read`/`readBytes`, and `write`/`writeBytes` APIs instead of adding a parallel `lurek.fs` namespace.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

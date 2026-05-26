@@ -1,0 +1,331 @@
+[root]
+widget_type = "panel"
+id = "root_ui"
+w = 800
+h = 600
+bg_color = [0, 0, 0, 0]
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "title_screen"
+  w = 800
+  h = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "PARADROID"
+    font_size = 30
+    color = [0.3, 0.8, 1.0, 1]
+    anchor = "center"
+    y = -140
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Lurek2D Remake"
+    font_size = 16
+    color = [0.5, 0.5, 0.6, 1]
+    anchor = "center"
+    y = -80
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "title_press_start"
+    text = "PRESS SPACE TO START"
+    font_size = 20
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = 140
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Arrow keys: Move | Space: Fire | E: Transfer"
+    font_size = 12
+    color = [0.4, 0.4, 0.5, 1]
+    anchor = "center"
+    y = 200
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "game_over_screen"
+  w = 800
+  h = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "GAME OVER"
+    font_size = 30
+    color = [1.0, 0.3, 0.2, 1]
+    anchor = "center"
+    y = -80
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_score"
+    text = "Score: 0"
+    font_size = 24
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = -10
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_level"
+    text = "Level: 0"
+    font_size = 20
+    color = [0.6, 0.6, 0.6, 1]
+    anchor = "center"
+    y = 30
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "go_press_start"
+    text = "PRESS SPACE"
+    font_size = 20
+    color = [0.7, 0.7, 0.7, 1]
+    anchor = "center"
+    y = 120
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "level_clear_screen"
+  w = 800
+  h = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "lc_title"
+    text = "LEVEL 1 CLEAR"
+    font_size = 30
+    color = [0.3, 1.0, 0.4, 1]
+    anchor = "center"
+    y = -60
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "lc_score"
+    text = "Score: 0"
+    font_size = 24
+    color = [0.8, 0.8, 0.8, 1]
+    anchor = "center"
+    y = 10
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "lc_press_start"
+    text = "PRESS SPACE FOR NEXT LEVEL"
+    font_size = 16
+    color = [0.7, 0.7, 0.7, 1]
+    anchor = "center"
+    y = 100
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "transfer_screen"
+  w = 800
+  h = 600
+  bg_color = [0, 0, 0, 0.6]
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "TRANSFER SEQUENCE"
+    font_size = 30
+    color = [0.4, 0.8, 1.0, 1]
+    anchor = "center"
+    y = -200
+
+    [[root.children.children]]
+    widget_type = "label"
+    text = "Mash WASD to boost!"
+    font_size = 16
+    color = [0.6, 0.6, 0.7, 1]
+    anchor = "center"
+    y = -160
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "transfer_player_label"
+    text = "YOU [001]"
+    font_size = 16
+    color = [0.3, 0.8, 1.0, 1]
+    x = 250
+    y = 200
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 300
+    h = 30
+    bg_color = [0.1, 0.1, 0.15, 1]
+    x = 250
+    y = 220
+
+      [[root.children.children.children]]
+      widget_type = "panel"
+      id = "transfer_player_bar"
+      w = 0
+      h = 30
+      bg_color = [0.3, 0.7, 1.0, 1]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "transfer_enemy_label"
+    text = "ENEMY [000]"
+    font_size = 16
+    color = [1.0, 0.3, 0.3, 1]
+    x = 250
+    y = 280
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 300
+    h = 30
+    bg_color = [0.1, 0.1, 0.15, 1]
+    x = 250
+    y = 300
+
+      [[root.children.children.children]]
+      widget_type = "panel"
+      id = "transfer_enemy_bar"
+      w = 0
+      h = 30
+      bg_color = [1.0, 0.3, 0.3, 1]
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 300
+    h = 6
+    bg_color = [0.15, 0.15, 0.2, 1]
+    x = 250
+    y = 360
+
+      [[root.children.children.children]]
+      widget_type = "panel"
+      id = "transfer_time_bar"
+      w = 0
+      h = 6
+      bg_color = [0.8, 0.8, 0.3, 1]
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "transfer_result"
+    text = ""
+    font_size = 24
+    color = [1, 1, 1, 1]
+    anchor = "center"
+    y = 110
+
+  [[root.children]]
+  widget_type = "panel"
+  id = "hud_screen"
+  w = 800
+  h = 600
+  visible = false
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 120
+    h = 28
+    bg_color = [0.05, 0.05, 0.1, 0.9]
+    x = 4
+    y = 4
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_droid"
+      text = "DROID 001"
+      font_size = 16
+      color = [0.3, 0.8, 1.0, 1]
+      x = 8
+      y = 4
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 120
+    h = 14
+    bg_color = [0.1, 0.05, 0.05, 0.9]
+    x = 4
+    y = 36
+
+      [[root.children.children.children]]
+      widget_type = "panel"
+      id = "hud_hp_bar"
+      w = 120
+      h = 14
+      bg_color = [0.2, 0.8, 0.3, 1]
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      text = "HP"
+      font_size = 10
+      color = [1, 1, 1, 1]
+      x = 4
+      y = 1
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 120
+    h = 14
+    bg_color = [0.05, 0.05, 0.1, 0.9]
+    x = 4
+    y = 54
+
+      [[root.children.children.children]]
+      widget_type = "panel"
+      id = "hud_en_bar"
+      w = 120
+      h = 14
+      bg_color = [0.3, 0.6, 1.0, 1]
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      text = "NRG"
+      font_size = 10
+      color = [1, 1, 1, 1]
+      x = 4
+      y = 1
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 136
+    h = 28
+    bg_color = [0.05, 0.05, 0.1, 0.9]
+    x = 660
+    y = 4
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_score"
+      text = "SCORE 0"
+      font_size = 16
+      color = [0.8, 0.8, 0.8, 1]
+      x = 8
+      y = 4
+
+    [[root.children.children]]
+    widget_type = "panel"
+    w = 136
+    h = 18
+    bg_color = [0.05, 0.05, 0.1, 0.9]
+    x = 660
+    y = 36
+
+      [[root.children.children.children]]
+      widget_type = "label"
+      id = "hud_level"
+      text = "LEVEL 1"
+      font_size = 12
+      color = [0.6, 0.6, 0.7, 1]
+      x = 8
+      y = 2
+
+    [[root.children.children]]
+    widget_type = "label"
+    id = "fps_label"
+    text = "FPS 60"
+    font_size = 12
+    color = [0.3, 0.3, 0.4, 1]
+    x = 4
+    y = 580

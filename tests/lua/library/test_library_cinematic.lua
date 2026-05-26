@@ -1,0 +1,138 @@
+-- tests/lua/library/test_library_cinematic.lua
+-- BDD tests for library/cinematic/init.lua     multi-track scrubbable timeline.
+
+local cine = require("library.cinematic")
+
+
+-- @describe clip firing
+describe("clip firing", function()
+    -- @library lurek.library_cinematic
+    it("clips fire in declared order across multiple tracks", function()
+        local fired = {}
+        local tl = cine.newTimeline()
+        local a = tl:track("a")
+        local b = tl:track("b")
+        a:call(0.5, function() fired[#fired+1] = "a@0.5" end)
+        b:call(0.2, function() fired[#fired+1] = "b@0.2" end)
+        a:call(1.0, function() fired[#fired+1] = "a@1.0" end)
+        tl:play():update(2.0)
+        -- Clips fire per-track in time order; tracks fire in declaration order
+        -- All track "a" clips fire before track "b" clips
+        expect_equal("a@0.5", fired[1])
+        expect_equal("a@1.0", fired[2])
+        expect_equal("b@0.2", fired[3])
+    end)
+
+    -- @library LTween:setTime
+    it("setTime(t) seeks past clips and applies them", function()
+        local hit = false
+        local tl = cine.newTimeline()
+        tl:track("x"):call(1.0, function() hit = true end)
+        tl:play()
+        tl:setTime(1.5)
+        expect_true(hit)
+    end)
+end)
+
+-- @describe pause / resume
+describe("pause / resume", function()
+    -- @library LTween:getTime
+    it("pause then resume preserves elapsed time", function()
+        local tl = cine.newTimeline()
+        tl:track("x"):call(2.0, function() end)
+        tl:play():update(0.4)
+        tl:pause()
+        local t0 = tl:getTime()
+        tl:resume():update(0.0)
+        expect_near(t0, tl:getTime(), 1e-9)
+    end)
+end)
+
+-- @describe onComplete
+describe("onComplete", function()
+    -- @library lurek.library_cinematic
+    it("fires once at duration", function()
+        local n = 0
+        local tl = cine.newTimeline()
+        tl:track("x"):call(1.0, function() end)
+        tl:onComplete(function() n = n + 1 end)
+        tl:play():update(2.0)
+        expect_equal(1, n)
+        expect_true(tl:isFinished())
+    end)
+end)
+
+-- @describe labels & skip
+describe("labels & skip", function()
+    -- @library LTween:getTime
+    it("skipTo jumps the playhead to the labelled time", function()
+        local tl = cine.newTimeline()
+        tl:track("x"):call(2.0, function() end)
+        tl:label(2.0, "boom")
+        tl:skipTo("boom")
+        expect_near(2.0, tl:getTime(), 1e-9)
+    end)
+
+    it("skipTo on unknown label raises", function()
+        local tl = cine.newTimeline()
+        expect_error(function() tl:skipTo("nope") end)
+    end)
+end)
+
+-- @describe branch
+describe("branch", function()
+    -- @library lurek.library_cinematic
+    it("only runs when predicate is true at branch time", function()
+        local tl    = cine.newTimeline()
+        local child = cine.newTimeline()
+        local fired = false
+        child:track("x"):call(0.0, function() fired = true end)
+        tl:track("x"):call(2.0, function() end)
+        tl:branch(0.5, function() return false end, child)
+        tl:play():update(3.0)
+        expect_false(fired)
+    end)
+end)
+
+-- @describe scrubbing
+describe("scrubbing", function()
+    -- @library LTween:setTime
+    it("backward scrub past non-reversible clip raises", function()
+        local tl = cine.newTimeline()
+        tl:track("x"):audio(0.5, "song.ogg")
+        tl:play():update(1.0)
+        expect_error(function() tl:setTime(0.0) end)
+    end)
+
+    -- @library LTween:setTime
+    it("backward scrub through reversible call clip is allowed", function()
+        local applied
+        local tl = cine.newTimeline()
+        tl:track("x"):call(0.5, function() applied = true end, { reversible = true })
+        tl:play():update(1.0)
+        expect_true(applied)
+        expect_no_error(function() tl:setTime(0.0) end)
+    end)
+end)
+
+-- @describe export
+describe("export", function()
+    -- @library lurek.library_cinematic
+    it("export returns playhead state", function()
+        local tl = cine.newTimeline()
+        tl:track("x"):call(2.0, function() end)
+        tl:play():update(0.7)
+        local blob = tl:export()
+        expect_near(0.7, blob.t, 1e-6)
+        expect_equal(2.0, blob.duration)
+    end)
+end)
+
+-- @describe error paths
+describe("error paths", function()
+    it("track:add raises on missing 'at'", function()
+        local tl = cine.newTimeline()
+        expect_error(function() tl:track("x"):add({ kind = "call" }) end)
+    end)
+end)
+test_summary()

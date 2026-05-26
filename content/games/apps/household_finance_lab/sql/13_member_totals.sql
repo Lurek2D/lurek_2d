@@ -1,0 +1,9 @@
+SELECT
+    member_clean,
+    SUM(income_amount),
+    SUM(expense_amount),
+    SUM(savings_amount),
+    SUM(debt_amount),
+    COUNT(*)
+FROM filtered_transactions
+GROUP BY member_clean

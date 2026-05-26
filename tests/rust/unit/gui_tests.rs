@@ -1,0 +1,389 @@
+//! INTERNAL ONLY: Rust unit tests for private UI internals not reachable through the `lurek.*` Lua API.
+//!
+//! **Rule**: If behaviour can be observed via `lurek.ui.*` it MUST be tested in
+//! `tests/lua/unit/test_gui.lua` instead. Only struct-field defaults, non-public
+//! helpers, and pure-Rust invariants that cannot survive the Lua call boundary
+//! belong here.
+//!
+//! Naming convention: `<subject>_<scenario>_<expected>` — no `test_` prefix.
+//! Float comparisons use `(a - b).abs() < 1e-5` — never `assert_eq!` on floats.
+
+use lurek2d::ui::context::GuiContext;
+use lurek2d::ui::controls::Switch;
+use lurek2d::ui::theme::{Theme, WidgetStyle};
+use lurek2d::ui::widget::{WidgetBase, WidgetType};
+
+// ─── WidgetStyle field defaults ───────────────────────────────────────────────
+// WidgetStyle is an internal struct with no Lua getter; its default values are
+// invisible to the script layer and must be confirmed here.
+
+#[test]
+fn widget_style_default_shadow_alpha_is_zero() {
+    let s = WidgetStyle::default();
+    assert!(
+        (s.shadow_color[3]).abs() < 1e-5,
+        "default shadow alpha must be zero"
+    );
+}
+
+#[test]
+fn widget_style_default_highlight_alpha_is_zero() {
+    let s = WidgetStyle::default();
+    assert!(
+        (s.highlight_alpha).abs() < 1e-5,
+        "default highlight_alpha must be zero"
+    );
+}
+
+#[test]
+fn widget_style_default_gradient_end_is_none() {
+    assert!(WidgetStyle::default().gradient_end.is_none());
+}
+
+#[test]
+fn widget_style_default_text_align_is_center() {
+    assert_eq!(WidgetStyle::default().text_align, "center");
+}
+
+#[test]
+fn widget_style_default_shadow_offset_is_zero() {
+    let s = WidgetStyle::default();
+    assert!((s.shadow_offset[0]).abs() < 1e-5);
+    assert!((s.shadow_offset[1]).abs() < 1e-5);
+}
+
+// ─── WidgetType::default_size ─────────────────────────────────────────────────
+// default_size() is not exposed as a Lua function; it only drives WidgetBase::new().
+
+#[test]
+fn widget_type_button_default_size_is_16px_aligned() {
+    let (w, h) = WidgetType::Button.default_size();
+    assert_eq!(w % 16.0, 0.0, "Button width must be 16px aligned");
+    assert_eq!(h % 16.0, 0.0, "Button height must be 16px aligned");
+}
+
+#[test]
+fn widget_type_spin_box_default_size_is_positive() {
+    let (w, h) = WidgetType::SpinBox.default_size();
+    assert!(w > 0.0 && h > 0.0);
+}
+
+#[test]
+fn widget_type_switch_default_size_is_positive() {
+    let (w, h) = WidgetType::Switch.default_size();
+    assert!(w > 0.0 && h > 0.0);
+}
+
+#[test]
+fn widget_type_badge_default_size_is_positive() {
+    let (w, h) = WidgetType::Badge.default_size();
+    assert!(w > 0.0 && h > 0.0);
+}
+
+// ─── WidgetBase::new sizing ───────────────────────────────────────────────────
+// The fact that WidgetBase uses default_size (not a 100×30 hardcode) is a
+// pure-Rust invariant — Lua cannot observe the raw width/height before any
+// geometry call.
+
+#[test]
+fn widget_base_new_width_matches_type_default_size() {
+    let (expected_w, _) = WidgetType::Button.default_size();
+    let base = WidgetBase::new(WidgetType::Button);
+    assert!((base.width - expected_w).abs() < 1e-5);
+}
+
+#[test]
+fn widget_base_new_height_matches_type_default_size() {
+    let (_, expected_h) = WidgetType::Button.default_size();
+    let base = WidgetBase::new(WidgetType::Button);
+    assert!((base.height - expected_h).abs() < 1e-5);
+}
+
+// ─── Switch::thumb_t ─────────────────────────────────────────────────────────
+// `thumb_t` is a private animation field not exposed via the Lua `Switch`
+// userdata — it drives the thumb animation only inside Rust.
+
+#[test]
+fn switch_new_off_has_thumb_t_zero() {
+    let sw = Switch::new(false);
+    assert!((sw.thumb_t).abs() < 1e-5, "thumb_t must be 0 when off");
+}
+
+#[test]
+fn switch_new_on_has_thumb_t_one() {
+    let sw = Switch::new(true);
+    assert!(
+        (sw.thumb_t - 1.0).abs() < 1e-5,
+        "thumb_t must be 1.0 when on"
+    );
+}
+
+// ─── Theme::default_dark ──────────────────────────────────────────────────────
+// The Theme struct's style map is not surfaced through any `lurek.ui.*` getter;
+// its content can only be inspected at the Rust level.
+
+#[test]
+fn theme_default_dark_has_button_style() {
+    use lurek2d::ui::widget::{WidgetState, WidgetType};
+    let theme = Theme::default_dark();
+    let style = theme.get_style(WidgetType::Button, WidgetState::Normal);
+    assert!(
+        style.is_some(),
+        "default_dark must include a style for Button/Normal"
+    );
+}
+
+#[test]
+fn theme_default_dark_button_has_nonzero_corner_radius() {
+    use lurek2d::ui::widget::{WidgetState, WidgetType};
+    let theme = Theme::default_dark();
+    let style = theme
+        .get_style(WidgetType::Button, WidgetState::Normal)
+        .unwrap();
+    assert!(
+        style.corner_radius > 0.0,
+        "Button in default_dark must have corner_radius > 0"
+    );
+}
+
+#[test]
+fn theme_default_dark_button_has_depth_cues() {
+    use lurek2d::ui::widget::{WidgetState, WidgetType};
+    let theme = Theme::default_dark();
+    let style = theme
+        .get_style(WidgetType::Button, WidgetState::Normal)
+        .unwrap();
+    assert!(
+        style.gradient_end.is_some(),
+        "Button in default_dark must have a gradient fill"
+    );
+    assert!(
+        style.shadow_color[3] > 0.0,
+        "Button in default_dark must have a visible shadow"
+    );
+    assert!(
+        style.highlight_alpha > 0.0,
+        "Button in default_dark must have a top highlight"
+    );
+}
+
+#[test]
+fn theme_default_dark_has_normal_style_for_every_widget_type() {
+    use lurek2d::ui::widget::{WidgetState, WidgetType};
+    let theme = Theme::default_dark();
+    let widget_types = [
+        WidgetType::Button,
+        WidgetType::Label,
+        WidgetType::TextInput,
+        WidgetType::CheckBox,
+        WidgetType::Slider,
+        WidgetType::ProgressBar,
+        WidgetType::ComboBox,
+        WidgetType::ListBox,
+        WidgetType::Panel,
+        WidgetType::Layout,
+        WidgetType::ScrollPanel,
+        WidgetType::NinePatch,
+        WidgetType::TabBar,
+        WidgetType::Toast,
+        WidgetType::Separator,
+        WidgetType::Spacer,
+        WidgetType::TreeView,
+        WidgetType::RadioButton,
+        WidgetType::ScrollBar,
+        WidgetType::GUIWindow,
+        WidgetType::SplitPanel,
+        WidgetType::DockPanel,
+        WidgetType::Toolbar,
+        WidgetType::MenuBar,
+        WidgetType::MenuItem,
+        WidgetType::Dialog,
+        WidgetType::StatusBar,
+        WidgetType::Accordion,
+        WidgetType::TooltipPanel,
+        WidgetType::ColorPicker,
+        WidgetType::GUITable,
+        WidgetType::ImageWidget,
+        WidgetType::SpinBox,
+        WidgetType::Switch,
+        WidgetType::Badge,
+        WidgetType::Custom,
+    ];
+    for widget_type in widget_types {
+        assert!(
+            theme.get_style(widget_type, WidgetState::Normal).is_some(),
+            "default_dark missing normal style for {}",
+            widget_type.as_str()
+        );
+    }
+}
+
+// ─── GuiContext private internals ─────────────────────────────────────────────
+// GuiContext fields (dirty, viewport_w/h, theme, widget pool) are not exposed
+// via `lurek.ui.*`; only the effects of mutation are observable from Lua.
+
+#[test]
+fn gui_context_new_is_dirty() {
+    let ctx = GuiContext::new();
+    assert!(ctx.dirty, "GuiContext must start dirty");
+}
+
+#[test]
+fn gui_context_add_spin_box_marks_dirty() {
+    let mut ctx = GuiContext::new();
+    ctx.flush_cache();
+    ctx.add_spin_box(0.0, 10.0);
+    assert!(ctx.dirty, "add_spin_box must set dirty = true");
+}
+
+#[test]
+fn gui_context_add_switch_marks_dirty() {
+    let mut ctx = GuiContext::new();
+    ctx.flush_cache();
+    ctx.add_switch(false);
+    assert!(ctx.dirty, "add_switch must set dirty = true");
+}
+
+#[test]
+fn gui_context_add_badge_marks_dirty() {
+    let mut ctx = GuiContext::new();
+    ctx.flush_cache();
+    ctx.add_badge(0);
+    assert!(ctx.dirty, "add_badge must set dirty = true");
+}
+
+#[test]
+fn gui_context_set_viewport_stores_dimensions() {
+    let mut ctx = GuiContext::new();
+    ctx.set_viewport(1280.0, 720.0);
+    assert!((ctx.viewport_w - 1280.0).abs() < 1e-5);
+    assert!((ctx.viewport_h - 720.0).abs() < 1e-5);
+}
+
+#[test]
+fn gui_context_set_default_theme_installs_theme() {
+    let mut ctx = GuiContext::new();
+    ctx.set_default_theme();
+    assert!(
+        ctx.theme.is_some(),
+        "set_default_theme must install a non-None theme"
+    );
+}
+
+#[test]
+fn gui_context_add_spin_box_returns_valid_index() {
+    let mut ctx = GuiContext::new();
+    let idx = ctx.add_spin_box(0.0, 10.0);
+    assert!(
+        idx < ctx.widgets.len(),
+        "returned index must be within widgets pool"
+    );
+}
+
+// ─── EasingFunction evaluations ────────────────────────────────────────────────
+
+use lurek2d::ui::widget::EasingFunction;
+
+#[test]
+fn easing_linear_zero_returns_zero() {
+    assert!((EasingFunction::Linear.eval(0.0)).abs() < 1e-5);
+}
+
+#[test]
+fn easing_linear_one_returns_one() {
+    assert!((EasingFunction::Linear.eval(1.0) - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn easing_linear_half_returns_half() {
+    assert!((EasingFunction::Linear.eval(0.5) - 0.5).abs() < 1e-5);
+}
+
+#[test]
+fn easing_sine_out_one_returns_one() {
+    assert!((EasingFunction::SineOut.eval(1.0) - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn easing_sine_in_zero_returns_zero() {
+    assert!((EasingFunction::SineIn.eval(0.0)).abs() < 1e-5);
+}
+
+#[test]
+fn easing_cubic_out_one_returns_one() {
+    assert!((EasingFunction::CubicOut.eval(1.0) - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn easing_cubic_in_zero_returns_zero() {
+    assert!((EasingFunction::CubicIn.eval(0.0)).abs() < 1e-5);
+}
+
+#[test]
+fn easing_bounce_out_boundaries() {
+    assert!((EasingFunction::BounceOut.eval(0.0)).abs() < 1e-5);
+    assert!((EasingFunction::BounceOut.eval(1.0) - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn easing_elastic_out_boundaries() {
+    assert!((EasingFunction::ElasticOut.eval(0.0)).abs() < 1e-5);
+    assert!((EasingFunction::ElasticOut.eval(1.0) - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn easing_back_out_reaches_one() {
+    assert!((EasingFunction::BackOut.eval(1.0) - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn easing_parse_str_valid() {
+    assert_eq!(EasingFunction::parse_str("linear"), Some(EasingFunction::Linear));
+    assert_eq!(EasingFunction::parse_str("bounce_out"), Some(EasingFunction::BounceOut));
+    assert_eq!(EasingFunction::parse_str("elastic_out"), Some(EasingFunction::ElasticOut));
+}
+
+#[test]
+fn easing_parse_str_invalid_returns_none() {
+    assert_eq!(EasingFunction::parse_str("nonexistent"), None);
+    assert_eq!(EasingFunction::parse_str(""), None);
+}
+
+// ─── WidgetBase new field defaults ─────────────────────────────────────────────
+
+#[test]
+fn widget_base_default_scale_is_one() {
+    let base = WidgetBase::new(WidgetType::Panel);
+    assert!((base.scale_x - 1.0).abs() < 1e-5);
+    assert!((base.scale_y - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn widget_base_default_rotation_is_zero() {
+    let base = WidgetBase::new(WidgetType::Panel);
+    assert!((base.rotation).abs() < 1e-5);
+}
+
+#[test]
+fn widget_base_default_color_tint_is_white() {
+    let base = WidgetBase::new(WidgetType::Panel);
+    assert!((base.color_tint[0] - 1.0).abs() < 1e-5);
+    assert!((base.color_tint[1] - 1.0).abs() < 1e-5);
+    assert!((base.color_tint[2] - 1.0).abs() < 1e-5);
+    assert!((base.color_tint[3] - 1.0).abs() < 1e-5);
+}
+
+// ─── GuiContext new field defaults ─────────────────────────────────────────────
+
+#[test]
+fn gui_context_default_base_resolution() {
+    let ctx = GuiContext::new();
+    assert!((ctx.base_resolution.0 - 1920.0).abs() < 1e-5);
+    assert!((ctx.base_resolution.1 - 1080.0).abs() < 1e-5);
+}
+
+#[test]
+fn gui_context_default_scale_factor_is_one() {
+    let ctx = GuiContext::new();
+    assert!((ctx.scale_factor - 1.0).abs() < 1e-5);
+}

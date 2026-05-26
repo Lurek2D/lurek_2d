@@ -1,0 +1,295 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+
+[[root.children]]
+widget_type = "panel"
+id = "title_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_label"
+  text = "SYSTEM INFILTRATION"
+  x = 220
+  y = 120
+  color = [0.3, 0.9, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_line"
+  text = "-----------------------------"
+  x = 220
+  y = 160
+  color = [0.2, 0.5, 0.7, 0.6]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "briefing_label"
+  text = "MISSION BRIEFING:\n\nInfiltrate the facility and download data from the terminal.\nReach the exit before time runs out.\n\nGADGETS:\n  [1] Keycard  (3x) - Opens electronic doors\n  [2] EMP      (2x) - Disables all cameras for 8 sec\n  [3] Lockpick (3x) - Opens mechanical locks\n\n  [E] Interact - Hack terminals & wire-doors\n\nAvoid camera detection. Alert at 100 = CAUGHT.\nBonus: crack the vault using all 3 gadget types.\n\nPress [E] to begin mission"
+  x = 180
+  y = 200
+  color = [0.7, 0.8, 0.9, 0.9]
+
+[[root.children]]
+widget_type = "panel"
+id = "won_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.7]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "won_title"
+  text = "MISSION COMPLETE"
+  x = 250
+  y = 200
+  color = [0.2, 1.0, 0.4, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "won_time"
+  text = "Time remaining: 0 seconds"
+  x = 280
+  y = 260
+  color = [0.7, 0.9, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "won_vault"
+  text = "VAULT BONUS ACHIEVED"
+  x = 280
+  y = 300
+  color = [0.9, 0.9, 0.2, 1.0]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "won_restart"
+  text = "Press [E] to return to title"
+  x = 270
+  y = 380
+  color = [0.5, 0.7, 0.8, 0.8]
+
+[[root.children]]
+widget_type = "panel"
+id = "caught_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.15, 0.0, 0.0, 0.7]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "caught_title"
+  text = "MISSION FAILED"
+  x = 270
+  y = 200
+  color = [1.0, 0.2, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "caught_reason"
+  text = "Alert level critical"
+  x = 320
+  y = 260
+  color = [0.9, 0.5, 0.5, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "caught_restart"
+  text = "Press [E] to return to title"
+  x = 270
+  y = 340
+  color = [0.5, 0.7, 0.8, 0.8]
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "time_label"
+  text = "TIME: 0:00"
+  x = 660
+  y = 10
+  color = [0.7, 0.9, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "panel"
+  id = "alert_bg"
+  x = 10
+  y = 10
+  w = 200
+  h = 20
+  color = [0.15, 0.15, 0.2, 0.8]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "alert_bar"
+    text = "██████████████████████████████████████████████████"
+    x = 12
+    y = 12
+    color = [0.2, 0.8, 0.2, 1.0]
+
+    [[root.children.children.children]]
+    widget_type = "label"
+    id = "alert_label"
+    text = "ALERT: 0%"
+    x = 14
+    y = 12
+    color = [1.0, 1.0, 1.0, 0.9]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "gadget_1_label"
+  text = "[1] Keycard: 3/3"
+  x = 34
+  y = 43
+  color = [0.2, 0.6, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "gadget_2_label"
+  text = "[2] EMP: 2/2"
+  x = 34
+  y = 69
+  color = [0.9, 0.4, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "gadget_3_label"
+  text = "[3] Lockpick: 3/3"
+  x = 34
+  y = 95
+  color = [0.7, 0.3, 0.1, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "data_label"
+  text = "DATA: NOT YET"
+  x = 10
+  y = 122
+  color = [0.5, 0.5, 0.5, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "vault_label"
+  text = "VAULT: OPEN"
+  x = 10
+  y = 140
+  color = [0.9, 0.9, 0.2, 1.0]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  x = 720
+  y = 580
+  color = [0.4, 0.4, 0.5, 0.6]
+
+[[root.children]]
+widget_type = "panel"
+id = "msg_panel"
+x = 200
+y = 540
+w = 400
+h = 30
+visible = false
+color = [0.05, 0.05, 0.1, 0.85]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "msg_label"
+  text = ""
+  x = 210
+  y = 545
+  color = [0.9, 0.9, 0.3, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "hack_panel"
+x = 250
+y = 220
+w = 300
+h = 160
+visible = false
+color = [0.05, 0.05, 0.12, 0.95]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hack_title"
+  text = "WIRE HACK"
+  x = 360
+  y = 230
+  color = [0.9, 0.7, 0.1, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hack_seq_label"
+  text = "Sequence:"
+  x = 300
+  y = 270
+  color = [0.7, 0.7, 0.8, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hack_1"
+  text = "[1] RED"
+  x = 310
+  y = 290
+  color = [0.9, 0.2, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hack_2"
+  text = "[2] GRN"
+  x = 310
+  y = 312
+  color = [0.2, 0.8, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hack_3"
+  text = "[3] BLU"
+  x = 310
+  y = 334
+  color = [0.3, 0.4, 0.9, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hack_4"
+  text = "[4] YLW"
+  x = 310
+  y = 356
+  color = [0.9, 0.9, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hack_hint"
+  text = "Press 1-4 to match wires"
+  x = 320
+  y = 360
+  color = [0.5, 0.5, 0.6, 0.8]

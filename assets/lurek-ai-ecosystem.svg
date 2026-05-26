@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1600" viewBox="0 0 960 1600" role="img">
+  <title>Lurek AI Ecosystem</title>
+  <defs>
+    <linearGradient id="bg"     x1="0" y1="0" x2="0" y2="1"><stop offset="0%"   stop-color="#0d0f1c"/><stop offset="100%" stop-color="#181b2e"/></linearGradient>
+    <linearGradient id="gAi"    x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#4e3575"/><stop offset="100%" stop-color="#2c1b4d"/></linearGradient>
+    <linearGradient id="gVs"    x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#1e528a"/><stop offset="100%" stop-color="#0e2a4a"/></linearGradient>
+    <linearGradient id="gCli"   x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#3b706c"/><stop offset="100%" stop-color="#1b3b38"/></linearGradient>
+    <linearGradient id="gBld"   x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#276142"/><stop offset="100%" stop-color="#103622"/></linearGradient>
+    <linearGradient id="gApp"   x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#2a456e"/><stop offset="100%" stop-color="#11223d"/></linearGradient>
+    <linearGradient id="gMod"   x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#1e5a4a"/><stop offset="100%" stop-color="#0c2e24"/></linearGradient>
+    <linearGradient id="gEng"   x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#a64d1f"/><stop offset="100%" stop-color="#5e2b10"/></linearGradient>
+    <linearGradient id="gUse"   x1="0" y1="0" x2="1" y2="1"><stop offset="0%"   stop-color="#4a2c6e"/><stop offset="100%" stop-color="#221040"/></linearGradient>
+    <filter id="sh" x="-6%" y="-6%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <marker id="arr" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,1 L11,6 L0,11 z" fill="#8ab0cc"/>
+    </marker>
+  </defs>
+
+  <style>
+    .T  { font: 700 42px  'Segoe UI',sans-serif; fill:#ffffff; }
+    .S  { font: 400 18px  'Segoe UI',sans-serif; fill:#9aa8bb; }
+    .BL { font: 700 24px  'Segoe UI',sans-serif; fill:#ffffff; }
+    .CT { font: 700 17px  'Segoe UI',sans-serif; fill:#dce8f6; }
+    .CM { font: 400 14px  'Segoe UI',sans-serif; fill:#9eb8d0; }
+    .HL { font: 700 15px  'Segoe UI',sans-serif; fill:#ffb86c; }
+    .UI { font: 600 17px  'Segoe UI',sans-serif; fill:#e2ecf8; }
+    .TG { font: 500 13px  'Segoe UI',sans-serif; fill:#5fd99a; }
+    .bx { fill:#161d30; stroke:#2c3555; stroke-width:1.5; }
+  </style>
+
+  <!-- background -->
+  <rect width="960" height="1600" fill="url(#bg)"/>
+
+  <!-- ─── HEADER ─── -->
+  <text x="40"  y="60"  class="T">Lurek AI Ecosystem</text>
+  <text x="40"  y="90"  class="S">Agentic flow · Local AI · VS Code · CLI · 1-File Builds · App · Mod · Engine</text>
+
+  <!-- ═══════════════════════════════════════════
+       ROW 1  AI Models (left)  +  VS Code (right)
+       y=110 … y=510  h=400
+       ═══════════════════════════════════════════ -->
+
+  <!-- AI Models  x=20 w=430 -->
+  <g transform="translate(20,110)">
+    <rect width="430" height="400" rx="18" fill="url(#gAi)" filter="url(#sh)"/>
+    <text x="215" y="46"  class="BL" text-anchor="middle">AI Models</text>
+
+    <rect x="16" y="58"  width="398" height="148" rx="11" class="bx"/>
+    <text x="215" y="92"  class="CT" text-anchor="middle">Local AI</text>
+    <text x="215" y="120" class="CM" text-anchor="middle">Bielik AI</text>
+    <text x="215" y="144" class="CM" text-anchor="middle">Ollama</text>
+    <text x="215" y="192" class="CM" text-anchor="middle">Private &amp; Offline execution</text>
+
+    <rect x="16" y="225" width="398" height="152" rx="11" class="bx"/>
+    <text x="215" y="259" class="CT" text-anchor="middle">Cloud AI</text>
+    <text x="215" y="290" class="CM" text-anchor="middle">OpenAI (GPT) / Anthropic</text>
+    <text x="215" y="318" class="CM" text-anchor="middle">Identical workflow for agents</text>
+    <text x="215" y="356" class="CM" text-anchor="middle">Same agent interface · cloud or local</text>
+  </g>
+
+  <!-- VS Code  x=510 w=430 -->
+  <g transform="translate(510,110)">
+    <rect width="430" height="400" rx="18" fill="url(#gVs)" filter="url(#sh)"/>
+    <text x="215" y="46"  class="BL" text-anchor="middle">MS VS Code</text>
+
+    <rect x="16" y="58"  width="398" height="148" rx="11" class="bx"/>
+    <text x="215" y="92"  class="CT" text-anchor="middle">Lurek Extension</text>
+    <text x="215" y="122" class="CM" text-anchor="middle">Rich IntelliSense &amp; Editors</text>
+    <text x="215" y="146" class="CM" text-anchor="middle">Workspace Tasks</text>
+    <text x="215" y="184" class="HL" text-anchor="middle">MCP Server Host</text>
+
+    <rect x="16" y="225" width="398" height="152" rx="11" class="bx"/>
+    <text x="215" y="259" class="CT" text-anchor="middle">Workspace CAG</text>
+    <text x="215" y="290" class="CM" text-anchor="middle">Agents &amp; Skills</text>
+    <text x="215" y="318" class="CM" text-anchor="middle">Main logic for App building</text>
+    <text x="215" y="356" class="CM" text-anchor="middle">Routes tasks to CLI via MCP</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       ROW 2  CLI bar   y=548 … y=668  h=120
+       ═══════════════════════════════════════════ -->
+  <g transform="translate(20,548)">
+    <rect width="920" height="120" rx="18" fill="url(#gCli)" filter="url(#sh)"/>
+    <text x="460" y="44"  class="BL" text-anchor="middle">Lurek CLI  (Headless Mode)</text>
+    <rect x="18" y="58"  width="884" height="42" rx="9" class="bx"/>
+    <text x="460" y="84"  class="CM" text-anchor="middle">Invoked by Agent via VS Code MCP Bridge · Headless: queries, asset builds, doc gen, CI tasks</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       ROW 3  Builds (left)  +  App / Mod (right)
+       Builds  y=716 … y=1076  h=360
+       App     y=716 … y=878  h=162
+       Mod     y=894 … y=1076  h=182
+       ═══════════════════════════════════════════ -->
+
+  <!-- 1-File Builds  x=20 w=430 h=360 -->
+  <g transform="translate(20,716)">
+    <rect width="430" height="360" rx="18" fill="url(#gBld)" filter="url(#sh)"/>
+    <text x="215" y="44"  class="BL" text-anchor="middle">Lurek 1-File Builds</text>
+    <text x="215" y="66"  class="CM" text-anchor="middle">Single-binary · no plugin ecosystem</text>
+
+    <rect x="16" y="78"  width="398" height="68" rx="11" class="bx"/>
+    <text x="215" y="106" class="CT" text-anchor="middle">Lurek Game</text>
+    <text x="215" y="128" class="CM" text-anchor="middle">Full game runtime · GPU · Audio</text>
+
+    <rect x="16" y="160" width="398" height="68" rx="11" class="bx"/>
+    <text x="215" y="188" class="CT" text-anchor="middle">Lurek Data</text>
+    <text x="215" y="210" class="CM" text-anchor="middle">Headless data pipeline</text>
+
+    <rect x="16" y="242" width="398" height="68" rx="11" class="bx"/>
+    <text x="215" y="270" class="CT" text-anchor="middle">Lurek Full</text>
+    <text x="215" y="292" class="CM" text-anchor="middle">All modules · Maximum capability</text>
+  </g>
+
+  <!-- Lurek App  x=510 y=716  w=430 h=162 -->
+  <g transform="translate(510,716)">
+    <rect width="430" height="162" rx="18" fill="url(#gApp)" filter="url(#sh)"/>
+    <text x="215" y="40"  class="BL" text-anchor="middle">Lurek App</text>
+    <text x="215" y="60"  class="CM" text-anchor="middle">Packaged application  (.lurek zip)</text>
+
+    <rect x="16" y="72"  width="188" height="72" rx="11" class="bx"/>
+    <text x="110" y="100" class="CT" text-anchor="middle">App Package</text>
+    <text x="110" y="122" class="CM" text-anchor="middle">Scripts · assets · data</text>
+
+    <rect x="226" y="72"  width="188" height="72" rx="11" class="bx"/>
+    <text x="320" y="100" class="CT" text-anchor="middle">App Autonomy</text>
+    <text x="320" y="122" class="CM" text-anchor="middle">Exposes Mods API</text>
+  </g>
+
+  <!-- Mod / CAG Config  x=510 y=894  w=430 h=182 -->
+  <g transform="translate(510,894)">
+    <rect width="430" height="182" rx="18" fill="url(#gMod)" filter="url(#sh)"/>
+    <text x="215" y="40"  class="BL" text-anchor="middle">Mod  /  CAG Config</text>
+    <text x="215" y="62"  class="CM" text-anchor="middle">Loaded into App · runs on Engine · driven by Use Case</text>
+
+    <rect x="16" y="74"  width="188" height="88" rx="11" class="bx"/>
+    <text x="110" y="104" class="CT" text-anchor="middle">Lua Playbooks</text>
+    <text x="110" y="126" class="CM" text-anchor="middle">App-level agents</text>
+    <text x="110" y="148" class="CM" text-anchor="middle">Workflow scripts</text>
+
+    <rect x="226" y="74"  width="188" height="88" rx="11" class="bx"/>
+    <text x="320" y="104" class="CT" text-anchor="middle">CAG Agents</text>
+    <text x="320" y="126" class="CM" text-anchor="middle">Skills &amp; prompts</text>
+    <text x="320" y="148" class="CM" text-anchor="middle">Per use-case logic</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       ROW 4  Engine (left)  +  Use Cases (right)
+       y=1112 … y=1568  h=456
+       ═══════════════════════════════════════════ -->
+
+  <!-- Lurek Engine  x=20 w=430 h=456 -->
+  <g transform="translate(20,1112)">
+    <rect width="430" height="456" rx="18" fill="url(#gEng)" filter="url(#sh)"/>
+    <text x="215" y="44"  class="BL" text-anchor="middle">Lurek Engine</text>
+
+    <rect x="16" y="58"  width="398" height="114" rx="11" class="bx"/>
+    <text x="215" y="88"  class="CT" text-anchor="middle">Portable Powerhouse</text>
+    <text x="215" y="112" class="CM" text-anchor="middle">Rust + LuaJIT · 50+ Modules</text>
+    <text x="215" y="134" class="CM" text-anchor="middle">CPU Multithreading · Native GPU</text>
+
+    <rect x="16" y="186" width="398" height="114" rx="11" class="bx"/>
+    <text x="215" y="216" class="CT" text-anchor="middle">Execution Modes</text>
+    <text x="215" y="240" class="CM" text-anchor="middle">Win / Linux / Mac</text>
+    <text x="215" y="262" class="CM" text-anchor="middle">GUI · Headless CLI · REPL</text>
+
+    <rect x="16" y="314" width="398" height="124" rx="11" class="bx"/>
+    <text x="215" y="344" class="CT" text-anchor="middle">Runtime APIs</text>
+    <text x="215" y="368" class="CM" text-anchor="middle">DevBridge · Mods API · Docs API</text>
+    <text x="215" y="392" class="CM" text-anchor="middle">Live VM &amp; memory access</text>
+    <text x="215" y="416" class="CM" text-anchor="middle">Lua scripting layer for all features</text>
+  </g>
+
+  <!-- Use Cases  x=510 w=430 h=456 -->
+  <g transform="translate(510,1112)">
+    <rect width="430" height="456" rx="18" fill="url(#gUse)" filter="url(#sh)"/>
+    <text x="215" y="44"  class="BL" text-anchor="middle">Use Cases</text>
+
+    <!-- Education -->
+    <circle cx="32" cy="80"  r="6" fill="#5fd99a"/>
+    <text x="50" y="85"  class="UI">Education 4 Kids</text>
+    <text x="50" y="102" class="TG">→ Edu Mod template</text>
+
+    <!-- Digital Twin -->
+    <circle cx="32" cy="132" r="6" fill="#5fd99a"/>
+    <text x="50" y="137" class="UI">Digital Twin</text>
+    <text x="50" y="154" class="TG">→ Twin Mod template</text>
+
+    <!-- Games -->
+    <circle cx="32" cy="184" r="6" fill="#5fd99a"/>
+    <text x="50" y="189" class="UI">Games</text>
+    <text x="50" y="206" class="TG">→ Game Mod template</text>
+
+    <!-- Demo Scena -->
+    <circle cx="32" cy="236" r="6" fill="#5fd99a"/>
+    <text x="50" y="241" class="UI">Demo Scena</text>
+    <text x="50" y="258" class="TG">→ Demo Mod template</text>
+
+    <!-- Data Apps -->
+    <circle cx="32" cy="288" r="6" fill="#5fd99a"/>
+    <text x="50" y="293" class="UI">Data Apps</text>
+    <text x="50" y="310" class="TG">→ Data Mod template</text>
+
+    <!-- Automation -->
+    <circle cx="32" cy="340" r="6" fill="#5fd99a"/>
+    <text x="50" y="345" class="UI">Automation</text>
+    <text x="50" y="362" class="TG">→ Auto Mod template</text>
+
+    <!-- Productivity -->
+    <circle cx="32" cy="392" r="6" fill="#5fd99a"/>
+    <text x="50" y="397" class="UI">Productivity</text>
+    <text x="50" y="414" class="TG">→ Productivity Mod template</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════
+       ARROWS
+       ═══════════════════════════════════════════ -->
+
+  <!-- 1. AI Models → VS Code  (horizontal, row-1 midpoint y=322) -->
+  <line x1="452" y1="322" x2="507" y2="322"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+  <!-- 2. VS Code → CLI  (down, x=725) -->
+  <line x1="725" y1="512" x2="725" y2="546"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+  <!-- 3. CLI → 1-File Builds  (down-left, x=235) -->
+  <line x1="235" y1="670" x2="235" y2="714"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+  <!-- 4. CLI → App  (down-right, x=725) -->
+  <line x1="725" y1="670" x2="725" y2="714"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+  <!-- 5. Builds → App  (horizontal, y=790 = App midpoint) -->
+  <line x1="452" y1="790" x2="507" y2="790"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+  <!-- 6. App → Mod  (down inside right column, x=725) -->
+  <line x1="725" y1="880" x2="725" y2="892"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+  <!-- 7. Builds → Engine  (down, x=235) -->
+  <line x1="235" y1="1078" x2="235" y2="1110"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+  <!-- 8. Mod → Use Cases  (down, x=725) -->
+  <line x1="725" y1="1078" x2="725" y2="1110"
+        stroke="#8ab0cc" stroke-width="4" marker-end="url(#arr)"/>
+
+</svg>

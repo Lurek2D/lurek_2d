@@ -1,0 +1,175 @@
+//! Parse raw HTML strings into a live element tree with parent-child relationships.
+//!
+//! - Split tag headers, extract and normalize attribute key-value pairs.
+//! - Decode and encode the small HTML entity set (amp, lt, gt, quot, #39).
+//! - Collapse whitespace in text nodes before attaching to elements.
+//! - Handle self-closing tags, void tags, closing tags, and comments.
+
+use crate::html::element::{HtmlElement, HtmlElementId};
+use std::collections::BTreeMap;
+/// Parse HTML into a live element tree and return the top-level child ids.
+pub(crate) fn parse_into(
+    html: &str,
+    elements: &mut Vec<HtmlElement>,
+    parent: HtmlElementId,
+    warnings: &mut Vec<String>,
+) -> Vec<HtmlElementId> {
+    let mut roots = Vec::new();
+    let mut stack = vec![parent];
+    let mut cursor = 0;
+    while cursor < html.len() {
+        let Some(relative_start) = html[cursor..].find('<') else {
+            push_text(elements, *stack.last().unwrap_or(&parent), &html[cursor..]);
+            break;
+        };
+        let start = cursor + relative_start;
+        push_text(
+            elements,
+            *stack.last().unwrap_or(&parent),
+            &html[cursor..start],
+        );
+        let Some(relative_end) = html[start..].find('>') else {
+            warnings.push("unterminated HTML tag".to_string());
+            break;
+        };
+        let end = start + relative_end;
+        let raw_tag = html[start + 1..end].trim();
+        cursor = end + 1;
+        if raw_tag.is_empty() || raw_tag.starts_with('!') || raw_tag.starts_with('?') {
+            continue;
+        }
+        if raw_tag.starts_with("!--") {
+            continue;
+        }
+        if raw_tag.starts_with('/') {
+            if stack.len() > 1 {
+                stack.pop();
+            }
+            continue;
+        }
+        let self_closing = raw_tag.ends_with('/');
+        let tag_body = raw_tag.trim_end_matches('/').trim();
+        let (tag_name, attr_source) = split_tag(tag_body);
+        if tag_name.is_empty() {
+            continue;
+        }
+        let tag_name = tag_name.to_ascii_lowercase();
+        let attrs = parse_attributes(attr_source);
+        let current_parent = *stack.last().unwrap_or(&parent);
+        if tag_name == "body" && current_parent == parent && elements[parent].tag_name() == "body" {
+            apply_attributes(&mut elements[parent], attrs);
+            if !self_closing {
+                stack.push(parent);
+            }
+            continue;
+        }
+        let id = elements.len();
+        let mut element = HtmlElement::new(id, tag_name, Some(current_parent));
+        apply_attributes(&mut element, attrs);
+        elements.push(element);
+        elements[current_parent].children.push(id);
+        if current_parent == parent {
+            roots.push(id);
+        }
+        if !self_closing && !elements[id].is_void_tag() {
+            stack.push(id);
+        }
+    }
+    roots
+}
+/// Split a tag header into the tag name and the remaining attribute text.
+fn split_tag(source: &str) -> (&str, &str) {
+    let mut parts = source.splitn(2, char::is_whitespace);
+    let tag = parts.next().unwrap_or_default();
+    let attrs = parts.next().unwrap_or_default();
+    (tag, attrs)
+}
+/// Parse a tag attribute string into a normalized attribute map.
+fn parse_attributes(source: &str) -> BTreeMap<String, String> {
+    let mut attrs = BTreeMap::new();
+    let bytes = source.as_bytes();
+    let mut cursor = 0;
+    while cursor < bytes.len() {
+        while cursor < bytes.len() && bytes[cursor].is_ascii_whitespace() {
+            cursor += 1;
+        }
+        let name_start = cursor;
+        while cursor < bytes.len() && !bytes[cursor].is_ascii_whitespace() && bytes[cursor] != b'='
+        {
+            cursor += 1;
+        }
+        if name_start == cursor {
+            break;
+        }
+        let name = source[name_start..cursor].to_ascii_lowercase();
+        while cursor < bytes.len() && bytes[cursor].is_ascii_whitespace() {
+            cursor += 1;
+        }
+        let value = if cursor < bytes.len() && bytes[cursor] == b'=' {
+            cursor += 1;
+            while cursor < bytes.len() && bytes[cursor].is_ascii_whitespace() {
+                cursor += 1;
+            }
+            if cursor < bytes.len() && (bytes[cursor] == b'\'' || bytes[cursor] == b'"') {
+                let quote = bytes[cursor];
+                cursor += 1;
+                let value_start = cursor;
+                while cursor < bytes.len() && bytes[cursor] != quote {
+                    cursor += 1;
+                }
+                let value = decode_entities(&source[value_start..cursor]);
+                if cursor < bytes.len() {
+                    cursor += 1;
+                }
+                value
+            } else {
+                let value_start = cursor;
+                while cursor < bytes.len() && !bytes[cursor].is_ascii_whitespace() {
+                    cursor += 1;
+                }
+                decode_entities(&source[value_start..cursor])
+            }
+        } else {
+            "true".to_string()
+        };
+        attrs.insert(name, value);
+    }
+    attrs
+}
+/// Apply parsed attributes to an element by reusing the element setter.
+fn apply_attributes(element: &mut HtmlElement, attrs: BTreeMap<String, String>) {
+    for (name, value) in attrs {
+        element.set_attribute(&name, Some(value));
+    }
+}
+/// Append collapsed text content to an element after decoding entities.
+fn push_text(elements: &mut [HtmlElement], element_id: HtmlElementId, text: &str) {
+    let text = decode_entities(text);
+    let collapsed = text.split_whitespace().collect::<Vec<_>>().join(" ");
+    if collapsed.is_empty() {
+        return;
+    }
+    let element = &mut elements[element_id];
+    if !element.text.is_empty() {
+        element.text.push(' ');
+    }
+    element.text.push_str(&collapsed);
+}
+/// Escape text for HTML text nodes.
+pub(crate) fn escape_text(text: &str) -> String {
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+}
+/// Escape text for HTML attribute values.
+pub(crate) fn escape_attribute(text: &str) -> String {
+    escape_text(text).replace('"', "&quot;")
+}
+/// Decode the small entity set supported by the HTML parser.
+fn decode_entities(text: &str) -> String {
+    text.replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&amp;", "&")
+}

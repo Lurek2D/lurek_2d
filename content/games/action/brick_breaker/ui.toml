@@ -1,0 +1,171 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+
+[[root.children]]
+widget_type = "panel"
+id = "title_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_label"
+  text = "BRICK BREAKER"
+  x = 270
+  y = 240
+  color = [0.2, 0.6, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "start_label"
+  text = "PRESS ENTER"
+  x = 325
+  y = 310
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "controls_label"
+  text = "A/D or Arrows = Move  |  Space = Launch  |  Esc = Quit"
+  x = 180
+  y = 360
+  color = [0.6, 0.6, 0.6, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_text"
+  text = "SCORE: 0"
+  x = 10
+  y = 8
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "level_text"
+  text = "LEVEL: 1"
+  x = 360
+  y = 8
+  color = [0.6, 0.9, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lives_text"
+  text = "LIVES: 3"
+  x = 690
+  y = 8
+  color = [1.0, 0.4, 0.4, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "wide_pu_text"
+  text = ""
+  x = 650
+  y = 30
+  color = [1.0, 0.6, 0.1, 1.0]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "slow_pu_text"
+  text = ""
+  x = 650
+  y = 46
+  color = [0.4, 1.0, 0.4, 1.0]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "launch_text"
+  text = "PRESS SPACE TO LAUNCH"
+  x = 295
+  y = 590
+  color = [1.0, 1.0, 1.0, 1.0]
+  visible = false
+
+[[root.children]]
+widget_type = "panel"
+id = "game_over_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.6]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_title"
+  text = "GAME OVER"
+  x = 300
+  y = 260
+  color = [1.0, 0.3, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_score"
+  text = "Final Score: 0"
+  x = 320
+  y = 310
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_restart"
+  text = "PRESS ENTER TO RESTART"
+  x = 280
+  y = 350
+  color = [1.0, 1.0, 1.0, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "level_complete_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.5]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lc_title"
+  text = "LEVEL 1 COMPLETE!"
+  x = 280
+  y = 270
+  color = [0.2, 1.0, 0.5, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "lc_cont"
+  text = "PRESS ENTER FOR NEXT LEVEL"
+  x = 260
+  y = 320
+  color = [1.0, 1.0, 1.0, 1.0]
+
+[[root.children]]
+widget_type = "label"
+id = "fps_label"
+text = "FPS: 60"
+x = 720
+y = 580
+color = [0.4, 0.4, 0.4, 1.0]
