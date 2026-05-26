@@ -40,7 +40,7 @@ The `dsp` module encapsulates all audio signal processing that is independent of
 
 The module provides three capabilities:
 
-1. **Real-time effects** (`effects.rs`, `graph.rs`) — A 16-variant `EffectType` enum (lowpass, highpass, reverb, delay, chorus, flanger, distortion, bitcrush, compressor, limiter, tremolo, vibrato, phaser, gain, bandpass, notch) with `AtomicParam`-based lock-free parameter updates. `SharedEffectGraph` and `DynamicEffectSource<I>` wrap any rodio `Source` to apply an ordered effects chain without blocking the audio thread.
+1. **Real-time effects** (`effects.rs`, `graph.rs`) — A 17-variant `EffectType` enum (lowpass, highpass, reverb, delay, chorus, flanger, distortion, bitcrush, compressor, limiter, tremolo, vibrato, phaser, gain, bandpass, notch, stereowidener) with `AtomicParam`-based lock-free parameter updates. `SharedEffectGraph` and `DynamicEffectSource<I>` wrap any rodio `Source` to apply an ordered effects chain without blocking the audio thread.
 
 2. **Offline processing** (`offline.rs`) — `process_offline()` applies an effect chain to a WAV file and writes the result to disk. `normalize_file()` performs peak normalization. Both operate file-to-file without real-time playback.
 
@@ -90,7 +90,7 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 📖 API Overview
 
 - Source spec: [docs/specs/dsp.md](../blob/main/docs/specs/dsp.md)
-- Module-level functions: 5
+- Module-level functions: 11
 - Lua-visible types: 0
 - Total type methods: 0
 
@@ -100,6 +100,145 @@ This module has no separate Lua-visible classes in the generated API data.
 ## ⚙️ Module Functions
 
 ### Module-Level Functions
+
+#### lurek.dsp.addEffectToBus
+
+#### Definition
+
+```lua
+--- Adds an effect to a named audio bus and returns its effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+---@param params? table Optional parameters table; may include a `value` field.
+---@return number Numeric effect ID handle for use with `removeEffectFromBus` and `setEffectParam`.
+lurek.dsp.addEffectToBus = function(bus_name, effect_type_str, params) end
+```
+
+#### Description
+
+Adds an effect to a named audio bus and returns its effect ID.
+
+Parameters:
+
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_type_str` (`string`, required): Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+- `params` (`table`, optional): Optional parameters table; may include a `value` field.
+
+Returns: `integer` - Numeric effect ID handle for use with `removeEffectFromBus` and `setEffectParam`.
+
+#### Example
+
+Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
+
+```lua
+do
+    local busName = "dsp_test_bus"
+    lurek.audio.create_bus(busName, nil)
+    local eid = lurek.dsp.addEffectToBus(busName, "lowpass", {value = 800.0})
+    print("lurek.dsp.addEffectToBus eid=" .. tostring(eid))
+end
+```
+
+#### lurek.dsp.analyzeFft
+
+#### Definition
+
+```lua
+--- Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+---@param sd LSoundData The audio buffer to analyze.
+---@param size number FFT window size (must be power of two, e.g. 512).
+---@return table Array of magnitudes for each frequency bin.
+lurek.dsp.analyzeFft = function(sd, size) end
+```
+
+#### Description
+
+Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+
+Parameters:
+
+- `sd` (`LSoundData`, required): The audio buffer to analyze.
+- `size` (`integer`, required): FFT window size (must be power of two, e.g. 512).
+
+Returns: `table` - Array of magnitudes for each frequency bin.
+
+#### Example
+
+Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
+
+```lua
+do
+    local input = "content/examples/assets/audio/sample_click.wav"
+    local bins = lurek.dsp.analyzeFft(input, 512)
+    print("lurek.dsp.analyzeFft bins count=" .. tostring(#bins))
+end
+```
+
+#### lurek.dsp.analyzePeak
+
+#### Definition
+
+```lua
+--- Analyzes the Peak volume of a `SoundData` buffer.
+---@param sd LSoundData The audio buffer to analyze.
+---@return number The peak level (linear).
+lurek.dsp.analyzePeak = function(sd) end
+```
+
+#### Description
+
+Analyzes the Peak volume of a `SoundData` buffer.
+
+Parameters:
+
+- `sd` (`LSoundData`, required): The audio buffer to analyze.
+
+Returns: `number` - The peak level (linear).
+
+#### Example
+
+Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
+
+```lua
+do
+    local input = "content/examples/assets/audio/sample_click.wav"
+    local peak = lurek.dsp.analyzePeak(input)
+    print("lurek.dsp.analyzePeak peak=" .. tostring(peak))
+end
+```
+
+#### lurek.dsp.analyzeRms
+
+#### Definition
+
+```lua
+--- Analyzes the RMS volume of a `SoundData` buffer.
+---@param sd LSoundData The audio buffer to analyze.
+---@return number The RMS level (linear).
+lurek.dsp.analyzeRms = function(sd) end
+```
+
+#### Description
+
+Analyzes the RMS volume of a `SoundData` buffer.
+
+Parameters:
+
+- `sd` (`LSoundData`, required): The audio buffer to analyze.
+
+Returns: `number` - The RMS level (linear).
+
+#### Example
+
+Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
+
+```lua
+do
+    local input = "content/examples/assets/audio/sample_click.wav"
+    local rms = lurek.dsp.analyzeRms(input)
+    print("lurek.dsp.analyzeRms rms=" .. tostring(rms))
+end
+```
 
 #### lurek.dsp.newEffectParams
 
@@ -213,6 +352,84 @@ do
     local ok = lurek.dsp.processOffline(input, output, effects)
     print("lurek.dsp.processOffline ok=" .. tostring(ok))
     print("output exists=" .. tostring(lurek.filesystem.exists(output)))
+end
+```
+
+#### lurek.dsp.removeEffectFromBus
+
+#### Definition
+
+```lua
+--- Removes an effect from a named audio bus by effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by addEffectToBus.
+---@return boolean True if the effect was successfully removed.
+lurek.dsp.removeEffectFromBus = function(bus_name, effect_id) end
+```
+
+#### Description
+
+Removes an effect from a named audio bus by effect ID.
+
+Parameters:
+
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_id` (`integer`, required): Effect ID returned by addEffectToBus.
+
+Returns: `boolean` - True if the effect was successfully removed.
+
+#### Example
+
+Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
+
+```lua
+do
+    local busName = "dsp_test_bus3"
+    lurek.audio.create_bus(busName, nil)
+    local eid = lurek.dsp.addEffectToBus(busName, "highpass", {value = 200.0})
+    local ok = lurek.dsp.removeEffectFromBus(busName, eid)
+    print("lurek.dsp.removeEffectFromBus ok=" .. tostring(ok))
+end
+```
+
+#### lurek.dsp.setEffectParam
+
+#### Definition
+
+```lua
+--- Sets a parameter value on an effect attached to a named audio bus.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by addEffectToBus.
+---@param param_name string Name of the effect parameter to set.
+---@param value number New value for the parameter.
+---@return boolean True if the parameter was set successfully.
+lurek.dsp.setEffectParam = function(bus_name, effect_id, param_name, value) end
+```
+
+#### Description
+
+Sets a parameter value on an effect attached to a named audio bus.
+
+Parameters:
+
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_id` (`integer`, required): Effect ID returned by addEffectToBus.
+- `param_name` (`string`, required): Name of the effect parameter to set.
+- `value` (`number`, required): New value for the parameter.
+
+Returns: `boolean` - True if the parameter was set successfully.
+
+#### Example
+
+Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
+
+```lua
+do
+    local busName = "dsp_test_bus2"
+    lurek.audio.create_bus(busName, nil)
+    local eid = lurek.dsp.addEffectToBus(busName, "reverb", {value = 1000.0})
+    local ok = lurek.dsp.setEffectParam(busName, eid, "decay", 0.5)
+    print("lurek.dsp.setEffectParam ok=" .. tostring(ok))
 end
 ```
 

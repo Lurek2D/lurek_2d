@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when designing Result flows, EngineError variants, Lua error propagation, or panic prevention. Skip it for general Rust coding or test work."
 ---
+
 # error-handling
 
 ## Mission
@@ -30,6 +31,12 @@ description: "Load this skill when designing Result flows, EngineError variants,
 - `panic!` is acceptable only for internal invariant violations that indicate a programmer error, not for any user-input-triggered path. All `unwrap()` on user-facing paths must be replaced with explicit error propagation.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - src/runtime/error.rs

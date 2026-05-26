@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when setting up or maintaining CI/CD, GitHub Actions, test pipelines, or release automation. Skip it for local dev work or code changes."
 ---
+
 # ci-cd-pipeline
 
 ## Mission
@@ -30,6 +31,12 @@ description: "Load this skill when setting up or maintaining CI/CD, GitHub Actio
 - CI YAML should remain readably staged — each logical step is a named step in the YAML, not a long inline shell block. Prefer checked-in scripts over inline YAML logic.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - .github/

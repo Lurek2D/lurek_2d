@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+trigger: always_load
 description: "Lurek2D System Prompt for copilot-instructions.md"
 ---
 # Lurek2D System Prompt

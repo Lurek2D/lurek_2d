@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when validating, debugging, or maintaining CAG files and cag_validate.py rules. Skip it for engine code or game scripts."
 ---
+
 # tools-cag-validation
 
 ## Mission
@@ -30,6 +31,12 @@ description: "Load this skill when validating, debugging, or maintaining CAG fil
 - After the validator passes, update `docs/CHANGELOG.md` with a `docs` or `chore` entry describing the CAG change. CAG changes without a changelog entry fail the commit hygiene check.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - tools/validate/cag_validate.py

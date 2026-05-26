@@ -15,7 +15,7 @@
 
 ## Summary
 
- As a Core Runtime tier component, it defines the essential shared state, engine configuration, unified error handling, and structured logging mechanisms upon which every other engine subsystem relies. At the heart of the module is `SharedState`, a central, mutable state container accessed via `RefCell` borrows. It orchestrates cross-module communication during a frame, tracking window state, input aggregation, timing profiles, asynchronous file I/O (GameFS), render pipeline configurations, and managing slot-map resource pools (textures, fonts, shaders, particle systems, etc.) while enforcing memory budgets via LRU eviction.
+As a Core Runtime tier component, it defines the essential shared state, engine configuration, unified error handling, and structured logging mechanisms upon which every other engine subsystem relies. At the heart of the module is `SharedState`, a central, mutable state container accessed via `RefCell` borrows. It orchestrates cross-module communication during a frame, tracking window state, input aggregation, timing profiles, asynchronous file I/O (GameFS), render pipeline configurations, and managing slot-map resource pools (textures, fonts, shaders, particle systems, etc.) while enforcing memory budgets via LRU eviction.
 
 Configuration is driven by the `Config` struct, which parses the `conf.toml` file at startup. It dictates window settings, renderer preferences, performance caps (like Lua callback timeouts), and feature-toggles (`ModulesConfig`) that selectively load or auto-disable engine subsystems based on prerequisites. The runtime actively supports hot-reloading for many configuration values, allowing live tweaks to target FPS, physics ticks, log levels, and viewport settings without restarting the game. The module also robustly handles different startup modes (`gui`, `tui`, `headless`, `cli`), with the headless path specifically designed for script automation and CI testing without requiring window or audio contexts.
 
@@ -35,7 +35,7 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - Defines `EngineError` — the engine-wide error enum covering all subsystem failures.
 - Provides `ErrorCategory` for high-level failure classification (init, runtime, resource, script, filesystem, system).
 - Assigns stable machine-readable error codes (`E1001`–`E1012`) and recovery hints per variant.
-- Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding; serde-based serialization escapes control characters correctly.
+- Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding.
 - Supplies the `EngineResult<T>` convenience alias used throughout the runtime.
 
 ### `headless.rs`
@@ -74,7 +74,11 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
 
 ### `os.rs`
-- OS-level utilities including clipboard, system info, environment variables, and platform detection.
+- Operating system detection utilities for platform-specific code paths.
+- `get_os_name()` returns a lowercase string: `"windows"`, `"linux"`, or `"macos"`.
+- Used at startup to set OS-specific defaults (e.g. font paths, config directories).
+- Exposed to Lua via `lurek.runtime.os()` for platform-conditional game scripts.
+- Built on `cfg!` macros; no runtime OS probing, so the result is always correct.
 
 ### `resource_keys.rs`
 - Typed slotmap keys for every engine resource pool (textures, fonts, sounds, particles, etc.).
@@ -147,7 +151,7 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - `EngineError::code` (`error.rs`): Return stable machine-readable error code for this variant.
 - `EngineError::category` (`error.rs`): Return high-level category used for diagnostics grouping.
 - `EngineError::recovery_hint` (`error.rs`): Return operator hint describing likely remediation path.
-- `ErrorSnapshot::to_json` (`error.rs`): Encode snapshot as compact JSON via serde serialization; recovery hint serialized as `hint` field.
+- `ErrorSnapshot::to_json` (`error.rs`): Encode snapshot as compact JSON for external consumers.
 - `EngineError::snapshot` (`error.rs`): Build snapshot payload from this error value.
 - `run_headless` (`headless.rs`): Runs the no-window Lua runtime and maps errors to `ExitCode`.
 - `run_headless_checked` (`headless.rs`): Runs headless while preserving structured engine errors for tests.
@@ -201,6 +205,7 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - `input`: Imports or references `input` from `src/input/`.
 - `light`: Imports or references `light` from `src/light/`.
 - `lua_api`: Imports or references `src/lua_api/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
 - `parallax`: Imports or references `parallax` from `src/parallax/`.
 - `particle`: Imports or references `particle` from `src/particle/`.
 - `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.

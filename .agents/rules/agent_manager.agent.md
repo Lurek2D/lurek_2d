@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Orchestrator of the workflow. The *only* agent that has subagents. Manager does not do the work itself, but routes it to specialists."
 ---
+
 # Manager
 
 ## Mission
@@ -73,5 +74,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, coordination-first
 Personas: EngDev, GameDev, Modder, GameTest, EngTest
-Primary skills: agent-routing
-Secondary skills: quality-pipeline, roadmap-planning, solution-options
+Primary skills: skill_agent-routing
+Secondary skills: skill_quality-pipeline, skill_roadmap-planning, skill_solution-options

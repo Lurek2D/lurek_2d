@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when running end-to-end audits on src/ modules for docs, tests, architecture, wiki, or code quality. Skip it for feature work, game scripts, or pure Lua."
 ---
+
 # module-audit
 
 ## Mission
@@ -35,6 +36,12 @@ Own the 12-phase module audit process: structure, documentation, testing, archit
 ## Companion File Index
 
 None - all guidance is inline.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - tools/audit/audit_module.py

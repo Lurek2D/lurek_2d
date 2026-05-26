@@ -15,7 +15,7 @@
 
 ## Summary
 
- Situated within the Edge/Integration tier, this module empowers developers to analyze performance and iteratively refine game code without interrupting execution. Key among its features is the `Logger`, which provides structured, severity-leveled logging with sophisticated sink routing—allowing logs to be mirrored to in-memory bounded buffers, standard error, or append-only log files. It natively supports severity filtering and prefix-based category filtering.
+Situated within the Edge/Integration tier, this module empowers developers to analyze performance and iteratively refine game code without interrupting execution. Key among its features is the `Logger`, which provides structured, severity-leveled logging with sophisticated sink routing—allowing logs to be mirrored to in-memory bounded buffers, standard error, or append-only log files. It natively supports severity filtering and prefix-based category filtering.
 
 For performance analysis, the `Profiler` implements a hierarchical, push/pop zone-based timing system. It captures execution durations per named scope (zone), segregating total elapsed time from exclusive 'self-time'. The data is collected on a per-frame basis and stored in a rolling frame history, facilitating deep CPU-cost inspection across consecutive frames. Working alongside the profiler is `FrameStats`, which translates raw per-frame CPU and GPU timing deltas into actionable metrics, including FPS aggregates, minimums, maximums, and percentiles.
 
@@ -204,39 +204,6 @@ All these diagnostic tools are designed to be 'headless-safe' and lightweight, i
 
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 - `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
-
-## Scope Boundary
-
-This section defines ownership between `devtools` (local in-game tools) and `debugbridge` (remote debugging protocol). Both modules touch overlapping concerns but serve different consumers.
-
-| Feature | Owner | Rationale |
-|---------|-------|-----------|
-| In-game overlay/inspector | devtools | Visible in running game window |
-| FPS/memory counters (FrameStats) | devtools | Authoritative local performance monitoring |
-| CPU profiler (zones, hierarchy) | devtools | Local-only instrumentation |
-| Structured logging (Logger) | devtools | In-process log capture and filtering |
-| File watcher (FileWatcher) | devtools | Local file-system change detection |
-| Local eval / REPL | devtools | In-game script execution (`lurek.devtools.eval`) |
-| Local getCallStack | devtools | Script-callable stack inspection (`lurek.devtools.getCallStack`) |
-| Hot-reload file detection | devtools | Watches files for mtime changes |
-| Remote eval request | debugbridge | VS Code sends eval via JSON-RPC; handled in `debugbridge.poll` |
-| Remote getCallStack | debugbridge | VS Code requests stack via JSON-RPC |
-| Remote getLocals/getGlobals | debugbridge | VS Code variable inspection via JSON-RPC |
-| Remote performance streaming | debugbridge | Lightweight frame-time copy for VS Code panel |
-| Remote hot-reload trigger | debugbridge | VS Code sends `triggerHotReload`; consumed via `consumeHotReloadRequest` |
-| Print capture → remote | debugbridge | Intercepts prints for VS Code output channel |
-| Screenshot request | debugbridge | Remote tooling requests frame capture |
-| TCP server / JSON-RPC | debugbridge | All wire protocol handling |
-
-### Overlap Notes
-
-- **eval**: Both modules evaluate Lua code. `devtools.eval` is the local in-game entry point (REPL, script panels). `debugbridge` routes remote eval requests through `poll()`. They do NOT share implementation — each uses `lua.load(...).eval()` independently.
-- **getCallStack**: Both produce call-stack frames. `devtools.getCallStack` is callable from Lua scripts directly. `debugbridge` services the same query from remote clients. The introspection Lua snippet is duplicated (acceptable — it is a small fixed script).
-- **Frame metrics**: `devtools.FrameStats` is the comprehensive source (percentiles, GPU stats, configurable history). `debugbridge.BridgeShared` maintains its own lightweight rolling window solely for streaming to remote clients. No cross-dependency exists.
-- **Hot-reload**: `devtools` detects local file changes. `debugbridge` accepts a remote trigger flag. The runtime consumes both signals — they are complementary, not duplicated.
-
-> devtools MUST NOT implement wire protocols or remote communication.
-> debugbridge MUST NOT render in-game UI or own authoritative performance metrics.
 
 ## Notes
 

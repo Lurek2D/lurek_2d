@@ -15,7 +15,7 @@
 
 ## Summary
 
- It provides the structural backbone for Lurek2D games by coordinating transitions between distinct game states, such as main menus, gameplay levels, and pause screens. The core `SceneStack` maintains the active scene hierarchy. Pushing a new scene pauses the underlying scene, while popping it resumes the previous one. The module supports overlay scenes for logic flow, but rendering now follows a strict engine-level rule: **only the top scene is render-active**.
+It provides the structural backbone for Lurek2D games by coordinating transitions between distinct game states, such as main menus, gameplay levels, and pause screens. The core `SceneStack` maintains the active scene hierarchy. Pushing a new scene pauses the underlying scene, while popping it resumes the previous one. The module supports overlay scenes for logic flow, but rendering now follows a strict engine-level rule: **only the top scene is render-active**.
 
 Visual polish is heavily emphasized through built-in transition effects. When switching scenes, developers can apply animated transitions (including fade, wipe, slide, dissolve, pixelate, and iris effects) with configurable durations and mathematical easing curves (like bounce or back-overshoot). To ensure correct visual layering, the module features a highly optimized `DepthSorter`. This component adaptively selects the most efficient sorting strategy (unstable, stable, radix, or even multi-threaded rayon parallel sorting for 10k+ entries) based on the number of draw calls, ensuring that sprites and UI elements are rendered strictly front-to-back according to their assigned depth values.
 
@@ -28,10 +28,6 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 - Selects unstable, stable, 8-bit radix, or rayon parallel sort by entry count and depth shape.
 - Radix path requires integral depths and ≥256 entries; parallel kicks in at 10k entries.
 - Each entry carries depth, callback index, and object-kind flag for draw dispatch.
-
-### `easing.rs`
-- Easing curve helpers for scene transitions and tween interpolation.
-- Provides bounce-out and related mathematical curves.
 
 ### `mod.rs`
 - Scene stack with push/pop lifecycle and unique SceneId handles.
@@ -80,7 +76,6 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 - `DepthSorter::sorted_entries` (`depth_sorter.rs`): Return sorted entry slice, triggering sort() first if dirty.
 - `DepthSorter::clear` (`depth_sorter.rs`): Clear all entries and reset dirty to false.
 - `DepthSorter::get_count` (`depth_sorter.rs`): Return entry count without sorting.
-- `bounce_out` (`easing.rs`): Evaluate the bounce-out easing curve for t in [0, 1]; returns 1 at t=1.
 - `SceneStack::generate_render_commands` (`render.rs`): Collect and return RenderCommand list for the current scene; returns empty vec when no scene is active.
 - `SceneStack::draw_to_image` (`render.rs`): Render the active scene into a new ImageData of the given pixel dimensions; fills with background colour when empty.
 - `SceneStack::new` (`stack.rs`): Create an empty SceneStack with no active scenes and no pending transitions.
@@ -220,6 +215,7 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 ## References
 
 - `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 

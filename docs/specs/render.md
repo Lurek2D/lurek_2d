@@ -15,7 +15,7 @@
 
 ## Summary
 
- Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
+Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
 
 The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
 
@@ -78,12 +78,19 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Draw-layer ordering and blend/stencil/depth state per command.
 
 ### `obj_loader.rs`
-
-**Feature-gated:** `obj-loader` (default: enabled). Disable with `default-features = false` if not needed.
-
-**This is NOT a 3D rendering pipeline.** It projects 3D geometry into 2D draw calls
-for the raycaster and globe rendering systems.
-
+- OBJ model loader for 2D projection.
+- Loads Wavefront .obj files and projects 3D geometry into 2D for use with
+- the raycaster and globe rendering systems. This is NOT a 3D rendering
+- pipeline — models are reduced to 2D projections (orthographic or perspective)
+- for display in the 2D engine.
+- ## Feature Gate
+- This module is gated behind the `obj-loader` feature (enabled by default).
+- Disable it to reduce binary size if your game doesn't use 3D model loading:
+- ```toml
+- [dependencies]
+- lurek2d = { version = "...", default-features = false, features = [...] }
+- ```
+- ## Capabilities
 - Wavefront OBJ and MTL file loading via a built-in hand parser.
 - Triangulated face model with per-vertex position, UV, and normal indices.
 - Named materials carrying diffuse colour and optional texture path.
@@ -96,9 +103,6 @@ for the raycaster and globe rendering systems.
 - MTL parsing extracting `newmtl`, `Kd`, and `map_Kd` into a flat material list.
 - OBJ face-vertex index resolver handling 1-based and negative (relative) indices.
 - Edge-function barycentric rasterisation for the CPU renderer path.
-
-Lua API: `lurek.render.loadObj(path)` / `lurek.render.loadModel(path)` — returns an `LObjModel` handle
-for `renderToImage()` and `projectToMesh()` calls.
 
 ### `postfx_pipeline.rs`
 - Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
@@ -216,8 +220,8 @@ for `renderToImage()` and `projectToMesh()` calls.
 - `Font::text_width` (`font.rs`): Returns the summed advance width for `text`.
 - `Font::line_height` (`font.rs`): Returns the effective line height in pixels.
 - `Font::set_line_height` (`font.rs`): Sets the line-height multiplier.
-- `Font::ascent` (`font.rs`): Returns ascent in pixels.
-- `Font::descent` (`font.rs`): Returns descent in pixels.
+- `Font::ascent` (`font.rs`): Returns the font ascent in pixels.
+- `Font::descent` (`font.rs`): Returns the font descent in pixels.
 - `Font::atlas_data` (`font.rs`): Returns atlas upload data as `(pixel_data, width, height)`.
 - `Font::is_dirty` (`font.rs`): Returns true when the atlas still needs GPU upload.
 - `Font::mark_clean` (`font.rs`): Clears the dirty flag after upload.
@@ -501,41 +505,6 @@ for `renderToImage()` and `projectToMesh()` calls.
 - `LShader:typeOf`: Checks whether this object matches the given type name.
 - `LShader:type`: Returns the type name string for this shader object.
 
-#### `LShader:send(name, value)` — set a uniform value
-
-Upload a value to a named uniform in the compiled WGSL shader. Must be called after `lurek.render.setShader` and before the draw call that needs the value.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `name` | `string` | Uniform variable name as declared in the WGSL shader source. |
-| `value` | `number \| boolean \| table` | Value to upload. `number` → `float`; `boolean` → `bool`; table of 2 numbers → `vec2`; 3 → `vec3`; 4 → `vec4`. |
-
-**Returns** nothing.
-
-```lua
-local shader = lurek.render.newShader(wgsl_src)
-lurek.render.setShader(shader)
-shader:send("u_time",  lurek.timer.getTime())     -- float
-shader:send("u_tint",  {1.0, 0.5, 0.2, 1.0})     -- vec4
-shader:send("u_flash", true)                       -- bool
-lurek.render.rectangle("fill", 100, 100, 200, 200)
-lurek.render.setShader(nil)
-```
-
-#### `LShader:hasUniform(name) → boolean` — test whether a uniform was sent
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `name` | `string` | Uniform name to test. |
-
-**Returns** `boolean` — `true` when a value has been sent under that name via `send`.
-
-```lua
-if not shader:hasUniform("u_time") then
-    shader:send("u_time", 0.0)
-end
-```
-
 ### `LShape` Methods
 - `LShape:getCommandCount`: Returns the number of drawing commands accumulated in this shape.
 - `LShape:clear`: Removes all drawing commands from this shape, making it empty.
@@ -565,6 +534,7 @@ end
 
 ## References
 
+- `font`: Imports or references `src/font/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
 - `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `light`: Imports or references `light` from `src/light/`.
 - `math`: Imports or references `math` from `src/math/`.

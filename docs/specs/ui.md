@@ -15,13 +15,16 @@
 
 ## Summary
 
- Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
+Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
 
 At the structural level, the module employs a robust flex-based layout engine (`Layout`) that supports vertical, horizontal, and grid packing, alongside alignment, spacing, padding, and min/max constraints. Layouts can be constructed programmatically in Lua or loaded dynamically from declarative TOML files using the built-in layout loader, which dramatically accelerates UI iteration. The visual presentation is governed by a flexible `Theme` system that maps widget states (Normal, Hovered, Pressed, Focused, Disabled) to specific styles containing color palettes, font overrides, borders, and shadows. The module natively supports resolution-independent 9-slice borders (`NinePatch`) and per-widget transition animations (alpha fades, position slides) to deliver a polished, responsive user experience.
 
 Beyond standard UI components and input routing, the module integrates powerful data binding tools. The `GUITable` seamlessly integrates with the `dataframe` module, enabling bulk loading of structured rows directly into UI views without expensive Lua-side iterations. Fully exposed through the `lurek.ui.*` API, this module equips developers with everything needed to build intricate developer dashboards, complex menus, and data-rich game interfaces.
 
 ## Source Documentation
+
+### `chart.rs`
+- Re-export charts for UI module compatibility.
 
 ### `containers.rs`
 - Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.
@@ -51,6 +54,12 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
 - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
 
+### `data_graph_renderer.rs`
+- Multi-series data graph renderer for line, scatter, and bar data.
+- Provides viewport management, coordinate transforms, auto-range, and cursor
+- support. Does not write GPU commands directly — callers convert `SeriesEntry`
+- values to draw calls as needed.
+
 ### `extras.rs`
 - Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
 - Accordion panels with optional exclusive-expand mode and tooltip overlays with configurable delay.
@@ -72,7 +81,7 @@ Beyond standard UI components and input routing, the module integrates powerful 
 ### `mod.rs`
 - Immediate-mode GUI toolkit: containers, controls, extras, and theming.
 - Provides layout panels, interactive widgets, and data-bound context.
-- Optional TOML layout-loader features behind feature flags.
+- Optional TOML layout-loader feature behind a feature flag.
 
 ### `render.rs`
 - GPU render-command emission for all retained-mode UI widget types (buttons, sliders, trees, tables, dialogs, etc.).
@@ -97,7 +106,12 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
 
 ### `widget.rs`
-- Public types and helpers for the widget module.
+- UI widget tree node: the fundamental layout and rendering unit of the UI system.
+- `Widget` holds layout properties (size, margin, padding), style, and child list.
+- Widgets are built from Lua tables or TOML layout files and owned by the UI tree.
+- Layout is computed in a single top-down pass; results are cached until dirty.
+- Render commands are emitted per-widget in tree order during the UI render phase.
+- Interaction (click, hover, focus) is dispatched in a second bottom-up hit-test pass.
 
 ## Types
 
@@ -127,6 +141,8 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `ScrollBar` (`struct`, `controls.rs`): A scroll bar for scrollable content areas.
 - `SpinBox` (`struct`, `controls.rs`): A numeric spin box: a text field with increment and decrement buttons.
 - `Switch` (`struct`, `controls.rs`): A binary toggle switch rendered as a pill with a sliding thumb.
+- `SeriesEntry` (`enum`, `data_graph_renderer.rs`): A single data series entry stored by the graph renderer.
+- `GraphRenderer` (`struct`, `data_graph_renderer.rs`): Multi-series graph renderer with viewport and coordinate mapping.
 - `Toast` (`struct`, `extras.rs`): Timed transient notification.
 - `Separator` (`struct`, `extras.rs`): Visual divider line widget.
 - `Spacer` (`struct`, `extras.rs`): Empty layout filler widget.
@@ -158,6 +174,7 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `WidgetState` (`enum`, `widget.rs`): Encodes common UI states such as normal, hovered, pressed, focused, and disabled.
 - `MouseFilter` (`enum`, `widget.rs`): Mouse interaction filter matching Godot's control behavior.
 - `WidgetType` (`enum`, `widget.rs`): Identifies the broad widget class for styling and state-dependent behavior.
+- `EasingFunction` (`enum`, `widget.rs`): Easing function for property animations.
 - `WidgetTransitionKind` (`enum`, `widget.rs`): Which property a `WidgetTransition` animates.
 - `WidgetTransition` (`struct`, `widget.rs`): Active animation on a `WidgetBase`; evaluated each frame by `GuiContext::update`.
 - `WidgetBase` (`struct`, `widget.rs`): Shared geometry, visibility, spacing, anchoring, and flex-like metadata embedded in every widget.
@@ -230,6 +247,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `GuiContext::drop_on` (`context.rs`): Drop the active dragged widget onto `target_idx`; returns `false` if target is not a container or would create a cycle.
 - `GuiContext::animate_alpha` (`context.rs`): Queue an alpha tween on `widget_idx` from its current alpha to `to_alpha` over `duration` seconds; returns `false` on invalid index.
 - `GuiContext::animate_position` (`context.rs`): Queue a position tween on `widget_idx` from its current position to `(to_x, to_y)` over `duration` seconds.
+- `GuiContext::animate_scale` (`context.rs`): Start a scale animation on a widget.
+- `GuiContext::animate_rotation` (`context.rs`): Start a rotation animation on a widget.
+- `GuiContext::animate_color` (`context.rs`): Start a color tint animation on a widget.
 - `GuiContext::cancel_animations` (`context.rs`): Clear all pending transitions on `widget_idx`; returns `false` on invalid index.
 - `GuiContext::is_animating` (`context.rs`): Return `true` if `widget_idx` has at least one active transition.
 - `GuiContext::update_bindings` (`context.rs`): Apply `values` to bound widgets; return the number of widgets whose state changed.
@@ -244,6 +264,11 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `GuiContext::toast_count` (`context.rs`): Return the number of active toast messages.
 - `GuiContext::update` (`context.rs`): Advance toast timers, expire old toasts, and step all active widget transitions by `dt` seconds.
 - `GuiContext::find_by_id` (`context.rs`): Search the subtree rooted at `start_idx` for a widget whose `id` matches; return its index or `None`.
+- `GuiContext::calculate_minimum_size` (`context.rs`): Calculate the minimum size a widget needs based on its content.
+- `GuiContext::find_spatial_focus_neighbor` (`context.rs`): Find the nearest focusable widget in the given direction from `current_idx`.
+- `GuiContext::focus_direction` (`context.rs`): Move focus in a spatial direction.
+- `GuiContext::visible_item_range` (`context.rs`): Calculate the visible item range for a scrollable list widget.
+- `GuiContext::update_resolution` (`context.rs`): Update the current viewport resolution and recompute the UI scale factor.
 - `GuiContext::mouse_pressed` (`context.rs`): Process a mouse button press at `(x, y)`; return `true` if any widget consumed it.
 - `GuiContext::mouse_released` (`context.rs`): Process a mouse button release at `(x, y)`; fires `Click` events on clickable widgets.
 - `GuiContext::mouse_moved` (`context.rs`): Process a mouse move to `(x, y)`; updates `Hovered`/`Normal` states; return `true` on any state change.
@@ -289,6 +314,26 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `Switch::new` (`controls.rs`): Create a switch with the given initial state; sets `thumb_t` accordingly.
 - `Switch::toggle` (`controls.rs`): Flip the on/off state and snap `thumb_t` to the new position.
 - `Switch::set_on` (`controls.rs`): Set `on` to the given value and snap `thumb_t`.
+- `SeriesEntry::name` (`data_graph_renderer.rs`): Return the series label.
+- `GraphRenderer::new` (`data_graph_renderer.rs`): Create a new graph renderer with sensible defaults.
+- `GraphRenderer::series` (`data_graph_renderer.rs`): Return a slice of all series entries.
+- `GraphRenderer::add_line_series` (`data_graph_renderer.rs`): Add a line series.
+- `GraphRenderer::add_scatter_series` (`data_graph_renderer.rs`): Add a scatter series.
+- `GraphRenderer::add_bar_series` (`data_graph_renderer.rs`): Add a bar series.
+- `GraphRenderer::get_series_names` (`data_graph_renderer.rs`): Return all series names in insertion order.
+- `GraphRenderer::remove_series` (`data_graph_renderer.rs`): Remove a series by name.
+- `GraphRenderer::clear_series` (`data_graph_renderer.rs`): Remove all series.
+- `GraphRenderer::set_viewport` (`data_graph_renderer.rs`): Set the viewport rectangle (x, y, width, height) in screen pixels.
+- `GraphRenderer::get_viewport` (`data_graph_renderer.rs`): Return the current viewport rectangle as `(x, y, width, height)`.
+- `GraphRenderer::set_show_grid` (`data_graph_renderer.rs`): Enable or disable the background grid.
+- `GraphRenderer::set_show_axes` (`data_graph_renderer.rs`): Enable or disable the axis lines.
+- `GraphRenderer::set_range` (`data_graph_renderer.rs`): Set the data range (x_min, x_max, y_min, y_max).
+- `GraphRenderer::get_range` (`data_graph_renderer.rs`): Return the current data range as `(x_min, x_max, y_min, y_max)`.
+- `GraphRenderer::world_to_screen` (`data_graph_renderer.rs`): Convert a world (data) coordinate to a screen pixel coordinate.
+- `GraphRenderer::screen_to_world` (`data_graph_renderer.rs`): Convert a screen pixel coordinate back to a world (data) coordinate.
+- `GraphRenderer::auto_range` (`data_graph_renderer.rs`): Auto-compute range from all series data with ~10% padding on each side.
+- `GraphRenderer::set_cursor_position` (`data_graph_renderer.rs`): Set the cursor world position.
+- `GraphRenderer::get_cursor_value` (`data_graph_renderer.rs`): Return the current cursor world position, or `None` if unset.
 - `Toast::new` (`extras.rs`): Create a toast with the given message and display duration in seconds.
 - `Toast::progress` (`extras.rs`): Return the normalised progress in `[0.0, 1.0]`; returns 1.0 when `duration <= 0`.
 - `Toast::is_expired` (`extras.rs`): Return `true` if `elapsed >= duration`.
@@ -343,6 +388,8 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `load_layout_def` (`layout_loader.rs`): Recursively build a widget tree from a `WidgetDef` into a `GuiContext`. Returns the pool index of the created root widget.
 - `load_layout_toml` (`layout_loader.rs`): Parse a TOML source string into a `LayoutDef` then delegate to `load_layout_def`. Returns the pool index of the created root widget.
 - `render_to_image` (`layout_loader.rs`): Save the engine's software UI rasterisation (`GuiContext::draw_to_image`) to a PNG. Headless-safe and visually aligned with default UI rendering.
+- `push_scissor` (`render.rs`): Push a scissor rect onto the stack, intersecting with the current topmost scissor.
+- `pop_scissor` (`render.rs`): Pop the topmost scissor rect and restore the previous one (or disable scissor if stack is empty).
 - `GuiContext::build_render_commands_with_fonts` (`render.rs`): Run a layout pass then emit render commands using `font_key` and explicit font storage.
 - `GuiContext::build_render_commands` (`render.rs`): Run a layout pass then emit all render commands using `font_key`; return the command list.
 - `GuiContext::generate_render_commands` (`render.rs`): Run a layout pass and emit render commands using the default font key.
@@ -364,8 +411,14 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `WidgetType::as_str` (`widget.rs`): Return the canonical lowercase name string for this type.
 - `WidgetType::parse_str` (`widget.rs`): Parse str.
 - `WidgetType::default_size` (`widget.rs`): Return the default `(width, height)` size in pixels for this widget type.
+- `EasingFunction::eval` (`widget.rs`): Evaluate the easing curve at normalized time t in [0, 1].
+- `EasingFunction::parse_str` (`widget.rs`): Parse easing name from string.
 - `WidgetTransition::alpha` (`widget.rs`): Create an alpha fade from `from` to `to` over `duration` seconds; optionally hide when done.
 - `WidgetTransition::position` (`widget.rs`): Create a position slide from `(from_x, from_y)` to `(to_x, to_y)` over `duration` seconds.
+- `WidgetTransition::scale` (`widget.rs`): Create a scale transition from `(from_sx, from_sy)` to `(to_sx, to_sy)` over `duration` seconds.
+- `WidgetTransition::rotation` (`widget.rs`): Create a rotation transition from `from` to `to` radians over `duration` seconds.
+- `WidgetTransition::color` (`widget.rs`): Create a color tint transition from `from` RGBA to `to` RGBA over `duration` seconds.
+- `WidgetTransition::with_easing` (`widget.rs`): Set the easing function on this transition, returning self for chaining.
 - `WidgetBase::new` (`widget.rs`): Create a `WidgetBase` with `widget_type` defaults from `WidgetType::default_size`, visible, enabled, alpha 1.
 - `WidgetBase::contains_point` (`widget.rs`): Return `true` if `(px, py)` lies within the computed screen rect, falling back to local geometry.
 - `WidgetBase::clear_anchors` (`widget.rs`): Clear all six anchor fields (`anchor_left`, `anchor_top`, `anchor_right`, `anchor_bottom`, `anchor_center_x`, `anchor_center_y`).
@@ -421,6 +474,14 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `lurek.ui.focusNext`: Moves keyboard focus to the next focusable widget.
 - `lurek.ui.focusPrev`: Moves keyboard focus to the previous focusable widget.
 - `lurek.ui.focusNeighbor`: Moves keyboard focus using an explicit directional focus link.
+- `lurek.ui.focusDirection`: Move focus in a spatial direction. Uses geometry to find nearest focusable widget.
+- `lurek.ui.updateResolution`: Update the current viewport resolution and recompute UI scale factor.
+- `lurek.ui.setBaseResolution`: Set the logical base resolution the UI was designed for.
+- `lurek.ui.getScaleFactor`: Get the current UI scale factor (current_height / base_height).
+- `lurek.ui.visibleRange`: Calculate the visible item range for a scrollable list widget.
+- `lurek.ui.animateScale`: Animate widget scale from one value to another.
+- `lurek.ui.animateRotation`: Animate widget rotation from one angle to another (in radians).
+- `lurek.ui.animateColor`: Animate widget color tint from one RGBA value to another.
 - `lurek.ui.clear`: Clears all retained UI widgets and transient UI state while keeping the active theme.
 - `lurek.ui.clearFocus`: Clears keyboard focus from all widgets.
 - `lurek.ui.addToast`: Adds a toast notification to the queue.
@@ -436,6 +497,11 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `lurek.ui.newCustomWidget`: Creates a new custom widget with optional initial configuration.
 - `lurek.ui.getWidgetCount`: Returns the total number of widgets in the UI context.
 - `lurek.ui.drawToImage`: Renders the entire UI to an image buffer.
+- `lurek.ui.newLineChart`: Creates a new line chart for data visualization.
+- `lurek.ui.newBarChart`: Creates a new bar chart for data visualization.
+- `lurek.ui.newScatterPlot`: Creates a new scatter plot for data visualization.
+- `lurek.ui.newPieChart`: Creates a new pie chart for data visualization.
+- `lurek.ui.newAreaChart`: Creates a new area chart for data visualization.
 - `lurek.ui.parseWidgetState`: Validates and normalizes a widget state string.
 - `lurek.ui.newSpinBox`: Creates a new spin box (numeric stepper) widget.
 - `lurek.ui.newSwitch`: Creates a new toggle switch widget.
@@ -464,10 +530,26 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LAccordion:setExclusive`: Sets exclusive mode. When true, expanding one section collapses all others.
 - `LAccordion:getSectionTitle`: Returns the title of an accordion section by its 1-based index.
 
+### `LAreaChart` Methods
+- `LAreaChart:addLayer`: Adds a data layer to this area chart.
+- `LAreaChart:addLayerFromDataFrame`: Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
+- `LAreaChart:setYMax`: Sets the maximum Y-axis value for this area chart.
+- `LAreaChart:drawToImage`: Renders this area chart to an image buffer.
+- `LAreaChart:type`: Returns the type name of this object.
+- `LAreaChart:typeOf`: Checks whether this object matches the given type name.
+
 ### `LBadge` Methods
 - `LBadge:setCount`: Sets the notification count displayed by this badge.
 - `LBadge:getCount`: Returns the current notification count of this badge.
 - `LBadge:getDisplayText`: Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
+
+### `LBarChart` Methods
+- `LBarChart:addSeries`: Adds a named series to this bar chart.
+- `LBarChart:addCategory`: Adds a category with values for each series.
+- `LBarChart:addCategoriesFromDataFrame`: Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
+- `LBarChart:drawToImage`: Renders this bar chart to an image buffer.
+- `LBarChart:type`: Returns the type name of this object.
+- `LBarChart:typeOf`: Checks whether this object matches the given type name.
 
 ### `LButton` Methods
 - `LButton:setText`: Sets the display text on this button.
@@ -568,6 +650,15 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LLayout:setJustify`: Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
 - `LLayout:getJustify`: Returns the current main-axis justification mode.
 
+### `LLineChart` Methods
+- `LLineChart:addSeries`: Adds a named series of points to this line chart.
+- `LLineChart:addSeriesFromDataFrame`: Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
+- `LLineChart:setYMax`: Sets the maximum Y-axis value for this line chart.
+- `LLineChart:setXMax`: Sets the maximum X-axis value for this line chart.
+- `LLineChart:drawToImage`: Renders this line chart to an image buffer.
+- `LLineChart:type`: Returns the type name of this object.
+- `LLineChart:typeOf`: Checks whether this object matches the given type name.
+
 ### `LListBox` Methods
 - `LListBox:addItem`: Appends a new text item to this list box.
 - `LListBox:removeItem`: Removes the item at the given 1-based index from this list box.
@@ -607,6 +698,13 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LPanel:getTitle`: Returns the title text of this panel.
 - `LPanel:setScrollable`: Enables or disables scrolling within this panel.
 
+### `LPieChart` Methods
+- `LPieChart:addSegment`: Adds a labeled segment to this pie chart widget.
+- `LPieChart:addSegmentsFromDataFrame`: Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
+- `LPieChart:drawToImage`: Renders this pie chart to an image buffer.
+- `LPieChart:type`: Returns the type name of this object.
+- `LPieChart:typeOf`: Checks whether this object matches the given type name.
+
 ### `LProgressBar` Methods
 - `LProgressBar:setValue`: Sets the current fill value of this progress bar, clamped to its range.
 - `LProgressBar:getValue`: Returns the current value of this progress bar.
@@ -623,6 +721,15 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LRadioButton:getGroup`: Returns the radio button group name. Buttons in the same group are mutually exclusive.
 - `LRadioButton:setGroup`: Sets the radio button group name. Buttons in the same group are mutually exclusive.
 - `LRadioButton:setOnChange`: Registers a callback invoked when this radio button's selection changes.
+
+### `LScatterPlot` Methods
+- `LScatterPlot:addSeries`: Adds a data series to this scatter plot.
+- `LScatterPlot:addSeriesFromDataFrame`: Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
+- `LScatterPlot:setXRange`: Sets the X-axis range for this scatter plot.
+- `LScatterPlot:setYRange`: Sets the Y-axis range for this scatter plot.
+- `LScatterPlot:drawToImage`: Renders this scatter plot to an image buffer.
+- `LScatterPlot:type`: Returns the type name of this object.
+- `LScatterPlot:typeOf`: Checks whether this object matches the given type name.
 
 ### `LScrollBar` Methods
 - `LScrollBar:getScrollPosition`: Returns the current scroll position of this scroll bar.
@@ -776,73 +883,6 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LUiWidget:setTextWrap`: Enables or disables word-wrap for text inside this widget.
 - `LUiWidget:setTextEllipsis`: Enables or disables ellipsis clipping for overflowing single-line text.
 - `LUiWidget:setTextVAlign`: Sets the vertical alignment of text inside this widget.
-
-## Advanced Features
-
-### Two-Phase Layout (Min-Size Negotiation)
-
-The layout pass runs in two phases:
-
-1. **Bottom-up min-size**: `calculate_minimum_size()` recursively computes the minimum pixel footprint each widget needs. Leaf widgets (Button, Label) derive min-size from text extent + padding. Containers aggregate children (sum along the layout axis, max on the cross axis) plus their own spacing/padding.
-2. **Top-down allocation**: The existing `run_layout_pass()` distributes available space downward, respecting the computed minimums.
-
-This ensures buttons and labels never clip their text without requiring explicit sizes in TOML layouts.
-
-### Spatial Focus Navigation
-
-`find_spatial_focus_neighbor(dx, dy)` searches for the nearest focusable widget in the direction `(dx, dy)` using geometry:
-
-- Candidates must lie within a **60° cone** centered on the direction vector from the currently focused widget's center.
-- Among candidates inside the cone, the closest (Euclidean center-to-center) wins.
-- If no candidate is found in the cone, focus does not move.
-
-Lua API: `lurek.ui.focusDirection(dx, dy) → boolean` — returns `true` if focus moved.
-
-Typical usage: map gamepad D-pad axes (0/±1) directly to `dx, dy`.
-
-### UI Virtualization
-
-`visible_item_range(scroll_offset, viewport_height, item_count, item_height)` returns the `(start, end)` 0-based index range of items currently within the viewport. Only those items need rendering or hit-testing.
-
-Applies to `ListBox` and `GUITable` when row count exceeds viewport capacity.
-
-Lua API: `lurek.ui.visibleRange(widget, itemCount, itemHeight) → start, end` (1-based).
-
-### Global Resolution Scaling
-
-Fields on `GuiContext`:
-- `base_resolution: (u32, u32)` — the design resolution (default: window size at init).
-- `scale_factor: f32` — `current_height / base_height`.
-
-`update_resolution(w, h)` recomputes `scale_factor`. All logical pixel values in TOML layouts and programmatic widget creation are multiplied by `scale_factor` during the layout pass, providing uniform DPI-independent scaling.
-
-Lua API:
-- `lurek.ui.setBaseResolution(width, height)` — sets the design resolution.
-- `lurek.ui.updateResolution(width, height)` — recalculates scale factor for the given actual size.
-- `lurek.ui.getScaleFactor() → number` — returns the current scale multiplier.
-
-### Scissor Stack
-
-`push_scissor(rect)` and `pop_scissor()` manage a stack of clipping rectangles emitted as `SetScissor` render commands. Each push intersects the new rect with the current top-of-stack, guaranteeing nested scroll panels clip correctly without manual rect math.
-
-Used internally by `ScrollPanel` rendering. Games do not typically call this directly but may do so for custom widget draw callbacks.
-
-### Extended Property Tweens
-
-New `EasingFunction` enum with 10 curves:
-`Linear`, `SineIn`, `SineOut`, `SineInOut`, `CubicIn`, `CubicOut`, `CubicInOut`, `BounceOut`, `ElasticOut`, `BackOut`.
-
-New animation types (alongside existing alpha/position tweens):
-- **Scale** — `animate_scale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing?)`
-- **Rotation** — `animate_rotation(idx, from, to, duration, easing?)`
-- **Color tint** — `animate_color(idx, from_color, to_color, duration, easing?)`
-
-All accept an optional `easing` parameter (defaults to `Linear`).
-
-Lua API:
-- `lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing?) → boolean`
-- `lurek.ui.animateRotation(idx, from, to, duration, easing?) → boolean`
-- `lurek.ui.animateColor(idx, fromColor, toColor, duration, easing?) → boolean`
 - `LUiWidget:setFocusable`: Sets whether this widget participates in keyboard focus traversal.
 - `LUiWidget:setTabIndex`: Sets the tab-order index for this widget.
 - `LUiWidget:setFocusGroup`: Sets the focus traversal group for this widget.
@@ -903,6 +943,8 @@ Lua API:
 
 ## References
 
+- `charts`: Imports or references `src/charts/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `image`: Imports or references `image` from `src/image/`.
 - `math`: Imports or references `math` from `src/math/`.

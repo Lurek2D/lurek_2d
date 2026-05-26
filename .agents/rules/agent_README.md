@@ -1,8 +1,9 @@
 ---
-trigger: model_decision
+trigger: always_on
 description: "Lurek2D Agent Definition for README.md"
 ---
-﻿# CAG Agents Roster (v2)
+
+# CAG Agents Roster (v2)
 
 Consolidated from 27 agents to 12. Previous agents merged into broader roles that cover overlapping workflow modes.
 

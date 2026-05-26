@@ -15,7 +15,7 @@
 
 ## Summary
 
- It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
+It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
 
 Beyond security, the module offers a robust suite of filesystem operations. It supports synchronous and asynchronous file reads/writes, directory creation, flat and recursive listing, glob matching, and file copy/move operations. A notable feature is its support for virtual mount overlays: directories or read-only `.zip` archives (`ZipMount`) can be layered into the virtual filesystem at specified prefixes. When a file is requested, `GameFS` queries these layered mounts seamlessly, enabling modding, content patching, and asset packing without altering game logic.
 
@@ -246,101 +246,6 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `LZipMount:prefix`: Returns the virtual prefix used by this ZIP mount.
 - `LZipMount:type`: Returns the Lua-visible type name for this ZIP mount handle.
 - `LZipMount:typeOf`: Returns whether this ZIP mount handle matches a supported type name.
-
-### Core Function Reference
-
-The following six operations cover the most common game file I/O needs. Read access resolves through all mounted layers; write access is always restricted to `save/`.
-
-#### `lurek.filesystem.read(path) → string`
-
-Read a UTF-8 text file from GameFS.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `path` | `string` | GameFS path relative to the game base directory. |
-
-**Returns** `string` — file contents as text.
-**Errors** Raises a Lua error when the path cannot be found or read.
-
-```lua
-local data = lurek.filesystem.read("data/config.toml")
-```
-
-#### `lurek.filesystem.write(path, data)`
-
-Write a UTF-8 text file. The path **must** begin with `save/`.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `path` | `string` | Destination path; must start with `save/`. |
-| `data` | `string` | Text content to write. |
-
-**Errors** Raises when the path is outside `save/` or on OS write failure.
-
-```lua
-lurek.filesystem.write("save/settings.txt", "volume=80")
-```
-
-#### `lurek.filesystem.exists(path) → boolean`
-
-Test whether a path exists in GameFS (file or directory).
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `path` | `string` | GameFS path to test. |
-
-**Returns** `boolean` — `true` when the path exists.
-
-```lua
-if not lurek.filesystem.exists("save/progress.dat") then
-    lurek.filesystem.write("save/progress.dat", "level=1")
-end
-```
-
-#### `lurek.filesystem.getDirectoryItems(path) → string[]`
-
-List immediate (non-recursive) entries inside a directory. Returns entry names only, not full paths. This is the standard directory-listing operation. For a recursive walk use `listRecursive`; for pattern matching use `glob`.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `path` | `string` | Directory path to list. |
-
-**Returns** `string[]` — array of entry name strings.
-**Errors** Raises when the directory cannot be read.
-
-```lua
-for _, name in ipairs(lurek.filesystem.getDirectoryItems("data/maps")) do
-    print(name)
-end
-```
-
-#### `lurek.filesystem.mkdir(path)`
-
-Create a directory tree under the GameFS base directory. Unlike `createDirectory`, this function is **not** sandboxed to `save/` — it creates directories relative to the game base folder.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `path` | `string` | Relative directory path to create. |
-
-**Errors** Raises on OS failure (e.g. permission denied).
-
-```lua
-lurek.filesystem.mkdir("save/screenshots")
-```
-
-#### `lurek.filesystem.remove(path)`
-
-Remove a file from the GameFS save directory. To remove an entire directory tree use `removeDir`.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `path` | `string` | Path of the file to remove. |
-
-**Errors** Raises when the file cannot be removed.
-
-```lua
-lurek.filesystem.remove("save/old_slot.dat")
-```
 
 ## References
 

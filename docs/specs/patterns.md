@@ -15,19 +15,11 @@
 
 ## Summary
 
- Designed to be highly reusable, completely decoupled from one another, and fully exposed to the Lua environment, these primitives act as high-level building blocks for complex game logic. At the core of AI decision-making is the `BehaviorTree` system, featuring Sequences, Selectors, Parallels, Inverters, Repeats, and Leaf action nodes. For transition-heavy logic, the module offers a hierarchical `StateMachine` with enter/exit/update callbacks, explicit transition rules, and bounded history, alongside a `SimpleState` alternative for simpler needs.
+Designed to be highly reusable, completely decoupled from one another, and fully exposed to the Lua environment, these primitives act as high-level building blocks for complex game logic. At the core of AI decision-making is the `BehaviorTree` system, featuring Sequences, Selectors, Parallels, Inverters, Repeats, and Leaf action nodes. For transition-heavy logic, the module offers a hierarchical `StateMachine` with enter/exit/update callbacks, explicit transition rules, and bounded history, alongside a `SimpleState` alternative for simpler needs.
 
 To facilitate decoupled communication across systems, the module provides a robust `EventBus` for pub-sub messaging with wildcard listeners and prioritized execution, as well as a channel-based `Mediator`. The `Observer` pattern is available for reactive property-change notifications, and the `Blackboard` provides a shared, typed key-value store with revision tracking—essential for coordinating AI state. For undo/redo functionality (e.g., in editors or turn-based games), the `CommandStack` offers a cursor-based linear history with batching support. Resource management is handled by the `ObjectPool`, which tracks active and idle IDs to reduce allocation churn for frequently spawned entities like bullets or particles. The `Factory` and `ServiceLocator` patterns provide dynamic object construction and dependency injection.
 
 The module also includes specialized data structures optimized for game development. These include a `Graph` (directed/undirected with BFS/DFS traversals), a `Trie` for rapid prefix searches, a `BiMap` for bidirectional lookups, and a `PriorityQueue` with stable FIFO tie-breaking. Time-based operations are supported by a `Ring` buffer for fixed-size rolling histories (useful for telemetry or combo tracking), a `Funnel` for batching events over a time window, and `Throttle`/`Debounce` primitives for rate-limiting inputs or actions. Additionally, the `WeightedRandom` selector enables deterministic, dynamic picking with or without replacement. All these tools are instantiated via `lurek.patterns.*` and operate as standalone userdata objects, ensuring script developers have robust, C-speed architectural primitives at their fingertips.
-
-## Registration
-
-The `patterns` module is registered as **always-on** (no configuration gate required).
-As a Foundations tier library, it is available unconditionally in all VM contexts.
-
-Previously gated by `modules.pipeline` — this coupling was removed as architecturally incorrect
-(Foundations tier must not depend on Feature Systems tier gates).
 
 ## Source Documentation
 
@@ -47,6 +39,8 @@ Previously gated by `modules.pipeline` — this coupling was removed as architec
 - Shared key-value store for passing typed state between AI and game systems.
 - Supports bool, number, text, and nil entries with per-key revision tracking.
 - Global and per-key revision counters enable efficient change detection.
+- Optional parent chain for hierarchical lookup (child inherits parent data).
+- Typed getters with defaults that walk the parent chain on miss.
 
 ### `collections.rs`
 - Capacity metadata types for bounded stacks and queues.
@@ -221,15 +215,23 @@ Previously gated by `modules.pipeline` — this coupling was removed as architec
 - `Blackboard::set_bool` (`blackboard.rs`): Write a `bool` to `key`, advancing revision counters.
 - `Blackboard::set_number` (`blackboard.rs`): Write a `f64` to `key`, advancing revision counters.
 - `Blackboard::set_text` (`blackboard.rs`): Write a `String` to `key`, advancing revision counters.
-- `Blackboard::clear` (`blackboard.rs`): Remove `key` and advance revision counters.
-- `Blackboard::get` (`blackboard.rs`): Return the value for `key`, or `None` if not set.
-- `Blackboard::keys` (`blackboard.rs`): Return all keys as a slice of string references.
-- `Blackboard::snapshot` (`blackboard.rs`): Return all `(key, value)` pairs as a vector.
-- `Blackboard::has` (`blackboard.rs`): Return true when `key` is set.
+- `Blackboard::set_string` (`blackboard.rs`): Write a string to `key` (convenience wrapper over [`set_text`](Self::set_text)).
+- `Blackboard::remove` (`blackboard.rs`): Remove a single `key` and advance revision counters.
+- `Blackboard::get` (`blackboard.rs`): Return the raw value for `key`, or `None` if not set locally.
+- `Blackboard::get_number` (`blackboard.rs`): Read a `Number` by key; walks the parent chain, returns `default` if absent.
+- `Blackboard::get_bool` (`blackboard.rs`): Read a `Bool` by key; walks the parent chain, returns `default` if absent.
+- `Blackboard::get_string` (`blackboard.rs`): Read a `Text` by key; walks the parent chain, returns `default` if absent.
+- `Blackboard::keys` (`blackboard.rs`): Return all local keys as owned strings.
+- `Blackboard::snapshot` (`blackboard.rs`): Return all `(key, value)` pairs as a vector (local entries only).
+- `Blackboard::has` (`blackboard.rs`): Return true when `key` is set locally or in any ancestor.
 - `Blackboard::key_revision` (`blackboard.rs`): Return the global revision at which `key` was last written, or `0` if never written.
-- `Blackboard::clear_all` (`blackboard.rs`): Remove all keys and advance the global revision.
-- `Blackboard::len` (`blackboard.rs`): Return the number of entries currently set.
-- `Blackboard::is_empty` (`blackboard.rs`): Return true when no keys are set.
+- `Blackboard::clear` (`blackboard.rs`): Remove all local keys and advance the global revision.
+- `Blackboard::clear_all` (`blackboard.rs`): Alias for [`clear`](Self::clear).
+- `Blackboard::len` (`blackboard.rs`): Return the number of local entries currently set.
+- `Blackboard::size` (`blackboard.rs`): Alias for [`len`](Self::len).
+- `Blackboard::is_empty` (`blackboard.rs`): Return true when no local keys are set.
+- `Blackboard::set_parent` (`blackboard.rs`): Attach a parent board; looked up when a local key is missing.
+- `Blackboard::parent` (`blackboard.rs`): Return a reference to the parent board, or `None` if none is set.
 - `StackMeta::new` (`collections.rs`): Create metadata with `capacity` (`0` = unbounded).
 - `StackMeta::is_full` (`collections.rs`): Return true when `len` is at or above a non-zero capacity limit.
 - `QueueMeta::new` (`collections.rs`): Create metadata with `capacity` (`0` = unbounded).
@@ -698,7 +700,7 @@ Previously gated by `modules.pipeline` — this coupling was removed as architec
 
 ## References
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
 ## Notes
 

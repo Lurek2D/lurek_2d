@@ -314,8 +314,9 @@ do
     mgr:enableAutoSave(5.0, "autosave")
     mgr:markDirty()
     print("auto-save triggered = " .. tostring(mgr:update(6.0)))
-    print("autosave exists = " .. tostring(mgr:exists("autosave")))
-    mgr:delete("autosave")
+    local autosave_exists = mgr:exists("autosave")
+    print("autosave exists = " .. tostring(autosave_exists))
+    if autosave_exists then mgr:delete("autosave") end
 end
 ```
 

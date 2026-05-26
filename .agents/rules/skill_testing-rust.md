@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when writing or reviewing Rust unit tests, Lua API tests, or test coverage rules. Skip it for feature implementation or non-test game scripting."
 ---
+
 # testing-rust
 
 ## Mission
@@ -46,7 +47,7 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
   - Apply **manual** marker corrections (no bulk repo-wide rewrite pass).
   - After each 3-file batch, run `python tools/audit/lua_test_structure_audit.py --path <file>` for each touched file and proceed only if all pass.
   - Use helper scripts only for detection/reporting, not for blind mass edits.
-- Demo tests go in `tests/lua/content/games/test_<name>.lua` and `tests/demo_smoke_tests.rs` — not in `tests/lua/unit/`. Mixing demo tests with unit tests defeats the purpose of both suites.
+- Demo tests go in `tests/lua/demos/test_<name>.lua` (headless, discovered by `lua_demos_headless_all`) and `tests/demo_smoke_tests.rs` (`#[ignore]` screenshots) — not in `tests/lua/unit/`. Optional colocated `content/games/**/test.lua` files run via `lua_demo_colocated_games`.
 
 ## Test Type Matrix (Authoritative)
 
@@ -169,6 +170,12 @@ Each Lua test family has a distinct goal, marker set, and acceptance rule. Do no
 ## Companion File Index
 
 None - all guidance is inline.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - tests/lua/

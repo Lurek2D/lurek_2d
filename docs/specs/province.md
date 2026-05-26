@@ -30,34 +30,6 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - `visibility_state >= 2`: fully visible. The renderer emits normal map-mode fill and full details.
 - Border segments render only when both adjacent provinces are fully visible (`>= 2`).
 
-## Generic Properties
-
-Province properties are game-defined key-value pairs stored per province.
-The engine provides fast access; game logic (in Lua or library modules) defines semantics.
-
-### Types
-
-- **Numeric properties**: `f64` values keyed by string name
-- **String attributes**: text values keyed by string name
-- **Flags**: 64-bit bitfield per province (bits 0–63)
-
-### Lua API
-
-- `lurek.province.setProperty(id, key, value)` — set numeric property
-- `lurek.province.getProperty(id, key)` → number or nil
-- `lurek.province.setAttr(id, key, value)` — set string attribute
-- `lurek.province.getAttr(id, key)` → string or nil
-- `lurek.province.setFlag(id, bit, bool)` — set flag bit (0–63)
-- `lurek.province.hasFlag(id, bit)` → bool
-- `lurek.province.clearProperties(id)` — remove all properties for a province
-
-## Registration
-
-The `province` module is gated by `modules.province` (default: `true`).
-
-Previously gated by `modules.image` — this was corrected to give the province module
-its own independent configuration gate, reflecting its distinct domain responsibility.
-
 ## Source Documentation
 
 ### `border_index.rs`
@@ -66,9 +38,11 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - Optional dilation expands border coverage for thick styled borders.
 
 ### `borders.rs`
-- Border type utilities for the province map system.
-- Border classification is now game-defined via `registerBorderType` from Lua.
-- The engine no longer auto-classifies borders by terrain.
+- Province border geometry: border index map, dilation, and edge detection.
+- `build_border_index` converts a raw province-ID grid into a border pixel mask.
+- `dilate_border_index_with_styles` expands border pixels by per-pair style thickness.
+- `build_border_index_from_registry` reads the current registry pixel buffer directly.
+- Output is an `R16Uint` texture uploaded via `province::gpu_upload`.
 
 ### `cache.rs`
 - Serialisable geometry cache for province spans and border segments.
@@ -79,11 +53,6 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - Distance-from-border precompute for province pixels.
 - Multi-source BFS seeded from border pixels where neighboring province ids differ.
 - Produces a compact u8 field used by later shading or LOD passes.
-
-### `properties.rs`
-- Generic per-province key-value property store.
-- Numeric, string, and 64-bit flag properties keyed by province ID.
-- Game logic defines semantics; the engine provides fast storage and retrieval.
 
 ### `events.rs`
 - Change-log entries for single-field province mutations (colour, terrain, border, fog, visibility).
@@ -114,17 +83,36 @@ its own independent configuration gate, reflecting its distinct domain responsib
 ### `labels.rs`
 - Compute pixel-weighted centroids from province span data.
 - Map province IDs to their geometric center for label placement.
+- Accumulates pixel-weighted x/y sums across span rows and normalises per province area.
 
 ### `map_modes.rs`
-- Map-mode enum selecting which province style field drives fill colour.
-- Colour resolution logic mapping political, terrain, and visibility modes to RGBA.
-- String round-trip helpers for mode serialisation and Lua interop.
+- Config-driven map mode system for the province renderer.
+- Map modes are registered from Lua at runtime with per-mode display settings.
+- Color resolution uses the color_property field from the active map mode config.
 
 ### `mod.rs`
 - Province map system: registry, geometry cache, GPU bridge, and rendering.
 - Imports colour-map PNG + CSV/TOML metadata into an authoritative ProvinceRegistry.
 - Generates RenderCommands for fills, borders, capitals, and text labels.
 - Provides view-transform helpers for camera fitting and screen-to-map projection.
+
+### `properties.rs`
+- Province property storage: per-province key-value metadata and stat tables.
+- `ProvinceProperties` maps `ProvinceId → HashMap<String, PropertyValue>`.
+- `PropertyValue` is an enum covering `Int`, `Float`, `Bool`, and `Text` variants.
+- Properties are set from Lua via `lurek.province.set_property(id, key, value)`.
+- Serialized into the save file as a flat list for fast round-trip loading.
+
+### `province_grid.rs`
+- Province grid construction from color-mapped images, assigning unique ids per distinct RGB color.
+- Pixel-level province id lookup and reverse color retrieval by id.
+- Adjacency detection between neighboring provinces with shared-border-pixel counts.
+- Horizontal span extraction for contiguous province row segments.
+- Border segment detection returning line segments between differing province regions.
+- Polygon tracing from directed cell edges into closed point loops per province.
+- Polygon simplification removing collinear vertices and 45-degree staircase patterns.
+- Binary serialization and deserialization of span and border segment shape data.
+- Adjacency pair struct exposing province relationships for map graph queries.
 
 ### `registry.rs`
 - Central province registry: owns pixel grid, span runs, adjacency graph, and per-province records.
@@ -134,8 +122,7 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - Stores capital positions, label anchor lines, and label text per province.
 - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
 - Maintains a monotonic revision counter and ordered change log for incremental sync.
-- Supports border type overrides keyed by normalised province pair.
-- Stores registered border type configs (name, color, thickness, draw_priority).
+- Supports border class overrides keyed by normalised province pair.
 - Stores arbitrary string key-value attributes per province via set_attr.
 
 ### `render.rs`
@@ -154,8 +141,7 @@ its own independent configuration gate, reflecting its distinct domain responsib
 
 ### `types.rs`
 - Core type definitions for the province map system.
-- ProvinceId alias, BorderType (u8) for game-defined adjacency classification, and ProvinceStyle for per-province visuals.
-- BorderTypeConfig struct for per-type visual settings registered from Lua.
+- ProvinceId newtype, BorderType (u8) for game-defined adjacency classification, and ProvinceStyle for per-province visuals.
 - ProvinceSnapshot provides an immutable point-in-time view of province state.
 
 ### `view_transform.rs`
@@ -168,7 +154,6 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `ProvinceBorderIndex` (`struct`, `border_index.rs`): Dense per-pixel border pair index map.
 - `ProvinceGeometryCache` (`struct`, `cache.rs`): Cache blob of precomputed province geometry.
 - `ProvinceDistanceField` (`struct`, `distance_field.rs`): Per-pixel distance to nearest province border, clamped to `max_distance`.
-- `ProvinceProperties` (`struct`, `properties.rs`): Generic per-province key-value property store (numeric, string, flags).
 - `ProvinceChange` (`enum`, `events.rs`): Fine-grained field updates emitted by the province registry.
 - `ProvinceEvent` (`enum`, `events.rs`): High-level province events for subscribers.
 - `ProvinceGpuRecord` (`struct`, `gpu_bridge.rs`): GPU packed province row (std430-friendly 32-byte payload).
@@ -178,13 +163,18 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `MarkerSanitizeSummary` (`struct`, `import.rs`): Result counters returned by sanitize_marked_png.
 - `ProvinceMetadataImportOptions` (`struct`, `import.rs`): Options for the full metadata import pipeline run by import_metadata_from_files.
 - `ProvinceMetadataImportSummary` (`struct`, `import.rs`): Result counters returned by import_metadata_from_files.
-- `ProvinceMapMode` (`enum`, `map_modes.rs`): Built-in map modes supported by the province engine.
+- `MapModeConfig` (`struct`, `map_modes.rs`): Configuration for a named map display mode, registered from Lua.
+- `MapModeRegistry` (`struct`, `map_modes.rs`): Registry of map modes, keyed by name string.
+- `ProvinceProperties` (`struct`, `properties.rs`): Generic per-province key-value property store (numeric, string, flags).
+- `AdjacencyPair` (`struct`, `province_grid.rs`): Adjacency summary for two provinces and the number of shared border pixels.
+- `ProvinceShapeCacheEntry` (`struct`, `province_grid.rs`): Cached province polygon draw data with color, bounds, and flattened vertices.
+- `ProvinceGrid` (`struct`, `province_grid.rs`): Province id grid derived from image colors and cached geometry.
 - `ProvinceRecord` (`struct`, `registry.rs`): Runtime state for one province row.
 - `ProvinceRegistry` (`struct`, `registry.rs`): Full province dataset with revisioned change history.
 - `ProvinceZoomMode` (`enum`, `render.rs`): Strategic/tactical map rendering mode.
 - `ProvinceRenderOptions` (`struct`, `render.rs`): Render options for one province map pass.
 - `ProvinceGraph` (`struct`, `topology.rs`): Undirected adjacency graph between provinces.
-- `ProvinceId` (`type`, `types.rs`): Province identifier used across province/globe/minimap modules.
+- `ProvinceId` (`struct`, `types.rs`): Province identifier used across province/globe/minimap modules.
 - `BorderType` (`type`, `types.rs`): Game-defined border type identifier (u8). Registered via `registerBorderType` from Lua.
 - `BorderTypeConfig` (`struct`, `types.rs`): Per border-type visual config (name, color, thickness, draw_priority).
 - `BorderPairFlags` (`struct`, `types.rs`): Bit-flag set controlling semantic styling of a border pair override.
@@ -199,22 +189,12 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `build_border_index` (`border_index.rs`): Build border index map from raw province id grid.
 - `dilate_border_index_with_styles` (`border_index.rs`): Expand border pixels by radius per pair style thickness.
 - `build_border_index_from_registry` (`border_index.rs`): Build border index map directly from current registry pixel grid.
-- `classify_border` (`borders.rs`): Removed — border classification is now game-defined via Lua.
 - `ProvinceGeometryCache::from_registry` (`cache.rs`): Build a cache by copying spans and border_segments from the given registry.
 - `ProvinceGeometryCache::encode` (`cache.rs`): Serialise to a versioned little-endian byte buffer; always succeeds.
 - `ProvinceGeometryCache::decode` (`cache.rs`): Deserialise from a byte buffer produced by encode; return None on magic mismatch or truncation.
 - `ProvinceDistanceField::at` (`distance_field.rs`): Return field value at (x, y), or None when out of bounds.
 - `compute_distance_field` (`distance_field.rs`): Compute distance-to-border field from a raw province id grid.
 - `compute_distance_field_from_registry` (`distance_field.rs`): Build a distance field directly from the current registry pixel grid.
-- `ProvinceProperties::new` (`properties.rs`): Create a new empty property store.
-- `ProvinceProperties::set_numeric` (`properties.rs`): Set a numeric property on a province.
-- `ProvinceProperties::get_numeric` (`properties.rs`): Get a numeric property from a province.
-- `ProvinceProperties::set_string` (`properties.rs`): Set a string attribute on a province.
-- `ProvinceProperties::get_string` (`properties.rs`): Get a string attribute from a province.
-- `ProvinceProperties::set_flag` (`properties.rs`): Set a flag bit on a province.
-- `ProvinceProperties::has_flag` (`properties.rs`): Check if a flag bit is set on a province.
-- `ProvinceProperties::clear_province` (`properties.rs`): Remove all data for a province.
-- `ProvinceProperties::province_ids` (`properties.rs`): List all province IDs with any stored data.
 - `build_gpu_records` (`gpu_bridge.rs`): Builds a sorted GPU record table from registry contents.
 - `build_border_style_gpu_records` (`gpu_bridge.rs`): Build border style GPU records aligned to `ProvinceBorderIndex::id_to_pair`.
 - `pack_u32_pixels_le` (`gpu_upload.rs`): Pack `u32` row-major pixels into little-endian bytes for `R32Uint` uploads.
@@ -226,9 +206,38 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `sanitize_marked_png` (`import.rs`): Replace capital and label marker pixels with their nearest non-marker neighbour and write the result to output_png_path; return pixel counts or an error string.
 - `import_metadata_from_files` (`import.rs`): Import province metadata from colour-map PNG, RGB CSV, and optional TOML/marker files into registry; return counts or an error string.
 - `centroids_from_spans` (`labels.rs`): Computes centroid candidates from fill spans.
-- `ProvinceMapMode::as_str` (`map_modes.rs`): Return the canonical lowercase string token for this mode.
-- `ProvinceMapMode::parse_str` (`map_modes.rs`): Parse a string token to a variant; return None on unknown input.
-- `resolve_color` (`map_modes.rs`): Resolves output color for one province style in selected map mode.
+- `MapModeRegistry::new` (`map_modes.rs`): Create a new registry with a default "political" mode.
+- `MapModeRegistry::register` (`map_modes.rs`): Register a named map mode config.
+- `MapModeRegistry::set_active` (`map_modes.rs`): Set the active map mode by name.
+- `MapModeRegistry::active_name` (`map_modes.rs`): Get the currently active map mode name.
+- `MapModeRegistry::active_config` (`map_modes.rs`): Get the active map mode config.
+- `MapModeRegistry::get_config` (`map_modes.rs`): Get config for a named map mode.
+- `MapModeRegistry::mode_names` (`map_modes.rs`): List all registered mode names.
+- `resolve_color_fallback` (`map_modes.rs`): Resolve fill colour for a province given the active mode's config and the province style.
+- `ProvinceProperties::new` (`properties.rs`): Create a new empty property store with no province data.
+- `ProvinceProperties::set_numeric` (`properties.rs`): Set a named numeric value for the given province.
+- `ProvinceProperties::get_numeric` (`properties.rs`): Get the named numeric value for a province, or `None` if not set.
+- `ProvinceProperties::set_string` (`properties.rs`): Set a named string attribute for the given province.
+- `ProvinceProperties::get_string` (`properties.rs`): Get the named string attribute for a province, or `None` if not set.
+- `ProvinceProperties::set_flag` (`properties.rs`): Set or clear a bitfield flag (0-63) for the given province.
+- `ProvinceProperties::has_flag` (`properties.rs`): Return `true` if the specified bitfield flag is set for the given province.
+- `ProvinceProperties::clear_province` (`properties.rs`): Remove all numeric, string, and flag data stored for the given province.
+- `ProvinceProperties::province_ids` (`properties.rs`): Return a sorted list of all province IDs that have any stored properties.
+- `ProvinceGrid::from_image` (`province_grid.rs`): Build a province grid from an image where non-black pixels define province ids.
+- `ProvinceGrid::from_file` (`province_grid.rs`): Load an image from disk and derive province ids from it.
+- `ProvinceGrid::width` (`province_grid.rs`): Return the grid width in pixels.
+- `ProvinceGrid::height` (`province_grid.rs`): Return the grid height in pixels.
+- `ProvinceGrid::get_at` (`province_grid.rs`): Return the province id at a coordinate, or `0` when out of bounds.
+- `ProvinceGrid::province_count` (`province_grid.rs`): Return the highest province id present in the grid.
+- `ProvinceGrid::province_color` (`province_grid.rs`): Return the RGB color associated with a province id, or `None` for id 0.
+- `ProvinceGrid::adjacencies` (`province_grid.rs`): Return cached adjacency triples for the grid.
+- `ProvinceGrid::province_spans` (`province_grid.rs`): Return horizontal spans for each province row segment.
+- `ProvinceGrid::border_segments` (`province_grid.rs`): Return contiguous border segments between differing provinces.
+- `ProvinceGrid::province_polygons` (`province_grid.rs`): Trace province polygons as ordered point loops.
+- `ProvinceGrid::province_polygons_simplified` (`province_grid.rs`): Return simplified province polygons with redundant vertices removed.
+- `ProvinceGrid::build_shape_cache` (`province_grid.rs`): Build a simplified polygon shape cache for efficient drawing.
+- `ProvinceGrid::serialize_shape_data` (`province_grid.rs`): Serialize spans and border segments into a compact binary blob.
+- `ProvinceGrid::deserialize_shape_data` (`province_grid.rs`): Decode serialized spans and border segments from a shape-data blob.
 - `ProvinceRegistry::new` (`registry.rs`): Return a new empty registry with zero dimensions and no provinces.
 - `ProvinceRegistry::from_grid` (`registry.rs`): Build a registry from a pre-parsed ProvinceGrid, computing spans, adjacency, and centroids.
 - `ProvinceRegistry::from_png` (`registry.rs`): Build a registry by loading a province colour-map PNG from path; return error on I/O or decode failure.
@@ -265,6 +274,11 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `ProvinceRegistry::set_border_pair_style` (`registry.rs`): Set the border pair style for (a, b) and record a BorderPairStyle change.
 - `ProvinceRegistry::get_border_pair_style` (`registry.rs`): Return the stored border pair style for (a, b), or None if not explicitly set.
 - `ProvinceRegistry::set_attr` (`registry.rs`): Insert a key-value string attribute for id; return false if id is unknown.
+- `ProvinceRegistry::register_map_mode` (`registry.rs`): Register a named map mode config.
+- `ProvinceRegistry::set_map_mode` (`registry.rs`): Set the active map mode by name.
+- `ProvinceRegistry::active_map_mode` (`registry.rs`): Get the currently active map mode name.
+- `ProvinceRegistry::map_mode_config` (`registry.rs`): Get the active map mode config.
+- `ProvinceRegistry::get_map_mode_config` (`registry.rs`): Get config for a named map mode.
 - `generate_render_commands` (`render.rs`): Generates render commands for one province map frame.
 - `ProvinceGraph::new` (`topology.rs`): Return a new empty graph.
 - `ProvinceGraph::rebuild_from_pairs` (`topology.rs`): Rebuild the graph from a slice of adjacent id pairs; clears previous data.
@@ -272,15 +286,15 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `ProvinceGraph::is_adjacent` (`topology.rs`): Return true if a and b share a border in the graph.
 - `ProvinceGraph::province_ids` (`topology.rs`): Return all province ids present in the graph, sorted ascending.
 - `ProvinceGraph::adjacency_pairs` (`topology.rs`): Return all unique adjacency pairs (a < b) sorted ascending.
-- `BorderPairFlags::empty` (`types.rs`): Create an empty flag set.
-- `BorderPairFlags::bits` (`types.rs`): Return the raw bit pattern.
+- `ProvinceId::new` (`types.rs`): Creates a new ProvinceId from a raw u32.
+- `ProvinceId::raw` (`types.rs`): Returns the raw u32 underlying value.
+- `BorderPairFlags::empty` (`types.rs`): Create a new empty border flag set.
+- `BorderPairFlags::bits` (`types.rs`): Return the raw flag bit pattern.
 - `BorderPairFlags::from_bits` (`types.rs`): Build a flag set from raw bits.
-- `BorderPairFlags::insert_bits` (`types.rs`): Insert a raw flag mask.
+- `BorderPairFlags::insert_bits` (`types.rs`): Insert a raw flag bitmask into this set.
 - `BorderPairFlags::contains_bits` (`types.rs`): Return true if all bits from mask are present.
 - `BorderPairFlags::parse_token` (`types.rs`): Parse a single canonical flag token.
 - `BorderPairFlags::to_tokens` (`types.rs`): Return canonical tokens for all set bits.
-- `BorderClass::as_str` (`types.rs`): Removed — replaced by generic BorderType system.
-- `BorderClass::parse_str` (`types.rs`): Removed — replaced by generic BorderType system.
 - `fit_camera_to_screen` (`view_transform.rs`): Computes camera transform that fits the full province map inside the screen.
 - `screen_to_map` (`view_transform.rs`): Converts a screen-space position to map-space pixel coordinates.
 - `map_to_cell` (`view_transform.rs`): Converts map-space coordinates to a 0-based integer cell when inside bounds.
@@ -300,6 +314,13 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `lurek.province.setActive`: Sets the named registry as the active province registry. Returns false if no registry with that name exists.
 - `lurek.province.getActive`: Returns the currently active province registry, or nil if none is set.
 - `lurek.province.zoomCameraAt`: Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually stationary on screen while the zoom level changes.
+- `lurek.province.setProperty`: Sets a numeric property on a province. Game logic defines the semantics of each key.
+- `lurek.province.getProperty`: Gets a numeric property from a province. Returns nil if not set.
+- `lurek.province.setAttr`: Sets a string attribute on a province.
+- `lurek.province.getAttr`: Gets a string attribute from a province. Returns nil if not set.
+- `lurek.province.setFlag`: Sets a single flag bit (0–63) on a province.
+- `lurek.province.hasFlag`: Checks whether a flag bit is set on a province.
+- `lurek.province.clearProperties`: Removes all properties, attributes, and flags for a province.
 
 ### `LProvinceRegistry` Methods
 - `LProvinceRegistry:getName`: Returns the string name used to identify this registry in the province system.
@@ -318,10 +339,10 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `LProvinceRegistry:getProvince`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
 - `LProvinceRegistry:getNeighbors`: Returns a table of province IDs that share a border with the given province.
 - `LProvinceRegistry:getBorderType`: Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.
-- `LProvinceRegistry:setBorderType`: Sets the border type ID between two adjacent provinces.
+- `LProvinceRegistry:setBorderType`: Sets the border type ID between two adjacent provinces. Register types first with registerBorderType.
+- `LProvinceRegistry:getBorderClass`: Backward-compatible alias for getBorderType. Returns the border type ID.
+- `LProvinceRegistry:setBorderClass`: Backward-compatible alias for setBorderType. Sets the border type ID.
 - `LProvinceRegistry:registerBorderType`: Registers a border type config by ID. Defines visual appearance for borders of this type.
-- `LProvinceRegistry:getBorderClass`: Backward-compatible alias for getBorderType.
-- `LProvinceRegistry:setBorderClass`: Backward-compatible alias for setBorderType.
 - `LProvinceRegistry:setBorderPairStyle`: Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
 - `LProvinceRegistry:getBorderPairStyle`: Returns the style override for a specific adjacency pair, or nil when unset.
 - `LProvinceRegistry:setPoliticalColor`: Sets the political map color for a province. Used in political map mode rendering and change tracking.
@@ -335,7 +356,10 @@ its own independent configuration gate, reflecting its distinct domain responsib
 - `LProvinceRegistry:setLabelText`: Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.
 - `LProvinceRegistry:importMetadataFromFiles`: Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
 - `LProvinceRegistry:render`: Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
-- `LProvinceRegistry:getChangesSince`: Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_type).
+- `LProvinceRegistry:getChangesSince`: Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
+- `LProvinceRegistry:registerMapMode`: Registers a named map mode with display configuration. Overwrites if name exists.
+- `LProvinceRegistry:setMapMode`: Switches the active map mode to a previously registered mode name.
+- `LProvinceRegistry:getMapMode`: Returns the name of the currently active map mode.
 - `LProvinceRegistry:type`: Returns the type name string for this userdata object.
 - `LProvinceRegistry:typeOf`: Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object".
 

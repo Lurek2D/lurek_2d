@@ -15,7 +15,7 @@
 
 ## Summary
 
- At its core is the `Globe` structure, which oversees a highly optimized, region-based spherical map. It utilizes an orbit camera with latitude and longitude positioning, supporting smooth interpolation, variable zoom levels, and automatic Level-of-Detail (LOD) adjustments. A key architectural decision is that all rendering output consists of 2D draw commands (such as convex fans, polylines, and circles) projected from spherical coordinates, intentionally avoiding the complexity of a full 3D pipeline.
+At its core is the `Globe` structure, which oversees a highly optimized, region-based spherical map. It utilizes an orbit camera with latitude and longitude positioning, supporting smooth interpolation, variable zoom levels, and automatic Level-of-Detail (LOD) adjustments. A key architectural decision is that all rendering output consists of 2D draw commands (such as convex fans, polylines, and circles) projected from spherical coordinates, intentionally avoiding the complexity of a full 3D pipeline.
 
 The module manages complex geographical topologies via the `RegionGraph` (aliased as `ProvinceGraph` for backward compatibility), which caches adjacency data and enables rapid pathfinding and reachability queries. Region geometry can be constructed in multiple ways: parsed from TOML descriptions, extracted from color-indexed PNG maps, or generated dynamically from Voronoi seed points. For visual presentation, the module implements advanced lighting models, including a day/night terminator band, per-region diffuse intensity, and atmospheric halos.
 
@@ -99,6 +99,7 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 ### `province_adapter.rs`
 - Sync political colors and fog visibility from the province registry into the globe.
 - Bridge between province game-state and globe rendering data.
+- Copies color and fog state from `ProvinceRegistry` into matching `Globe` region entries.
 
 ### `registry.rs`
 - Mutable globe state combining topology, fog, markers, labels, layers, and arcs.
@@ -108,6 +109,13 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - Frame emission producing render commands for the full globe state.
 - Named globe registry for storing and retrieving multiple globes by name.
 - Reachability caching per faction for path-cost queries.
+
+### `sphere.rs`
+- Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
+- Great-circle distance (Haversine) and arc interpolation between two geo-points.
+- Ray-sphere intersection returning the nearest positive hit distance.
+- Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
+- Matrix-vector and matrix-matrix multiplication for globe-view transforms.
 
 ### `sync.rs`
 - Snapshot serialization of globe state for cross-thread transfer.
@@ -142,10 +150,12 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `OrbitCamera` (`struct`, `projection.rs`): Orbit camera controlling the viewpoint onto the globe.
 - `Globe` (`struct`, `registry.rs`): Owns all domain stores for one named globe simulation.
 - `GlobeRegistry` (`struct`, `registry.rs`): Named multi-globe manager.
+- `Mat3x3` (`struct`, `sphere.rs`): Column-major 3×3 float matrix used for sphere rotation in globe view transforms.
 - `GlobeSyncSnapshot` (`struct`, `sync.rs`): Serializable globe state used for snapshot transfer.
 - `GlobeSyncChannel` (`struct`, `sync.rs`): Channel pair used to send and receive globe snapshots.
 - `RegionGraph` (`struct`, `topology.rs`): Complete region topology for one globe instance (aliased as `ProvinceGraph`).
-- `RegionId` (`type`, `types.rs`): Unique identifier for a region within a single globe instance (aliased as `ProvinceId`).
+- `ProvinceGraph` (`type`, `topology.rs`): Backward compatibility alias.
+- `RegionId` (`struct`, `types.rs`): Unique identifier for a region within a single globe instance (aliased as `ProvinceId`).
 - `Region` (`struct`, `types.rs`): A convex (or near-convex) polygon on the unit sphere, representing a geographical region (aliased as `Province`).
 - `FogState` (`enum`, `types.rs`): Fog-of-war state for a region.
 - `HeatLayer` (`struct`, `types.rs`): Heat overlay parameters used by globe color mapping.
@@ -160,6 +170,9 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `ProjectedRegion` (`struct`, `types.rs`): A region projected to screen space, ready for draw calls (aliased as `ProjectedProvince`).
 - `Arc` (`struct`, `types.rs`): A great-circle travel arc, projected to screen space.
 - `GlobeError` (`enum`, `types.rs`): Errors returned by globe operations.
+- `Province` (`type`, `types.rs`): Backward compatibility aliases.
+- `ProvinceId` (`type`, `types.rs`): Backward-compatible type alias for `RegionId`.
+- `ProjectedProvince` (`type`, `types.rs`): Backward-compatible type alias for `ProjectedRegion`.
 
 ## Functions
 
@@ -167,6 +180,7 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `emit_globe_frame` (`draw.rs`): Emit all render commands for one globe frame.
 - `project_arc` (`draw.rs`): Pre-project a great-circle arc into a flat screenspace point list.
 - `export_regions_to_obj` (`export.rs`): Export region polygons as a flat OBJ string with one object per region (aliased as `export_provinces_to_obj`).
+- `export_provinces_to_obj` (`export.rs`): Backward compatibility alias.
 - `FogMask::all_hidden` (`fog.rs`): Create a mask with every region hidden.
 - `FogMask::all_visible` (`fog.rs`): Create a mask with every region visible.
 - `FogMask::is_visible` (`fog.rs`): Return true when the region is visible.
@@ -188,7 +202,7 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `FogStore::get_or_insert` (`fog.rs`): Return the mask for a viewer, inserting a hidden mask when absent.
 - `FogStore::get` (`fog.rs`): Return the mask for a viewer when it exists.
 - `FogStore::is_visible` (`fog.rs`): Return true when the viewer can see the region.
-- `FogStore::reveal` (`fog.rs`): Reveal a region for a viewer.
+- `FogStore::reveal` (`fog.rs`): Reveal a fog region for a specific viewer.
 - `FogStore::explore` (`fog.rs`): Mark a region as explored for a viewer.
 - `FogStore::hide` (`fog.rs`): Hide a region for a viewer.
 - `FogStore::visible_ids` (`fog.rs`): Return the visible region ids for a viewer when the viewer exists.
@@ -255,27 +269,36 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `build_view_matrix` (`projection.rs`): Build the composite rotation matrix for a frame.
 - `project_point` (`projection.rs`): Project a single unit-sphere point through the view matrix to screen space.
 - `project_region` (`projection.rs`): Project a region's boundary vertices (aliased as `project_province`).
+- `project_province` (`projection.rs`): Backward compatibility alias.
 - `project_point_with_z` (`projection.rs`): Project a lat/lon point to screen and also return the camera-space Z (for picking).
 - `screen_delta_to_pan` (`projection.rs`): Convert a screen delta `(dx, dy)` in pixels to a globe pan `(delta_lat, delta_lon)`.
 - `normalize_v3` (`projection.rs`): Normalize a `Vec3` (returns zero vector if near-zero length).
 - `apply_political_colors` (`province_adapter.rs`): Applies political colors from a province registry onto matching globe provinces.
 - `apply_visibility_to_viewer` (`province_adapter.rs`): Applies fog visibility from province registry to one globe viewer mask.
 - `Globe::new` (`registry.rs`): Create a globe with the supplied name and spec.
-- `Globe::add_province` (`registry.rs`): Insert a region or return TooManyRegions when the graph is full (aliased; primary is `add_region`).
-- `Globe::remove_province` (`registry.rs`): Remove a region by id and return it when present (aliased; primary is `remove_region`).
-- `Globe::get_province` (`registry.rs`): Return a shared region reference when the id exists (aliased; primary is `get_region`).
-- `Globe::get_province_mut` (`registry.rs`): Return a mutable region reference when the id exists (aliased; primary is `get_region_mut`).
-- `Globe::province_count` (`registry.rs`): Return the number of stored regions (aliased; primary is `region_count`).
+- `Globe::add_region` (`registry.rs`): Insert a region or return TooManyRegions when the graph is full.
+- `Globe::remove_region` (`registry.rs`): Remove a region by id and return it when present.
+- `Globe::get_region` (`registry.rs`): Return a shared region reference when the id exists.
+- `Globe::get_region_mut` (`registry.rs`): Return a mutable region reference when the id exists.
+- `Globe::region_count` (`registry.rs`): Return the number of stored regions.
+- `Globe::add_province` (`registry.rs`): Backward compatibility: insert a region.
+- `Globe::remove_province` (`registry.rs`): Backward compatibility: remove a region by id.
+- `Globe::get_province` (`registry.rs`): Backward compatibility: get a region reference.
+- `Globe::get_province_mut` (`registry.rs`): Backward compatibility: get a mutable region reference.
+- `Globe::province_count` (`registry.rs`): Backward compatibility: return region count.
 - `Globe::add_arc` (`registry.rs`): Insert an arc and return its assigned id.
 - `Globe::remove_arc` (`registry.rs`): Remove an arc by id and return true when it existed.
 - `Globe::update` (`registry.rs`): Advance simulation time and update the globe clock and rotation.
-- `Globe::pick_screen` (`registry.rs`): Pick a region at screen coordinates or return None when no region matches.
+- `Globe::pick_screen` (`registry.rs`): Pick a province at screen coordinates or return None when no province matches.
 - `Globe::emit_frame` (`registry.rs`): Emit render commands for the current globe state.
 - `Globe::set_heat_layer` (`registry.rs`): Add or replace a heat layer by name.
 - `Globe::remove_heat_layer` (`registry.rs`): Remove a heat layer by name and return true when one was removed.
-- `Globe::set_province_sector` (`registry.rs`): Assign a region to a named sector (aliased; primary is `set_region_sector`).
-- `Globe::province_sector` (`registry.rs`): Return the sector name that contains a region when one exists (aliased; primary is `region_sector`).
-- `Globe::sector_provinces` (`registry.rs`): Return all region ids for a named sector (aliased; primary is `sector_regions`).
+- `Globe::set_region_sector` (`registry.rs`): Assign a region to a named sector.
+- `Globe::region_sector` (`registry.rs`): Return the sector name that contains a region when one exists.
+- `Globe::sector_regions` (`registry.rs`): Return all region ids for a named sector.
+- `Globe::set_province_sector` (`registry.rs`): Backward compatibility: assign a region to a sector.
+- `Globe::province_sector` (`registry.rs`): Backward compatibility: get sector for a region.
+- `Globe::sector_provinces` (`registry.rs`): Backward compatibility: get region ids in a sector.
 - `Globe::cache_reachability_default` (`registry.rs`): Cache default reachability for a faction name.
 - `Globe::cached_reachability` (`registry.rs`): Return cached reachability for a faction when present.
 - `GlobeRegistry::new` (`registry.rs`): Create an empty globe registry.
@@ -286,37 +309,48 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `GlobeRegistry::names` (`registry.rs`): Return all globe names in arbitrary order.
 - `GlobeRegistry::len` (`registry.rs`): Return the number of stored globes.
 - `GlobeRegistry::is_empty` (`registry.rs`): Return true when no globes are stored.
+- `Mat3x3::identity` (`sphere.rs`): Return the identity matrix.
+- `Mat3x3::from_cols` (`sphere.rs`): Construct a matrix from three column arrays.
+- `Mat3x3::mul_vec` (`sphere.rs`): Multiply this matrix by column vector `v`.
+- `Mat3x3::mul_mat` (`sphere.rs`): Return the product of this matrix and `other`.
+- `lat_lon_to_unit` (`sphere.rs`): Convert latitude/longitude in degrees to a unit sphere Vec3 (Y-up, Z-east convention).
+- `unit_to_lat_lon` (`sphere.rs`): Convert a unit Vec3 back to latitude/longitude in degrees; normalises the input.
+- `great_circle_distance` (`sphere.rs`): Return the great-circle angular distance in radians between two lat/lon points via Haversine.
+- `great_circle_path` (`sphere.rs`): Return `n` evenly spaced lat/lon points along the great-circle arc from point 1 to point 2.
+- `ray_sphere_intersect` (`sphere.rs`): Return the smallest positive intersection `t` for a ray from `origin` in `dir` with sphere of `radius`.
+- `axial_tilt_mat` (`sphere.rs`): Return a rotation matrix representing axial tilt (alias for `rot_x`).
+- `rot_x` (`sphere.rs`): Return a rotation matrix for `angle_deg` degrees around the X axis.
+- `rot_y` (`sphere.rs`): Return a rotation matrix for `angle_deg` degrees around the Y axis.
+- `rot_z` (`sphere.rs`): Return a rotation matrix for `angle_deg` degrees around the Z axis.
 - `GlobeSyncChannel::new` (`sync.rs`): Create a new snapshot channel pair.
 - `build_snapshot` (`sync.rs`): Build a snapshot from the current globe state.
 - `apply_snapshot` (`sync.rs`): Apply a snapshot to a mutable globe instance.
-- `ProvinceGraph::new` (`topology.rs`): Create an empty region graph (type aliased as `RegionGraph`).
-- `ProvinceGraph::insert` (`topology.rs`): Insert a province and update the cached adjacency data.
-- `ProvinceGraph::remove` (`topology.rs`): Remove a province and its cached data, returning the removed province when present.
-- `ProvinceGraph::get` (`topology.rs`): Return a shared province reference when the id exists.
-- `ProvinceGraph::get_mut` (`topology.rs`): Return a mutable province reference when the id exists.
-- `ProvinceGraph::iter` (`topology.rs`): Iterate over all stored provinces.
-- `ProvinceGraph::len` (`topology.rs`): Return the number of stored provinces.
-- `ProvinceGraph::is_empty` (`topology.rs`): Return true when no provinces are stored.
-- `ProvinceGraph::find_path` (`topology.rs`): Find a province path or return NoPath when no route exists.
-- `ProvinceGraph::reachable` (`topology.rs`): Return provinces reachable within the supplied maximum cost.
-- `ProvinceGraph::neighbors_of` (`topology.rs`): Return the cached neighbor slice for a province or an empty slice when missing.
-- `ProvinceGraph::set_attr` (`topology.rs`): Set a province attribute or return ProvinceNotFound when the id is missing.
-- `ProvinceGraph::get_attr` (`topology.rs`): Return a province attribute as a string slice when it exists.
-- `ProvinceGraph::find_path_default` (`topology.rs`): Find a province path with the default cost function.
-- `ProvinceGraph::reachable_default` (`topology.rs`): Return reachable provinces with the default cost function.
-- `ProvinceGraph::rebuild_caches` (`topology.rs`): Rebuild all cached adjacency and edge-tag data from the stored provinces.
-- `Province::new` (`types.rs`): Create a province from vertices and derive a centroid from them.
-- `Province::with_data` (`types.rs`): Create a province from explicit cached data.
+- `RegionGraph::new` (`topology.rs`): Create an empty region graph.
+- `RegionGraph::insert` (`topology.rs`): Insert a region and update the cached adjacency data.
+- `RegionGraph::remove` (`topology.rs`): Remove a region and its cached data, returning the removed region when present.
+- `RegionGraph::get` (`topology.rs`): Return a shared region reference when the id exists.
+- `RegionGraph::get_mut` (`topology.rs`): Return a mutable region reference when the id exists.
+- `RegionGraph::iter` (`topology.rs`): Iterate over all stored regions.
+- `RegionGraph::len` (`topology.rs`): Return the number of stored regions.
+- `RegionGraph::is_empty` (`topology.rs`): Return true when no regions are stored.
+- `RegionGraph::find_path` (`topology.rs`): Find a region path or return NoPath when no route exists.
+- `RegionGraph::reachable` (`topology.rs`): Return regions reachable within the supplied maximum cost.
+- `RegionGraph::neighbors_of` (`topology.rs`): Return the cached neighbor slice for a region or an empty slice when missing.
+- `RegionGraph::set_attr` (`topology.rs`): Set a region attribute or return RegionNotFound when the id is missing.
+- `RegionGraph::get_attr` (`topology.rs`): Return a region attribute as a string slice when it exists.
+- `RegionGraph::find_path_default` (`topology.rs`): Find a region path with the default cost function.
+- `RegionGraph::reachable_default` (`topology.rs`): Return reachable regions with the default cost function.
+- `RegionGraph::rebuild_caches` (`topology.rs`): Rebuild all cached adjacency and edge-tag data from the stored regions.
+- `RegionId::new` (`types.rs`): Creates a new RegionId from a raw u32.
+- `RegionId::raw` (`types.rs`): Returns the raw u32 underlying value.
+- `Region::new` (`types.rs`): Create a region from vertices and derive a centroid from them.
+- `Region::with_data` (`types.rs`): Create a region from explicit cached data.
 - `Layer::new` (`types.rs`): Create a visible overlay layer with the supplied name, kind, and z-order.
 
 ## Lua API Reference
 
 - Binding path(s): `src/lua_api/globe_api.rs`
 - Namespace: `lurek.globe`
-
-### Module Constants
-- `lurek.globe.MAX_PROVINCES`: Maximum number of provinces that can be registered in a globe (soft cap; alias for `MAX_REGIONS`).
-- `lurek.globe.MAX_REGIONS`: Alias for `MAX_PROVINCES` — maximum number of regions that can be registered in a globe.
 
 ### Module Functions
 - `lurek.globe.new`: Creates a named globe with optional specification fields in the module registry.
@@ -331,8 +365,11 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 
 ### `LGlobe` Methods
 - `LGlobe:addProvince`: Adds a province described by id, centroid, vertices, neighbors, and optional base color.
-- `LGlobe:removeProvince`: Removes a province by id. This method is available to Lua scripts.
-- `LGlobe:provinceCount`: Returns the number of provinces in this globe.
+- `LGlobe:removeProvince`: Removes a region by id. This method is available to Lua scripts.
+- `LGlobe:addRegion`: Adds a region described by id, centroid, vertices, neighbors, and optional base color.
+- `LGlobe:removeRegion`: Removes a region by id. This method is available to Lua scripts.
+- `LGlobe:provinceCount`: Returns the number of regions in this globe.
+- `LGlobe:regionCount`: Returns the number of regions in this globe.
 - `LGlobe:getNeighbors`: Returns neighboring province ids for a province.
 - `LGlobe:setProvinceAttr`: Sets a string attribute on a province.
 - `LGlobe:getProvinceAttr`: Reads a string attribute from a province.
@@ -404,7 +441,6 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 
 ## References
 
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
 - `pathfind`: Imports or references `src/pathfind/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
 - `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.

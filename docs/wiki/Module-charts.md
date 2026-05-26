@@ -1207,7 +1207,7 @@ end
 #### Definition
 
 ```lua
---- Add a slice to the pie chart — Lua userdata object exposed by the engine.
+--- Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
 ---@param label string Display label for the slice.
 ---@param value number Numeric value determining the slice proportion.
 ---@param color? table Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.
@@ -1216,7 +1216,7 @@ function LPieChart:addSlice(label, value, color) end
 
 #### Description
 
-Add a slice to the pie chart — Lua userdata object exposed by the engine.
+Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
 
 Parameters:
 

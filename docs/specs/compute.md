@@ -15,7 +15,7 @@
 
 ## Summary
 
- Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
+Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
 
 The module offers a vast mathematical operations suite accessible via `ops.rs`. This includes element-wise arithmetic, boolean comparisons, bitwise logic, and reduction operations (sum, mean, min, max) that can be applied globally or along specific array axes. Many of these operations feature in-place mutation variants and support row-broadcasting to optimize memory usage. For large array processing, the module leverages the `rayon` crate to automatically dispatch operations concurrently across threads when workloads exceed a tunable parallelization threshold.
 

@@ -15,7 +15,7 @@
 
 ## Summary
 
- It provides a robust engine for animating numeric properties over time, making it ideal for UI transitions, camera movements, and gameplay juice. At its core, `LuaTween` interpolates a single numeric property (or multiple numeric fields on a single Lua table) from a start value to a target value over a specified duration. Developers can choose from over 30 built-in easing curves—including linear, quadratic, cubic, elastic, bounce, and back—or register custom easing functions to achieve the exact feel required. Tweens support full lifecycle callbacks (`onUpdate`, `onComplete`, `onCancel`) and can be configured to repeat infinitely, yoyo (reverse direction on repeat), or operate in relative mode where targets act as offsets.
+It provides a robust engine for animating numeric properties over time, making it ideal for UI transitions, camera movements, and gameplay juice. At its core, `LuaTween` interpolates a single numeric property (or multiple numeric fields on a single Lua table) from a start value to a target value over a specified duration. Developers can choose from over 30 built-in easing curves—including linear, quadratic, cubic, elastic, bounce, and back—or register custom easing functions to achieve the exact feel required. Tweens support full lifecycle callbacks (`onUpdate`, `onComplete`, `onCancel`) and can be configured to repeat infinitely, yoyo (reverse direction on repeat), or operate in relative mode where targets act as offsets.
 
 To handle complex animation choreography, the module provides powerful combinators. `LuaTweenSequence` enables the chaining of multiple tweens, delays, and callbacks into an ordered execution pipeline, where each step seamlessly transitions to the next while carrying over leftover frame delta time. Conversely, `LuaTweenParallel` groups multiple tweens together, executing them simultaneously and completing only when the longest-running child finishes. For a more organic, physics-driven feel, `SpringSystem` offers damped spring interpolation with configurable stiffness and damping. This eliminates fixed durations in favor of natural settling dynamics, which is particularly effective for responsive UI elements or following camera logic.
 
@@ -24,7 +24,12 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 ## Source Documentation
 
 ### `engine.rs`
-- Public types and helpers for the engine module.
+- Tween engine: per-tick interpolation of numeric table fields on Lua objects.
+- `TweenEngine` holds a slab of active `TweenJob` entries; completed jobs are freed.
+- Each job targets a Lua registry key and a list of field names to animate.
+- Easing functions (linear, ease-in, ease-out, spring, bounce) are value-mapped.
+- `on_settle` callback fires once the job reaches its target value within epsilon.
+- Updated synchronously inside `lua_tick`; no background threads.
 
 ### `handle.rs`
 - Lua-visible tween handles: single-field (`LuaTween`), sequence (`LuaTweenSequence`), and parallel (`LuaTweenParallel`).
@@ -35,11 +40,19 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - Parallel groups advance all lanes simultaneously and complete when every lane finishes.
 - Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
 
+### `interpolator.rs`
+- Multi-channel tween interpolator that drives values from start to target over a fixed duration.
+- Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
+- Each tween holds an independent clock, supports reset, seek, and completion query.
+- Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
+- Falls back to linear when an unknown easing name is provided.
+
 ### `mod.rs`
 - Smooth value interpolation with configurable easing curves.
 - Sequence and parallel combinators for complex multi-step animations.
 - Spring-based physics tweening for natural motion.
 - Shared tween engine driving all active tweens each frame.
+- Multi-channel interpolator driven by easing functions over a fixed duration.
 
 ### `spring.rs`
 - Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
@@ -59,6 +72,8 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LuaTweenSequence` (`struct`, `handle.rs`): The ordered step runner that executes tween, delay, and callback steps one after another.
 - `ParallelEntry` (`struct`, `handle.rs`): The per-arm tween record stored inside a parallel group.
 - `LuaTweenParallel` (`struct`, `handle.rs`): The grouped runner that executes multiple tween entries at the same time.
+- `TweenValue` (`struct`, `interpolator.rs`): Start/target pair for a single channel managed by a `Tween`.
+- `Tween` (`struct`, `interpolator.rs`): Multi-channel tween interpolator driven by an easing function over a fixed duration.
 - `SpringAxis` (`struct`, `spring.rs`): Single-axis spring simulation driven by a damped differential equation.
 - `SpringSystem` (`struct`, `spring.rs`): Named collection of [`SpringAxis`] values that all share the same parameters.
 - `TweenState` (`struct`, `state.rs`): The pure timing and easing core that tracks elapsed time, completion, and interpolation progress without Lua dependencies.
@@ -85,6 +100,18 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LuaTweenSequence::resume_waiters` (`handle.rs`): Resume all registered waiter coroutines and remove their registry entries.
 - `LuaTweenParallel::new` (`handle.rs`): Create an empty, inactive parallel group.
 - `LuaTweenParallel::tick_with` (`handle.rs`): Advance all incomplete lanes by `dt` seconds; return true when every lane is done.
+- `Tween::new` (`interpolator.rs`): Create a new Tween with the given `duration` (seconds) and named easing; falls back to linear when name is unknown.
+- `Tween::add_value` (`interpolator.rs`): Register a `(start, target)` channel and return its index.
+- `Tween::update` (`interpolator.rs`): Advance the clock by `dt` seconds; returns true when the tween has completed.
+- `Tween::get_value` (`interpolator.rs`): Return the interpolated value for channel `index`; returns 0.0 for out-of-range index.
+- `Tween::get_all_values` (`interpolator.rs`): Return interpolated values for all registered channels.
+- `Tween::reset` (`interpolator.rs`): Reset the clock to zero without clearing channels.
+- `Tween::set_time` (`interpolator.rs`): Set the clock to a specific time `t`, clamped to `[0, duration]`.
+- `Tween::is_complete` (`interpolator.rs`): Return true when the clock has reached or passed the duration.
+- `Tween::value_count` (`interpolator.rs`): Return the number of registered value channels.
+- `Tween::easing_name` (`interpolator.rs`): Return the easing name string this tween was constructed with.
+- `Tween::duration` (`interpolator.rs`): Return the total duration in seconds.
+- `Tween::clock` (`interpolator.rs`): Return the current elapsed clock time in seconds.
 - `SpringAxis::new` (`spring.rs`): Create a new spring axis; `settled` is set immediately if `|position - target| < precision`.
 - `SpringAxis::update` (`spring.rs`): Advance the spring by `dt` seconds; snap to target and zero velocity when settled.
 - `SpringAxis::is_settled` (`spring.rs`): Return true if the spring has settled within `precision` of its target.

@@ -2391,6 +2391,7 @@ end
 
 ## 🎮 Reference Games
 
+- [province_economy_demo](../tree/main/content/games/simulation/province_economy_demo) (simulation)
 - [eu2](../tree/main/content/games/strategy/eu2) (strategy)
 
 [⬆ back to top](#table-of-contents)

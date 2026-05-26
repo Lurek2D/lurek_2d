@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "High-level technical lead. Owns architecture docs, module boundaries, and design decisions. For hard problems acts as solver: defines the problem, builds 2-4 options, checks against constraints, and chooses one path."
 ---
+
 # Architect
 
 ## Mission
@@ -95,5 +96,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, structure-first
 Personas: EngDev
-Primary skills: module-architecture, enterprise-architecture, solution-options
-Secondary skills: documentation, agent-md, togaf, roadmap-planning
+Primary skills: skill_module-architecture, skill_enterprise-architecture, skill_solution-options
+Secondary skills: skill_documentation, skill_agent-md, skill_togaf, skill_roadmap-planning

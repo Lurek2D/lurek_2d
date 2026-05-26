@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when editing .github agents, skills, prompts, or the system prompt, or when choosing the right CAG file type. Skip it for engine code, Lua scripts, or roadmap work."
 ---
+
 # cag-workflow
 
 ## Mission
@@ -31,6 +32,12 @@ description: "Load this skill when editing .github agents, skills, prompts, or t
 - Workflow: baseline validate → minimal change → validate again → run `cag_link_check.py --strict` → update `docs/CHANGELOG.md` → commit. Never commit a CAG change without a green validator run.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - .github/copilot-instructions.md

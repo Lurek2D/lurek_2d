@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when collecting or reading logs, telemetry, SQL results, DataFrame tables, perf counters, or session records for analysis. Skip it for live bug debugging or for adding log output."
 ---
+
 # analytics
 
 ## Mission
@@ -29,6 +30,12 @@ description: "Load this skill when collecting or reading logs, telemetry, SQL re
 - Balance analysis for library modules (combat, economy, loot): check `library/<name>/example.lua` and `tests/lua/library/test_library_<name>.lua` for the baseline scenario. If a balance question cannot be answered from existing test fixtures, recommend adding a parameterized scenario test rather than inventing simulation data.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - logs/data/

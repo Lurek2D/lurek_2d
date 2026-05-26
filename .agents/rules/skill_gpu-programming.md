@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when working on wgpu setup, RenderCommand flow, render passes, textures, shaders, or GPU validation errors. Skip it for font internals, Lua API design, or physics."
 ---
+
 # gpu-programming
 
 ## Mission
@@ -35,6 +36,12 @@ description: "Load this skill when working on wgpu setup, RenderCommand flow, re
 - Engine is 2D-only (binding constraint A-03). Any proposal involving perspective projection, depth buffer, or 3D scene graph is out of scope. Raycasting and isometric effects still use 2D draw calls.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - src/render/

@@ -15,7 +15,7 @@
 
 ## Summary
 
- It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
+It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
 
 The central orchestration of these lighting primitives is handled by the `LightWorld`. This scene-level container holds pools of active lights and `Occluder` shapes (convex polygons that block light propagation to generate shadows). It provides an efficient slotmap-backed architecture for adding, removing, and querying these entities, as well as applying batch operations like intensity or color changes across named light groups. The lighting model supports sophisticated attenuation, allowing for quadratic, linear, and inverse-square falloff models, alongside custom coefficient tuples to precisely control how light decays over distance. Blend modes (additive, subtractive, alpha-mix) dictate how each light composited into the final accumulation buffer.
 
@@ -31,10 +31,12 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 ### `blend_mode.rs`
 - Define blend modes controlling how each light merges into the accumulation buffer.
 - Support additive, subtractive, and alpha-mix compositing strategies.
+- Variants: `Add` (classic glow), `Subtract` (shadow zones), `Mix` (alpha compositing).
 
 ### `falloff.rs`
 - Radial intensity falloff shapes applied on top of distance attenuation.
 - Variants control how brightness decreases from a light's center to its radius edge.
+- Modes: `Linear` (default), `Smooth` (smooth-step), and `Constant` (no radial decay).
 
 ### `flicker.rs`
 - Sine-based flicker configuration that modulates light intensity over time.
@@ -312,6 +314,7 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 
 ## References
 
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
 - `image`: Imports or references `image` from `src/image/`.
 - `math`: Imports or references `math` from `src/math/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

@@ -15,7 +15,7 @@
 
 ## Summary
 
- Its fundamental responsibility is the creation and configuration of the Lua Virtual Machine (via the `mlua` crate) and the comprehensive registration of all `lurek.*` API namespaces. This module is the structural terminus of the engine's dependency graph—it imports nearly every other core module to expose their functionality, but is strictly never imported by them, ensuring a unidirectional data flow and enforcing architectural boundaries.
+Its fundamental responsibility is the creation and configuration of the Lua Virtual Machine (via the `mlua` crate) and the comprehensive registration of all `lurek.*` API namespaces. This module is the structural terminus of the engine's dependency graph—it imports nearly every other core module to expose their functionality, but is strictly never imported by them, ensuring a unidirectional data flow and enforcing architectural boundaries.
 
 At the heart of this module is a vast collection of over 70 custom userdata type definitions that wrap Rust engine structs (such as `LuaVec2`, `LuaLight`, `LuaSpriteBatch`, and `LuaWorld`) and expose them as fully-featured Lua objects. Each engine subsystem has a dedicated binding file (e.g., `audio_api.rs`, `physics_api.rs`, `render_api.rs`) responsible for parsing Lua arguments, invoking the underlying Rust business logic, and safely converting the results back into Lua-compatible values. The module strictly enforces Lurek2D's binding constraints (TST-03): binding files must contain absolutely no domain business logic. Their sole purpose is translation, validation, and error boundary management.
 
@@ -47,17 +47,26 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 ### `automation_api.rs`
 - `lurek.automation` -- Automation bindings for loading simulator scripts, controlling playback, inspecting state, saving macros, and waiting on Lua predicates.
 
+### `binary_api.rs`
+- `lurek.binary` -- Binary bindings for binary packing, compression, encoding, hashing, byte buffers, data views, TOML conversion, ring buffers, and structured writers.
+
 ### `callback_registry.rs`
 - Public types and helpers for the callback_registry module.
 
 ### `camera_api.rs`
 - `lurek.camera` -- Camera bindings for 2D transforms, targets, bounds, screen conversion, paths, zoom tweens, parallax factors, effects, constraints, presets, and camera rigs.
 
+### `charts_api.rs`
+- `lurek.charts` -- Chart creation, configuration, and rendering bindings.
+
+### `color_api.rs`
+- `lurek.color` -- Color bindings for RGBA construction, color-space conversions, blending modes, palettes, and utility operations.
+
 ### `compute_api.rs`
 - `lurek.compute` -- Compute bindings for multidimensional arrays, numeric operations, reductions, spatial filters, analytics, linear algebra, FFT helpers, and parallel threshold tuning.
 
-### `data_api.rs`
-- `lurek.data` -- Data bindings for binary packing, compression, encoding, hashing, byte buffers, data views, TOML conversion, ring buffers, and structured writers.
+### `cursor_api.rs`
+- `lurek.cursor` - Cursor appearance, system cursors, custom image cursors, animated cursors, and context-sensitive switching.
 
 ### `dataframe_api.rs`
 - `lurek.dataframe` -- DataFrame bindings for tabular rows, columns, grouping, joins, SQL queries, lazy pipelines, databases, vectorized frames, serialization, and statistics.
@@ -68,14 +77,20 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 ### `devtools_api.rs`
 - `lurek.devtools` -- Developer tooling bindings for logs, profiling, frame stats, file watching, console state, watch expressions, snapshots, REPL, and debugger-style eval helpers.
 
+### `dialog_api.rs`
+- `lurek.dialog` — Lua bindings for the dialog system (topics, branches, state, speakers).
+
 ### `docs_api.rs`
 - `lurek.docs` -- Documentation tooling bindings for live API reflection, editable catalogs, quality reports, schema validation, and export helpers that produce editor and Markdown artifacts from Lua-visible API metadata.
+
+### `dsp_api.rs`
+- `lurek.dsp` - Digital signal processing: effects, offline batch processing, and audio visualization.
 
 ### `ecs_api.rs`
 - `lurek.ecs` -- Entity-component-system bindings for creating universes, managing entities and components, running Lua systems, querying tags and blueprints, serializing state, and tracking hierarchy and relation data.
 
 ### `effect_api.rs`
-- `lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, image effect chains, screen overlays, weather and ambient controls, screen transitions, and shader error display state used by the renderer command queue.
+- `lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, and image effect chains used by the renderer command queue.
 
 ### `engine_api.rs`
 - `lurek.engine` -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.
@@ -86,11 +101,17 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 ### `filesystem_api.rs`
 - `lurek.filesystem` -- GameFS bindings for text, binary, JSON, directory, metadata, async IO, mount, ZIP archive, file handle, file data, watcher, path conversion, and script chunk loading operations available to Lua.
 
+### `flownet_api.rs`
+- `lurek.flownet` -- Logistics flow-network bindings for nodes, directed edges, typed items, capacities, queues, conversion rules, supply and demand, pathfinding, reachability, graph algorithms, events, and Lua callbacks.
+
+### `font_api.rs`
+- `lurek.font` -- Font bindings for text measurement, font loading, word wrapping, and text shaping.
+
 ### `globe_api.rs`
 - `lurek.globe` -- Spherical province-map bindings for globe registries, province graphs, sectors, heat layers, camera controls, picking, fog of war, markers, labels, render layers, arcs, pathfinding, exports, and coordinate math.
 
-### `graph_api.rs`
-- `lurek.graph` -- Logistics graph bindings for nodes, directed edges, typed items, capacities, queues, conversion rules, supply and demand, pathfinding, reachability, graph algorithms, events, and Lua callbacks.
+### `grep_api.rs`
+- `lurek.grep` - Pattern-based file search across game content: literal, regex, multi-pattern, and log search.
 
 ### `html_api.rs`
 - `lurek.html` -- HTML document bindings for markup and CSS loading, layout, rendering into engine draw commands, DOM element selection and mutation, input forwarding, event listeners, and feature support checks.
@@ -104,17 +125,35 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 ### `input_api.rs`
 - `lurek.input` -- Input bindings for keyboard, mouse, cursor objects, gamepads, touch points, action mappings, combo detection, virtual d-pad conversion, input recording, and playback state exposed through nested Lua tables.
 
+### `layout_api.rs`
+- `lurek.layout` — Lua bindings for graph/tree/DAG layout algorithms.
+
+### `learning_api.rs`
+- `lurek.learning` - Lua bindings for machine learning and evolutionary computation algorithms.
+
 ### `light_api.rs`
 - `lurek.light` -- 2D lighting bindings for light handles, occluders, ambient color, shadows, masks, groups, flicker animation, transitions, cookies, normal-map hints, and renderer-facing lighting world state.
 
 ### `log_api.rs`
 - `lurek.log` -- Logging bindings for severity helpers, global level control, memory/file/rotating/callback sinks, sink listing and flushing, memory reads, structured field logs, tag filters, and Lua callback dispatch.
 
+### `lua_module.rs`
+- Trait-based module registration for `lurek.*` Lua API modules.
+
 ### `lua_types.rs`
 - Public types and helpers for the lua_types module.
 
+### `mapblock_api.rs`
+- `lurek.mapblock` — Block-based map assembly system.
+- Provides tools for building tile maps from composable blocks using
+- scripted placement, Carcassonne-style neighbor constraints, multi-level
+- support, and configurable tile slots.
+
 ### `math_api.rs`
-- `lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, noise generation, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, colors, and scalar helpers.
+- `lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, and scalar helpers.
+
+### `midi_api.rs`
+- `lurek.midi` - MIDI playback and SoundFont management.
 
 ### `minimap_api.rs`
 - `lurek.minimap` -- Lua bindings for grid minimaps, terrain colors, fog, object markers, overlays, layers, hover conversion, and render command output.
@@ -127,6 +166,9 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 
 ### `network_api.rs`
 - `lurek.network` -- Lua bindings for ENet-style hosts, async network runtime, message packing, lobby helpers, relay tickets, and snapshot prediction.
+
+### `overlay_api.rs`
+- `lurek.overlay` -- Lua bindings for the overlay system: weather, atmosphere, screen flash/shake/fade, transitions, and ambient controls.
 
 ### `parallax_api.rs`
 - `lurek.parallax` -- Lua bindings for parallax layers, parallax sets, presets, automatic camera rendering, tiling, blend modes, and effect chains.
@@ -141,7 +183,7 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `lurek.patterns` — Design pattern utilities: event buses, object pools, state machines, command stacks, observers, mediators, factories, data structures, behavior trees, and graphs.
 
 ### `physics_api.rs`
-- `lurek.physics` — 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
+- `lurek.physics` â€” 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
 
 ### `pipeline_api.rs`
 - `lurek.pipeline` — Declarative task pipelines with dependency ordering, retry logic, branching, and async coroutine execution.
@@ -170,8 +212,8 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 ### `scene_api.rs`
 - `lurek.scene` — Stack-based scene management with animated transitions, overlay support, shared data passing, lifecycle callbacks (enter/leave/pause/resume/ready/update/draw/render), and depth-sorted rendering via `LDepthSorter`.
 
-### `serial_api.rs`
-- `lurek.serial` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange.
+### `serialize_api.rs`
+- `lurek.serialize` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange.
 
 ### `spine_api.rs`
 - `lurek.spine` — Spine-like skeletal animation with bones, slots, attachments, IK constraints, and skin mixing.
@@ -180,7 +222,7 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `lurek.sprite` - Provides sprite batch rendering, sprite sheets, quad management, and texture atlas operations for efficient 2D rendering.
 
 ### `system_api.rs`
-- `lurek.runtime` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
+- `lurek.system` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
 
 ### `terminal_api.rs`
 - `lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
@@ -200,6 +242,12 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 ### `ui_api.rs`
 - `lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.
 
+### `validator_api.rs`
+- `lurek.validator` - Schema and constraint validation for Lua files, assets, imports, and custom rules.
+
+### `visibility_api.rs`
+- `lurek.visibility` -- Lua bindings for universal fog-of-war, discovery, and line-of-sight.
+
 ### `window_api.rs`
 - `lurek.window` - Provides window management with resizing, fullscreen, title, icon, DPI scaling, and display mode control.
 
@@ -215,12 +263,12 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaMidiPlayer` (`struct`, `audio_api.rs`): Lua-side wrapper for the MIDI player.
 - `LuaSoundPool` (`struct`, `audio_api.rs`): Lua-side wrapper for a polyphonic [`crate::audio::SoundPool`].
 - `LuaDecoder` (`struct`, `audio_api.rs`): Lua-side wrapper for a streaming audio decoder.
+- `LuaRingBuffer` (`struct`, `binary_api.rs`): Lua-side fixed-capacity ring buffer that holds any Lua value.
+- `LuaDataWriter` (`struct`, `binary_api.rs`): Write-cursor wrapper for the `lurek.data` module.
 - `CallbackRegistry` (`struct`, `callback_registry.rs`): Opaque store mapping `u32` IDs to [`LuaRegistryKey`] values.
 - `LuaCamera2D` (`struct`, `camera_api.rs`): Lua-side wrapper around a [`Camera2D`] instance.
 - `LuaCameraRig` (`struct`, `camera_api.rs`): Lua-side camera rig that manages named cameras and viewport layouts.
 - `LuaArray` (`struct`, `compute_api.rs`): Lua-side wrapper around [`NdArray`].
-- `LuaRingBuffer` (`struct`, `data_api.rs`): Lua-side fixed-capacity ring buffer that holds any Lua value.
-- `LuaDataWriter` (`struct`, `data_api.rs`): Write-cursor wrapper for the `lurek.data` module.
 - `LuaGroupedFrame` (`struct`, `dataframe_api.rs`): Lua-side wrapper around a grouped result from [`DataFrame::group_by`].
 - `LuaDataFrameTask` (`struct`, `dataframe_api.rs`): Lua-side handle for a threaded dataframe job.
 - `LuaDataFrame` (`struct`, `dataframe_api.rs`): Lua-side wrapper around a shared [`DataFrame`].
@@ -228,15 +276,17 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaDatabase` (`struct`, `dataframe_api.rs`): Lua-side wrapper around a shared [`Database`].
 - `LuaVecFrame` (`struct`, `dataframe_api.rs`): Thin Lua wrapper around a [`VecFrame`]: typed-column vectorized DataFrame.
 - `LuaReplConsole` (`struct`, `devtools_api.rs`): Lua-side wrapper around a [`ReplConsole`] interactive evaluator.
+- `LuaDialogueAI` (`struct`, `dialog_api.rs`): Lua handle for topic and branch selection driven by dialogue AI state.
+- `LuaDialogueState` (`struct`, `dialog_api.rs`): Lua handle for dialog conversation state tracking.
+- `LuaSpeakerRegistry` (`struct`, `dialog_api.rs`): Lua userdata handle for managing a named speaker registry.
 - `LuaUniverse` (`struct`, `ecs_api.rs`): Lua-side wrapper around a [`Universe`] ECS world.
 - `LuaPostFxEffect` (`struct`, `effect_api.rs`): Lua-side wrapper around [`PostFxEffect`].
 - `LuaPostFxStack` (`struct`, `effect_api.rs`): Lua-side wrapper around [`PostFxStack`].
 - `LuaImageEffect` (`struct`, `effect_api.rs`): Lua-side wrapper around [`ImageEffect`].
-- `LuaOverlay` (`struct`, `effect_api.rs`): Lua-side wrapper around [`Overlay`].
-- `LuaScreenTransition` (`struct`, `effect_api.rs`): Lua-side wrapper around a [`crate::effect::ScreenTransition`].
 - `LuaSignal` (`struct`, `event_api.rs`): Lua-side wrapper around a [`Signal`] with registry-stored callbacks.
 - `LuaFileData` (`struct`, `filesystem_api.rs`): Lua-side wrapper around a [`FileData`] buffer.
 - `LuaFileHandle` (`struct`, `filesystem_api.rs`): Lua-side wrapper around a [`FileHandle`] with interior mutability.
+- `LuaFont` (`struct`, `font_api.rs`): Lua-side handle to a loaded font stored in SharedState.
 - `LuaGlobe` (`struct`, `globe_api.rs`): Lua-accessible handle to a `Globe` inside a `GlobeRegistry`.
 - `LuaGlobeRegistry` (`struct`, `globe_api.rs`): Lua-accessible handle to the shared `GlobeRegistry`.
 - `LuaProvinceGrid` (`struct`, `image_api.rs`): Lua-side wrapper around [`ProvinceGrid`].
@@ -244,8 +294,15 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaCompressedImageData` (`struct`, `image_api.rs`): Lua-side wrapper around [`CompressedImageData`].
 - `LuaPaletteLUT` (`struct`, `image_api.rs`): Lua-side wrapper around [`PaletteLUT`].
 - `LuaCursor` (`struct`, `input_api.rs`): Lua-side wrapper around a mouse cursor handle.
+- `LuaQLearner` (`struct`, `learning_api.rs`): Lua handle for a Q-learning table with configurable exploration and learning parameters.
+- `LuaNeuralNet` (`struct`, `learning_api.rs`): Lua handle for a feed-forward neural network.
+- `LuaGeneticAlgorithm` (`struct`, `learning_api.rs`): Lua handle for a floating-point genetic algorithm population.
+- `LuaBandit` (`struct`, `learning_api.rs`): Lua handle for multi-armed bandit action selection.
+- `LuaNeuroevolution` (`struct`, `learning_api.rs`): Lua handle for evolving neural network chromosomes.
 - `LuaLight` (`struct`, `light_api.rs`): Lua-side handle to a light resource stored in [`LightWorld`].
 - `LuaOccluder` (`struct`, `light_api.rs`): Lua-side handle to an occluder resource stored in [`LightWorld`].
+- `LuaModule` (`trait`, `lua_module.rs`): Trait implemented by each `lurek.*` API module to enable declarative registration.
+- `ModuleEntry` (`struct`, `lua_module.rs`): Entry in the compile-time module registry used by `register_modules`.
 - `LurekType` (`trait`, `lua_types.rs`): Marker trait that every Lua UserData type in Lurek2D must implement.
 - `LuaVec2` (`struct`, `math_api.rs`): Lua-side wrapper around a [`Vec2`] value type.
 - `LuaVec3` (`struct`, `math_api.rs`): Lua-side wrapper around a [`Vec3`] value type.
@@ -256,7 +313,6 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaBezierCurve` (`struct`, `math_api.rs`): Lua-side wrapper around a [`BezierCurve`].
 - `LuaTween` (`struct`, `math_api.rs`): Lua-side wrapper around a [`Tween`].
 - `LuaSpatialHash` (`struct`, `math_api.rs`): Lua-side wrapper around a [`SpatialHash`].
-- `LuaNoiseGenerator` (`struct`, `math_api.rs`): Lua-side wrapper around a [`NoiseGenerator`].
 - `LuaCircle` (`struct`, `math_api.rs`): Lua-side wrapper around a [`Circle`].
 - `LuaAabbTree` (`struct`, `math_api.rs`): Lua-side wrapper around an [`AabbTree`].
 - `LuaRectPacker` (`struct`, `math_api.rs`): Lua-side wrapper for a rectangle packer.
@@ -266,6 +322,8 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaContentRegistry` (`struct`, `mods_api.rs`): A typed content registry for mod-contributed assets and objects.
 - `LuaNetworkHost` (`struct`, `network_api.rs`): Lua-side wrapper around [`NetworkHost`].
 - `LuaNetworkRuntime` (`struct`, `network_api.rs`): Lua-side wrapper around [`NetworkRuntime`] for async HTTP/TCP/WebSocket.
+- `LuaOverlay` (`struct`, `overlay_api.rs`): Lua-side wrapper around [`Overlay`].
+- `LuaScreenTransition` (`struct`, `overlay_api.rs`): Lua-side wrapper around a [`crate::effect::ScreenTransition`].
 - `LuaParallaxLayer` (`struct`, `parallax_api.rs`): Lua-side handle to a single parallax background layer.
 - `LuaParallaxSet` (`struct`, `parallax_api.rs`): Lua-side container that groups `LuaParallaxLayer` objects for scene-level management.
 - `LuaParticleSystem` (`struct`, `particle_api.rs`): Lua-side handle to a particle system stored in SharedState.
@@ -287,6 +345,7 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaStep` (`struct`, `pipeline_api.rs`): Lua-side wrapper around a single [`PipelineStep`], plus Lua callback registry keys.
 - `LuaPipeline` (`struct`, `pipeline_api.rs`): Lua-side wrapper around a [`Pipeline`] DAG with scheduler and Lua callback registry.
 - `LuaBiomeClassifier` (`struct`, `procgen_api.rs`): Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
+- `LuaNoiseGenerator` (`struct`, `procgen_api.rs`): Lua-side wrapper around a [`NoiseGenerator`].
 - `LuaProvinceRegistry` (`struct`, `province_api.rs`): Lua handle referencing one named engine-side province registry.
 - `LuaDoorManager` (`struct`, `raycaster_api.rs`): Lua-side wrapper around a [`DoorManager`], managing sliding doors in a level.
 - `LuaHeightMap` (`struct`, `raycaster_api.rs`): Lua-side wrapper around a [`HeightMap`] for variable floor/ceiling heights.
@@ -340,6 +399,7 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `register` (`audio_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`automation_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `Step::vec_from_lua_table` (`automation_api.rs`): Converts a Lua array of step tables into automation steps.
+- `register` (`binary_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `CallbackRegistry::new` (`callback_registry.rs`): Creates a new value.
 - `CallbackRegistry::register` (`callback_registry.rs`): Register.
 - `CallbackRegistry::get` (`callback_registry.rs`): Returns a value.
@@ -352,35 +412,46 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaCamera2D::visible_area` (`camera_api.rs`): Returns the camera visible area tuple for engine-side helpers.
 - `LuaCamera2D::position` (`camera_api.rs`): Returns the camera position tuple for engine-side helpers.
 - `register` (`camera_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`charts_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`color_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`compute_api.rs`): Registers the `lurek.window` API table with the Lua VM.
-- `register` (`data_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`cursor_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `LuaDataFrame::borrow_dataframe` (`dataframe_api.rs`): Borrows the inner dataframe for cross-binding helpers.
 - `LuaVecFrame::new` (`dataframe_api.rs`): Wraps a vectorized frame in shared Lua userdata state.
 - `register` (`dataframe_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`debugbridge_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`devtools_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`dialog_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`docs_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`dsp_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`ecs_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`effect_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`engine_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`event_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`filesystem_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`flownet_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register_font_api` (`font_api.rs`): Registers the `lurek.font` namespace and returns the Lua table.
 - `register` (`globe_api.rs`): Registers the `lurek.window` API table with the Lua VM.
-- `register` (`graph_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`grep_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`html_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`i18n_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`image_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`input_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`layout_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`learning_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`light_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`log_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `add_type_methods` (`lua_types.rs`): Adds the standard `type()`, `typeOf(typeName)`, and `__tostring` methods to any [`LuaUserData`] type that also implements [`LunaType`].
+- `register` (`mapblock_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`math_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`midi_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`minimap_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `LuaMod::new` (`mods_api.rs`): Creates a Lua mod wrapper from mod metadata.
 - `LuaModManager::new` (`mods_api.rs`): Creates an empty Lua mod manager wrapper.
 - `LuaContentRegistry::new` (`mods_api.rs`): Creates an empty content registry with no registered types or entries.
 - `register` (`mods_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`network_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`overlay_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`parallax_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`particle_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `ParticleConfig::from_lua_opts` (`particle_api.rs`): Builds a particle config from a Lua options table.
@@ -412,7 +483,7 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaSaveManager::new` (`save_api.rs`): Creates a new Lua-visible save manager bound to shared engine state.
 - `register` (`save_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`scene_api.rs`): Registers the `lurek.window` API table with the Lua VM.
-- `register` (`serial_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`serialize_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`spine_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`sprite_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`system_api.rs`): Registers the `lurek.window` API table with the Lua VM.
@@ -423,6 +494,8 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `LuaSpring::tick_with` (`tween_api.rs`): Advances the spring simulation and writes updated axis values back into the target table.
 - `register` (`tween_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`ui_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`validator_api.rs`): Registers the `lurek.window` API table with the Lua VM.
+- `register` (`visibility_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`window_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 
 ## Lua API Reference
@@ -436,29 +509,40 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `app`: Imports or references `src/app/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `audio`: Imports or references `audio` from `src/audio/`.
 - `automation`: Imports or references `automation` from `src/automation/`.
+- `binary`: Imports or references `src/binary/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `camera`: Imports or references `camera` from `src/camera/`.
+- `charts`: Imports or references `src/charts/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `compute`: Imports or references `compute` from `src/compute/`.
-- `data`: Imports or references `data` from `src/data/`.
+- `cursor`: Imports or references `src/cursor/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `dataframe`: Imports or references `dataframe` from `src/dataframe/`.
 - `debugbridge`: Imports or references `debugbridge` from `src/debugbridge/`.
 - `devtools`: Imports or references `devtools` from `src/devtools/`.
+- `dialog`: Imports or references `src/dialog/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `docs`: Imports or references `docs` from `src/docs/`.
+- `dsp`: Imports or references `src/dsp/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `ecs`: Imports or references `ecs` from `src/ecs/`.
 - `effect`: Imports or references `effect` from `src/effect/`.
 - `event`: Imports or references `event` from `src/event/`.
 - `filesystem`: Imports or references `filesystem` from `src/filesystem/`.
+- `flownet`: Imports or references `src/flownet/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `globe`: Imports or references `src/globe/`. Cross-group dependency from ``Edge/Integration`` into `Edge/Integration`.
-- `graph`: Imports or references `graph` from `src/graph/`.
+- `grep`: Imports or references `src/grep/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `html`: Imports or references `src/html/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `i18n`: Imports or references `i18n` from `src/i18n/`.
 - `image`: Imports or references `image` from `src/image/`.
 - `input`: Imports or references `input` from `src/input/`.
+- `layout`: Imports or references `src/layout/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `learning`: Imports or references `src/learning/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `light`: Imports or references `light` from `src/light/`.
 - `log`: Imports or references `log` from `src/log/`.
+- `mapblock`: Imports or references `src/mapblock/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `math`: Imports or references `math` from `src/math/`.
+- `midi`: Imports or references `src/midi/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `minimap`: Imports or references `minimap` from `src/minimap/`.
 - `mods`: Imports or references `mods` from `src/mods/`.
 - `network`: Imports or references `network` from `src/network/`.
+- `overlay`: Imports or references `src/overlay/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `parallax`: Imports or references `parallax` from `src/parallax/`.
 - `particle`: Imports or references `particle` from `src/particle/`.
 - `pathfind`: Imports or references `pathfind` from `src/pathfind/`.
@@ -473,7 +557,7 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 - `save`: Imports or references `save` from `src/save/`.
 - `scene`: Imports or references `scene` from `src/scene/`.
-- `serial`: Imports or references `serial` from `src/serial/`.
+- `serialize`: Imports or references `src/serialize/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
 - `spine`: Imports or references `spine` from `src/spine/`.
 - `sprite`: Imports or references `sprite` from `src/sprite/`.
 - `terminal`: Imports or references `terminal` from `src/terminal/`.
@@ -482,6 +566,8 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `timer`: Imports or references `timer` from `src/timer/`.
 - `tween`: Imports or references `tween` from `src/tween/`.
 - `ui`: Imports or references `ui` from `src/ui/`.
+- `validator`: Imports or references `src/validator/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `visibility`: Imports or references `src/visibility/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 - `window`: Imports or references `window` from `src/window/`.
 
 ## Notes

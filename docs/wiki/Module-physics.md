@@ -2437,7 +2437,7 @@ end
 
 ```lua
 --- Sets the body's restitution (bounciness) value.
----@param restitution number New restitution (0–1).
+---@param restitution number New restitution (0â€“1).
 function LBody:setRestitution(restitution) end
 ```
 
@@ -2447,7 +2447,7 @@ Sets the body's restitution (bounciness) value.
 
 Parameters:
 
-- `restitution` (`number`, required): New restitution (0–1).
+- `restitution` (`number`, required): New restitution (0â€“1).
 
 #### Example
 
@@ -4180,7 +4180,7 @@ end
 --- Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
 ---@param bodyA number First body ID.
 ---@param bodyB number Second body ID.
----@param factor number Correction factor (0–1), higher = faster convergence.
+---@param factor number Correction factor (0â€“1), higher = faster convergence.
 ---@return number The joint ID.
 function LWorld:addMotorJoint(bodyA, bodyB, factor) end
 ```
@@ -4193,7 +4193,7 @@ Parameters:
 
 - `bodyA` (`integer`, required): First body ID.
 - `bodyB` (`integer`, required): Second body ID.
-- `factor` (`number`, required): Correction factor (0–1), higher = faster convergence.
+- `factor` (`number`, required): Correction factor (0â€“1), higher = faster convergence.
 
 Returns: `integer` - The joint ID.
 
@@ -6349,7 +6349,7 @@ end
 --- Updates the friction coefficient of a specific fixture on a body.
 ---@param bodyId number The body ID.
 ---@param fixtureIndex number Zero-based fixture index on the body.
----@param friction number New friction value (0–1 typical range).
+---@param friction number New friction value (0â€“1 typical range).
 function LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) end
 ```
 
@@ -6361,7 +6361,7 @@ Parameters:
 
 - `bodyId` (`integer`, required): The body ID.
 - `fixtureIndex` (`integer`, required): Zero-based fixture index on the body.
-- `friction` (`number`, required): New friction value (0–1 typical range).
+- `friction` (`number`, required): New friction value (0â€“1 typical range).
 
 #### Example
 
@@ -6702,7 +6702,7 @@ end
 
 ```lua
 --- Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
----@param n number Number of iterations (default is typically 4–8).
+---@param n number Number of iterations (default is typically 4â€“8).
 function LWorld:setSolverIterations(n) end
 ```
 
@@ -6712,7 +6712,7 @@ Sets the number of velocity solver iterations. Higher values improve stability a
 
 Parameters:
 
-- `n` (`integer`, required): Number of iterations (default is typically 4–8).
+- `n` (`integer`, required): Number of iterations (default is typically 4â€“8).
 
 #### Example
 

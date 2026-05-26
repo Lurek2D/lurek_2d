@@ -1,7 +1,8 @@
 ---
 trigger: model_decision
-description: "Load this skill when researching TOGAF, mapping repo architecture to TOGAF concepts, or writing TOGAF-aware gap analysis and governance notes. Skip it for generic architecture work with no TOGAF angle, module structure fixes, or engine i..."
+description: "Load this skill when researching TOGAF, mapping repo architecture to TOGAF concepts, or writing TOGAF-aware gap analysis and governance notes. Skip it for generic architecture work with no TOGAF angle, module structure fixes, or engine implementation."
 ---
+
 # togaf
 
 ## Mission
@@ -29,6 +30,12 @@ description: "Load this skill when researching TOGAF, mapping repo architecture 
 - Avoid checkbox gap analyses. If a TOGAF concept has no meaningful Lurek2D equivalent (e.g., procurement governance, organizational unit mapping), name the mismatch explicitly and scope the comparison note rather than forcing a mapping that adds no insight.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - docs/architecture/togaf.md

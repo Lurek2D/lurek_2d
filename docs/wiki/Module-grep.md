@@ -74,23 +74,23 @@ No source-file descriptions were found in the module spec.
 #### Definition
 
 ```lua
---- Search JSON files under a path for a literal pattern and return a result table.
----@param path string Root directory to search.
----@param pattern string Literal string to find.
----@return table Table of search matches found in JSON files.
-lurek.grep.jsonSearch = function(path, pattern) end
+--- Searches a JSON file for all values associated with a given key name at any depth.
+---@param file string Path to the JSON file to search.
+---@param key string Key name to search for in the JSON structure.
+---@return table Array of tables with fields: path (string), value (string).
+lurek.grep.jsonSearch = function(file, key) end
 ```
 
 #### Description
 
-Search JSON files under a path for a literal pattern and return a result table.
+Searches a JSON file for all values associated with a given key name at any depth.
 
 Parameters:
 
-- `path` (`string`, required): Root directory to search.
-- `pattern` (`string`, required): Literal string to find.
+- `file` (`string`, required): Path to the JSON file to search.
+- `key` (`string`, required): Key name to search for in the JSON structure.
 
-Returns: - Table of search matches found in JSON files.
+Returns: `table` - Array of tables with fields: path (string), value (string).
 
 #### Example
 
@@ -108,21 +108,25 @@ end
 #### Definition
 
 ```lua
---- Search engine log files for a pattern and return structured result entries.
----@param pattern string Literal string to find in log files.
----@return table Log entries matching the pattern as a result table.
-lurek.grep.logSearch = function(pattern) end
+--- Searches a structured log file by log level and regex pattern, returning matched entries.
+---@param file string Path to the log file to search.
+---@param level string Log level filter (e.g. "ERROR", "WARN"); empty string matches all.
+---@param pattern string Regex pattern to match against log messages; empty string matches all.
+---@return table Array of tables with fields: line (integer), message (string), timestamp (string?), level (string?).
+lurek.grep.logSearch = function(file, level, pattern) end
 ```
 
 #### Description
 
-Search engine log files for a pattern and return structured result entries.
+Searches a structured log file by log level and regex pattern, returning matched entries.
 
 Parameters:
 
-- `pattern` (`string`, required): Literal string to find in log files.
+- `file` (`string`, required): Path to the log file to search.
+- `level` (`string`, required): Log level filter (e.g. "ERROR", "WARN"); empty string matches all.
+- `pattern` (`string`, required): Regex pattern to match against log messages; empty string matches all.
 
-Returns: - Log entries matching the pattern as a result table.
+Returns: `table` - Array of tables with fields: line (integer), message (string), timestamp (string?), level (string?).
 
 #### Example
 
@@ -140,16 +144,16 @@ end
 #### Definition
 
 ```lua
---- Create an LFileFilter pre-configured to match only Lua source files.
----@return LuaValue A new LFileFilter configured for Lua source files.
+--- Creates a file filter preset that matches only Lua source files (.lua extension).
+---@return LFileFilter A file filter configured for Lua files only.
 lurek.grep.luaFilter = function() end
 ```
 
 #### Description
 
-Create an LFileFilter pre-configured to match only Lua source files.
+Creates a file filter preset that matches only Lua source files (.lua extension).
 
-Returns: - A new LFileFilter configured for Lua source files.
+Returns: `LFileFilter` - A file filter configured for Lua files only.
 
 #### Example
 
@@ -167,16 +171,16 @@ end
 #### Definition
 
 ```lua
---- Create a new LGrepEngine with default file-type filters for game content.
----@return LuaValue A new LGrepEngine instance with default filters.
+--- Creates a new grep engine with default configuration settings.
+---@return LGrepEngine A new grep engine instance.
 lurek.grep.newEngine = function() end
 ```
 
 #### Description
 
-Create a new LGrepEngine with default file-type filters for game content.
+Creates a new grep engine with default configuration settings.
 
-Returns: - A new LGrepEngine instance with default filters.
+Returns: `LGrepEngine` - A new grep engine instance.
 
 #### Example
 
@@ -194,21 +198,21 @@ end
 #### Definition
 
 ```lua
---- Create a new LGrepEngine with a custom LFileFilter controlling which files are scanned.
----@param filter LFileFilter File filter to use for this engine instance.
----@return LuaValue A new LGrepEngine instance with the custom filter.
-lurek.grep.newEngineOpts = function(filter) end
+--- Creates a new grep engine with custom search configuration options.
+---@param opts table Options table with fields: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).
+---@return LGrepEngine A new configured grep engine instance.
+lurek.grep.newEngineOpts = function(opts) end
 ```
 
 #### Description
 
-Create a new LGrepEngine with a custom LFileFilter controlling which files are scanned.
+Creates a new grep engine with custom search configuration options.
 
 Parameters:
 
-- `filter` (`LFileFilter`, required): File filter to use for this engine instance.
+- `opts` (`table`, required): Options table with fields: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).
 
-Returns: - A new LGrepEngine instance with the custom filter.
+Returns: `LGrepEngine` - A new configured grep engine instance.
 
 #### Example
 
@@ -227,16 +231,16 @@ end
 #### Definition
 
 ```lua
---- Create a new LFileFilter with default extension-based inclusion rules.
----@return LuaValue A new LFileFilter with default extension rules.
+--- Creates a new empty file filter that can be configured to match specific file patterns.
+---@return LFileFilter A new empty file filter instance.
 lurek.grep.newFilter = function() end
 ```
 
 #### Description
 
-Create a new LFileFilter with default extension-based inclusion rules.
+Creates a new empty file filter that can be configured to match specific file patterns.
 
-Returns: - A new LFileFilter with default extension rules.
+Returns: `LFileFilter` - A new empty file filter instance.
 
 #### Example
 
@@ -255,23 +259,23 @@ end
 #### Definition
 
 ```lua
---- Search a directory tree for a literal text pattern; return a result table.
----@param path string Root directory to search.
----@param pattern string Literal string to find.
----@return table Table of search matches found in the directory.
+--- Searches a directory tree for files containing an exact literal pattern string.
+---@param path string Root directory path to search in.
+---@param pattern string Literal text pattern to search for.
+---@return table Array of tables with fields: file (string), line (integer), text (string).
 lurek.grep.search = function(path, pattern) end
 ```
 
 #### Description
 
-Search a directory tree for a literal text pattern; return a result table.
+Searches a directory tree for files containing an exact literal pattern string.
 
 Parameters:
 
-- `path` (`string`, required): Root directory to search.
-- `pattern` (`string`, required): Literal string to find.
+- `path` (`string`, required): Root directory path to search in.
+- `pattern` (`string`, required): Literal text pattern to search for.
 
-Returns: - Table of search matches found in the directory.
+Returns: `table` - Array of tables with fields: file (string), line (integer), text (string).
 
 #### Example
 
@@ -301,54 +305,10 @@ Lua userdata that controls which files are scanned by a LGrepEngine instance.
 Source: [grep.lua](../blob/main/content/examples/grep.lua)
 
 ```lua
---
--- Topics: grep engine, file filters, search, JSON search, log search.
--- ==========================================================================
-
--- Quick search (simplest usage)
---@api-stub: lurek.grep.newEngine
-do
-    local eng = lurek.grep.newEngine()
-    print("engine created = " .. tostring(eng ~= nil))
-end
-
---@api-stub: lurek.grep.newEngineOpts
-do
-    local opts = { case_sensitive = false, threads = 2, whole_word = false }
-    local eng = lurek.grep.newEngineOpts(opts)
-    print("engine with opts created = " .. tostring(eng ~= nil))
-end
-
---@api-stub: lurek.grep.newFilter
-do
-    local fil = lurek.grep.newFilter()
-    fil:addExtension("lua")
-    print("filter created = " .. tostring(fil ~= nil))
-end
-
---@api-stub: lurek.grep.luaFilter
 do
     local fil = lurek.grep.luaFilter()
     print("lua filter created = " .. tostring(fil ~= nil))
 end
-
---@api-stub: lurek.grep.search
-do
-    local results = lurek.grep.search("content/examples", "api-stub")
-    print("files searched = " .. results.files_searched)
-    print("total matches = " .. results.total_matches)
-end
-
---@api-stub: lurek.grep.jsonSearch
-do
-    local results = lurek.grep.jsonSearch("content/examples", "api-stub")
-    print("json results = " .. #results)
-end
-
---@api-stub: lurek.grep.logSearch
-do
-    local results = lurek.grep.logSearch("logs/runtime.log", "ERROR", "panic")
-    print("log results = " .. #results)
 ```
 
 ### LGrepEngine
@@ -362,54 +322,10 @@ Lua userdata that performs pattern-based search across game content files.
 Source: [grep.lua](../blob/main/content/examples/grep.lua)
 
 ```lua
---
--- Topics: grep engine, file filters, search, JSON search, log search.
--- ==========================================================================
-
--- Quick search (simplest usage)
---@api-stub: lurek.grep.newEngine
 do
     local eng = lurek.grep.newEngine()
     print("engine created = " .. tostring(eng ~= nil))
 end
-
---@api-stub: lurek.grep.newEngineOpts
-do
-    local opts = { case_sensitive = false, threads = 2, whole_word = false }
-    local eng = lurek.grep.newEngineOpts(opts)
-    print("engine with opts created = " .. tostring(eng ~= nil))
-end
-
---@api-stub: lurek.grep.newFilter
-do
-    local fil = lurek.grep.newFilter()
-    fil:addExtension("lua")
-    print("filter created = " .. tostring(fil ~= nil))
-end
-
---@api-stub: lurek.grep.luaFilter
-do
-    local fil = lurek.grep.luaFilter()
-    print("lua filter created = " .. tostring(fil ~= nil))
-end
-
---@api-stub: lurek.grep.search
-do
-    local results = lurek.grep.search("content/examples", "api-stub")
-    print("files searched = " .. results.files_searched)
-    print("total matches = " .. results.total_matches)
-end
-
---@api-stub: lurek.grep.jsonSearch
-do
-    local results = lurek.grep.jsonSearch("content/examples", "api-stub")
-    print("json results = " .. #results)
-end
-
---@api-stub: lurek.grep.logSearch
-do
-    local results = lurek.grep.logSearch("logs/runtime.log", "ERROR", "panic")
-    print("log results = " .. #results)
 ```
 
 

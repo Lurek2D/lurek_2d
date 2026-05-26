@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when mapping ideas, finding product or engine gaps, clustering opportunity signals, or ranking backlog candidates. Skip it for implementation planning, code work, or API design."
 ---
+
 # opportunity-discovery
 
 ## Mission
@@ -28,6 +29,12 @@ description: "Load this skill when mapping ideas, finding product or engine gaps
 - Output shape: a ranked list where each entry has: rank, problem title, evidence, affected area, personas, confidence, validation action, and suggested next owner. Deliver as a `work/<session>/reports/opportunities.md` file, not as inline chat prose, so the planner can act on it.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - ideas/

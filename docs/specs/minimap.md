@@ -15,22 +15,11 @@
 
 ## Summary
 
- It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
+It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
 
 Beyond basic terrain visualization, the minimap acts as a comprehensive strategic display. It tracks active game entities via `MinimapObject`s, which project world positions onto the grid and render as typed, owner-colored dots or assigned texture icons. To support mission and location tracking, it provides a `MinimapMarker` system for persistent or timed points of interest, featuring built-in animation states like blinking, pulsing, or rotating crosshairs. For strategic feedback, the module supports dynamic `OverlayShape`s (lines, rectangles, named polyline paths) and temporary animated `MinimapPing` alerts to draw player attention to specific map coordinates.
 
 The module also features a robust rendering pipeline that composites these layers—terrain, fog, overlays, objects, markers, and pings—into an optimized `ImageData` buffer or directly generates an ordered list of `RenderCommand`s. It fully supports configurable display resolutions, zoom levels, panning, and automatic camera-tracking viewports that overlay the player's active screen bounds. To support diverse game genres, it offers multiple color modes, such as switching between standard terrain-colored views and political owner-colored strategic modes. Bridging seamlessly with other systems like the `province` registry, this entire feature set is exposed to Lua scripts via the `lurek.minimap.*` API, enabling developers to build complex, interactive UI maps with minimal engine overhead.
-
-## Architecture Boundary
-
-**Tier**: Feature Systems
-
-**Dependencies**:
-- `minimap` → `raycaster` (for raycaster overlay rendering in `raycaster_overlay.rs`)
-
-**Known Issue**: A reverse dependency exists where `raycaster/mod.rs` re-exports minimap types.
-This creates a cycle (T-02 violation). The fix is to remove those re-exports from raycaster.
-After resolution, the dependency is strictly one-way: minimap depends on raycaster, not vice versa.
 
 ## Source Documentation
 
@@ -49,12 +38,21 @@ After resolution, the dependency is strictly one-way: minimap depends on raycast
 - Minimap state, layer composition, marker tracking, and fog-of-war reveal.
 - Pixel-buffer rendering pipeline that writes the minimap texture each frame.
 - Province-map adapter bridging world regions into minimap layers.
+- Raycaster-specific tile extraction with lighting, LOS, and FOV reveal.
 - Shared types for markers, overlays, pings, and color modes.
 
 ### `province_adapter.rs`
 - Bridge between `ProvinceRegistry` terrain/visibility data and the minimap grid.
 - Copy terrain types, fog levels, and political palette colours into a `Minimap`.
 - Clips to the smaller of the two grids so mismatched sizes never panic.
+
+### `raycaster_overlay.rs`
+- Raycaster-specific minimap overlay rendering.
+- Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
+- Bresenham grid traversal for fast obstruction testing between player and map cells.
+- FOV ray fan that reveals all traversed cells within a max distance and step size.
+- Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
+- Player arrow rendering (filled circle plus direction line) composited onto the minimap.
 
 ### `render.rs`
 - Convert minimap state into an ordered list of `RenderCommand` values for the renderer.
@@ -71,17 +69,11 @@ After resolution, the dependency is strictly one-way: minimap depends on raycast
 - `OverlayShape` and `OverlayPath` describe vector geometry drawn over the terrain grid.
 - `LayerData` stores raw cell bytes for named minimap layers.
 
-### `raycaster_overlay.rs`
-- Raycaster-specific minimap tile extraction with per-tile lighting and LOS checks.
-- Bresenham grid traversal for fast obstruction testing between player and map cells.
-- FOV ray fan that reveals all traversed cells within a max distance and step size.
-- Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
-- Player arrow rendering (filled circle plus direction line) composited onto the minimap.
-
 ## Types
 
 - `MinimapIcon` (`struct`, `minimap.rs`): Cached icon dimensions for one object type or marker texture slot.
 - `Minimap` (`struct`, `minimap.rs`): The main grid-based minimap model. It owns terrain, visibility, tracked entities, overlays, and minimap-space conversions.
+- `MinimapTileSample` (`struct`, `raycaster_overlay.rs`): One sampled minimap tile with blocked/visible/light fields for raycaster-based minimaps.
 - `ColorMode` (`enum`, `types.rs`): Chooses how minimap cells are colored, such as terrain-driven versus owner-driven display.
 - `FogLevel` (`enum`, `types.rs`): Encodes whether a minimap cell is hidden, explored, or currently visible.
 - `MinimapObjectType` (`struct`, `types.rs`): A registered object type with a display color and visibility toggle.
@@ -92,7 +84,6 @@ After resolution, the dependency is strictly one-way: minimap depends on raycast
 - `OverlayShape` (`enum`, `types.rs`): A custom geometric shape drawn on top of the minimap in grid space.
 - `OverlayPath` (`struct`, `types.rs`): A pathfinding route overlay displayed on the minimap.
 - `LayerData` (`struct`, `types.rs`): Per-layer terrain data for multi-layer minimap rendering.
-- `MinimapTileSample` (`struct`, `raycaster_overlay.rs`): One sampled minimap tile with blocked/visible/light fields for raycaster-based minimaps.
 
 ## Functions
 
@@ -191,15 +182,15 @@ After resolution, the dependency is strictly one-way: minimap depends on raycast
 - `apply_terrain` (`province_adapter.rs`): Projects province terrain IDs into minimap terrain grid.
 - `apply_visibility` (`province_adapter.rs`): Projects province visibility state into minimap fog cells.
 - `apply_terrain_palette` (`province_adapter.rs`): Pushes terrain-type color palette inferred from province styles.
-- `Minimap::generate_render_commands` (`render.rs`): Build the full ordered `RenderCommand` list for this minimap at screen origin `(screen_x, screen_y)`.
-- `ColorMode::parse_mode` (`types.rs`): Parse `"terrain"` or `"political"` to a `ColorMode`; returns `None` on unknown strings.
-- `ColorMode::as_str` (`types.rs`): Return the canonical string name for this colour mode.
-- `FogLevel::from_u8` (`types.rs`): Convert a raw `u8` byte to a `FogLevel`; values >= 2 map to `Visible`.
 - `compute_tile_light` (`raycaster_overlay.rs`): Computes LOS-aware ambient + point-light color for a tile center.
 - `build_minimap_tile_window` (`raycaster_overlay.rs`): Returns sampled minimap tile records around a world-space center.
 - `reveal_cells_from_rays` (`raycaster_overlay.rs`): Traces multiple rays and returns unique crossed grid cells.
 - `extract_minimap` (`raycaster_overlay.rs`): Extracts a top-down minimap from a Raycaster2D grid.
 - `draw_player_arrow` (`raycaster_overlay.rs`): Renders a simple directional arrow for the player on the minimap.
+- `Minimap::generate_render_commands` (`render.rs`): Build the full ordered `RenderCommand` list for this minimap at screen origin `(screen_x, screen_y)`.
+- `ColorMode::parse_mode` (`types.rs`): Parse `"terrain"` or `"political"` to a `ColorMode`; returns `None` on unknown strings.
+- `ColorMode::as_str` (`types.rs`): Return the canonical string name for this colour mode.
+- `FogLevel::from_u8` (`types.rs`): Convert a raw `u8` byte to a `FogLevel`; values >= 2 map to `Visible`.
 
 ## Lua API Reference
 
@@ -302,6 +293,7 @@ After resolution, the dependency is strictly one-way: minimap depends on raycast
 - `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `image`: Imports or references `image` from `src/image/`.
 - `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `raycaster`: Imports or references `src/raycaster/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 

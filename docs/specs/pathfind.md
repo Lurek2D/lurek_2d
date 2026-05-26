@@ -15,7 +15,7 @@
 
 ## Summary
 
- It is designed to handle everything from simple grid-based movement to complex, multi-agent AI steering and hierarchical navigation. The foundation of the module is the `NavGrid`, a robust 2D grid structure supporting per-cell walkability masks, integer-based movement costs, and configurable diagonal movement policies (with corner-cutting prevention). On top of this, the module implements classical algorithms like A* (with octile or Manhattan heuristics), Dijkstra's algorithm for cost-weighted reachability, and unweighted BFS. For high-performance uniform-cost grids, it features Jump Point Search (JPS), which dramatically accelerates A* by pruning symmetric neighbors.
+It is designed to handle everything from simple grid-based movement to complex, multi-agent AI steering and hierarchical navigation. The foundation of the module is the `NavGrid`, a robust 2D grid structure supporting per-cell walkability masks, integer-based movement costs, and configurable diagonal movement policies (with corner-cutting prevention). On top of this, the module implements classical algorithms like A* (with octile or Manhattan heuristics), Dijkstra's algorithm for cost-weighted reachability, and unweighted BFS. For high-performance uniform-cost grids, it features Jump Point Search (JPS), which dramatically accelerates A* by pruning symmetric neighbors.
 
 To address the challenges of large open worlds and massive agent counts, the module includes several advanced AI pathing techniques. Hierarchical Pathfinding A* (HPA*) partitions grids into chunks, building an abstract graph of boundary entrances to allow near-instant long-distance path planning that is later refined into tile-by-tile routes. For crowd simulation, the `FlowField` and `ai_flow_field` structures precompute directional vectors across a grid toward a specific goal, allowing hundreds of agents to steer smoothly without calculating individual paths. Additionally, the `InfluenceMap` system allows developers to propagate, blend, and decay scalar values across grids—perfect for tactical AI to evaluate threat levels, control zones, or attractive points of interest.
 
@@ -467,7 +467,7 @@ Beyond standard square grids, the module offers extensive support for alternativ
 
 ## References
 
-- `graph`: Imports or references `src/graph/`. Cross-group dependency from ``Feature Systems`` into `Foundations`.
+- `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `image`: Imports or references `image` from `src/image/`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

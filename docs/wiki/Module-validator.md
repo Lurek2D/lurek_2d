@@ -71,17 +71,21 @@ No source-file descriptions were found in the module spec.
 #### Definition
 
 ```lua
---- Create a new LValidationEngine for running schema and constraint checks.
----@param root LuaValue
----@return number A new LValidationEngine instance ready for use.
+--- Creates a new validation engine rooted at the given filesystem path.
+---@param root string Root directory path for the validation engine.
+---@return LValidationEngine A new validation engine instance.
 lurek.validator.newEngine = function(root) end
 ```
 
 #### Description
 
-Create a new LValidationEngine for running schema and constraint checks.
+Creates a new validation engine rooted at the given filesystem path.
 
-Returns: - A new LValidationEngine instance ready for use.
+Parameters:
+
+- `root` (`string`, required): Root directory path for the validation engine.
+
+Returns: `LValidationEngine` - A new validation engine instance.
 
 #### Example
 
@@ -100,25 +104,21 @@ end
 #### Definition
 
 ```lua
---- Validate a Lua table against a named schema; return violations as a table.
----@param engine LValidationEngine Validation engine to run.
----@param schema string Schema name to validate against.
----@param data table Data table to validate.
----@return table Table of validation violations found.
-lurek.validator.validate = function(engine, schema, data) end
+--- Runs all validation rules against a project root directory and returns a report table.
+---@param path string Root directory path of the project to validate.
+---@return table Table with fields: errors (table), warnings (table), passed (boolean).
+lurek.validator.validate = function(path) end
 ```
 
 #### Description
 
-Validate a Lua table against a named schema; return violations as a table.
+Runs all validation rules against a project root directory and returns a report table.
 
 Parameters:
 
-- `engine` (`LValidationEngine`, required): Validation engine to run.
-- `schema` (`string`, required): Schema name to validate against.
-- `data` (`table`, required): Data table to validate.
+- `path` (`string`, required): Root directory path of the project to validate.
 
-Returns: - Table of validation violations found.
+Returns: `table` - Table with fields: errors (table), warnings (table), passed (boolean).
 
 #### Example
 
@@ -137,25 +137,21 @@ end
 #### Definition
 
 ```lua
---- Validate a file on disk against a named schema; return violations as a table.
----@param engine LValidationEngine Validation engine to run.
----@param schema string Schema name to validate against.
----@param path string Path to the file to validate.
----@return table Table of validation violations found in the file.
-lurek.validator.validateFile = function(engine, schema, path) end
+--- Runs API validation rules against a single Lua file and returns a report table.
+---@param path string Absolute or relative path to the Lua file to validate.
+---@return table Table with fields: errors (table), warnings (table), passed (boolean).
+lurek.validator.validateFile = function(path) end
 ```
 
 #### Description
 
-Validate a file on disk against a named schema; return violations as a table.
+Runs API validation rules against a single Lua file and returns a report table.
 
 Parameters:
 
-- `engine` (`LValidationEngine`, required): Validation engine to run.
-- `schema` (`string`, required): Schema name to validate against.
-- `path` (`string`, required): Path to the file to validate.
+- `path` (`string`, required): Absolute or relative path to the Lua file to validate.
 
-Returns: - Table of validation violations found in the file.
+Returns: `table` - Table with fields: errors (table), warnings (table), passed (boolean).
 
 #### Example
 
@@ -185,54 +181,11 @@ Lua userdata that runs schema and constraint validation on data tables and files
 Source: [validator.lua](../blob/main/content/examples/validator.lua)
 
 ```lua
---
--- Topics: validation engine, rules, reports, pattern rules, TOML rules.
--- ==========================================================================
-
--- Quick validation (simplest usage)
---@api-stub: lurek.validator.newEngine
 do
     local eng = lurek.validator.newEngine("content/examples")
     print("lurek.validator.newEngine type=" .. eng:type())
     print("rule count=" .. eng:ruleCount())
 end
-
---@api-stub: lurek.validator.validate
-do
-    local report = lurek.validator.validate("content/examples")
-    print("lurek.validator.validate files_checked=" .. report.files_checked)
-    print("is_clean=" .. tostring(report.is_clean))
-end
-
---@api-stub: lurek.validator.validateFile
-do
-    local report = lurek.validator.validateFile("content/examples/math.lua")
-    print("lurek.validator.validateFile files_checked=" .. report.files_checked)
-    print("errors=" .. report.error_count)
-end
-
---@api-stub: LValidationEngine:addAssetRule
-do
-    local eng = lurek.validator.newEngine("content/examples")
-    eng:addAssetRule("assets")
-    print("LValidationEngine:addAssetRule rules=" .. eng:ruleCount())
-end
-
---@api-stub: LValidationEngine:addImportRule
-do
-    local eng = lurek.validator.newEngine("content/examples")
-    eng:addImportRule({ "content/examples", "library" })
-    print("LValidationEngine:addImportRule rules=" .. eng:ruleCount())
-end
-
---@api-stub: LValidationEngine:addApiRule
-do
-    local eng = lurek.validator.newEngine("content/examples")
-    eng:addApiRule()
-    print("LValidationEngine:addApiRule rules=" .. eng:ruleCount())
-end
-
---@api-stub: LValidationEngine:addPatternRule
 ```
 
 

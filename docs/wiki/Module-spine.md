@@ -154,7 +154,7 @@ Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
-    local jsonData = '{"name":"idle_bounce","duration":1.2,"timelines":[{"bone":0,"property":"y","keys":[{"time":0,"value":0},{"time":1.2,"value":0}]}]}'
+    local jsonData = '{"name":"idle_bounce","duration":1.2,"timelines":[{"bone_idx":0,"property":"y","keys":[{"time":0,"value":0},{"time":1.2,"value":0}]}]}'
     local anim = lurek.spine.animationFromJson(jsonData)
     print("timelines = " .. anim:getTimelineCount())
 end
@@ -268,7 +268,7 @@ Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
-    local jsonData = '{"name":"idle_bounce","duration":1.2,"timelines":[{"bone":0,"property":"y","keys":[{"time":0,"value":0},{"time":1.2,"value":0}]}]}'
+    local jsonData = '{"name":"idle_bounce","duration":1.2,"timelines":[{"bone_idx":0,"property":"y","keys":[{"time":0,"value":0},{"time":1.2,"value":0}]}]}'
     local anim = lurek.spine.animationFromJson(jsonData)
     print("timelines = " .. anim:getTimelineCount())
 end

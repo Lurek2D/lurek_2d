@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Full owner of the lurek.* API, maintaining src/lua_api/, docstrings, generator tools, and coverage tools. Lua API is the main human-engine interface and a product in its own right."
 ---
+
 # Lua-Designer
 
 ## Mission
@@ -69,5 +70,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, lightly creative only for naming
 Personas: GameDev, Modder
-Primary skills: lua-api-design, lua-rust-bridge, lua-runtime
-Secondary skills: error-handling, documentation, threading
+Primary skills: skill_lua-api-design, skill_lua-rust-bridge, skill_lua-runtime
+Secondary skills: skill_error-handling, skill_documentation, skill_threading

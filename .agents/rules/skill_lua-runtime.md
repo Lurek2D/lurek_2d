@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when working on LuaJIT vs Lua 5.4 behavior, GC, lua-jit/lua54 features, or Lua runtime performance. Skip it for bindings, general game scripts, or API naming."
 ---
+
 # lua-runtime
 
 ## Mission
@@ -31,6 +32,12 @@ description: "Load this skill when working on LuaJIT vs Lua 5.4 behavior, GC, lu
 - When filing a Lua runtime bug, always state: feature flag used (`luaJIT` or `lua54`), reproduction script (minimal, deterministic), observed vs expected behavior, and whether the issue is LuaJIT-only, lua54-only, or both.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - Cargo.toml

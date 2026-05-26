@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when planning module boundaries, dependency direction, or crate layout. Skip it for implementation or API naming."
 ---
+
 # module-architecture
 
 ## Mission
@@ -27,6 +28,12 @@ description: "Load this skill when planning module boundaries, dependency direct
 - Cross-module communication rule: within a tier, modules communicate via function calls and struct arguments. Across tiers, prefer passing data through the composition root rather than direct imports. The event system (`src/event/`) and the shared state (`src/runtime/shared_state.rs`) are the sanctioned cross-tier communication paths.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - docs/specs/

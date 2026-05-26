@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when designing or changing the lurek.* Lua API surface. It owns naming, params, callbacks, and consistency. Skip it for Rust internals or pure Lua scripts."
 ---
+
 # lua-api-design
 
 ## Mission
@@ -30,6 +31,12 @@ description: "Load this skill when designing or changing the lurek.* Lua API sur
 - `docs/api/lurek.lua` and `docs/api/lurek.md` are generated — never hand-edit them. Always fix docstring issues in `src/lua_api/<module>_api.rs`, then regenerate with `python tools/gen_all_docs.py`.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - src/lua_api/

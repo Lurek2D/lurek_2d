@@ -15,7 +15,7 @@
 
 ## Summary
 
- Its primary role is to handle world-to-screen coordinate mapping, transform calculations, viewport scaling, and dynamic camera behaviors without directly allocating or managing GPU resources. At its core, the module exposes two main camera types: the lightweight `Camera`, providing minimal state like position, zoom, rotation, and view-matrix generation; and the gameplay-ready `Camera2D`, which adds robust tracking behaviors, smooth interpolation, and boundary clamping.
+Its primary role is to handle world-to-screen coordinate mapping, transform calculations, viewport scaling, and dynamic camera behaviors without directly allocating or managing GPU resources. At its core, the module exposes two main camera types: the lightweight `Camera`, providing minimal state like position, zoom, rotation, and view-matrix generation; and the gameplay-ready `Camera2D`, which adds robust tracking behaviors, smooth interpolation, and boundary clamping.
 
 A defining feature of `Camera2D` is its target tracking capability. It supports smooth-follow interpolation using linear, smooth-step, or ease-out-cubic easing. Developers can fine-tune tracking through dead zones, look-ahead multipliers, and zoom/rotation damping. For common use cases, the module provides out-of-the-box follow presets: tight, cinematic, balanced, and aggressive. The `Viewport` subsystem works hand-in-hand with the camera to resolve window resizing by mapping the logical game surface to the physical window using configurable scale modes (Letterbox, Stretch, PixelPerfect).
 
@@ -45,7 +45,7 @@ For local multiplayer or complex UI requirements, the module provides `CameraRig
 ### `path.rs`
 - Waypoint-based camera path interpolation for scripted camera movement.
 - CameraZoomTween provides eased transitions between zoom levels over time.
-- CameraTweenEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
+- CameraEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
 - CameraPath segments multi-point paths with linear interpolation and progress tracking.
 - ZoomTween is a type alias preserving backwards compatibility.
 
@@ -81,12 +81,13 @@ For local multiplayer or complex UI requirements, the module provides `CameraRig
 - `ZoomPulse` (`struct`, `effects.rs`): Zoom pulse effect — brief zoom-in that decays back to the original zoom via a sine envelope.
 - `CameraSway` (`struct`, `effects.rs`): Camera sway — sinusoidal x/y offset oscillation for rocking or underwater effects.
 - `CameraBreathing` (`struct`, `effects.rs`): Camera breathing — subtle periodic zoom oscillation for a "living camera" feel.
+- `CameraFollowEasing` (`type`, `mod.rs`): Selects easing behavior used by target-follow interpolation.
 - `CameraRig2D` (`struct`, `multi.rs`): Stores named camera instances used by multi-view rendering flows.
 - `CameraPath` (`struct`, `path.rs`): Animates a camera along a series of world-space waypoints over a fixed duration using linear interpolation between consecutive points.
-- `CameraTweenEasing` (`enum`, `path.rs`): Easing mode for camera-local tweening.
+- `CameraTweenEasing` (`type`, `path.rs`): Easing mode for camera-local tweening.
 - `CameraZoomTween` (`struct`, `path.rs`): Smoothly transitions a camera zoom level from a start value to a target value over a fixed duration.
 - `ZoomTween` (`type`, `path.rs`): Backward-compatible alias for `CameraZoomTween`.
-- `CameraFollowEasing` (`enum`, `types.rs`): Selects easing behavior used by target-follow interpolation.
+- `CameraEasing` (`enum`, `types.rs`): Selects easing behavior used by camera tween and follow interpolation.
 - `Camera` (`struct`, `types.rs`): Lightweight camera state with position, zoom, rotation, and view-matrix generation.
 - `Camera2D` (`struct`, `types.rs`): Gameplay-facing 2D camera with follow targets, dead zones, look-ahead, bounds clamping, shake, and coordinate helpers.
 - `ScaleMode` (`enum`, `viewport.rs`): Enum selecting letterbox, stretch, or pixel-perfect viewport behavior.
@@ -140,6 +141,7 @@ For local multiplayer or complex UI requirements, the module provides `CameraRig
 - `Camera2D::begin_render_commands` (`render.rs`): Build 2D begin-transform command list and return it for submission.
 - `Camera2D::end_render_command` (`render.rs`): Return render command that restores transform stack after 2D camera pass.
 - `Camera2D::generate_render_commands` (`render.rs`): Wrap scene commands with 2D camera transforms and return combined list.
+- `CameraEasing::apply` (`types.rs`): Evaluate easing curve and return clamped interpolation factor.
 - `Camera::new` (`types.rs`): Create camera state and return it with provided transform values.
 - `Camera::view_matrix` (`types.rs`): Build camera view matrix and return world-to-view transform.
 - `Camera::set_position` (`types.rs`): Set camera position and return after replacing previous value.

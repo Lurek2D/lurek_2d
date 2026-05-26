@@ -15,7 +15,7 @@
 
 ## Summary
 
- It enables developers to reliably save and load game state with built-in support for compression, file rotation, and schema versioning. The architecture is built around the `SaveManager`, which coordinates persistence using a named-section approach. Developers register game modules (like inventory, player stats, or level state) by assigning a string name and providing paired `collect` and `restore` Lua callback functions. During a save operation, the manager queries these collectors to gather the current game state as a Lua table; during load, the state is passed back via the restorers.
+It enables developers to reliably save and load game state with built-in support for compression, file rotation, and schema versioning. The architecture is built around the `SaveManager`, which coordinates persistence using a named-section approach. Developers register game modules (like inventory, player stats, or level state) by assigning a string name and providing paired `collect` and `restore` Lua callback functions. During a save operation, the manager queries these collectors to gather the current game state as a Lua table; during load, the state is passed back via the restorers.
 
 To optimize performance and minimize disk wear, the system employs dirty tracking. Writes are entirely skipped unless the state is explicitly marked as dirty (changed). An auto-save scheduler can be configured to automatically persist the dirty state to a designated slot at regular intervals. When writing to disk, the `save` module uses a custom serialization format that converts Lua tables into a Rust `SaveValue` tree, emitting valid Lua-literal text. To ensure small file sizes, this text is subsequently compressed using LZ4 and Base64 encoded before being written. The manager also handles slot file rotation, automatically maintaining a configurable number of backup copies for data safety.
 
@@ -107,7 +107,7 @@ Crucially, the module provides robust tools for long-term game maintenance via s
 
 ## References
 
-- `data`: Imports or references `src/data/`. Cross-group dependency from ``Feature Systems`` into `Foundations`.
+- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes

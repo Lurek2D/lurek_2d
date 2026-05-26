@@ -15,7 +15,7 @@
 
 ## Summary
 
- Its core responsibility is to orchestrate the engine's initialization, manage the central game loop, and mediate communication between hardware events, graphics presentation, and Lua script execution. The central component is `LurekApp`, which initializes all engine subsystems in strict dependency order, establishes the `wgpu` rendering surface, and assumes control of the `winit` event loop.
+Its core responsibility is to orchestrate the engine's initialization, manage the central game loop, and mediate communication between hardware events, graphics presentation, and Lua script execution. The central component is `LurekApp`, which initializes all engine subsystems in strict dependency order, establishes the `wgpu` rendering surface, and assumes control of the `winit` event loop.
 
 During active execution, `LurekApp` drives the engine's frame lifecycle. Each frame, it advances the core `Clock` timing, polls hardware inputs (including keyboard, mouse, touch, and `gilrs`-driven gamepads), steps the physics simulation, and dispatches events to the active Lua environment via structured callbacks such as `load`, `update`, `draw`, and `keypressed`. The module implements safety boundaries around script execution using `lua_callbacks` wrappers, ensuring that unhandled Lua panics are caught and long-running scripts can be aborted via instruction-count timeouts before they freeze the application.
 
@@ -51,6 +51,7 @@ Additionally, `app` seamlessly manages development workflows with built-in hot-r
 ### `frame_profile.rs`
 - Formats per-frame timing data into compact single-line strings for logging.
 - Reads tick, update, render, and callback timings from `FrameProfile`.
+- Output format: `tick=Xms update=Xms render=Xms cb=Xms` for tracing frame budget.
 
 ### `lua_callbacks.rs`
 - Invokes named `lurek.*` Lua callbacks with error logging and optional timeout.
@@ -92,7 +93,7 @@ Additionally, `app` seamlessly manages development workflows with built-in hot-r
 - `App::run` (`app.rs`): Start the winit event loop and run the runtime for the selected game directory.
 - `DebugOverlay::new` (`debug_overlay.rs`): Create disabled debug overlay state.
 - `DebugOverlay::build_render_commands` (`debug_overlay.rs`): Build render commands for FPS and draw-call counters in a top-right panel.
-- `ErrorScreen::from_error` (`error_screen.rs`): Build error screen model from plain text where first non-empty line is title and remainder is body.
+- `ErrorScreen::from_error` (`error_screen.rs`): Build error screen model from plain text where first non-empty line becomes the title and remainder is body.
 - `ErrorScreen::from_lua_error` (`error_screen.rs`): Build error screen model from `mlua::Error`, splitting message and traceback sections.
 - `ErrorScreen::from_engine_error` (`error_screen.rs`): Build error screen model from `EngineError` display text.
 - `ErrorScreen::build_render_commands` (`error_screen.rs`): Build draw commands that render full-screen error background, text body, traceback, and footer hints.

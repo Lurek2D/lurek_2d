@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when writing or reviewing Rust engine code. It owns safe Rust conventions, error patterns, module structure, and idiomatic style. Skip it for Lua scripts, CAG files, or docs."
 ---
+
 # rust-coding
 
 ## Mission
@@ -68,13 +69,11 @@ Content of bullets — describe in order:
 **Do NOT list individual function names, struct names, or method names.** Describe capabilities and behaviors. The reader can see declarations — the `//!` block explains WHY this file exists and HOW its pieces relate.
 
 Reference example (`src/math/geometry.rs`):
-```rust
-//! - Provides standalone 2D geometry algorithms over scalar coordinates and flat vertex arrays.
-//! - Basic helpers compute angle between points, circle point containment, circle-circle overlap, line-circle intersections, and segment-circle intersections.
-//! - Polygon helpers compute signed area, centroid with arithmetic-mean fallback for degenerate polygons, point-in-polygon by ray casting, and convex hull by Andrew monotone chain.
-//! - Functions favor simple tuples and slices so they can be used from runtime code, tests, and Lua bindings without owning heavier geometry types.
-//! - Degenerate paths generally return conservative values such as empty result sets, arithmetic centroids, or false intersections instead of panicking.
-```
+> //! - Provides standalone 2D geometry algorithms over scalar coordinates and flat vertex arrays.
+> //! - Basic helpers compute angle between points, circle point containment, circle-circle overlap, line-circle intersections, and segment-circle intersections.
+> //! - Polygon helpers compute signed area, centroid with arithmetic-mean fallback for degenerate polygons, point-in-polygon by ray casting, and convex hull by Andrew monotone chain.
+> //! - Functions favor simple tuples and slices so they can be used from runtime code, tests, and Lua bindings without owning heavier geometry types.
+> //! - Degenerate paths generally return conservative values such as empty result sets, arithmetic centroids, or false intersections instead of panicking.
 
 **Struct (`///`)**
 One line: role in the system + which other type uses it.
@@ -162,6 +161,12 @@ Only methods/functions actually registered to Lua (`methods.add_method`, `method
 - Optional/union return types like `number?`, `number, nil`, `Type|nil`
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - src/

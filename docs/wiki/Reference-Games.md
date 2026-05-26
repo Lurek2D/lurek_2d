@@ -115,6 +115,7 @@
   - [mining](#mining)
   - [physics_demo](#physicsdemo)
   - [physics_sandbox](#physicssandbox)
+  - [province_economy_demo](#provinceeconomydemo)
   - [railroad](#railroad)
   - [settlers_rise](#settlersrise)
   - [tower_sim](#towersim)
@@ -973,6 +974,12 @@ Hospital management simulation — triage patients, assign staff, upgrade depart
 Free-form physics playground where you build structures and destroy them with explosions, heavy balls, and gravity manipulation.
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [province_economy_demo](../tree/main/content/games/simulation/province_economy_demo)
+
+No description available.
+
+**Modules:** [province](Module-province), [render](Module-render), [window](Module-window)
 
 ### [railroad](../tree/main/content/games/simulation/railroad)
 

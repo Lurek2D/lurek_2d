@@ -15,7 +15,7 @@
 
 ## Summary
 
- It offers a rich suite of deterministic, headless-testable algorithms for creating diverse game worlds, terrains, and structures. Central to the module is a robust `NoiseGenerator` built on an internal seeded Linear Congruential Generator (LCG). It supports 2D/3D/4D Perlin and Simplex noise, as well as 2D/3D Worley (cellular) noise with various distance metrics. These base noises can be combined using fractal combinators like Fractal Brownian Motion (FBM), ridged multifractal, and turbulence, and deformed via domain warping. For map generation, `procgen` provides sequential and parallel (`rayon`-powered) heightmap generation with options for hydraulic erosion, which can then be classified into dynamic biomes (e.g., ocean, desert, forest) via the `BiomeClassifier`.
+It offers a rich suite of deterministic, headless-testable algorithms for creating diverse game worlds, terrains, and structures. Central to the module is a robust `NoiseGenerator` built on an internal seeded Linear Congruential Generator (LCG). It supports 2D/3D/4D Perlin and Simplex noise, as well as 2D/3D Worley (cellular) noise with various distance metrics. These base noises can be combined using fractal combinators like Fractal Brownian Motion (FBM), ridged multifractal, and turbulence, and deformed via domain warping. For map generation, `procgen` provides sequential and parallel (`rayon`-powered) heightmap generation with options for hydraulic erosion, which can then be classified into dynamic biomes (e.g., ocean, desert, forest) via the `BiomeClassifier`.
 
 The module also excels at dungeon and interior generation. The `BspDungeon` generator uses Binary Space Partitioning to recursively divide space and carve rooms connected by L-shaped corridors. Alternatively, the `rooms_dungeon` generator places random non-overlapping rooms. Both systems support a prefab stamping feature that cleanly pastes named template shapes into qualifying rooms in a round-robin fashion. For organic caves, the `cellular_automata` generator applies birth/survival rules to a grid to form natural-looking caverns.
 
@@ -268,6 +268,12 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 - `lurek.procgen.noiseMapParallelSeeded`: Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
 - `lurek.procgen.simplex2d`: Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
 - `lurek.procgen.simplex3d`: Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
+- `lurek.procgen.newNoiseGenerator`: Creates a procedural noise generator with an optional seed.
+- `lurek.procgen.perlin2d`: Samples stateless 2D Perlin noise.
+- `lurek.procgen.perlin3d`: Samples stateless 3D Perlin noise.
+- `lurek.procgen.perlin4d`: Samples stateless 4D Perlin noise.
+- `lurek.procgen.fbm`: Samples stateless fractal Brownian motion noise.
+- `lurek.procgen.simplexNoise`: Sample a 2D or 3D simplex noise value at a given point.
 - `lurek.procgen.newBiomeClassifier`: Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
 - `lurek.procgen.biomeColor`: Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
 
@@ -276,6 +282,27 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 - `LBiomeClassifier:classifyMap`: Classify an entire grid of points into biome types in bulk.
 - `LBiomeClassifier:type`: Returns the type name of this object.
 - `LBiomeClassifier:typeOf`: Check whether this object matches a given type name.
+
+### `LNoiseGenerator` Methods
+- `LNoiseGenerator:perlin1d`: Samples 1D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin2d`: Samples 2D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin3d`: Samples 3D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin4d`: Samples 4D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex1d`: Samples 1D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex2d`: Samples 2D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex3d`: Samples 3D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:worley2d`: Samples 2D Worley noise. This method is available to Lua scripts.
+- `LNoiseGenerator:worley3d`: Samples 3D Worley noise. This method is available to Lua scripts.
+- `LNoiseGenerator:fbm`: Samples fractal Brownian motion noise.
+- `LNoiseGenerator:ridged`: Samples ridged fractal noise. This method is available to Lua scripts.
+- `LNoiseGenerator:turbulence`: Samples turbulence fractal noise.
+- `LNoiseGenerator:warpDomain`: Samples domain-warped noise coordinates.
+- `LNoiseGenerator:generateMap`: Generates a noise map and returns it as a flat array table.
+- `LNoiseGenerator:generateMapCompute`: Generates a noise map through the compute backend and returns it as a flat array table.
+- `LNoiseGenerator:getSeed`: Returns this noise generator seed.
+- `LNoiseGenerator:setSeed`: Sets this noise generator seed. This method is available to Lua scripts.
+- `LNoiseGenerator:type`: Returns the Lua-visible type name for this noise generator handle.
+- `LNoiseGenerator:typeOf`: Returns whether this noise generator handle matches a supported type name.
 
 ## References
 

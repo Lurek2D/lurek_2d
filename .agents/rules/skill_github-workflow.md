@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when working with GitHub issues, PRs, labels, milestones, or roadmap mapping. Skip it for CI/CD setup or code review."
 ---
+
 # github-workflow
 
 ## Mission
@@ -27,6 +28,12 @@ description: "Load this skill when working with GitHub issues, PRs, labels, mile
 - `CONTRIBUTING.md` is the canonical process document. When a process question arises, check there first. If the answer is not there, add it after resolving the question — the answer belongs in `CONTRIBUTING.md`, not in a chat message.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - CONTRIBUTING.md

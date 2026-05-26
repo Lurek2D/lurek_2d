@@ -13,11 +13,9 @@
 - Rust test path(s): tests/rust/unit/ai_tests.rs, tests/rust/game/ai_tests.rs
 - Lua test path(s): tests/lua/unit/test_ai.lua, tests/lua/golden/test_ai_golden.lua, tests/lua/integration/test_ecs_ai.lua, tests/lua/integration/test_ai_physics.lua, tests/lua/integration/test_ai_pathfind.lua, tests/lua/integration/test_ai_ecs_scene.lua, tests/lua/stress/test_ai_stress.lua
 
-> **Note:** The dialog/conversation system has been extracted to `src/dialog/` — see [`docs/specs/dialog.md`](dialog.md). The `ai` module re-exports `DialogueAI`, `DialogueBranch`, and `DialogueTopic` for backward compatibility.
-
 ## Summary
 
- Positioned within the Feature Systems tier, the module is entirely pure CPU, headless-testable, and imposes zero rendering dependencies, making it suitable for server-side logic and highly optimized simulation loops. It imports only the `math` and `runtime` modules, maintaining strict architectural isolation.
+Positioned within the Feature Systems tier, the module is entirely pure CPU, headless-testable, and imposes zero rendering dependencies, making it suitable for server-side logic and highly optimized simulation loops. It imports only the `math` and `runtime` modules, maintaining strict architectural isolation.
 
 At its core, the module offers a centralized `AIWorld` that manages registered agents and their execution. Individual `Agent` records maintain state, motion, and active decision models. To facilitate complex decision-making, the module includes over a dozen specialized subsystems. These include traditional reactive architectures like Finite State Machines (`FSM`) and Behavior Trees with a variety of composite, decorator, and leaf nodes, alongside advanced planning architectures such as Goal-Oriented Action Planning (`GOAP`) and Hierarchical Task Networks (`HTN`). For dynamic environments, Monte-Carlo Tree Search (`MCTS`) provides bounded lookahead, while `UtilityAI` allows agents to score candidate actions using response curves and considerations.
 
@@ -37,6 +35,9 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - Single-call constructor initializing all fields to safe defaults with subsystem slots disconnected.
 
 ### `behavior_tree.rs`
+- Runtime behavior tree executor for AI agents with Lua callbacks.
+- For structural BT building and inspection, see [`crate::patterns::behavior_tree`].
+- This module adds Lua RegistryKey-driven actions, conditions, guards, and per-tick running state.
 - Behavior-tree node hierarchy with local runtime progress and last tick result.
 - Control-flow variants: selector, sequence, parallel, decorator, guard, and Lua leaves.
 - Subtree reset, node counting, status translation, and compact debug snapshots.
@@ -45,11 +46,11 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - Root node container used as the single-instance tree by the per-agent AI runtime.
 
 ### `blackboard.rs`
-- Lightweight hierarchical blackboard storing per-agent facts as numbers, booleans, and strings.
-- Local entry map with optional parent chain and read/write resolution through fallback hierarchy.
-- Key removal, board clearing, key listing, size reporting, and parent attachment operations.
-- Parent-chain walk for reads giving child boards transparent access to shared data.
-- Structured runtime logging for creation, removal, and clear events.
+- Agent blackboard: shared read/write key-value memory for behaviour-tree nodes.
+- Stores typed values (`bool`, `i32`, `f32`, `String`) under string keys.
+- Designed for single-agent or squad-shared access within one Lua game tick.
+- Values are reset or persisted per agent lifecycle at the call site's discretion.
+- Used by BT nodes to communicate patrol targets, attack counts, and state flags.
 
 ### `command_queue.rs`
 - Queued command format staging discrete actor actions with targets, callbacks, and priority.
@@ -70,13 +71,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - Uses cosine-attenuated cone fill to smoothly distribute weights across
 - neighboring slots near a target angle.
 
-### `dialogue.rs`
-- Dialogue selection choosing topics and branches from weighted sets guarded by FSM and BT state.
-- Topic and branch records with optional gate keys and utility-score references.
-- Scoring and matching logic filtering by gates, folding utility, and returning best candidates.
-- Independent gating against FSM state and behavior-tree status for adaptive selection.
-- Base weight combined with optional utility scores for flexible priority ranking.
-
 ### `director.rs`
 - Pacing director translating accumulated tension into pressure phases and runtime multipliers.
 - Tunable thresholds and timers moving between buildup, peak, sustain, and relief phases.
@@ -92,6 +86,9 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - Dominant emotion identification by filtering active entries and selecting highest value.
 
 ### `fsm.rs`
+- Runtime state machine executor for AI agents.
+- For structural FSM definition and graph validation, see [`crate::patterns::state_machine`].
+- This module adds Lua callback execution, priority-based transitions, and per-frame time tracking.
 - Finite-state-machine storing named states, callback hooks, transition rules, and active state.
 - Callback bundles for state entry, update, and exit with priority-sorted transition records.
 - Mutable machine state tracking current state, initial state, elapsed time, and registration helpers.
@@ -132,8 +129,7 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 ### `mod.rs`
 - Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
 - Module-level export map for agent state, planners, blackboard, and command flow.
-- Re-exports learning types (NeuralNet, GeneticAlgorithm, QLearner, Bandit, Neuroevolution) from `src/learning/` for backward compatibility.
-- Perception, steering, and squad coordination re-exports.
+- Learning helpers, perception, steering, and squad coordination re-exports.
 - Compact entry surface re-exporting runtime types for higher engine layers.
 
 ### `needs.rs`
@@ -194,24 +190,16 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 
 - `DecisionModel` (`enum`, `agent.rs`): Chooses which AI paradigm an `Agent` is currently using.
 - `Agent` (`struct`, `agent.rs`): One autonomous actor record with movement state, limits, selected decision model, and local blackboard.
-- `BanditArm` (`struct`, `bandit.rs`): One arm in a multi-armed bandit.
-- `BanditStrategy` (`enum`, `bandit.rs`): Arm selection algorithm for a [`Bandit`].
-- `Bandit` (`struct`, `bandit.rs`): Multi-armed bandit with configurable exploration strategy.
 - `BTStatus` (`enum`, `behavior_tree.rs`): The execution result returned by behavior-tree steps.
 - `ParallelPolicy` (`enum`, `behavior_tree.rs`): Defines how parallel behavior-tree nodes determine success or failure.
 - `BTNode` (`enum`, `behavior_tree.rs`): The behavior-tree node enum describing the actual tree shape.
 - `BehaviorTree` (`struct`, `behavior_tree.rs`): Hierarchical decision structure for composite, decorator, and leaf AI behavior.
 - `BtDebugState` (`struct`, `behavior_tree.rs`): A snapshot of a [`BehaviorTree`]'s current diagnostic state.
-- `BlackboardValue` (`enum`, `blackboard.rs`): The value enum stored in a `Blackboard`.
-- `Blackboard` (`struct`, `blackboard.rs`): Hierarchical key-value state store used for AI coordination and memory.
 - `Command` (`struct`, `command_queue.rs`): One queued AI command with priority and callback information.
 - `CommandQueue` (`struct`, `command_queue.rs`): Ordered queue of AI commands waiting to run or interrupt one another.
 - `ContextBehaviorKind` (`enum`, `context_steering.rs`): Variant of a context steering behavior defining how it fills the ring.
 - `ContextBehavior` (`struct`, `context_steering.rs`): A single context steering behavior with a weight and enabled flag.
 - `ContextSteering` (`struct`, `context_steering.rs`): Radial context steering evaluator producing a smooth, obstacle-aware movement direction.
-- `DialogueBranch` (`struct`, `dialogue.rs`): Single branch inside a topic.
-- `DialogueTopic` (`struct`, `dialogue.rs`): Top-level dialogue topic with an ordered set of branches.
-- `DialogueAI` (`struct`, `dialogue.rs`): Topic and branch selector with gate checks and utility scoring.
 - `DirectorPhase` (`enum`, `director.rs`): Current pacing phase of the AI Director state machine.
 - `DirectorConfig` (`struct`, `director.rs`): Configuration thresholds and decay rates for [`AIDirector`].
 - `AIDirector` (`struct`, `director.rs`): Dynamic pacing and difficulty director.
@@ -220,8 +208,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `StateCallbacks` (`struct`, `fsm.rs`): Bundles per-state lifecycle callbacks for FSM behavior.
 - `Transition` (`struct`, `fsm.rs`): One guarded edge between FSM states.
 - `StateMachine` (`struct`, `fsm.rs`): Finite state machine with named states and guarded transitions.
-- `Chromosome` (`struct`, `genetic.rs`): A candidate solution in a genetic algorithm population.
-- `GeneticAlgorithm` (`struct`, `genetic.rs`): Simple generational genetic algorithm.
 - `GOAPAction` (`struct`, `goap.rs`): One GOAP action with preconditions and effects.
 - `GOAPGoal` (`struct`, `goap.rs`): Desired end-state description for GOAP planning.
 - `GOAPPlanner` (`struct`, `goap.rs`): Planner that searches action sequences over world-state facts.
@@ -237,10 +223,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `Need` (`struct`, `needs.rs`): A single named motivational drive for an AI agent.
 - `NeedAdvertisement` (`struct`, `needs.rs`): A world-space announcement that an object or location can satisfy a need.
 - `NeedSystem` (`struct`, `needs.rs`): Collection of [`Need`]s for a single agent.
-- `Activation` (`enum`, `neural_net.rs`): Element-wise activation function applied at the output of a neural layer.
-- `NeuralLayer` (`struct`, `neural_net.rs`): A single fully-connected layer in a neural network.
-- `NeuralNet` (`struct`, `neural_net.rs`): Feedforward neural network stack.
-- `Neuroevolution` (`struct`, `neuroevolution.rs`): Neuroevolution trainer: evolves a population of neural network weight vectors.
 - `ORCAAgent` (`struct`, `orca.rs`): A single agent participating in ORCA collision avoidance.
 - `ORCASolver` (`struct`, `orca.rs`): ORCA crowd solver for a flat list of agents.
 - `StimulusType` (`enum`, `perception.rs`): The sensory channel of a [`Stimulus`].
@@ -248,7 +230,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `DetectedStimulus` (`struct`, `perception.rs`): Result record produced when a sensor successfully detects a stimulus.
 - `StimulusWorld` (`struct`, `perception.rs`): Scene-level registry of active sensory stimuli.
 - `Sensor` (`struct`, `perception.rs`): Agent-level sensing configuration and awareness state.
-- `QLearner` (`struct`, `qlearner.rs`): Tabular reinforcement learner for action value estimation.
 - `FormationType` (`enum`, `squad.rs`): Identifies the supported squad formation patterns.
 - `Squad` (`struct`, `squad.rs`): Group-level AI container for formations and shared decisions.
 - `Force` (`type`, `steering.rs`): 2D force vector (fx, fy).
@@ -272,13 +253,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `DecisionModel::parse_str` (`agent.rs`): Parse a string tag into a `DecisionModel`; returns `None` for unknown tags.
 - `DecisionModel::as_str` (`agent.rs`): Return the canonical string tag for this model.
 - `Agent::new` (`agent.rs`): Create a new agent with default movement, AI, and support systems.
-- `BanditArm::mean_reward` (`bandit.rs`): Return the empirical mean reward; returns 0.5 before the first pull.
-- `Bandit::new` (`bandit.rs`): Create a bandit with `arm_count` arms and a fixed RNG seed.
-- `Bandit::arm_count` (`bandit.rs`): Return the number of available arms.
-- `Bandit::select` (`bandit.rs`): Select an arm index according to the current strategy.
-- `Bandit::update` (`bandit.rs`): Update the chosen arm with an observed reward in the range `[0, 1]`.
-- `Bandit::best_arm` (`bandit.rs`): Return the greedy best arm by empirical mean reward.
-- `Bandit::reset` (`bandit.rs`): Reset all arm statistics and the total pull counter.
 - `BTStatus::parse_str` (`behavior_tree.rs`): Parse a string tag into `BTStatus`; unknown strings default to `Running`.
 - `BTStatus::as_str` (`behavior_tree.rs`): Return the canonical lowercase string tag for this status.
 - `ParallelPolicy::parse_str` (`behavior_tree.rs`): Parse a string tag; unknown strings default to `RequireOne`.
@@ -287,20 +261,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `BTNode::child_count` (`behavior_tree.rs`): Return the number of direct children; leaf nodes return 0.
 - `BehaviorTree::new` (`behavior_tree.rs`): Create an empty tree with `last_status` initialised to `Success`.
 - `BehaviorTree::debug_state` (`behavior_tree.rs`): Build a `BtDebugState` snapshot from the current tree shape and status.
-- `Blackboard::new` (`blackboard.rs`): Create an empty blackboard with no parent.
-- `Blackboard::set_number` (`blackboard.rs`): Write a `Number` value under `key`, overwriting any existing entry.
-- `Blackboard::get_number` (`blackboard.rs`): Read a `Number` by key; walks the parent chain, returns `default` if absent.
-- `Blackboard::set_bool` (`blackboard.rs`): Write a `Bool` value under `key`, overwriting any existing entry.
-- `Blackboard::get_bool` (`blackboard.rs`): Read a `Bool` by key; walks the parent chain, returns `default` if absent.
-- `Blackboard::set_string` (`blackboard.rs`): Write a `Text` value under `key`, overwriting any existing entry.
-- `Blackboard::get_string` (`blackboard.rs`): Read a `Text` by key; walks the parent chain, returns `default` if absent.
-- `Blackboard::has` (`blackboard.rs`): Return `true` if `key` exists in this board or any ancestor.
-- `Blackboard::remove` (`blackboard.rs`): Remove `key` from the local entries only; parent is not affected.
-- `Blackboard::clear` (`blackboard.rs`): Remove all local entries; parent is not affected.
-- `Blackboard::keys` (`blackboard.rs`): Return all local key names as a new `Vec`; does not include parent keys.
-- `Blackboard::size` (`blackboard.rs`): Return the number of entries in the local board, excluding the parent.
-- `Blackboard::set_parent` (`blackboard.rs`): Attach a parent board; looked up when a local key is missing.
-- `Blackboard::parent` (`blackboard.rs`): Return a reference to the parent board, or `None` if none is set.
 - `CommandQueue::new` (`command_queue.rs`): Create an empty queue.
 - `CommandQueue::enqueue` (`command_queue.rs`): Append `cmd` to the back of the queue.
 - `CommandQueue::push_front` (`command_queue.rs`): Insert `cmd` at the front, making it the next command to execute.
@@ -329,16 +289,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `ContextSteering::chosen_magnitude` (`context_steering.rs`): Return the magnitude chosen by the last evaluation.
 - `ContextSteering::interest_map` (`context_steering.rs`): Return a copy of the last computed interest ring.
 - `ContextSteering::danger_map` (`context_steering.rs`): Return a copy of the last computed danger ring.
-- `DialogueAI::new` (`dialogue.rs`): Create an empty dialogue selector.
-- `DialogueAI::set_fsm_state` (`dialogue.rs`): Set the FSM state gate used by topic and branch selection.
-- `DialogueAI::set_bt_status` (`dialogue.rs`): Set the behavior-tree status gate used by topic and branch selection.
-- `DialogueAI::set_utility_score` (`dialogue.rs`): Store a utility score under `key`.
-- `DialogueAI::clear_utility_scores` (`dialogue.rs`): Remove all cached utility scores.
-- `DialogueAI::add_topic` (`dialogue.rs`): Add a topic with optional gate requirements and utility key.
-- `DialogueAI::add_branch` (`dialogue.rs`): Add a branch to the named topic; returns `false` if the topic is missing.
-- `DialogueAI::select_topic` (`dialogue.rs`): Return the best matching topic id, or `None` when no topic matches.
-- `DialogueAI::select_branch` (`dialogue.rs`): Return the best matching branch id for `topic_id`, or `None` when none matches.
-- `DialogueAI::topic_count` (`dialogue.rs`): Return the number of registered topics.
 - `DirectorPhase::as_str` (`director.rs`): Return the canonical string tag for this pacing phase.
 - `AIDirector::new` (`director.rs`): Create a director with default config.
 - `AIDirector::with_config` (`director.rs`): Create a director with a custom config.
@@ -377,11 +327,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `StateMachine::add_state_raw` (`fsm.rs`): Register a state by name with optional enter, update, and exit registry keys.
 - `StateMachine::add_transition_raw` (`fsm.rs`): Build a `Transition` from raw parts and add it via `add_transition`.
 - `StateMachine::set_initial_state` (`fsm.rs`): Set the state name that will be activated on the first tick.
-- `Chromosome::new` (`genetic.rs`): Create a zeroed chromosome with `gene_count` genes.
-- `GeneticAlgorithm::new` (`genetic.rs`): Create a population with random initial genes.
-- `GeneticAlgorithm::pop_size` (`genetic.rs`): Return the current population size.
-- `GeneticAlgorithm::best` (`genetic.rs`): Return the chromosome with the highest fitness, or `None` if empty.
-- `GeneticAlgorithm::evolve` (`genetic.rs`): Build the next generation using elitism, tournament selection, crossover, and mutation.
 - `GOAPPlanner::new` (`goap.rs`): Create a planner with an empty action and goal lists and `max_iterations = 10 000`.
 - `GOAPPlanner::plan` (`goap.rs`): Plan for the highest-priority goal; return ordered action name list or empty on failure.
 - `GOAPPlanner::plan_for_goal_idx` (`goap.rs`): Plan for the goal at `goal_idx`; return ordered action name list or empty on failure.
@@ -437,27 +382,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `NeedSystem::need_names` (`needs.rs`): Return all tracked need names.
 - `NeedSystem::value_of` (`needs.rs`): Return the current value of the named need, or 1.0 if missing.
 - `NeedSystem::best_advertisement` (`needs.rs`): Return the best-scoring available advertisement, or `None` if none score positive.
-- `Activation::from_str` (`neural_net.rs`): Parse a lowercase activation name; unknown strings map to `Linear`.
-- `Activation::as_str` (`neural_net.rs`): Return the canonical activation name.
-- `Activation::apply` (`neural_net.rs`): Apply the activation in place to `v`.
-- `NeuralLayer::new` (`neural_net.rs`): Create a zeroed dense layer.
-- `NeuralLayer::param_count` (`neural_net.rs`): Return the number of learnable parameters in the layer.
-- `NeuralLayer::forward` (`neural_net.rs`): Compute the layer output for `input`.
-- `NeuralNet::new` (`neural_net.rs`): Create an empty neural net.
-- `NeuralNet::add_layer` (`neural_net.rs`): Append a new dense layer.
-- `NeuralNet::param_count` (`neural_net.rs`): Return the total number of learnable parameters.
-- `NeuralNet::forward` (`neural_net.rs`): Run a forward pass through all layers.
-- `NeuralNet::set_weights` (`neural_net.rs`): Load flattened weights and biases; returns `false` when the shape mismatches.
-- `NeuralNet::get_weights` (`neural_net.rs`): Return the flattened weights and biases.
-- `NeuralNet::layer_count` (`neural_net.rs`): Return the number of layers.
-- `Neuroevolution::new` (`neuroevolution.rs`): Create a population for the provided layer spec.
-- `Neuroevolution::pop_size` (`neuroevolution.rs`): Return the population size.
-- `Neuroevolution::chromosome_to_net` (`neuroevolution.rs`): Build a neural net from chromosome `i`; returns `None` when the index is invalid.
-- `Neuroevolution::set_fitness` (`neuroevolution.rs`): Assign fitness to chromosome `i` when present.
-- `Neuroevolution::evolve` (`neuroevolution.rs`): Advance the underlying genetic algorithm and generation counter.
-- `Neuroevolution::best_network` (`neuroevolution.rs`): Build the network for the best chromosome, or `None` if the population is empty.
-- `Neuroevolution::best_fitness` (`neuroevolution.rs`): Return the best fitness in the current population, or 0.0 if empty.
-- `Neuroevolution::population` (`neuroevolution.rs`): Return the current chromosome slice.
 - `ORCAAgent::new` (`orca.rs`): Create a new agent at `(x, y)`.
 - `ORCASolver::new` (`orca.rs`): Create a solver with a minimum time horizon of 0.1 seconds.
 - `ORCASolver::add_agent` (`orca.rs`): Add an agent and return its index.
@@ -483,15 +407,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `Sensor::update_awareness` (`perception.rs`): Raise or decay awareness based on the current number of detections.
 - `Sensor::is_alert` (`perception.rs`): Return `true` when awareness reached the alert threshold.
 - `Sensor::add_custom_range` (`perception.rs`): Register a detection range override for one custom stimulus label.
-- `QLearner::new` (`qlearner.rs`): Create a zeroed Q-table for `state_count` states and `action_count` actions.
-- `QLearner::choose_action` (`qlearner.rs`): Return a randomly chosen action (explore) or the greedy best action (exploit).
-- `QLearner::best_action` (`qlearner.rs`): Return the action with the highest Q-value for `state`; ties broken by index.
-- `QLearner::learn` (`qlearner.rs`): Apply a Bellman update: Q[s,a] ← Q[s,a] + α(r + γ·max Q[s'] − Q[s,a]).
-- `QLearner::end_episode` (`qlearner.rs`): Decay epsilon and increment `episode_count`; call once at the end of each episode.
-- `QLearner::get_q` (`qlearner.rs`): Return Q[state, action]; returns 0.0 if indices are out of bounds.
-- `QLearner::set_q` (`qlearner.rs`): Set Q[state, action] to `value`; no-op if indices are out of bounds.
-- `QLearner::serialize` (`qlearner.rs`): Serialize the Q-table to a compact JSON string `[[row0], [row1], ...]`.
-- `QLearner::deserialize` (`qlearner.rs`): Parse a JSON Q-table string and overwrite the current table; returns error on shape mismatch.
 - `StateMachine::generate_render_commands` (`render.rs`): Build line and box commands for the FSM debug view.
 - `StateMachine::draw_to_image` (`render.rs`): Draw the FSM debug view into an `ImageData` buffer.
 - `BehaviorTree::generate_render_commands` (`render.rs`): Build render commands for the BT debug view.
@@ -700,16 +615,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `LBTNode:type`: Returns the Lua-visible type name for this behavior tree node handle.
 - `LBTNode:typeOf`: Returns whether this behavior tree node handle matches a supported type name.
 
-### `LBandit` Methods
-- `LBandit:select`: Selects an arm using the configured bandit strategy.
-- `LBandit:update`: Updates one arm with a received reward.
-- `LBandit:bestArm`: Returns the arm with the best current estimate.
-- `LBandit:reset`: Resets all bandit arm statistics. This method is available to Lua scripts.
-- `LBandit:armCount`: Returns the number of arms in this bandit.
-- `LBandit:totalPulls`: Returns the total number of arm selections recorded by this bandit.
-- `LBandit:type`: Returns the Lua-visible type name for this bandit handle.
-- `LBandit:typeOf`: Returns whether this bandit handle matches a supported type name.
-
 ### `LBehaviorTree` Methods
 - `LBehaviorTree:setRoot`: Sets the behavior tree root by moving a node handle into the tree.
 - `LBehaviorTree:getLastStatus`: Returns the last behavior tree status string recorded by the tree.
@@ -742,19 +647,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `LContextSteering:type`: Returns the Lua-visible type name for this context steering handle.
 - `LContextSteering:typeOf`: Returns whether this context steering handle matches a supported type name.
 
-### `LDialogueAI` Methods
-- `LDialogueAI:setFSMState`: Sets the finite-state-machine state used as dialogue selection context.
-- `LDialogueAI:setBTStatus`: Sets the behavior-tree status used as dialogue selection context.
-- `LDialogueAI:setUtilityScore`: Stores a utility score used by topics and branches that reference the given key.
-- `LDialogueAI:clearUtilityScores`: Removes every stored utility score from this dialogue selector.
-- `LDialogueAI:addTopic`: Adds a selectable dialogue topic with optional context filters.
-- `LDialogueAI:addBranch`: Adds a selectable branch under an existing dialogue topic.
-- `LDialogueAI:selectTopic`: Selects the best currently valid topic using weights and context filters.
-- `LDialogueAI:selectBranch`: Selects the best currently valid branch for the given topic.
-- `LDialogueAI:getTopicCount`: Returns the number of topics registered in this dialogue selector.
-- `LDialogueAI:type`: Returns the Lua-visible type name for this dialogue AI handle.
-- `LDialogueAI:typeOf`: Returns whether this dialogue AI handle matches a supported type name.
-
 ### `LEmotionModel` Methods
 - `LEmotionModel:add`: Adds an emotion definition with resting value, decay, and visibility threshold.
 - `LEmotionModel:trigger`: Adds an amount to a named emotion. This method is available to Lua scripts.
@@ -779,16 +671,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `LGOAPPlanner:setMaxIterations`: Sets the maximum number of planner iterations allowed during search.
 - `LGOAPPlanner:type`: Returns the Lua-visible type name for this GOAP planner handle.
 - `LGOAPPlanner:typeOf`: Returns whether this GOAP planner handle matches a supported type name.
-
-### `LGeneticAlgorithm` Methods
-- `LGeneticAlgorithm:evolve`: Advances the genetic algorithm by one generation.
-- `LGeneticAlgorithm:generation`: Returns the current generation index.
-- `LGeneticAlgorithm:popSize`: Returns the population size. This method is available to Lua scripts.
-- `LGeneticAlgorithm:setFitness`: Sets the fitness value for a chromosome by zero-based index.
-- `LGeneticAlgorithm:getGenes`: Returns the genes for a chromosome by zero-based index.
-- `LGeneticAlgorithm:bestGenes`: Returns the genes for the best chromosome in the population.
-- `LGeneticAlgorithm:type`: Returns the Lua-visible type name for this genetic algorithm handle.
-- `LGeneticAlgorithm:typeOf`: Returns whether this genetic algorithm handle matches a supported type name.
 
 ### `LHTNDomain` Methods
 - `LHTNDomain:addPrimitive`: Adds a primitive HTN task with preconditions, effects, and cleared facts.
@@ -832,27 +714,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `LNeedSystem:type`: Returns the Lua-visible type name for this need system handle.
 - `LNeedSystem:typeOf`: Returns whether this need system handle matches a supported type name.
 
-### `LNeuralNet` Methods
-- `LNeuralNet:addLayer`: Adds a neural network layer with an activation function.
-- `LNeuralNet:forward`: Runs a forward pass and returns output values.
-- `LNeuralNet:setWeights`: Replaces the network weights from a flat numeric array.
-- `LNeuralNet:getWeights`: Returns the network weights as a flat numeric array.
-- `LNeuralNet:paramCount`: Returns the total number of trainable parameters.
-- `LNeuralNet:layerCount`: Returns the number of layers in the network.
-- `LNeuralNet:type`: Returns the Lua-visible type name for this neural network handle.
-- `LNeuralNet:typeOf`: Returns whether this neural network handle matches a supported type name.
-
-### `LNeuroevolution` Methods
-- `LNeuroevolution:evolve`: Advances the neuroevolution population by one generation.
-- `LNeuroevolution:setFitness`: Sets the fitness value for a chromosome by zero-based index.
-- `LNeuroevolution:chromosomeToNet`: Converts one chromosome into a neural network handle when the index is valid.
-- `LNeuroevolution:bestNetwork`: Converts the best chromosome into a neural network handle when one exists.
-- `LNeuroevolution:bestFitness`: Returns the best fitness value in the population.
-- `LNeuroevolution:popSize`: Returns the population size. This method is available to Lua scripts.
-- `LNeuroevolution:generation`: Returns the current generation index.
-- `LNeuroevolution:type`: Returns the Lua-visible type name for this neuroevolution handle.
-- `LNeuroevolution:typeOf`: Returns whether this neuroevolution handle matches a supported type name.
-
 ### `LORCASolver` Methods
 - `LORCASolver:addAgent`: Adds an ORCA avoidance agent and returns its zero-based solver index.
 - `LORCASolver:setPreferredVelocity`: Sets the preferred velocity for an ORCA agent by zero-based index.
@@ -862,29 +723,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `LORCASolver:agentCount`: Returns the number of ORCA agents in this solver.
 - `LORCASolver:type`: Returns the Lua-visible type name for this ORCA solver handle.
 - `LORCASolver:typeOf`: Returns whether this ORCA solver handle matches a supported type name.
-
-### `LQLearner` Methods
-- `LQLearner:chooseAction`: Chooses an action for a one-based state index using the learner's exploration policy.
-- `LQLearner:bestAction`: Returns the highest-valued action for a one-based state index without exploration.
-- `LQLearner:learn`: Applies one Q-learning update from a transition and reward.
-- `LQLearner:getQValue`: Returns the stored Q-value for a one-based state and action pair.
-- `LQLearner:setQValue`: Sets the stored Q-value for a one-based state and action pair.
-- `LQLearner:endEpisode`: Ends the current learning episode and applies episode bookkeeping.
-- `LQLearner:getEpisodeCount`: Returns how many learning episodes have been completed.
-- `LQLearner:getStateCount`: Returns the number of states represented by this learner.
-- `LQLearner:getActionCount`: Returns the number of actions represented by this learner.
-- `LQLearner:setLearningRate`: Sets the Q-learning alpha learning rate.
-- `LQLearner:getLearningRate`: Returns the Q-learning alpha learning rate.
-- `LQLearner:setDiscountFactor`: Sets the Q-learning gamma discount factor.
-- `LQLearner:getDiscountFactor`: Returns the Q-learning gamma discount factor.
-- `LQLearner:setExplorationRate`: Sets the exploration rate used by action selection.
-- `LQLearner:getExplorationRate`: Returns the exploration rate used by action selection.
-- `LQLearner:setExplorationDecay`: Sets the exploration decay multiplier applied across episodes.
-- `LQLearner:getExplorationDecay`: Returns the exploration decay multiplier.
-- `LQLearner:serialize`: Serializes the Q-learner state to a JSON string.
-- `LQLearner:deserialize`: Replaces the Q-learner state from a JSON string.
-- `LQLearner:type`: Returns the Lua-visible type name for this Q-learner handle.
-- `LQLearner:typeOf`: Returns whether this Q-learner handle matches a supported type name.
 
 ### `LSquad` Methods
 - `LSquad:getName`: Returns the squad name. This method is available to Lua scripts.
@@ -981,7 +819,10 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 
 ## References
 
+- `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `image`: Imports or references `image` from `src/image/`.
+- `learning`: Imports or references `src/learning/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `patterns`: Imports or references `src/patterns/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 

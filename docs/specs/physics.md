@@ -15,7 +15,7 @@
 
 ## Summary
 
- At its center is the `World` struct, which completely encapsulates the Rapier simulation state, including body sets, collider sets, joint sets, and the broad/narrow-phase collision pipelines. The simulation is advanced via deterministic fixed-timestep sub-stepping (`step_fixed`), ensuring consistent and predictable physical interactions regardless of frame rate fluctuations.
+At its center is the `World` struct, which completely encapsulates the Rapier simulation state, including body sets, collider sets, joint sets, and the broad/narrow-phase collision pipelines. The simulation is advanced via deterministic fixed-timestep sub-stepping (`step_fixed`), ensuring consistent and predictable physical interactions regardless of frame rate fluctuations.
 
 The module supports a full spectrum of physics bodies: `dynamic` (fully simulated), `static` (immovable terrain/walls), `kinematic` (script-driven movement that affects dynamic bodies), and `sensor` (detects overlap without physical collision response). These bodies can be composed of various primitives, including circles, rectangles, convex polygons, edge segments, and chain polylines. Developers have granular control over material properties such as density, friction, and restitution (bounciness). Advanced simulation features like continuous collision detection (CCD, or "bullet mode") are available to prevent fast-moving objects from tunneling through walls, and rotation locking ensures character controllers behave predictably.
 
@@ -42,7 +42,12 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - Geometric fill helpers (rect, circle) for painting materials into the grid.
 
 ### `collision.rs`
-- Collision detection result types for penetration depth and contact normals.
+- Collision event queuing and contact processing between physics bodies.
+- `CollisionQueue` accumulates `ContactEvent`s during `physics::step()`.
+- Events are drained each Lua tick and delivered as `lurek.physics.on_contact` callbacks.
+- Contact events carry both body keys, contact normal, and penetration depth.
+- Sensor events (`ContactEvent::SensorEnter` / `SensorExit`) are routed separately.
+- The queue is never flushed mid-step; callbacks fire only after step completes.
 
 ### `collision_helpers.rs`
 - Pure-geometry collision tests for AABB, circle, and point queries.
@@ -74,6 +79,11 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - Run-length row merging to minimise body count per chunk.
 - Compact bitpacked serialisation and deserialisation for save/load.
 - Debris spawning and column-collapse utilities for destructible terrain effects.
+
+### `types.rs`
+- Core type definitions for the physics subsystem.
+- `BodyId` newtype wrapper for type-safe body identification across Lua and Rust layers.
+- Implements `Copy`, `Hash`, and `Display`; converts to/from `usize` without allocation.
 
 ### `world.rs`
 - Full rapier2d-backed physics simulation world with body, collider, and joint management.
@@ -107,6 +117,7 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `StandaloneShape` (`struct`, `shape.rs`): Reusable shape-plus-fixture descriptor for attaching extra colliders.
 - `ChunkId` (`struct`, `terrain.rs`): Identifies a `CHUNK_SIZE Ã— CHUNK_SIZE` cell block by its position in chunk coordinate space.
 - `TerrainMap` (`struct`, `terrain.rs`): Bitgrid-backed destructible terrain with chunked static physics colliders.
+- `BodyId` (`struct`, `types.rs`): Unique identifier for a physics body.
 - `BodyContact` (`struct`, `world.rs`): Stable-ID collision event emitted from simulation results.
 - `RaycastHit` (`struct`, `world.rs`): Query result carrying hit body, hit point, normal, and distance.
 - `ContactInfo` (`struct`, `world.rs`): Narrow-phase contact snapshot for detailed per-pair inspection.
@@ -123,7 +134,7 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 
 ## Functions
 
-- `Body::new` (`body.rs`): Create a rectangular body at `(x,y)` with default 32×32 dimensions.
+- `Body::new` (`body.rs`): Create a rectangular body at `(x,y)` with explicit `(w,h)` dimensions.
 - `Body::new_circle` (`body.rs`): Create a circular body at `(x,y)` with the given `radius`.
 - `Body::new_polygon` (`body.rs`): Create a polygon body at `(x,y)` from a vertex list; AABB derived from vertex bounds.
 - `Body::new_edge` (`body.rs`): Create an edge (line segment) body from `v1` to `v2` anchored at `(x,y)`.
@@ -177,6 +188,8 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `TerrainMap::to_bytes` (`terrain.rs`): Serialise to a compact byte buffer: `width u32 LE` + `height u32 LE` + `cell_size f32 LE` + bitpacked cells.
 - `TerrainMap::from_bytes` (`terrain.rs`): Deserialise from a byte buffer produced by `to_bytes`; marks all chunks dirty; return `None` on error.
 - `TerrainMap::load_from_bytes` (`terrain.rs`): Load bytes into this map if dimensions match; return false on mismatch or parse error.
+- `BodyId::new` (`types.rs`): Creates a new BodyId from a raw usize.
+- `BodyId::raw` (`types.rs`): Returns the raw usize underlying value.
 - `World::draw_debug_to_image` (`world.rs`): Draw all body outlines onto an RGBA `ImageData` using the given colour.
 - `World::extract_shape_snapshots` (`world.rs`): Return a snapshot of all body shapes suitable for debug rendering.
 - `World::new` (`world.rs`): Create a world with gravity `(gx, gy)` in pixels/s².
@@ -273,7 +286,7 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `World::sleep_body` (`world.rs`): Force body `id` to sleep immediately.
 - `World::set_solver_iterations` (`world.rs`): Set the number of solver iterations (minimum 1).
 - `World::get_solver_iterations` (`world.rs`): Return the current number of solver iterations.
-- `World::add_bodies` (`world.rs`): Batch-create bodies from a list of `(x, y, BodyType)` tuples; return their ids.
+- `World::add_bodies` (`world.rs`): Batch-create bodies from a list of `(x, y, w, h, BodyType)` tuples; return their ids.
 - `ZoneBoundary::contains` (`zone.rs`): Return true if point `(px, py)` is inside this boundary.
 - `PhysicsZone::new_rect` (`zone.rs`): Create a rectangular zone with zero gravity and default layer mask.
 - `PhysicsZone::set_circle` (`zone.rs`): Replace the boundary with a circle centred at `(cx, cy)` with given `radius`.
@@ -425,7 +438,7 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LWorld:getBodyCount`: Returns the total number of active bodies in the world.
 - `LWorld:getBodyIds`: Returns a sequential table of all body IDs currently in the world.
 - `LWorld:destroyBody`: Removes a body from the world by its ID, along with all attached fixtures and joints.
-- `LWorld:newBody`: Creates a new physics body at the given position with the specified type.
+- `LWorld:newBody`: Creates a new physics body at the given position with the specified type and dimensions.
 - `LWorld:newCircleBody`: Creates a new body with a circle collider already attached.
 - `LWorld:newPolygonBody`: Creates a new body with a convex polygon collider defined by vertex pairs.
 - `LWorld:newEdgeBody`: Creates a new body with an edge (line segment) collider between two local points.
@@ -488,7 +501,7 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LWorld:sleepBody`: Forces a body into the sleeping state, pausing its simulation until disturbed.
 - `LWorld:setSolverIterations`: Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
 - `LWorld:getSolverIterations`: Returns the current number of velocity solver iterations.
-- `LWorld:newBodies`: Batch-creates multiple bodies at once for better performance. Each entry is {x, y, type}.
+- `LWorld:newBodies`: Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type}.
 - `LWorld:stepFixed`: Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
 - `LWorld:addZone`: Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
 - `LWorld:getZoneEvents`: Returns all zone enter/leave events from the last step.

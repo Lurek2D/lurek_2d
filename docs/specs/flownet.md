@@ -15,21 +15,11 @@
 
 ## Summary
 
- Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
+Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
 
 The simulation is deeply systemic. Items (`GraphItem`) accumulate in node inventories and traverse directed edges (`Edge`). These edges are not merely logical links; they enforce strict constraints including transit capacities, cooldown timers, and item-type filters. Nodes (`Node`) possess configurable item capacities, explicit queueing systems, and distinct flow modes (passive, push, or pull). Furthermore, nodes can execute `ConversionRule`s—acting as economic factories that consume specific inputs to produce new typed outputs. To manage bottlenecks, nodes implement defined `OverflowPolicy` behaviors, dictating whether excess items are rejected, queued, or destroyed.
 
 The module runs an intricate simulation pipeline (`step(dt)`) that processes item decay, executes conversion rules, matches supply against demand declarations, and progresses items along edges. To support this, the module includes a comprehensive suite of graph algorithms: A* and Dijkstra shortest-path searches, reachability flood-fills, connected component discovery, cycle detection, topological sorting, Kruskal's minimum spanning tree, and graph coloring. Pathfinding inherently respects edge constraints and item-type filters. For performance scalability, the simulation tick can be executed in parallel using multi-threading. The engine exposes this entire logistical framework, alongside event-driven callbacks for state transitions, to Lua scripts via the `lurek.graph.*` namespace.
-
-## Architecture Boundary
-
-**Tier**: Feature Systems
-
-**Dependencies** (all correct direction):
-- `graph` → `render` (Platform Services): for `RenderCommand` output in `graph/render.rs`
-- `graph` → `runtime` (Core Runtime): for structured log messages
-
-No boundary violations detected.
 
 ## Source Documentation
 
@@ -66,10 +56,10 @@ No boundary violations detected.
 - Provide decay-time lifetime, priority, and alive/dead state per item.
 
 ### `mod.rs`
-- Directed graph container with typed nodes, edges, and item flow.
+- Directed flownet container with typed nodes, edges, and item flow.
 - Supply/demand modeling, conversion rules, and overflow policies.
 - Pathfinding, simulation stepping, and event emission.
-- Render helpers for visual graph output.
+- Render helpers for visual flownet output.
 
 ### `node.rs`
 - Node struct with id, type, capacity, inventory, and flow settings for graph simulation.
@@ -109,6 +99,13 @@ No boundary violations detected.
 - Pathfinding-based item routing from supplier to consumer.
 - Event emission on supply depletion and demand fulfillment.
 
+### `types.rs`
+- Shared type definitions for the flownet visual scripting graph.
+- `NodeId`, `PortId`, and `EdgeId` are newtype wrappers around `u32` for clarity.
+- `PortKind` distinguishes input/output and the value type carried (number, bool, any).
+- `NodeValue` is the runtime variant type flowing through edges at evaluation time.
+- All types are `Clone + Debug + PartialEq` to support undo-redo snapshotting.
+
 ## Types
 
 - `GraphStats` (`struct`, `core.rs`): Read-only state summary for graph size, activity, demand, supply, and queued items.
@@ -124,6 +121,9 @@ No boundary violations detected.
 - `Node` (`struct`, `node.rs`): Rich vertex type with capacity, flow mode, overflow policy, queueing, conversion rules, supplies, demands, and tags.
 - `PathResult` (`struct`, `pathfinding.rs`): Shortest-path result containing ordered node IDs, edge IDs, and total path cost.
 - `GraphEvent` (`enum`, `simulation.rs`): Event enum emitted by simulation and demand processing for Lua callback dispatch.
+- `NodeId` (`struct`, `types.rs`): Unique identifier for a flownet graph node.
+- `EdgeId` (`struct`, `types.rs`): Unique identifier for a flownet graph edge.
+- `ItemId` (`struct`, `types.rs`): Unique identifier for a flownet item (resource flowing through the network).
 
 ## Functions
 
@@ -143,6 +143,7 @@ No boundary violations detected.
 - `Graph::get_node_ids` (`core.rs`): Return all node ids in arbitrary order.
 - `Graph::get_node_count` (`core.rs`): Return the number of nodes.
 - `Graph::add_edge` (`core.rs`): Add an edge and return its assigned id or an error when either endpoint is missing.
+- `Graph::add_edge_unchecked` (`core.rs`): Add an edge without validating that source/target nodes exist.
 - `Graph::remove_edge` (`core.rs`): Remove an edge and detach any items in transit, returning true when it existed.
 - `Graph::has_edge` (`core.rs`): Return true when the edge id exists.
 - `Graph::get_edge_ids` (`core.rs`): Return all edge ids in arbitrary order.
@@ -224,10 +225,16 @@ No boundary violations detected.
 - `Graph::update_parallel` (`simulation.rs`): Run one simulation update using parallel decay processing when enabled.
 - `Graph::update_parallel` (`simulation.rs`): Run one simulation update when the parallel feature is disabled.
 - `Graph::process_demand` (`supply_demand.rs`): Process node demands and return the resulting graph events.
+- `NodeId::new` (`types.rs`): Create a new `NodeId` wrapping the given raw integer.
+- `NodeId::raw` (`types.rs`): Return the underlying raw node identifier.
+- `EdgeId::new` (`types.rs`): Create a new `EdgeId` wrapping the given raw integer.
+- `EdgeId::raw` (`types.rs`): Return the underlying raw edge identifier.
+- `ItemId::new` (`types.rs`): Create a new `ItemId` wrapping the given raw integer.
+- `ItemId::raw` (`types.rs`): Return the underlying raw item identifier.
 
 ## Lua API Reference
 
-- Binding path(s): `src/lua_api/graph_api.rs`
+- Binding path(s): `src/lua_api/flownet_api.rs`
 - Namespace: `lurek.graph`
 
 ### Module Functions
@@ -240,6 +247,7 @@ No boundary violations detected.
 - `LGraph:getNodes`: Returns all nodes in this logistics graph.
 - `LGraph:getNodeCount`: Returns the number of nodes in this graph.
 - `LGraph:addEdge`: Creates an edge between two nodes with an optional edge type.
+- `LGraph:addEdgeUnchecked`: Adds an edge without validating endpoint nodes exist. Faster for batch construction.
 - `LGraph:removeEdge`: Removes an edge by handle on this object.
 - `LGraph:hasEdge`: Returns whether an edge handle still exists in this graph.
 - `LGraph:getEdges`: Returns all edges in this logistics graph.
@@ -271,6 +279,9 @@ No boundary violations detected.
 - `LGraph:processDemand`: Processes graph supply and demand once and dispatches generated callbacks.
 - `LGraph:getStats`: Returns graph counts and aggregate supply-demand statistics.
 - `LGraph:on`: Registers a callback for a named graph event generated during simulation.
+- `LGraph:batchAddNodes`: Creates multiple nodes at once, returning their IDs as a table.
+- `LGraph:batchAddEdges`: Creates multiple edges from a table of {from_id, to_id} or {from_id, to_id, edge_type} entries.
+- `LGraph:batchStep`: Runs multiple simulation steps in sequence. More efficient than calling step() in a loop from Lua.
 - `LGraph:type`: Returns the Lua-visible type name for this graph handle.
 - `LGraph:typeOf`: Returns whether this graph handle matches a supported type name.
 

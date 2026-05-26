@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when handling platform-specific code, cfg gates, or Windows/Linux/macOS differences. Skip it for pure game logic or Lua scripts."
 ---
+
 # cross-platform
 
 ## Mission
@@ -29,6 +30,12 @@ description: "Load this skill when handling platform-specific code, cfg gates, o
 - When adding a cfg-gated feature, add a corresponding test or smoke scenario that exercises the cfg path on the affected platform. An untested cfg branch will regress at next update.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - src/window/

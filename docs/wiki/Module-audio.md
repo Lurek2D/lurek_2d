@@ -198,7 +198,7 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 ## 📖 API Overview
 
 - Source spec: [docs/specs/audio.md](../blob/main/docs/specs/audio.md)
-- Module-level functions: 99
+- Module-level functions: 93
 - Lua-visible types: 6
 - Total type methods: 122
 
@@ -208,44 +208,6 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 ## ⚙️ Module Functions
 
 ### Module-Level Functions
-
-#### lurek.audio.add_effect
-
-#### Definition
-
-```lua
---- Adds an effect to a named audio bus and returns its effect ID.
----@param bus_name string Name of the audio bus.
----@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
----@param params? table Optional parameters table; may include a `value` field.
----@return number Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
-lurek.audio.add_effect = function(bus_name, effect_type_str, params) end
-```
-
-#### Description
-
-Adds an effect to a named audio bus and returns its effect ID.
-
-Parameters:
-
-- `bus_name` (`string`, required): Name of the audio bus.
-- `effect_type_str` (`string`, required): Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
-- `params` (`table`, optional): Optional parameters table; may include a `value` field.
-
-Returns: `integer` - Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
-
-#### Example
-
-Source: [audio.lua](../blob/main/content/examples/audio.lua)
-
-```lua
-do
-    lurek.audio.create_bus("fx_bus", nil)
-    local eid = lurek.audio.add_effect("fx_bus", "reverb", { value = 0.5 })
-    print("effect id = " .. tostring(eid))
-    print("effect added to fx_bus")
-end
-```
 
 #### lurek.audio.applyBandpass
 
@@ -2072,6 +2034,48 @@ do
 end
 ```
 
+#### lurek.audio.newSynthWave
+
+#### Definition
+
+```lua
+--- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
+---@param waveform string Waveform type ("sine", "square", "sawtooth", "triangle", "noise").
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@param adsr table ADSR parameters: `attack`, `decay`, `sustain`, `release`.
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
+lurek.audio.newSynthWave = function(waveform, freq, duration, sample_rate, amplitude, adsr) end
+```
+
+#### Description
+
+Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
+
+Parameters:
+
+- `waveform` (`string`, required): Waveform type ("sine", "square", "sawtooth", "triangle", "noise").
+- `freq` (`number`, required): Frequency in Hz.
+- `duration` (`number`, required): Duration in seconds.
+- `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
+- `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
+- `adsr` (`table`, required): ADSR parameters: `attack`, `decay`, `sustain`, `release`.
+
+Returns: `LSoundData` - A `SoundData` object containing the generated PCM samples.
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    local sd = lurek.audio.newSynthWave("sine", 440, 1.0, 44100, 0.8)
+    print("synth wave = " .. tostring(sd ~= nil))
+end
+```
+
 #### lurek.audio.newTriangleWave
 
 #### Definition
@@ -2145,43 +2149,6 @@ Source: [audio.lua](../blob/main/content/examples/audio.lua)
 do
     local sd = lurek.audio.newWhiteNoise(1.0, 44100, 0.4, 12345)
     print("white noise = " .. tostring(sd ~= nil))
-end
-```
-
-#### lurek.audio.normalizeFile
-
-#### Definition
-
-```lua
---- Normalizes an audio file to a target peak amplitude and saves the result.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output WAV file.
----@param target number Target peak amplitude (e.g. 0.9 for headroom).
-lurek.audio.normalizeFile = function(input, output, target) end
-```
-
-#### Description
-
-Normalizes an audio file to a target peak amplitude and saves the result.
-
-Parameters:
-
-- `input` (`string`, required): Relative path to the input audio file.
-- `output` (`string`, required): Relative path for the output WAV file.
-- `target` (`number`, required): Target peak amplitude (e.g. 0.9 for headroom).
-
-#### Example
-
-Source: [audio.lua](../blob/main/content/examples/audio.lua)
-
-```lua
-do
-    local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/normalized.wav"
-    lurek.audio.normalizeFile(path_in, path_out, 0.9)
-    print("input file = " .. path_in)
-    print("output file = " .. path_out)
-    print("normalized to 0.9 peak")
 end
 ```
 
@@ -2348,44 +2315,6 @@ do
 end
 ```
 
-#### lurek.audio.processOffline
-
-#### Definition
-
-```lua
---- Processes an audio file offline through a chain of effects and writes the result to an output file.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output WAV file.
----@param effects_tbl table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
-lurek.audio.processOffline = function(input, output, effects_tbl) end
-```
-
-#### Description
-
-Processes an audio file offline through a chain of effects and writes the result to an output file.
-
-Parameters:
-
-- `input` (`string`, required): Relative path to the input audio file.
-- `output` (`string`, required): Relative path for the output WAV file.
-- `effects_tbl` (`table`, required): Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
-
-#### Example
-
-Source: [audio.lua](../blob/main/content/examples/audio.lua)
-
-```lua
-do
-    local effects = {{ type = "lowpass", p1 = 1000 }, { type = "gain", p1 = 0.8 }}
-    local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/processed.wav"
-    lurek.audio.processOffline(path_in, path_out, effects)
-    print("input file = " .. path_in)
-    print("output file = " .. path_out)
-    print("offline processing done")
-end
-```
-
 #### lurek.audio.queueSource
 
 #### Definition
@@ -2455,43 +2384,6 @@ do
     lurek.audio.release(src)
     print("source released")
     print("source count before release = " .. tostring(before))
-end
-```
-
-#### lurek.audio.remove_effect
-
-#### Definition
-
-```lua
---- Removes an effect from a named audio bus by effect ID.
----@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by add_effect.
----@return boolean True if the effect was successfully removed.
-lurek.audio.remove_effect = function(bus_name, effect_id) end
-```
-
-#### Description
-
-Removes an effect from a named audio bus by effect ID.
-
-Parameters:
-
-- `bus_name` (`string`, required): Name of the audio bus.
-- `effect_id` (`integer`, required): Effect ID returned by add_effect.
-
-Returns: `boolean` - True if the effect was successfully removed.
-
-#### Example
-
-Source: [audio.lua](../blob/main/content/examples/audio.lua)
-
-```lua
-do
-    lurek.audio.create_bus("temp_bus", nil)
-    local eid = lurek.audio.add_effect("temp_bus", "lowpass", { value = 800 })
-    local ok = lurek.audio.remove_effect("temp_bus", eid)
-    print("effect id = " .. tostring(eid))
-    print("removed = " .. tostring(ok))
 end
 ```
 
@@ -2655,47 +2547,6 @@ do
     lurek.audio.set_bus_volume("music_bus", 0.7)
     print("configured music_bus volume = 0.7")
     print("music_bus peak = " .. tostring(lurek.audio.getBusPeak("music_bus")))
-end
-```
-
-#### lurek.audio.set_effect_param
-
-#### Definition
-
-```lua
---- Sets a parameter value on an effect attached to a named audio bus.
----@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by add_effect.
----@param param_name string Name of the effect parameter to set.
----@param value number New value for the parameter.
----@return boolean True if the parameter was set successfully.
-lurek.audio.set_effect_param = function(bus_name, effect_id, param_name, value) end
-```
-
-#### Description
-
-Sets a parameter value on an effect attached to a named audio bus.
-
-Parameters:
-
-- `bus_name` (`string`, required): Name of the audio bus.
-- `effect_id` (`integer`, required): Effect ID returned by add_effect.
-- `param_name` (`string`, required): Name of the effect parameter to set.
-- `value` (`number`, required): New value for the parameter.
-
-Returns: `boolean` - True if the parameter was set successfully.
-
-#### Example
-
-Source: [audio.lua](../blob/main/content/examples/audio.lua)
-
-```lua
-do
-    lurek.audio.create_bus("eq_bus", nil)
-    local eid = lurek.audio.add_effect("eq_bus", "highpass", { cutoff = 200 })
-    local ok = lurek.audio.set_effect_param("eq_bus", eid, "cutoff", 500)
-    print("effect id = " .. tostring(eid))
-    print("param set = " .. tostring(ok))
 end
 ```
 
@@ -3390,45 +3241,6 @@ do
 end
 ```
 
-#### lurek.audio.spectrogramToPng
-
-#### Definition
-
-```lua
---- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output PNG file.
----@param width number Image width in pixels.
----@param height number Image height in pixels.
-lurek.audio.spectrogramToPng = function(input, output, width, height) end
-```
-
-#### Description
-
-Renders a spectrogram visualization of an audio file and saves it as a PNG image.
-
-Parameters:
-
-- `input` (`string`, required): Relative path to the input audio file.
-- `output` (`string`, required): Relative path for the output PNG file.
-- `width` (`integer`, required): Image width in pixels.
-- `height` (`integer`, required): Image height in pixels.
-
-#### Example
-
-Source: [audio.lua](../blob/main/content/examples/audio.lua)
-
-```lua
-do
-    local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/spectrogram.png"
-    lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
-    print("input file = " .. path_in)
-    print("output file = " .. path_out)
-    print("spectrogram image saved")
-end
-```
-
 #### lurek.audio.stop
 
 #### Definition
@@ -3554,45 +3366,6 @@ do
     local pos = lurek.audio.tell(src)
     print("playing = " .. tostring(lurek.audio.isPlaying(src)))
     print("position = " .. tostring(pos))
-end
-```
-
-#### lurek.audio.waveformToPng
-
-#### Definition
-
-```lua
---- Renders a waveform visualization of an audio file and saves it as a PNG image.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output PNG file.
----@param width number Image width in pixels.
----@param height number Image height in pixels.
-lurek.audio.waveformToPng = function(input, output, width, height) end
-```
-
-#### Description
-
-Renders a waveform visualization of an audio file and saves it as a PNG image.
-
-Parameters:
-
-- `input` (`string`, required): Relative path to the input audio file.
-- `output` (`string`, required): Relative path for the output PNG file.
-- `width` (`integer`, required): Image width in pixels.
-- `height` (`integer`, required): Image height in pixels.
-
-#### Example
-
-Source: [audio.lua](../blob/main/content/examples/audio.lua)
-
-```lua
-do
-    local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/waveform.png"
-    lurek.audio.waveformToPng(path_in, path_out, 800, 200)
-    print("input file = " .. path_in)
-    print("output file = " .. path_out)
-    print("waveform image saved")
 end
 ```
 

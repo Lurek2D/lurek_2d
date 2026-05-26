@@ -1,12 +1,6 @@
 ---
 trigger: model_decision
-description: "Lurek2D Agent Definition for extension-engineer.agent.md"
----
-
----
-name: Extension-Engineer
-description: Build and maintain the VS Code extension in extensions/vscode/, including commands, panels, language features, and generated data integration. Do not work on engine Rust code.
-tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, vscode/toolSearch, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, read/problems, read/readFile, read/viewImage, read/skill, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, todo]
+description: "Build and maintain the VS Code extension in extensions/vscode/, including commands, panels, language features, and generated data integration. Do not work on engine Rust code."
 ---
 
 # Extension-Engineer
@@ -70,5 +64,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, IDE-first
 Personas: EngDev, GameDev, Modder
-Primary skills: vscode-extension
-Secondary skills: html-css, ui-layout, build-system, lua-api-design, documentation
+Primary skills: skill_vscode-extension
+Secondary skills: skill_html-css, skill_ui-layout, skill_build-system, skill_lua-api-design, skill_documentation

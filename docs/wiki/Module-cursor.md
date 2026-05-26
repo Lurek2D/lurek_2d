@@ -77,23 +77,21 @@ No source-file descriptions were found in the module spec.
 #### Definition
 
 ```lua
---- Create a new LAnimatedCursor that cycles through a sequence of frames.
----@param frames table Array of LCustomCursor frames to animate.
----@param delay_ms number Duration of each frame in milliseconds.
----@return LuaValue A new LAnimatedCursor instance.
-lurek.cursor.newAnimated = function(frames, delay_ms) end
+--- Creates a new animated cursor that can cycle through frames.
+---@param looping boolean Whether the animation loops continuously.
+---@return LAnimatedCursor A new animated cursor instance.
+lurek.cursor.newAnimated = function(looping) end
 ```
 
 #### Description
 
-Create a new LAnimatedCursor that cycles through a sequence of frames.
+Creates a new animated cursor that can cycle through frames.
 
 Parameters:
 
-- `frames` (`table`, required): Array of LCustomCursor frames to animate.
-- `delay_ms` (`number`, required): Duration of each frame in milliseconds.
+- `looping` (`boolean`, required): Whether the animation loops continuously.
 
-Returns: - A new LAnimatedCursor instance.
+Returns: `LAnimatedCursor` - A new animated cursor instance.
 
 #### Example
 
@@ -112,27 +110,27 @@ end
 #### Definition
 
 ```lua
---- Create a new LCustomCursor from pixel data with the given hot-spot coordinates.
----@param width number Width of the cursor image in pixels.
----@param height number Height of the cursor image in pixels.
----@param hotspot_x number X coordinate of the cursor hot-spot.
----@param hotspot_y number Y coordinate of the cursor hot-spot.
----@return LuaValue A new LCustomCursor instance.
-lurek.cursor.newCustom = function(width, height, hotspot_x, hotspot_y) end
+--- Creates a new custom cursor with specified dimensions and hotspot position.
+---@param w number Width of the cursor image in pixels.
+---@param h number Height of the cursor image in pixels.
+---@param hx number Hotspot X offset from cursor origin.
+---@param hy number Hotspot Y offset from cursor origin.
+---@return LCustomCursor A new custom cursor instance.
+lurek.cursor.newCustom = function(w, h, hx, hy) end
 ```
 
 #### Description
 
-Create a new LCustomCursor from pixel data with the given hot-spot coordinates.
+Creates a new custom cursor with specified dimensions and hotspot position.
 
 Parameters:
 
-- `width` (`integer`, required): Width of the cursor image in pixels.
-- `height` (`integer`, required): Height of the cursor image in pixels.
-- `hotspot_x` (`integer`, required): X coordinate of the cursor hot-spot.
-- `hotspot_y` (`integer`, required): Y coordinate of the cursor hot-spot.
+- `w` (`integer`, required): Width of the cursor image in pixels.
+- `h` (`integer`, required): Height of the cursor image in pixels.
+- `hx` (`integer`, required): Hotspot X offset from cursor origin.
+- `hy` (`integer`, required): Hotspot Y offset from cursor origin.
 
-Returns: - A new LCustomCursor instance.
+Returns: `LCustomCursor` - A new custom cursor instance.
 
 #### Example
 
@@ -152,16 +150,16 @@ end
 #### Definition
 
 ```lua
---- Create a new LCursorManager that controls cursor appearance at runtime.
----@return LuaValue A new LCursorManager instance.
+--- Creates a new cursor manager for handling cursor state and visibility.
+---@return LCursorManager A new cursor manager instance.
 lurek.cursor.newManager = function() end
 ```
 
 #### Description
 
-Create a new LCursorManager that controls cursor appearance at runtime.
+Creates a new cursor manager for handling cursor state and visibility.
 
-Returns: - A new LCursorManager instance.
+Returns: `LCursorManager` - A new cursor manager instance.
 
 #### Example
 
@@ -180,16 +178,16 @@ end
 #### Definition
 
 ```lua
---- Return a table listing all available system cursor style names on this platform.
----@return table Table of available system cursor style names.
+--- Returns a list of all available system cursor names as a string array.
+---@return table Array of system cursor name strings.
 lurek.cursor.systemCursors = function() end
 ```
 
 #### Description
 
-Return a table listing all available system cursor style names on this platform.
+Returns a list of all available system cursor names as a string array.
 
-Returns: - Table of available system cursor style names.
+Returns: `table` - Array of system cursor name strings.
 
 #### Example
 
@@ -218,54 +216,11 @@ Lua userdata representing an animated cursor that cycles through image frames.
 Source: [cursor.lua](../blob/main/content/examples/cursor.lua)
 
 ```lua
---
--- Topics: cursor manager, custom cursors, animation, trails, zoom.
--- ==========================================================================
-
--- Create a cursor manager
---@api-stub: lurek.cursor.newManager
-do
-    local cm = lurek.cursor.newManager()
-    print("manager visible = " .. tostring(cm:isVisible()))
-    print("manager context = " .. cm:getContext())
-end
-
---@api-stub: lurek.cursor.newCustom
-do
-    local c = lurek.cursor.newCustom(16, 16, 0, 0)
-    local w, h = c:getSize()
-    print("custom cursor size = " .. w .. "x" .. h)
-    print("hotspot = 0,0")
-end
-
---@api-stub: lurek.cursor.newAnimated
 do
     local c = lurek.cursor.newAnimated(true)
     print("animated frame count = " .. c:frameCount())
     print("animated scale = " .. c:currentScale())
 end
-
---@api-stub: lurek.cursor.systemCursors
-do
-    local list = lurek.cursor.systemCursors()
-    print("lurek.cursor.systemCursors count=" .. #list)
-end
-
---@api-stub: LAnimatedCursor:addFrame
-do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    print("LAnimatedCursor:addFrame count=" .. c:frameCount())
-end
-
---@api-stub: LAnimatedCursor:update
-do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    c:update(0.05)
-    print("LAnimatedCursor:update idx=" .. c:currentIndex())
 ```
 
 ### LCursorManager
@@ -279,54 +234,11 @@ Lua userdata that controls cursor appearance and system cursor selection.
 Source: [cursor.lua](../blob/main/content/examples/cursor.lua)
 
 ```lua
---
--- Topics: cursor manager, custom cursors, animation, trails, zoom.
--- ==========================================================================
-
--- Create a cursor manager
---@api-stub: lurek.cursor.newManager
 do
     local cm = lurek.cursor.newManager()
     print("manager visible = " .. tostring(cm:isVisible()))
     print("manager context = " .. cm:getContext())
 end
-
---@api-stub: lurek.cursor.newCustom
-do
-    local c = lurek.cursor.newCustom(16, 16, 0, 0)
-    local w, h = c:getSize()
-    print("custom cursor size = " .. w .. "x" .. h)
-    print("hotspot = 0,0")
-end
-
---@api-stub: lurek.cursor.newAnimated
-do
-    local c = lurek.cursor.newAnimated(true)
-    print("animated frame count = " .. c:frameCount())
-    print("animated scale = " .. c:currentScale())
-end
-
---@api-stub: lurek.cursor.systemCursors
-do
-    local list = lurek.cursor.systemCursors()
-    print("lurek.cursor.systemCursors count=" .. #list)
-end
-
---@api-stub: LAnimatedCursor:addFrame
-do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    print("LAnimatedCursor:addFrame count=" .. c:frameCount())
-end
-
---@api-stub: LAnimatedCursor:update
-do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    c:update(0.05)
-    print("LAnimatedCursor:update idx=" .. c:currentIndex())
 ```
 
 ### LCustomCursor
@@ -340,54 +252,12 @@ Lua userdata representing a custom-drawn cursor image with a configurable hot-sp
 Source: [cursor.lua](../blob/main/content/examples/cursor.lua)
 
 ```lua
---
--- Topics: cursor manager, custom cursors, animation, trails, zoom.
--- ==========================================================================
-
--- Create a cursor manager
---@api-stub: lurek.cursor.newManager
-do
-    local cm = lurek.cursor.newManager()
-    print("manager visible = " .. tostring(cm:isVisible()))
-    print("manager context = " .. cm:getContext())
-end
-
---@api-stub: lurek.cursor.newCustom
 do
     local c = lurek.cursor.newCustom(16, 16, 0, 0)
     local w, h = c:getSize()
     print("custom cursor size = " .. w .. "x" .. h)
     print("hotspot = 0,0")
 end
-
---@api-stub: lurek.cursor.newAnimated
-do
-    local c = lurek.cursor.newAnimated(true)
-    print("animated frame count = " .. c:frameCount())
-    print("animated scale = " .. c:currentScale())
-end
-
---@api-stub: lurek.cursor.systemCursors
-do
-    local list = lurek.cursor.systemCursors()
-    print("lurek.cursor.systemCursors count=" .. #list)
-end
-
---@api-stub: LAnimatedCursor:addFrame
-do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    print("LAnimatedCursor:addFrame count=" .. c:frameCount())
-end
-
---@api-stub: LAnimatedCursor:update
-do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    c:update(0.05)
-    print("LAnimatedCursor:update idx=" .. c:currentIndex())
 ```
 
 

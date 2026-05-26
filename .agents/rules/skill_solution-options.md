@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when solving a high-level problem needs 2 to 4 real options, trade-off checks, and one chosen path. Skip it for direct implementation, routine planning, or narrow bug fixing."
 ---
+
 # solution-options
 
 ## Mission
@@ -29,6 +30,12 @@ description: "Load this skill when solving a high-level problem needs 2 to 4 rea
 - When a human call is needed: surface the exact trade-off (e.g., "Option B saves 2 ms per frame but requires rewriting 400 lines of physics integration") and leave the decision point explicit in the output rather than choosing on behalf of the user.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - .github/agents/architect.agent.md

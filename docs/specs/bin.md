@@ -15,7 +15,7 @@
 
 ## Summary
 
- Its primary responsibility is to host the `fn main()` targets that initialize the runtime environment and delegate control to the core engine. This module contains no intrinsic game logic; instead, it parses command-line arguments and coordinates the initialization sequence by calling into the `app` and `runtime` modules.
+Its primary responsibility is to host the `fn main()` targets that initialize the runtime environment and delegate control to the core engine. This module contains no intrinsic game logic; instead, it parses command-line arguments and coordinates the initialization sequence by calling into the `app` and `runtime` modules.
 
 The module provides two distinct entry points tailored for different distribution contexts. The first is `lurek_headless.rs`, a specialized CLI tool designed for automation, testing, and game validation. It initializes the engine without creating a GPU surface or OS window, making it ideal for CI pipelines. This headless runner supports several subcommands: `validate` invokes external Python scripts for game data validation, `pack` compresses a game directory into a distributable `.lurek` ZIP archive, and `screenshot-batch` systematically spawns engine instances to capture PNG screenshots over a set number of frames.
 

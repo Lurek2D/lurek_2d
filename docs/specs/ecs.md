@@ -15,7 +15,7 @@
 
 ## Summary
 
- Central to this module is the `Universe` container, which orchestrates the entire lifecycle of entities, components, and systems within the Feature Systems tier. Entities are represented as lightweight, packed 32-bit generational IDs (comprising a 24-bit slot index and an 8-bit generation counter). This generational approach efficiently manages slot reuse and instantly invalidates stale entity handles without costly memory lookups. Unlike traditional Rust-centric ECS architectures, Lurek2D components are arbitrary Lua values stored directly within per-entity Lua registry tables; there is no hidden Rust-side component data storage. This design ensures seamless interplay with Lua scripts and maximizes flexibility for game developers.
+Central to this module is the `Universe` container, which orchestrates the entire lifecycle of entities, components, and systems within the Feature Systems tier. Entities are represented as lightweight, packed 32-bit generational IDs (comprising a 24-bit slot index and an 8-bit generation counter). This generational approach efficiently manages slot reuse and instantly invalidates stale entity handles without costly memory lookups. Unlike traditional Rust-centric ECS architectures, Lurek2D components are arbitrary Lua values stored directly within per-entity Lua registry tables; there is no hidden Rust-side component data storage. This design ensures seamless interplay with Lua scripts and maximizes flexibility for game developers.
 
 The module provides robust data querying mechanisms, ranging from basic `set`, `get`, `has`, and `remove` operations to advanced batch lookups like `query`, `queryNot`, and `queryMulti`. To further accelerate queries, the module offers an archetype-style index. Beyond simple component attachments, the ECS supports sophisticated entity hierarchies with parent-child relationships, enabling recursive cascading operations like hierarchical deletions (`kill_recursive`). For rapid entity classification and filtering, the module implements string-based tagging and high-speed 63-bit bitmap tags. Additionally, numeric layer assignments are supported, natively sorting entities for deterministic rendering operations.
 
@@ -44,6 +44,13 @@ To simplify entity instantiation, the ECS leverages a Blueprint system. Blueprin
 - Canonical entity-pair ordering for symmetric, order-independent lookups.
 - Directed named links between entities for one-way associations.
 - Query helpers: filter by entity, check existence, iterate all relations.
+
+### `types.rs`
+- Core ECS type aliases and ID newtypes: entity, component slot, and archetype key.
+- `EntityId` is a `u32` generation-stamped handle; 0 is the null entity.
+- `ComponentSlot` is a dense index into a component storage array.
+- `ArchetypeKey` is a sorted bitset of component type IDs identifying a layout.
+- All types derive `Copy`, `Eq`, and `Hash` so they can be used as map keys.
 
 ### `universe.rs`
 - Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.
@@ -76,6 +83,7 @@ To simplify entity instantiation, the ECS leverages a Blueprint system. Blueprin
 - `RelationType` (`struct`, `relationships.rs`): The definition of one named relationship category and its allowed level strings.
 - `Relationship` (`struct`, `relationships.rs`): The stored record for one normalized entity pair, including a numeric value and per-type named levels.
 - `RelationshipManager` (`struct`, `relationships.rs`): A standalone manager for pairwise entity relationships that is separate from `Universe` but often complements ECS-driven gameplay.
+- `EntityId` (`struct`, `types.rs`): Unique identifier for an ECS entity.
 - `SnapshotDiff` (`struct`, `universe.rs`): Incremental diff payload returned by `take_snapshot_diff`, containing added/removed component events, deleted entities, and dirty entities.
 - `Universe` (`struct`, `universe.rs`): The main ECS world object that owns entity lifecycle, component storage, tags, layers, blueprints, parent-child links, and registered systems.
 
@@ -107,6 +115,8 @@ To simplify entity instantiation, the ECS leverages a Blueprint system. Blueprin
 - `RelationshipManager::remove_link` (`relationships.rs`): Removes one directed link target from a source entity and link name.
 - `RelationshipManager::clear_links` (`relationships.rs`): Removes all directed link targets for a source entity and link name.
 - `RelationshipManager::has_link` (`relationships.rs`): Returns whether a directed link target exists for the source entity and link name.
+- `EntityId::new` (`types.rs`): Create a new `EntityId` wrapping the given raw integer.
+- `EntityId::raw` (`types.rs`): Return the underlying raw entity identifier.
 - `Universe::new` (`universe.rs`): Creates an empty universe with fresh stores and counters.
 - `Universe::get_system_store` (`universe.rs`): Fetches the Lua system store table, failing if the universe is not initialized.
 - `Universe::pack_id` (`universe.rs`): Packs a slot and generation into the public entity id format.

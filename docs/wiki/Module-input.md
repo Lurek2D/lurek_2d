@@ -2259,12 +2259,6 @@ do
             lurek.input.loadRecording(rec:toJson())
             lurek.input.startPlayback()
         end
-
---@api-stub: lurek.input.stopRecording
-do
---@api-stub: lurek.input.getTouchCount
-do
-    print("lurek.input.getTouchCount=" .. lurek.input.getTouchCount())
 end
 ```
 
@@ -2290,9 +2284,9 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
---@api-stub: lurek.input.getTouchCount
-do
-    print("lurek.input.getTouchCount=" .. lurek.input.getTouchCount())
+	lurek.input.startRecording()
+	local rec = lurek.input.stopRecording()
+	print("recording stopped, got recording = " .. tostring(rec ~= nil))
 end
 ```
 
@@ -2904,9 +2898,9 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
---@api-stub: lurek.input.getTouchCount
-do
-    print("lurek.input.getTouchCount=" .. lurek.input.getTouchCount())
+	lurek.input.startRecording()
+	local rec = lurek.input.stopRecording()
+	print("recording stopped, got recording = " .. tostring(rec ~= nil))
 end
 ```
 

@@ -15,19 +15,13 @@
 
 ## Summary
 
- Positioned within the Foundations tier, it offers robust data analytics capabilities completely decoupled from engine-specific state. The core data structure is the `DataFrame`, which stores named columns containing `CellValue` variants (Nil, Bool, Int, Float, String). It provides a comprehensive set of operations including adding or removing columns and rows, cell access, sorting, and filtering via predicates. The module also supports advanced tabular functions like inner, left, right, and full joins, grouping, and aggregations (sum, mean, min, max, count).
+Positioned within the Foundations tier, it offers robust data analytics capabilities completely decoupled from engine-specific state. The core data structure is the `DataFrame`, which stores named columns containing `CellValue` variants (Nil, Bool, Int, Float, String). It provides a comprehensive set of operations including adding or removing columns and rows, cell access, sorting, and filtering via predicates. The module also supports advanced tabular functions like inner, left, right, and full joins, grouping, and aggregations (sum, mean, min, max, count).
 
 For analytical workloads, the module includes an extensive suite of window functions (rank, row_number, lag, lead, running totals) and processing helpers such as value counts, missing value reports, duplicate row extraction, and ISO date part extraction. A lazy query builder (`LazyQuery`) is available to chain sequential query steps (filter, sort, select, slice) before materializing the final frame, improving efficiency for complex data pipelines. Additionally, for highly performant bulk numeric operations, a vectorized variant called `VecFrame` leverages parallel operations and typed storage.
 
 A standout feature is the `Database` container, which holds multiple named `DataFrame` instances and acts as a localized query catalog. The module features a bespoke, built-in SQL engine complete with a tokenizer and recursive-descent parser. This engine natively executes SQL queries across the database, supporting full SELECT statements with WHERE clauses, GROUP BY, ORDER BY, LIMIT, subqueries, and table JOINs. It robustly handles explicit `AS` aliases, aggregate calls, and complex arithmetic expressions, including parameterized queries with positional `?` placeholders.
 
 To facilitate seamless data interchange, the module implements native serialization and deserialization for CSV, JSON, and compact binary (LVDF) formats. Recognizing the performance impact of parsing large datasets, these operations—alongside SQL queries—can be executed asynchronously on Rust worker threads using `DataFrameTask`. These tasks operate on storage snapshots, ensuring that heavy I/O and SQL processing do not block the main Lua thread. The entire robust feature set is exposed to script authors through the `lurek.dataframe.*` API, enabling sophisticated data engineering and analytics within game scripts.
-
-## Registration
-
-The `dataframe` module is registered as **always-on** and requires no configuration gate.
-As a Foundations tier library, it is available unconditionally in all VM contexts.
-No `modules.dataframe` config field exists — this is intentional.
 
 ## Source Documentation
 
@@ -104,8 +98,7 @@ No `modules.dataframe` config field exists — this is intentional.
 - ISO date part extraction into appended year, month, and day columns
 
 ### `query/window.rs`
-- Rolling mean, sum, min, and max over configurable window size; mean and sum use O(N) sliding-window algorithms
-- Rolling operations ignore nil cells; result is Nil when current window contains no numeric cells
+- Rolling mean, sum, min, and max over configurable window size
 - Dense rank computation with average-rank tie-breaking
 - Row-to-row percent change calculation
 - Cumulative sum across ordered rows
@@ -248,6 +241,7 @@ No `modules.dataframe` config field exists — this is intentional.
 - `DataFrame::mode_val` (`query/analytics.rs`): Return most frequent non-nil value in selected column.
 - `DataFrame::entropy` (`query/analytics.rs`): Compute Shannon entropy over rendered cell values.
 - `DataFrame::filter` (`query/filter.rs`): Filter rows by column predicate and return matching frame.
+- `DataFrame::par_filter` (`query/filter.rs`): Parallel filter — uses rayon to scan rows when frame exceeds threshold.
 - `DataFrame::sort` (`query/filter.rs`): Sort rows by column and return sorted frame.
 - `DataFrame::head` (`query/filter.rs`): Return first n rows as new frame.
 - `DataFrame::tail` (`query/filter.rs`): Return last n rows as new frame.
@@ -275,6 +269,7 @@ No `modules.dataframe` config field exists — this is intentional.
 - `DataFrame::get_column_as_f64` (`query/filter.rs`): Export selected column as f64 vector with nil as NaN.
 - `DataFrame::set_column_from_f64` (`query/filter.rs`): Set selected column from f64 vector with NaN mapped to nil.
 - `DataFrame::group_agg` (`query/grouping.rs`): Aggregate values by group key and return grouped result frame.
+- `DataFrame::par_group_agg` (`query/grouping.rs`): Parallel group-by aggregation — partitions by group column, aggregates each partition in parallel.
 - `DataFrame::pivot` (`query/grouping.rs`): Pivot row and column keys into cross-tabulated frame.
 - `DataFrame::corr` (`query/grouping.rs`): Compute Pearson correlation between two numeric columns.
 - `DataFrame::correlation_matrix` (`query/grouping.rs`): Build numeric-column correlation matrix frame.
@@ -341,6 +336,7 @@ No `modules.dataframe` config field exists — this is intentional.
 - `VecFrame::col_cast` (`vectorized.rs`): Cast named column to target type in place.
 - `VecFrame::par_reduce` (`vectorized.rs`): Reduce multiple columns in parallel and return name-to-result map.
 - `VecFrame::par_scalar_op` (`vectorized.rs`): Apply scalar operation across multiple Float64 columns in parallel.
+- `DataFrame::par_apply_column` (`vectorized.rs`): Parallel element-wise transform on a column.
 
 ## Lua API Reference
 
@@ -426,6 +422,8 @@ No `modules.dataframe` config field exists — this is intentional.
 - `LDataFrame:withPctChange`: Adds a percent-change column in place.
 - `LDataFrame:withCumsum`: Adds a cumulative-sum column in place.
 - `LDataFrame:groupAgg`: Groups by one column and aggregates another column.
+- `LDataFrame:parFilter`: Parallel filter — automatically parallelizes when frame has 10,000+ rows.
+- `LDataFrame:parGroupAgg`: Parallel group-by aggregation — partitions and aggregates in parallel.
 - `LDataFrame:pivot`: Pivots rows into columns using row, column, and value fields.
 - `LDataFrame:corr`: Returns correlation between two numeric columns.
 - `LDataFrame:correlationMatrix`: Returns a correlation matrix for numeric columns.

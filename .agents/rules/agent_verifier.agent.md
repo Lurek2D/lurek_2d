@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Final quality gate. Review diffs, specs, CAG, and architecture for correctness, risk, and test coverage. Profile performance, detect regressions, and accept or reject a completed phase."
 ---
+
 # Verifier
 
 ## Mission
@@ -83,5 +84,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, gate-first
 Personas: EngDev, GameDev, EngTest
-Primary skills: module-audit, performance-profiling
-Secondary skills: testing-rust, error-handling, quality-pipeline, dev-debugging
+Primary skills: skill_module-audit, skill_performance-profiling
+Secondary skills: skill_testing-rust, skill_error-handling, skill_quality-pipeline, skill_dev-debugging

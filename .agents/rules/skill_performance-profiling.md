@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when analyzing or optimizing frame time, allocations, hot paths, rendering throughput, or Lua-Rust overhead. Skip it for correctness bugs or feature work."
 ---
+
 # performance-profiling
 
 ## Mission
@@ -30,6 +31,12 @@ description: "Load this skill when analyzing or optimizing frame time, allocatio
 - Do not interleave correctness fixes and performance optimizations in one commit — attribution becomes impossible when both change together.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - src/render/

@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Write and fix Rust engine code across all subsystems: general runtime, renderer, physics, audio, and assets. Find runtime root causes. Do not own lurek.* API design."
 ---
+
 # Developer
 
 ## Mission
@@ -111,5 +112,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, implementation-first
 Personas: EngDev, GameDev, EngTest
-Primary skills: rust-coding, error-handling, dev-debugging
-Secondary skills: module-architecture, gpu-programming, performance-profiling, lua-rust-bridge, asset-pipeline, logging, visual-effects
+Primary skills: skill_rust-coding, skill_error-handling, skill_dev-debugging
+Secondary skills: skill_module-architecture, skill_gpu-programming, skill_performance-profiling, skill_lua-rust-bridge, skill_asset-pipeline, skill_logging, skill_visual-effects

@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when diagnosing runtime bugs, crashes, or wrong behavior in Lurek2D. Skip it for feature work or test writing."
 ---
+
 # dev-debugging
 
 ## Mission
@@ -31,6 +32,12 @@ description: "Load this skill when diagnosing runtime bugs, crashes, or wrong be
 - Check Clippy output (`cargo clippy --all-targets -- -D warnings`) after reproducing, because sometimes the root cause is a known pattern that Clippy would already flag.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - logs/

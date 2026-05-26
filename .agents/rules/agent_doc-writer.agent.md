@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Write and maintain all Lurek2D docs including user guides, specs, API reference, wiki, and changelog. Detect and fix docs-spec drift. Do not implement engine code."
 ---
+
 # Doc-Writer
 
 ## Mission
@@ -78,5 +79,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, docs-first
 Personas: EngDev, GameDev, Modder
-Primary skills: documentation, agent-md
-Secondary skills: lua-api-design, roadmap-planning, enterprise-architecture, github-workflow
+Primary skills: skill_documentation, skill_agent-md
+Secondary skills: skill_lua-api-design, skill_roadmap-planning, skill_enterprise-architecture, skill_github-workflow

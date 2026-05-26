@@ -1,102 +1,116 @@
-# layout — Module Specification
+# layout
 
-| Field        | Value                                                    |
-| ------------ | -------------------------------------------------------- |
-| **Module**   | `layout`                                                 |
-| **Tier**     | Foundations                                              |
-| **Path**     | `src/layout/`                                            |
-| **API**      | `lurek.layout.*`                                         |
-| **Depends**  | (none — leaf module)                                     |
-| **Used by**  | pipeline, dialog, graph, UI trees, skill trees, editors  |
+## TL;DR
 
-## Purpose
+
+
+## General Info
+
+- Module group: `Edge/Integration`
+- Source path: `src/layout/`
+- Lua API path(s): `src/lua_api/layout_api.rs`
+- Primary Lua namespace: `lurek.layout`
+- Rust test path(s): None found in the workspace
+- Lua test path(s): None found in the workspace
+
+## Summary
 
 Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space.
 Pure algorithmic module with no engine runtime dependencies.
 
-## Files
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
-| File           | Content                                                              |
-| -------------- | -------------------------------------------------------------------- |
-| `mod.rs`       | Module declarations and re-exports                                   |
-| `types.rs`     | Core types: `NodeId`, `LayoutNode`, `LayoutEdge`, `LayoutConfig`, `LayoutResult` |
-| `tree.rs`      | Reingold-Tilford tree layout algorithm                               |
-| `dag.rs`       | Sugiyama layered DAG layout (layer assignment + crossing reduction)   |
-| `force.rs`     | Force-directed spring layout (Fruchterman-Reingold)                  |
-| `grid_align.rs`| Snap-to-grid and center-in-area post-processing                      |
+## Source Documentation
 
-## Public Types
+### `dag.rs`
+- Sugiyama layered layout algorithm for directed acyclic graphs.
+- `layout_dag(nodes, edges, config)` returns a `LayoutResult` with `(x, y)` positions.
+- Phases: cycle removal, layer assignment, crossing minimisation, coordinate assignment.
+- `DagConfig` controls node separation, layer height, and direction (top-down / LR).
+- Output coordinates are in logical pixels; caller applies camera transform.
+- Used by `lurek.layout.dag`; suitable for dependency trees and tech-tree UIs.
 
-- `NodeId = usize` — Index-based node identifier.
-- `LayoutNode` — Node with id, x, y, width, height, label.
-- `LayoutEdge` — Directed edge with from, to, weight.
-- `LayoutConfig` — Spacing parameters (h_spacing, v_spacing, margin).
-- `ForceConfig` — Force-directed parameters (iterations, repulsion, attraction, cooling, area).
-- `LayoutResult` — Positioned nodes with bounding dimensions.
+### `force.rs`
+- Fruchterman-Reingold force-directed layout for arbitrary undirected graphs.
+- `layout_force(nodes, edges, config)` iterates attraction/repulsion until convergence.
+- `ForceConfig` controls temperature, cooling rate, repulsion constant, and max iterations.
+- Initialises nodes on a random grid; deterministic given the same seed.
+- Convergence is detected when the max node displacement falls below a threshold.
+- Used by `lurek.layout.force` for social graphs, skill webs, and mind maps.
 
-## Algorithms
+### `grid_align.rs`
+- Post-processing utilities: snap node positions to a grid and centre in a bounding box.
+- `snap_to_grid(positions, cell_size)` rounds each node to the nearest grid cell.
+- `center_layout(positions, viewport)` translates the whole layout to fill a rect.
+- Pure functions; no mutation of the graph structure, only the coordinate map.
+- Applied after any layout algorithm before the positions are returned to Lua.
 
-### Reingold-Tilford Tree (`tree.rs`)
-- Post-order traversal assigns x to leaves sequentially.
-- Internal nodes are centered over their children.
-- Depth determines y position.
-- Produces minimal-width layouts with symmetric subtrees.
+### `mod.rs`
+- Generic graph/tree/DAG layout algorithms.
+- Provides algorithms for positioning nodes in 2D space:
+- **Tree layout** — Reingold-Tilford algorithm for hierarchical trees
+- **DAG layout** — Sugiyama layered algorithm for directed acyclic graphs
+- **Force-directed** — Fruchterman-Reingold spring simulation for arbitrary graphs
+- **Grid alignment** — Post-processing snap-to-grid and centering
+- Used by: pipeline visualization, dialog tree view, skill trees, node editors.
 
-### Sugiyama Layered DAG (`dag.rs`)
-- Layer assignment via longest path from sources (topological order).
-- Crossing reduction via single-pass barycenter heuristic.
-- Coordinate assignment with uniform spacing per layer.
-- Handles multi-root DAGs (multiple sources placed at layer 0).
+### `tree.rs`
+- Reingold-Tilford algorithm for compact hierarchical tree node layout.
+- `layout_tree(root, children, config)` returns a `HashMap<NodeId, (f32, f32)>`.
+- Handles arbitrary branching factors; sibling subtrees are packed as tightly as possible.
+- `TreeConfig` sets horizontal and vertical node separation distances.
+- Supports top-down and left-to-right orientations via the `orientation` field.
+- Used by `lurek.layout.tree` for dialogue trees, skill trees, and org charts.
 
-### Fruchterman-Reingold Force-Directed (`force.rs`)
-- All-pairs repulsion (O(n²) per iteration).
-- Edge-spring attraction proportional to distance and weight.
-- Simulated annealing via temperature cooling.
-- Bounded within configured area.
+### `types.rs`
+- Shared layout types: nodes, edges, configuration structs, and result containers.
+- `LayoutNode` carries an ID and optional size hint for layout algorithms.
+- `LayoutEdge` is a directed `(from, to)` pair with an optional weight.
+- `LayoutResult` is the common return type: a `HashMap<NodeId, (f32, f32)>`.
+- `LayoutConfig` base fields (padding, viewport size) are embedded in every algorithm config.
 
-### Post-Processing (`grid_align.rs`)
-- `snap_to_grid` — Round positions to nearest grid multiple.
-- `center_in_area` — Translate layout to center within a given rectangle.
+## Types
 
-## Lua API Surface
+- `ForceConfig` (`struct`, `force.rs`): Configuration for force-directed layout.
+- `NodeId` (`type`, `types.rs`): Unique node identifier (index-based for performance).
+- `LayoutNode` (`struct`, `types.rs`): A node with position and size in layout space.
+- `LayoutEdge` (`struct`, `types.rs`): A directed edge between two nodes.
+- `LayoutConfig` (`struct`, `types.rs`): Configuration for layout spacing.
+- `LayoutResult` (`struct`, `types.rs`): Result of a layout computation.
 
-| Function                         | Description                                     |
-| -------------------------------- | ----------------------------------------------- |
-| `lurek.layout.tree(nodes, children, root, config?)` | Reingold-Tilford tree layout    |
-| `lurek.layout.dag(nodes, edges, config?)`            | Sugiyama layered DAG layout     |
-| `lurek.layout.force(nodes, edges, config?)`          | Force-directed spring layout    |
-| `lurek.layout.snapToGrid(result, gridSize)`          | Snap positions to grid          |
-| `lurek.layout.centerInArea(result, width, height)`   | Center layout in area           |
+## Functions
 
-### Node table format
-```lua
-{ id = 1, width = 60, height = 30, label = "Node A" }
-```
+- `layout_dag` (`dag.rs`): Lays out a directed acyclic graph using a layered approach.
+- `layout_force` (`force.rs`): Applies force-directed layout to a graph.
+- `snap_to_grid` (`grid_align.rs`): Snaps all node positions to the nearest grid point.
+- `center_in_area` (`grid_align.rs`): Centers the layout within a given area.
+- `layout_tree` (`tree.rs`): Lays out a tree rooted at `root` with the given parent-to-children adjacency.
+- `LayoutNode::new` (`types.rs`): Creates a new node with default size at origin.
+- `LayoutNode::with_size` (`types.rs`): Sets the node size, returning self for chaining.
+- `LayoutNode::with_label` (`types.rs`): Sets the node label, returning self for chaining.
+- `LayoutEdge::new` (`types.rs`): Creates a new edge with default weight 1.0.
+- `LayoutEdge::with_weight` (`types.rs`): Sets the edge weight, returning self for chaining.
+- `LayoutResult::new` (`types.rs`): Creates a result and computes bounding dimensions from node positions.
+- `LayoutResult::get` (`types.rs`): Gets a positioned layout node by its ID.
+- `LayoutResult::count` (`types.rs`): Returns the number of positioned nodes.
 
-### Edge table format
-```lua
-{ from = 1, to = 2, weight = 1.0 }
-```
+## Lua API Reference
 
-### Config table format
-```lua
-{ hSpacing = 50, vSpacing = 80, margin = 20 }
-```
+- Binding path(s): `src/lua_api/layout_api.rs`
+- Namespace: `lurek.layout`
 
-### Force config table format
-```lua
-{ iterations = 100, repulsion = 10000, attraction = 0.01, cooling = 0.95, areaWidth = 800, areaHeight = 600 }
-```
+### Module Functions
+- `lurek.layout.tree`: Lays out a tree using the Reingold-Tilford algorithm.
+- `lurek.layout.dag`: Lays out a DAG using the Sugiyama layered algorithm.
+- `lurek.layout.force`: Lays out a graph using force-directed Fruchterman-Reingold simulation.
+- `lurek.layout.snapToGrid`: Snaps all node positions to the nearest grid point.
+- `lurek.layout.centerInArea`: Centers the layout within a given area.
 
-### Result table format
-```lua
-{ nodes = { {id=1, x=..., y=..., width=..., height=..., label=...}, ... }, width = ..., height = ... }
-```
+## References
 
-## Cross-References
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-- `src/pipeline/` — uses DAG layout for stage visualization
-- `src/dialog/` — uses tree layout for conversation trees
-- `src/graph/` — uses force-directed layout for flow graphs
-- `library/` — skill trees, node editors consume layout results
-- `content/examples/layout.lua` — usage demonstration
+## Notes
+
+- Keep this module reference synchronized with `src/layout/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

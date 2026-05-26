@@ -2555,13 +2555,6 @@ function LSource:type() end
 ---@return boolean True if this object matches the given type.
 function LSource:typeOf(name) end
 
---- Adds an effect to a named audio bus and returns its effect ID.
----@param bus_name string Name of the audio bus.
----@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
----@param params? table Optional parameters table; may include a `value` field.
----@return number Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
-lurek.audio.add_effect = function(bus_name, effect_type_str, params) end
-
 --- Applies a bandpass filter in-place to the sound data.
 ---@param sd_ud LSoundData The sound data to process.
 ---@param low_hz number Lower cutoff frequency in Hz.
@@ -2847,6 +2840,16 @@ lurek.audio.newSource = function(path, sourceType) end
 ---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newSquareWave = function(freq, duration, sample_rate, amplitude) end
 
+--- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
+---@param waveform string Waveform type ("sine", "square", "sawtooth", "triangle", "noise").
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@param adsr table ADSR parameters: `attack`, `decay`, `sustain`, `release`.
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
+lurek.audio.newSynthWave = function(waveform, freq, duration, sample_rate, amplitude, adsr) end
+
 --- Generates a triangle wave as a `SoundData` buffer.
 ---@param freq number Frequency in Hz.
 ---@param duration number Duration in seconds.
@@ -2862,12 +2865,6 @@ lurek.audio.newTriangleWave = function(freq, duration, sample_rate, amplitude) e
 ---@param seed number Seed value for the noise generator (same seed produces identical output).
 ---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newWhiteNoise = function(duration, sample_rate, amplitude, seed) end
-
---- Normalizes an audio file to a target peak amplitude and saves the result.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output WAV file.
----@param target number Target peak amplitude (e.g. 0.9 for headroom).
-lurek.audio.normalizeFile = function(input, output, target) end
 
 --- Pauses playback of a source at its current position.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -2890,12 +2887,6 @@ lurek.audio.playLooping = function(source) end
 ---@param qsource_id number Queueable source handle returned by newQueueableSource.
 lurek.audio.playQueueable = function(qsource_id) end
 
---- Processes an audio file offline through a chain of effects and writes the result to an output file.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output WAV file.
----@param effects_tbl table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
-lurek.audio.processOffline = function(input, output, effects_tbl) end
-
 --- Queues a decoded audio chunk for playback on a queueable source.
 ---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
 ---@param sd LSoundData Sound data chunk to enqueue for playback.
@@ -2905,12 +2896,6 @@ lurek.audio.queueSource = function(qsource_id, sd) end
 ---@param source LSource|number Audio source or numeric source ID to release.
 ---@return boolean True if the source was successfully released.
 lurek.audio.release = function(source) end
-
---- Removes an effect from a named audio bus by effect ID.
----@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by add_effect.
----@return boolean True if the effect was successfully removed.
-lurek.audio.remove_effect = function(bus_name, effect_id) end
 
 --- Resumes playback of a paused source.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -3039,21 +3024,6 @@ lurek.audio.setVolume = function(source, vol) end
 ---@param volume number Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
 lurek.audio.set_bus_volume = function(name, volume) end
 
---- Sets a parameter value on an effect attached to a named audio bus.
----@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by add_effect.
----@param param_name string Name of the effect parameter to set.
----@param value number New value for the parameter.
----@return boolean True if the parameter was set successfully.
-lurek.audio.set_effect_param = function(bus_name, effect_id, param_name, value) end
-
---- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output PNG file.
----@param width number Image width in pixels.
----@param height number Image height in pixels.
-lurek.audio.spectrogramToPng = function(input, output, width, height) end
-
 --- Stops playback of a source and resets its position to the beginning.
 ---@param source LSource|number Audio source or numeric source ID.
 lurek.audio.stop = function(source) end
@@ -3069,13 +3039,6 @@ lurek.audio.stopQueueable = function(qsource_id) end
 ---@param source LSource|number Audio source or numeric source ID.
 ---@return number Current position in seconds.
 lurek.audio.tell = function(source) end
-
---- Renders a waveform visualization of an audio file and saves it as a PNG image.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output PNG file.
----@param width number Image width in pixels.
----@param height number Image height in pixels.
-lurek.audio.waveformToPng = function(input, output, width, height) end
 
 ---@class lurek.automation
 lurek.automation = {}
@@ -4122,7 +4085,7 @@ function LLineChart:setTitle(title) end
 ---@class LPieChart
 LPieChart = {}
 
---- Add a slice to the pie chart — Lua userdata object exposed by the engine.
+--- Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
 ---@param label string Display label for the slice.
 ---@param value number Numeric value determining the slice proportion.
 ---@param color? table Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.
@@ -5002,26 +4965,25 @@ function LCustomCursor:getSize() end
 ---@param a number Alpha (0-255).
 function LCustomCursor:setPixel(x, y, r, g, b, a) end
 
---- Create a new LAnimatedCursor that cycles through a sequence of frames.
----@param frames table Array of LCustomCursor frames to animate.
----@param delay_ms number Duration of each frame in milliseconds.
----@return LuaValue A new LAnimatedCursor instance.
-lurek.cursor.newAnimated = function(frames, delay_ms) end
+--- Creates a new animated cursor that can cycle through frames.
+---@param looping boolean Whether the animation loops continuously.
+---@return LAnimatedCursor A new animated cursor instance.
+lurek.cursor.newAnimated = function(looping) end
 
---- Create a new LCustomCursor from pixel data with the given hot-spot coordinates.
----@param width number Width of the cursor image in pixels.
----@param height number Height of the cursor image in pixels.
----@param hotspot_x number X coordinate of the cursor hot-spot.
----@param hotspot_y number Y coordinate of the cursor hot-spot.
----@return LuaValue A new LCustomCursor instance.
-lurek.cursor.newCustom = function(width, height, hotspot_x, hotspot_y) end
+--- Creates a new custom cursor with specified dimensions and hotspot position.
+---@param w number Width of the cursor image in pixels.
+---@param h number Height of the cursor image in pixels.
+---@param hx number Hotspot X offset from cursor origin.
+---@param hy number Hotspot Y offset from cursor origin.
+---@return LCustomCursor A new custom cursor instance.
+lurek.cursor.newCustom = function(w, h, hx, hy) end
 
---- Create a new LCursorManager that controls cursor appearance at runtime.
----@return LuaValue A new LCursorManager instance.
+--- Creates a new cursor manager for handling cursor state and visibility.
+---@return LCursorManager A new cursor manager instance.
 lurek.cursor.newManager = function() end
 
---- Return a table listing all available system cursor style names on this platform.
----@return table Table of available system cursor style names.
+--- Returns a list of all available system cursor names as a string array.
+---@return table Array of system cursor name strings.
 lurek.cursor.systemCursors = function() end
 
 ---@class lurek.dataframe
@@ -6899,6 +6861,29 @@ lurek.docs.validateModule = function(module_name, catalog_ud) end
 ---@class lurek.dsp
 lurek.dsp = {}
 
+--- Adds an effect to a named audio bus and returns its effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+---@param params? table Optional parameters table; may include a `value` field.
+---@return number Numeric effect ID handle for use with `removeEffectFromBus` and `setEffectParam`.
+lurek.dsp.addEffectToBus = function(bus_name, effect_type_str, params) end
+
+--- Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+---@param sd LSoundData The audio buffer to analyze.
+---@param size number FFT window size (must be power of two, e.g. 512).
+---@return table Array of magnitudes for each frequency bin.
+lurek.dsp.analyzeFft = function(sd, size) end
+
+--- Analyzes the Peak volume of a `SoundData` buffer.
+---@param sd LSoundData The audio buffer to analyze.
+---@return number The peak level (linear).
+lurek.dsp.analyzePeak = function(sd) end
+
+--- Analyzes the RMS volume of a `SoundData` buffer.
+---@param sd LSoundData The audio buffer to analyze.
+---@return number The RMS level (linear).
+lurek.dsp.analyzeRms = function(sd) end
+
 --- Creates an effect parameter descriptor table for use with offline processing.
 ---@param effectType string Effect type name (e.g. "lowpass", "reverb", "compressor").
 ---@param p1 number Primary parameter value.
@@ -6918,6 +6903,20 @@ lurek.dsp.normalize = function(input, output, target) end
 ---@param output string Relative path for the output WAV file.
 ---@param effects table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
 lurek.dsp.processOffline = function(input, output, effects) end
+
+--- Removes an effect from a named audio bus by effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by addEffectToBus.
+---@return boolean True if the effect was successfully removed.
+lurek.dsp.removeEffectFromBus = function(bus_name, effect_id) end
+
+--- Sets a parameter value on an effect attached to a named audio bus.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by addEffectToBus.
+---@param param_name string Name of the effect parameter to set.
+---@param value number New value for the parameter.
+---@return boolean True if the parameter was set successfully.
+lurek.dsp.setEffectParam = function(bus_name, effect_id, param_name, value) end
 
 --- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 ---@param input string Relative path to the input audio file.
@@ -8842,65 +8841,75 @@ function LFont:measure(text, scale) end
 ---@return table Array of wrapped line strings.
 function LFont:wrapText(text, maxWidth, scale) end
 
---- Return a table of point sizes for which a given font family has been cached.
----@param family string Font family name to query.
----@return table Table of cached point size numbers for the font family.
-lurek.font.availableSizes = function(family) end
+--- Returns the array of built-in bitmap font point sizes available in the engine.
+---@return table Array of integer point sizes available as built-in fonts.
+lurek.font.availableSizes = function() end
 
---- Return the advance width in pixels for a single character using a given font.
----@param font LFont Font to query.
----@param char string Single UTF-8 character to measure.
----@return number Advance width in pixels for the character.
-lurek.font.charAdvance = function(font, char) end
+--- Returns the horizontal advance width in pixels of a single character using the given font.
+---@param font LFont Font handle.
+---@param char string A single-character string.
+---@param scale? number Scale factor (default 1.0).
+---@return number Horizontal advance width in pixels.
+lurek.font.charAdvance = function(font, char, scale) end
 
---- Return the built-in default engine font as an LFont userdata object.
----@return LFont The built-in default LFont userdata.
+--- Returns the default engine font as an LFont userdata handle.
+---@return LFont The default engine font handle.
 lurek.font.getDefault = function() end
 
---- Return the line height in pixels (ascender + descender + line gap) for a font.
----@param font LFont Font to query.
----@return number Line height in pixels for the font.
+--- Returns the line height of the given font in pixels.
+---@param font LFont Font handle to query.
+---@return number Line height in pixels.
 lurek.font.lineHeight = function(font) end
 
---- Return a table of all font family names registered with the engine font cache.
----@return table Table of registered font family name strings.
+--- Lists all registered fonts with their name, size, and style metadata.
+---@return table Array of tables with fields: name (string), size (number), style (string).
 lurek.font.list = function() end
 
---- Load a TTF or OTF font file from disk and return an LFont userdata.
----@param path string Path to the font file relative to the game root.
----@param size number Point size to rasterise the font at.
----@return LFont An LFont userdata loaded at the given point size.
+--- Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
+---@param path string Relative path to the font file.
+---@param size number Point size for rasterisation.
+---@return LFont The loaded font handle.
 lurek.font.load = function(path, size) end
 
---- Load a bitmap font from a JSON descriptor and PNG atlas, returning an LFont.
----@param json_path string Path to the bitmap font JSON descriptor.
----@return LFont An LFont userdata backed by the bitmap atlas.
-lurek.font.loadBitmap = function(json_path) end
+--- Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
+---@param path string Relative path to the PNG atlas.
+---@param cellWidth number Cell width in pixels.
+---@param cellHeight number Cell height in pixels.
+---@return LFont The loaded bitmap font handle.
+lurek.font.loadBitmap = function(path, cellWidth, cellHeight) end
 
---- Measure the pixel width and height of a multi-line text block using a given font.
----@param font LFont Font to measure with.
----@param text string Text to measure (may contain newlines).
----@return number Width and height of the text block in pixels.
-lurek.font.measure = function(font, text) end
+--- Measures the pixel dimensions of a text string using the given font handle and scale.
+---@param font LFont Font handle to measure with.
+---@param text string Text string to measure.
+---@param scale? number Scale factor (default 1.0).
+---@return number Width in pixels (height returned as second value).
+lurek.font.measure = function(font, text, scale) end
 
---- Measure the pixel width and height of a single line of text using a font.
----@param font LFont Font to measure with.
----@param text string Single-line text to measure.
----@return number Width and height of the single line in pixels.
-lurek.font.measureLine = function(font, text) end
+--- Measures the pixel width and height of a single line of text with the given font.
+---@param font LFont Font handle to measure with.
+---@param text string Single-line text string to measure.
+---@param scale? number Scale factor (default 1.0).
+---@return number Width in pixels (height returned as second value).
+lurek.font.measureLine = function(font, text, scale) end
 
---- Shape a text string with a font and return per-glyph position and advance data.
----@param font LFont Font to shape text with.
+--- Shapes and aligns text into wrapped lines with x-offset data for rendering.
+---@param font LFont Font handle used for shaping.
 ---@param text string Text to shape.
----@return table Per-glyph position and advance data table.
-lurek.font.shapeText = function(font, text) end
+---@param maxWidth number Maximum line width in pixels.
+---@param scale number Scale factor (default 1.0).
+---@param align string Alignment: "left", "center", "right", or "justify".
+---@param wrap string Wrap mode: "none", "word", or "char".
+---@return table Array of tables with fields: text (string), width (number), xOffset (number).
+lurek.font.shapeText = function(font, text, maxWidth, scale, align, wrap) end
 
---- Wrap a string to fit within a pixel width, returning a table of line strings.
----@param font LFont Font used for glyph measurements.
+--- Wraps a text string into lines that fit within the given maximum pixel width.
+---@param font LFont Font handle used for measurement.
 ---@param text string Text to wrap.
----@param max_width number Maximum line width in pixels.
+---@param maxWidth number Maximum line width in pixels.
+---@param scale number Scale factor (default 1.0).
+---@param mode string Wrap mode: "none", "word", or "char".
 ---@return table Array of wrapped line strings.
-lurek.font.wrapText = function(font, text, max_width) end
+lurek.font.wrapText = function(font, text, maxWidth, scale, mode) end
 
 ---@class lurek.globe
 ---@field MAX_PROVINCES number  Maximum number of provinces the globe supports.
@@ -9442,38 +9451,40 @@ function LGrepEngine:searchExt(path, pattern, extensions) end
 ---@return table Search result.
 function LGrepEngine:searchFiles(files, pattern) end
 
---- Search JSON files under a path for a literal pattern and return a result table.
----@param path string Root directory to search.
----@param pattern string Literal string to find.
----@return table Table of search matches found in JSON files.
-lurek.grep.jsonSearch = function(path, pattern) end
+--- Searches a JSON file for all values associated with a given key name at any depth.
+---@param file string Path to the JSON file to search.
+---@param key string Key name to search for in the JSON structure.
+---@return table Array of tables with fields: path (string), value (string).
+lurek.grep.jsonSearch = function(file, key) end
 
---- Search engine log files for a pattern and return structured result entries.
----@param pattern string Literal string to find in log files.
----@return table Log entries matching the pattern as a result table.
-lurek.grep.logSearch = function(pattern) end
+--- Searches a structured log file by log level and regex pattern, returning matched entries.
+---@param file string Path to the log file to search.
+---@param level string Log level filter (e.g. "ERROR", "WARN"); empty string matches all.
+---@param pattern string Regex pattern to match against log messages; empty string matches all.
+---@return table Array of tables with fields: line (integer), message (string), timestamp (string?), level (string?).
+lurek.grep.logSearch = function(file, level, pattern) end
 
---- Create an LFileFilter pre-configured to match only Lua source files.
----@return LuaValue A new LFileFilter configured for Lua source files.
+--- Creates a file filter preset that matches only Lua source files (.lua extension).
+---@return LFileFilter A file filter configured for Lua files only.
 lurek.grep.luaFilter = function() end
 
---- Create a new LGrepEngine with default file-type filters for game content.
----@return LuaValue A new LGrepEngine instance with default filters.
+--- Creates a new grep engine with default configuration settings.
+---@return LGrepEngine A new grep engine instance.
 lurek.grep.newEngine = function() end
 
---- Create a new LGrepEngine with a custom LFileFilter controlling which files are scanned.
----@param filter LFileFilter File filter to use for this engine instance.
----@return LuaValue A new LGrepEngine instance with the custom filter.
-lurek.grep.newEngineOpts = function(filter) end
+--- Creates a new grep engine with custom search configuration options.
+---@param opts table Options table with fields: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).
+---@return LGrepEngine A new configured grep engine instance.
+lurek.grep.newEngineOpts = function(opts) end
 
---- Create a new LFileFilter with default extension-based inclusion rules.
----@return LuaValue A new LFileFilter with default extension rules.
+--- Creates a new empty file filter that can be configured to match specific file patterns.
+---@return LFileFilter A new empty file filter instance.
 lurek.grep.newFilter = function() end
 
---- Search a directory tree for a literal text pattern; return a result table.
----@param path string Root directory to search.
----@param pattern string Literal string to find.
----@return table Table of search matches found in the directory.
+--- Searches a directory tree for files containing an exact literal pattern string.
+---@param path string Root directory path to search in.
+---@param pattern string Literal text pattern to search for.
+---@return table Array of tables with fields: file (string), line (integer), text (string).
 lurek.grep.search = function(path, pattern) end
 
 ---@class lurek.html
@@ -18097,7 +18108,7 @@ function LBody:setMass(mass) end
 function LBody:setPosition(x, y) end
 
 --- Sets the body's restitution (bounciness) value.
----@param restitution number New restitution (0–1).
+---@param restitution number New restitution (0â€“1).
 function LBody:setRestitution(restitution) end
 
 --- Controls whether the body can enter sleep state. Disable for bodies that must stay active.
@@ -18393,7 +18404,7 @@ function LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) end
 --- Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
 ---@param bodyA number First body ID.
 ---@param bodyB number Second body ID.
----@param factor number Correction factor (0–1), higher = faster convergence.
+---@param factor number Correction factor (0â€“1), higher = faster convergence.
 ---@return number The joint ID.
 function LWorld:addMotorJoint(bodyA, bodyB, factor) end
 
@@ -18790,7 +18801,7 @@ function LWorld:setEndContact(callback) end
 --- Updates the friction coefficient of a specific fixture on a body.
 ---@param bodyId number The body ID.
 ---@param fixtureIndex number Zero-based fixture index on the body.
----@param friction number New friction value (0–1 typical range).
+---@param friction number New friction value (0â€“1 typical range).
 function LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) end
 
 --- Updates the restitution (bounciness) of a specific fixture on a body.
@@ -18842,7 +18853,7 @@ function LWorld:setMeter(ppm) end
 function LWorld:setMouseJointTarget(jointId, x, y) end
 
 --- Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
----@param n number Number of iterations (default is typically 4–8).
+---@param n number Number of iterations (default is typically 4â€“8).
 function LWorld:setSolverIterations(n) end
 
 --- Forces a body into the sleeping state, pausing its simulation until disturbed.
@@ -27877,24 +27888,20 @@ function LValidationEngine:run() end
 ---@return table Report.
 function LValidationEngine:runFile(path) end
 
---- Create a new LValidationEngine for running schema and constraint checks.
----@param root LuaValue
----@return number A new LValidationEngine instance ready for use.
+--- Creates a new validation engine rooted at the given filesystem path.
+---@param root string Root directory path for the validation engine.
+---@return LValidationEngine A new validation engine instance.
 lurek.validator.newEngine = function(root) end
 
---- Validate a Lua table against a named schema; return violations as a table.
----@param engine LValidationEngine Validation engine to run.
----@param schema string Schema name to validate against.
----@param data table Data table to validate.
----@return table Table of validation violations found.
-lurek.validator.validate = function(engine, schema, data) end
+--- Runs all validation rules against a project root directory and returns a report table.
+---@param path string Root directory path of the project to validate.
+---@return table Table with fields: errors (table), warnings (table), passed (boolean).
+lurek.validator.validate = function(path) end
 
---- Validate a file on disk against a named schema; return violations as a table.
----@param engine LValidationEngine Validation engine to run.
----@param schema string Schema name to validate against.
----@param path string Path to the file to validate.
----@return table Table of validation violations found in the file.
-lurek.validator.validateFile = function(engine, schema, path) end
+--- Runs API validation rules against a single Lua file and returns a report table.
+---@param path string Absolute or relative path to the Lua file to validate.
+---@return table Table with fields: errors (table), warnings (table), passed (boolean).
+lurek.validator.validateFile = function(path) end
 
 ---@class lurek.visibility
 lurek.visibility = {}

@@ -15,7 +15,7 @@
 
 ## Summary
 
- Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
+Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
 
 The `MouseState` system offers comprehensive tracking of cursor coordinates, scroll-wheel deltas, and multi-button states. It allows developers to customize the cursor by selecting from system icons, providing raw RGBA pixel data, or toggling visibility and window-grab confinement (relative mode) for first-person control schemes. Gamepad support is exceptionally robust via the `GamepadState` struct, which tracks up to four connected controllers simultaneously. It manages analog sticks, triggers, button presses, connection lifecycles, and OS force-feedback vibration requests, synthesizing virtual D-pads and providing SDL2 GameControllerDB GUID mapping for maximum compatibility. `TouchState` similarly handles multi-point contact tracking for mobile or touchscreen interfaces, capturing press, move, and release lifecycles.
 
@@ -29,7 +29,11 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - Used by the `lurek.input` combo API to recognize fighting-game-style input sequences.
 
 ### `events.rs`
-- Lua event name constants for input callbacks.
+- Input event types emitted by the winit event loop and queued for Lua consumption.
+- `InputEvent` enum covers keyboard, mouse button, mouse move, scroll, and gamepad.
+- Events are buffered in a ring during the platform event loop and drained each tick.
+- `KeyEvent` carries the logical `KeyCode`, physical scan code, and press/release state.
+- Gamepad events include axis deltas and button states for up to 4 connected pads.
 
 ### `gamepad.rs`
 - Per-slot gamepad state tracking: buttons, axes, connection lifecycle, and per-frame delta sets.

@@ -71,21 +71,16 @@ No source-file descriptions were found in the module spec.
 #### Definition
 
 ```lua
---- Return a table of point sizes for which a given font family has been cached.
----@param family string Font family name to query.
----@return table Table of cached point size numbers for the font family.
-lurek.font.availableSizes = function(family) end
+--- Returns the array of built-in bitmap font point sizes available in the engine.
+---@return table Array of integer point sizes available as built-in fonts.
+lurek.font.availableSizes = function() end
 ```
 
 #### Description
 
-Return a table of point sizes for which a given font family has been cached.
+Returns the array of built-in bitmap font point sizes available in the engine.
 
-Parameters:
-
-- `family` (`string`, required): Font family name to query.
-
-Returns: - Table of cached point size numbers for the font family.
+Returns: `table` - Array of integer point sizes available as built-in fonts.
 
 #### Example
 
@@ -104,23 +99,25 @@ end
 #### Definition
 
 ```lua
---- Return the advance width in pixels for a single character using a given font.
----@param font LFont Font to query.
----@param char string Single UTF-8 character to measure.
----@return number Advance width in pixels for the character.
-lurek.font.charAdvance = function(font, char) end
+--- Returns the horizontal advance width in pixels of a single character using the given font.
+---@param font LFont Font handle.
+---@param char string A single-character string.
+---@param scale? number Scale factor (default 1.0).
+---@return number Horizontal advance width in pixels.
+lurek.font.charAdvance = function(font, char, scale) end
 ```
 
 #### Description
 
-Return the advance width in pixels for a single character using a given font.
+Returns the horizontal advance width in pixels of a single character using the given font.
 
 Parameters:
 
-- `font` (`LFont`, required): Font to query.
-- `char` (`string`, required): Single UTF-8 character to measure.
+- `font` (`LFont`, required): Font handle.
+- `char` (`string`, required): A single-character string.
+- `scale` (`number`, optional): Scale factor (default 1.0).
 
-Returns: - Advance width in pixels for the character.
+Returns: `number` - Horizontal advance width in pixels.
 
 #### Example
 
@@ -139,16 +136,16 @@ end
 #### Definition
 
 ```lua
---- Return the built-in default engine font as an LFont userdata object.
----@return LFont The built-in default LFont userdata.
+--- Returns the default engine font as an LFont userdata handle.
+---@return LFont The default engine font handle.
 lurek.font.getDefault = function() end
 ```
 
 #### Description
 
-Return the built-in default engine font as an LFont userdata object.
+Returns the default engine font as an LFont userdata handle.
 
-Returns: - The built-in default LFont userdata.
+Returns: `LFont` - The default engine font handle.
 
 #### Example
 
@@ -166,21 +163,21 @@ end
 #### Definition
 
 ```lua
---- Return the line height in pixels (ascender + descender + line gap) for a font.
----@param font LFont Font to query.
----@return number Line height in pixels for the font.
+--- Returns the line height of the given font in pixels.
+---@param font LFont Font handle to query.
+---@return number Line height in pixels.
 lurek.font.lineHeight = function(font) end
 ```
 
 #### Description
 
-Return the line height in pixels (ascender + descender + line gap) for a font.
+Returns the line height of the given font in pixels.
 
 Parameters:
 
-- `font` (`LFont`, required): Font to query.
+- `font` (`LFont`, required): Font handle to query.
 
-Returns: - Line height in pixels for the font.
+Returns: `number` - Line height in pixels.
 
 #### Example
 
@@ -199,16 +196,16 @@ end
 #### Definition
 
 ```lua
---- Return a table of all font family names registered with the engine font cache.
----@return table Table of registered font family name strings.
+--- Lists all registered fonts with their name, size, and style metadata.
+---@return table Array of tables with fields: name (string), size (number), style (string).
 lurek.font.list = function() end
 ```
 
 #### Description
 
-Return a table of all font family names registered with the engine font cache.
+Lists all registered fonts with their name, size, and style metadata.
 
-Returns: - Table of registered font family name strings.
+Returns: `table` - Array of tables with fields: name (string), size (number), style (string).
 
 #### Example
 
@@ -226,23 +223,23 @@ end
 #### Definition
 
 ```lua
---- Load a TTF or OTF font file from disk and return an LFont userdata.
----@param path string Path to the font file relative to the game root.
----@param size number Point size to rasterise the font at.
----@return LFont An LFont userdata loaded at the given point size.
+--- Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
+---@param path string Relative path to the font file.
+---@param size number Point size for rasterisation.
+---@return LFont The loaded font handle.
 lurek.font.load = function(path, size) end
 ```
 
 #### Description
 
-Load a TTF or OTF font file from disk and return an LFont userdata.
+Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
 
 Parameters:
 
-- `path` (`string`, required): Path to the font file relative to the game root.
-- `size` (`number`, required): Point size to rasterise the font at.
+- `path` (`string`, required): Relative path to the font file.
+- `size` (`number`, required): Point size for rasterisation.
 
-Returns: - An LFont userdata loaded at the given point size.
+Returns: `LFont` - The loaded font handle.
 
 #### Example
 
@@ -264,21 +261,25 @@ end
 #### Definition
 
 ```lua
---- Load a bitmap font from a JSON descriptor and PNG atlas, returning an LFont.
----@param json_path string Path to the bitmap font JSON descriptor.
----@return LFont An LFont userdata backed by the bitmap atlas.
-lurek.font.loadBitmap = function(json_path) end
+--- Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
+---@param path string Relative path to the PNG atlas.
+---@param cellWidth number Cell width in pixels.
+---@param cellHeight number Cell height in pixels.
+---@return LFont The loaded bitmap font handle.
+lurek.font.loadBitmap = function(path, cellWidth, cellHeight) end
 ```
 
 #### Description
 
-Load a bitmap font from a JSON descriptor and PNG atlas, returning an LFont.
+Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
 
 Parameters:
 
-- `json_path` (`string`, required): Path to the bitmap font JSON descriptor.
+- `path` (`string`, required): Relative path to the PNG atlas.
+- `cellWidth` (`integer`, required): Cell width in pixels.
+- `cellHeight` (`integer`, required): Cell height in pixels.
 
-Returns: - An LFont userdata backed by the bitmap atlas.
+Returns: `LFont` - The loaded bitmap font handle.
 
 #### Example
 
@@ -300,23 +301,25 @@ end
 #### Definition
 
 ```lua
---- Measure the pixel width and height of a multi-line text block using a given font.
----@param font LFont Font to measure with.
----@param text string Text to measure (may contain newlines).
----@return number Width and height of the text block in pixels.
-lurek.font.measure = function(font, text) end
+--- Measures the pixel dimensions of a text string using the given font handle and scale.
+---@param font LFont Font handle to measure with.
+---@param text string Text string to measure.
+---@param scale? number Scale factor (default 1.0).
+---@return number Width in pixels (height returned as second value).
+lurek.font.measure = function(font, text, scale) end
 ```
 
 #### Description
 
-Measure the pixel width and height of a multi-line text block using a given font.
+Measures the pixel dimensions of a text string using the given font handle and scale.
 
 Parameters:
 
-- `font` (`LFont`, required): Font to measure with.
-- `text` (`string`, required): Text to measure (may contain newlines).
+- `font` (`LFont`, required): Font handle to measure with.
+- `text` (`string`, required): Text string to measure.
+- `scale` (`number`, optional): Scale factor (default 1.0).
 
-Returns: - Width and height of the text block in pixels.
+Returns: `number` - Width in pixels (height returned as second value).
 
 #### Example
 
@@ -335,23 +338,25 @@ end
 #### Definition
 
 ```lua
---- Measure the pixel width and height of a single line of text using a font.
----@param font LFont Font to measure with.
----@param text string Single-line text to measure.
----@return number Width and height of the single line in pixels.
-lurek.font.measureLine = function(font, text) end
+--- Measures the pixel width and height of a single line of text with the given font.
+---@param font LFont Font handle to measure with.
+---@param text string Single-line text string to measure.
+---@param scale? number Scale factor (default 1.0).
+---@return number Width in pixels (height returned as second value).
+lurek.font.measureLine = function(font, text, scale) end
 ```
 
 #### Description
 
-Measure the pixel width and height of a single line of text using a font.
+Measures the pixel width and height of a single line of text with the given font.
 
 Parameters:
 
-- `font` (`LFont`, required): Font to measure with.
-- `text` (`string`, required): Single-line text to measure.
+- `font` (`LFont`, required): Font handle to measure with.
+- `text` (`string`, required): Single-line text string to measure.
+- `scale` (`number`, optional): Scale factor (default 1.0).
 
-Returns: - Width and height of the single line in pixels.
+Returns: `number` - Width in pixels (height returned as second value).
 
 #### Example
 
@@ -370,23 +375,31 @@ end
 #### Definition
 
 ```lua
---- Shape a text string with a font and return per-glyph position and advance data.
----@param font LFont Font to shape text with.
+--- Shapes and aligns text into wrapped lines with x-offset data for rendering.
+---@param font LFont Font handle used for shaping.
 ---@param text string Text to shape.
----@return table Per-glyph position and advance data table.
-lurek.font.shapeText = function(font, text) end
+---@param maxWidth number Maximum line width in pixels.
+---@param scale number Scale factor (default 1.0).
+---@param align string Alignment: "left", "center", "right", or "justify".
+---@param wrap string Wrap mode: "none", "word", or "char".
+---@return table Array of tables with fields: text (string), width (number), xOffset (number).
+lurek.font.shapeText = function(font, text, maxWidth, scale, align, wrap) end
 ```
 
 #### Description
 
-Shape a text string with a font and return per-glyph position and advance data.
+Shapes and aligns text into wrapped lines with x-offset data for rendering.
 
 Parameters:
 
-- `font` (`LFont`, required): Font to shape text with.
+- `font` (`LFont`, required): Font handle used for shaping.
 - `text` (`string`, required): Text to shape.
+- `maxWidth` (`number`, required): Maximum line width in pixels.
+- `scale` (`number`, required): Scale factor (default 1.0).
+- `align` (`string`, required): Alignment: "left", "center", "right", or "justify".
+- `wrap` (`string`, required): Wrap mode: "none", "word", or "char".
 
-Returns: - Per-glyph position and advance data table.
+Returns: `table` - Array of tables with fields: text (string), width (number), xOffset (number).
 
 #### Example
 
@@ -415,25 +428,29 @@ end
 #### Definition
 
 ```lua
---- Wrap a string to fit within a pixel width, returning a table of line strings.
----@param font LFont Font used for glyph measurements.
+--- Wraps a text string into lines that fit within the given maximum pixel width.
+---@param font LFont Font handle used for measurement.
 ---@param text string Text to wrap.
----@param max_width number Maximum line width in pixels.
+---@param maxWidth number Maximum line width in pixels.
+---@param scale number Scale factor (default 1.0).
+---@param mode string Wrap mode: "none", "word", or "char".
 ---@return table Array of wrapped line strings.
-lurek.font.wrapText = function(font, text, max_width) end
+lurek.font.wrapText = function(font, text, maxWidth, scale, mode) end
 ```
 
 #### Description
 
-Wrap a string to fit within a pixel width, returning a table of line strings.
+Wraps a text string into lines that fit within the given maximum pixel width.
 
 Parameters:
 
-- `font` (`LFont`, required): Font used for glyph measurements.
+- `font` (`LFont`, required): Font handle used for measurement.
 - `text` (`string`, required): Text to wrap.
-- `max_width` (`number`, required): Maximum line width in pixels.
+- `maxWidth` (`number`, required): Maximum line width in pixels.
+- `scale` (`number`, required): Scale factor (default 1.0).
+- `mode` (`string`, required): Wrap mode: "none", "word", or "char".
 
-Returns: - Array of wrapped line strings.
+Returns: `table` - Array of wrapped line strings.
 
 #### Example
 
@@ -469,52 +486,9 @@ Lua-visible font handle storing the slot key and cached metadata.
 Source: [font.lua](../blob/main/content/examples/font.lua)
 
 ```lua
---- Font Examples: loading, measurement, wrapping, shaping, and font handles
-
---@api-stub: lurek.font.getDefault
 do
     local font = lurek.font.getDefault()
     print("default font = " .. tostring(font ~= nil))
-end
-
---@api-stub: lurek.font.load
-do
-    local ok, font = pcall(lurek.font.load, "assets/fonts/default.ttf", 16)
-    if ok then
-        print("loaded font = " .. font:getName())
-    else
-        print("load error (expected if file missing): " .. tostring(font))
-    end
-end
-
---@api-stub: lurek.font.loadBitmap
-do
-    local ok, font = pcall(lurek.font.loadBitmap, "assets/fonts/bitmap8x8.png", 8, 8)
-    if ok then
-        print("bitmap font = " .. tostring(font ~= nil))
-    else
-        print("bitmap load error (expected if file missing): " .. tostring(font))
-    end
-end
-
---@api-stub: lurek.font.list
-do
-    local fonts = lurek.font.list()
-    print("registered fonts = " .. #fonts)
-end
-
---@api-stub: lurek.font.availableSizes
-do
-    local sizes = lurek.font.availableSizes()
-    print("available sizes = " .. #sizes)
-    print("first size = " .. tostring(sizes[1]))
-end
-
---@api-stub: lurek.font.measure
-do
-    local font = lurek.font.getDefault()
-    local w, h = lurek.font.measure(font, "Hello, Lurek!", 1.0)
-    print("measure w=" .. w .. " h=" .. h)
 end
 ```
 

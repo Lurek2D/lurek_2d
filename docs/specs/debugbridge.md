@@ -15,7 +15,7 @@
 
 ## Summary
 
- Situated within the Edge/Integration tier, the bridge operates primarily over a lightweight JSON-RPC protocol. It accepts requests for real-time engine interactions, including breakpoint management, variable inspection, expression evaluation, screenshot capture, and print history retrieval. By design, the module is disabled by default in release builds for security and performance reasons, activating only when explicitly started from Lua via `lurek.debugbridge.start()`.
+Situated within the Edge/Integration tier, the bridge operates primarily over a lightweight JSON-RPC protocol. It accepts requests for real-time engine interactions, including breakpoint management, variable inspection, expression evaluation, screenshot capture, and print history retrieval. By design, the module is disabled by default in release builds for security and performance reasons, activating only when explicitly started from Lua via `lurek.debugbridge.start()`.
 
 At the architectural core of the module is `BridgeShared`, a synchronized state container wrapped in an `Arc<Mutex<>>`. This structure safely brokers data between the main game thread and the dedicated background TCP I/O thread. It holds pending request and response queues, frame-time performance metrics with bounded sampling windows, and a broadcast queue for event delivery to all connected clients. One of its key features is print capture: it intercepts `lurek.log` and standard Lua `print` output, storing it in a bounded ring buffer so that external editors can natively display runtime textual output without needing to scrape the system's stdout.
 
@@ -91,39 +91,6 @@ The server loop manages non-blocking TCP connections, executing protocol handsha
 ## References
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
-
-## Scope Boundary
-
-This section defines ownership between `debugbridge` (remote debugging protocol) and `devtools` (local in-game tools). Both modules touch overlapping concerns but serve different consumers.
-
-| Feature | Owner | Rationale |
-|---------|-------|-----------|
-| TCP server / JSON-RPC protocol | debugbridge | All wire communication with external tools |
-| Remote eval request | debugbridge | VS Code sends eval via JSON-RPC; executed in `poll()` |
-| Remote getCallStack | debugbridge | VS Code requests stack frames via JSON-RPC |
-| Remote getLocals/getGlobals | debugbridge | VS Code variable inspection via JSON-RPC |
-| Remote performance streaming | debugbridge | Lightweight frame-time window for VS Code panel |
-| Remote hot-reload trigger | debugbridge | VS Code sends `triggerHotReload`; runtime consumes flag |
-| Print capture → remote | debugbridge | Intercepts prints and broadcasts to connected clients |
-| Screenshot request | debugbridge | Remote tooling requests frame capture |
-| Protocol handshake/auth | debugbridge | Nonce, version negotiation, client management |
-| In-game overlay/inspector | devtools | Visible in running game window — not debugbridge's concern |
-| Authoritative FPS/metrics | devtools | Comprehensive FrameStats with percentiles, GPU timing |
-| CPU profiler (zones) | devtools | Local-only hierarchical instrumentation |
-| Structured logging | devtools | In-process log history, severity filtering, file output |
-| File watcher | devtools | Local file-system mtime change detection |
-| Local eval / REPL | devtools | In-game script execution (`lurek.devtools.eval`) |
-| Local getCallStack | devtools | Script-callable stack inspection |
-
-### Overlap Notes
-
-- **eval**: `debugbridge.poll` executes remote eval requests. `devtools.eval` provides local in-game eval. Both call `lua.load(...).eval()` independently — no shared code, no cross-dependency.
-- **getCallStack**: `debugbridge.poll` services remote stack requests. `devtools.getCallStack` is callable from Lua directly. Both use a small Lua debug introspection snippet (duplicated, acceptable).
-- **Frame metrics**: `debugbridge` maintains a lightweight `frame_times` VecDeque for remote streaming. `devtools.FrameStats` is the authoritative comprehensive source. They are independent — debugbridge does NOT import devtools.
-- **Hot-reload**: `debugbridge` accepts a remote trigger flag (`triggerHotReload` → `consumeHotReloadRequest`). `devtools` detects local file changes via `FileWatcher`. They are complementary paths into the same runtime reload mechanism.
-
-> debugbridge MUST NOT render in-game UI or own authoritative performance data.
-> devtools MUST NOT implement wire protocols or remote communication.
 
 ## Notes
 

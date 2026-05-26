@@ -1,7 +1,8 @@
 ---
 trigger: model_decision
-description: "Manage the content folder (demos, examples, library) as a Game Designer. Write Lua code based on the lurek API. Review experience through player personas and report friction. Write conf.lua and conf.toml config templates. Do not work on ..."
+description: "Manage the content folder (demos, examples, library) as a Game Designer. Write Lua code based on the lurek API. Review experience through player personas and report friction. Write conf.lua and conf.toml config templates."
 ---
+
 # Content-Maker
 
 ## Mission
@@ -99,5 +100,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, content-first
 Personas: GameDev, Modder, Player
-Primary skills: lua-scripting, examples-management, demo-creation
-Secondary skills: library-authoring, html-css, ui-layout, documentation
+Primary skills: skill_lua-scripting, skill_examples-management, skill_demo-creation
+Secondary skills: skill_library-authoring, skill_html-css, skill_ui-layout, skill_documentation

@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when designing or reviewing TOML UI layouts in content/layouts/ and related layout tools. Skip it for Rust UI code or Lua game logic."
 ---
+
 # ui-layout
 
 ## Mission
@@ -27,6 +28,12 @@ description: "Load this skill when designing or reviewing TOML UI layouts in con
 - `apps/` layouts are for standalone UI demos (calculator, login form, dashboard). `games/` layouts are in-game HUDs and menus. Keep these folders distinct in meaning: a games/ layout should assume a game is running; an apps/ layout should not. Do not add game-specific IDs (e.g., `hp_bar`) to apps/ layouts.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - content/layouts/

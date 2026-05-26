@@ -845,7 +845,6 @@ LBlendLayerSet:typeOf(name: string) -> boolean -- Returns whether this blend lay
 [Module page](Module-audio)
 
 ```lua
-lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer -- Adds an effect to a named audio bus and returns its effect ID.
 lurek.audio.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number) -- Applies a bandpass filter in-place to the sound data.
 lurek.audio.applyGain(sd_ud: LSoundData, gain: number) -- Applies a gain multiplier in-place to the sound data.
 lurek.audio.applyHighpass(sd_ud: LSoundData, cutoff_hz: number) -- Applies a highpass filter in-place to the sound data.
@@ -900,24 +899,21 @@ lurek.audio.newSineWave(freq: number, duration: number, sample_rate: integer, am
 lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData -- Creates a new SoundData object from a file path or blank buffer for procedural audio.
 lurek.audio.newSource(path: string, [sourceType]: string) -> LSource -- Creates a new audio source from a file path, either fully loaded or streaming.
 lurek.audio.newSquareWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData -- Generates a square wave as a `SoundData` buffer.
+lurek.audio.newSynthWave(waveform: string, freq: number, duration: number, sample_rate: integer, amplitude: number, adsr: table) -> LSoundData -- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
 lurek.audio.newTriangleWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData -- Generates a triangle wave as a `SoundData` buffer.
 lurek.audio.newWhiteNoise(duration: number, sample_rate: integer, amplitude: number, seed: integer) -> LSoundData -- Generates white noise as a `SoundData` buffer using a deterministic seed.
-lurek.audio.normalizeFile(input: string, output: string, target: number) -- Normalizes an audio file to a target peak amplitude and saves the result.
 lurek.audio.pause(source: LSource|integer) -- Pauses playback of a source at its current position.
 lurek.audio.pauseAll() -- Pauses all currently playing audio sources.
 lurek.audio.play(source: LSource|integer, [options]: table) -> integer -- Starts playback of a source by handle, optionally routing through a named bus.
 lurek.audio.playLooping(source: LSource|integer) -- Starts playback of a source with looping enabled in one call.
 lurek.audio.playQueueable(qsource_id: integer) -- Starts playback of a queueable audio source.
-lurek.audio.processOffline(input: string, output: string, effects_tbl: table) -- Processes an audio file offline through a chain of effects and writes the result to an output file.
 lurek.audio.queueSource(qsource_id: integer, sd: LSoundData) -- Queues a decoded audio chunk for playback on a queueable source.
 lurek.audio.release(source: LSource|integer) -> boolean -- Releases an audio source, freeing its memory and stopping playback.
-lurek.audio.remove_effect(bus_name: string, effect_id: integer) -> boolean -- Removes an effect from a named audio bus by effect ID.
 lurek.audio.resume(source: LSource|integer) -- Resumes playback of a paused source.
 lurek.audio.resumeAll() -- Resumes all paused audio sources. This function is exposed to Lua scripts.
 lurek.audio.saveWAV(sd_ud: LSoundData, filename: string) -- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 lurek.audio.seek(source: LSource|integer, pos: number) -- Seeks a source to a specific position in seconds.
 lurek.audio.set_bus_volume(name: string, volume: number) -- Sets the volume of a named audio bus.
-lurek.audio.set_effect_param(bus_name: string, effect_id: integer, param_name: string, value: number) -> boolean -- Sets a parameter value on an effect attached to a named audio bus.
 lurek.audio.setDistanceModel(model: string) -- Sets the distance attenuation model for spatial audio.
 lurek.audio.setDopplerScale(scale: number) -- Sets the global Doppler effect intensity multiplier.
 lurek.audio.setHighpass(source: LSource|integer, cutoff_hz: integer) -- Applies a highpass filter to a source, attenuating low frequencies.
@@ -938,12 +934,10 @@ lurek.audio.setSourceBus(source: LSource|integer, bus: LBus) -- Routes a source 
 lurek.audio.setStereoWidth(src_ud: LSource, width: number) -- Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
 lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, [z]: number) -- Sets the velocity of a source for Doppler effect calculations.
 lurek.audio.setVolume(source: LSource|integer, vol: number) -- Sets the volume of a source by handle.
-lurek.audio.spectrogramToPng(input: string, output: string, width: integer, height: integer) -- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 lurek.audio.stop(source: LSource|integer) -- Stops playback of a source and resets its position to the beginning.
 lurek.audio.stopAll() -- Stops all audio sources and resets their positions.
 lurek.audio.stopQueueable(qsource_id: integer) -- Stops playback of a queueable audio source.
 lurek.audio.tell(source: LSource|integer) -> number -- Returns the current playback position of a source in seconds.
-lurek.audio.waveformToPng(input: string, output: string, width: integer, height: integer) -- Renders a waveform visualization of an audio file and saves it as a PNG image.
 ```
 
 ### LBus
@@ -1392,7 +1386,7 @@ LLineChart:setTitle(title: string) -- Set or update the chart's displayed title.
 ### LPieChart
 
 ```lua
-LPieChart:addSlice(label: string, value: number, [color]: table|nil) -- Add a slice to the pie chart — Lua userdata object exposed by the engine.
+LPieChart:addSlice(label: string, value: number, [color]: table|nil) -- Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
 LPieChart:clear() -- Removes all pie data slices from this chart.
 LPieChart:getHeight() -> number -- Get the chart output height in pixels.
 LPieChart:getWidth() -> number -- Get the chart output width in pixels.
@@ -1548,10 +1542,10 @@ LArray:zscore() -> LArray -- Returns z-score normalized array values.
 [Module page](Module-cursor)
 
 ```lua
-lurek.cursor.newAnimated(frames: table, delay_ms: number) -- Create a new LAnimatedCursor that cycles through a sequence of frames.
-lurek.cursor.newCustom(width: integer, height: integer, hotspot_x: integer, hotspot_y: integer) -- Create a new LCustomCursor from pixel data with the given hot-spot coordinates.
-lurek.cursor.newManager() -- Create a new LCursorManager that controls cursor appearance at runtime.
-lurek.cursor.systemCursors() -- Return a table listing all available system cursor style names on this platform.
+lurek.cursor.newAnimated(looping: boolean) -> LAnimatedCursor -- Creates a new animated cursor that can cycle through frames.
+lurek.cursor.newCustom(w: integer, h: integer, hx: integer, hy: integer) -> LCustomCursor -- Creates a new custom cursor with specified dimensions and hotspot position.
+lurek.cursor.newManager() -> LCursorManager -- Creates a new cursor manager for handling cursor state and visibility.
+lurek.cursor.systemCursors() -> table -- Returns a list of all available system cursor names as a string array.
 ```
 
 ### LAnimatedCursor
@@ -2074,9 +2068,15 @@ LValidationReport:typeOf(name: string) -> boolean -- Returns whether this valida
 [Module page](Module-dsp)
 
 ```lua
+lurek.dsp.addEffectToBus(bus_name: string, effect_type_str: string, [params]: table) -> integer -- Adds an effect to a named audio bus and returns its effect ID.
+lurek.dsp.analyzeFft(sd: LSoundData, size: integer) -> table -- Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+lurek.dsp.analyzePeak(sd: LSoundData) -> number -- Analyzes the Peak volume of a `SoundData` buffer.
+lurek.dsp.analyzeRms(sd: LSoundData) -> number -- Analyzes the RMS volume of a `SoundData` buffer.
 lurek.dsp.newEffectParams(effectType: string, p1: number, p2: number, p3: number) -> table -- Creates an effect parameter descriptor table for use with offline processing.
 lurek.dsp.normalize(input: string, output: string, target: number) -- Normalizes an audio file to a target peak amplitude and saves the result.
 lurek.dsp.processOffline(input: string, output: string, effects: table) -- Processes an audio file offline through a chain of effects and writes the result to an output file.
+lurek.dsp.removeEffectFromBus(bus_name: string, effect_id: integer) -> boolean -- Removes an effect from a named audio bus by effect ID.
+lurek.dsp.setEffectParam(bus_name: string, effect_id: integer, param_name: string, value: number) -> boolean -- Sets a parameter value on an effect attached to a named audio bus.
 lurek.dsp.spectrogramToPng(input: string, output: string, width: integer, height: integer) -- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 lurek.dsp.waveformToPng(input: string, output: string, width: integer, height: integer) -- Renders a waveform visualization of an audio file and saves it as a PNG image.
 ```
@@ -2567,17 +2567,17 @@ LGraphNode:typeOf(name: string) -> boolean -- Returns whether this graph node ha
 [Module page](Module-font)
 
 ```lua
-lurek.font.availableSizes(family: string) -- Return a table of point sizes for which a given font family has been cached.
-lurek.font.charAdvance(font: LFont, char: string) -- Return the advance width in pixels for a single character using a given font.
-lurek.font.getDefault() -- Return the built-in default engine font as an LFont userdata object.
-lurek.font.lineHeight(font: LFont) -- Return the line height in pixels (ascender + descender + line gap) for a font.
-lurek.font.list() -- Return a table of all font family names registered with the engine font cache.
-lurek.font.load(path: string, size: number) -- Load a TTF or OTF font file from disk and return an LFont userdata.
-lurek.font.loadBitmap(json_path: string) -- Load a bitmap font from a JSON descriptor and PNG atlas, returning an LFont.
-lurek.font.measure(font: LFont, text: string) -- Measure the pixel width and height of a multi-line text block using a given font.
-lurek.font.measureLine(font: LFont, text: string) -- Measure the pixel width and height of a single line of text using a font.
-lurek.font.shapeText(font: LFont, text: string) -- Shape a text string with a font and return per-glyph position and advance data.
-lurek.font.wrapText(font: LFont, text: string, max_width: number) -- Wrap a string to fit within a pixel width, returning a table of line strings.
+lurek.font.availableSizes() -> table -- Returns the array of built-in bitmap font point sizes available in the engine.
+lurek.font.charAdvance(font: LFont, char: string, [scale]: number) -> number -- Returns the horizontal advance width in pixels of a single character using the given font.
+lurek.font.getDefault() -> LFont -- Returns the default engine font as an LFont userdata handle.
+lurek.font.lineHeight(font: LFont) -> number -- Returns the line height of the given font in pixels.
+lurek.font.list() -> table -- Lists all registered fonts with their name, size, and style metadata.
+lurek.font.load(path: string, size: number) -> LFont -- Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
+lurek.font.loadBitmap(path: string, cellWidth: integer, cellHeight: integer) -> LFont -- Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
+lurek.font.measure(font: LFont, text: string, [scale]: number) -> number -- Measures the pixel dimensions of a text string using the given font handle and scale.
+lurek.font.measureLine(font: LFont, text: string, [scale]: number) -> number -- Measures the pixel width and height of a single line of text with the given font.
+lurek.font.shapeText(font: LFont, text: string, maxWidth: number, scale: number, align: string, wrap: string) -> table -- Shapes and aligns text into wrapped lines with x-offset data for rendering.
+lurek.font.wrapText(font: LFont, text: string, maxWidth: number, scale: number, mode: string) -> table -- Wraps a text string into lines that fit within the given maximum pixel width.
 ```
 
 ### LFont
@@ -2696,13 +2696,13 @@ LGlobeRegistry:typeOf(name: string) -> boolean -- Returns whether this registry 
 [Module page](Module-grep)
 
 ```lua
-lurek.grep.jsonSearch(path: string, pattern: string) -- Search JSON files under a path for a literal pattern and return a result table.
-lurek.grep.logSearch(pattern: string) -- Search engine log files for a pattern and return structured result entries.
-lurek.grep.luaFilter() -- Create an LFileFilter pre-configured to match only Lua source files.
-lurek.grep.newEngine() -- Create a new LGrepEngine with default file-type filters for game content.
-lurek.grep.newEngineOpts(filter: LFileFilter) -- Create a new LGrepEngine with a custom LFileFilter controlling which files are scanned.
-lurek.grep.newFilter() -- Create a new LFileFilter with default extension-based inclusion rules.
-lurek.grep.search(path: string, pattern: string) -- Search a directory tree for a literal text pattern; return a result table.
+lurek.grep.jsonSearch(file: string, key: string) -> table -- Searches a JSON file for all values associated with a given key name at any depth.
+lurek.grep.logSearch(file: string, level: string, pattern: string) -> table -- Searches a structured log file by log level and regex pattern, returning matched entries.
+lurek.grep.luaFilter() -> LFileFilter -- Creates a file filter preset that matches only Lua source files (.lua extension).
+lurek.grep.newEngine() -> LGrepEngine -- Creates a new grep engine with default configuration settings.
+lurek.grep.newEngineOpts(opts: table) -> LGrepEngine -- Creates a new grep engine with custom search configuration options.
+lurek.grep.newFilter() -> LFileFilter -- Creates a new empty file filter that can be configured to match specific file patterns.
+lurek.grep.search(path: string, pattern: string) -> table -- Searches a directory tree for files containing an exact literal pattern string.
 ```
 
 ### LFileFilter
@@ -7182,9 +7182,9 @@ LUiWidget:unbind() -- Removes the data binding from this widget.
 [Module page](Module-validator)
 
 ```lua
-lurek.validator.newEngine(root) -- Create a new LValidationEngine for running schema and constraint checks.
-lurek.validator.validate(engine: LValidationEngine, schema: string, data: table) -- Validate a Lua table against a named schema; return violations as a table.
-lurek.validator.validateFile(engine: LValidationEngine, schema: string, path: string) -- Validate a file on disk against a named schema; return violations as a table.
+lurek.validator.newEngine(root: string) -> LValidationEngine -- Creates a new validation engine rooted at the given filesystem path.
+lurek.validator.validate(path: string) -> table -- Runs all validation rules against a project root directory and returns a report table.
+lurek.validator.validateFile(path: string) -> table -- Runs API validation rules against a single Lua file and returns a report table.
 ```
 
 ### LValidationEngine

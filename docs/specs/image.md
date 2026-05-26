@@ -15,21 +15,11 @@
 
 ## Summary
 
- The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
+The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
 
 Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
 
 The `image` module features specialized systems for game development, most notably the `ProvinceGrid`. This system performs high-speed flood-fill analysis on color-coded PNG maps to generate optimized spatial indexes, identifying distinct provinces, calculating adjacencies, tracing polygonal borders, and exporting compressed shape data for Geoscape-style games. Additionally, `PaletteLUT` provides hardware-accelerated color remapping for retro palette-swapping effects. The module also contains an extensive set of debug visualization renderers for animation, audio, camera bounds, easing curves, and procedural generation (Voronoi, noise, cellular automata). The entire API, including CPU-to-GPU texture upload helpers, is fully exposed to Lua via the `lurek.image.*` namespace.
-
-## Architecture Boundary
-
-**Tier**: Platform Services
-
-**Dependents**:
-- `province` module imports `ProvinceGrid` and `ImageData` from image (correct: Feature → Platform direction)
-
-The image module provides province-grid parsing utilities (`image/province_grid.rs`) that the
-province module consumes. This is intentional shared infrastructure, not a boundary violation.
 
 ## Source Documentation
 
@@ -75,16 +65,10 @@ province module consumes. This is intentional shared infrastructure, not a bound
 - Hash-accelerated pixel matching for large palettes, linear scan for small ones.
 - In-place image rewrite and cyclic rotation of replacement colors.
 
-### `province_grid.rs`
-- Province grid construction from color-mapped images, assigning unique ids per distinct RGB color.
-- Pixel-level province id lookup and reverse color retrieval by id.
-- Adjacency detection between neighboring provinces with shared-border-pixel counts.
-- Horizontal span extraction for contiguous province row segments.
-- Border segment detection returning line segments between differing province regions.
-- Polygon tracing from directed cell edges into closed point loops per province.
-- Polygon simplification removing collinear vertices and 45-degree staircase patterns.
-- Binary serialization and deserialization of span and border segment shape data.
-- Adjacency pair struct exposing province relationships for map graph queries.
+### `rect_packing.rs`
+- Shelf-first rectangle packing for texture atlas layout.
+- Configurable atlas dimensions and uniform pixel padding between rects.
+- Tracks occupancy ratio and returns placement coordinates in insertion order.
 
 ### `render.rs`
 - Convert an image buffer into GPU render commands for on-screen display.
@@ -205,9 +189,8 @@ province module consumes. This is intentional shared infrastructure, not a bound
 - `ImageLayer` (`struct`, `layers.rs`): Represents a single named layer with visibility, opacity, and its own `ImageData` backing store.
 - `LayeredImage` (`struct`, `layers.rs`): Owns an ordered stack of `ImageLayer` values and merges them into a flat image when callers need a composited result.
 - `PaletteLUT` (`struct`, `palette_lut.rs`): Describes palette remapping tables for effects that replace source colors with target colors.
-- `AdjacencyPair` (`struct`, `province_grid.rs`): Records that `province_a` and `province_b` share a border of `border_pixels` length (public fields).
-- `ProvinceShapeCacheEntry` (`struct`, `province_grid.rs`): Cached province polygon draw data with color, bounds, and flattened vertices.
-- `ProvinceGrid` (`struct`, `province_grid.rs`): Flat `Vec<u32>` spatial index for province-colour maps. Built from an `ImageData` in a single O(w×h) scan; each unique non-black RGB is assigned a sequential province ID (1..n).
+- `PackedRect` (`struct`, `rect_packing.rs`): Placement result for a single packed rectangle.
+- `RectPacker` (`struct`, `rect_packing.rs`): Shelf-first texture-atlas packer with configurable atlas dimensions and uniform padding.
 - `TextureColorSpace` (`enum`, `texture.rs`): Texture color space stored alongside decoded pixels.
 - `Texture` (`struct`, `texture.rs`): A lightweight texture handle and metadata wrapper used when CPU image data is inserted into renderer-owned texture storage.
 - `NineSliceInsets` (`struct`, `texture_atlas.rs`): Nine-slice border distances used to preserve corners and edges.
@@ -270,6 +253,7 @@ province module consumes. This is intentional shared infrastructure, not a bound
 - `ImageData::draw_text_with_font` (`image_data.rs`): Draw `text` into this image using a bitmap font atlas produced by `crate::render::font::Font`.
 - `ImageData::encode_png` (`image_data.rs`): Encode the image as PNG bytes and return an error on encode failure.
 - `ImageData::as_bytes` (`image_data.rs`): Return a slice of the raw RGBA pixel bytes.
+- `ImageData::as_mut_bytes` (`image_data.rs`): Return a mutable slice of the raw RGBA pixel bytes.
 - `ImageData::get_string` (`image_data.rs`): Return a cloned copy of the raw RGBA pixel bytes.
 - `ImageData::set_raw_data` (`image_data.rs`): Replace pixel data with new raw bytes and return an error on length mismatch.
 - `ImageData::map_pixel_par` (`image_data.rs`): Map every pixel through a callback in place using parallel rows above the threshold.
@@ -297,21 +281,13 @@ province module consumes. This is intentional shared infrastructure, not a bound
 - `PaletteLUT::clear` (`palette_lut.rs`): Clear all stored color pairs.
 - `PaletteLUT::cycle_to_colors` (`palette_lut.rs`): Rotate replacement colors by the requested offset.
 - `PaletteLUT::apply` (`palette_lut.rs`): Apply the palette lookup to an image buffer in place.
-- `ProvinceGrid::from_image` (`province_grid.rs`): Build a province grid from an image where non-black pixels define province ids.
-- `ProvinceGrid::from_file` (`province_grid.rs`): Load an image from disk and derive province ids from it.
-- `ProvinceGrid::width` (`province_grid.rs`): Return the grid width in pixels.
-- `ProvinceGrid::height` (`province_grid.rs`): Return the grid height in pixels.
-- `ProvinceGrid::get_at` (`province_grid.rs`): Return the province id at a coordinate, or `0` when out of bounds.
-- `ProvinceGrid::province_count` (`province_grid.rs`): Return the highest province id present in the grid.
-- `ProvinceGrid::province_color` (`province_grid.rs`): Return the RGB color associated with a province id, or `None` for id 0.
-- `ProvinceGrid::adjacencies` (`province_grid.rs`): Return cached adjacency triples for the grid.
-- `ProvinceGrid::province_spans` (`province_grid.rs`): Return horizontal spans for each province row segment.
-- `ProvinceGrid::border_segments` (`province_grid.rs`): Return contiguous border segments between differing provinces.
-- `ProvinceGrid::province_polygons` (`province_grid.rs`): Trace province polygons as ordered point loops.
-- `ProvinceGrid::province_polygons_simplified` (`province_grid.rs`): Return simplified province polygons with redundant vertices removed.
-- `ProvinceGrid::build_shape_cache` (`province_grid.rs`): Build a simplified polygon shape cache for efficient drawing.
-- `ProvinceGrid::serialize_shape_data` (`province_grid.rs`): Serialize spans and border segments into a compact binary blob.
-- `ProvinceGrid::deserialize_shape_data` (`province_grid.rs`): Decode serialized spans and border segments from a shape-data blob.
+- `RectPacker::new` (`rect_packing.rs`): Construct a packer with the given atlas `width × height` and uniform `padding`.
+- `RectPacker::pack` (`rect_packing.rs`): Place a `w × h` rectangle with optional `id` label; returns placement or `None` when no space remains.
+- `RectPacker::clear` (`rect_packing.rs`): Remove all placed rects and reset shelves, keeping atlas dimensions unchanged.
+- `RectPacker::packed_rects` (`rect_packing.rs`): Return a slice of all successfully placed rects in insertion order.
+- `RectPacker::occupancy` (`rect_packing.rs`): Return the fraction `[0,1]` of the atlas area covered by placed rects, excluding padding.
+- `RectPacker::size` (`rect_packing.rs`): Return the atlas dimensions as `(width, height)` in pixels.
+- `RectPacker::padding` (`rect_packing.rs`): Return the uniform padding value used during packing.
 - `ImageData::generate_render_commands` (`render.rs`): Generate draw commands for this image buffer at the given screen position.
 - `ImageData::draw_to_image` (`render.rs`): Clone the image buffer into a standalone image value.
 - `save_image` (`serial.rs`): Save a flat [`ImageData`] to a LIMG binary file at the given path.
@@ -511,7 +487,9 @@ province module consumes. This is intentional shared infrastructure, not a bound
 
 - `animation`: Imports or references `animation` from `src/animation/`.
 - `camera`: Imports or references `camera` from `src/camera/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
 - `math`: Imports or references `math` from `src/math/`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 

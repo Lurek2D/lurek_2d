@@ -15,7 +15,7 @@
 
 ## Summary
 
- It provides a unified system for capturing, filtering, and dispatching diagnostic messages across the entire engine and Lua scripting environment. At its core, the module utilizes a level-gated emission system. The global log level acts as an initial filter, ensuring that messages below the active threshold incur near-zero performance cost—they are suppressed before any formatting or string allocation occurs. This allows developers to instrument code heavily with debug and trace messages without impacting production performance.
+It provides a unified system for capturing, filtering, and dispatching diagnostic messages across the entire engine and Lua scripting environment. At its core, the module utilizes a level-gated emission system. The global log level acts as an initial filter, ensuring that messages below the active threshold incur near-zero performance cost—they are suppressed before any formatting or string allocation occurs. This allows developers to instrument code heavily with debug and trace messages without impacting production performance.
 
 When a message passes the global filter, it is dispatched via the `SinkRegistry` to one or more registered `Sink` destinations. The module supports several powerful sink types. The `MemoryEntry` sink utilizes a bounded, in-memory ring buffer, perfectly suited for powering in-game developer consoles or debug overlays where recent logs must be rapidly accessible. The `RotatingFileSink` writes output to disk, automatically managing file sizes and backups to prevent unbounded storage consumption, while buffering writes to minimize OS syscall overhead. Furthermore, a callback sink allows log messages to be routed back into the Lua runtime for custom handling.
 
@@ -111,7 +111,7 @@ Logging is highly structured, allowing messages to carry not only severity level
 
 ## References
 
-- `data`: Imports or references `src/data/`. Dependency stays inside `Foundations` and should remain acyclic.
+- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Foundations` into `Edge/Integration`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes

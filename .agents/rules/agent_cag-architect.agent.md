@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Own the .github CAG layer and its validation rules, plus retrieval corpus shape, chunking, and source ranking. Keep wording short, scopes distinct, and routing coherent."
 ---
+
 # CAG-Architect
 
 ## Mission
@@ -88,5 +89,5 @@ Score the work from 1 to 10 stars against these checks.
 ## CAG Metadata
 Communication: simple, direct, low-token, policy-first
 Personas: EngDev, GameDev, Modder, GameTest, EngTest
-Primary skills: cag-workflow, tools-cag-validation, agent-routing
-Secondary skills: retrieval-architecture, documentation, module-architecture, enterprise-architecture
+Primary skills: skill_cag-workflow, skill_tools-cag-validation, skill_agent-routing
+Secondary skills: skill_retrieval-architecture, skill_documentation, skill_module-architecture, skill_enterprise-architecture

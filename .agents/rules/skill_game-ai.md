@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when designing or implementing lurek.ai.* game behavior like FSMs, behavior trees, GOAP, steering, or squad logic. Skip it for Rust AI internals or pathfinding algorithms."
 ---
+
 # game-ai
 
 ## Mission
@@ -26,6 +27,12 @@ description: "Load this skill when designing or implementing lurek.ai.* game beh
 - `pathfind` owns grid search and route math. `ai` owns decision-making and behavior composition. Never call pathfinding algorithms directly in an AI script; call `lurek.pathfind.findPath(world, x1, y1, x2, y2)` and use the returned waypoint list to set steering targets.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - docs/specs/ai.md

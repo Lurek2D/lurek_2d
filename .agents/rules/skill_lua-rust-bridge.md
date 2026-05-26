@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when writing Lua-Rust bindings, LuaUserData impls, type conversion, boundary errors, or SharedState borrow rules. Skip it for API design, game scripts, or pure Rust domain logic."
 ---
+
 # lua-rust-bridge
 
 ## Mission
@@ -31,6 +32,12 @@ description: "Load this skill when writing Lua-Rust bindings, LuaUserData impls,
 - When a binding function exceeds ~20 lines, it is almost certainly doing too much. Split extraction, validation, domain call, and conversion into distinct steps and move the domain call to `src/<module>/`.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - src/lua_api/

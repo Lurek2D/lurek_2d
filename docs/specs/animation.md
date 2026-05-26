@@ -15,7 +15,7 @@
 
 ## Summary
 
- At its core, the module uses `AnimClip` to hold ordered sequences of `AnimFrame` entries, each specifying a source texture rectangle, an optional per-frame duration, and event triggers. This allows for both uniform and variable-timing animations. Playback is managed by the `Animation` controller, which handles forward, reverse, and ping-pong playback modes, along with looping and playback speed scaling.
+At its core, the module uses `AnimClip` to hold ordered sequences of `AnimFrame` entries, each specifying a source texture rectangle, an optional per-frame duration, and event triggers. This allows for both uniform and variable-timing animations. Playback is managed by the `Animation` controller, which handles forward, reverse, and ping-pong playback modes, along with looping and playback speed scaling.
 
 To support complex character and entity animations, the module implements a robust `AnimStateMachine`. This finite-state machine (FSM) drives transitions between named animation clips based on configurable conditions. Transitions can evaluate float, integer, and boolean parameters using standard relational operators, enabling logic like switching from a 'running' state to a 'jumping' state when a velocity parameter exceeds a threshold. Furthermore, `BlendLayerSet` provides support for multi-layer additive and override mixing, allowing multiple animations to be combined—for instance, playing a 'shooting' animation on the upper body while a 'running' animation plays on the lower body.
 
@@ -255,7 +255,7 @@ Finally, the module generates textured draw commands from active frame quads via
 - `LAnimStateMachine:setParam`: Sets a boolean, integer, or numeric state machine parameter.
 - `LAnimStateMachine:getQuad`: Returns the current frame rectangle from the state machine's owned animation.
 - `LAnimStateMachine:setImage`: Stores a spritesheet image on this state machine so draw can be called without an explicit image argument.
-- `LAnimStateMachine:draw`: Draws the current state-machine animation frame without advancing playback. Accepts `draw(image, x, y, opts)` or `draw(x, y, opts)` when an image was stored with `setImage`.
+- `LAnimStateMachine:draw`: Draws the current state-machine animation frame without advancing playback.
 - `LAnimStateMachine:type`: Returns the Lua-visible type name for this animation state machine handle.
 - `LAnimStateMachine:typeOf`: Returns whether this animation state machine handle matches a supported type name.
 
@@ -282,7 +282,7 @@ Finally, the module generates textured draw commands from active frame quads via
 - `LAnimation:update`: Advances animation playback and records any frame or clip events.
 - `LAnimation:getQuad`: Returns the current frame rectangle as a table.
 - `LAnimation:setImage`: Stores a spritesheet image on this animation so draw can be called without an explicit image argument.
-- `LAnimation:draw`: Draws the current animation frame without advancing playback. Accepts `draw(image, x, y, opts)` or `draw(x, y, opts)` when an image was stored with `setImage`.
+- `LAnimation:draw`: Draws the current animation frame without advancing playback.
 - `LAnimation:pollEvents`: Drains animation events produced since the previous poll.
 - `LAnimation:isPlaying`: Returns whether this animation is currently playing.
 - `LAnimation:isLooping`: Returns whether the current clip loops.

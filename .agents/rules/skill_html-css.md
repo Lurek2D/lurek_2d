@@ -2,6 +2,7 @@
 trigger: model_decision
 description: "Load this skill when building lurek.html screens, HUDs, menus, dialogs, or scoreboards with HTML and CSS. Skip it for src/ui/ Rust internals, TOML layouts, or pure game logic."
 ---
+
 # html-css
 
 ## Mission
@@ -28,6 +29,12 @@ description: "Load this skill when building lurek.html screens, HUDs, menus, dia
 - Content separation rule: HTML and CSS own structure and visual rules. Lua owns state transitions, data flow, and timing. Never compute game state inside a CSS expression or inline HTML attribute. If the value comes from game state, write it through `doc:setAttr()` from Lua.
 ## Companion File Index
 - None.
+
+
+## Gemini Tips (Antigravity Optimization)
+- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
+- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
+- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - docs/specs/html.md

@@ -1,4 +1,4 @@
-# serial
+# serialize
 
 ## TL;DR
 
@@ -15,7 +15,7 @@
 
 ## Summary
 
- At its core, it relies on the recursive `SerialValue` enum—an intermediate type-erased representation—to seamlessly map between native Lua tables and six popular text and binary formats: JSON, TOML, CSV, XML, INI, and MessagePack. This design allows developers to read and write diverse data sources using a unified API without worrying about the underlying parsing mechanics. The module features an intelligent auto-detection system that inspects content bytes to automatically guess the correct `SerialFormat` during decoding, making it exceptionally robust for loading arbitrary user-provided files or unknown network payloads.
+At its core, it relies on the recursive `SerialValue` enum—an intermediate type-erased representation—to seamlessly map between native Lua tables and six popular text and binary formats: JSON, TOML, CSV, XML, INI, and MessagePack. This design allows developers to read and write diverse data sources using a unified API without worrying about the underlying parsing mechanics. The module features an intelligent auto-detection system that inspects content bytes to automatically guess the correct `SerialFormat` during decoding, making it exceptionally robust for loading arbitrary user-provided files or unknown network payloads.
 
 Each format codec is highly specialized to handle the nuances of its specific specification. For instance, the CSV parser efficiently handles headers, custom delimiters, quoting, and multi-line fields, easily mapping between spreadsheet rows and Lua arrays of tables. The TOML and INI parsers support deep nesting and sections, perfect for configuration files. The XML parser correctly interprets attributes and text nodes, crucial for importing complex assets like Tiled map exports. For performance-critical paths—such as save states or network synchronization—the MessagePack codec provides fast, compact binary encoding that significantly outperforms text formats in both speed and size.
 
