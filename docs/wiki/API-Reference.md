@@ -5479,6 +5479,7 @@ lurek.render.clear([r]: number, [g]: number, [b]: number) -- Clears all queued r
 lurek.render.clearStencil() -- Resets the stencil state to defaults (no stencil operations).
 lurek.render.currentLayer() -> string -- Returns the name of the currently active rendering layer.
 lurek.render.draw(drawable: LImage|LCanvas|LSpriteBatch|LMesh, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -- Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
+lurek.render.drawBatch(batch: LSpriteBatch) -- Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
 lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, [bevelW]: number, [style]: string, [opts]: table) -- Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
 lurek.render.drawColoredPolygon(vertices: table, colors: table, [mode]: string) -- Draws a polygon with per-vertex colors.
 lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, [segs]: number) -- Draws a cubic Bezier curve through start, two control points, and end.

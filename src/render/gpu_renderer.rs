@@ -72,10 +72,35 @@ struct LightVertex {
     /// Shadow sampling parameters: `[radius, mode, texel_size, _pad]`.
     shadow_params: [f32; 4],
 }
+#[repr(C)]
+#[derive(Copy, Clone, Pod, Zeroable)]
+struct ShadowEdgeGpu {
+    ax: f32,
+    ay: f32,
+    sx: f32,
+    sy: f32,
+}
+#[repr(C)]
+#[derive(Copy, Clone, Pod, Zeroable)]
+struct ShadowComputeParams {
+    inv_radius: f32,
+    edge_count: u32,
+    row: u32,
+    _pad: u32,
+}
+struct ShadowDispatchInput<'a> {
+    row: usize,
+    light_x: f32,
+    light_y: f32,
+    light_radius: f32,
+    shadow_mask: u16,
+    occluders: &'a [&'a crate::light::occluder::Occluder],
+}
 /// Horizontal resolution of the 1-D shadow map texture.
 const SHADOW_MAP_RES: usize = 256;
 /// Maximum number of shadow-casting point lights rendered per frame.
 const MAX_SHADOW_LIGHTS: usize = 128;
+const SHADOW_COMPUTE_WORKGROUP_SIZE: u32 = 64;
 /// Per-frame viewport uniform uploaded to the GPU: pixel dimensions, time, and camera transform.
 #[repr(C)]
 #[derive(Copy, Clone, Pod, Zeroable)]
@@ -515,6 +540,52 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     return vec4<f32>(in.color.rgb * intensity * shadow, 1.0);
 }
 "#;
+const SHADOW_COMPUTE_SHADER: &str = r#"
+struct Edge {
+    ax: f32,
+    ay: f32,
+    sx: f32,
+    sy: f32,
+}
+struct Params {
+    inv_radius: f32,
+    edge_count: u32,
+    row: u32,
+    _pad: u32,
+}
+@group(0) @binding(0) var<storage, read> edges: array<Edge>;
+@group(0) @binding(1) var<uniform> params: Params;
+@group(0) @binding(2) var shadow_atlas: texture_storage_2d<r32float, write>;
+
+@compute @workgroup_size(64)
+fn cs_main(@builtin(global_invocation_id) gid: vec3<u32>) {
+    let i = gid.x;
+    if (i >= 256u) {
+        return;
+    }
+    let angle = (f32(i) / 256.0) * 6.28318530718 - 3.14159265359;
+    let dir_x = cos(angle);
+    let dir_y = sin(angle);
+    var min_dist = 1.0;
+    for (var edge_idx = 0u; edge_idx < params.edge_count; edge_idx = edge_idx + 1u) {
+        let edge = edges[edge_idx];
+        let cross_ds = dir_x * edge.sy - dir_y * edge.sx;
+        if (abs(cross_ds) < 0.00000001) {
+            continue;
+        }
+        let inv_cross = 1.0 / cross_ds;
+        let t = (edge.ax * edge.sy - edge.ay * edge.sx) * inv_cross;
+        let u = (edge.ax * dir_y - edge.ay * dir_x) * inv_cross;
+        if (t > 0.0 && u >= 0.0 && u <= 1.0) {
+            let norm_dist = t * params.inv_radius;
+            if (norm_dist < min_dist && norm_dist < 1.0) {
+                min_dist = norm_dist;
+            }
+        }
+    }
+    textureStore(shadow_atlas, vec2<i32>(i32(i), i32(params.row)), vec4<f32>(min_dist, 0.0, 0.0, 1.0));
+}
+"#;
 /// GPU state for the additive light accumulation and shadow-atlas composite pass.
 struct LightGpuState {
     #[allow(dead_code)]
@@ -532,6 +603,7 @@ struct LightGpuState {
     vertex_buffer: wgpu::Buffer,
     /// Index buffer for light quads.
     index_buffer: wgpu::Buffer,
+    #[allow(dead_code)]
     /// Shadow atlas texture storing 1-D shadow maps for each light.
     shadow_atlas_texture: wgpu::Texture,
     #[allow(dead_code)]
@@ -539,6 +611,12 @@ struct LightGpuState {
     shadow_atlas_view: wgpu::TextureView,
     /// Bind group for sampling the shadow atlas in the light pass shader.
     shadow_atlas_bind_group: wgpu::BindGroup,
+    shadow_compute_bind_group_layout: wgpu::BindGroupLayout,
+    shadow_compute_bind_group: wgpu::BindGroup,
+    shadow_compute_pipeline: wgpu::ComputePipeline,
+    shadow_edge_buffer: wgpu::Buffer,
+    shadow_edge_capacity: usize,
+    shadow_params_buffer: wgpu::Buffer,
     /// Pixel width of accumulation and shadow-atlas textures.
     width: u32,
     /// Pixel height of the accumulation texture.
@@ -615,23 +693,13 @@ pub struct GpuRenderer {
     /// Per-effect capture textures for multi-pass post-fx.
     postfx_capture: HashMap<u64, crate::render::postfx_pipeline::PostFxTexture>,
 }
-/// Compute the normalised 1-D shadow map for a point light at `(light_x, light_y)` with `light_radius`.
-fn compute_1d_shadow_map(
+fn collect_shadow_edges(
     light_x: f32,
     light_y: f32,
-    light_radius: f32,
     shadow_mask: u16,
     occluders: impl IntoIterator<Item = impl std::borrow::Borrow<crate::light::occluder::Occluder>>,
-) -> Vec<f32> {
-    let mut map = vec![1.0f32; SHADOW_MAP_RES];
-    let inv_res = 1.0 / SHADOW_MAP_RES as f32;
-    struct Edge {
-        ax: f32,
-        ay: f32,
-        sx: f32,
-        sy: f32,
-    }
-    let mut edges: Vec<Edge> = Vec::new();
+) -> Vec<ShadowEdgeGpu> {
+    let mut edges = Vec::new();
     for occ_ref in occluders {
         let occ = occ_ref.borrow();
         if !occ.enabled {
@@ -652,7 +720,7 @@ fn compute_1d_shadow_map(
             let ay = a.y + occ.position.y - light_y;
             let bx = b.x + occ.position.x - light_x;
             let by = b.y + occ.position.y - light_y;
-            edges.push(Edge {
+            edges.push(ShadowEdgeGpu {
                 ax,
                 ay,
                 sx: bx - ax,
@@ -660,34 +728,7 @@ fn compute_1d_shadow_map(
             });
         }
     }
-    if edges.is_empty() {
-        return map;
-    }
-    let inv_radius = 1.0 / light_radius;
-    #[allow(clippy::needless_range_loop)]
-    for i in 0..SHADOW_MAP_RES {
-        let angle = (i as f32 * inv_res) * std::f32::consts::TAU - PI;
-        let dir_x = angle.cos();
-        let dir_y = angle.sin();
-        let mut min_dist = 1.0f32;
-        for e in &edges {
-            let cross_ds = dir_x * e.sy - dir_y * e.sx;
-            if cross_ds.abs() < 1e-8 {
-                continue;
-            }
-            let inv_cross = 1.0 / cross_ds;
-            let t = (e.ax * e.sy - e.ay * e.sx) * inv_cross;
-            let u = (e.ax * dir_y - e.ay * dir_x) * inv_cross;
-            if t > 0.0 && (0.0..=1.0).contains(&u) {
-                let norm_dist = t * inv_radius;
-                if norm_dist < min_dist && norm_dist < 1.0 {
-                    min_dist = norm_dist;
-                }
-            }
-        }
-        map[i] = min_dist;
-    }
-    map
+    edges
 }
 impl GpuRenderer {
     /// Create a `GpuRenderer` from an already-acquired wgpu device/queue pair and surface format.
@@ -1238,7 +1279,9 @@ impl GpuRenderer {
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,
             format: wgpu::TextureFormat::R32Float,
-            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING
+                | wgpu::TextureUsages::STORAGE_BINDING
+                | wgpu::TextureUsages::COPY_DST,
             view_formats: &[],
         });
         let shadow_atlas_view =
@@ -1400,6 +1443,97 @@ impl GpuRenderer {
             usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
+        let shadow_edge_capacity = 1usize;
+        let shadow_edge_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("shadow_edge_buffer"),
+            size: std::mem::size_of::<ShadowEdgeGpu>() as u64,
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let shadow_params_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("shadow_compute_params"),
+            size: std::mem::size_of::<ShadowComputeParams>() as u64,
+            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let shadow_compute_bind_group_layout =
+            self.device
+                .create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                    label: Some("shadow_compute_bgl"),
+                    entries: &[
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 0,
+                            visibility: wgpu::ShaderStages::COMPUTE,
+                            ty: wgpu::BindingType::Buffer {
+                                ty: wgpu::BufferBindingType::Storage { read_only: true },
+                                has_dynamic_offset: false,
+                                min_binding_size: None,
+                            },
+                            count: None,
+                        },
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 1,
+                            visibility: wgpu::ShaderStages::COMPUTE,
+                            ty: wgpu::BindingType::Buffer {
+                                ty: wgpu::BufferBindingType::Uniform,
+                                has_dynamic_offset: false,
+                                min_binding_size: None,
+                            },
+                            count: None,
+                        },
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 2,
+                            visibility: wgpu::ShaderStages::COMPUTE,
+                            ty: wgpu::BindingType::StorageTexture {
+                                access: wgpu::StorageTextureAccess::WriteOnly,
+                                format: wgpu::TextureFormat::R32Float,
+                                view_dimension: wgpu::TextureViewDimension::D2,
+                            },
+                            count: None,
+                        },
+                    ],
+                });
+        let shadow_compute_bind_group = self.device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("shadow_compute_bg"),
+            layout: &shadow_compute_bind_group_layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: shadow_edge_buffer.as_entire_binding(),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: shadow_params_buffer.as_entire_binding(),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 2,
+                    resource: wgpu::BindingResource::TextureView(&shadow_atlas_view),
+                },
+            ],
+        });
+        let shadow_compute_layout =
+            self.device
+                .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                    label: Some("shadow_compute_layout"),
+                    bind_group_layouts: &[&shadow_compute_bind_group_layout],
+                    push_constant_ranges: &[],
+                });
+        let shadow_compute_module =
+            self.device
+                .create_shader_module(wgpu::ShaderModuleDescriptor {
+                    label: Some("shadow_compute_shader"),
+                    source: wgpu::ShaderSource::Wgsl(SHADOW_COMPUTE_SHADER.into()),
+                });
+        let shadow_compute_pipeline =
+            self.device
+                .create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+                    label: Some("shadow_compute_pipeline"),
+                    layout: Some(&shadow_compute_layout),
+                    module: &shadow_compute_module,
+                    entry_point: "cs_main",
+                    compilation_options: Default::default(),
+                    cache: None,
+                });
         self.light_gpu = Some(LightGpuState {
             accum_texture,
             accum_view,
@@ -1411,9 +1545,94 @@ impl GpuRenderer {
             shadow_atlas_texture,
             shadow_atlas_view,
             shadow_atlas_bind_group,
+            shadow_compute_bind_group_layout,
+            shadow_compute_bind_group,
+            shadow_compute_pipeline,
+            shadow_edge_buffer,
+            shadow_edge_capacity,
+            shadow_params_buffer,
             width: w,
             height: h,
         });
+    }
+    fn ensure_shadow_edge_capacity(&mut self, required_edges: usize) {
+        let Some(lg) = self.light_gpu.as_mut() else {
+            return;
+        };
+        if required_edges <= lg.shadow_edge_capacity {
+            return;
+        }
+        let new_capacity = required_edges.max(1).next_power_of_two();
+        let shadow_edge_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("shadow_edge_buffer"),
+            size: (new_capacity * std::mem::size_of::<ShadowEdgeGpu>()) as u64,
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        let shadow_compute_bind_group = self.device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("shadow_compute_bg"),
+            layout: &lg.shadow_compute_bind_group_layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: shadow_edge_buffer.as_entire_binding(),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: lg.shadow_params_buffer.as_entire_binding(),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 2,
+                    resource: wgpu::BindingResource::TextureView(&lg.shadow_atlas_view),
+                },
+            ],
+        });
+        lg.shadow_edge_buffer = shadow_edge_buffer;
+        lg.shadow_edge_capacity = new_capacity;
+        lg.shadow_compute_bind_group = shadow_compute_bind_group;
+    }
+    fn dispatch_shadow_map_gpu(
+        &mut self,
+        encoder: &mut wgpu::CommandEncoder,
+        input: ShadowDispatchInput<'_>,
+    ) {
+        let edges = collect_shadow_edges(
+            input.light_x,
+            input.light_y,
+            input.shadow_mask,
+            input.occluders.iter().copied(),
+        );
+        self.ensure_shadow_edge_capacity(edges.len());
+        let Some(lg) = self.light_gpu.as_ref() else {
+            return;
+        };
+        if !edges.is_empty() {
+            self.queue
+                .write_buffer(&lg.shadow_edge_buffer, 0, bytemuck::cast_slice(&edges));
+        }
+        let params = ShadowComputeParams {
+            inv_radius: if input.light_radius > 0.0 {
+                1.0 / input.light_radius
+            } else {
+                0.0
+            },
+            edge_count: edges.len() as u32,
+            row: input.row as u32,
+            _pad: 0,
+        };
+        self.queue
+            .write_buffer(&lg.shadow_params_buffer, 0, bytemuck::bytes_of(&params));
+        let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
+            label: Some("shadow_compute_pass"),
+            timestamp_writes: None,
+        });
+        cpass.set_pipeline(&lg.shadow_compute_pipeline);
+        cpass.set_bind_group(0, &lg.shadow_compute_bind_group, &[]);
+        cpass.dispatch_workgroups(
+            (SHADOW_MAP_RES as u32).div_ceil(SHADOW_COMPUTE_WORKGROUP_SIZE),
+            1,
+            1,
+        );
     }
     /// Return whether an axis-aligned bounding box is visible after model+camera transform.
     #[inline]
@@ -4181,52 +4400,27 @@ impl GpuRenderer {
             let occluder_list: Vec<&crate::light::occluder::Occluder> =
                 light_world.occluders.values().collect();
             let mut light_shadow_rows: Vec<Option<usize>> = Vec::new();
-            let mut shadow_rows_data: Vec<(usize, Vec<f32>)> = Vec::new();
             for (_, light) in light_world.lights.iter() {
                 if !light.enabled || light.radius * light.energy <= 0.0 {
                     light_shadow_rows.push(None);
                     continue;
                 }
                 if light.shadow_enabled && shadow_row < MAX_SHADOW_LIGHTS {
-                    let map = compute_1d_shadow_map(
-                        light.x,
-                        light.y,
-                        light.radius * light.energy,
-                        light.shadow_mask,
-                        occluder_list.iter().copied(),
+                    self.dispatch_shadow_map_gpu(
+                        &mut encoder,
+                        ShadowDispatchInput {
+                            row: shadow_row,
+                            light_x: light.x,
+                            light_y: light.y,
+                            light_radius: light.radius * light.energy,
+                            shadow_mask: light.shadow_mask,
+                            occluders: &occluder_list,
+                        },
                     );
-                    shadow_rows_data.push((shadow_row, map));
                     light_shadow_rows.push(Some(shadow_row));
                     shadow_row += 1;
                 } else {
                     light_shadow_rows.push(None);
-                }
-            }
-            if let Some(lg) = self.light_gpu.as_ref() {
-                for (row, data) in &shadow_rows_data {
-                    self.queue.write_texture(
-                        wgpu::ImageCopyTexture {
-                            texture: &lg.shadow_atlas_texture,
-                            mip_level: 0,
-                            origin: wgpu::Origin3d {
-                                x: 0,
-                                y: *row as u32,
-                                z: 0,
-                            },
-                            aspect: wgpu::TextureAspect::All,
-                        },
-                        bytemuck::cast_slice(data),
-                        wgpu::ImageDataLayout {
-                            offset: 0,
-                            bytes_per_row: Some((SHADOW_MAP_RES * 4) as u32),
-                            rows_per_image: None,
-                        },
-                        wgpu::Extent3d {
-                            width: SHADOW_MAP_RES as u32,
-                            height: 1,
-                            depth_or_array_layers: 1,
-                        },
-                    );
                 }
             }
             let mut light_verts: Vec<LightVertex> = Vec::new();
@@ -4414,9 +4608,10 @@ impl GpuRenderer {
             None
         };
         for (stack_id, passes, w, h) in &pending_postfx {
-            if let (Some(pipeline), Some(capture)) =
-                (&self.postfx_pipeline, self.postfx_capture.get(stack_id))
-            {
+            if let (Some(pipeline), Some(capture)) = (
+                self.postfx_pipeline.as_mut(),
+                self.postfx_capture.get(stack_id),
+            ) {
                 pipeline.apply(
                     &self.device,
                     &self.queue,

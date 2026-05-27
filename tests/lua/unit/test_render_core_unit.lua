@@ -858,6 +858,26 @@ describe("render missing API coverage sweep", function()
         sb:add(0, 0)
     end)
 
+    -- @covers lurek.render.drawBatch
+    -- @covers lurek.render.draw
+    -- @covers lurek.render.newSpriteBatch
+    -- @covers LSpriteBatch:add
+    -- @covers LSpriteBatch:getCount
+    it("drawBatch accepts the same sprite batch used by draw", function()
+        local img = lurek.render.newImage("assets/icon.png")
+        local sb = lurek.render.newSpriteBatch(img, 8)
+        sb:add(0, 0)
+        sb:add(4, 4, 0, 1, 1, 0, 0)
+        expect_equal(2, sb:getCount())
+        expect_no_error(function()
+            lurek.render.draw(sb)
+        end)
+        expect_no_error(function()
+            lurek.render.drawBatch(sb)
+        end)
+        expect_equal(2, sb:getCount())
+    end)
+
     -- @covers lurek.render.newQuad
     -- @covers LQuad:getTextureDimensions
     it("quad texture dimensions are readable", function()

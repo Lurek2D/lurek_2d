@@ -511,6 +511,34 @@ impl PostFxTexture {
         Self { texture, view }
     }
 }
+#[derive(Clone, Copy, PartialEq, Eq)]
+struct PostFxTextureCacheKey {
+    width: u32,
+    height: u32,
+    format: wgpu::TextureFormat,
+}
+struct CachedPostFxTexture {
+    texture: PostFxTexture,
+    bind_group: wgpu::BindGroup,
+}
+#[derive(Clone, Copy)]
+enum CachedPostFxSlot {
+    Ping,
+    Pong,
+}
+impl CachedPostFxSlot {
+    fn next(self) -> Self {
+        match self {
+            Self::Ping => Self::Pong,
+            Self::Pong => Self::Ping,
+        }
+    }
+}
+#[derive(Clone, Copy)]
+enum PostFxSource<'a> {
+    External(&'a wgpu::TextureView),
+    Cached(CachedPostFxSlot),
+}
 /// GPU post-processing pipeline owning compiled WGSL render pipelines and shared GPU resources.
 pub struct PostFxPipeline {
     /// Map from effect name to compiled wgpu render pipeline.
@@ -523,6 +551,12 @@ pub struct PostFxPipeline {
     pub(crate) bind_group_layout: wgpu::BindGroupLayout,
     /// Surface format used to match render-target attachments.
     surface_format: wgpu::TextureFormat,
+    /// Cached dimensions and format for the internal ping-pong textures.
+    cache_key: Option<PostFxTextureCacheKey>,
+    /// First reusable intermediate texture and bind group.
+    ping: Option<CachedPostFxTexture>,
+    /// Second reusable intermediate texture and bind group.
+    pong: Option<CachedPostFxTexture>,
 }
 impl PostFxPipeline {
     /// Build all built-in effect pipelines and shared GPU resources for `surface_format`.
@@ -668,6 +702,9 @@ impl PostFxPipeline {
             params_buf,
             bind_group_layout,
             surface_format,
+            cache_key: None,
+            ping: None,
+            pong: None,
         }
     }
     /// Compile and register a custom WGSL fragment shader under `name` for use in `PostFxPass`.
@@ -713,114 +750,14 @@ impl PostFxPipeline {
         });
         self.pipelines.insert(name.to_string(), pipeline);
     }
-    /// Execute all enabled `passes` in sequence using ping-pong textures; write final result to `target_view`.
-    #[allow(clippy::too_many_arguments)]
-    pub fn apply(
+    fn create_bind_group(
         &self,
         device: &wgpu::Device,
-        queue: &wgpu::Queue,
-        encoder: &mut wgpu::CommandEncoder,
-        capture_view: &wgpu::TextureView,
-        target_view: &wgpu::TextureView,
-        passes: &[crate::render::renderer::PostFxPass],
-        width: u32,
-        height: u32,
-        total_time: f32,
-        frame_count: u64,
-    ) {
-        if passes.is_empty() {
-            self.run_copy_pass(device, encoder, queue, capture_view, target_view);
-            return;
-        }
-        let ping = PostFxTexture::new(device, width, height, "postfx_ping", self.surface_format);
-        let pong = PostFxTexture::new(device, width, height, "postfx_pong", self.surface_format);
-        let textures = [&ping, &pong];
-        let mut src_view: &wgpu::TextureView = capture_view;
-        let mut dst_idx = 0usize;
-        let n = passes.len();
-        for (i, pass) in passes.iter().enumerate() {
-            let is_last = i == n - 1;
-            let dst_view: &wgpu::TextureView = if is_last {
-                target_view
-            } else {
-                &textures[dst_idx].view
-            };
-            let mut raw = params_to_uniform(&pass.params);
-            if pass.auto_uniforms {
-                raw[12] = total_time;
-                raw[13] = frame_count as f32;
-                raw[14] = width as f32;
-                raw[15] = height as f32;
-            }
-            queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
-            let effect_key = pass.effect_name.as_str();
-            let Some(pipeline) = self.pipelines.get(effect_key) else {
-                log::warn!("PostFxPipeline: unknown effect '{}' — skipped", effect_key);
-                self.run_copy_pass(device, encoder, queue, src_view, dst_view);
-                if !is_last {
-                    src_view = &textures[dst_idx].view;
-                    dst_idx = 1 - dst_idx;
-                }
-                continue;
-            };
-            let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-                label: Some("postfx_bg"),
-                layout: &self.bind_group_layout,
-                entries: &[
-                    wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: wgpu::BindingResource::TextureView(src_view),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 1,
-                        resource: wgpu::BindingResource::Sampler(&self.sampler),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 2,
-                        resource: self.params_buf.as_entire_binding(),
-                    },
-                ],
-            });
-            {
-                let mut rp = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                    label: Some("postfx_pass"),
-                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                        view: dst_view,
-                        resolve_target: None,
-                        ops: wgpu::Operations {
-                            load: wgpu::LoadOp::Clear(wgpu::Color::BLACK),
-                            store: wgpu::StoreOp::Store,
-                        },
-                    })],
-                    depth_stencil_attachment: None,
-                    ..Default::default()
-                });
-                rp.set_pipeline(pipeline);
-                rp.set_bind_group(0, &bind_group, &[]);
-                rp.draw(0..3, 0..1);
-            }
-            if !is_last {
-                src_view = &textures[dst_idx].view;
-                dst_idx = 1 - dst_idx;
-            }
-        }
-    }
-    /// Blit `src_view` to `dst_view` using the identity copy shader.
-    fn run_copy_pass(
-        &self,
-        device: &wgpu::Device,
-        encoder: &mut wgpu::CommandEncoder,
-        queue: &wgpu::Queue,
+        label: &str,
         src_view: &wgpu::TextureView,
-        dst_view: &wgpu::TextureView,
-    ) {
-        let raw = [0.0f32; 16];
-        queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
-        let Some(copy_pipeline) = self.pipelines.get("__copy") else {
-            return;
-        };
-        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            label: Some("postfx_copy_bg"),
+    ) -> wgpu::BindGroup {
+        device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some(label),
             layout: &self.bind_group_layout,
             entries: &[
                 wgpu::BindGroupEntry {
@@ -836,9 +773,78 @@ impl PostFxPipeline {
                     resource: self.params_buf.as_entire_binding(),
                 },
             ],
-        });
+        })
+    }
+    fn create_cached_texture(
+        &self,
+        device: &wgpu::Device,
+        width: u32,
+        height: u32,
+        texture_label: &str,
+        bind_group_label: &str,
+    ) -> CachedPostFxTexture {
+        let texture = PostFxTexture::new(device, width, height, texture_label, self.surface_format);
+        let bind_group = self.create_bind_group(device, bind_group_label, &texture.view);
+        CachedPostFxTexture {
+            texture,
+            bind_group,
+        }
+    }
+    fn ensure_ping_pong(&mut self, device: &wgpu::Device, width: u32, height: u32) {
+        let key = PostFxTextureCacheKey {
+            width,
+            height,
+            format: self.surface_format,
+        };
+        if self.cache_key == Some(key) && self.ping.is_some() && self.pong.is_some() {
+            return;
+        }
+        self.ping = Some(self.create_cached_texture(
+            device,
+            width,
+            height,
+            "postfx_ping",
+            "postfx_ping_bg",
+        ));
+        self.pong = Some(self.create_cached_texture(
+            device,
+            width,
+            height,
+            "postfx_pong",
+            "postfx_pong_bg",
+        ));
+        self.cache_key = Some(key);
+    }
+    fn cached_texture(&self, slot: CachedPostFxSlot) -> &CachedPostFxTexture {
+        match slot {
+            CachedPostFxSlot::Ping => self.ping.as_ref().expect("postfx ping cache exists"),
+            CachedPostFxSlot::Pong => self.pong.as_ref().expect("postfx pong cache exists"),
+        }
+    }
+    fn bind_group_for_source<'a>(
+        &'a self,
+        device: &wgpu::Device,
+        source: PostFxSource<'a>,
+    ) -> PostFxBindGroup<'a> {
+        match source {
+            PostFxSource::Cached(slot) => {
+                PostFxBindGroup::Borrowed(&self.cached_texture(slot).bind_group)
+            }
+            PostFxSource::External(view) => {
+                // Capture views are frame-owned; only stable ping-pong views are cached here.
+                PostFxBindGroup::Owned(self.create_bind_group(device, "postfx_external_bg", view))
+            }
+        }
+    }
+    fn encode_fullscreen_pass(
+        encoder: &mut wgpu::CommandEncoder,
+        label: &str,
+        dst_view: &wgpu::TextureView,
+        pipeline: &wgpu::RenderPipeline,
+        bind_group: &wgpu::BindGroup,
+    ) {
         let mut rp = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-            label: Some("postfx_copy_pass"),
+            label: Some(label),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                 view: dst_view,
                 resolve_target: None,
@@ -850,8 +856,113 @@ impl PostFxPipeline {
             depth_stencil_attachment: None,
             ..Default::default()
         });
-        rp.set_pipeline(copy_pipeline);
-        rp.set_bind_group(0, &bind_group, &[]);
+        rp.set_pipeline(pipeline);
+        rp.set_bind_group(0, bind_group, &[]);
         rp.draw(0..3, 0..1);
+    }
+    /// Execute all enabled `passes` in sequence using ping-pong textures; write final result to `target_view`.
+    #[allow(clippy::too_many_arguments)]
+    pub fn apply(
+        &mut self,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        encoder: &mut wgpu::CommandEncoder,
+        capture_view: &wgpu::TextureView,
+        target_view: &wgpu::TextureView,
+        passes: &[crate::render::renderer::PostFxPass],
+        width: u32,
+        height: u32,
+        total_time: f32,
+        frame_count: u64,
+    ) {
+        if passes.is_empty() {
+            self.run_copy_pass(
+                device,
+                encoder,
+                queue,
+                PostFxSource::External(capture_view),
+                target_view,
+            );
+            return;
+        }
+        if passes.len() > 1 {
+            self.ensure_ping_pong(device, width, height);
+        }
+        let mut source = PostFxSource::External(capture_view);
+        let mut dst_slot = CachedPostFxSlot::Ping;
+        let n = passes.len();
+        for (i, pass) in passes.iter().enumerate() {
+            let is_last = i == n - 1;
+            let dst_view: &wgpu::TextureView = if is_last {
+                target_view
+            } else {
+                &self.cached_texture(dst_slot).texture.view
+            };
+            let mut raw = params_to_uniform(&pass.params);
+            if pass.auto_uniforms {
+                raw[12] = total_time;
+                raw[13] = frame_count as f32;
+                raw[14] = width as f32;
+                raw[15] = height as f32;
+            }
+            queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
+            let effect_key = pass.effect_name.as_str();
+            let Some(pipeline) = self.pipelines.get(effect_key) else {
+                log::warn!("PostFxPipeline: unknown effect '{}' — skipped", effect_key);
+                self.run_copy_pass(device, encoder, queue, source, dst_view);
+                if !is_last {
+                    source = PostFxSource::Cached(dst_slot);
+                    dst_slot = dst_slot.next();
+                }
+                continue;
+            };
+            let bind_group = self.bind_group_for_source(device, source);
+            Self::encode_fullscreen_pass(
+                encoder,
+                "postfx_pass",
+                dst_view,
+                pipeline,
+                bind_group.as_ref(),
+            );
+            if !is_last {
+                source = PostFxSource::Cached(dst_slot);
+                dst_slot = dst_slot.next();
+            }
+        }
+    }
+    /// Blit `source` to `dst_view` using the identity copy shader.
+    fn run_copy_pass(
+        &self,
+        device: &wgpu::Device,
+        encoder: &mut wgpu::CommandEncoder,
+        queue: &wgpu::Queue,
+        source: PostFxSource<'_>,
+        dst_view: &wgpu::TextureView,
+    ) {
+        let raw = [0.0f32; 16];
+        queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
+        let Some(copy_pipeline) = self.pipelines.get("__copy") else {
+            return;
+        };
+        let bind_group = self.bind_group_for_source(device, source);
+        Self::encode_fullscreen_pass(
+            encoder,
+            "postfx_copy_pass",
+            dst_view,
+            copy_pipeline,
+            bind_group.as_ref(),
+        );
+    }
+}
+enum PostFxBindGroup<'a> {
+    Borrowed(&'a wgpu::BindGroup),
+    Owned(wgpu::BindGroup),
+}
+impl AsRef<wgpu::BindGroup> for PostFxBindGroup<'_> {
+    fn as_ref(&self) -> &wgpu::BindGroup {
+        match self {
+            Self::Borrowed(bind_group) => bind_group,
+            Self::Owned(bind_group) => bind_group,
+        }
     }
 }

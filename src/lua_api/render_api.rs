@@ -592,6 +592,22 @@ impl LuaUserData for LuaSpriteBatch {
         methods.add_method("type", |_, _, ()| Ok("LSpriteBatch"));
     }
 }
+
+fn queue_sprite_batch_draw(
+    st: &mut SharedState,
+    batch_key: SpriteBatchKey,
+    error_context: &str,
+) -> LuaResult<()> {
+    if !st.sprite_batches.contains_key(batch_key) {
+        return Err(LuaError::RuntimeError(format!(
+            "{error_context}: sprite batch handle is not valid"
+        )));
+    }
+    st.render_commands
+        .push(RenderCommand::DrawBatch { batch_key });
+    Ok(())
+}
+
 /// Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.
 #[derive(Clone)]
 pub struct LuaMesh {
@@ -1673,14 +1689,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     if let Ok(batch) = ud.borrow::<LuaSpriteBatch>() {
                         let key = batch.key;
                         drop(batch);
-                        if !st.sprite_batches.contains_key(key) {
-                            return Err(LuaError::RuntimeError(
-                                "lurek.graphic.draw: sprite batch handle is not valid".into(),
-                            ));
-                        }
-                        st.render_commands
-                            .push(RenderCommand::DrawBatch { batch_key: key });
-                        return Ok(());
+                        return queue_sprite_batch_draw(&mut st, key, "lurek.graphic.draw");
                     }
                     if let Ok(mesh) = ud.borrow::<LuaMesh>() {
                         let key = mesh.key;
@@ -1713,6 +1722,21 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     "lurek.graphic.draw: unsupported drawable type".into(),
                 )),
             }
+        })?,
+    )?;
+    let s = state.clone();
+    // -- drawBatch --
+    /// Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
+    /// @param | batch | LSpriteBatch | Sprite batch handle to draw.
+    /// @return | nil | No return value.
+    graphics.set(
+        "drawBatch",
+        lua.create_function(move |_, batch: LuaAnyUserData| {
+            let batch = batch.borrow::<LuaSpriteBatch>()?;
+            let key = batch.key;
+            drop(batch);
+            let mut st = s.borrow_mut();
+            queue_sprite_batch_draw(&mut st, key, "lurek.render.drawBatch")
         })?,
     )?;
     let s = state.clone();
@@ -2356,7 +2380,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getFontSizes",
         lua.create_function(|lua, ()| {
             let tbl = lua.create_table()?;
-            for (i, &size) in crate::render::font::AVAILABLE_POINT_SIZES.iter().enumerate() {
+            for (i, &size) in crate::render::font::AVAILABLE_POINT_SIZES
+                .iter()
+                .enumerate()
+            {
                 tbl.set(i + 1, size)?;
             }
             Ok(tbl)
@@ -2383,29 +2410,27 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LFont | The built-in font handle.
     graphics.set(
         "getDefaultFont",
-        lua.create_function(
-            move |_, (point_size, bold): (Option<u32>, Option<bool>)| {
-                let st = s.borrow();
-                let use_bold = bold.unwrap_or(st.active_bold);
-                let key = if let Some(point_size) = point_size {
-                    builtin_font_key_by_point_size(&st, point_size, Some(use_bold))
-                } else if use_bold == st.default_font_bold {
-                    st.default_font
-                } else {
-                    builtin_font_key_by_point_size(&st, st.default_font_size, Some(use_bold))
-                };
-                if let Some(key) = key {
-                    Ok(LuaFont {
-                        state: s.clone(),
-                        key,
-                    })
-                } else {
-                    Err(LuaError::RuntimeError(
-                        "lurek.graphic.getDefaultFont: built-in fonts not loaded".into(),
-                    ))
-                }
-            },
-        )?,
+        lua.create_function(move |_, (point_size, bold): (Option<u32>, Option<bool>)| {
+            let st = s.borrow();
+            let use_bold = bold.unwrap_or(st.active_bold);
+            let key = if let Some(point_size) = point_size {
+                builtin_font_key_by_point_size(&st, point_size, Some(use_bold))
+            } else if use_bold == st.default_font_bold {
+                st.default_font
+            } else {
+                builtin_font_key_by_point_size(&st, st.default_font_size, Some(use_bold))
+            };
+            if let Some(key) = key {
+                Ok(LuaFont {
+                    state: s.clone(),
+                    key,
+                })
+            } else {
+                Err(LuaError::RuntimeError(
+                    "lurek.graphic.getDefaultFont: built-in fonts not loaded".into(),
+                ))
+            }
+        })?,
     )?;
     let s = state.clone();
     // -- setDefaultFont --
@@ -2419,11 +2444,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let mut st = s.borrow_mut();
             let point_size = point_size.unwrap_or(st.default_font_size);
             let use_bold = bold.unwrap_or(st.active_bold);
-            let key = st.set_active_builtin_font(point_size, use_bold).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "lurek.graphic.setDefaultFont: built-in fonts not loaded".into(),
-                )
-            })?;
+            let key = st
+                .set_active_builtin_font(point_size, use_bold)
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(
+                        "lurek.graphic.setDefaultFont: built-in fonts not loaded".into(),
+                    )
+                })?;
             Ok(LuaFont {
                 state: s.clone(),
                 key,

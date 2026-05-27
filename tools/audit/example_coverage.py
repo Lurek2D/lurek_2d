@@ -618,6 +618,152 @@ def export_markdown(bk: dict[str, ModuleCov], entries: list[ApiEntry], out_path:
 
         f.write(f'| TOTAL | {total_miss} | {total_todo} | {total_part} | {total_full} | {total_all} |\n')
 
+
+# ---------------------------------------------------------------------------
+# Lint: structural quality checks for --@api-stub: blocks
+# ---------------------------------------------------------------------------
+
+# Valid marker: identifier chars, dots, optional single colon, optional .N suffix
+# Examples:  lurek.window.close  LFoo:getBar  LFoo:getBar.2
+STUB_TAG_RE = re.compile(r'^--@api-stub:\s*(.+)$')
+STUB_MARKER_VALID_RE = re.compile(
+    r'^[A-Za-z_][A-Za-z0-9_]*'       # leading word (class or lurek)
+    r'(?:\.[A-Za-z_][A-Za-z0-9_]*)*' # zero or more .word segments
+    r'(?::[A-Za-z_][A-Za-z0-9_]*)?'  # optional :method
+    r'(?:\.\d+)?$'                    # optional .N dedup suffix
+)
+LINT_MIN_BODY_LINES = 2  # non-blank lines (code OR comment) inside a do block
+
+
+def _collect_do_block(lines: list, start: int) -> tuple:
+    """Collect lines inside the do...end block starting at index `start`.
+
+    Returns (end_index, body_lines).  end_index is the 0-based index of the
+    closing `end` line.  body_lines includes all lines between do and end.
+    """
+    depth = 1
+    body: list[str] = []
+    k = start + 1
+    while k < len(lines):
+        ls = lines[k].strip()
+        opens = _count_scope_openings(ls)
+        closes = _count_scope_closures(ls)
+        if depth == 1 and closes > 0 and opens == 0:
+            return k, body
+        body.append(ls)
+        depth += opens
+        depth -= closes
+        k += 1
+    return k, body
+
+
+def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
+    """Structural quality scan.
+
+    Returns a list of (filename, lineno, error_code, message) tuples.
+
+    Checks:
+      E1  stub has no ``do`` block below it (not a recognised alias)
+      E2  non-blank, non-stub line between stub marker and ``do``
+      E3  two or more stubs stacked with no ``do`` block between them
+      E4  ``do`` block body is thin (< LINT_MIN_BODY_LINES non-blank lines)
+      E5  marker text is not a clean API identifier
+    """
+    issues: list = []
+
+    for p in sorted(examples_dir.glob('*.lua')):
+        if filt and filt.lower() not in p.stem.lower():
+            continue
+
+        lines = p.read_text(encoding='utf-8', errors='replace').splitlines()
+        n = len(lines)
+        i = 0
+
+        while i < n:
+            stripped = lines[i].strip()
+            m = STUB_TAG_RE.match(stripped)
+            if not m:
+                i += 1
+                continue
+
+            marker = m.group(1).strip()
+            stub_lineno = i + 1  # 1-based
+
+            # E5: marker must be a clean API identifier
+            if not STUB_MARKER_VALID_RE.match(marker):
+                issues.append((p.name, stub_lineno, 'E5',
+                    f"marker '{marker}' is not a clean API identifier"))
+
+            # Look ahead, skipping blank lines only
+            j = i + 1
+            while j < n and not lines[j].strip():
+                j += 1
+
+            if j >= n:
+                issues.append((p.name, stub_lineno, 'E1',
+                    f"stub '{marker}': no do block found (end of file)"))
+                i = n
+                continue
+
+            next_stripped = lines[j].strip()
+
+            # E3: immediately followed by another stub
+            if STUB_TAG_RE.match(next_stripped):
+                issues.append((p.name, stub_lineno, 'E3',
+                    f"stub '{marker}': stacked — another stub follows with no do block"))
+                i = j  # let the loop pick up the next stub
+                continue
+
+            # E2: non-blank, non-do line between stub and do
+            if not DO_LINE_RE.match(next_stripped):
+                label = 'comment' if next_stripped.startswith('--') else 'line'
+                issues.append((p.name, stub_lineno, 'E2',
+                    f"stub '{marker}': {label} between marker and do: '{next_stripped[:70]}'"))
+                i = j + 1
+                continue
+
+            # Found do — collect and inspect body
+            end_idx, body_lines = _collect_do_block(lines, j)
+
+            # E4: thin block
+            non_blank = [l for l in body_lines if l]
+            if len(non_blank) < LINT_MIN_BODY_LINES:
+                issues.append((p.name, stub_lineno, 'E4',
+                    f"stub '{marker}': block has {len(non_blank)} non-blank line(s) "
+                    f"(need >= {LINT_MIN_BODY_LINES})"))
+
+            i = end_idx + 1
+
+    return issues
+
+
+def print_lint(examples_dir: Path, filt: str | None = None) -> int:
+    """Run lint and print results.  Returns issue count."""
+    from collections import defaultdict
+
+    issues = lint_example_files(examples_dir, filt)
+
+    if not issues:
+        print('lint: OK — no structural issues found')
+        return 0
+
+    by_file: dict = defaultdict(list)
+    for fname, lineno, code, msg in issues:
+        by_file[fname].append((lineno, code, msg))
+
+    for fname in sorted(by_file):
+        print(f'\n{fname}:')
+        for lineno, code, msg in sorted(by_file[fname]):
+            print(f'  {lineno}: [{code}] {msg}')
+
+    counts: dict = {}
+    for _, _, code, _ in issues:
+        counts[code] = counts.get(code, 0) + 1
+    summary = '  '.join(f'{code}={n}' for code, n in sorted(counts.items()))
+    print(f'\nlint: {len(issues)} issue(s)  [{summary}]')
+    return len(issues)
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -626,6 +772,7 @@ def main() -> int:
     p.add_argument('--missing',   action='store_true', help='Show only missing items per module')
     p.add_argument('--stubs',     action='store_true', help='Show modules with --@api-stub: blocks remaining')
     p.add_argument('--summary',   action='store_true', help='Show summary table (default)')
+    p.add_argument('--lint',      action='store_true', help='Check structural quality of --@api-stub: blocks')
     p.add_argument('--report',    action='store_true', help='CI gate: exit 1 if any gaps exist')
     p.add_argument('--no-stubs',  action='store_true', help='With --report: also fail if any stub blocks remain')
     p.add_argument('--module',    metavar='NAME',      help='Filter to one module')
@@ -684,6 +831,11 @@ def main() -> int:
         print_missing(bk, filt=args.module)
     elif args.stubs:
         print_stubs(bk, filt=args.module)
+    elif args.lint:
+        lint_count = print_lint(examples_dir, filt=args.module)
+        if args.report and lint_count:
+            return 1
+        return 0
     else:
         print_summary(bk, filt=args.module)
 

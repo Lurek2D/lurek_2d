@@ -21598,6 +21598,11 @@ lurek.render.currentLayer = function() end
 ---@return nil No return value.
 lurek.render.draw = function(drawable, x, y, r, sx, sy, ox, oy) end
 
+--- Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
+---@param batch LSpriteBatch Sprite batch handle to draw.
+---@return nil No return value.
+lurek.render.drawBatch = function(batch) end
+
 --- Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
 ---@param x number Left edge X.
 ---@param y number Top edge Y.

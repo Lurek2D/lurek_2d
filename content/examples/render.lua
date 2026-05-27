@@ -566,6 +566,16 @@ do
     print("last sprite index = " .. tostring(last))
 end
 
+--@api-stub: lurek.render.drawBatch
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    batch:add(120, 220, 0, 0.5, 0.5, 0, 0)
+    lurek.render.drawBatch(batch)
+    print("drawBatch sprite count = " .. batch:getCount())
+    print("drawBatch issued")
+end
+
 --@api-stub: LSpriteBatch:type
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+ - perf(render): compute point-light 1-D shadow atlas rows on the GPU instead of raycasting every sample on the CPU.
+ - perf(render): reuse PostFx ping-pong textures and internal bind groups across frames when dimensions and format are unchanged.
+ - feat(render): add `lurek.render.drawBatch` as an explicit SpriteBatch alias for `lurek.render.draw(batch)`.
  - refactor(audio,dsp): extract logic-heavy Lua registration closures into private helpers and return boolean success values for DSP offline file operations.
  - fix(config): gate `lurek.dsp` registration with `modules.dsp` and keep `dsp` disabled when `audio` is disabled.
  - test(dsp): move Rust-only DSP internals into `tests/rust/unit/dsp_tests.rs` and register the `dsp_tests` Cargo target.

@@ -76,7 +76,7 @@ Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. 
 
 The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
 
-A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
+A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using cached ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
 
 [⬆ back to top](#table-of-contents)
 
@@ -116,7 +116,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Flat-color and textured geometry paths with per-frame vertex/index buffer management.
 - User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
 - Off-screen canvas render targets with lazy depth/stencil attachment creation.
-- Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
+- Additive point-light accumulation pass with a GPU-computed 1-D shadow-map atlas and composite blend.
 - Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
 - Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
 - Stencil write/test pipeline variants with configurable compare and operation modes.
@@ -177,7 +177,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
 - 20+ built-in WGSL fragment shaders: bloom, blur, vignette, noise, grayscale, sepia, invert, CRT, chromatic aberration, scanlines, pixelate, hue-shift, edge-detect, god-rays, water-distort, sharpen, dither, outline, depth-of-field, motion-blur.
 - Shared fullscreen-triangle vertex shader emitted once and reused by all effects.
-- Ping-pong intermediate textures for multi-pass compositing without extra allocations.
+- Cached ping-pong intermediate textures and bind groups for multi-pass compositing without per-frame internal resource allocation when size and format are unchanged.
 - Named parameter map → 16-float uniform packing for effect configuration.
 - Runtime registration of custom WGSL fragment shaders under user-chosen names.
 - Auto-uniform injection of time, frame count, and resolution into the last four slots.
@@ -239,7 +239,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 ## 📖 API Overview
 
 - Source spec: [docs/specs/render.md](../blob/main/docs/specs/render.md)
-- Module-level functions: 116
+- Module-level functions: 117
 - Lua-visible types: 12
 - Total type methods: 88
 
@@ -576,6 +576,42 @@ do
     lurek.render.draw(canvas, 280, 430, 0, 0.75, 0.75)
     print("draw used a canvas handle")
     print("draw scale = 0.75")
+end
+```
+
+#### lurek.render.drawBatch
+
+#### Definition
+
+```lua
+--- Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
+---@param batch LSpriteBatch Sprite batch handle to draw.
+---@return nil No return value.
+lurek.render.drawBatch = function(batch) end
+```
+
+#### Description
+
+Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
+
+Parameters:
+
+- `batch` (`LSpriteBatch`, required): Sprite batch handle to draw.
+
+Returns: - No return value.
+
+#### Example
+
+Source: [render.lua](../blob/main/content/examples/render.lua)
+
+```lua
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    batch:add(120, 220, 0, 0.5, 0.5, 0, 0)
+    lurek.render.drawBatch(batch)
+    print("drawBatch sprite count = " .. batch:getCount())
+    print("drawBatch issued")
 end
 ```
 
