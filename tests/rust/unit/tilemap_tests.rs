@@ -9,7 +9,7 @@
 //! `LTileMap` / `LTileSet` CRUD (layers, tiles, viewport, sweep, autotile) lives in
 //! `tests/lua/unit/test_tilemap_core_unit.lua`.
 
-use lurek2d::math::Color;
+use lurek2d::color::Color;
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::tilemap::ldtk::load_ldtk;
 use lurek2d::tilemap::polygon_map::PolygonMap;

@@ -110,7 +110,7 @@ This module has no separate Lua-visible classes in the generated API data.
 
 ```lua
 --- Builds a word-to-keys search index from the catalog.
----@return string[] Map table from normalized words to arrays of translation keys.
+---@return table Map table from normalized words to arrays of translation keys.
 lurek.i18n.buildIndex = function() end
 ```
 
@@ -118,7 +118,7 @@ lurek.i18n.buildIndex = function() end
 
 Builds a word-to-keys search index from the catalog.
 
-Returns: `string[]` - Map table from normalized words to arrays of translation keys.
+Returns: `table` - Map table from normalized words to arrays of translation keys.
 
 #### Example
 

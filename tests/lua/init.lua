@@ -504,11 +504,7 @@ function test_summary()
     return r.failed == 0
 end
 
--- Override lurek.filesystem.write to use the write_file helper when running in the testVM
-local wf = rawget(_G, "write_file")
-if wf and lurek and lurek.filesystem then
-    lurek.filesystem.write = wf
-end
+
 
 
 

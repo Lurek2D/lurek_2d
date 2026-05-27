@@ -170,7 +170,7 @@ impl TerrainMap {
                             let mut body = Body::new(bx, by, bw, bh, BodyType::Static);
                             body.restitution = 0.0;
                             body.friction = 0.8;
-                            new_ids.push(world.add_body(body));
+                            new_ids.push(world.add_body(body).0);
                             run_start = None;
                         }
                         _ => {}
@@ -234,7 +234,7 @@ impl TerrainMap {
                 let mut b = Body::new(wx, wy, self.cell_size, self.cell_size, BodyType::Dynamic);
                 b.mass = cell_mass;
                 b.restitution = restitution;
-                world.add_body(b)
+                world.add_body(b).0
             })
             .collect()
     }

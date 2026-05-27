@@ -1,45 +1,82 @@
-# Sports Manager
+# Sports Manager — Lurek2D
 
-**Category:** Sports
-**Engine:** Lurek2D
+> **Kategoria / Category:** Sports · Management Simulation  
+> **Uruchamianie / Run:** `cargo run -- content/games/sports/sports_manager`
 
-## Description
+---
 
-A team sports management simulation where you guide a soccer club through a 14-week league season. Scout talent on the transfer market, train your squad between matches, set your starting eleven, and watch automated match simulations with play-by-play commentary. Finish in the top 3 to win the league.
+## O grze / About
 
-## How to Play
+**PL:** Symulator zarządzania klubem piłkarskim z 14-tygodniową ligą round-robin (8 drużyn). Gracz zarządza składem 16 zawodników (GK/DEF/MID/FWD), zleca treningi, kupuje zawodników na rynku transferowym i symuluje mecze z play-by-play. Zwycięstwa przynoszą złoto (waluta), kontuzje losowo wyłączają zawodników.
 
-- **R** — open roster view; click a player to toggle starter / bench
-- **T** — open training screen between matches
-  - **O** — train Offense (+2 skill to attackers)
-  - **D** — train Defense (+2 skill to defenders)
-  - **F** — train Fitness (+5 stamina to all)
-  - **M** — train Morale (+10 morale to all)
-- **B** — open transfer market to buy new players
-- **1–4** — select a player on the market to purchase
-- **Space** — advance to the next match
-- **Enter** — confirm / start from title screen
-- **Escape** — quit
+**EN:** A football club management simulator with a 14-week round-robin league (8 teams). The player manages a 16-player roster (GK/DEF/MID/FWD), runs weekly training sessions, buys players from the transfer market, and simulates matches with a play-by-play commentary feed. Wins earn gold (currency); injuries randomly bench players.
 
-## Goals
+---
 
-- Play a full 14-match-week round-robin season
-- Finish in the **top 3** of the 8-team league to win
+## Pętla rozgrywki / Gameplay Loop
 
-## Features
+1. **Office** — hub tygodnia: podgląd tabeli, budżet, stan składu.
+2. **Roster** (R) — kliknij zawodnika aby dodać/usunąć z jedenastki startowej; max 11 startujących.
+3. **Training** (T) — wybierz fokus raz na tydzień: Offence / Defence / Fitness / Morale.
+4. **Transfer** (B) — kup jednego z 3 zawodników na rynku (cena = skill-based).
+5. **Match** (Space) — symulacja meczu: 6 eventów, live play-by-play (text), animowane goal-particles.
+6. **Season End** — po 14 tygodniach: finalna pozycja w tabeli, wynik sezonu.
 
-- 11-player squad with generated names, skill, stamina, and morale stats
-- Automated 5-second match simulation with goal, save, red card, and injury events
-- 8-team round-robin league with full standings table
-- Training system with four focus areas between matches
-- Transfer market refreshing each week with budget management
-- Stamina depletion and injury system affecting availability
-- Goal celebration, training sweat, and transfer sparkle particles
-- Tween animations for score counters, league table shifts, and morale bars
-- Title screen, office hub, and season-end summary
+---
 
-## Running
+## Uruchamianie / Run
 
 ```bash
 cargo run -- content/games/sports/sports_manager
 ```
+
+---
+
+## Sterowanie / Controls
+
+| Klawisz / Key | Akcja / Action |
+|---|---|
+| `R` | Roster (zarządzanie składem) |
+| `T` | Training |
+| `B` | Transfer market |
+| `Space` | Symuluj następny mecz |
+| `O / D / F / M` | Wybór opcji treningu |
+| `1 / 2 / 3` | Kup zawodnika z rynku |
+| `LMB` | Kliknij zawodnika w roster |
+| `Escape` | Wyjście |
+
+---
+
+## Inspiracje / Inspirations
+
+| Tytuł | Nawiązanie |
+|---|---|
+| **Football Manager** (Sports Interactive) | Roster, treningi, liga, transfery |
+| **Sensible World of Soccer** (Amiga 1994) | Szybka symulacja meczu z play-by-play |
+| **New Star Soccer** | Budżet + morale + stamina system |
+| **Championship Manager 01/02** | Tabela ligowa, round-robin schedule |
+
+---
+
+## Lurek Engine API — kluczowe funkcje
+
+| API | Zastosowanie |
+|---|---|
+| `lurek.ui.loadLayoutFile` | Multi-screen TOML: office, roster, match, training, transfer, season-end |
+| `lurek.input.bind` + `mouse1` | Klikalne wiersze w roster (pozycja myszy) |
+| Tween (manualny) | Animowane punkty w tabeli, score display |
+| Particle (manualny, 3 typy) | Goal confetti, training sparks, transfer gold |
+| `lurek.timer.getFPS` | FPS counter |
+| `lurek.event.quit` | Bezpieczne zamknięcie |
+
+---
+
+## Przydatność i unikalność / Showcase Value
+
+**PL:** Sports Manager jest jedyną grą w bibliotece demonstrującą **kompletny cykl zarządzania** (roster → trening → transfer → mecz → liga) oraz **proceduralny generator piłkarzy** z losowymi imionami, pozycjami i statystykami. Pokazuje jak Lurek może obsłużyć złożony stan gry zarządzany przez wiele ekranów TOML bez żadnego frameworka UI.
+
+**EN:** Sports Manager is the only demo in the library with a **complete management loop** (roster → training → market → match → league table), a **procedural player generator** with random names and stats, and a **TOML multi-screen UI** driven entirely from Lua state. It demonstrates that Lurek can handle complex persistent game state across multiple screens.
+
+### Podobne gry / Similar games to watch for overlap
+- **Sensible Soccer** — ta sama tematyka futbolowa, ale gameplay zręcznościowy nie zarządczy.
+- ✅ **Verdict:** Jedyny management sim w bibliotece — **keep**. Potencjalne ryzyko duplikacji tylko gdyby dodano drugą grę zarządzania.

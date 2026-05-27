@@ -4,7 +4,7 @@
 //! - `collect_lua_files` and `collect_files_with_ext` enumerate files before dispatch.
 //! - Each worker applies all rules to its file slice; results are merged with no locks.
 //! - Thread count is sourced from `ValidatorConfig`; 0 forces single-threaded mode.
-use super::report::{ValidationReport, Violation};
+use super::report::ValidationReport;
 use super::rule::ValidationRule;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -24,7 +24,6 @@ pub fn validate_parallel(
     std::thread::scope(|s| {
         for chunk in chunks {
             let violations = Arc::clone(&violations);
-            let rules = rules;
             s.spawn(move || {
                 for path in chunk {
                     let content = match std::fs::read_to_string(path) {

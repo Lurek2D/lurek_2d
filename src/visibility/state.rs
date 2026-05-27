@@ -6,9 +6,10 @@
 //! - Custom levels (e.g. `Remembered`) can be inserted between `Discovered` and `Visible`.
 
 /// Visibility state for a region from a specific player's perspective.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum VisibilityState {
     /// Completely hidden — player knows nothing about this region.
+    #[default]
     Hidden,
     /// Previously seen but not currently visible — shows last-known state.
     Discovered,
@@ -47,11 +48,5 @@ impl VisibilityState {
     /// Whether the region is currently fully visible.
     pub fn is_visible(&self) -> bool {
         matches!(self, Self::Visible)
-    }
-}
-
-impl Default for VisibilityState {
-    fn default() -> Self {
-        Self::Hidden
     }
 }

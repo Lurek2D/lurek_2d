@@ -131,7 +131,7 @@ fn parse_field(line: &str, b: &mut TomlRegionBuilder) -> Result<(), String> {
     let val = line[eq + 1..].trim();
     match key {
         "id" => {
-            b.id = Some(parse_u32(val)?);
+            b.id = Some(RegionId(parse_u32(val)?));
         }
         "centroid" => {
             b.centroid = Some(parse_f32_pair(val)?);
@@ -140,7 +140,7 @@ fn parse_field(line: &str, b: &mut TomlRegionBuilder) -> Result<(), String> {
             b.vertices = parse_f32_pair_array(val)?;
         }
         "neighbors" => {
-            b.neighbors = parse_u32_array(val)?;
+            b.neighbors = parse_u32_array(val)?.into_iter().map(RegionId).collect();
         }
         "base_color" => {
             b.base_color = Some(parse_f32_4(val)?);
@@ -248,10 +248,11 @@ pub fn load_from_png_file(_path: &str) -> Result<Vec<Region>, String> {
     let mut bounds: HashMap<RegionId, (u32, u32, u32, u32)> = HashMap::new();
     for y in 0..height {
         for x in 0..width {
-            let id = grid.get_at(x, y);
-            if id == 0 {
+            let raw_id = grid.get_at(x, y);
+            if raw_id == 0 {
                 continue;
             }
+            let id = RegionId(raw_id);
             let e = bounds.entry(id).or_insert((x, y, x, y));
             e.0 = e.0.min(x);
             e.1 = e.1.min(y);
@@ -261,8 +262,10 @@ pub fn load_from_png_file(_path: &str) -> Result<Vec<Region>, String> {
     }
     let mut neighbors: HashMap<RegionId, Vec<RegionId>> = HashMap::new();
     for (a, b, _) in grid.adjacencies() {
-        neighbors.entry(*a).or_default().push(*b);
-        neighbors.entry(*b).or_default().push(*a);
+        let ra = RegionId(*a);
+        let rb = RegionId(*b);
+        neighbors.entry(ra).or_default().push(rb);
+        neighbors.entry(rb).or_default().push(ra);
     }
     let mut out = Vec::with_capacity(bounds.len());
     for (id, (min_x, min_y, max_x, max_y)) in bounds {
@@ -294,7 +297,7 @@ pub fn generate_voronoi_provinces(points: &[(f32, f32)]) -> Vec<Region> {
     let cells = voronoi_from_points(&pts_xy);
     let mut out = Vec::with_capacity(cells.len());
     for (i, cell) in cells.iter().enumerate() {
-        let id = (i + 1) as u32;
+        let id = RegionId((i + 1) as u32);
         let mut vertices = Vec::with_capacity(cell.vertices.len().max(3));
         if cell.vertices.is_empty() {
             let (x, y) = cell.site;
@@ -319,7 +322,7 @@ pub fn generate_voronoi_provinces(points: &[(f32, f32)]) -> Vec<Region> {
     }
     for i in 0..out.len() {
         let (ilat, ilon) = out[i].centroid;
-        let mut nearest: Vec<(f32, u32)> = out
+        let mut nearest: Vec<(f32, RegionId)> = out
             .iter()
             .filter(|p| p.id != out[i].id)
             .map(|p| {

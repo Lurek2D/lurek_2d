@@ -72,9 +72,5 @@ fn extract_string_arg(s: &str) -> Option<String> {
     let s = s.trim();
     let quote = if s.starts_with('"') { '"' } else if s.starts_with('\'') { '\'' } else { return None };
     let rest = &s[1..];
-    if let Some(end) = rest.find(quote) {
-        Some(rest[..end].to_string())
-    } else {
-        None
-    }
+    rest.find(quote).map(|end| rest[..end].to_string())
 }

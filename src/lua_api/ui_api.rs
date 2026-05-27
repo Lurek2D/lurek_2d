@@ -9,7 +9,7 @@ use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetKind};
 use crate::ui::extras::{AccordionSection, TableColumn, TableDataFrameOptions, Toast};
 use crate::ui::theme::{Theme, ThemeToken, WidgetStyle};
-use crate::ui::widget::{EasingFunction, MouseFilter, WidgetState, WidgetType, WidgetTransition, WidgetTransitionKind};
+use crate::ui::widget::{EasingFunction, MouseFilter, WidgetState, WidgetType};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -6457,16 +6457,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 usize, LuaTable, LuaTable, f32, Option<String>,
             )| {
                 let from = [
-                    from_tbl.get::<f32>("r").unwrap_or(1.0),
-                    from_tbl.get::<f32>("g").unwrap_or(1.0),
-                    from_tbl.get::<f32>("b").unwrap_or(1.0),
-                    from_tbl.get::<f32>("a").unwrap_or(1.0),
+                    from_tbl.get::<_, f32>("r").unwrap_or(1.0),
+                    from_tbl.get::<_, f32>("g").unwrap_or(1.0),
+                    from_tbl.get::<_, f32>("b").unwrap_or(1.0),
+                    from_tbl.get::<_, f32>("a").unwrap_or(1.0),
                 ];
                 let to = [
-                    to_tbl.get::<f32>("r").unwrap_or(1.0),
-                    to_tbl.get::<f32>("g").unwrap_or(1.0),
-                    to_tbl.get::<f32>("b").unwrap_or(1.0),
-                    to_tbl.get::<f32>("a").unwrap_or(1.0),
+                    to_tbl.get::<_, f32>("r").unwrap_or(1.0),
+                    to_tbl.get::<_, f32>("g").unwrap_or(1.0),
+                    to_tbl.get::<_, f32>("b").unwrap_or(1.0),
+                    to_tbl.get::<_, f32>("a").unwrap_or(1.0),
                 ];
                 let ease = easing
                     .as_deref()

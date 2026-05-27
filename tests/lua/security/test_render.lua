@@ -451,8 +451,10 @@ describe("validation: graph invalid operations", function()
         local g = lurek.graph.newGraph()
         local n1 = g:addNode("processor", 100)
         -- Passing a number instead of node userdata should error
+        local bad_node ---@type any
+        bad_node = 999
         expect_error(function()
-            g:addEdge(n1, 999)
+            g:addEdge(n1, bad_node)
         end, "edge to invalid node should error")
     end)
 
@@ -569,5 +571,8 @@ describe("fuzz: P0 modules nil type extreme", function()
     end)
 end)
 test_summary()
+
+
+
 
 

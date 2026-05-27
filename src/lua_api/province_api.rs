@@ -8,7 +8,7 @@ use crate::province::registry::ProvinceRegistry;
 use crate::province::render::{
     generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
 };
-use crate::province::types::{BorderPairFlags, BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId};
+use crate::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
 use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
 use crate::province::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,

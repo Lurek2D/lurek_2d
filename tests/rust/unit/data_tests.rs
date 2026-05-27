@@ -151,7 +151,7 @@ mod pack_tests {
     fn get_packed_size_uses_single_value_index_for_each_token() {
         let values = vec![
             PackValue::Int(100),
-            PackValue::Double(3.14),
+            PackValue::Double(3.0),
             PackValue::Str("test".to_string()),
         ];
         let size = get_packed_size(">ids", &values).expect("get_packed_size should succeed");

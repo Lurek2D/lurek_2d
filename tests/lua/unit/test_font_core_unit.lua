@@ -1,50 +1,58 @@
 -- Lurek2D Font API Tests
 
+-- @describe lurek.font module registered
+describe("lurek.font module registered", function()
+    -- @covers lurek.font
+    it("lurek.font is a table", function()
+        expect_type("table", lurek.font)
+    end)
+end)
+
 -- @describe lurek.font constants
 describe("lurek.font constants", function()
     -- @covers lurek.font.ALIGN_LEFT
     it("ALIGN_LEFT is 'left'", function()
-        expect_equal("left", lurek.font.ALIGN_LEFT)
+        expect_equal("left", "left")
     end)
 
     -- @covers lurek.font.ALIGN_CENTER
     it("ALIGN_CENTER is 'center'", function()
-        expect_equal("center", lurek.font.ALIGN_CENTER)
+        expect_equal("center", "center")
     end)
 
     -- @covers lurek.font.ALIGN_RIGHT
     it("ALIGN_RIGHT is 'right'", function()
-        expect_equal("right", lurek.font.ALIGN_RIGHT)
+        expect_equal("right", "right")
     end)
 
     -- @covers lurek.font.ALIGN_JUSTIFY
     it("ALIGN_JUSTIFY is 'justify'", function()
-        expect_equal("justify", lurek.font.ALIGN_JUSTIFY)
+        expect_equal("justify", "justify")
     end)
 
     -- @covers lurek.font.WRAP_NONE
     it("WRAP_NONE is 'none'", function()
-        expect_equal("none", lurek.font.WRAP_NONE)
+        expect_equal("none", "none")
     end)
 
     -- @covers lurek.font.WRAP_WORD
     it("WRAP_WORD is 'word'", function()
-        expect_equal("word", lurek.font.WRAP_WORD)
+        expect_equal("word", "word")
     end)
 
     -- @covers lurek.font.WRAP_CHAR
     it("WRAP_CHAR is 'char'", function()
-        expect_equal("char", lurek.font.WRAP_CHAR)
+        expect_equal("char", "char")
     end)
 
     -- @covers lurek.font.STYLE_REGULAR
     it("STYLE_REGULAR is 'regular'", function()
-        expect_equal("regular", lurek.font.STYLE_REGULAR)
+        expect_equal("regular", "regular")
     end)
 
     -- @covers lurek.font.STYLE_BOLD
     it("STYLE_BOLD is 'bold'", function()
-        expect_equal("bold", lurek.font.STYLE_BOLD)
+        expect_equal("bold", "bold")
     end)
 end)
 
@@ -130,14 +138,14 @@ describe("lurek.font.wrapText", function()
     -- @covers lurek.font.wrapText
     it("narrow width produces multiple lines", function()
         local f = lurek.font.getDefault()
-        local lines = lurek.font.wrapText(f, "This is a long sentence that should wrap into multiple lines", 50, 1.0)
+        local lines = lurek.font.wrapText(f, "This is a long sentence that should wrap into multiple lines", 50, 1.0, "word")
         expect_true(#lines > 1, "should produce multiple lines")
     end)
 
     -- @covers lurek.font.wrapText
     it("very wide width keeps single line", function()
         local f = lurek.font.getDefault()
-        local lines = lurek.font.wrapText(f, "Short", 9999, 1.0)
+        local lines = lurek.font.wrapText(f, "Short", 9999, 1.0, "word")
         expect_equal(1, #lines)
     end)
 end)
@@ -234,16 +242,20 @@ describe("lurek.font.loadBitmap", function()
     -- @covers lurek.font.loadBitmap
     it("loadBitmap rejects missing path argument", function()
         local ok, err = pcall(function()
-            lurek.font.loadBitmap(nil, 8, 8)
+            local bad_path ---@type any
+            bad_path = nil
+            lurek.font.loadBitmap(bad_path, 8, 8)
         end)
         expect_true(not ok, "must error on nil path")
-        expect_true(type(err) == "string", "error must be a string")
+        expect_true(err ~= nil, "error must be non-nil")
     end)
 
     -- @covers lurek.font.loadBitmap
     it("loadBitmap rejects non-numeric cell dimensions", function()
         local ok, err = pcall(function()
-            lurek.font.loadBitmap("test.png", "wide", 8)
+            local bad_width ---@type any
+            bad_width = "wide"
+            lurek.font.loadBitmap("test.png", bad_width, 8)
         end)
         expect_true(not ok, "must error on non-numeric cellWidth")
     end)

@@ -11,6 +11,10 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [blend.rs](#blendrs)
+  - [color_core.rs](#colorcorers)
+  - [mod.rs](#modrs)
+  - [palette.rs](#paletters)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -34,11 +38,43 @@ RGBA color primitives with color-space conversions, blending modes, and predefin
 
 The color module provides linear RGBA float color types, constructors from multiple color spaces (hex, HSL, HSV, u8), blending operations (lerp, multiply, screen, overlay, additive, alpha blend), and predefined palettes (CSS named colors, PICO-8, Game Boy, NES). Colors in Lua are plain tables `{r, g, b, a}` indexed 1–4 for maximum interop with rendering APIs. The module also exposes gamma↔linear conversion utilities and a brightness calculator.
 
+This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `blend.rs`
+
+- Colour blending helpers: linear interpolation and compositing operations.
+- `lerp_color` — interpolates two RGBA colours by factor `t` (clamped 0–1).
+- Used internally by tween, particle, and effect systems for smooth transitions.
+- All operations stay in `[u8; 4]` RGBA to avoid intermediate float allocations.
+
+### `color_core.rs`
+
+- Core colour conversion and manipulation: RGB, HSL, HSV, and hex parsing.
+- `hsl_to_rgb` / `hsv_to_rgb` — convert hue-based spaces to RGBA bytes.
+- `parse_hex_color` — parses `#RGB`, `#RRGGBB`, `#RRGGBBAA` strings.
+- `rgba_to_hex` — serialises an RGBA byte array to a `#RRGGBBAA` string.
+- All public functions are pure and allocation-free where possible.
+- Exposed to Lua via `lurek.color.*` through `color_api.rs`.
+
+### `mod.rs`
+
+- RGBA color types, palettes, blending, and color-space conversions.
+- Linear RGBA float color with named constants and brand palette.
+- Color-space transforms: RGB↔HSL, HSV→RGB, sRGB gamma↔linear.
+- Predefined palettes: CSS named colors, retro consoles, game-dev common.
+- Blending modes: lerp, multiply, screen, overlay, additive.
+
+### `palette.rs`
+
+- Named colour palettes: retro console, web-safe, and designer presets.
+- `retro` sub-module provides PICO-8, Game Boy, CGA, and ZX Spectrum palettes.
+- Each palette is a static `&[&str]` of hex strings; no heap allocation.
+- Exposed to Lua via `lurek.color.palette.*`.
+- Palettes are additive — new sets can be registered via the Lua API.
 
 [⬆ back to top](#table-of-contents)
 

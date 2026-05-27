@@ -12,6 +12,9 @@ use super::orientation::MapOrientation;
 use super::placement::PlacementGrid;
 use std::collections::HashMap;
 
+/// Alias for 4-level tile data: `[level][layer][tile_index][slot] = (tileset_id, gid)`.
+type TileData = Vec<Vec<Vec<Vec<(u32, u32)>>>>;
+
 /// Result of map block generation — contains all placed tiles ready for rendering.
 #[derive(Debug, Clone)]
 pub struct MapBlockResult {
@@ -26,7 +29,7 @@ pub struct MapBlockResult {
     /// Slot count per tile.
     pub slot_count: usize,
     /// Tile data: `[level][layer][y * width + x][slot] = (tileset_id, gid)`.
-    pub tiles: Vec<Vec<Vec<Vec<(u32, u32)>>>>,
+    pub tiles: TileData,
     /// Orientation used.
     pub orientation: MapOrientation,
     /// Tile pixel width.
@@ -70,7 +73,7 @@ impl MapBlockResult {
 
         // Initialize tile data
         let empty_tile = vec![(0u32, 0u32); slot_count];
-        let tiles: Vec<Vec<Vec<Vec<(u32, u32)>>>> = (0..level_count)
+        let tiles: TileData = (0..level_count)
             .map(|_| {
                 (0..max_layers)
                     .map(|_| {
@@ -140,7 +143,7 @@ impl MapBlockResult {
     /// Get a tile slot value at (level, layer, x, y, slot).
     pub fn get_tile(&self, level: u32, layer: u32, x: u32, y: u32, slot: usize) -> (u32, u32) {
         if level < self.level_count
-            && (layer as usize) < self.tiles.get(level as usize).map(|l| l.len()).unwrap_or(0)
+            && (layer as usize) < self.tiles.get(level as usize).map(|l: &Vec<Vec<Vec<(u32, u32)>>>| l.len()).unwrap_or(0)
             && x < self.width
             && y < self.height
             && slot < self.slot_count

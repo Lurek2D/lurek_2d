@@ -114,6 +114,7 @@ pub mod retro {
     };
 
     /// PICO-8 color values.
+    #[allow(clippy::approx_constant)]
     static PICO8_COLORS: [Color; 16] = [
         Color::new(0.0, 0.0, 0.0, 1.0),             // 0  black
         Color::new(0.114, 0.169, 0.326, 1.0),        // 1  dark-blue
@@ -142,6 +143,7 @@ pub mod retro {
     ];
 
     /// NES representative colors (16 distinct hues from the NES PPU palette).
+    #[allow(clippy::approx_constant)]
     static NES_COLORS: [Color; 16] = [
         Color::new(0.482, 0.482, 0.482, 1.0),        // grey
         Color::new(0.0, 0.180, 0.678, 1.0),          // dark-blue

@@ -739,5 +739,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     lurek.set("overlay", tbl)?;
+
+    // Compatibility aliases: lurek.effect.newOverlay / lurek.effect.newTransition
+    // overlay_api is registered after effect_api, so lurek.effect exists here.
+    if let Ok(effect_tbl) = lurek.get::<_, mlua::Table>("effect") {
+        let overlay_tbl: mlua::Table = lurek.get("overlay")?;
+        effect_tbl.set("newOverlay", overlay_tbl.get::<_, mlua::Function>("new")?)?;
+        effect_tbl.set(
+            "newTransition",
+            overlay_tbl.get::<_, mlua::Function>("newTransition")?,
+        )?;
+    }
+
     Ok(())
 }

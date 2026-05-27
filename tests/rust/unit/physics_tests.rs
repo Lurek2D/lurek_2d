@@ -148,8 +148,8 @@ mod world_tests {
     fn get_body_mut_allows_mutation() {
         let mut w = World::new(0.0, 0.0);
         let id = w.add_body(Body::new(0.0, 0.0, 32.0, 32.0, BodyType::Dynamic));
-        w.get_body_mut(id).unwrap().position.x = 123.0;
-        assert!((w.get_body(id).unwrap().position.x - 123.0).abs() < 1e-6);
+        w.get_body_mut(id.0).unwrap().position.x = 123.0;
+        assert!((w.get_body(id.0).unwrap().position.x - 123.0).abs() < 1e-6);
     }
 
     #[test]
@@ -169,7 +169,7 @@ mod world_tests {
         let mut w = World::new(0.0, 0.0);
         let a = w.add_body(Body::new(0.0, 0.0, 32.0, 32.0, BodyType::Dynamic));
         let b = w.add_body(Body::new(50.0, 0.0, 32.0, 32.0, BodyType::Dynamic));
-        let jid = w.add_revolute_joint(a, b, 0.0, 0.0);
+        let jid = w.add_revolute_joint(a.0, b.0, 0.0, 0.0);
         assert_eq!(jid, 0);
         assert_eq!(w.joint_count(), 1);
     }
@@ -179,7 +179,7 @@ mod world_tests {
         let mut w = World::new(0.0, 0.0);
         let a = w.add_body(Body::new(0.0, 0.0, 32.0, 32.0, BodyType::Dynamic));
         let b = w.add_body(Body::new(50.0, 0.0, 32.0, 32.0, BodyType::Dynamic));
-        let jid = w.add_revolute_joint(a, b, 0.0, 0.0);
+        let jid = w.add_revolute_joint(a.0, b.0, 0.0, 0.0);
         w.destroy_joint(jid);
     }
 
@@ -187,8 +187,7 @@ mod world_tests {
     fn add_zone_returns_id() {
         let mut w = World::new(0.0, 9.8);
         let zone = PhysicsZone::new_rect(0, 0.0, 0.0, 200.0, 200.0);
-        let zid = w.add_zone(zone);
-        assert!(zid > 0 || zid == 0);
+        let _zid = w.add_zone(zone); // just verify no panic
     }
 
     #[test]

@@ -86,7 +86,7 @@ describe("Evidence: lurek.math visual scenarios", function()
 
         for y = 0, h - 1 do
             for x = 0, w - 1 do
-                local n = lurek.procgen.simplex2d(x * 0.05, y * 0.05, 7)
+                local n = lurek.procgen.simplex2d(x * 0.05, y * 0.05)
                 local t = (n + 1.0) * 0.5
                 img:setPixel(x, y, clamp255(30 + t * 160), clamp255(20 + t * 200), clamp255(40 + t * 220), 255)
             end
@@ -227,10 +227,10 @@ describe("Evidence: lurek.math visual scenarios", function()
 
         for x = 0, w - 1 do
             local hval = x / (w - 1) * 360.0
-            local r, g, b = lurek.math.hslToRgb(hval, 0.78, 0.52)
-            local rr = clamp255(r * 255)
-            local gg = clamp255(g * 255)
-            local bb = clamp255(b * 255)
+            local c = lurek.color.fromHsl(hval, 0.78, 0.52)
+            local rr = clamp255(c[1] * 255)
+            local gg = clamp255(c[2] * 255)
+            local bb = clamp255(c[3] * 255)
             img:drawRect(x, 0, 1, h, rr, gg, bb, 255)
         end
 

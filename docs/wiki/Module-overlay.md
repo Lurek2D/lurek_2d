@@ -11,6 +11,14 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [ambient.rs](#ambientrs)
+  - [atmosphere.rs](#atmospherers)
+  - [controller.rs](#controllerrs)
+  - [mod.rs](#modrs)
+  - [screen_effects.rs](#screeneffectsrs)
+  - [transition.rs](#transitionrs)
+  - [water.rs](#waterrs)
+  - [weather.rs](#weatherrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -38,13 +46,72 @@ Screen overlay system: weather, atmosphere, screen effects, and transitions.
 
 ## 📋 Summary
 
-Screen overlay system: weather, atmosphere, screen effects, and transitions.
+Provides visual layers drawn BETWEEN the game world and the player. Unlike post-processing effects (which modify the rendered frame via shaders), overlays ADD visual elements: rain/snow particles, fog, flash/shake/fade effects, screen transitions, ambient color tinting, water distortion, and lightning.
+
+This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `ambient.rs`
+
+- Global ambient tint state driven by a time-of-day curve.
+- Maps hour values (0–24) to RGBA color through piecewise dawn/day/dusk/night segments.
+- Consumed by the overlay renderer when the ambient effect is enabled.
+
+### `atmosphere.rs`
+
+- State structs for full-screen atmosphere overlays: clouds, fog, heat haze, vignette, film grain, and lightning flash.
+- Each struct carries enabled flag plus effect-specific parameters (density, intensity, color, speed).
+- All default to disabled so overlays are opt-in per scene.
+
+### `controller.rs`
+
+- Central `Overlay` struct owning every screen-space post-world effect state block.
+- Per-frame update loop advancing weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning.
+- Weather particle spawning and simulation for rain, snow, hail, dust, leaves, ash, and pollen modes.
+- Trigger API for flash, camera shake, screen fade, and lightning flash events.
+- Query helpers for shake offset, flash/lightning alpha, active state, and target dimensions.
+- Render command builder emitting full-screen colored rectangles for flash, fade, lightning, and vignette overlays.
+- Clear/reset restoring all subsystems to default inactive state.
+- Debug visualization: state panels, flash frame strips, shake offset trails, fade transition strips, and combined trigger previews.
+
+### `mod.rs`
+
+- Screen-space overlay sub-system: ambient lighting, atmospheric effects, and scene transitions.
+- `ambient` — ambient colour driven by time-of-day for scene-wide lighting tint.
+- `atmosphere` — atmospheric overlays: clouds, fog layers, and lightning flashes.
+- `controller` — top-level overlay scheduler for weather, fades, haze, and screen burns.
+- `screen_effects` — short-lived screen-space flash, shake, and fade state.
+- `transition` — full-screen scene transition effects with configurable easing.
+- `water` — animated water distortion overlay for underwater and rain scenarios.
+- `weather` — particle-based weather simulation: rain, snow, hail, dust, leaves, and ash.
+
+### `screen_effects.rs`
+
+- Full-screen effect state machines: flash, shake, and fade.
+- Each state tracks active flag, timing, and per-frame parameters.
+- Deterministic PRNG for shake offsets without external RNG dependency.
+
+### `transition.rs`
+
+- Full-screen transition effects: fade, wipe, iris wipe, and dissolve.
+- String-based kind parsing with canonical name round-tripping.
+- Time-based playback lifecycle with forward and reverse modes.
+- Normalized progress query for renderer consumption.
+
+### `water.rs`
+
+- Animated water distortion overlay with configurable amplitude, frequency, and speed.
+- Shallow-water tint and depth-based color shift with independent blend strengths.
+- Time-accumulating update loop that advances the wave pattern each frame.
+
+### `weather.rs`
+
+- Weather particle simulation types and state management.
+- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
+- Tracks particle pool, wind parameters, and internal PRNG.
 
 [⬆ back to top](#table-of-contents)
 
@@ -2338,7 +2405,7 @@ Source: [overlay.lua](../blob/main/content/examples/overlay.lua)
 ```lua
 do
     local ov = lurek.overlay.new(800, 600)
-    ov:triggerFade(1.0, 0, 0, 0)
+    ov:triggerFade(1.0, 0, 0, 0, 0.2)
     print("LOverlay:triggerFade isFading=" .. tostring(ov:isFading()))
 end
 ```

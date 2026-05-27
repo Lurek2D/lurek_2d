@@ -27,3 +27,16 @@ impl From<usize> for BodyId {
 impl From<BodyId> for usize {
     fn from(id: BodyId) -> Self { id.0 }
 }
+
+impl mlua::IntoLua<'_> for BodyId {
+    fn into_lua(self, lua: &mlua::Lua) -> mlua::Result<mlua::Value<'_>> {
+        lua.pack(self.0 as i64)
+    }
+}
+
+impl mlua::FromLua<'_> for BodyId {
+    fn from_lua(val: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
+        let n = i64::from_lua(val, lua)?;
+        Ok(BodyId(n as usize))
+    }
+}

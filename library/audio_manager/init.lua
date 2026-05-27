@@ -1,4 +1,3 @@
---- @module library.audio_manager
 --- @status full
 --- High-level audio manager: music crossfade, SFX pools, volume groups,
 --- master volume, mute/unmute, pause/resume. Wraps lurek.audio.* for
@@ -10,7 +9,7 @@ local M = {}
 --- Optional debug logging via lurek.log when running inside the engine.
 --- Falls back to a no-op when lurek is unavailable.
 -- @see lurek.log
-local _log_debug = function() end
+local _log_debug = function(...) end
 local _has_lurek = rawget(_G, 'lurek') ~= nil
 if _has_lurek then
     local ok, _ = pcall(function()
@@ -26,7 +25,15 @@ end
 local _audio = {}
 
 if _has_lurek and lurek.audio then
-    _audio.play      = lurek.audio.play
+    -- Wrap lurek.audio.* to match the path-based play(path, opts) signature used internally.
+    -- lurek.audio.play expects an existing LSource handle, so we create one on demand.
+    _audio.play = function(path, opts)
+        opts = opts or {}
+        local src_type = opts.loop and "stream" or "static"
+        local src = lurek.audio.newSource(path, src_type)
+        if opts.volume ~= nil then lurek.audio.setVolume(src, opts.volume) end
+        return lurek.audio.play(src)
+    end
     _audio.stop      = lurek.audio.stop
     _audio.setVolume = lurek.audio.setVolume
     _audio.pause     = lurek.audio.pause

@@ -1,2 +1,4 @@
 -- @covers: lurek.dummy.test
-local test = require('test_harness')
+local test = true
+
+test_summary()

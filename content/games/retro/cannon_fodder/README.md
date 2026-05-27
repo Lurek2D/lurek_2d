@@ -1,41 +1,61 @@
 # Cannon Fodder
 
-_Command a squad of soldiers through five escalating jungle missions — move, shoot, and use grenades wisely, because every casualty is permanent._
+_Dowodź oddziałem żołnierzy w niebezpiecznej dżungli — kieruj ruchem, prowadź ogień zaporowy i rzucaj granatami taktycznymi, pamiętając, że każda strata w ludziach jest bezpowrotna._
 
-## Run
+## 🎮 O grze (About the Game)
+
+W **Cannon Fodder** (hołd dla legendarnej taktycznej gry z 1993 roku) obejmujesz dowództwo nad maksymalnie trzyosobowym oddziałem żołnierzy wysłanych na misje pacyfikacyjne w gęstej dżungli. Gra łączy zręcznościowe strzelanie z taktycznym zarządzaniem pozycjonowaniem i zasobami.
+
+Cechy rozgrywki:
+- **Permanentna śmierć (Permadeath)** – żołnierze polegli na polu bitwy giną na zawsze. Przystąpienie do kolejnej misji z mniejszym oddziałem drastycznie utrudnia walkę i zwiększa ryzyko porażki.
+- **Sterowanie oddziałem** – Twoi żołnierze poruszają się w zwartej formacji (squad). Wszyscy żyjący członkowie oddziału strzelają jednocześnie w kierunku, w którym są aktualnie zwróceni.
+- **Taktyczny arsenał** – oprócz standardowych karabinów, dysponujesz ograniczoną liczbą **granatów** (3 na misję). Wybuch granatu zadaje potężne obrażenia obszarowe w promieniu 60 pikseli – to doskonały sposób na szybkie eliminowanie zgrupowań wroga lub niszczenie ich punktów obronnych.
+- **Struktura misji** – kampania składa się z 5 eskalujących misji (od 6 do 22 wrogów patrolujących teren i otwierających ogień po wykryciu oddziału). Ukończenie misji wymaga wyeliminowania wszystkich wrogów na mapie i dotarcia do flagi ewakuacyjnej na szczycie planszy.
+
+## 🚀 Uruchomienie (Run Instructions)
+
+Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
 
 ```powershell
 cargo run -- content/games/retro/cannon_fodder
 ```
 
-## Controls
+## 🕹️ Sterowanie (Controls)
 
-| Key    | Action                                              |
-| ------ | --------------------------------------------------- |
-| WASD   | Set squad movement direction                        |
-| Space  | All living soldiers fire in facing direction        |
-| G      | Throw grenade (3 per mission, 60 px blast radius)   |
-| Escape | Quit                                                |
+Sterowanie zostało oparte o precyzyjny system akcji wejściowych silnika Lurek.
 
-## Gameplay
+| Klawisz | Akcja w grze | Opis działania |
+| :--- | :--- | :--- |
+| **W, A, S, D** | Ruch oddziału | Marsz całej formacji żołnierzy w określonym kierunku dżungli |
+| **Spacja** | Ogień karabinowy | Wszyscy żyjący żołnierze oddziału oddają strzał w kierunku marszu |
+| **G** | Rzut granatem | Rzuca granat w kierunku celowania (limitowany zapas, obrażenia obszarowe) |
+| **Escape** | Wyjście | Zamknięcie gry i powrót do konsoli |
 
-Lead a squad of up to three soldiers across a scrolling top-down jungle map. Hold a direction key to march the squad, then tap Space to make every living soldier fire in the direction they face. Enemies patrol fixed routes and open fire when a soldier enters their detection range. Reach the flag at the top of the map after eliminating all enemies to complete the mission.
+---
 
-Soldiers killed in action are gone permanently — entering the next mission with fewer soldiers makes every fight harder. Five missions escalate from 6 to 22 enemies. Grenades deal area damage across a 60-pixel radius and are the fastest way to clear clustered enemies; use them sparingly. Score +100 per enemy kill, +50 per grenade kill, and +500 per completed mission.
+## 🔗 Inspiracje i Klasyki (Inspirations & Classics)
 
-## APIs Used
+- **Cannon Fodder (1993) stworzony przez Sensible Software na komputer Amiga**
+  - *Opis powiązania*: Gra jest hołdem dla kultowego, czarnohumorystycznego klasyka Jon Hare'a. Nasza implementacja Lurek2D doskonale oddaje fundamentalną mechanikę gry – **permanentną śmierć żołnierzy o unikalnych imionach**, dynamiczną formację oddziału maszerującego ramię w ramię oraz taktyczny podział na szybką broń maszynową i limitowane granaty obszarowe. Zamiast statycznej planszy, gra oferuje płynnie przewijany w pionie świat dżungli (vertical scrolling camera), klimatyczne efekty cząsteczkowe eksplozji granatów i smug strzałów oraz proceduralnie generowane przeszkody (drzewa dżungli).
 
-**`lurek.*` engine bindings**
+---
 
-- `lurek.render` — draws the scrolling jungle terrain, tree canopy, soldiers, enemies, bullets, grenades, particles, and all HUD overlays.
-- `lurek.input` — action bindings for directional movement, fire, grenade throw, and quit.
-- `lurek.window` — sets the window title on startup.
-- `lurek.event` — signals clean engine shutdown on Escape.
+## 🛠️ Wykorzystane API Lurek (Engine APIs Showcased)
 
-**Lureksome (`library/`) modules**
+Gra demonstruje zaawansowane zarządzanie kamerą w świecie o otwartej strukturze oraz efekty balistyczne:
 
-_None._
+- `lurek.camera` – Realizuje płynnie przewijaną w pionie kamerę (scrolling camera), która centrowana jest na środku ciężkości poruszającego się oddziału żołnierzy.
+- `lurek.render` – Rysuje bogate środowisko dżungli (geometryczne korony drzew, pnie, wzniesienia), postacie żołnierzy i wrogów, trajektorie pocisków, rzucane łukowo granaty oraz rozbudowany panel HUD.
+- `lurek.input` – Odpowiada za płynną obsługę jednoczesnego poruszania się i prowadzenia ognia w marszu bez blokowania klawiszy.
+- `lurek.particle` – Generuje widowiskowe chmury pyłu, ognia i dymu przy wybuchu granatów oraz małe iskry przy zestrzeleniach.
+- `lurek.tween` – Obsługuje dynamiczne pulsowanie flagi ewakuacyjnej, animacje interfejsu oraz przejścia ekranów misji.
+- `lurek.timer` – Kontroluje odliczanie do wybuchu rzuconego granatu, częstotliwość ognia wrogów oraz mierzy Delta Time do fizyki poruszania się.
+- `lurek.window` & `lurek.event` – Kontrola nad oknem i poprawnym wyjściem.
 
-## Changes from Original Demo
+---
 
-Inspired by Sensible Software's 1993 Amiga classic. This implementation uses geometry-only rendering (no sprites or audio) and a simplified ballistic model. Permanent soldier death and mission escalation mechanics are faithful to the original concept; map layout is procedurally constructed rather than hand-authored level data.
+## 💎 Przydatność i Unikalność (Showcase Value & Uniqueness)
+
+- **Wartość demonstracyjna (Showcase Value)**: To sztandarowy pokaz **kamery przewijanej w świecie 2D (world-space viewport and scrolling camera)** oraz **asynchronicznych pocisków balistycznych (projectile logic)**. Doskonale ilustruje, jak zaimplementować dynamiczną fizykę rzutu granatu po paraboli w osi Z (mimo widoku 2D z góry) z rozchodzeniem się fali uderzeniowej.
+- **Unikalność**: Jedyna gra taktyczna z widokiem z góry (top-down tactical squad shooter) wprowadzająca **system trwałej straty jednostek (permadeath campaign)**, w której błędy gracza z poprzednich poziomów rzutują bezpośrednio na trudność kolejnych misji.
+- **Podobne gry**: *Commando* (również shooter z góry), ale *Cannon Fodder* wyróżnia się dowodzeniem wieloosobowym oddziałem (squad mechanics) oraz permanentną śmiercią zamiast klasycznego systemu żyć i respawnów.

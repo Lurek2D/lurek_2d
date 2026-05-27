@@ -71,7 +71,7 @@ impl ProvinceProperties {
     pub fn has_flag(&self, province_id: u32, bit: u8) -> bool {
         self.flags
             .get(&province_id)
-            .map_or(false, |f| f & (1u64 << (bit.min(63))) != 0)
+            .is_some_and(|f| f & (1u64 << (bit.min(63))) != 0)
     }
 
     /// Remove all numeric, string, and flag data stored for the given province.

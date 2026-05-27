@@ -1,7 +1,7 @@
 //! `lurek.cursor` - Cursor appearance, system cursors, custom image cursors, animated cursors, and context-sensitive switching.
 use super::SharedState;
 use crate::cursor::{
-    AnimatedCursor, CursorConfig, CursorContext, CursorManager, CursorTrail, CursorZoom,
+    AnimatedCursor, CursorContext, CursorManager, CursorTrail, CursorZoom,
     CustomCursor, PulseConfig, SystemCursor, TrailMode,
 };
 use mlua::prelude::*;
@@ -18,11 +18,11 @@ struct LuaCursorManager {
 }
 
 impl LuaUserData for LuaCursorManager {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Set the active cursor to a system cursor by name.
         /// @param | name | string | System cursor name (arrow, hand, crosshair, ibeam, wait, no, etc.).
         methods.add_method("setSystem", |_, this, name: String| {
-            let cursor = SystemCursor::from_str(&name)
+            let cursor = SystemCursor::from_name(&name)
                 .ok_or_else(|| LuaError::runtime(format!("unknown system cursor: {name}")))?;
             this.inner.borrow_mut().set_system(cursor);
             Ok(())
@@ -30,14 +30,16 @@ impl LuaUserData for LuaCursorManager {
 
         /// Set the active cursor to a custom image cursor.
         /// @param | cursor | LuaCustomCursor | Custom cursor object.
-        methods.add_method("setCustom", |_, this, cursor: LuaCustomCursor| {
+        methods.add_method("setCustom", |_, this, cursor: LuaAnyUserData| {
+            let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
             this.inner.borrow_mut().set_custom(cursor.inner.borrow().clone());
             Ok(())
         });
 
         /// Set the active cursor to an animated cursor.
         /// @param | cursor | LuaAnimatedCursor | Animated cursor object.
-        methods.add_method("setAnimated", |_, this, cursor: LuaAnimatedCursor| {
+        methods.add_method("setAnimated", |_, this, cursor: LuaAnyUserData| {
+            let cursor = cursor.borrow::<LuaAnimatedCursor>()?.clone();
             this.inner.borrow_mut().set_animated(cursor.inner.borrow().clone());
             Ok(())
         });
@@ -45,7 +47,7 @@ impl LuaUserData for LuaCursorManager {
         /// Set the current context for context-sensitive switching.
         /// @param | ctx | string | Context name (default, raycaster, globe, tilemap, ui_button, etc.).
         methods.add_method("setContext", |_, this, ctx: String| {
-            this.inner.borrow_mut().set_context(CursorContext::from_str(&ctx));
+            this.inner.borrow_mut().set_context(CursorContext::from_name(&ctx));
             Ok(())
         });
 
@@ -53,11 +55,11 @@ impl LuaUserData for LuaCursorManager {
         /// @param | ctx | string | Context name.
         /// @param | cursor_name | string | System cursor name.
         methods.add_method("addRule", |_, this, (ctx, cursor_name): (String, String)| {
-            let cursor = SystemCursor::from_str(&cursor_name)
+            let cursor = SystemCursor::from_name(&cursor_name)
                 .ok_or_else(|| LuaError::runtime(format!("unknown system cursor: {cursor_name}")))?;
             use crate::cursor::context::{ContextRule, CursorState};
             this.inner.borrow_mut().add_rule(ContextRule {
-                context: CursorContext::from_str(&ctx),
+                context: CursorContext::from_name(&ctx),
                 cursor: CursorState::System(cursor),
             });
             Ok(())
@@ -66,7 +68,7 @@ impl LuaUserData for LuaCursorManager {
         /// Remove a context rule for this object.
         /// @param | ctx | string | Context name to remove.
         methods.add_method("removeRule", |_, this, ctx: String| {
-            this.inner.borrow_mut().remove_rule(&CursorContext::from_str(&ctx));
+            this.inner.borrow_mut().remove_rule(&CursorContext::from_name(&ctx));
             Ok(())
         });
 
@@ -181,7 +183,7 @@ struct LuaCustomCursor {
 }
 
 impl LuaUserData for LuaCustomCursor {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Set a pixel color — Lua userdata object exposed by the engine.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
@@ -237,11 +239,12 @@ struct LuaAnimatedCursor {
 }
 
 impl LuaUserData for LuaAnimatedCursor {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add a frame from a custom cursor image.
         /// @param | cursor | LuaCustomCursor | Frame image.
         /// @param | duration_ms | integer | Frame duration in milliseconds.
-        methods.add_method("addFrame", |_, this, (cursor, dur): (LuaCustomCursor, u32)| {
+        methods.add_method("addFrame", |_, this, (cursor, dur): (LuaAnyUserData, u32)| {
+            let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
             let img = cursor.inner.borrow().clone();
             this.inner.borrow_mut().add_frame(img, dur);
             Ok(())
@@ -327,9 +330,12 @@ impl LuaUserData for LuaAnimatedCursor {
 /// ### systemCursors (see lurek Lua API reference for details).
 /// Get list of available system cursor names.
 /// @return | table | Array of cursor name strings.
-pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
+pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
     let module = lua.create_table()?;
 
+    /// Creates a new cursor manager for handling cursor state and visibility.
+    ///
+    /// @return | LCursorManager | A new cursor manager instance.
     module.set(
         "newManager",
         lua.create_function(|_, ()| {
@@ -339,6 +345,13 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Creates a new custom cursor with specified dimensions and hotspot position.
+    ///
+    /// @param | w | integer | Width of the cursor image in pixels.
+    /// @param | h | integer | Height of the cursor image in pixels.
+    /// @param | hx | integer | Hotspot X offset from cursor origin.
+    /// @param | hy | integer | Hotspot Y offset from cursor origin.
+    /// @return | LCustomCursor | A new custom cursor instance.
     module.set(
         "newCustom",
         lua.create_function(|_, (w, h, hx, hy): (u32, u32, u32, u32)| {
@@ -348,6 +361,10 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Creates a new animated cursor that can cycle through frames.
+    ///
+    /// @param | looping | boolean | Whether the animation loops continuously.
+    /// @return | LAnimatedCursor | A new animated cursor instance.
     module.set(
         "newAnimated",
         lua.create_function(|_, looping: bool| {
@@ -357,6 +374,9 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Returns a list of all available system cursor names as a string array.
+    ///
+    /// @return | table | Array of system cursor name strings.
     module.set(
         "systemCursors",
         lua.create_function(|lua, ()| {

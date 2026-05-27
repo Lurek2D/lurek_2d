@@ -17,7 +17,7 @@
   - [layers.rs](#layersrs)
   - [mod.rs](#modrs)
   - [palette_lut.rs](#palettelutrs)
-  - [province_grid.rs](#provincegridrs)
+  - [rect_packing.rs](#rectpackingrs)
   - [render.rs](#renderrs)
   - [serial.rs](#serialrs)
   - [texture.rs](#texturers)
@@ -125,17 +125,11 @@ The `image` module features specialized systems for game development, most notab
 - Hash-accelerated pixel matching for large palettes, linear scan for small ones.
 - In-place image rewrite and cyclic rotation of replacement colors.
 
-### `province_grid.rs`
+### `rect_packing.rs`
 
-- Province grid construction from color-mapped images, assigning unique ids per distinct RGB color.
-- Pixel-level province id lookup and reverse color retrieval by id.
-- Adjacency detection between neighboring provinces with shared-border-pixel counts.
-- Horizontal span extraction for contiguous province row segments.
-- Border segment detection returning line segments between differing province regions.
-- Polygon tracing from directed cell edges into closed point loops per province.
-- Polygon simplification removing collinear vertices and 45-degree staircase patterns.
-- Binary serialization and deserialization of span and border segment shape data.
-- Adjacency pair struct exposing province relationships for map graph queries.
+- Shelf-first rectangle packing for texture atlas layout.
+- Configurable atlas dimensions and uniform pixel padding between rects.
+- Tracks occupancy ratio and returns placement coordinates in insertion order.
 
 ### `render.rs`
 

@@ -13,6 +13,7 @@
 - [📁 Source Files](#source-files)
   - [engine.rs](#enginers)
   - [handle.rs](#handlers)
+  - [interpolator.rs](#interpolatorrs)
   - [mod.rs](#modrs)
   - [spring.rs](#springrs)
   - [state.rs](#staters)
@@ -61,7 +62,12 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 
 ### `engine.rs`
 
-- Public types and helpers for the engine module.
+- Tween engine: per-tick interpolation of numeric table fields on Lua objects.
+- `TweenEngine` holds a slab of active `TweenJob` entries; completed jobs are freed.
+- Each job targets a Lua registry key and a list of field names to animate.
+- Easing functions (linear, ease-in, ease-out, spring, bounce) are value-mapped.
+- `on_settle` callback fires once the job reaches its target value within epsilon.
+- Updated synchronously inside `lua_tick`; no background threads.
 
 ### `handle.rs`
 
@@ -73,12 +79,21 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - Parallel groups advance all lanes simultaneously and complete when every lane finishes.
 - Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
 
+### `interpolator.rs`
+
+- Multi-channel tween interpolator that drives values from start to target over a fixed duration.
+- Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
+- Each tween holds an independent clock, supports reset, seek, and completion query.
+- Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
+- Falls back to linear when an unknown easing name is provided.
+
 ### `mod.rs`
 
 - Smooth value interpolation with configurable easing curves.
 - Sequence and parallel combinators for complex multi-step animations.
 - Spring-based physics tweening for natural motion.
 - Shared tween engine driving all active tweens each frame.
+- Multi-channel interpolator driven by easing functions over a fixed duration.
 
 ### `spring.rs`
 

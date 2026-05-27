@@ -1,7 +1,7 @@
 //! INTERNAL ONLY: Rust-only tests for the flownet module.
 //!
 //! Public flownet behavior reachable through \lurek.graph.*\ is covered in
-//! \	ests/lua/unit/test_flownet_unit.lua\. The remaining Rust-only coverage here
+//! \tests/lua/unit/test_flownet_unit.lua\. The remaining Rust-only coverage here
 //! keeps render helpers and simulation edge-cases that are easier to assert in Rust.
 
 use lurek2d::flownet::Graph;

@@ -40,24 +40,24 @@ describe("CursorManager", function()
     -- @covers lurek.cursor.newManager
     it("manager default visibility is true", function()
         local mgr = lurek.cursor.newManager()
-        assert_true(mgr:isVisible())
+        expect_true(mgr:isVisible())
     end)
 
     -- @covers lurek.cursor.newManager
     it("setVisible toggles visibility", function()
         local mgr = lurek.cursor.newManager()
         mgr:setVisible(false)
-        assert_equal(false, mgr:isVisible())
+        expect_equal(false, mgr:isVisible())
         mgr:setVisible(true)
-        assert_true(mgr:isVisible())
+        expect_true(mgr:isVisible())
     end)
 
     -- @covers lurek.cursor.newManager
     it("setLocked and isLocked", function()
         local mgr = lurek.cursor.newManager()
-        assert_equal(false, mgr:isLocked())
+        expect_equal(false, mgr:isLocked())
         mgr:setLocked(true)
-        assert_true(mgr:isLocked())
+        expect_true(mgr:isLocked())
     end)
 
     -- @covers lurek.cursor.newManager
@@ -73,14 +73,14 @@ describe("CursorManager", function()
         local mgr = lurek.cursor.newManager()
         mgr:setSystem("arrow")
         -- No crash = system cursor set
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers lurek.cursor.newManager
     it("setContext and getContext roundtrip", function()
         local mgr = lurek.cursor.newManager()
         mgr:setContext("combat")
-        assert_equal("combat", mgr:getContext())
+        expect_equal("combat", mgr:getContext())
     end)
 
     -- @covers lurek.cursor.newManager
@@ -89,7 +89,7 @@ describe("CursorManager", function()
         mgr:addRule("hover", "hand")
         mgr:removeRule("hover")
         -- No crash = success
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers lurek.cursor.newManager
@@ -97,8 +97,8 @@ describe("CursorManager", function()
         local mgr = lurek.cursor.newManager()
         mgr:update(100, 200, 1/60)
         local x, y = mgr:getPosition()
-        assert_near(100, x, 0.1)
-        assert_near(200, y, 0.1)
+        expect_near(100, x, 0.1)
+        expect_near(200, y, 0.1)
     end)
 
     -- @covers lurek.cursor.newManager
@@ -106,7 +106,7 @@ describe("CursorManager", function()
         local mgr = lurek.cursor.newManager()
         mgr:enableTrail(255, 0, 0, 0.5)
         mgr:disableTrail()
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers lurek.cursor.newManager
@@ -114,7 +114,7 @@ describe("CursorManager", function()
         local mgr = lurek.cursor.newManager()
         mgr:enableZoom(2.0, 50)
         mgr:disableZoom()
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -128,7 +128,7 @@ describe("systemCursors list", function()
     it("returns a list of strings", function()
         local cursors = lurek.cursor.systemCursors()
         expect_type("table", cursors)
-        assert_true(#cursors > 0)
+        expect_true(#cursors > 0)
         expect_type("string", cursors[1])
     end)
 
@@ -139,7 +139,7 @@ describe("systemCursors list", function()
         for _, c in ipairs(cursors) do
             if c == "arrow" then found = true break end
         end
-        assert_true(found)
+        expect_true(found)
     end)
 end)
 
@@ -154,16 +154,16 @@ describe("CustomCursor", function()
         local cursor = lurek.cursor.newCustom(32, 32, 0, 0)
         expect_type("userdata", cursor)
         local w, h = cursor:getSize()
-        assert_equal(32, w)
-        assert_equal(32, h)
+        expect_equal(32, w)
+        expect_equal(32, h)
     end)
 
     -- @covers lurek.cursor.newCustom
     it("getHotspot returns hotspot position", function()
         local cursor = lurek.cursor.newCustom(16, 16, 8, 4)
         local hx, hy = cursor:getHotspot()
-        assert_equal(8, hx)
-        assert_equal(4, hy)
+        expect_equal(8, hx)
+        expect_equal(4, hy)
     end)
 
     -- @covers lurek.cursor.newCustom
@@ -171,10 +171,10 @@ describe("CustomCursor", function()
         local cursor = lurek.cursor.newCustom(4, 4, 0, 0)
         cursor:setPixel(1, 2, 255, 128, 64, 200)
         local r, g, b, a = cursor:getPixel(1, 2)
-        assert_equal(255, r)
-        assert_equal(128, g)
-        assert_equal(64, b)
-        assert_equal(200, a)
+        expect_equal(255, r)
+        expect_equal(128, g)
+        expect_equal(64, b)
+        expect_equal(200, a)
     end)
 end)
 
@@ -195,7 +195,7 @@ describe("AnimatedCursor", function()
         local anim = lurek.cursor.newAnimated(true)
         local frame = lurek.cursor.newCustom(8, 8, 0, 0)
         anim:addFrame(frame, 100)
-        assert_equal(1, anim:frameCount())
+        expect_equal(1, anim:frameCount())
     end)
 
     -- @covers lurek.cursor.newAnimated
@@ -203,7 +203,7 @@ describe("AnimatedCursor", function()
         local anim = lurek.cursor.newAnimated(true)
         local frame = lurek.cursor.newCustom(8, 8, 0, 0)
         anim:addFrame(frame, 100)
-        assert_equal(0, anim:currentIndex())
+        expect_equal(0, anim:currentIndex())
     end)
 
     -- @covers lurek.cursor.newAnimated
@@ -214,7 +214,7 @@ describe("AnimatedCursor", function()
         anim:addFrame(f1, 50)
         anim:addFrame(f2, 50)
         anim:update(0.06) -- 60ms > 50ms frame duration
-        assert_equal(1, anim:currentIndex())
+        expect_equal(1, anim:currentIndex())
     end)
 
     -- @covers lurek.cursor.newAnimated
@@ -226,7 +226,7 @@ describe("AnimatedCursor", function()
         anim:addFrame(f2, 50)
         anim:update(0.06)
         anim:reset()
-        assert_equal(0, anim:currentIndex())
+        expect_equal(0, anim:currentIndex())
     end)
 
     -- @covers lurek.cursor.newAnimated
@@ -237,7 +237,7 @@ describe("AnimatedCursor", function()
         anim:setPulse(0.8, 1.2, 2.0)
         local scale = anim:currentScale()
         expect_type("number", scale)
-        assert_true(scale >= 0.8 and scale <= 1.2)
+        expect_true(scale >= 0.8 and scale <= 1.2)
     end)
 
     -- @covers LAnimatedCursor:clearPulse
@@ -247,7 +247,7 @@ describe("AnimatedCursor", function()
         anim:addFrame(frame, 100)
         anim:setPulse(0.8, 1.2, 2.0)
         anim:clearPulse()
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -262,15 +262,16 @@ describe("CursorManager setAnimated and enableLineTrail", function()
         local mgr = lurek.cursor.newManager()
         local anim = lurek.cursor.newAnimated(true)
         mgr:setAnimated(anim)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LCursorManager:enableLineTrail
     it("enableLineTrail sets line trail mode without crash", function()
         local mgr = lurek.cursor.newManager()
         mgr:enableLineTrail(1.0, 0.0, 0.0, 2.0)
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
 test_summary()
+

@@ -4,6 +4,7 @@ use super::SharedState;
 use crate::render::font::{AVAILABLE_POINT_SIZES, Font};
 use crate::runtime::resource_keys::FontKey;
 use mlua::prelude::*;
+use slotmap::Key;
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
@@ -171,7 +172,7 @@ fn make_lua_font(state: Rc<RefCell<SharedState>>, key: FontKey) -> LuaFont {
 }
 
 /// Registers the `lurek.font` namespace and returns the Lua table.
-pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResult<LuaTable> {
+pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResult<LuaTable<'_>> {
     let font = lua.create_table()?;
 
     // --- Constants ---
@@ -190,6 +191,9 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | LuaFont | The default font handle.
     {
         let s = state.clone();
+        /// Returns the default engine font as an LFont userdata handle.
+        ///
+        /// @return | LFont | The default engine font handle.
         font.set(
             "getDefault",
             lua.create_function(move |_, ()| {
@@ -213,6 +217,11 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | LuaFont | The loaded font handle.
     {
         let s = state.clone();
+        /// Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
+        ///
+        /// @param | path | string | Relative path to the font file.
+        /// @param | size | number | Point size for rasterisation.
+        /// @return | LFont | The loaded font handle.
         font.set(
             "load",
             lua.create_function(move |_, (path, size): (String, f32)| {
@@ -281,6 +290,12 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | LuaFont | The loaded bitmap font handle.
     {
         let s = state.clone();
+        /// Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
+        ///
+        /// @param | path | string | Relative path to the PNG atlas.
+        /// @param | cellWidth | integer | Cell width in pixels.
+        /// @param | cellHeight | integer | Cell height in pixels.
+        /// @return | LFont | The loaded bitmap font handle.
         font.set(
             "loadBitmap",
             lua.create_function(
@@ -336,6 +351,9 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | table | Array of tables with fields: name (string), size (number), style (string).
     {
         let s = state.clone();
+        /// Lists all registered fonts with their name, size, and style metadata.
+        ///
+        /// @return | table | Array of tables with fields: name (string), size (number), style (string).
         font.set(
             "list",
             lua.create_function(move |lua, ()| {
@@ -371,6 +389,9 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// Returns the built-in bitmap font sizes available in the engine. This function is available to Lua scripts.
     /// @return | table | Array of numbers representing available point sizes.
     {
+        /// Returns the array of built-in bitmap font point sizes available in the engine.
+        ///
+        /// @return | table | Array of integer point sizes available as built-in fonts.
         font.set(
             "availableSizes",
             lua.create_function(move |lua, ()| {
@@ -391,6 +412,12 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | number, number | Width and height in pixels.
     {
         let s = state.clone();
+        /// Measures the pixel dimensions of a text string using the given font handle and scale.
+        ///
+        /// @param | font | LFont | Font handle to measure with.
+        /// @param | text | string | Text string to measure.
+        /// @param | scale | number | Scale factor (default 1.0).
+        /// @return | number | Width in pixels (height returned as second value).
         font.set(
             "measure",
             lua.create_function(
@@ -421,6 +448,12 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | number, number | Width and height in pixels.
     {
         let s = state.clone();
+        /// Measures the pixel width and height of a single line of text with the given font.
+        ///
+        /// @param | font | LFont | Font handle to measure with.
+        /// @param | text | string | Single-line text string to measure.
+        /// @param | scale | number | Scale factor (default 1.0).
+        /// @return | number | Width in pixels (height returned as second value).
         font.set(
             "measureLine",
             lua.create_function(
@@ -453,6 +486,14 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | table | Array of wrapped line strings.
     {
         let s = state.clone();
+        /// Wraps a text string into lines that fit within the given maximum pixel width.
+        ///
+        /// @param | font | LFont | Font handle used for measurement.
+        /// @param | text | string | Text to wrap.
+        /// @param | maxWidth | number | Maximum line width in pixels.
+        /// @param | scale | number | Scale factor (default 1.0).
+        /// @param | mode | string | Wrap mode: "none", "word", or "char".
+        /// @return | table | Array of wrapped line strings.
         font.set(
             "wrapText",
             lua.create_function(
@@ -501,6 +542,15 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | table | Array of tables with fields: text (string), width (number), xOffset (number).
     {
         let s = state.clone();
+        /// Shapes and aligns text into wrapped lines with x-offset data for rendering.
+        ///
+        /// @param | font | LFont | Font handle used for shaping.
+        /// @param | text | string | Text to shape.
+        /// @param | maxWidth | number | Maximum line width in pixels.
+        /// @param | scale | number | Scale factor (default 1.0).
+        /// @param | align | string | Alignment: "left", "center", "right", or "justify".
+        /// @param | wrap | string | Wrap mode: "none", "word", or "char".
+        /// @return | table | Array of tables with fields: text (string), width (number), xOffset (number).
         font.set(
             "shapeText",
             lua.create_function(
@@ -592,6 +642,12 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | number | Advance width in pixels.
     {
         let s = state.clone();
+        /// Returns the horizontal advance width in pixels of a single character using the given font.
+        ///
+        /// @param | font | LFont | Font handle.
+        /// @param | char | string | A single-character string.
+        /// @param | scale | number | Scale factor (default 1.0).
+        /// @return | number | Horizontal advance width in pixels.
         font.set(
             "charAdvance",
             lua.create_function(
@@ -620,6 +676,10 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @return | number | Line height in pixels.
     {
         let s = state.clone();
+        /// Returns the line height of the given font in pixels.
+        ///
+        /// @param | font | LFont | Font handle to query.
+        /// @return | number | Line height in pixels.
         font.set(
             "lineHeight",
             lua.create_function(move |_, font_ud: LuaAnyUserData| {
@@ -638,4 +698,11 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     }
 
     Ok(font)
+}
+
+/// Standard module registration entry point — registers `lurek.font` and returns `Ok(())`.
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    let font = register_font_api(lua, state)?;
+    lurek.set("font", font)?;
+    Ok(())
 }

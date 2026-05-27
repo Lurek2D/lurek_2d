@@ -17,6 +17,10 @@ pub struct LineChart {
     pub config: ChartConfig,
     /// Data series to plot.
     series: Vec<ChartSeries>,
+    /// Optional Y-axis maximum override.
+    pub y_max: f32,
+    /// Optional X-axis maximum override.
+    pub x_max: f32,
 }
 
 impl LineChart {
@@ -25,12 +29,57 @@ impl LineChart {
         Self {
             config,
             series: Vec::new(),
+            y_max: 0.0,
+            x_max: 0.0,
         }
     }
 
-    /// Add a data series to the chart.
-    pub fn add_series(&mut self, series: ChartSeries) {
+    /// Add a data series (low-level: accepts a ChartSeries directly).
+    pub fn push_series(&mut self, series: ChartSeries) {
         self.series.push(series);
+    }
+
+    /// Add a named series from point data and a color.
+    pub fn add_series(&mut self, name: &str, pts: &[(f32, f32)], color: crate::color::Color) {
+        self.push_series(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: pts.to_vec(),
+        });
+    }
+
+    /// Add a named series from dataframe columns, returning the number of points added.
+    pub fn add_series_from_dataframe(
+        &mut self,
+        name: &str,
+        df: &crate::dataframe::DataFrame,
+        x_col: &str,
+        y_col: &str,
+        color: crate::color::Color,
+        opts: crate::charts::config::ChartDataFrameOptions,
+    ) -> Result<usize, String> {
+        use crate::dataframe::frame::ColRef;
+        let xs = df.get_column(ColRef::Name(x_col.to_string()))?;
+        let ys = df.get_column(ColRef::Name(y_col.to_string()))?;
+        let limit = opts.max_rows.unwrap_or(usize::MAX);
+        let mut pts: Vec<(f32, f32)> = Vec::new();
+        for (xc, yc) in xs.iter().zip(ys.iter()).take(limit) {
+            if let (Some(x), Some(y)) = (xc.as_number(), yc.as_number()) {
+                pts.push((x as f32, y as f32));
+            }
+        }
+        let added = pts.len();
+        self.push_series(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: pts,
+        });
+        Ok(added)
+    }
+
+    /// Render this chart into an ImageData buffer.
+    pub fn draw_to_image(&self, img: &mut crate::image::ImageData) {
+        self.render(img.as_mut_bytes());
     }
 
     /// Remove all series from the chart.

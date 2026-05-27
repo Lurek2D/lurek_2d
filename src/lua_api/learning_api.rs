@@ -81,6 +81,12 @@ impl LuaUserData for LuaQLearner {
             this.inner.borrow_mut().end_episode();
             Ok(())
         });
+        // -- getEpisodeCount --
+        /// Returns the total number of episodes completed so far.
+        /// @return | integer | Episode count.
+        methods.add_method("getEpisodeCount", |_, this, ()| {
+            Ok(this.inner.borrow().episode_count)
+        });
         // -- getStateCount --
         /// Returns the number of states represented by this learner.
         /// @return | integer | State count.
@@ -414,7 +420,7 @@ impl LuaUserData for LuaNeuroevolution {
         // -- chromosomeToNet --
         /// Converts one chromosome into a neural network handle when the index is valid.
         /// @param | idx | integer | Zero-based chromosome index.
-        /// @return | LuaValue | Neural network handle, or nil when the chromosome index is invalid.
+        /// @return | LNeuralNet | Neural network handle.
         methods.add_method("chromosomeToNet", |_, this, idx: usize| {
             let net = this.inner.borrow().chromosome_to_net(idx);
             Ok(net.map(|n| LuaNeuralNet {
@@ -423,7 +429,7 @@ impl LuaUserData for LuaNeuroevolution {
         });
         // -- bestNetwork --
         /// Converts the best chromosome into a neural network handle when one exists.
-        /// @return | LuaValue | Neural network handle, or nil when no best chromosome is available.
+        /// @return | LNeuralNet | Neural network handle.
         methods.add_method("bestNetwork", |_, this, ()| {
             let net = this.inner.borrow().best_network();
             Ok(net.map(|n| LuaNeuralNet {

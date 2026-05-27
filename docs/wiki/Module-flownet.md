@@ -21,6 +21,7 @@
   - [render.rs](#renderrs)
   - [simulation.rs](#simulationrs)
   - [supply_demand.rs](#supplydemandrs)
+  - [types.rs](#typesrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -100,10 +101,10 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 
 ### `mod.rs`
 
-- Directed graph container with typed nodes, edges, and item flow.
+- Directed flownet container with typed nodes, edges, and item flow.
 - Supply/demand modeling, conversion rules, and overflow policies.
 - Pathfinding, simulation stepping, and event emission.
-- Render helpers for visual graph output.
+- Render helpers for visual flownet output.
 
 ### `node.rs`
 
@@ -147,6 +148,14 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - Priority-ordered demand matching against available supply nodes.
 - Pathfinding-based item routing from supplier to consumer.
 - Event emission on supply depletion and demand fulfillment.
+
+### `types.rs`
+
+- Shared type definitions for the flownet visual scripting graph.
+- `NodeId`, `PortId`, and `EdgeId` are newtype wrappers around `u32` for clarity.
+- `PortKind` distinguishes input/output and the value type carried (number, bool, any).
+- `NodeValue` is the runtime variant type flowing through edges at evaluation time.
+- All types are `Clone + Debug + PartialEq` to support undo-redo snapshotting.
 
 [⬆ back to top](#table-of-contents)
 

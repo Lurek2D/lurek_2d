@@ -54,8 +54,9 @@ end
 function demo_check_no_direct_present(demo_dir, label)
     label = label or demo_dir
     local src = demo_read_main(demo_dir, label)
+    local safe_src = src or ""
     expect_nil(
-        src:find("lurek%.window%.present", 1, true),
+        safe_src:find("lurek%.window%.present", 1, true),
         label .. ": main.lua should not call lurek.window.present (headless demos)"
     )
 end

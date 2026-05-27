@@ -8,16 +8,18 @@
 // ── fog ───────────────────────────────────────────────────────────────────────
 
 mod fog_tests {
-    use lurek2d::globe::fog::{FogMask, FogStore};
+
+    use lurek2d::globe::{FogMask, FogStore};
+    use lurek2d::globe::types::RegionId;
 
     // FogMask::all_hidden
 
     #[test]
     fn all_hidden_no_province_visible() {
         let mask = FogMask::all_hidden();
-        assert!(!mask.is_visible(0));
-        assert!(!mask.is_visible(1));
-        assert!(!mask.is_visible(100));
+        assert!(!mask.is_visible(RegionId(0)));
+        assert!(!mask.is_visible(RegionId(1)));
+        assert!(!mask.is_visible(RegionId(100)));
     }
 
     #[test]
@@ -37,13 +39,13 @@ mod fog_tests {
     #[test]
     fn all_visible_province_zero_visible() {
         let mask = FogMask::all_visible();
-        assert!(mask.is_visible(0));
+        assert!(mask.is_visible(RegionId(0)));
     }
 
     #[test]
     fn all_visible_province_ten_visible() {
         let mask = FogMask::all_visible();
-        assert!(mask.is_visible(10));
+        assert!(mask.is_visible(RegionId(10)));
     }
 
     #[test]
@@ -57,35 +59,35 @@ mod fog_tests {
     #[test]
     fn reveal_makes_province_visible() {
         let mut mask = FogMask::all_hidden();
-        mask.reveal(5);
-        assert!(mask.is_visible(5));
-        assert!(!mask.is_visible(6));
+        mask.reveal(RegionId(5));
+        assert!(mask.is_visible(RegionId(5)));
+        assert!(!mask.is_visible(RegionId(6)));
     }
 
     #[test]
     fn hide_after_reveal_hides_province() {
         let mut mask = FogMask::all_hidden();
-        mask.reveal(3);
-        assert!(mask.is_visible(3));
-        mask.hide(3);
-        assert!(!mask.is_visible(3));
+        mask.reveal(RegionId(3));
+        assert!(mask.is_visible(RegionId(3)));
+        mask.hide(RegionId(3));
+        assert!(!mask.is_visible(RegionId(3)));
     }
 
     #[test]
     fn reveal_increments_count() {
         let mut mask = FogMask::all_hidden();
-        mask.reveal(0);
-        mask.reveal(1);
-        mask.reveal(2);
+        mask.reveal(RegionId(0));
+        mask.reveal(RegionId(1));
+        mask.reveal(RegionId(2));
         assert_eq!(mask.count_visible(), 3);
     }
 
     #[test]
     fn hide_decrements_count() {
         let mut mask = FogMask::all_hidden();
-        mask.reveal(0);
-        mask.reveal(1);
-        mask.hide(0);
+        mask.reveal(RegionId(0));
+        mask.reveal(RegionId(1));
+        mask.hide(RegionId(0));
         assert_eq!(mask.count_visible(), 1);
     }
 
@@ -93,8 +95,8 @@ mod fog_tests {
     fn reveal_out_of_bounds_is_noop() {
         let mut mask = FogMask::all_hidden();
         // Revealing an ID at or beyond MAX_PROVINCES should not panic.
-        mask.reveal(99999);
-        assert!(!mask.is_visible(99999));
+        mask.reveal(RegionId(99999));
+        assert!(!mask.is_visible(RegionId(99999)));
     }
 
     // FogMask::reveal_batch
@@ -102,11 +104,11 @@ mod fog_tests {
     #[test]
     fn reveal_batch_reveals_all_ids() {
         let mut mask = FogMask::all_hidden();
-        mask.reveal_batch([10u32, 20, 30].iter().copied());
-        assert!(mask.is_visible(10));
-        assert!(mask.is_visible(20));
-        assert!(mask.is_visible(30));
-        assert!(!mask.is_visible(11));
+        mask.reveal_batch([RegionId(10), RegionId(20), RegionId(30)].iter().copied());
+        assert!(mask.is_visible(RegionId(10)));
+        assert!(mask.is_visible(RegionId(20)));
+        assert!(mask.is_visible(RegionId(30)));
+        assert!(!mask.is_visible(RegionId(11)));
     }
 
     // FogMask::visible_ids
@@ -114,19 +116,19 @@ mod fog_tests {
     #[test]
     fn visible_ids_returns_revealed_ids() {
         let mut mask = FogMask::all_hidden();
-        mask.reveal(1);
-        mask.reveal(7);
-        mask.reveal(63);
+        mask.reveal(RegionId(1));
+        mask.reveal(RegionId(7));
+        mask.reveal(RegionId(63));
         let mut ids = mask.visible_ids();
         ids.sort_unstable();
-        assert_eq!(ids, vec![1, 7, 63]);
+        assert_eq!(ids, vec![RegionId(1), RegionId(7), RegionId(63)]);
     }
 
     // FogMask::from_visible_ids round-trip
 
     #[test]
     fn from_visible_ids_round_trip() {
-        let ids: Vec<u32> = vec![0, 5, 100, 255];
+        let ids: Vec<RegionId> = vec![RegionId(0), RegionId(5), RegionId(100), RegionId(255)];
         let mask = FogMask::from_visible_ids(&ids);
         let mut recovered = mask.visible_ids();
         recovered.sort_unstable();
@@ -157,17 +159,17 @@ mod fog_tests {
     #[test]
     fn fog_store_reveal_makes_visible() {
         let mut store = FogStore::new();
-        store.reveal("player", 42);
-        assert!(store.is_visible("player", 42));
-        assert!(!store.is_visible("player", 43));
+        store.reveal("player", RegionId(42));
+        assert!(store.is_visible("player", RegionId(42)));
+        assert!(!store.is_visible("player", RegionId(43)));
     }
 
     #[test]
     fn fog_store_hide_clears_visible() {
         let mut store = FogStore::new();
-        store.reveal("player", 10);
-        store.hide("player", 10);
-        assert!(!store.is_visible("player", 10));
+        store.reveal("player", RegionId(10));
+        store.hide("player", RegionId(10));
+        assert!(!store.is_visible("player", RegionId(10)));
     }
 
     // FogStore::visible_ids
@@ -175,11 +177,11 @@ mod fog_tests {
     #[test]
     fn fog_store_visible_ids_for_known_viewer() {
         let mut store = FogStore::new();
-        store.reveal("ally", 5);
-        store.reveal("ally", 9);
+        store.reveal("ally", RegionId(5));
+        store.reveal("ally", RegionId(9));
         let mut ids = store.visible_ids("ally").unwrap();
         ids.sort_unstable();
-        assert_eq!(ids, vec![5, 9]);
+        assert_eq!(ids, vec![RegionId(5), RegionId(9)]);
     }
 
     #[test]
@@ -193,8 +195,8 @@ mod fog_tests {
     #[test]
     fn fog_store_viewers_lists_known_viewers() {
         let mut store = FogStore::new();
-        store.reveal("a", 0);
-        store.reveal("b", 0);
+        store.reveal("a", RegionId(0));
+        store.reveal("b", RegionId(0));
         let mut viewers = store.viewers();
         viewers.sort();
         assert_eq!(viewers, vec!["a", "b"]);
@@ -206,19 +208,19 @@ mod fog_tests {
     fn fog_store_is_visible_true_for_unknown_viewer() {
         let store = FogStore::new();
         // Unknown viewer → no mask → full visibility.
-        assert!(store.is_visible("ghost", 99));
+        assert!(store.is_visible("ghost", RegionId(99)));
     }
 
     #[test]
     fn fog_mask_base64_round_trip_preserves_states() {
         let mut mask = FogMask::all_hidden();
-        mask.reveal(1);
-        mask.explore(2);
+        mask.reveal(RegionId(1));
+        mask.explore(RegionId(2));
         let encoded = mask.to_base64();
         let decoded = FogMask::from_base64(&encoded).expect("decode should succeed");
-        assert!(decoded.is_visible(1));
+        assert!(decoded.is_visible(RegionId(1)));
         assert_eq!(decoded.count_explored(), 1);
-        assert!(!decoded.is_visible(2));
+        assert!(!decoded.is_visible(RegionId(2)));
     }
 }
 
@@ -382,7 +384,7 @@ mod projection_tests {
         build_view_matrix, normalize_v3, project_point, project_point_with_z, project_province,
         screen_delta_to_pan, OrbitCamera,
     };
-    use lurek2d::globe::types::{GlobeSpec, LodTier, Province};
+    use lurek2d::globe::types::{GlobeSpec, LodTier, Province, RegionId};
     use lurek2d::math::Vec3;
 
     fn default_spec() -> GlobeSpec {
@@ -543,7 +545,7 @@ mod projection_tests {
         let view = build_view_matrix(&spec, &cam);
         // A tiny triangle near lat=30, lon=0 (front hemisphere at default cam).
         let verts = vec![(30.0_f32, -1.0_f32), (31.0, 0.0), (30.0, 1.0)];
-        let prov = Province::new(1, verts);
+        let prov = Province::new(RegionId(1), verts);
         let result = project_province(&prov, &view, &spec, &cam, 1.0);
         assert!(result.is_some(), "front-hemisphere province should project");
     }
@@ -555,7 +557,7 @@ mod projection_tests {
         let view = build_view_matrix(&spec, &cam);
         // Province near south pole, antipodal side — likely culled.
         let verts = vec![(-80.0_f32, 170.0_f32), (-80.0, 175.0), (-75.0, 172.0)];
-        let prov = Province::new(2, verts);
+        let prov = Province::new(RegionId(2), verts);
         let _ = project_province(&prov, &view, &spec, &cam, 0.5);
         // No panic is the assertion.
     }
@@ -671,11 +673,11 @@ mod loader_tests {
 
 mod topology_tests {
     use lurek2d::globe::topology::ProvinceGraph;
-    use lurek2d::globe::types::{GlobeError, Province};
+    use lurek2d::globe::types::{GlobeError, Province, RegionId};
 
     fn make_province(id: u32, neighbors: Vec<u32>) -> Province {
-        let mut p = Province::new(id, vec![(0.0_f32, 0.0_f32), (1.0, 0.0), (0.5, 1.0)]);
-        p.neighbors = neighbors;
+        let mut p = Province::new(RegionId(id), vec![(0.0_f32, 0.0_f32), (1.0, 0.0), (0.5, 1.0)]);
+        p.neighbors = neighbors.into_iter().map(RegionId).collect();
         p
     }
 
@@ -691,7 +693,7 @@ mod topology_tests {
     #[test]
     fn insert_increases_len() {
         let mut g = ProvinceGraph::new();
-        g.insert(Province::new(1, vec![])).unwrap();
+        g.insert(Province::new(RegionId(1), vec![])).unwrap();
         assert_eq!(g.len(), 1);
         assert!(!g.is_empty());
     }
@@ -700,7 +702,7 @@ mod topology_tests {
     fn insert_multiple_provinces() {
         let mut g = ProvinceGraph::new();
         for id in 0..5 {
-            g.insert(Province::new(id, vec![])).unwrap();
+            g.insert(Province::new(RegionId(id), vec![])).unwrap();
         }
         assert_eq!(g.len(), 5);
     }
@@ -710,9 +712,9 @@ mod topology_tests {
     #[test]
     fn get_returns_inserted_province() {
         let mut g = ProvinceGraph::new();
-        g.insert(Province::new(42, vec![])).unwrap();
-        assert!(g.get(42).is_some());
-        assert!(g.get(43).is_none());
+        g.insert(Province::new(RegionId(42), vec![])).unwrap();
+        assert!(g.get(RegionId(42)).is_some());
+        assert!(g.get(RegionId(43)).is_none());
     }
 
     // ProvinceGraph::remove
@@ -720,17 +722,17 @@ mod topology_tests {
     #[test]
     fn remove_existing_returns_some() {
         let mut g = ProvinceGraph::new();
-        g.insert(Province::new(10, vec![])).unwrap();
-        let removed = g.remove(10);
+        g.insert(Province::new(RegionId(10), vec![])).unwrap();
+        let removed = g.remove(RegionId(10));
         assert!(removed.is_some());
-        assert!(g.get(10).is_none());
+        assert!(g.get(RegionId(10)).is_none());
         assert_eq!(g.len(), 0);
     }
 
     #[test]
     fn remove_nonexistent_returns_none() {
         let mut g = ProvinceGraph::new();
-        assert!(g.remove(99).is_none());
+        assert!(g.remove(RegionId(99)).is_none());
     }
 
     // ProvinceGraph::neighbors_of
@@ -740,16 +742,16 @@ mod topology_tests {
         let mut g = ProvinceGraph::new();
         let p = make_province(1, vec![2, 3]);
         g.insert(p).unwrap();
-        let nbrs = g.neighbors_of(1);
+        let nbrs = g.neighbors_of(RegionId(1));
         assert_eq!(nbrs.len(), 2);
-        assert!(nbrs.contains(&2));
-        assert!(nbrs.contains(&3));
+        assert!(nbrs.contains(&RegionId(2)));
+        assert!(nbrs.contains(&RegionId(3)));
     }
 
     #[test]
     fn neighbors_of_empty_for_unknown_province() {
         let g = ProvinceGraph::new();
-        assert!(g.neighbors_of(999).is_empty());
+        assert!(g.neighbors_of(RegionId(999)).is_empty());
     }
 
     // ProvinceGraph::set_attr / get_attr
@@ -757,35 +759,35 @@ mod topology_tests {
     #[test]
     fn set_and_get_attr() {
         let mut g = ProvinceGraph::new();
-        g.insert(Province::new(1, vec![])).unwrap();
-        g.set_attr(1, "terrain".to_string(), "plains".to_string())
+        g.insert(Province::new(RegionId(1), vec![])).unwrap();
+        g.set_attr(RegionId(1), "terrain".to_string(), "plains".to_string())
             .unwrap();
-        assert_eq!(g.get_attr(1, "terrain"), Some("plains"));
+        assert_eq!(g.get_attr(RegionId(1), "terrain"), Some("plains"));
     }
 
     #[test]
     fn get_attr_missing_key_returns_none() {
         let mut g = ProvinceGraph::new();
-        g.insert(Province::new(1, vec![])).unwrap();
-        assert!(g.get_attr(1, "nonexistent").is_none());
+        g.insert(Province::new(RegionId(1), vec![])).unwrap();
+        assert!(g.get_attr(RegionId(1), "nonexistent").is_none());
     }
 
     #[test]
     fn set_attr_nonexistent_province_returns_error() {
         let mut g = ProvinceGraph::new();
-        let result = g.set_attr(999, "k".to_string(), "v".to_string());
-        assert!(matches!(result, Err(GlobeError::ProvinceNotFound(999))));
+        let result = g.set_attr(RegionId(999), "k".to_string(), "v".to_string());
+        assert!(matches!(result, Err(GlobeError::RegionNotFound(RegionId(999)))));
     }
 
     #[test]
     fn set_attr_overwrites_existing() {
         let mut g = ProvinceGraph::new();
-        g.insert(Province::new(1, vec![])).unwrap();
-        g.set_attr(1, "owner".to_string(), "red".to_string())
+        g.insert(Province::new(RegionId(1), vec![])).unwrap();
+        g.set_attr(RegionId(1), "owner".to_string(), "red".to_string())
             .unwrap();
-        g.set_attr(1, "owner".to_string(), "blue".to_string())
+        g.set_attr(RegionId(1), "owner".to_string(), "blue".to_string())
             .unwrap();
-        assert_eq!(g.get_attr(1, "owner"), Some("blue"));
+        assert_eq!(g.get_attr(RegionId(1), "owner"), Some("blue"));
     }
 
     // ProvinceGraph::reachable_default
@@ -795,12 +797,12 @@ mod topology_tests {
     #[test]
     fn rebuild_caches_restores_neighbor_info() {
         let mut g = ProvinceGraph::new();
-        let mut p = Province::new(1, vec![(0.0_f32, 0.0_f32)]);
-        p.neighbors = vec![2];
+        let mut p = Province::new(RegionId(1), vec![(0.0_f32, 0.0_f32)]);
+        p.neighbors = vec![RegionId(2)];
         g.insert(p).unwrap();
         // Force cache rebuild.
         g.rebuild_caches();
-        assert_eq!(g.neighbors_of(1), &[2u32]);
+        assert_eq!(g.neighbors_of(RegionId(1)), &[RegionId(2)]);
     }
 
     #[test]

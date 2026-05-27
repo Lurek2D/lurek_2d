@@ -18,7 +18,7 @@ struct LuaValidationEngine {
 }
 
 impl LuaUserData for LuaValidationEngine {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add the built-in asset existence rule.
         /// @param | asset_root | string | Root directory for asset files.
         methods.add_method("addAssetRule", |_, this, asset_root: String| {
@@ -46,7 +46,7 @@ impl LuaUserData for LuaValidationEngine {
         /// @param | message | string | Violation message.
         /// @param | severity | string | Severity: hint, warning, error, critical.
         methods.add_method("addPatternRule", |_, this, (id, pattern, message, severity): (String, String, String, String)| {
-            let sev = Severity::from_str(&severity);
+            let sev = Severity::from_name(&severity);
             let rule = LuaPatternRule::new(id, pattern, message, sev);
             this.inner.borrow_mut().add_pattern_rule(rule);
             Ok(())
@@ -97,7 +97,7 @@ impl LuaUserData for LuaValidationEngine {
 // Helper
 // ---------------------------------------------------------------------------
 
-fn report_to_table(lua: &Lua, report: &crate::validator::report::ValidationReport) -> LuaResult<LuaTable> {
+fn report_to_table<'lua>(lua: &'lua Lua, report: &crate::validator::report::ValidationReport) -> LuaResult<LuaTable<'lua>> {
     let tbl = lua.create_table()?;
     tbl.set("files_checked", report.files_checked)?;
     tbl.set("duration_ms", report.duration_ms)?;
@@ -148,9 +148,13 @@ fn report_to_table(lua: &Lua, report: &crate::validator::report::ValidationRepor
 /// Validate a single Lua file with default rules.
 /// @param | path | string | File path.
 /// @return | table | Validation report.
-pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
+pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
     let module = lua.create_table()?;
 
+    /// Creates a new validation engine rooted at the given filesystem path.
+    ///
+    /// @param | root | string | Root directory path for the validation engine.
+    /// @return | LValidationEngine | A new validation engine instance.
     module.set(
         "newEngine",
         lua.create_function(|_, root: String| {
@@ -161,6 +165,10 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Runs all validation rules against a project root directory and returns a report table.
+    ///
+    /// @param | path | string | Root directory path of the project to validate.
+    /// @return | table | Table with fields: errors (table), warnings (table), passed (boolean).
     module.set(
         "validate",
         lua.create_function(|lua, path: String| {
@@ -174,6 +182,10 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Runs API validation rules against a single Lua file and returns a report table.
+    ///
+    /// @param | path | string | Absolute or relative path to the Lua file to validate.
+    /// @return | table | Table with fields: errors (table), warnings (table), passed (boolean).
     module.set(
         "validateFile",
         lua.create_function(|lua, path: String| {

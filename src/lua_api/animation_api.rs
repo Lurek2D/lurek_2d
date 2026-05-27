@@ -846,7 +846,7 @@ fn draw_animation_frame(
 ) -> LuaResult<bool> {
     let texture_key = image.key;
     let state = image.state.clone();
-    let options = parse_animation_draw_options(method_name, x, y, opts)?
+    let options = parse_animation_draw_options(method_name, x, y, opts)?;
     let (tex_w, tex_h) = {
         let st = state.borrow();
         let texture = st.textures.get(texture_key).ok_or_else(|| {
@@ -927,11 +927,11 @@ fn parse_opt_coord(method_name: &str, field: &str, val: Option<&LuaValue>) -> Lu
 }
 
 /// Parse an optional opts table argument, accepting nil or table.
-fn parse_opt_table_arg(
+fn parse_opt_table_arg<'lua>(
     method_name: &str,
     field: &str,
-    val: Option<LuaValue>,
-) -> LuaResult<Option<LuaTable>> {
+    val: Option<LuaValue<'lua>>,
+) -> LuaResult<Option<LuaTable<'lua>>> {
     match val {
         None | Some(LuaValue::Nil) => Ok(None),
         Some(LuaValue::Table(t)) => Ok(Some(t)),

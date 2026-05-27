@@ -2593,40 +2593,6 @@ end
 
 --- Patterns Module Part 5: integrated multi-pattern examples, real-world scenarios
 
---@api-stub: LObjectPool:acquire
-do
-    local factory = lurek.patterns.newFactory()
-    factory:register("bullet", function(speed)
-        return {speed = speed or 300, active = false}
-    end)
-    local pool = lurek.patterns.newObjectPool()
-    pool:add(factory:create("bullet", 400))
-    local bullet = pool:acquire()
-    print("bullet speed = " .. tostring(bullet and bullet.speed))
-    print("active = " .. pool:getActiveCount())
-end
-
---@api-stub: LPatternGraph:nodeCount
-do
-    local graph = lurek.patterns.newGraph(true)
-    local a = graph:addNode("core")
-    local b = graph:addNode("physics")
-    graph:addEdge(a, b)
-    print("nodes = " .. graph:nodeCount())
-    print("edges = " .. graph:edgeCount())
-end
-
---@api-stub: LPatternGraph:bfs
-do
-    local graph = lurek.patterns.newGraph(true)
-    local start = graph:addNode("core")
-    local physics = graph:addNode("physics")
-    graph:addEdge(start, physics)
-    local order = graph:bfs(start)
-    print("bfs count = " .. #order)
-    print("connected = " .. tostring(graph:isConnected(start, physics)))
-end
-
 --- Patterns Module Part 5: BehaviorTree (addChild/nodeCount/setRoot), LList:clear, LObjectPool counts, LSimpleState:update, LStrategy:getCurrent
 
 --@api-stub: LBehaviorTree:addChild
@@ -2751,18 +2717,4 @@ do
     strat:set("attack")
     print("current = " .. tostring(strat:getCurrent()))
     print("result = " .. tostring(strat:execute()))
-end
-
---@api-stub: LBehaviorTree:setRoot
-do
-    local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSequence("root_seq")
-    local act = bt:addLeaf("act")
-    bt:addChild(root, act)
-    bt:setLeaf("act", function()
-        return "success"
-    end)
-    bt:setRoot(root)
-    print("result = " .. bt:tick())
-    print("type = " .. bt:type())
 end

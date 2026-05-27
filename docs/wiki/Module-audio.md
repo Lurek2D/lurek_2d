@@ -13,17 +13,12 @@
 - [📁 Source Files](#source-files)
   - [bus.rs](#busrs)
   - [decoder.rs](#decoderrs)
-  - [dsp.rs](#dsprs)
   - [facade.rs](#facaders)
-  - [midi.rs](#midirs)
-  - [midi_player.rs](#midiplayerrs)
   - [mixer.rs](#mixerrs)
   - [mod.rs](#modrs)
-  - [offline.rs](#offliners)
   - [pool.rs](#poolrs)
   - [sound_data.rs](#sounddatars)
   - [source.rs](#sourcers)
-  - [visualizer.rs](#visualizerrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -73,114 +68,68 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 
 ### `bus.rs`
 
-- Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
-- Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
-- Dynamic add/remove of typed effects (lowpass, reverb, chorus, compressor, etc.) with runtime IDs.
-- Duck-target assignment enabling automatic cross-bus volume suppression.
-- Boundary clamping on volume, pitch, and duck volume values.
+- Audio routing channel providing signal grouping and transformation controls.
+- Provides centralized volume, pitch, and pause controls for groups of assigned audio sources.
+- Maintains shared effect processing chains to apply DSP transformations efficiently across multiple inputs.
+- Implements ducking behaviors allowing one bus to automatically suppress the volume of another based on target thresholds.
+- Designed to safely receive runtime updates from scripting environments while being read lock-free by the audio thread.
 
 ### `decoder.rs`
 
-- Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
-- Random-access seek and rewind via cursor over the decoded i16 sample buffer.
-- Chunked iteration with configurable `buffer_size` for streaming consumption.
-- Duration and position queries derived from sample rate and channel count.
-- Seekable flag always true since the entire file is held in memory.
-
-### `dsp.rs`
-
-- Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
-- `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
-- `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
-- `ActiveEffect` per-source instantiation holding biquad delay elements, circular comb buffer, LFO phase, and envelope state.
-- Sample-by-sample `process` implementing each algorithm variant with clamped parameter reads.
-- `SharedEffectGraph` Arc-wrapped effect list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
-- `DynamicEffectSource<I>` rodio `Source` wrapper applying the full effect chain per sample with per-frame sync.
-- Comb-buffer sizing derived from sample rate and effect type at construction time.
-- Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
-- LFO-driven modulated delay for flanger and phaser with depth and rate controls.
+- Audio file decoding capabilities translating compressed formats into raw PCM data.
+- Provides in-memory decoding for standard audio formats including WAV, OGG, MP3, and FLAC.
+- Decodes entire files into contiguous sample buffers to guarantee fast random-access seeking without I/O blocking.
+- Supports chunk-based stream iteration with configurable buffer sizes for progressive consumption by the audio backend.
+- Exposes precise duration and position measurements based on underlying channel count and sample rates.
 
 ### `facade.rs`
 
-- Stub device enumeration and selection for the audio output backend.
-- Always reports a single "Default" device until platform-specific enumeration is added.
-- Validates device name against the available list on set.
-
-### `midi.rs`
-
-- 
-- RIFF+sfbk header validation on `set_soundfont` to reject malformed SF2 files.
-- Query and clear helpers for SoundFont availability and data access.
-
-### `midi_player.rs`
-
-- `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
-- File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
-- Transport controls: play, stop, pause, resume, seek, tell, and duration queries.
-- Per-channel volume, mute, instrument, and solo/unsolo operations across 16 MIDI channels.
-- Per-track mute support keyed by track index.
-- Configurable tempo scaling, looping, and output sample rate / channel count.
-- Mixer bus assignment via `BusKey` for routed playback.
-- `MidiData` metadata struct storing parsed song-level attributes.
-- Helper functions for MIDI note-to-frequency conversion and sine-wave note rendering.
+- Hardware audio device enumeration and selection interface.
+- Provides capabilities to query available system audio output devices.
+- Exposes functions to select and activate specific playback hardware endpoints.
+- Currently implements default device fallback behavior pending deeper platform integration.
 
 ### `mixer.rs`
 
-- `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
-- rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
-- Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
-- Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
-- `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
-- `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
-- Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
-- Peak metering: per-source, per-bus average, and master peak tracking.
-- Stereo width, random pitch range, crossfade, and sound pool creation utilities.
-- `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
+- Central audio mixing registry for managing playback streams and spatial state.
+- Manages hardware output stream ownership with graceful fallbacks when audio hardware is unavailable.
+- Tracks full playback lifecycle for individual sound sources including pause, resume, seek, and release.
+- Propagates parameters such as volume, pitch, pan, looping, and filters hierarchically through routing buses.
+- Manages queueable push-buffer sources designed for continuous procedural stream delivery.
+- Calculates spatial audio positioning incorporating listener orientation, velocity, doppler scaling, and distance attenuation models.
+- Implements peak metering across individual sources, group buses, and the master output channel.
+- Differentiates dynamically between fully decoded static caches and on-demand stream strategies.
 
 ### `mod.rs`
 
-- Audio subsystem module: mixer, buses, DSP effects, decoders, MIDI, pools, and visualisation.
-- Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `MidiPlayer`, `SoundPool`.
-- Submodule organisation separating playback, offline processing, and device enumeration.
-
-### `offline.rs`
-
-- Offline audio processing: apply DSP effect chains to files without real-time playback.
-- Peak normalisation with configurable target level.
-- WAV file decode to f32 and encode back to 16-bit PCM via rodio.
-- `OfflineEffect` serialisable struct matching `EffectType` + three parameter slots.
-- Parent directory auto-creation for output paths.
+- Subsystem for audio playback, spatialization, and hardware integration.
+- Provides centralized registries for mixing multiple concurrent sound streams.
+- Manages audio routing groups, continuous procedural buffers, and one-shot polyphonic voice pools.
+- Encapsulates decoding implementations for various compressed file formats.
+- Acts as the primary bridge between the engine architecture and the underlying Rodio audio backend.
 
 ### `pool.rs`
 
-- `SoundPool` round-robin polyphonic voice pool for one-shot playback of a single sound asset.
-- Preloaded `SoundKey` voices cycled via `next_voice` for low-latency triggering.
-- Per-pool volume multiplier and optional bus routing assignment.
-- Validity check ensuring at least one voice is available.
+- Polyphonic voice pooling capabilities for managing repeated one-shot sound effects.
+- Implements round-robin allocation strategies across preloaded audio voices to minimize trigger latency.
+- Pre-allocates fixed counts of identical sources to prevent mid-frame decoding overhead during intense playback events.
+- Groups pool-level properties like volume multipliers and bus assignments to be applied collectively.
+- Automatically validates and recovers from degenerate states such as empty voice lists.
 
 ### `sound_data.rs`
 
-- `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
-- File decode via rodio, silent-buffer allocation, and Lua argument factory.
-- WAV encoding to byte vector for save/export.
-- Waveform generators: sine, square, sawtooth, triangle, and deterministic white noise.
-- In-place DSP transforms: low-pass, high-pass, band-pass, gain, and mix-into.
-- Waveform drawing into `ImageData` for visual feedback.
-- Duration, sample count, and channel count queries.
+- In-memory audio sample buffering and raw waveform representation capabilities.
+- Provides contiguous block storage for decoded PCM sample data mapped into floating-point format.
+- Retains essential decoding metadata including sample rates, bit depths, and channel topologies.
+- Defers all advanced synthesis and signal manipulation directly to dedicated digital signal processing algorithms.
+- Serves as the primary bridge layer between offline decoders, generator functions, and the runtime streaming backend.
 
 ### `source.rs`
 
-- `SpatialState` 3D position, velocity, and orientation for positional audio.
-- `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
-- Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
-
-### `visualizer.rs`
-
-- Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
-- Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
-- Mono downmix helper for multi-channel input files.
-- Heat-colour mapping from normalised magnitude to RGBA.
-- Parent directory auto-creation for output image paths.
+- Data structures defining physical characteristics of audio emitters.
+- Provides containers to hold three-dimensional coordinates and orientation vectors for positional audio calculations.
+- Groups basic metadata required to uniquely identify and serialize sound assets.
+- Supplies sane fallback defaults assuming origins and neutral orientations to prevent spatial calculation errors.
 
 [⬆ back to top](#table-of-contents)
 
@@ -198,7 +147,7 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 ## 📖 API Overview
 
 - Source spec: [docs/specs/audio.md](../blob/main/docs/specs/audio.md)
-- Module-level functions: 93
+- Module-level functions: 100
 - Lua-visible types: 6
 - Total type methods: 122
 
@@ -208,6 +157,44 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 ## ⚙️ Module Functions
 
 ### Module-Level Functions
+
+#### lurek.audio.add_effect
+
+#### Definition
+
+```lua
+--- Adds an effect to a named audio bus and returns its effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+---@param params? table Optional parameters table; may include a `value` field.
+---@return number Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
+lurek.audio.add_effect = function(bus_name, effect_type_str, params) end
+```
+
+#### Description
+
+Adds an effect to a named audio bus and returns its effect ID.
+
+Parameters:
+
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_type_str` (`string`, required): Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+- `params` (`table`, optional): Optional parameters table; may include a `value` field.
+
+Returns: `integer` - Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    lurek.audio.create_bus("fx_bus", nil)
+    local eid = lurek.audio.add_effect("fx_bus", "reverb", { value = 0.5 })
+    print("effect id = " .. tostring(eid))
+    print("effect added to fx_bus")
+end
+```
 
 #### lurek.audio.applyBandpass
 
@@ -2040,12 +2027,12 @@ end
 
 ```lua
 --- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
----@param waveform string Waveform type ("sine", "square", "sawtooth", "triangle", "noise").
----@param freq number Frequency in Hz.
+---@param waveform string Wave type: `"sine"`, `"square"`, `"sawtooth"`, or `"triangle"`.
+---@param freq number Frequency in Hz (e.g. 440.0 for concert A).
 ---@param duration number Duration in seconds.
 ---@param sample_rate number Sample rate in Hz (e.g. 44100).
 ---@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@param adsr table ADSR parameters: `attack`, `decay`, `sustain`, `release`.
+---@param adsr? table Optional ADSR envelope with `attack`, `decay`, `sustain`, `release` fields (durations in seconds, sustain is a level in [0,1]).
 ---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newSynthWave = function(waveform, freq, duration, sample_rate, amplitude, adsr) end
 ```
@@ -2056,12 +2043,12 @@ Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
 
 Parameters:
 
-- `waveform` (`string`, required): Waveform type ("sine", "square", "sawtooth", "triangle", "noise").
-- `freq` (`number`, required): Frequency in Hz.
+- `waveform` (`string`, required): Wave type: `"sine"`, `"square"`, `"sawtooth"`, or `"triangle"`.
+- `freq` (`number`, required): Frequency in Hz (e.g. 440.0 for concert A).
 - `duration` (`number`, required): Duration in seconds.
 - `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
 - `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
-- `adsr` (`table`, required): ADSR parameters: `attack`, `decay`, `sustain`, `release`.
+- `adsr` (`table`, optional): Optional ADSR envelope with `attack`, `decay`, `sustain`, `release` fields (durations in seconds, sustain is a level in [0,1]).
 
 Returns: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
@@ -2070,10 +2057,53 @@ Returns: `LSoundData` - A `SoundData` object containing the generated PCM sample
 Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
+--- Audio Examples Part 1: Source creation, playback control, volume, pitch, pan, master, bus, filters, spatial
+
+--@api-stub: lurek.audio.newSource
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 1.0, 44100, 0.8)
-    print("synth wave = " .. tostring(sd ~= nil))
+    local path = "content/examples/assets/audio/sample_click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    local source_type = lurek.audio.getSourceType(src)
+    print("source created = " .. tostring(src ~= nil))
+    print("path = " .. path)
+    print("source type = " .. tostring(source_type))
 end
+
+--@api-stub: lurek.audio.play
+do
+    local path = "content/examples/assets/audio/sample_loop.wav"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    print("play requested for = " .. path)
+    print("playing = " .. tostring(lurek.audio.isPlaying(src)))
+end
+
+--@api-stub: lurek.audio.stop
+do
+    local path = "content/examples/assets/audio/sample_click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.play(src)
+    print("before stop playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.audio.stop(src)
+    print("stopped = " .. tostring(lurek.audio.isStopped(src)))
+end
+
+--@api-stub: lurek.audio.setVolume
+do
+    local path = "content/examples/assets/audio/sample_click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    print("volume before = " .. tostring(lurek.audio.getVolume(src)))
+    lurek.audio.setVolume(src, 0.5)
+    print("volume after = " .. tostring(lurek.audio.getVolume(src)))
+end
+
+--@api-stub: lurek.audio.getVolume
+do
+    local path = "content/examples/assets/audio/sample_click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setVolume(src, 0.8)
+    local vol = lurek.audio.getVolume(src)
+    print("configured volume = 0.8")
 ```
 
 #### lurek.audio.newTriangleWave
@@ -2149,6 +2179,43 @@ Source: [audio.lua](../blob/main/content/examples/audio.lua)
 do
     local sd = lurek.audio.newWhiteNoise(1.0, 44100, 0.4, 12345)
     print("white noise = " .. tostring(sd ~= nil))
+end
+```
+
+#### lurek.audio.normalizeFile
+
+#### Definition
+
+```lua
+--- Normalizes an audio file to a target peak amplitude and saves the result.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output WAV file.
+---@param target number Target peak amplitude (e.g. 0.9 for headroom).
+lurek.audio.normalizeFile = function(input, output, target) end
+```
+
+#### Description
+
+Normalizes an audio file to a target peak amplitude and saves the result.
+
+Parameters:
+
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output WAV file.
+- `target` (`number`, required): Target peak amplitude (e.g. 0.9 for headroom).
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
+    local path_out = "work/output/normalized.wav"
+    lurek.audio.normalizeFile(path_in, path_out, 0.9)
+    print("input file = " .. path_in)
+    print("output file = " .. path_out)
+    print("normalized to 0.9 peak")
 end
 ```
 
@@ -2315,6 +2382,44 @@ do
 end
 ```
 
+#### lurek.audio.processOffline
+
+#### Definition
+
+```lua
+--- Processes an audio file offline through a chain of effects and writes the result to an output file.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output WAV file.
+---@param effects_tbl table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
+lurek.audio.processOffline = function(input, output, effects_tbl) end
+```
+
+#### Description
+
+Processes an audio file offline through a chain of effects and writes the result to an output file.
+
+Parameters:
+
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output WAV file.
+- `effects_tbl` (`table`, required): Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    local effects = {{ type = "lowpass", p1 = 1000 }, { type = "gain", p1 = 0.8 }}
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
+    local path_out = "work/output/processed.wav"
+    lurek.audio.processOffline(path_in, path_out, effects)
+    print("input file = " .. path_in)
+    print("output file = " .. path_out)
+    print("offline processing done")
+end
+```
+
 #### lurek.audio.queueSource
 
 #### Definition
@@ -2384,6 +2489,43 @@ do
     lurek.audio.release(src)
     print("source released")
     print("source count before release = " .. tostring(before))
+end
+```
+
+#### lurek.audio.remove_effect
+
+#### Definition
+
+```lua
+--- Removes an effect from a named audio bus by effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by add_effect.
+---@return boolean True if the effect was successfully removed.
+lurek.audio.remove_effect = function(bus_name, effect_id) end
+```
+
+#### Description
+
+Removes an effect from a named audio bus by effect ID.
+
+Parameters:
+
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_id` (`integer`, required): Effect ID returned by add_effect.
+
+Returns: `boolean` - True if the effect was successfully removed.
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    lurek.audio.create_bus("temp_bus", nil)
+    local eid = lurek.audio.add_effect("temp_bus", "lowpass", { value = 800 })
+    local ok = lurek.audio.remove_effect("temp_bus", eid)
+    print("effect id = " .. tostring(eid))
+    print("removed = " .. tostring(ok))
 end
 ```
 
@@ -2547,6 +2689,47 @@ do
     lurek.audio.set_bus_volume("music_bus", 0.7)
     print("configured music_bus volume = 0.7")
     print("music_bus peak = " .. tostring(lurek.audio.getBusPeak("music_bus")))
+end
+```
+
+#### lurek.audio.set_effect_param
+
+#### Definition
+
+```lua
+--- Sets a parameter value on an effect attached to a named audio bus.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by add_effect.
+---@param param_name string Name of the effect parameter to set.
+---@param value number New value for the parameter.
+---@return boolean True if the parameter was set successfully.
+lurek.audio.set_effect_param = function(bus_name, effect_id, param_name, value) end
+```
+
+#### Description
+
+Sets a parameter value on an effect attached to a named audio bus.
+
+Parameters:
+
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_id` (`integer`, required): Effect ID returned by add_effect.
+- `param_name` (`string`, required): Name of the effect parameter to set.
+- `value` (`number`, required): New value for the parameter.
+
+Returns: `boolean` - True if the parameter was set successfully.
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    lurek.audio.create_bus("eq_bus", nil)
+    local eid = lurek.audio.add_effect("eq_bus", "highpass", { cutoff = 200 })
+    local ok = lurek.audio.set_effect_param("eq_bus", eid, "cutoff", 500)
+    print("effect id = " .. tostring(eid))
+    print("param set = " .. tostring(ok))
 end
 ```
 
@@ -3241,6 +3424,45 @@ do
 end
 ```
 
+#### lurek.audio.spectrogramToPng
+
+#### Definition
+
+```lua
+--- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output PNG file.
+---@param width number Image width in pixels.
+---@param height number Image height in pixels.
+lurek.audio.spectrogramToPng = function(input, output, width, height) end
+```
+
+#### Description
+
+Renders a spectrogram visualization of an audio file and saves it as a PNG image.
+
+Parameters:
+
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output PNG file.
+- `width` (`integer`, required): Image width in pixels.
+- `height` (`integer`, required): Image height in pixels.
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
+    local path_out = "work/output/spectrogram.png"
+    lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
+    print("input file = " .. path_in)
+    print("output file = " .. path_out)
+    print("spectrogram image saved")
+end
+```
+
 #### lurek.audio.stop
 
 #### Definition
@@ -3366,6 +3588,45 @@ do
     local pos = lurek.audio.tell(src)
     print("playing = " .. tostring(lurek.audio.isPlaying(src)))
     print("position = " .. tostring(pos))
+end
+```
+
+#### lurek.audio.waveformToPng
+
+#### Definition
+
+```lua
+--- Renders a waveform visualization of an audio file and saves it as a PNG image.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output PNG file.
+---@param width number Image width in pixels.
+---@param height number Image height in pixels.
+lurek.audio.waveformToPng = function(input, output, width, height) end
+```
+
+#### Description
+
+Renders a waveform visualization of an audio file and saves it as a PNG image.
+
+Parameters:
+
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output PNG file.
+- `width` (`integer`, required): Image width in pixels.
+- `height` (`integer`, required): Image height in pixels.
+
+#### Example
+
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
+
+```lua
+do
+    local path_in = "content/examples/assets/audio/sample_tone.wav"
+    local path_out = "work/output/waveform.png"
+    lurek.audio.waveformToPng(path_in, path_out, 800, 200)
+    print("input file = " .. path_in)
+    print("output file = " .. path_out)
+    print("waveform image saved")
 end
 ```
 

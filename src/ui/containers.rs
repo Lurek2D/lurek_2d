@@ -95,8 +95,8 @@ impl Layout {
             spacing: 0.0,
             columns: 1,
             wrap: false,
-            align: "center".to_string(),
-            justify: "center".to_string(),
+            align: "stretch".to_string(),
+            justify: "start".to_string(),
         }
     }
     /// Apply this layout's direction and spacing to position the given widget bases in-place.

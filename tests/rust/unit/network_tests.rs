@@ -26,7 +26,7 @@ mod constants_tests {
 
     #[test]
     fn http_timeout_nonzero() {
-        assert!(HTTP_TIMEOUT_SECS > 0);
+        const { assert!(HTTP_TIMEOUT_SECS > 0) };
     }
 }
 
@@ -295,7 +295,7 @@ mod message_tests {
 
     #[test]
     fn round_trip_float() {
-        let val = NetValue::Float(3.14159);
+        let val = NetValue::Float(std::f64::consts::PI);
         let packed = pack(&val).unwrap();
         let unpacked = unpack(&packed).unwrap();
         assert_eq!(val, unpacked);

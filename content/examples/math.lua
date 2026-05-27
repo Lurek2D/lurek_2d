@@ -507,114 +507,6 @@ do
     print("end = " .. x1 .. "," .. y1)
 end
 
---@api-stub: LNoiseGenerator:perlin1d
-do
-    local noise = lurek.procgen.newNoiseGenerator(123)
-    print("perlin1d = " .. noise:perlin1d(1.5))
-end
-
---@api-stub: LNoiseGenerator:perlin2d
-do
-    local noise = lurek.procgen.newNoiseGenerator(123)
-    print("perlin2d = " .. noise:perlin2d(1.5, 2.5))
-end
-
---@api-stub: LNoiseGenerator:perlin3d
-do
-    local noise = lurek.procgen.newNoiseGenerator(123)
-    print("perlin3d = " .. noise:perlin3d(1.0, 2.0, 3.0))
-end
-
---@api-stub: LNoiseGenerator:perlin4d
-do
-    local noise = lurek.procgen.newNoiseGenerator(123)
-    print("perlin4d = " .. noise:perlin4d(1.0, 2.0, 3.0, 4.0))
-end
-
---@api-stub: LNoiseGenerator:simplex1d
-do
-    local noise = lurek.procgen.newNoiseGenerator(99)
-    print("simplex1d = " .. noise:simplex1d(0.7))
-end
-
---@api-stub: LNoiseGenerator:simplex2d
-do
-    local noise = lurek.procgen.newNoiseGenerator(99)
-    print("simplex2d = " .. noise:simplex2d(0.7, 1.3))
-end
-
---@api-stub: LNoiseGenerator:simplex3d
-do
-    local noise = lurek.procgen.newNoiseGenerator(99)
-    print("simplex3d = " .. noise:simplex3d(0.7, 1.3, 2.1))
-end
-
---@api-stub: LNoiseGenerator:worley2d
-do
-    local noise = lurek.procgen.newNoiseGenerator(55)
-    print("euclidean = " .. noise:worley2d(3.5, 4.5))
-    print("manhattan = " .. noise:worley2d(3.5, 4.5, "manhattan"))
-end
-
---@api-stub: LNoiseGenerator:worley3d
-do
-    local noise = lurek.procgen.newNoiseGenerator(55)
-    print("worley3d = " .. noise:worley3d(1.0, 2.0, 3.0))
-end
-
---@api-stub: LNoiseGenerator:fbm
-do
-    local noise = lurek.procgen.newNoiseGenerator(7)
-    print("fbm = " .. noise:fbm(2.5, 3.5, 6, 2.0, 0.5, "simplex"))
-end
-
---@api-stub: LNoiseGenerator:ridged
-do
-    local noise = lurek.procgen.newNoiseGenerator(7)
-    print("ridged = " .. noise:ridged(2.5, 3.5, 8, 2.5, 0.6, "perlin"))
-end
-
---@api-stub: LNoiseGenerator:turbulence
-do
-    local noise = lurek.procgen.newNoiseGenerator(7)
-    print("turbulence = " .. noise:turbulence(1.0, 2.0, 5, 2.0, 0.5, "simplex"))
-end
-
---@api-stub: LNoiseGenerator:warpDomain
-do
-    local noise = lurek.procgen.newNoiseGenerator(13)
-    local x, y = noise:warpDomain(3.0, 4.0, 0.5)
-    print("warped = " .. x .. "," .. y)
-end
-
---@api-stub: LNoiseGenerator:generateMap
-do
-    local noise = lurek.procgen.newNoiseGenerator(1)
-    local map = noise:generateMap(8, 8, {scaleX = 4.0, scaleY = 4.0, octaves = 4, kind = "perlin"})
-    print("cells = " .. #map)
-    print("first = " .. map[1])
-end
-
---@api-stub: LNoiseGenerator:generateMapCompute
-do
-    local noise = lurek.procgen.newNoiseGenerator(1)
-    local map = noise:generateMapCompute(8, 8, {scaleX = 8.0, scaleY = 8.0})
-    print("compute cells = " .. #map)
-end
-
---@api-stub: LNoiseGenerator:setSeed
-do
-    local noise = lurek.procgen.newNoiseGenerator(0)
-    noise:setSeed(999)
-    print("seed = " .. noise:getSeed())
-end
-
---@api-stub: LNoiseGenerator:getSeed
-do
-    local noise = lurek.procgen.newNoiseGenerator(321)
-    print("seed = " .. noise:getSeed())
-end
-
 --@api-stub: lurek.math.vec2
 do
     local v = lurek.math.vec2(3, 4)
@@ -1213,18 +1105,6 @@ do
     print("cells = " .. #cells)
 end
 
---@api-stub: LNoiseGenerator:type
-do
-    local noise = lurek.procgen.newNoiseGenerator(42)
-    print("type = " .. noise:type())
-end
-
---@api-stub: LNoiseGenerator:typeOf
-do
-    local noise = lurek.procgen.newNoiseGenerator(42)
-    print("typeOf = " .. tostring(noise:typeOf("LNoiseGenerator")))
-end
-
 --@api-stub: lurek.math.applyEasing
 do
     local linear = lurek.math.applyEasing("linear", 0.5)
@@ -1399,12 +1279,6 @@ end
 do
     local rng = lurek.math.newRandomGenerator(77)
     print("typeOf = " .. tostring(rng:typeOf("LRandomGenerator")))
-end
-
---@api-stub: LRandomGenerator:getSeed
-do
-    local rng = lurek.math.newRandomGenerator(88)
-    print("seed = " .. rng:getSeed())
 end
 
 --@api-stub: lurek.math.geometricVoronoi
@@ -1667,22 +1541,4 @@ end
 do
     local v = lurek.math.Vec3(1, 2, 3)
     print(tostring(v:typeOf("LVec3")))
-end
-
---@api-stub: LNoiseGenerator:type
-do
-    local ng = lurek.procgen.newNoiseGenerator(42)
-    print("type = " .. ng:type())
-end
-
---@api-stub: LNoiseGenerator:typeOf
-do
-    local ng = lurek.procgen.newNoiseGenerator(42)
-    print("typeOf = " .. tostring(ng:typeOf("LNoiseGenerator")))
-end
-
---@api-stub: lurek.math.geometricVoronoi
-do
-    local cells = lurek.math.geometricVoronoi({{x = 0.2, y = 0.3}, {x = 0.7, y = 0.8}, {x = 0.5, y = 0.1}})
-    print("cells = " .. #cells)
 end

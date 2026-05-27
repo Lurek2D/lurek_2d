@@ -14,9 +14,9 @@
   - [minimap.rs](#minimaprs)
   - [mod.rs](#modrs)
   - [province_adapter.rs](#provinceadapterrs)
+  - [raycaster_overlay.rs](#raycasteroverlayrs)
   - [render.rs](#renderrs)
   - [types.rs](#typesrs)
-  - [raycaster_overlay.rs](#raycasteroverlayrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -69,6 +69,7 @@ The module also features a robust rendering pipeline that composites these layer
 - Minimap state, layer composition, marker tracking, and fog-of-war reveal.
 - Pixel-buffer rendering pipeline that writes the minimap texture each frame.
 - Province-map adapter bridging world regions into minimap layers.
+- Raycaster-specific tile extraction with lighting, LOS, and FOV reveal.
 - Shared types for markers, overlays, pings, and color modes.
 
 ### `province_adapter.rs`
@@ -76,6 +77,15 @@ The module also features a robust rendering pipeline that composites these layer
 - Bridge between `ProvinceRegistry` terrain/visibility data and the minimap grid.
 - Copy terrain types, fog levels, and political palette colours into a `Minimap`.
 - Clips to the smaller of the two grids so mismatched sizes never panic.
+
+### `raycaster_overlay.rs`
+
+- Raycaster-specific minimap overlay rendering.
+- Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
+- Bresenham grid traversal for fast obstruction testing between player and map cells.
+- FOV ray fan that reveals all traversed cells within a max distance and step size.
+- Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
+- Player arrow rendering (filled circle plus direction line) composited onto the minimap.
 
 ### `render.rs`
 
@@ -93,14 +103,6 @@ The module also features a robust rendering pipeline that composites these layer
 - Object, ping, and marker structs hold live map overlays with position, colour, and animation.
 - `OverlayShape` and `OverlayPath` describe vector geometry drawn over the terrain grid.
 - `LayerData` stores raw cell bytes for named minimap layers.
-
-### `raycaster_overlay.rs`
-
-- Raycaster-specific minimap tile extraction with per-tile lighting and LOS checks.
-- Bresenham grid traversal for fast obstruction testing between player and map cells.
-- FOV ray fan that reveals all traversed cells within a max distance and step size.
-- Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
-- Player arrow rendering (filled circle plus direction line) composited onto the minimap.
 
 [⬆ back to top](#table-of-contents)
 

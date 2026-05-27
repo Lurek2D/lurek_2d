@@ -12,7 +12,7 @@ describe("lurek.patterns.newEventBus", function()
         local bus = lurek.patterns.newEventBus()
         expect_equal("LEventBus", bus["type"](bus))
         expect_true(bus["typeOf"](bus, "LEventBus"))
-        expect_true(bus["typeOf"](bus, "Object"))
+        expect_true(bus["typeOf"](bus, "LObject"))
     end)
 
     -- @covers LEventBus:emit
@@ -115,7 +115,7 @@ describe("lurek.patterns.newObjectPool", function()
         local pool = lurek.patterns.newObjectPool()
         expect_equal("LObjectPool", pool["type"](pool))
         expect_true(pool["typeOf"](pool, "LObjectPool"))
-        expect_true(pool["typeOf"](pool, "Object"))
+        expect_true(pool["typeOf"](pool, "LObject"))
     end)
 
     -- @covers LObjectPool:acquire
@@ -196,7 +196,7 @@ describe("lurek.patterns.newCommandStack", function()
         local cmds = lurek.patterns.newCommandStack()
         expect_equal("LCommandStack", cmds["type"](cmds))
         expect_true(cmds["typeOf"](cmds, "LCommandStack"))
-        expect_true(cmds["typeOf"](cmds, "Object"))
+        expect_true(cmds["typeOf"](cmds, "LObject"))
     end)
 
     -- @covers LCommandStack:execute
@@ -304,7 +304,7 @@ describe("lurek.patterns.newServiceLocator", function()
         local sl = lurek.patterns.newServiceLocator()
         expect_equal("LServiceLocator", sl["type"](sl))
         expect_true(sl["typeOf"](sl, "LServiceLocator"))
-        expect_true(sl["typeOf"](sl, "Object"))
+        expect_true(sl["typeOf"](sl, "LObject"))
     end)
 
     -- @covers LServiceLocator:has
@@ -374,7 +374,7 @@ describe("lurek.patterns.newFactory", function()
         local f = lurek.patterns.newFactory()
         expect_equal("LFactory", f["type"](f))
         expect_true(f["typeOf"](f, "LFactory"))
-        expect_true(f["typeOf"](f, "Object"))
+        expect_true(f["typeOf"](f, "LObject"))
     end)
 
     -- @covers LFactory:create
@@ -447,7 +447,7 @@ describe("lurek.patterns.newSimpleState", function()
         local fsm = lurek.patterns.newSimpleState()
         expect_equal("LSimpleState", fsm["type"](fsm))
         expect_true(fsm["typeOf"](fsm, "LSimpleState"))
-        expect_true(fsm["typeOf"](fsm, "Object"))
+        expect_true(fsm["typeOf"](fsm, "LObject"))
     end)
 
     -- @covers LSimpleState:addState
@@ -1687,7 +1687,7 @@ describe("lurek.patterns.newWeightedRandom", function()
         local wr = newWeightedRandom()
         expect_equal("LWeightedRandom", wr["type"](wr))
         expect_true(wr["typeOf"](wr, "LWeightedRandom"))
-        expect_true(wr["typeOf"](wr, "Object"))
+        expect_true(wr["typeOf"](wr, "LObject"))
     end)
 
     -- @covers LWeightedRandom:add
@@ -1807,7 +1807,7 @@ describe("lurek.patterns.newBehaviorTree", function()
         local bt = newBehaviorTree()
         expect_equal("LBehaviorTree", bt["type"](bt))
         expect_true(bt["typeOf"](bt, "LBehaviorTree"))
-        expect_true(bt["typeOf"](bt, "Object"))
+        expect_true(bt["typeOf"](bt, "LObject"))
     end)
 
     -- @covers LBehaviorTree:tick
@@ -1993,7 +1993,7 @@ describe("lurek.patterns.newGraph", function()
         local g = newGraph()
         expect_equal("LPatternGraph", g["type"](g))
         expect_true(g["typeOf"](g, "LPatternGraph"))
-        expect_true(g["typeOf"](g, "Object"))
+        expect_true(g["typeOf"](g, "LObject"))
     end)
 
     -- @covers LPatternGraph:addNode

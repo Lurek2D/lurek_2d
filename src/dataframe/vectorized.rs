@@ -9,7 +9,7 @@
 //! - Column type casting between float64, int64, and text
 //! - Boolean mask filtering across all column types
 
-use crate::dataframe::frame::{CellValue, DataFrame};
+use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 use rayon::prelude::*;
 use std::collections::HashMap;
 #[derive(Debug, Clone)]
@@ -769,9 +769,9 @@ impl DataFrame {
         const PAR_THRESHOLD: usize = 10_000;
 
         let new_col: Vec<CellValue> = if col_data.len() >= PAR_THRESHOLD {
-            col_data.par_iter().map(|c| f(c)).collect()
+            col_data.par_iter().map(&f).collect()
         } else {
-            col_data.iter().map(|c| f(c)).collect()
+            col_data.iter().map(f).collect()
         };
         self.data[ci] = new_col;
         Ok(())

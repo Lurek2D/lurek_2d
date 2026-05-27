@@ -17,7 +17,7 @@ pub mod mod_loader;
 pub mod mod_sandbox;
 
 pub use mod_manager::*;
-pub use api_registry::GameApiRegistry;
-pub use api_schema::{FieldDef, FieldType, MethodDef, TypeSchema};
+pub use api_registry::{GameApiRegistry, TypeSchema};
+pub use api_schema::{FieldDef, FieldType, MethodDef};
 pub use mod_loader::{FieldValue, ModInstance};
 pub use mod_sandbox::{HookPoint, ModSandbox};

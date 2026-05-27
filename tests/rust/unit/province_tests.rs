@@ -20,7 +20,7 @@ use lurek2d::province::render::{
     generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
 };
 use lurek2d::province::registry::ProvinceRegistry;
-use lurek2d::province::types::{BorderPairFlags, BorderPairStyle, BorderType, BorderTypeConfig};
+use lurek2d::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 
 fn sample_grid() -> ProvinceGrid {
@@ -66,11 +66,11 @@ fn test_registry_from_grid_has_provinces_and_adjacency() {
     let reg = ProvinceRegistry::from_grid(&grid);
     assert_eq!(reg.province_count(), 2);
 
-    let neighbors_1 = reg.get_neighbors(1);
-    assert_eq!(neighbors_1, vec![2]);
+    let neighbors_1 = reg.get_neighbors(ProvinceId(1));
+    assert_eq!(neighbors_1, vec![ProvinceId(2)]);
 
-    let neighbors_2 = reg.get_neighbors(2);
-    assert_eq!(neighbors_2, vec![1]);
+    let neighbors_2 = reg.get_neighbors(ProvinceId(2));
+    assert_eq!(neighbors_2, vec![ProvinceId(1)]);
 }
 
 #[test]
@@ -79,8 +79,8 @@ fn test_registry_revision_and_change_tracking() {
     let mut reg = ProvinceRegistry::from_grid(&grid);
     assert_eq!(reg.revision(), 0);
 
-    assert!(reg.set_political_color(1, [1.0, 0.0, 0.0, 1.0]));
-    assert!(reg.set_terrain_type(1, 7));
+    assert!(reg.set_political_color(ProvinceId(1), [1.0, 0.0, 0.0, 1.0]));
+    assert!(reg.set_terrain_type(ProvinceId(1), 7));
 
     let rev = reg.revision();
     assert!(rev >= 2);
@@ -94,9 +94,9 @@ fn test_registry_border_type_roundtrip() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
 
-    reg.set_border_type(1, 2, 1);
-    assert_eq!(reg.get_border_type(1, 2), Some(1));
-    assert_eq!(reg.get_border_type(2, 1), Some(1));
+    reg.set_border_type(ProvinceId(1), ProvinceId(2), 1);
+    assert_eq!(reg.get_border_type(ProvinceId(1), ProvinceId(2)), Some(1));
+    assert_eq!(reg.get_border_type(ProvinceId(2), ProvinceId(1)), Some(1));
 }
 
 #[test]
@@ -137,8 +137,8 @@ fn test_registry_border_pair_style_roundtrip() {
         thickness: 3.0,
         flags,
     };
-    reg.set_border_pair_style(1, 2, style);
-    let got = reg.get_border_pair_style(2, 1).expect("style should exist");
+    reg.set_border_pair_style(ProvinceId(1), ProvinceId(2), style);
+    let got = reg.get_border_pair_style(ProvinceId(2), ProvinceId(1)).expect("style should exist");
 
     assert_eq!(got.color, style.color);
     assert_eq!(got.thickness, style.thickness);
@@ -163,18 +163,18 @@ fn test_registry_capital_and_label_metadata_roundtrip() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
 
-    assert!(reg.set_capital(1, 10.5, 20.5));
-    assert_eq!(reg.capital_for(1), Some((10.5, 20.5)));
+    assert!(reg.set_capital(ProvinceId(1), 10.5, 20.5));
+    assert_eq!(reg.capital_for(ProvinceId(1)), Some((10.5, 20.5)));
 
-    assert!(reg.set_label_line(1, 1.0, 2.0, 3.0, 4.0));
-    assert_eq!(reg.label_line_for(1), Some(((1.0, 2.0), (3.0, 4.0))));
+    assert!(reg.set_label_line(ProvinceId(1), 1.0, 2.0, 3.0, 4.0));
+    assert_eq!(reg.label_line_for(ProvinceId(1)), Some(((1.0, 2.0), (3.0, 4.0))));
 
-    assert!(reg.set_label_text(1, "Yukon".to_string()));
-    assert_eq!(reg.label_text_for(1), Some("Yukon"));
+    assert!(reg.set_label_text(ProvinceId(1), "Yukon".to_string()));
+    assert_eq!(reg.label_text_for(ProvinceId(1)), Some("Yukon"));
 
-    assert!(reg.bbox_for(1).is_some());
-    assert!(reg.spans_for(1).is_some());
-    assert!(reg.style_for(1).is_some());
+    assert!(reg.bbox_for(ProvinceId(1)).is_some());
+    assert!(reg.spans_for(ProvinceId(1)).is_some());
+    assert!(reg.style_for(ProvinceId(1)).is_some());
 }
 
 #[test]
@@ -227,18 +227,20 @@ fn test_import_metadata_from_files_sets_attrs_labels_and_markers() {
     let mut reg = ProvinceRegistry::from_grid(&grid);
     assert_eq!(reg.province_count(), 1);
 
-    let mut opts = ProvinceMetadataImportOptions::default();
-    opts.color_map_png_path = color_path.to_string_lossy().into_owned();
-    opts.marker_png_path = Some(marked_path.to_string_lossy().into_owned());
-    opts.color_csv_path = csv_path.to_string_lossy().into_owned();
-    opts.province_toml_path = Some(toml_path.to_string_lossy().into_owned());
+    let opts = ProvinceMetadataImportOptions {
+        color_map_png_path: color_path.to_string_lossy().into_owned(),
+        marker_png_path: Some(marked_path.to_string_lossy().into_owned()),
+        color_csv_path: csv_path.to_string_lossy().into_owned(),
+        province_toml_path: Some(toml_path.to_string_lossy().into_owned()),
+        ..Default::default()
+    };
 
     let summary = import_metadata_from_files(&mut reg, &opts).expect("import metadata");
     assert_eq!(summary.mapped_provinces, 1);
     assert!(summary.capitals_set >= 1);
     assert!(summary.labels_set >= 1);
 
-    let snap = reg.get_province(1).expect("province 1 snapshot");
+    let snap = reg.get_province(ProvinceId(1)).expect("province 1 snapshot");
     assert_eq!(snap.style.terrain_type, 0);
     assert_eq!(snap.attrs.get("game_id").map(String::as_str), Some("101"));
     assert_eq!(snap.attrs.get("terrain").map(String::as_str), Some("sea"));
@@ -246,8 +248,8 @@ fn test_import_metadata_from_files_sets_attrs_labels_and_markers() {
         snap.attrs.get("name").map(String::as_str),
         Some("Alpha Province")
     );
-    assert_eq!(reg.label_text_for(1), Some("Alpha Province"));
-    assert_eq!(reg.capital_for(1), Some((1.5, 0.5)));
+    assert_eq!(reg.label_text_for(ProvinceId(1)), Some("Alpha Province"));
+    assert_eq!(reg.capital_for(ProvinceId(1)), Some((1.5, 0.5)));
 }
 
 #[test]
@@ -310,8 +312,8 @@ fn test_province_polygons_staircase_produces_fewer_points_and_diagonal() {
 fn test_fow_render_hidden_and_discovered_fill_rules() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
-    assert!(reg.set_visibility_state(1, 0));
-    assert!(reg.set_visibility_state(2, 1));
+    assert!(reg.set_visibility_state(ProvinceId(1), 0));
+    assert!(reg.set_visibility_state(ProvinceId(2), 1));
 
     let opts = ProvinceRenderOptions {
         draw_fills: true,
@@ -350,8 +352,8 @@ fn test_fow_render_hidden_and_discovered_fill_rules() {
 fn test_fow_borders_require_both_provinces_fully_visible() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
-    assert!(reg.set_visibility_state(1, 2));
-    assert!(reg.set_visibility_state(2, 2));
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_visibility_state(ProvinceId(2), 2));
 
     let opts = ProvinceRenderOptions {
         draw_fills: false,
@@ -367,7 +369,7 @@ fn test_fow_borders_require_both_provinces_fully_visible() {
         .count();
     assert!(visible_lines > 0, "expected border lines when both provinces are visible");
 
-    assert!(reg.set_visibility_state(2, 1));
+    assert!(reg.set_visibility_state(ProvinceId(2), 1));
     let discovered_cmds = generate_render_commands(&reg, &opts, None);
     let discovered_lines = discovered_cmds
         .iter()
@@ -383,8 +385,8 @@ fn test_fow_borders_require_both_provinces_fully_visible() {
 fn test_fow_capitals_render_only_for_fully_visible_provinces() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
-    assert!(reg.set_capital(1, 1.0, 1.0));
-    assert!(reg.set_visibility_state(1, 1));
+    assert!(reg.set_capital(ProvinceId(1), 1.0, 1.0));
+    assert!(reg.set_visibility_state(ProvinceId(1), 1));
 
     let opts = ProvinceRenderOptions {
         draw_fills: false,
@@ -403,7 +405,7 @@ fn test_fow_capitals_render_only_for_fully_visible_provinces() {
         "capital markers should not render for discovered provinces"
     );
 
-    assert!(reg.set_visibility_state(1, 2));
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
     let visible_cmds = generate_render_commands(&reg, &opts, None);
     let visible_circles = visible_cmds
         .iter()
@@ -419,8 +421,8 @@ fn test_fow_capitals_render_only_for_fully_visible_provinces() {
 fn test_strategic_mode_renders_country_overrides_but_skips_land_land() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
-    assert!(reg.set_visibility_state(1, 2));
-    assert!(reg.set_visibility_state(2, 2));
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_visibility_state(ProvinceId(2), 2));
 
     let tactical_opts = ProvinceRenderOptions {
         draw_fills: false,
@@ -458,8 +460,8 @@ fn test_strategic_mode_renders_country_overrides_but_skips_land_land() {
     let mut flags = BorderPairFlags::empty();
     flags.insert_bits(BorderPairFlags::COUNTRY);
     reg.set_border_pair_style(
-        1,
-        2,
+        ProvinceId(1),
+        ProvinceId(2),
         BorderPairStyle {
             color: Some([1.0, 0.0, 0.0, 1.0]),
             thickness: 3.0,
@@ -481,7 +483,7 @@ fn test_distance_field_has_zero_on_border_and_greater_inside() {
     let mut img = ImageData::new(5, 5);
     for y in 0..5 {
         for x in 0..5 {
-            if x >= 1 && x <= 3 && y >= 1 && y <= 3 {
+            if (1..=3).contains(&x) && (1..=3).contains(&y) {
                 img.set_pixel(x, y, 255, 0, 0, 255);
             } else {
                 img.set_pixel(x, y, 0, 255, 0, 255);
@@ -514,8 +516,8 @@ fn test_border_index_builds_pair_ids_and_dilation_expands_coverage() {
     let mut flags = BorderPairFlags::empty();
     flags.insert_bits(BorderPairFlags::COUNTRY);
     reg.set_border_pair_style(
-        1,
-        2,
+        ProvinceId(1),
+        ProvinceId(2),
         BorderPairStyle {
             color: Some([1.0, 0.0, 0.0, 1.0]),
             thickness: 4.0,
@@ -525,9 +527,9 @@ fn test_border_index_builds_pair_ids_and_dilation_expands_coverage() {
 
     let mut styles = std::collections::HashMap::new();
     let style = reg
-        .get_border_pair_style(1, 2)
+        .get_border_pair_style(ProvinceId(1), ProvinceId(2))
         .expect("pair style should be present");
-    styles.insert((1, 2), style);
+    styles.insert((ProvinceId(1), ProvinceId(2)), style);
     dilate_border_index_with_styles(&mut index, &styles);
 
     let border_pixels_after = index.data.iter().filter(|&&v| v != 0).count();
@@ -560,8 +562,8 @@ fn test_gpu_bridge_border_style_records_follow_border_index_pairs() {
     let mut flags = BorderPairFlags::empty();
     flags.insert_bits(BorderPairFlags::COUNTRY);
     reg.set_border_pair_style(
-        1,
-        2,
+        ProvinceId(1),
+        ProvinceId(2),
         BorderPairStyle {
             color: Some([1.0, 0.0, 0.0, 1.0]),
             thickness: 4.0,

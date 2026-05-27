@@ -35,6 +35,19 @@ impl From<u32> for RegionId {
 impl From<RegionId> for u32 {
     fn from(id: RegionId) -> Self { id.0 }
 }
+
+impl mlua::IntoLua<'_> for RegionId {
+    fn into_lua(self, lua: &mlua::Lua) -> mlua::Result<mlua::Value<'_>> {
+        lua.pack(self.0 as i64)
+    }
+}
+
+impl mlua::FromLua<'_> for RegionId {
+    fn from_lua(val: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
+        let n = i64::from_lua(val, lua)?;
+        Ok(RegionId(n as u32))
+    }
+}
 /// Geographic region with polygon geometry, adjacency, and render attributes.
 #[derive(Debug, Clone)]
 pub struct Region {

@@ -1,42 +1,82 @@
-# Tennis Classic
+# Tennis Classic — Lurek2D
 
-Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opponent, and full tennis scoring (games, sets, match).
+> **Kategoria / Category:** Sports · Racket  
+> **Uruchamianie / Run:** `cargo run -- content/games/sports/tennis_classic`
 
-## Run
+---
 
-```
+## O grze / About
+
+**PL:** Pełnoprawna tenisowa rozgrywka widok z góry z kompletnym systemem punktacji (15/30/40/Deuce/Advantage), serwisem dwuetapowym (podrzut → uderzenie), topspin/slice, AI przeciwnikiem z reakcją rosnącą z każdym setem i mechaniką ładowania mocy uderzenia. Format: best-of-3 sety.
+
+**EN:** A complete top-down tennis game featuring authentic scoring (15/30/40/Deuce/Advantage), a two-phase serve (toss → hit), topspin/slice spin modifiers, an AI opponent that speeds up each set, and a charge-power hit mechanic. Match format: best-of-3 sets.
+
+---
+
+## Pętla rozgrywki / Gameplay Loop
+
+1. **Title** — `Space` aby rozpocząć.
+2. **Serving** — `Space` × 2: najpierw podrzut, potem uderzenie; aim_dir lewo/prawo wybiera pole serwisowe.
+3. **Playing** — poruszaj się WASD; gdy piłka jest blisko i leci w Twoją stronę, naciśnij i zwolnij `Space` dla nabitego uderzenia.
+   - `W` = topspin (piłka zapada się), `S` = slice (piłka unosi się).
+   - `A / D` podczas uderzenia = kierunek cross/down-the-line.
+4. **AI** — rywalizuje, powraca do centrum, przyspiesza co set.
+5. **Deuce / Advantage / Set End / Match End** — komunikaty z timerem.
+
+---
+
+## Uruchamianie / Run
+
+```bash
 cargo run -- content/games/sports/tennis_classic
 ```
 
-## Controls
+---
 
-| Key                   | Action                |
-| --------------------- | --------------------- |
-| W / A / S / D         | Move player           |
-| Space                 | Serve toss / hit ball |
-| A / D (while hitting) | Aim left / right      |
-| W (while hitting)     | Topspin shot          |
-| S (while hitting)     | Slice shot            |
-| Escape                | Quit                  |
+## Sterowanie / Controls
 
-## What It Demonstrates
+| Klawisz / Key | Akcja / Action |
+|---|---|
+| `W / A / S / D` | Ruch gracza |
+| `Space` (naciśnij) | Start ładowania uderzenia / podrzut |
+| `Space` (puść) | Uderzenie (siła = czas trzymania) |
+| `A / D` | Kierunek cross/DTL podczas uderzenia |
+| `W / S` | Topspin / Slice |
+| `Escape` | Wyjście |
 
-- Top-down court rendering with white line markings (singles court)
-- Serve mechanics: toss + hit, service box targeting, fault/double-fault
-- Shot types: topspin (fast dip), slice (slow float), power (hold Space)
-- Full tennis scoring: 0/15/30/40, deuce, advantage, games, sets (tiebreak at 6-6), best-of-3 match
-- AI opponent with reaction delay that scales per set
-- `lurek.input.bind()` — action-based input for move/hit/quit
-- `lurek.particle.newSystem()` — ball impact dust, ace flash, net shake
-- `lurek.tween.to()` — score popup, serve toss arc, ball speed trail
-- `lurek.camera.new()` — camera for court view
-- `lurek.timer.getFPS()` / `lurek.timer.getDelta()` — frame-rate display and delta timing
-- `lurek.window.setTitle()` — dynamic window title with score
-- `lurek.render.setBackgroundColor()` — grass-green background
-- `lurek.event.quit()` — clean exit on Escape
-- Render/render_ui split — court/players/ball in `render()`, score/HUD in `render_ui()`
-- TITLE → SERVING → PLAYING → POINT → SET_END → MATCH_END state machine
+---
 
-## Gameplay
+## Inspiracje / Inspirations
 
-Move your player (blue) on the bottom half of the court with WASD. Press Space to serve: first press tosses the ball, second press hits it into the diagonal service box. During rallies, press Space when the ball is near to return it. Hold Space longer for a power shot, press W while hitting for topspin, or S for slice. The AI opponent (red) tracks the ball with increasing skill each set. Rally counter tracks consecutive hits. Win games (0-15-30-40), sets (first to 6, tiebreak at 6-6), and the match (best of 3 sets).
+| Tytuł | Nawiązanie |
+|---|---|
+| **Pong** (Atari, 1972) | Ojciec rakietek ekranowych |
+| **Wimbledon** (Amiga, 1992) | Top-down tennis z prawdziwym scoringiem |
+| **Super Tennis** (SNES, 1991) | Serwis dwufazowy, spin modifier |
+| **Mario Tennis** (N64, 1998) | Charge shot, AI scaling with sets |
+
+---
+
+## Lurek Engine API — kluczowe funkcje
+
+| API | Zastosowanie |
+|---|---|
+| `lurek.particle.newSystem` | Dust (odbicia), ace (match-win), net (błąd sieciowy) |
+| `lurek.ui.loadLayoutFile` | HUD wynik, sety, rally counter; overlay komunikaty |
+| `lurek.camera.new` | Inicjalizacja kamery |
+| `lurek.tween` (manual lerp) | Ball trail fade, score popup alpha |
+| `lurek.input.bind` | WASD + Space action mapping |
+| `lurek.timer.getFPS` | FPS counter |
+
+---
+
+## Przydatność i unikalność / Showcase Value
+
+**PL:** Tennis Classic jest jedyną grą w bibliotece z **pełnym systemem punktacji teniса** (Deuce/Advantage, sety, mecz best-of-3), **mechaniką topspin/slice** wpływającą na trajektorię piłki i **ładowaniem mocy** uderzenia. Trzy rodzaje particle systems (dust, ace, net) działają jednocześnie.
+
+**EN:** Tennis Classic is the only demo implementing **authentic tennis scoring** (Deuce/Advantage/sets/best-of-3), a **spin modifier system** (topspin/slice affecting ball trajectory), and a **charge-release hit mechanic**. Three simultaneous particle systems (dust, ace, net) demonstrate multi-emitter usage in Lurek.
+
+### Podobne gry / Similar games to watch for overlap
+- **Sensible Soccer, Fishing** — inne sporty rakietowe/ball; brak semantycznego nakładania.
+- **Pong** (arcade/) — tematycznie zbliżone, ale Pong jest prymitywny; Tennis Classic to pełna symulacja.
+- ✅ **Verdict:** Jedyna pełna rakietkowa gra — **keep**. Duplikacja ryzyka niska.

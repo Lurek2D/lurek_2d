@@ -156,8 +156,7 @@ To facilitate seamless data interchange, the module implements native serializat
 
 ### `query/window.rs`
 
-- Rolling mean, sum, min, and max over configurable window size; mean and sum use O(N) sliding-window algorithms
-- Rolling operations ignore nil cells; result is Nil when current window contains no numeric cells
+- Rolling mean, sum, min, and max over configurable window size
 - Dense rank computation with average-rank tie-breaking
 - Row-to-row percent change calculation
 - Cumulative sum across ordered rows

@@ -1,41 +1,80 @@
-# Ski Jump
+# Ski Jump — Lurek2D
 
-_Choose your hill, crouch for speed on the approach, time your jump at the ramp lip, and lean through the air for maximum distance and style points._
+> **Kategoria / Category:** Sports · Winter  
+> **Uruchamianie / Run:** `cargo run -- content/games/sports/ski_jump`
 
-## Run
+---
 
-```powershell
+## O grze / About
+
+**PL:** Widokowa z boku gra skokowa w narciarstwie klasycznym. Gracz przechodzi przez trzy fazy: **rozbieg** (kucnięcie + przyspieszenie), **lot** (wychylenie ciała dla optymalnego lotu), **lądowanie** (Telemark). Trzy skocznie (Small 90m / Normal 120m / Large 150m), trzy rundy, pięciu sędziów oceniających styl.
+
+**EN:** A side-view ski jumping game with three distinct phases: **approach** (crouch for speed), **airborne** (lean forward/back for lift vs. drag), and **landing** (Telemark bonus). Three hill sizes (Small K90 / Normal K120 / Large K150), three rounds, five judges scoring style.
+
+---
+
+## Pętla rozgrywki / Gameplay Loop
+
+1. **Title** — wybór skoczni (1/2/3), start `Space`.
+2. **Approach** — trzymaj `D` (kucnięcie) dla większej prędkości; naciśnij `Space` przy końcu najazdu.
+3. **Airborne** — `W` = wychylenie do przodu (lift), `S` = wychylenie do tyłu; dopasuj kąt do trajektorii lotu.
+4. **Landing** — jakość = różnica kąta ciała vs. stoку; `Space` = bonus Telemark.
+5. **Score** — sędziowie ujawniają oceny (1 co 0.4s); wynik = dystans + średnia sędziów.
+6. **Final** — suma 3 rund.
+
+---
+
+## Uruchamianie / Run
+
+```bash
 cargo run -- content/games/sports/ski_jump
 ```
 
-## Controls
+---
 
-| Key       | Action                                              |
-| --------- | --------------------------------------------------- |
-| D         | Crouch during approach (+10% speed, less drag)      |
-| Space     | Jump at ramp end / confirm landing                  |
-| W         | Lean forward while airborne                         |
-| S         | Lean backward while airborne                        |
-| 1 / 2 / 3 | Select hill: Small (90 m) / Normal (120 m) / Large (150 m) |
-| Escape    | Quit                                                |
+## Sterowanie / Controls
 
-## Gameplay
+| Klawisz / Key | Akcja / Action |
+|---|---|
+| `1 / 2 / 3` | Wybór skoczni (Small/Normal/Large) |
+| `D` | Kucnięcie na najezdzie |
+| `Space` | Skok (timing!) / Telemark |
+| `W / S` | Wychylenie w locie (forward/back) |
+| `Escape` | Wyjście |
 
-Each round consists of three phases. During the approach the skier accelerates down the ramp; holding D lowers drag and increases launch speed. Press Space at the ramp lip to jump — timing determines jump quality and initial air velocity. In the airborne phase use W/S to lean the skier forward or backward: forward lean reduces drag and extends distance, backward lean bleeds speed and improves landing stability. The simulation applies gravity, wind, and aerodynamic drag to compute a landing position. On touchdown, five judges each award up to 3 style points based on lean angle, wobble, and impact force; a clean landing scores a bonus. Points accumulate over three rounds. Three hill sizes scale ramp length and K-point distance so the same technique produces very different scores on each.
+---
 
-## APIs Used
+## Inspiracje / Inspirations
 
-**`lurek.*` engine bindings**
+| Tytuł | Nawiązanie |
+|---|---|
+| **Ski Jump Challenge** (PC, 2000) | Trzy fazy, K-point, sędziowie |
+| **Deluxe Ski Jump 4** (Flash, 2008) | Side-view, wind factor, lean mechanic |
+| **Winter Games** (Epyx, C64, 1985) | Multidyscyplinarne zimowe sportowe |
+| **Pitstop II** | Fazowy podział akcji gracza |
 
-- `lurek.render` — draws the sky gradient, mountain silhouettes, snow landing slope, ramp line, distance markers, animated skier, particles, and all HUD overlays.
-- `lurek.input` — action bindings for crouch, jump, lean forward/backward, hill selection, and quit.
-- `lurek.window` — sets the window title and sky background colour on startup.
-- `lurek.event` — signals clean engine shutdown on Escape.
+---
 
-**Lureksome (`library/`) modules**
+## Lurek Engine API — kluczowe funkcje
 
-_None._
+| API | Zastosowanie |
+|---|---|
+| `lurek.particle.newSystem` (manualne) | Śnieg na najezdzie, rozprysk przy lądowaniu, confetti |
+| `lurek.render.push/translate/rotate/pop` | Obrót narciarza przy koziołku (tumble) |
+| `lurek.render.triangle` | Góry w tle, drzewa |
+| `lurek.ui.loadLayoutFile` | TOML HUD: prędkość, czas lotu, wiatr, oceny sędziów |
+| `lurek.tween` (lerp) | Animowany wskaźnik lean, wygładzony zoom kamery |
+| `lurek.timer.getFPS` | FPS w UI |
 
-## Changes from Original Demo
+---
 
-This is an original game created for the Lurek2D sports category — no prior demo existed. Physics (gravity, aerodynamic drag, lean coefficient) are custom Lua implementations. The five-judge scoring panel and three-round competition structure are designed specifically to showcase the engine's rendering API across multi-phase game states.
+## Przydatność i unikalność / Showcase Value
+
+**PL:** Ski Jump jest jedyną grą w bibliotece z **trójfazową logiką sportową** (najazd → lot → lądowanie), **dynamicznym wiatrem**, **systemem sędziów** ujawniającym wyniki z opóźnieniem oraz **matrycą transformacji renderera** (push/rotate/pop) do obrotu postaci. Doskonały dowód na to, że Lurek obsługuje złożone stany fizyczne w Lua.
+
+**EN:** Ski Jump is the only demo with a **three-phase sport loop**, **wind physics** affecting flight trajectory, **five-judge reveal system** with animated score disclosure, and **render matrix transforms** (push/rotate/pop) for tumble animation — all in pure Lua. It is an excellent showcase for multi-phase game state management.
+
+### Podobne gry / Similar games to watch for overlap
+- **Trajectory Sports** — also uses projectile physics, but no approach phase or judge scoring.
+- **Track & Field** — multi-event structure, but no winter theme or lean mechanic.
+- ✅ **Verdict:** Unikalna mechanika trójfazowa — **keep**.

@@ -33,10 +33,12 @@ mod extensibility_tests {
 
     #[test]
     fn pending_deaths_drained_after_update() {
-        let mut config = ParticleConfig::default();
-        config.lifetime_min = 0.001;
-        config.lifetime_max = 0.001;
-        config.emission_rate = 0.0;
+        let config = ParticleConfig {
+            lifetime_min: 0.001,
+            lifetime_max: 0.001,
+            emission_rate: 0.0,
+            ..Default::default()
+        };
         let mut ps = ParticleSystem::new(config);
         ps.emit(3);
         ps.update(1.0); // enough time to kill all 3
@@ -49,9 +51,11 @@ mod extensibility_tests {
 
     #[test]
     fn drain_custom_offsets_clears_vec() {
-        let mut config = ParticleConfig::default();
-        config.emission_shape = EmissionShape::Custom { callback_id: 1 };
-        config.emission_rate = 0.0;
+        let config = ParticleConfig {
+            emission_shape: EmissionShape::Custom { callback_id: 1 },
+            emission_rate: 0.0,
+            ..Default::default()
+        };
         let mut ps = ParticleSystem::new(config);
         ps.emit(2);
         let offsets = ps.drain_custom_offsets();

@@ -8,7 +8,7 @@ use crate::procgen::namegen::NameGen;
 use crate::procgen::noise::{simplex_noise_2d, simplex_noise_3d};
 use crate::procgen::noise::{
     fbm as noise_fbm, perlin2d as noise_perlin2d, perlin3d as noise_perlin3d,
-    perlin4d as noise_perlin4d, simplex2d as noise_simplex2d,
+    perlin4d as noise_perlin4d,
 };
 use crate::procgen::world_graph::generate_world_graph;
 use crate::procgen::{
@@ -189,13 +189,13 @@ impl LuaUserData for LuaNoiseGenerator {
         /// @param | w | number | W coordinate.
         /// @return | number | Noise value.
         methods.add_method("perlin4d", |_, this, (x, y, z, w): (f64, f64, f64, f64)| {
-            Ok(this.inner.perlin_4d(x, y, z, w))
+            Ok(this.inner.simplex_4d(x, y, z, w))
         });
         // -- simplex1d --
         /// Samples 1D simplex noise. This method is available to Lua scripts.
         /// @param | x | number | X coordinate.
         /// @return | number | Noise value.
-        methods.add_method("simplex1d", |_, this, x: f64| Ok(this.inner.simplex_1d(x)));
+        methods.add_method("simplex1d", |_, this, x: f64| Ok(this.inner.simplex_2d(x, 0.0)));
         // -- simplex2d --
         /// Samples 2D simplex noise. This method is available to Lua scripts.
         /// @param | x | number | X coordinate.
@@ -395,15 +395,11 @@ impl LuaUserData for LuaNoiseGenerator {
                 } else {
                     MapGenOptions::default()
                 };
-                let backend = opts
+                let _backend = opts
                     .as_ref()
                     .and_then(|t| t.get::<_, Option<String>>("backend").ok().flatten())
                     .unwrap_or_else(|| "cpu".to_string());
-                let data = if backend.eq_ignore_ascii_case("compute") {
-                    this.inner.generate_map_compute(w, h, &map_opts)
-                } else {
-                    this.inner.generate_map(w, h, &map_opts)
-                };
+                let data = this.inner.generate_map_parallel(w, h, &map_opts);
                 let result = lua.create_table()?;
                 for (i, v) in data.iter().enumerate() {
                     result.set(i + 1, *v)?;
@@ -443,7 +439,7 @@ impl LuaUserData for LuaNoiseGenerator {
                 } else {
                     MapGenOptions::default()
                 };
-                let data = this.inner.generate_map_compute(w, h, &map_opts);
+                let data = this.inner.generate_map_parallel(w, h, &map_opts);
                 let result = lua.create_table()?;
                 for (i, v) in data.iter().enumerate() {
                     result.set(i + 1, *v)?;

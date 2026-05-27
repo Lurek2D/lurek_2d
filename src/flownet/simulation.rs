@@ -207,7 +207,7 @@ impl Graph {
                     1.0
                 };
                 (
-                    e.id,
+                    e.id.0,
                     e.to_node,
                     progress_delta,
                     e.travel_time,
@@ -304,7 +304,7 @@ impl Graph {
             .filter(|n| {
                 n.active && (n.flow_mode == FlowMode::Push || n.flow_mode == FlowMode::Both)
             })
-            .map(|n| n.id)
+            .map(|n| n.id.0)
             .collect();
         for nid in push_nodes {
             let (push_rate, push_filter, items_snapshot) = {
@@ -383,7 +383,7 @@ impl Graph {
             .filter(|n| {
                 n.active && (n.flow_mode == FlowMode::Pull || n.flow_mode == FlowMode::Both)
             })
-            .map(|n| n.id)
+            .map(|n| n.id.0)
             .collect();
         for nid in pull_nodes {
             let (pull_slots, pull_filter) = {

@@ -5,7 +5,8 @@
 //! covered by `tests/lua/unit/test_camera_unit.lua`. The remaining Rust tests
 //! keep render-command emission and viewport helper invariants.
 
-use lurek2d::camera::types::{Camera, Camera2D, CameraFollowEasing};
+use lurek2d::camera::types::{Camera, Camera2D};
+use lurek2d::camera::CameraFollowEasing;
 use lurek2d::camera::viewport::{ScaleMode, Viewport};
 use lurek2d::camera::viewport_scale::ViewportScale;
 use lurek2d::camera::CameraRig2D;

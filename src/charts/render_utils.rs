@@ -24,6 +24,7 @@ pub fn set_pixel(buffer: &mut [u8], width: u32, x: u32, y: u32, color: [f32; 4])
 /// Draw a line between two points using Bresenham's algorithm.
 ///
 /// Floating-point endpoints are rounded to the nearest pixel.
+#[allow(clippy::too_many_arguments)]
 pub fn draw_line(
     buffer: &mut [u8],
     width: u32,

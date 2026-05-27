@@ -16,7 +16,7 @@ mod helper_tests {
     fn reveal_radius_marks_cells_visible_inside_circle() {
         let mut map = Minimap::new(8, 8, 80, 80);
         map.set_fog_enabled(true);
-        map.set_fog_data(&vec![0; 64]);
+        map.set_fog_data(&[0; 64]);
 
         map.reveal_radius(3.5, 3.5, 1.6);
 

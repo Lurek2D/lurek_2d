@@ -1,75 +1,65 @@
 # Tetris
 
-_Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece, ghost preview, and line-clear particles._
+_Klasyczna zręcznościowa gra logiczna — dopasowuj i układaj spadające klocki Tetromino, planuj ruchy z podglądem cienia (ghost preview), wymieniaj klocki w kieszeni (Hold) i wywołuj spektakularne czyszczenie linii._
 
-## Run
+## 🎮 O grze (About the Game)
+
+W **Tetris** Twoim celem jest układanie spadających geometrycznych klocków (Tetromino) na planszy o wymiarach 10×20 pól w taki sposób, aby tworzyć pełne poziome linie. Ukończenie linii powoduje jej usunięcie, nagrodzenie punktami oraz zwolnienie miejsca na kolejne klocki. Im więcej linii usuniesz jednocześnie (1, 2, 3 lub maksymalnie 4 – tzw. "Tetris"), tym większy mnożnik punktowy otrzymujesz (100 / 300 / 500 / 800 pomnożone przez aktualny poziom gry).
+
+Każde oczyszczone 10 linii zwiększa poziom gry oraz szybkość opadania klocków, podnosząc presję czasu. Gra posiada zaawansowane mechaniki znane z nowoczesnych wersji gry:
+- **Kieszeń Hold (Hold Piece)** – pozwala na schowanie aktualnie spadającego klocka za pomocą klawisza C i użycie go w dogodniejszym momencie (maksymalnie jedna wymiana na zrzut).
+- **Cień klocka (Ghost Preview)** – wyświetla półprzezroczysty zarys na samym dole planszy, precyzyjnie pokazując, gdzie wyląduje klocek przy szybkim zrzucie.
+- **Dynamiczne efekty (Juice & Polish)** – usunięcie linii wywołuje silny wstrząs ekranu (screen shake), rozbłysk światła oraz deszcz kolorowych iskier (particles).
+
+## 🚀 Uruchomienie (Run Instructions)
+
+Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
 
 ```powershell
 cargo run -- content/games/arcade/tetris
 ```
 
-## Controls
+## 🕹️ Sterowanie (Controls)
 
-| Input        | Action              |
-| ------------ | ------------------- |
-| A / ←        | Move left           |
-| D / →        | Move right          |
-| W / ↑        | Rotate (clockwise)  |
-| S / ↓ (hold) | Soft drop           |
-| Space        | Hard drop           |
-| C            | Hold / swap piece   |
-| R            | Restart (game over) |
-| Escape       | Quit                |
+Sterowanie zostało oparte o zaawansowane mapowanie akcji wejściowych silnika Lurek.
 
-## Gameplay
+| Klawisz | Akcja w grze | Opis działania |
+| :--- | :--- | :--- |
+| **A** / **←** | Ruch w lewo | Przesunięcie klocka o jedną kolumnę w lewo |
+| **D** / **→** | Ruch w prawo | Przesunięcie klocka o jedną kolumnę w prawo |
+| **W** / **↑** | Obrót | Obraca klocek o 90 stopni zgodnie z ruchem wskazówek zegara |
+| **S** / **↓** (przytrzymanie) | Miękki zrzut (Soft Drop) | Przyspiesza opadanie klocka |
+| **Spacja** | Twardy zrzut (Hard Drop) | Błyskawicznie zrzuca klocek na sam dół i go blokuje |
+| **C** | Hold (Kieszeń) | Zapisuje klocek lub zamienia go z klockiem w kieszeni |
+| **Enter** | Start | Uruchomienie gry z poziomu ekranu tytułowego |
+| **R** | Restart | Restart gry po przegranej (gdy klocki zablokują szczyt planszy) |
+| **Escape** | Wyjście | Zamknięcie gry i powrót do konsoli |
 
-Stack falling tetrominoes on a 10×20 board. Complete horizontal lines to clear them and score points — 1/2/3/4 lines award 100/300/500/800 points multiplied by your current level. Every 10 lines cleared advances the level and increases drop speed. Use the Hold slot (C key) to save a piece for later — you get one swap per piece drop.
+---
 
-## APIs Used
+## 🔗 Inspiracje i Klasyki (Inspirations & Classics)
 
-**`lurek.*` engine bindings**
+- **Tetris (1984) stworzony przez Aleksieja Pażytnowa**
+  - *Opis powiązania*: Gra jest hołdem dla najpopularniejszej gry logicznej wszech czasów. Nasza implementacja w Lurek2D łączy klasyczną mechanikę wymyśloną przez radzieckiego programistę z nowoczesnymi standardami turniejowymi (Tetris Guideline), takimi jak obecność strefy Hold, precyzyjny podgląd cienia klocka na dnie planszy (Ghost Piece) oraz generator losowy zapobiegający długim seriom tych samych klocków. Wykorzystanie wstrząsów ekranu i rozbłysków podczas usuwania linii dodaje grze niezwykle satysfakcjonującego, współczesnego charakteru typu "game juice".
 
-- `lurek.window` — sets the window title.
-- `lurek.render` — draws the board, pieces, ghost preview, sidebar, and overlays.
-- `lurek.input` — action-bound keyboard controls (left, right, rotate, soft/hard drop, hold).
-- `lurek.tween` — screen flash and shake on line clears.
-- `lurek.particle` — sparkle burst along cleared rows.
-- `lurek.timer` — FPS counter and elapsed time for shake animation.
-- `lurek.event` — clean shutdown on Escape.
+---
 
-**Lureksome (`content/library/`) modules**
+## 🛠️ Wykorzystane API Lurek (Engine APIs Showcased)
 
-_None._
+Gra stanowi kompleksowy pokaz zaawansowanych technik manipulowania siatką i sprzężenia zwrotnego z graczem:
 
-## Changes from Original Demo
+- `lurek.camera` – Służy do centrowania planszy, a także do wywoływania efektów dynamicznego trzęsienia ekranu (`camera.setOffset`) na bazie Delta Time.
+- `lurek.render` – Rysuje precyzyjny grid planszy, kolorowe klocki z obrysem, półprzezroczysty cień klocka (25% alpha), panel boczny z następnym klockiem (Next) i schowanym (Hold), oraz teksty interfejsu (render_ui).
+- `lurek.input` – Odpowiada za precyzyjne odczytywanie akcji rotacji i zrzutów, w tym rozróżnienie pojedynczego naciśnięcia od trzymania (soft vs hard drop).
+- `lurek.tween` – Kontroluje płynne wygaszanie wstrząsów ekranu oraz jasny rozbłysk planszy przy udanym Tetrisie.
+- `lurek.particle` – Generuje widowiskowy deszcz iskier rozchodzący się wzdłuż usuwanych wierszy planszy.
+- `lurek.timer` – Mierzy precyzyjnie czas opadania klocka na sekundy (Gravity), obsługuje animacje wstrząsów oraz wyświetla FPS.
+- `lurek.window` & `lurek.event` – Kontrola nad oknem i poprawnym wyjściem.
 
-### Replaced
+---
 
-- Raw `lurek.input.isKeyDown("down")` polling → `lurek.input.bind()` + `isActionDown("soft_drop")`.
-- `lurek.keypressed` callback for movement/rotation → `wasActionPressed` in `lurek.process(dt)`.
-- All drawing in single `lurek.render()` → split into `lurek.render()` (board) and `lurek.render_ui()` (HUD/overlays).
-- `lurek.event.restart()` on R → full `reset_game()` with state machine transition.
+## 💎 Przydatność i Unikalność (Showcase Value & Uniqueness)
 
-### Added
-
-- **Hold piece** — press C to swap the current piece with a hold slot (once per drop).
-- **Scene states** — TITLE → PLAYING → GAME_OVER with proper transitions and title screen.
-- **Particle effects** — sparkle burst along each cleared row via `lurek.particle.newSystem`.
-- **Screen shake & flash** — tween-driven white flash and shake offset on line clears.
-- **FPS counter** — bottom-left via `lurek.timer.getFPS()`.
-- **Ghost piece border** — ghost preview now drawn at 25% alpha for clearer drop targeting.
-- **Title screen** — blinking "PRESS ENTER TO START" with controls preview.
-- **Game over stats** — score, level, and lines displayed on the game-over screen.
-
-### Removed
-
-- Direct `lurek.event.restart()` call — replaced by internal `reset_game()` for cleaner state management.
-- Duplicate next-piece rendering code (consolidated into `draw_piece_preview` helper).
-
-### Open questions
-
-_None._
-
-## Screenshot
-
-![Tetris screenshot](screen.png)
+- **Wartość demonstracyjna (Showcase Value)**: Tetris to majstersztyk pokazujący zaawansowane **sprzężenie zwrotne z graczem (game feel / juice)** – wstrząsy kamery i rozbłyski ekranu zrealizowane całkowicie w Lua przy użyciu interpolacji matematycznych (`lurek.tween`). Pokazuje również zaawansowaną dwuwymiarową detekcję kolizji macierzowych (obrócenie klocka wymaga sprawdzenia, czy nowe koordynaty nie nachodzą na ściany lub inne klocki).
+- **Unikalność**: Jedyna gra w sekcji Arcade łącząca **dynamiczne modyfikowanie właściwości kamery (screen shake)** z rozbudowanym logicznym planowaniem (Hold slot i Ghost preview).
+- **Podobne gry**: Brak innych gier logicznych o zbliżonej charakterystyce spadających i obracanych klocków.

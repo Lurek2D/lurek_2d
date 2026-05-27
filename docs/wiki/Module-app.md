@@ -79,6 +79,7 @@ Additionally, `app` seamlessly manages development workflows with built-in hot-r
 
 - Formats per-frame timing data into compact single-line strings for logging.
 - Reads tick, update, render, and callback timings from `FrameProfile`.
+- Output format: `tick=Xms update=Xms render=Xms cb=Xms` for tracing frame budget.
 
 ### `lua_callbacks.rs`
 

@@ -6,6 +6,7 @@
 use crate::minimap::minimap::Minimap;
 use crate::minimap::types::FogLevel;
 use crate::province::registry::ProvinceRegistry;
+use crate::province::types::ProvinceId;
 
 /// Copy terrain types from `registry` cells into `minimap`, clipped to the smaller of the two grids.
 pub fn apply_terrain(minimap: &mut Minimap, registry: &ProvinceRegistry) {
@@ -17,7 +18,7 @@ pub fn apply_terrain(minimap: &mut Minimap, registry: &ProvinceRegistry) {
             if pid == 0 {
                 continue;
             }
-            if let Some(snap) = registry.get_province(pid) {
+            if let Some(snap) = registry.get_province(ProvinceId(pid)) {
                 minimap.set_terrain(x, y, snap.style.terrain_type);
             }
         }
@@ -34,7 +35,7 @@ pub fn apply_visibility(minimap: &mut Minimap, registry: &ProvinceRegistry) {
             if pid == 0 {
                 continue;
             }
-            if let Some(snap) = registry.get_province(pid) {
+            if let Some(snap) = registry.get_province(ProvinceId(pid)) {
                 let level = if snap.style.visibility_state == 0 {
                     FogLevel::Hidden
                 } else if snap.style.visibility_state < 128 {

@@ -195,7 +195,7 @@ mod effects_and_lut_tests {
     use lurek2d::image::effects::ResizeFilter;
     use lurek2d::image::premultiply_alpha_rgba8_in_place;
     use lurek2d::image::serial;
-    use lurek2d::math::Color;
+    use lurek2d::color::Color;
     use lurek2d::sprite::SpriteAtlas;
 
     #[test]
@@ -391,6 +391,7 @@ mod visualization_tests {
 
 mod coverage_symbol_tests {
     #[test]
+    #[allow(clippy::const_is_empty)]
     fn image_uncovered_symbol_markers() {
         let symbols = [
             "get_mipmap_count",

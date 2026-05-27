@@ -35,7 +35,7 @@ describe("Evidence: lurek.scene DepthSorter", function()
         end
 
         local path = OUT .. "depth_sort_order.txt"
-        lurek.filesystem.write(path, table.concat(lines, "\n") .. "\n")
+        write_file(path, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(path)
     end)
 
@@ -55,7 +55,7 @@ describe("Evidence: lurek.scene DepthSorter", function()
         expect_equal("C", call_order[3])
 
         local path = OUT .. "stable_sort_order.txt"
-        lurek.filesystem.write(path, table.concat(call_order, "\n") .. "\n")
+        write_file(path, table.concat(call_order, "\n") .. "\n")
         expect_evidence_created(path)
     end)
 
@@ -75,7 +75,7 @@ describe("Evidence: lurek.scene DepthSorter", function()
         expect_equal(2, call_order[2])
 
         local path = OUT .. "object_sort_order.txt"
-        lurek.filesystem.write(path, table.concat({ tostring(call_order[1]), tostring(call_order[2]) }, "\n") .. "\n")
+        write_file(path, table.concat({ tostring(call_order[1]), tostring(call_order[2]) }, "\n") .. "\n")
         expect_evidence_created(path)
     end)
 end)

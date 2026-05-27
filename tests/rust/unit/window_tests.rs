@@ -13,14 +13,15 @@ mod viewport_tests {
     use super::*;
 
     fn make_ws() -> WindowState {
-        let mut ws = WindowState::default();
-        ws.game_width = 800.0;
-        ws.game_height = 600.0;
-        ws.viewport_scale_x = 2.0;
-        ws.viewport_scale_y = 2.0;
-        ws.viewport_offset_x = 10.0;
-        ws.viewport_offset_y = 20.0;
-        ws
+        WindowState {
+            game_width: 800.0,
+            game_height: 600.0,
+            viewport_scale_x: 2.0,
+            viewport_scale_y: 2.0,
+            viewport_offset_x: 10.0,
+            viewport_offset_y: 20.0,
+            ..Default::default()
+        }
     }
 
     #[test]
@@ -56,9 +57,7 @@ mod viewport_tests {
 
     #[test]
     fn from_pixels_negative_scale_returns_zero() {
-        let mut ws = WindowState::default();
-        ws.viewport_scale_x = 0.0;
-        ws.viewport_scale_y = -0.0; // negative zero
+        let ws = WindowState { viewport_scale_x: 0.0, viewport_scale_y: -0.0, ..Default::default() };
         let (gx, gy) = from_pixels(&ws, 50.0, 50.0);
         assert_eq!(gx, 0.0);
         assert_eq!(gy, 0.0);

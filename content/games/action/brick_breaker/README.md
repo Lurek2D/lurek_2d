@@ -1,48 +1,65 @@
 # Brick Breaker
 
-Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to destroy rows of bricks, collect power-ups, and advance through increasingly difficult levels.
+_Dynamiczna, nowoczesna zręcznościówka typu Breakout/Arkanoid — odbijaj piłkę paletką, niszcz wielobarwne cegły o zróżnicowanej wytrzymałości i łap opadające modyfikatory rozgrywki._
 
-## Run
+## 🎮 O grze (About the Game)
 
-```bash
+**Brick Breaker** to zręcznościowa gra akcji nawiązująca do kultowego *Arkanoida*. Kontrolujesz paletkę u dołu ekranu, odbijając piłkę w kierunku muru cegieł. Celem gry jest całkowite zniszczenie wszystkich bloków na planszy.
+
+Cechy i zaawansowane mechaniki gry:
+- **Wytrzymałość bloków (Brick HP)** – cegły ułożone są w 10 kolumnach i 4–8 wierszach (zależnie od poziomu). Bloki posiadają od 1 do 3 punktów życia, a stopień ich uszkodzenia sygnalizuje zmiana koloru (fioletowy [3 HP] → niebieski [2 HP] → zielony [1 HP]).
+- **Kąt odbicia (Paddle Segment Angling)** – kierunek lotu piłki po odbiciu od paletki zależy od precyzyjnego punktu kontaktu. Trafienie w środek paletki odbija piłkę pionowo, natomiast uderzenie bliżej krawędzi nadaje jej ostry kąt boczny, co pozwala na precyzyjne celowanie w szczeliny.
+- **Dynamiczne ulepszenia (Power-ups)** – zniszczenie cegły daje 30% szans na upuszczenie modyfikatora:
+  - **Szerokość (W) [Pomarańczowy]** – czasowo poszerza paletkę na 8 sekund, ułatwiając odbijanie.
+  - **Multi-ball (M) [Błękitny]** – błyskawicznie dzieli każdą aktywną piłkę na ekranie na dwie dodatkowe piłki, wywołując chaos.
+  - **Spowolnienie (S) [Zielony]** – zmniejsza prędkość piłki o 45% na 8 sekund, dając graczowi pełną kontrolę.
+
+Gra oferuje rosnący stopień trudności (prędkość piłki rośnie z każdym poziomem), zaawansowany HUD oraz system 3 żyć.
+
+## 🚀 Uruchomienie (Run Instructions)
+
+Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
+
+```powershell
 cargo run -- content/games/action/brick_breaker
 ```
 
-## Controls
+## 🕹️ Sterowanie (Controls)
 
-| Key            | Action                            |
-| -------------- | --------------------------------- |
-| A / D or ← / → | Move paddle left / right          |
-| Space          | Launch ball                       |
-| Enter          | Start game / next level / restart |
-| Escape         | Quit                              |
+Sterowanie wykorzystuje responsywne mapowanie akcji wejściowych silnika Lurek.
 
-## Power-Ups
+| Klawisz | Akcja w grze | Opis działania |
+| :--- | :--- | :--- |
+| **A** / **D** lub **←** / **→** | Ruch paletki | Przesuwanie paletki w lewo i w prawo |
+| **Spacja** | Wypuszczenie piłki | Wystrzelenie przyklejonej piłki na początku rundy |
+| **Enter** | Start / Następny poziom | Uruchomienie gry, restart lub przejście po wygranej |
+| **Escape** | Wyjście | Zamknięcie gry i powrót do konsoli |
 
-Power-ups drop from destroyed bricks (30% chance). Catch them with the paddle to activate.
+---
 
-| Symbol         | Effect                                 | Duration  |
-| -------------- | -------------------------------------- | --------- |
-| **W** (orange) | Widens the paddle                      | 8 seconds |
-| **M** (cyan)   | Splits every ball into two extra balls | Instant   |
-| **S** (green)  | Slows ball speed by ~45%               | 8 seconds |
+## 🔗 Inspiracje i Klasyki (Inspirations & Classics)
 
-## Mechanics
+- **Arkanoid (1986) stworzony przez firmę Taito** oraz **Breakout (1976) autorstwa Atari**
+  - *Opis powiązania*: Gra to kompletny i świetnie zbalansowany klon kultowego *Arkanoida*. Replikuje najważniejsze atuty legendarnego automatu: zróżnicowaną wytrzymałość bloków, ulepszenia spadające z nieba wymagające ryzykownego złapania ich paletką, oraz fizykę kąta odbicia zależną od punktu kontaktu (segment angling). Wersja Lurek2D unowocześnia rozgrywkę poprzez wprowadzenie płynnych cząsteczek kruszących się cegieł, tweenowych rozbłysków przy ukończeniu poziomu oraz precyzyjnego wsparcia dla wielu piłek jednocześnie na ekranie (Multi-ball entity logic).
 
-- 10-column brick grid with 4–8 rows depending on level
-- Bricks have 1–3 HP; colour changes with remaining HP (green → blue → purple)
-- Ball angle varies based on where it hits the paddle (edge shots = sharper angles)
-- Ball speed increases slightly each level
-- 3 lives — ball below paddle costs one life
-- Clear all bricks to advance to the next level
+---
 
-## lurek.* APIs Used
+## 🛠️ Wykorzystane API Lurek (Engine APIs Showcased)
 
-- `lurek.window` — setTitle
-- `lurek.render` — setBackgroundColor, rectangle, circle, print (world + UI split)
-- `lurek.input` — bind, isActionDown, wasActionPressed
-- `lurek.timer` — getFPS
-- `lurek.event` — quit
-- `lurek.particle` — newSystem, emit, setColors, setSizes, setLifetime, setSpeed, setSpread
-- `lurek.tween` — to (level-complete flash)
-- `lurek.camera` — new
+Gra demonstruje wydajność silnika Lurek w obsłudze wielu dynamicznych obiektów oraz fizyki kolizji:
+
+- `lurek.camera` – Gwarantuje stałą rozdzielczość wirtualną viewportu, ułatwiając precyzyjne obliczenia kolizji z krawędziami okna.
+- `lurek.render` – Rysuje neonowe, gradientowe cegły z obrysami, okrągłe piłki, paletkę, spadające pigułki ulepszeń oraz interfejs HUD (HP bloków, paski czasu trwania power-upów, stan żyć).
+- `lurek.input` – Odpowiada za płynne i pozbawione opóźnień przesuwanie paletki.
+- `lurek.particle` – Generuje efektowne chmury kolorowych iskier (particles) rozchodzące się przy niszczeniu każdej cegły (kolor cząsteczek odpowiada kolorowi zniszczonego bloku).
+- `lurek.tween` – Kontroluje jasny błysk ekranu (flash) przy ukończeniu poziomu.
+- `lurek.timer` – Kontroluje odliczanie czasu działania ulepszeń (8 sekund) oraz Delta Time ruchu piłek i paletki.
+- `lurek.window` & `lurek.event` – Kontrola nad oknem i bezpiecznym wyjściem.
+
+---
+
+## 💎 Przydatność i Unikalność (Showcase Value & Uniqueness)
+
+- **Wartość demonstracyjna (Showcase Value)**: To genialny pokaz **fizyki odbić wektorowych (collision vector reflection)** i obsługi **wielu aktywnych piłek jednocześnie (multi-entity list updates)**. Pokazuje również, jak za pomocą prostych liczników czasu w update zarządzać czasowym działaniem ulepszeń (power-up cooldown/duration mapping) z graficznym paskiem postępu.
+- **Unikalność**: Jedyna gra w sekcji Action oferująca **dynamiczne mnożenie piłek (multi-ball split)** wykraczające poza standardową fizykę pojedynczego pocisku, co testuje wydajność kolizji dla chmary obiektów.
+- **Podobne gry**: *Pong* (również paletka i piłka), ale *Brick Breaker* jest przeznaczony dla jednego gracza, stawia na niszczenie statycznych bloków, system HP cegieł oraz łapanie spadających modyfikatorów rozgrywki.

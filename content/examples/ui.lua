@@ -3290,9 +3290,7 @@ do
     chart:addSeries("Q2", 1.0, 0.5, 0.1)
     chart:addCategory("Jan", {30, 45})
     chart:addCategory("Feb", {40, 35})
-    local img = lurek.image.newImageData(200, 100)
-    chart:drawToImage(img)
-    print("barChart addSeries/addCategory/drawToImage ok")
+    print("bar series count example ok")
 end
 
 --@api-stub: LBarChart:drawToImage
@@ -4089,17 +4087,6 @@ do
     local ok = lc:typeOf("LLineChart")
     local notOk = lc:typeOf("LBarChart")
     print("LLineChart typeOf:", ok, "typeOf LBarChart:", notOk)
-end
-
---@api-stub: LList:addItem
-do
-    local lb = lurek.ui.newList()
-    lb:addItem("Apple")
-    lb:addItem("Banana")
-    lb:addItem("Cherry")
-    local item = lb:getItem(2)
-    lb:clearItems()
-    print("addItem/clearItems/getItem ok, item:", item)
 end
 
 --@api-stub: LList:clearItems
@@ -7076,7 +7063,7 @@ end
 
 --@api-stub: lurek.ui.focusDirection
 do
-    lurek.ui.focusDirection("right")
+    lurek.ui.focusDirection(1.0, 0.0)
     print("lurek.ui.focusDirection ok")
 end
 
@@ -7100,50 +7087,42 @@ end
 
 --@api-stub: lurek.ui.visibleRange
 do
-    local x, y, w, h = lurek.ui.visibleRange()
+    local list = lurek.ui.newList()
+    local x, y = lurek.ui.visibleRange(list, 50, 20.0)
     print("lurek.ui.visibleRange x=" .. x .. " y=" .. y)
 end
 
 --@api-stub: lurek.ui.animateScale
 do
-    local btn = lurek.ui.newButton(100, 30)
-    lurek.ui.animateScale(btn, 1.0, 1.2, 0.3)
+    local btn = lurek.ui.newButton("Scale")
+    lurek.ui.animateScale(btn._idx, 1.0, 1.0, 1.2, 1.2, 0.3)
     print("lurek.ui.animateScale ok")
 end
 
 --@api-stub: lurek.ui.animateRotation
 do
-    local img = lurek.ui.newImage("assets/textures/logo.png")
-    lurek.ui.animateRotation(img, 0, 360, 1.0)
+    local img = lurek.ui.newPanel()
+    lurek.ui.animateRotation(img._idx, 0, 360, 1.0)
     print("lurek.ui.animateRotation ok")
 end
 
 --@api-stub: lurek.ui.animateColor
 do
     local lbl = lurek.ui.newLabel("Hello")
-    lurek.ui.animateColor(lbl, {1,1,1,1}, {1,0.5,0,1}, 0.5)
+    lurek.ui.animateColor(lbl._idx, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
     print("lurek.ui.animateColor ok")
-end
-
--- --- Chart addSeries (also in charts_api.rs; duplicate OK with WARN policy) --
-
---@api-stub: LBarChart:addSeries
-do
-    local chart = lurek.ui.newBarChart(400, 300)
-    chart:addSeries("Q2", { 5, 8, 3, 6 })
-    print("LBarChart:addSeries.2 ok")
 end
 
 --@api-stub: LLineChart:addSeries
 do
-    local chart = lurek.ui.newLineChart(400, 300)
+    local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
     chart:addSeries("sales", { 1, 4, 2, 7, 3 })
-    print("LLineChart:addSeries ok")
+    print("line series added")
 end
 
 --@api-stub: LScatterPlot:addSeries
 do
-    local chart = lurek.ui.newScatterPlot(400, 300)
+    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
     chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} })
-    print("LScatterPlot:addSeries ok")
+    print("scatter series added")
 end

@@ -181,10 +181,9 @@ impl LuaUserData for LuaNetworkHost {
         /// Polls the host for one network event.
         /// @return | table | Event table, or nil when no event is available.
         /// @field | type | string | Event type (connect, disconnect, receive).
-        /// @field | peer_id | integer? | Peer id.
-        /// @field | data | integer? | Connection data.
-        /// @field | channel | integer? | Channel index for receive events.
-        /// @field | payload | string? | Received payload bytes.
+        /// @field | peer_id | integer | Peer id.
+        /// @field | data | any | Connection data or receive payload.
+        /// @field | channel_id | integer? | Channel index for receive events.
         methods.add_method("service", |lua, this, ()| {
             match this
                 .inner
@@ -1018,8 +1017,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @param | id | string | Room id.
     /// @return | table | Room info table, or nil when missing.
     /// @field | id | string | Room id.
-    /// @field | room_id | string | Room identifier.
-    /// @field | peer_id | string | Peer identifier.
+    /// @field | name | string | Room name.
+    /// @field | host | string | Host address.
+    /// @field | player_count | integer | Current player count.
+    /// @field | max_players | integer | Maximum allowed players.
     tbl.set(
         "leaveRoom",
         lua.create_function(

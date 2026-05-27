@@ -38,6 +38,7 @@ fn test_iter_rows_streams_rows_in_order() {
 
 mod rolling_window_tests {
     use lurek2d::dataframe::{CellValue, DataFrame};
+    use lurek2d::dataframe::frame::ColRef;
 
     /// Helper for approximate float equality in CellValue::Number.
     fn assert_number_near(cell: &CellValue, expected: f64) {
@@ -67,8 +68,8 @@ mod rolling_window_tests {
         )
         .unwrap();
 
-        let result = df.rolling_sum(0, 2, "sum2").expect("rolling_sum should succeed");
-        let sum_col = &result.data[1];
+        let result = df.rolling_sum(ColRef::Index(1), 2, "sum2").expect("rolling_sum should succeed");
+        let sum_col = result.get_column(ColRef::Name("sum2".to_string())).expect("sum2 col");
 
         // Window size 2:
         // index 0: [Number(10)] → count=1 → Number(10)
@@ -91,9 +92,8 @@ mod rolling_window_tests {
         )
         .unwrap();
 
-        let result = df.rolling_mean(0, 2, "mean2").expect("rolling_mean should succeed");
-        let mean_col = &result.data[1];
-
+        let result = df.rolling_mean(ColRef::Index(1), 2, "mean2").expect("rolling_mean should succeed");
+        let mean_col = result.get_column(ColRef::Name("mean2".to_string())).expect("mean2 col");
         assert_number_near(&mean_col[0], 20.0);
         assert_number_near(&mean_col[1], 20.0);
         assert_eq!(mean_col[2], CellValue::Nil);
@@ -112,8 +112,8 @@ mod rolling_window_tests {
         )
         .unwrap();
 
-        let result = df.rolling_sum(0, 3, "sum3").expect("rolling_sum should succeed");
-        let sum_col = &result.data[1];
+        let result = df.rolling_sum(ColRef::Index(1), 3, "sum3").expect("rolling_sum should succeed");
+        let sum_col = result.get_column(ColRef::Name("sum3".to_string())).expect("sum3 col");
 
         // Window size 3:
         // index 0: [5] → 5
@@ -138,10 +138,8 @@ mod rolling_window_tests {
         )
         .unwrap();
 
-        let result = df.rolling_mean(0, 2, "mean2").expect("rolling_mean should succeed");
-        let mean_col = &result.data[1];
-
-        // Window size 2:
+        let result = df.rolling_mean(ColRef::Index(1), 2, "mean2").expect("rolling_mean should succeed");
+        let mean_col = result.get_column(ColRef::Name("mean2".to_string())).expect("mean2 col");
         // index 0: [6] → 6/1 = 6
         // index 1: [6, 12] → 18/2 = 9
         // index 2: [12, Nil] → 12/1 = 12

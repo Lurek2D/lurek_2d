@@ -34,7 +34,7 @@ describe("Evidence: lurek.tween API", function()
             "end_x=" .. tostring(target.x),
             "end_y=" .. tostring(target.y),
         }
-        lurek.filesystem.write(path, table.concat(lines, "\n") .. "\n")
+        write_file(path, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(path)
     end)
 
@@ -66,7 +66,7 @@ describe("Evidence: lurek.tween API", function()
             "still_paused_x=" .. tostring(still_paused_x),
             "end_x=" .. tostring(target.x),
         }
-        lurek.filesystem.write(path, table.concat(lines, "\n") .. "\n")
+        write_file(path, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(path)
     end)
 
@@ -84,7 +84,7 @@ describe("Evidence: lurek.tween API", function()
         end
 
         local path = OUT .. "tween_sequence.txt"
-        lurek.filesystem.write(path, "end_x=" .. tostring(target.x) .. "\n")
+        write_file(path, "end_x=" .. tostring(target.x) .. "\n")
         expect_evidence_created(path)
     end)
 end)

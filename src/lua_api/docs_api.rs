@@ -318,7 +318,7 @@ impl LuaUserData for ApiCatalog {
         // -- getEntry --
         /// Returns one catalog entry by qualified API name.
         /// @param | qualified_name | string | Full dotted API name to find.
-        /// @return | LuaValue | `LDocEntry` when found, or nil when the catalog has no match.
+        /// @return | LDocEntry | The matching catalog entry.
         methods.add_method("getEntry", |_, this, qualified_name: String| {
             Ok(this.get_entry(&qualified_name).map(|e| DocEntry(e.clone())))
         });

@@ -70,14 +70,14 @@ describe("GrepEngine", function()
     it("search finds matches in lua files", function()
         local engine = lurek.grep.newEngine()
         local result = engine:search("content/examples", "lurek.sprite")
-        assert_true(result.total_matches > 0)
+        expect_true(result.total_matches > 0)
     end)
 
     -- @covers lurek.grep.newEngine
     it("searchExt filters by extension", function()
         local engine = lurek.grep.newEngine()
         local result = engine:searchExt("content/examples", "lurek", { "lua" })
-        assert_true(result.files_searched > 0)
+        expect_true(result.files_searched > 0)
     end)
 
     -- @covers lurek.grep.newEngine
@@ -85,7 +85,7 @@ describe("GrepEngine", function()
         local engine = lurek.grep.newEngine()
         local count = engine:count("content/examples", "function")
         expect_type("number", count)
-        assert_true(count > 0)
+        expect_true(count > 0)
     end)
 
     -- @covers lurek.grep.newEngine
@@ -93,7 +93,7 @@ describe("GrepEngine", function()
         local engine = lurek.grep.newEngine()
         local result = engine:multiSearch("content/examples", { "lurek.sprite", "lurek.audio" })
         expect_type("table", result)
-        assert_true(result.total_matches >= 0)
+        expect_true(result.total_matches >= 0)
     end)
 end)
 
@@ -121,7 +121,7 @@ describe("FileFilter", function()
         filter:addExtension("lua")
         filter:addExtension("toml")
         -- No crash = success
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers lurek.grep.newFilter
@@ -129,14 +129,14 @@ describe("FileFilter", function()
         local filter = lurek.grep.newFilter()
         filter:excludeExtension("png")
         filter:excludePattern("node_modules")
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers lurek.grep.newFilter
     it("setIncludeHidden toggles hidden files", function()
         local filter = lurek.grep.newFilter()
         filter:setIncludeHidden(true)
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -150,7 +150,7 @@ describe("Quick search functions", function()
     it("search quick function works", function()
         local result = lurek.grep.search("content/examples", "local")
         expect_type("table", result)
-        assert_true(result.total_matches > 0)
+        expect_true(result.total_matches > 0)
     end)
 end)
 
@@ -174,7 +174,7 @@ describe("Result match structure", function()
                 expect_type("string", entry.lines[1].content)
             end
         end
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -190,7 +190,7 @@ describe("GrepEngine searchFiles", function()
         local result = engine:searchFiles({"content/examples/sprite.lua"}, "lurek")
         expect_type("table", result)
         expect_type("number", result.total_matches)
-        assert_true(result.total_matches >= 0)
+        expect_true(result.total_matches >= 0)
     end)
 
     -- @covers LGrepEngine:searchFiles
@@ -198,7 +198,7 @@ describe("GrepEngine searchFiles", function()
         local engine = lurek.grep.newEngine()
         local result = engine:searchFiles({}, "lurek")
         expect_type("table", result)
-        assert_equal(0, result.total_matches)
+        expect_equal(0, result.total_matches)
     end)
 end)
 

@@ -5,7 +5,7 @@
 //! - Mods declare their required API surface in `mod.toml`; the sandbox checks against it.
 //! - Unknown API requests produce a sandbox violation error before the mod is loaded.
 
-use super::api_schema::{AssetRequirement, FieldDef, FieldType, MethodDef};
+use super::api_schema::{AssetRequirement, FieldDef, MethodDef};
 use std::collections::HashMap;
 
 /// Schema for a registered game API type.

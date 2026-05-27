@@ -1,43 +1,75 @@
-# Loot RPG (Demo)
+# 💎 Loot RPG Demo — Quick-Start Sandbox & Procedural Loot Grinder
 
-_A focused demo of the Lurek2D loot-and-combat loop — fight enemies, collect tiered gear, and see how many floors you can climb._
+**Category:** RPG / Inventory & Stat Progression (Demo)  
+**Engine:** Lurek2D  
+**Language:** Polish & English  
 
-## Run
+---
 
-```powershell
-cargo run -- content/games/rpg/loot_rpg_demo
-```
+## 🇵🇱 Opis Gry (Polish)
 
-## Controls
+### Krótki Opis (Elevator Pitch)
+**Loot RPG Demo** to demonstracyjna wersja kompletnego dungeon crawlera nastawionego na zbieranie łupów i optymalizację statystyk. Służy jako bezpośredni, natychmiastowy sandbox kodowy, w którym deweloperzy mogą błyskawicznie sprawdzić działanie systemów generowania rzadkości przedmiotów, interpolacji pasków życia (HP) za pomocą tweenów oraz obsługi emiterów cząsteczek. Walcz z potworami, zbieraj epicki sprzęt, optymalizuj statystyki i sprawdź, jak działa zaawansowana pętla RPG w środowisku Lurek2D.
 
-| Key       | Action                                        |
-| --------- | --------------------------------------------- |
-| Space     | Advance room / attack (combat) / collect loot |
-| E         | Auto-equip best item from backpack            |
-| B         | Buy healing potion (5g)                       |
-| Up / Down | Scroll inventory list                         |
-| Escape    | Quit                                          |
+### Charakterystyka i Rola Wersji Demo
+Gra dzieli kod źródłowy z głównym modułem `loot_rpg`, lecz jest wyodrębniona jako niezależne demo technologiczne o ułatwionym wglądzie w kod:
+1.  **Pokaz Systemu Losowości:** Możliwość testowania szans na wylosowanie przedmiotów zwykłych, rzadkich, epickich oraz legendarnych (Legendary roll = 3% szans).
+2.  **Szybkie Prototypowanie UI:** Przejrzyste wyświetlanie statystyk dynamicznych (Obrażenia, Obrona, Szybkość, Bonus do Poczucia Życia) aktualizowanych w czasie rzeczywistym.
+3.  **Podgląd Klawiaturowego Suwaka:** Demonstracja przewijania listy plecaka przy sztywnym limicie wagowym (20.0 kg).
 
-## Gameplay
+---
 
-Progress through a dungeon one room at a time. Each room triggers either an enemy encounter, a loot drop, or a rest stop before the next floor. Combat is turn-based and fully automatic — your effectiveness comes entirely from equipped gear across five slots: weapon, armor, helm, boots, and accessory. Items drop with four rarity tiers (Common, Rare, Epic, Legendary) that multiply stat rolls. Your backpack is weight-limited, so choosing what to keep and what to discard is the core decision. Every five rooms a new floor begins with harder enemies and better loot. Survive as many floors as possible.
+## 🇬🇧 Game Description (English)
 
-## APIs Used
+### Short Pitch (Elevator Pitch)
+**Loot RPG Demo** serves as a lightweight, quick-start technological showcase of the main `loot_rpg` system. This sandbox allows developers and players to instantly witness Lurek2D's data-science state calculations, color-coded rarity item rolls, backpack scrolling, and visual "juice" transitions (combat blood splatters and legendary item sparkle cascades) in a single-file, highly-legible Lua script.
 
-**`lurek.*` engine bindings**
+### Sandbox Highlights & Purposes
+Sharing its architecture with `loot_rpg`, this demo slice is designed as a template for creators to tinker with:
+1.  **Rarity Math Sandbox:** Tweak stat rolls and scaling multiplier variables across Common, Rare, Epic, and Legendary gear.
+2.  **Backpack & Weight Limits:** A great template for inventory scrolling mechanics coupled with weight constraints.
+3.  **Visual Polish Harness:** Instant test-bed for mathematical life bar drains (tweens) and spatial particle explosions.
 
-- `lurek.render` — draws all HUD elements, health bars, combat log, inventory list, and game-over screen.
-- `lurek.camera` — creates and positions the 2D camera for the 800 x 600 viewport.
-- `lurek.particle` — sparkle burst on loot discovery and red flash on combat hits.
-- `lurek.tween` — animates the HP bar shrink and the loot glow fade-in.
-- `lurek.input` — action-bound keyboard controls (next_room, equip, buy, quit).
-- `lurek.window` — updates the window title with the current floor and room number.
-- `lurek.event` — signals clean engine shutdown on Escape.
+---
 
-**Lureksome (`library/`) modules**
+## 🎮 Sterowanie / Controls
 
-_None._
+| Klawisz / Key | Działanie (pl) | Action (en) |
+| :--- | :--- | :--- |
+| **Space** | Rozpocznij / Atakuj w walce / Zbierz łupy z podłogi | Start game / Attack in combat / Collect chest loot |
+| **E** | Automatycznie załóż najlepsze przedmioty | Auto-equip best stats items from backpack |
+| **B** | Zakup eliksir leczenia (koszt: 5 złota) | Purchase health potion (costs 5 gold) |
+| **↑ / ↓** | Przewijaj listę plecaka w dół / w górę | Scroll inventory list up / down |
+| **Escape** | Wyjście z gry | Quit to OS |
 
-## Changes from Original Demo
+---
 
-This is the demo build of the `loot_rpg` project — same core mechanics, same API surface. It serves as a focused showcase of the engine's particle, tween, and render APIs in a minimal RPG setting without additional content layers.
+## 🛡️ Inspiracje i Modernizacja / Retro & Classic Inspirations
+
+### Klasyczne Dziedzictwo
+Wzorowane na **Diablo** oraz tekstowych klasykach gatunku RPG (takich jak wczesne **Multi-User Dungeons - MUD**), demo skupia się na dostarczeniu natychmiastowej satysfakcji ze zdobywania coraz potężniejszego oręża (tzw. dopaminowej pętli lootu).
+
+### Modernizacja w Lurek2D
+*   **Łatwość Integracji:** Prosty, modularny zapis w jednym pliku `main.lua` bez zewnętrznych bibliotek, co ułatwia nowym programistom naukę mechanik RPG.
+*   **Wizualny Błysk (Game Juice):** Dynamiczne, krwawe cząsteczki walki oraz złote gwiazdy z fizyką grawitacyjną dodają grze wspaniałego dynamizmu.
+
+---
+
+## 🛠️ Wykorzystane API silnika Lurek2D / Lurek APIs Showcased
+
+*   `lurek.particle`: Generator cząsteczek rozbłysku skarbu (`lootSparkle`) oraz obrażeń walki (`combatFlash`).
+*   `lurek.tween`: Płynne skalowanie pasków HP (`tween`).
+*   `lurek.render`: Rysowanie interfejsu ekwipunku, statystyk postaci oraz logów walki (`rectangle`, `print`, `setColor`).
+*   `lurek.input`: Precyzyjne przechwytywanie wciśnięć klawiatury dla celów interakcji z ekwipunkiem (`bind`, `wasActionPressed`).
+*   `lurek.camera` & `lurek.window`: Rzutowanie 2D kamery oraz dynamiczna aktualizacja paska tytułowego okna gry (`setTitle`).
+*   `lurek.timer` & `lurek.event`: Monitorowanie liczby klatek na sekundę (`getFPS`) i bezpieczne wyłączanie gry (`quit`).
+
+---
+
+## 💎 Unikalność i Wartość Prezentacyjna / Showcase Value & Uniqueness
+
+### Dlaczego ta gra jest wyjątkowa?
+**Loot RPG Demo** to idealnie zoptymalizowane, gotowe do nauki demo technologiczne:
+1.  **Niezależny Szablon RPG:** Kod gry jest zwięzły, dobrze skomentowany i nie zależy od zewnętrznych zasobów graficznych, co czyni go najlepszym materiałem szkoleniowym w kategorii gier fabularnych.
+2.  **Pokazuje stabilność tablic stanów:** Dowodzi, jak bezproblemowo Lurek2D obsługuje głębokie zagnieżdżenia obiektów w Lua (baza przedmiotów, sloty ekwipunku, stany walki).
+3.  **Wydajność Cząsteczek:** Stabilna praca emiterów cząsteczek przy generowaniu setek obiektów na klatkę bez utraty wydajności.

@@ -30,7 +30,7 @@ pub enum HookPoint {
 
 impl HookPoint {
     /// Parse a `HookPoint` from a string name, supporting `on_event:`, `on_create:`, and `on_destroy:` prefixes.
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_name(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "on_load" | "load" => Self::OnLoad,
             "on_unload" | "unload" => Self::OnUnload,

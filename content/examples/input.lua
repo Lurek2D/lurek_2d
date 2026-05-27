@@ -389,8 +389,8 @@ end
 do
     lurek.input.bind("shoot", "x")
     local bindings = lurek.input.getBindings()
-    local shoot = bindings.shoot or {}
-    print("has shoot = " .. tostring(bindings.shoot ~= nil))
+    local shoot = rawget(bindings, "shoot") or {}
+    print("has shoot = " .. tostring(rawget(bindings, "shoot") ~= nil))
     print("shoot bindings = " .. #shoot)
 end
 
@@ -688,14 +688,16 @@ do
     if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
     lurek.input.stopPlayback()
     print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
-        if rec then
-            lurek.input.loadRecording(rec:toJson())
-            lurek.input.startPlayback()
-        end
+end
 
 --@api-stub: lurek.input.stopRecording
 do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("stopped recording=" .. tostring(rec ~= nil))
+end
+
 --@api-stub: lurek.input.getTouchCount
 do
-    print("lurek.input.getTouchCount=" .. lurek.input.getTouchCount())
+    print("lurek.input.getTouchCount=" .. lurek.input.touch.getTouchCount())
 end

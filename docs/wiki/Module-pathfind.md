@@ -486,7 +486,7 @@ Source: [pathfind.lua](../blob/main/content/examples/pathfind.lua)
 
 ```lua
 do
-    local tm = lurek.tilemap.newTileMap(16, 16, 8, 8)
+    local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local layer_index = tm:addLayer("ground", 8, 8)
 
     tm:setTile(layer_index, 3, 3, 2)

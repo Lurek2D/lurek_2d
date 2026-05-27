@@ -1173,49 +1173,43 @@ do
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setTile(1, 1, 1, 5)
     block:setTile(1, 2, 2, 8)
-    print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
-    print("tile (1,2,2) = " .. block:getTile(1, 2, 2))
-end
-
---@api-stub: LMapBlock:setTile.2
-do
-    local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setTile(1, 1, 1, 5)
-    block:setTile(1, 2, 2, 8)
-    print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
-    print("tile (1,2,2) = " .. block:getTile(1, 2, 2))
+    print("tile (1,1,1) = " .. tostring(block:getTile(1, 1, 1)))
+    print("tile (1,2,2) = " .. tostring(block:getTile(1, 2, 2)))
 end
 
 --@api-stub: LMapBlock:setName
 do
-    ---@type LMapBlock
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setName("room_corner")
-    print("name = " .. block:getName())
-end
-
---@api-stub: LMapBlock:setName.2
-do
-    ---@type LMapBlock
-    local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setName("room_corner")
-    print("name = " .. block:getName())
+    print("name = " .. tostring(block:getName()))
 end
 
 --@api-stub: LMapBlock:setWeight
 do
-    ---@type LMapBlock
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setWeight(3.0)
-    print("weight = " .. block:getWeight())
+    print("weight = " .. tostring(block:getWeight()))
+end
+
+--@api-stub: LMapBlock:getName
+do
+    local block = lurek.tilemap.newMapBlock(3, 3)
+    block:setName("entry")
+    print("getName = " .. tostring(block:getName()))
+end
+
+--@api-stub: LMapBlock:getTile
+do
+    local block = lurek.tilemap.newMapBlock(3, 3)
+    block:setTile(1, 2, 2, 9)
+    print("getTile = " .. tostring(block:getTile(1, 2, 2)))
 end
 
 --@api-stub: LMapBlock:getWeight
 do
-    ---@type LMapBlock
-    local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setWeight(3.0)
-    print("weight = " .. block:getWeight())
+    local block = lurek.tilemap.newMapBlock(2, 2)
+    block:setWeight(2.5)
+    print("getWeight = " .. tostring(block:getWeight()))
 end
 
 --@api-stub: LMapBlock:setSide
@@ -1633,36 +1627,32 @@ end
 --@api-stub: LMapGroup:addBlock
 do
     local group = lurek.tilemap.newMapGroup("dungeon")
-    local mb = lurek.tilemap.newMapBlock(8, 8, 1, 2)
-    group:addBlock(mb)
-    print("addBlock ok")
+    local block = lurek.tilemap.newMapBlock(8, 8, 1, 2)
+    group:addBlock(block)
+    print("block count = " .. tostring(group:getBlockCount()))
 end
 
---@api-stub: LMapGroup:addScript.2
+--@api-stub: LMapGroup:addScript
 do
-    local group = lurek.tilemap.newMapGroup("forest") ; local mb = lurek.tilemap.newMapBlock(6, 6, 1, 2)
-    group:addBlock(mb)
+    local group = lurek.tilemap.newMapGroup("forest")
     local script = lurek.tilemap.newMapScript()
+    script:addStep({ type = "fill", gid = 1 })
     group:addScript(script)
-    print("addScript ok")
+    print("script count = " .. tostring(group:getScriptCount()))
 end
 
---@api-stub: LMapGroup:getBlockCount.2
+--@api-stub: LMapGroup:getBlockCount
 do
-    local group = lurek.tilemap.newMapGroup("forest") ; local mb = lurek.tilemap.newMapBlock(6, 6, 1, 2)
-    group:addBlock(mb) ; local script = lurek.tilemap.newMapScript()
-    group:addScript(script)
-    local bc = group:getBlockCount()
-    print("blockCount:", bc)
+    local group = lurek.tilemap.newMapGroup("rooms")
+    group:addBlock(lurek.tilemap.newMapBlock(4, 4))
+    group:addBlock(lurek.tilemap.newMapBlock(6, 6))
+    print("getBlockCount = " .. tostring(group:getBlockCount()))
 end
 
---@api-stub: LMapGroup:getName.2
+--@api-stub: LMapGroup:getName
 do
-    local group = lurek.tilemap.newMapGroup("forest") ; local mb = lurek.tilemap.newMapBlock(6, 6, 1, 2)
-    group:addBlock(mb) ; local script = lurek.tilemap.newMapScript()
-    group:addScript(script)
-    local name = group:getName()
-    print("name:", name)
+    local group = lurek.tilemap.newMapGroup("boss_rooms")
+    print("getName = " .. tostring(group:getName()))
 end
 
 --@api-stub: LMapGroup:getScriptCount
@@ -1730,119 +1720,10 @@ do
     print("LMapScript typeOf:", ok)
 end
 
---@api-stub: LMapBlock:getHeight.2
-do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
-    print("LMapBlock:getHeight.2=" .. block:getHeight())
-end
-
---@api-stub: LMapBlock:getLayerCount.2
-do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(3, 3, 3, cfg)
-    print("LMapBlock:getLayerCount.2=" .. block:getLayerCount())
-end
-
---@api-stub: LMapBlock:getName
-do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
-    block:setName("entrance_hall")
-    print("LMapBlock:getName=" .. block:getName())
-end
-
---@api-stub: LMapBlock:getTile
-do
-    local cfg = lurek.mapblock.newConfig()
-    cfg:addSlot("floor", true, 0)
-    local block = lurek.mapblock.newBlock(3, 3, 1, cfg)
-    block:setTile(2, 2, 1, "floor", 1, 3)
-    local gid = block:getTile(2, 2, 1, "floor")
-    print("LMapBlock:getTile gid=" .. tostring(gid))
-end
-
---@api-stub: LMapBlock:getWidth.2
-do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(8, 5, 1, cfg)
-    print("LMapBlock:getWidth.2=" .. block:getWidth())
-end
-
---@api-stub: LMapBlock:setName.3
-do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
-    block:setName("throne_room")
-    print("LMapBlock:setName.3=" .. block:getName())
-end
-
---@api-stub: LMapBlock:setTile.3
-do
-    local cfg = lurek.mapblock.newConfig()
-    cfg:addSlot("door", false, 0)
-    local block = lurek.mapblock.newBlock(3, 3, 1, cfg)
-    block:setTile(1, 2, 1, "door", 1, 7)
-    print("LMapBlock:setTile.3 ok")
-end
-
---@api-stub: LMapBlock:setWeight.2
-do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
-    block:setWeight(5.0)
-    print("LMapBlock:setWeight.2 ok")
-end
-
---@api-stub: LMapGroup:addBlock.5
-do
-    local cfg = lurek.mapblock.newConfig()
-    local b1 = lurek.mapblock.newBlock(3, 3, 1, cfg)
-    local b2 = lurek.mapblock.newBlock(2, 4, 1, cfg)
-    local group = lurek.mapblock.newGroup("corridors")
-    group:addBlock(b1)
-    group:addBlock(b2)
-    print("LMapGroup:addBlock.5 count=" .. group:getBlockCount())
-end
-
---@api-stub: LMapGroup:addScript
-do
-    local script = lurek.mapblock.newScript()
-    script:addStep("scatter", { count = 3 })
-    local group = lurek.mapblock.newGroup("props")
-    group:addScript(script)
-    print("LMapGroup:addScript ok")
-end
-
---@api-stub: LMapGroup:getBlockCount
-do
-    local cfg = lurek.mapblock.newConfig()
-    local group = lurek.mapblock.newGroup("mixed")
-    for _ = 1, 3 do
-        group:addBlock(lurek.mapblock.newBlock(2, 2, 1, cfg))
-    end
-    print("LMapGroup:getBlockCount=" .. group:getBlockCount())
-end
-
---@api-stub: LMapGroup:getName
-do
-    local group = lurek.mapblock.newGroup("boss_rooms")
-    print("LMapGroup:getName=" .. group:getName())
-end
-
---@api-stub: LMapScript:addStep.3
-do
-    local script = lurek.mapblock.newScript()
-    script:addStep("place", { count = 4, pattern = "corners" })
-    script:addStep("decorate", { density = 0.3 })
-    print("LMapScript:addStep.3 count=" .. script:getStepCount())
-end
-
 --@api-stub: LMapScript:getStepCount
 do
-    local script = lurek.mapblock.newScript()
-    for i = 1, 5 do
-        script:addStep("step_" .. i, {})
-    end
-    print("LMapScript:getStepCount=" .. script:getStepCount())
+    local script = lurek.tilemap.newMapScript()
+    script:addStep({ type = "fill", gid = 1 })
+    script:addStep({ type = "rect", x = 1, y = 1, w = 2, h = 2, gid = 2 })
+    print("getStepCount = " .. tostring(script:getStepCount()))
 end

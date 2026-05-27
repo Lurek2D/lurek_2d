@@ -1,6 +1,5 @@
 --- @title Dialog System
 --- @desc Decision tree dialog with topics, branches, conditions, and speakers.
---- @module dialog
 
 --@api-stub: lurek.dialog.newAI
 do
@@ -72,7 +71,7 @@ do
     ds:start("rumor_intro")
     ds:advance("rumor_detail")
     ds:advance("rumor_exit")
-    print("LDialogueState:visitCount=" .. ds:visitCount("rumor"))
+    print("LDialogueState:visitCount=" .. ds:visitCount())
 end
 
 --@api-stub: LDialogueState:isActive

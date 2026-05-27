@@ -47,8 +47,10 @@ describe("integration: tilemap solid tiles as physics boundaries", function()
 
         expect_equal(10, solid_count, "10 solid bodies created from tilemap")
 
-        -- Drop a dynamic body - it should be stopped by the ground
-        local ball = lurek.physics.newBody(world_id, 160, 0, "dynamic")
+        -- Drop a dynamic body directly above tile 1 (x=16, aligned with ground body centre)
+        -- Ball must be centred over a tile; default bodies are 16px wide so off-centre balls
+        -- fall through the gaps between adjacent tile bodies.
+        local ball = lurek.physics.newBody(world_id, 16, 0, "dynamic")
 
         -- Step simulation
         for step = 1, 120 do
@@ -121,3 +123,5 @@ describe("integration: tilemap + pathfinding from solid tiles", function()
     end)
 end)
 test_summary()
+
+

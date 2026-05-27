@@ -529,6 +529,10 @@ impl ImageData {
     pub fn as_bytes(&self) -> &[u8] {
         &self.pixels
     }
+    /// Return a mutable slice of the raw RGBA pixel bytes.
+    pub fn as_mut_bytes(&mut self) -> &mut [u8] {
+        &mut self.pixels
+    }
     /// Return a cloned copy of the raw RGBA pixel bytes.
     pub fn get_string(&self) -> Vec<u8> {
         self.pixels.clone()

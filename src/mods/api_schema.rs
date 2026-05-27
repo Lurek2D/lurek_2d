@@ -22,7 +22,7 @@ pub enum FieldType {
 
 impl FieldType {
     /// Parse a `FieldType` from a string name; supports `?` optional and `[]` array suffixes.
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_name(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "string" | "str" => Self::String,
             "integer" | "int" => Self::Integer,
@@ -33,9 +33,9 @@ impl FieldType {
             "any" => Self::Any,
             other => {
                 if let Some(inner) = other.strip_suffix("?") {
-                    Self::Optional(Box::new(Self::from_str(inner)))
+                    Self::Optional(Box::new(Self::from_name(inner)))
                 } else if let Some(inner) = other.strip_suffix("[]") {
-                    Self::Array(Box::new(Self::from_str(inner)))
+                    Self::Array(Box::new(Self::from_name(inner)))
                 } else {
                     Self::Userdata(other.to_string())
                 }

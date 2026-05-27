@@ -250,16 +250,16 @@ pub fn generate_render_commands(
                 if max_x < left || min_x > right || max_y < top || min_y > bottom {
                     continue;
                 }
-                let Some(sa) = registry.style_for(a) else {
+                let Some(sa) = registry.style_for(ProvinceId(a)) else {
                     continue;
                 };
-                let Some(sb) = registry.style_for(b) else {
+                let Some(sb) = registry.style_for(ProvinceId(b)) else {
                     continue;
                 };
                 if !is_fully_visible(sa.visibility_state) || !is_fully_visible(sb.visibility_state) {
                     continue;
                 }
-                let pair_style_override = registry.get_border_pair_style(a, b);
+                let pair_style_override = registry.get_border_pair_style(ProvinceId(a), ProvinceId(b));
                 let pair_style = pair_style_override.unwrap_or_default();
                 let is_country = pair_style.flags.contains_bits(BorderPairFlags::COUNTRY);
                 if !should_render_border_in_mode(zoom_mode, is_country) {
@@ -276,7 +276,7 @@ pub fn generate_render_commands(
                     active_width = Some(width);
                 }
 
-                let color = pair_style.color.unwrap_or_else(|| border_color_from_registry(registry, a, b));
+                let color = pair_style.color.unwrap_or_else(|| border_color_from_registry(registry, ProvinceId(a), ProvinceId(b)));
                 if active_color != Some(color) {
                     cmds.push(RenderCommand::SetColor(color[0], color[1], color[2], color[3]));
                     active_color = Some(color);

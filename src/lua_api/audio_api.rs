@@ -2223,6 +2223,49 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             },
         )?,
     )?;
+    /// Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
+    /// @param | waveform | string | Wave type: `"sine"`, `"square"`, `"sawtooth"`, or `"triangle"`.
+    /// @param | freq | number | Frequency in Hz (e.g. 440.0 for concert A).
+    /// @param | duration | number | Duration in seconds.
+    /// @param | sample_rate | integer | Sample rate in Hz (e.g. 44100).
+    /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
+    /// @param | adsr | table? | Optional ADSR envelope with `attack`, `decay`, `sustain`, `release` fields (durations in seconds, sustain is a level in [0,1]).
+    /// @return | LSoundData | A `SoundData` object containing the generated PCM samples.
+    tbl.set(
+        "newSynthWave",
+        lua.create_function(
+            |_,
+             (waveform, freq, duration, sample_rate, amplitude, adsr): (
+                String,
+                f32,
+                f32,
+                u32,
+                f32,
+                Option<mlua::Table>,
+            )| {
+                let mut sd = match waveform.as_str() {
+                    "sine" => SoundData::sine_wave(freq, duration, sample_rate, amplitude),
+                    "square" => SoundData::square_wave(freq, duration, sample_rate, amplitude),
+                    "sawtooth" => SoundData::sawtooth_wave(freq, duration, sample_rate, amplitude),
+                    "triangle" => SoundData::triangle_wave(freq, duration, sample_rate, amplitude),
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "lurek.audio.newSynthWave: unknown waveform '{}'; expected sine, square, sawtooth, or triangle",
+                            other
+                        )))
+                    }
+                };
+                if let Some(env) = adsr {
+                    let attack: f32 = env.get("attack").unwrap_or(0.0);
+                    let decay: f32 = env.get("decay").unwrap_or(0.0);
+                    let sustain: f32 = env.get("sustain").unwrap_or(1.0);
+                    let release: f32 = env.get("release").unwrap_or(0.0);
+                    sd.apply_adsr(attack, decay, sustain, release);
+                }
+                Ok(sd)
+            },
+        )?,
+    )?;
     /// Applies a lowpass filter in-place to the sound data.
     /// @param | sd_ud | LSoundData | The sound data to process.
     /// @param | cutoff_hz | number | Lowpass cutoff frequency in Hz.

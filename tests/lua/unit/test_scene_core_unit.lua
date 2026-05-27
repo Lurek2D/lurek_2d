@@ -1649,7 +1649,7 @@ describe("lurek.scene.newScene", function()
                 return "ok"
             end,
         })
-        local enter_fn = rawget(scene, "enter")
+        local enter_fn = scene.enter  -- method is inherited via __index metatable, not a raw field
         expect_equal("table", type(scene))
         expect_equal("function", type(enter_fn))
         expect_equal("ok", enter_fn(scene))

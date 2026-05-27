@@ -32,21 +32,21 @@ impl RegionGraph {
             return Err(GlobeError::TooManyRegions);
         }
         let id = p.id;
-        let nbrs: Vec<u32> = p.neighbors.clone();
-        for (key, tags) in &p.edge_tags {
-            self.edge_tags.insert(*key, tags.clone());
+        let nbrs: Vec<u32> = p.neighbors.iter().map(|r| r.0).collect();
+        for ((a, b), tags) in &p.edge_tags {
+            self.edge_tags.insert((a.0, b.0), tags.clone());
         }
-        self.neighbors.insert(id, nbrs);
-        self.centroids.insert(id, p.centroid);
+        self.neighbors.insert(id.0, nbrs);
+        self.centroids.insert(id.0, p.centroid);
         self.regions.insert(id, p);
         Ok(())
     }
     /// Remove a region and its cached data, returning the removed region when present.
     pub fn remove(&mut self, id: RegionId) -> Option<Region> {
         let p = self.regions.remove(&id)?;
-        self.neighbors.remove(&id);
-        self.centroids.remove(&id);
-        self.edge_tags.retain(|(a, b), _| *a != id && *b != id);
+        self.neighbors.remove(&id.0);
+        self.centroids.remove(&id.0);
+        self.edge_tags.retain(|(a, b), _| *a != id.0 && *b != id.0);
         Some(p)
     }
     /// Return a shared region reference when the id exists.
@@ -80,8 +80,8 @@ impl RegionGraph {
             &self.neighbors,
             &self.centroids,
             &self.edge_tags,
-            from,
-            to,
+            from.0,
+            to.0,
             cost_fn,
         )
         .ok_or(GlobeError::NoPath(from, to))
@@ -93,17 +93,18 @@ impl RegionGraph {
         max_cost: f64,
         cost_fn: &ProvinceCostFn,
     ) -> HashMap<RegionId, f64> {
-        crate::pathfind::graph_path::province_reachable(
+        let raw = crate::pathfind::graph_path::province_reachable(
             &self.neighbors,
             &self.edge_tags,
-            start,
+            start.0,
             max_cost,
             cost_fn,
-        )
+        );
+        raw.into_iter().map(|(k, v)| (RegionId(k), v)).collect()
     }
     /// Return the cached neighbor slice for a region or an empty slice when missing.
-    pub fn neighbors_of(&self, id: RegionId) -> &[RegionId] {
-        self.neighbors.get(&id).map(Vec::as_slice).unwrap_or(&[])
+    pub fn neighbors_of(&self, id: RegionId) -> Vec<RegionId> {
+        self.neighbors.get(&id.0).map(|v| v.iter().map(|&r| RegionId(r)).collect()).unwrap_or_default()
     }
     /// Set a region attribute or return RegionNotFound when the id is missing.
     pub fn set_attr(
@@ -139,10 +140,10 @@ impl RegionGraph {
         self.centroids.clear();
         self.edge_tags.clear();
         for (id, p) in &self.regions {
-            self.neighbors.insert(*id, p.neighbors.clone());
-            self.centroids.insert(*id, p.centroid);
-            for (k, v) in &p.edge_tags {
-                self.edge_tags.insert(*k, v.clone());
+            self.neighbors.insert(id.0, p.neighbors.iter().map(|r| r.0).collect());
+            self.centroids.insert(id.0, p.centroid);
+            for ((a, b), v) in &p.edge_tags {
+                self.edge_tags.insert((a.0, b.0), v.clone());
             }
         }
     }

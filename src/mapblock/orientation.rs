@@ -16,7 +16,7 @@ pub enum MapOrientation {
 
 impl MapOrientation {
     /// Parse orientation from string.
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn from_name(s: &str) -> Option<Self> {
         match s.to_lowercase().as_str() {
             "topdown" | "top_down" | "top-down" => Some(Self::TopDown),
             "isometric" | "iso" => Some(Self::Isometric),

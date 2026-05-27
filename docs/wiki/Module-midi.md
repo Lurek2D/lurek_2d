@@ -11,6 +11,7 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [mod.rs](#modrs)
   - [player.rs](#playerrs)
   - [state.rs](#staters)
 - [🧩 Key Types](#key-types)
@@ -46,26 +47,31 @@ Backward compatibility is maintained via re-exports in . The `SharedState` holds
 
 ## 📁 Source Files
 
+### `mod.rs`
+
+- MIDI input and playback sub-system: device discovery, event routing, and sequencing.
+- Enumerates MIDI devices via the `midir` crate; device list is refreshed on demand.
+- Incoming MIDI events are translated to `lurek.midi.*` Lua callbacks each tick.
+- The built-in sequencer plays SMF (`.mid`) files via the audio mixer.
+- MIDI output (to hardware synths) is also supported if an output port is open.
+
 ### `player.rs`
 
-- `MidiPlayer`: full-featured MIDI sequencer with 16-channel state.
-- Transport: `play()`, `pause()`, `stop()`, `seek(pos)`, `tell()`, `duration()`, `is_playing()`.
-- Tempo: `set_tempo_scale(scale)`, `tempo_scale()`.
-- Volume: `set_volume(v)`, `volume()`. Clamped to [0.0, 2.0].
-- Looping: `set_looping(b)`, `is_looping()`.
-- Per-channel: `set_channel_volume(ch, v)`, `set_channel_muted(ch, b)`, `set_channel_instrument(ch, program)`.
-- Bus routing: `set_bus(key)`, `bus()`.
-- File: `load(path)` — reads MIDI file, resets transport.
-- Play state: tracks `PlayState` (Playing, Paused, Stopped).
-- Log messages: `A001_MIDI_READ_FAIL`, `A002_MIDI_DISABLED`.
+- `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
+- File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
+- Transport controls: play, stop, pause, resume, seek, tell, and duration queries.
+- Per-channel volume, mute, instrument, and solo/unsolo operations across 16 MIDI channels.
+- Per-track mute support keyed by track index.
+- Configurable tempo scaling, looping, and output sample rate / channel count.
+- Mixer bus assignment via `BusKey` for routed playback.
+- `MidiData` metadata struct storing parsed song-level attributes.
+- Helper functions for MIDI note-to-frequency conversion and sine-wave note rendering.
 
 ### `state.rs`
 
-- `MidiState`: global SoundFont registry.
-- `load_soundfont(path)` — validates RIFF+sfbk header, stores raw bytes.
-- `has_soundfont()` → bool.
-- `clear_soundfont()` — drops loaded data.
-- `new()` — constructs empty state.
+- 
+- RIFF+sfbk header validation on `set_soundfont` to reject malformed SF2 files.
+- Query and clear helpers for SoundFont availability and data access.
 
 [⬆ back to top](#table-of-contents)
 

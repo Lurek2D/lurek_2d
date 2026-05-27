@@ -59,7 +59,7 @@ describe("Evidence: lurek.animation API", function()
         }
 
         local path = OUT .. "animation_blend_state.txt"
-        lurek.filesystem.write(path, table.concat(info, "\n") .. "\n")
+        write_file(path, table.concat(info, "\n") .. "\n")
         expect_evidence_created(path)
     end)
 end)

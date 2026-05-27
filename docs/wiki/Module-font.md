@@ -11,6 +11,11 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [bitmap_font.rs](#bitmapfontrs)
+  - [metrics.rs](#metricsrs)
+  - [mod.rs](#modrs)
+  - [registry.rs](#registryrs)
+  - [shaping.rs](#shapingrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -38,11 +43,54 @@ CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap f
 
 The font module provides the CPU-side data layer for text rendering: bitmap font atlas loading with Latin-1 glyph coverage, per-glyph and per-text metrics, text alignment, word and character wrapping, and a central font registry for named handles. The module does not own GPU resources — texture management for font atlases remains in the render module. Fourteen bundled Courier New bitmap atlases are shipped in `assets/fonts/`.
 
+This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `bitmap_font.rs`
+
+- Bitmap font loader and glyph atlas builder for fixed-size sprite fonts.
+- Parses BMFont `.fnt` descriptor files (text and binary formats).
+- Builds a glyph atlas mapping codepoints to UV rectangles in a texture.
+- Kerning pairs are stored and applied during layout for tighter spacing.
+- Atlas textures are loaded through `GameFS` and cached in the font registry.
+- Used when the game explicitly requests a bitmap font over a TTF/OTF font.
+
+### `metrics.rs`
+
+- Font metrics and multi-line text measurement utilities.
+- `measure_text` splits on `\n` and returns a `TextMetrics` with width/height.
+- `measure_line` operates on a single line and accounts for kerning pairs.
+- Line height includes ascender, descender, and the configurable line-gap.
+- Results are in logical pixels; caller must apply DPI scale if needed.
+
+### `mod.rs`
+
+- Font subsystem: glyph metrics, text measurement, word wrapping, and font registry.
+- Bitmap font atlas loading and glyph lookup.
+- Runtime TTF/OTF rasterisation into atlas format via fontdue.
+- Text measurement and word wrapping without GPU dependency.
+- Font registry for named font handles.
+
+### `registry.rs`
+
+- Font registry: loads, caches, and resolves TTF/OTF and bitmap fonts by name.
+- `FontRegistry` maps `(name, FontStyle)` pairs to loaded `FontHandle` values.
+- Fonts are loaded on first request and cached; duplicates share the same handle.
+- `FontStyle` (Regular, Bold, Italic, BoldItalic) is independent of the file path.
+- File I/O is routed through `GameFS` — no direct filesystem access here.
+- A fallback font is always present; missing fonts degrade gracefully.
+
+### `shaping.rs`
+
+- Text shaping and word-wrap algorithms for multi-line layout.
+- `wrap_words` wraps at word boundaries to fit `max_width` in logical pixels.
+- `wrap_characters` wraps at character boundaries for CJK and monospace fonts.
+- `WordWrap` enum selects the strategy; `None` disables wrapping entirely.
+- Both functions return a `Vec<&str>` of lines; no allocation of the text itself.
+- Called by `measure_text` and the UI text widget before rasterisation.
 
 [⬆ back to top](#table-of-contents)
 

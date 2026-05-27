@@ -11,7 +11,6 @@
 pub use crate::font::{TextMetrics, TextAlign, WordWrap, FontStyle};
 pub use crate::font::GlyphMetrics as FontGlyphMetrics;
 
-use crate::font::metrics as font_metrics;
 use crate::runtime::error::{EngineError, EngineResult};
 use fontdue::{Font as RuntimeFont, FontSettings};
 use std::cmp::{max, min};

@@ -105,3 +105,5 @@ describe("integration: entity + physics body lifecycle", function()
     end)
 end)
 test_summary()
+
+

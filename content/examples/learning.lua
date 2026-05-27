@@ -600,3 +600,11 @@ do
     print("LQLearner:typeOf LQLearner", tostring(is_learner))
     print("LQLearner:typeOf LObject", tostring(is_object))
 end
+
+--@api-stub: LQLearner:getEpisodeCount
+do
+    local learner = lurek.learning.newQLearner(10, 4)
+    learner:endEpisode()
+    learner:endEpisode()
+    print("LQLearner:getEpisodeCount", learner:getEpisodeCount())
+end

@@ -1832,3 +1832,9 @@ do
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     print("is LSoundData = " .. tostring(sd:typeOf("LSoundData")))
 end
+
+--@api-stub: lurek.audio.newSynthWave
+do
+    local sd = lurek.audio.newSynthWave("sine", 440, 0.5, 44100, 0.8)
+    print("newSynthWave sampleCount = " .. sd:getSampleCount())
+end

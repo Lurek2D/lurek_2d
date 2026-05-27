@@ -78,11 +78,10 @@ impl FileFilter {
         }
 
         // Check include patterns
-        if !self.include_patterns.is_empty() {
-            if !self.include_patterns.iter().any(|pat| path_str.contains(pat.as_str())) {
+        if !self.include_patterns.is_empty()
+            && !self.include_patterns.iter().any(|pat| path_str.contains(pat.as_str())) {
                 return false;
             }
-        }
 
         true
     }

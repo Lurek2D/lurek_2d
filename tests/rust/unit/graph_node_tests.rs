@@ -9,7 +9,7 @@ use std::str::FromStr;
 #[test]
 fn test_new_node_defaults_factory() {
     let n = Node::new(1, "factory", 10);
-    assert_eq!(n.id, 1);
+    assert_eq!(n.id.0, 1);
     assert_eq!(n.get_type(), "factory");
     assert_eq!(n.get_capacity(), 10);
     assert!(n.active);

@@ -23,12 +23,12 @@
 - [🔷 Module Types](#module-types)
   - [LChannel](#lchannel)
   - [LPromise](#lpromise)
-  - [LThread](#lthread)
+  - [LThreadHandle](#lthreadhandle)
   - [LThreadPool](#lthreadpool)
 - [🔹 Module Methods](#module-methods)
   - [LChannel Methods](#lchannel-methods)
   - [LPromise Methods](#lpromise-methods)
-  - [LThread Methods](#lthread-methods)
+  - [LThreadHandle Methods](#lthreadhandle-methods)
   - [LThreadPool Methods](#lthreadpool-methods)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
@@ -98,7 +98,7 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 
 - `LChannel` (16 methods) - Creates a new unbounded channel for sending typed values between threads.
 - `LPromise` (6 methods) - Lua-visible handle representing an asynchronous computation that will produce a single result value.
-- `LThread` (6 methods) - Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
+- `LThreadHandle` (4 methods) - Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
 - `LThreadPool` (8 methods) - Lua-visible handle for a fixed-size pool of worker threads that process items from a shared input channel.
 
 [⬆ back to top](#table-of-contents)
@@ -108,7 +108,7 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 - Source spec: [docs/specs/thread.md](../blob/main/docs/specs/thread.md)
 - Module-level functions: 7
 - Lua-visible types: 4
-- Total type methods: 36
+- Total type methods: 34
 
 
 [⬆ back to top](#table-of-contents)
@@ -402,7 +402,7 @@ do
 end
 ```
 
-### LThread
+### LThreadHandle
 
 #### Description
 
@@ -413,17 +413,53 @@ Lua-visible handle wrapping a single background worker VM that executes a Lua co
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
+--- Thread Module: channels, threads, pools, promises, async, worker capabilities
+
+--@api-stub: lurek.thread.newChannel
 do
-    local results = lurek.thread.getChannel("results")
-    results:clear()
-    local thread = lurek.thread.newThread([[
-        local ch = lurek.thread.getChannel("results")
-        ch:push(21 * 2)
-    ]])
-    thread:start()
-    thread:wait()
-    print("result = " .. tostring(results:pop()))
+    local ch = lurek.thread.newChannel()
+    print("type = " .. ch:type())
+    print("count = " .. ch:getCount())
+    print("bounded = " .. tostring(ch:isBounded()))
 end
+
+--@api-stub: lurek.thread.newBoundedChannel
+do
+    ---@type LChannel
+    local ch = lurek.thread.newBoundedChannel(10)
+    print("bounded = " .. tostring(ch:isBounded()))
+    print("capacity = " .. ch:getCapacity())
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:push
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    local id1 = ch:push("hello")
+    print("pushed id: " .. id1)
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:pop
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    ch:push("hello")
+    local val1 = ch:pop()
+    print("pop 1 = " .. tostring(val1))
+end
+
+--@api-stub: LChannel:peek
+do
+    local ch = lurek.thread.newChannel()
+    ch:push("first")
+    print("peek = " .. tostring(ch:peek()))
+    print("count after peek = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:demand
+do
 ```
 
 ### LThreadPool
@@ -1139,16 +1175,16 @@ do
 end
 ```
 
-### LThread Methods
+### LThreadHandle Methods
 
-#### LThread:getError
+#### LThreadHandle:getError
 
 #### Definition
 
 ```lua
 --- Returns the error message from the worker thread, if it terminated with an error.
 ---@return string The error string, or `nil` if the thread completed successfully or is still running.
-function LThread:getError() end
+function LThreadHandle:getError() end
 ```
 
 #### Description
@@ -1162,24 +1198,63 @@ Returns: `string` - The error string, or `nil` if the thread completed successfu
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
+--- Thread Module: channels, threads, pools, promises, async, worker capabilities
+
+--@api-stub: lurek.thread.newChannel
 do
-    local t = lurek.thread.newThread([[
-        lurek.thread.getChannel("thread_status"):push("done")
-    ]])
-    t:start()
-    t:wait()
-    print("error=" .. tostring(t:getError()))
+    local ch = lurek.thread.newChannel()
+    print("type = " .. ch:type())
+    print("count = " .. ch:getCount())
+    print("bounded = " .. tostring(ch:isBounded()))
 end
+
+--@api-stub: lurek.thread.newBoundedChannel
+do
+    ---@type LChannel
+    local ch = lurek.thread.newBoundedChannel(10)
+    print("bounded = " .. tostring(ch:isBounded()))
+    print("capacity = " .. ch:getCapacity())
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:push
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    local id1 = ch:push("hello")
+    print("pushed id: " .. id1)
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:pop
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    ch:push("hello")
+    local val1 = ch:pop()
+    print("pop 1 = " .. tostring(val1))
+end
+
+--@api-stub: LChannel:peek
+do
+    local ch = lurek.thread.newChannel()
+    ch:push("first")
+    print("peek = " .. tostring(ch:peek()))
+    print("count after peek = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:demand
+do
 ```
 
-#### LThread:isRunning
+#### LThreadHandle:isRunning
 
 #### Definition
 
 ```lua
 --- Checks whether the worker thread is still executing.
 ---@return boolean `true` if the thread has been started and has not yet finished.
-function LThread:isRunning() end
+function LThreadHandle:isRunning() end
 ```
 
 #### Description
@@ -1193,21 +1268,63 @@ Returns: `boolean` - `true` if the thread has been started and has not yet finis
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
+--- Thread Module: channels, threads, pools, promises, async, worker capabilities
+
+--@api-stub: lurek.thread.newChannel
 do
-    local t = lurek.thread.newThread("return 1")
-    t:start()
-    print("running=" .. tostring(t:isRunning()))
+    local ch = lurek.thread.newChannel()
+    print("type = " .. ch:type())
+    print("count = " .. ch:getCount())
+    print("bounded = " .. tostring(ch:isBounded()))
 end
+
+--@api-stub: lurek.thread.newBoundedChannel
+do
+    ---@type LChannel
+    local ch = lurek.thread.newBoundedChannel(10)
+    print("bounded = " .. tostring(ch:isBounded()))
+    print("capacity = " .. ch:getCapacity())
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:push
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    local id1 = ch:push("hello")
+    print("pushed id: " .. id1)
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:pop
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    ch:push("hello")
+    local val1 = ch:pop()
+    print("pop 1 = " .. tostring(val1))
+end
+
+--@api-stub: LChannel:peek
+do
+    local ch = lurek.thread.newChannel()
+    ch:push("first")
+    print("peek = " .. tostring(ch:peek()))
+    print("count after peek = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:demand
+do
 ```
 
-#### LThread:start
+#### LThreadHandle:start
 
 #### Definition
 
 ```lua
 --- Launches the worker thread, executing the Lua code string supplied at creation time.
 ---@param ... any Zero or more arguments forwarded to the worker as the `arg` table.
-function LThread:start(...) end
+function LThreadHandle:start(...) end
 ```
 
 #### Description
@@ -1223,79 +1340,62 @@ Parameters:
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
+--- Thread Module: channels, threads, pools, promises, async, worker capabilities
+
+--@api-stub: lurek.thread.newChannel
 do
-    local t = lurek.thread.newThread("return 1")
-    t:start()
-    print("start ok")
+    local ch = lurek.thread.newChannel()
+    print("type = " .. ch:type())
+    print("count = " .. ch:getCount())
+    print("bounded = " .. tostring(ch:isBounded()))
 end
-```
 
-#### LThread:type
-
-#### Definition
-
-```lua
---- Returns the type name of this object.
----@return string Always returns `"LThread"`.
-function LThread:type() end
-```
-
-#### Description
-
-Returns the type name of this object.
-
-Returns: `string` - Always returns `"LThread"`.
-
-#### Example
-
-Source: [thread.lua](../blob/main/content/examples/thread.lua)
-
-```lua
+--@api-stub: lurek.thread.newBoundedChannel
 do
-    local t = lurek.thread.newThread("return 1")
-    print("type=" .. t:type())
+    ---@type LChannel
+    local ch = lurek.thread.newBoundedChannel(10)
+    print("bounded = " .. tostring(ch:isBounded()))
+    print("capacity = " .. ch:getCapacity())
+    print("count = " .. ch:getCount())
 end
-```
 
-#### LThread:typeOf
-
-#### Definition
-
-```lua
---- Checks whether this object matches the given type name.
----@param name string Type name to test against (`"LThread"`, `"Thread"`, or `"Object"`).
----@return boolean `true` if the name matches one of the accepted type names.
-function LThread:typeOf(name) end
-```
-
-#### Description
-
-Checks whether this object matches the given type name.
-
-Parameters:
-
-- `name` (`string`, required): Type name to test against (`"LThread"`, `"Thread"`, or `"Object"`).
-
-Returns: `boolean` - `true` if the name matches one of the accepted type names.
-
-#### Example
-
-Source: [thread.lua](../blob/main/content/examples/thread.lua)
-
-```lua
+--@api-stub: LChannel:push
 do
-    local t = lurek.thread.newThread("return 1")
-    print("typeOf=" .. tostring(t:typeOf("LThread")))
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    local id1 = ch:push("hello")
+    print("pushed id: " .. id1)
+    print("count = " .. ch:getCount())
 end
+
+--@api-stub: LChannel:pop
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    ch:push("hello")
+    local val1 = ch:pop()
+    print("pop 1 = " .. tostring(val1))
+end
+
+--@api-stub: LChannel:peek
+do
+    local ch = lurek.thread.newChannel()
+    ch:push("first")
+    print("peek = " .. tostring(ch:peek()))
+    print("count after peek = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:demand
+do
 ```
 
-#### LThread:wait
+#### LThreadHandle:wait
 
 #### Definition
 
 ```lua
 --- Blocks the calling thread until the worker thread finishes execution.
-function LThread:wait() end
+function LThreadHandle:wait() end
 ```
 
 #### Description
@@ -1307,12 +1407,53 @@ Blocks the calling thread until the worker thread finishes execution.
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
+--- Thread Module: channels, threads, pools, promises, async, worker capabilities
+
+--@api-stub: lurek.thread.newChannel
 do
-    local thread = lurek.thread.newThread("return 'done'")
-    thread:start()
-    thread:wait()
-    print("LThread:wait ok")
+    local ch = lurek.thread.newChannel()
+    print("type = " .. ch:type())
+    print("count = " .. ch:getCount())
+    print("bounded = " .. tostring(ch:isBounded()))
 end
+
+--@api-stub: lurek.thread.newBoundedChannel
+do
+    ---@type LChannel
+    local ch = lurek.thread.newBoundedChannel(10)
+    print("bounded = " .. tostring(ch:isBounded()))
+    print("capacity = " .. ch:getCapacity())
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:push
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    local id1 = ch:push("hello")
+    print("pushed id: " .. id1)
+    print("count = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:pop
+do
+    ---@type LChannel
+    local ch = lurek.thread.newChannel()
+    ch:push("hello")
+    local val1 = ch:pop()
+    print("pop 1 = " .. tostring(val1))
+end
+
+--@api-stub: LChannel:peek
+do
+    local ch = lurek.thread.newChannel()
+    ch:push("first")
+    print("peek = " .. tostring(ch:peek()))
+    print("count after peek = " .. ch:getCount())
+end
+
+--@api-stub: LChannel:demand
+do
 ```
 
 ### LThreadPool Methods

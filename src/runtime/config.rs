@@ -140,6 +140,8 @@ pub struct HeadlessConfig {
 pub struct ModulesConfig {
     /// Enable audio module.
     pub audio: bool,
+    /// Enable dsp module.
+    pub dsp: bool,
     /// Enable physics module.
     pub physics: bool,
     /// Enable render module.
@@ -222,12 +224,25 @@ pub struct ModulesConfig {
     pub globe: bool,
     /// Enable visibility module.
     pub visibility: bool,
+    /// Enable cursor module.
+    #[serde(default)]
+    pub cursor: bool,
+    /// Enable grep module.
+    #[serde(default)]
+    pub grep: bool,
+    /// Enable mapblock module.
+    #[serde(default)]
+    pub mapblock: bool,
+    /// Enable validator module.
+    #[serde(default)]
+    pub validator: bool,
 }
 /// Dependency validation and auto-fix logic for module toggles.
 impl ModulesConfig {
     /// Force module switches that must be disabled in no-window headless runtime.
     pub fn apply_headless_profile(&mut self) {
         self.audio = false;
+        self.dsp = false;
         self.render = false;
         self.input = false;
         self.window = false;
@@ -248,6 +263,11 @@ impl ModulesConfig {
     }
     /// Disable modules whose dependencies are not enabled and emit warnings.
     pub fn validate_and_fix(&mut self) {
+        if !self.audio
+            && self.dsp {
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "dsp requires audio");
+                self.dsp = false;
+            }
         if !self.render {
             if self.minimap {
                 log_msg!(warn, L050_MODULE_DEP_DISABLED, "minimap requires render");
@@ -362,6 +382,7 @@ impl Default for Config {
             },
             modules: ModulesConfig {
                 audio: true,
+                dsp: true,
                 physics: true,
                 render: true,
                 input: true,
@@ -402,6 +423,10 @@ impl Default for Config {
                 parallax: true,
                 globe: true,
                 visibility: true,
+                cursor: true,
+                grep: true,
+                mapblock: true,
+                validator: true,
             },
             performance: PerformanceConfig {
                 target_fps: 60,

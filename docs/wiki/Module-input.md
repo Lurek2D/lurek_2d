@@ -66,7 +66,11 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 
 ### `events.rs`
 
-- Lua event name constants for input callbacks.
+- Input event types emitted by the winit event loop and queued for Lua consumption.
+- `InputEvent` enum covers keyboard, mouse button, mouse move, scroll, and gamepad.
+- Events are buffered in a ring during the platform event loop and drained each tick.
+- `KeyEvent` carries the logical `KeyCode`, physical scan code, and press/release state.
+- Gamepad events include axis deltas and button states for up to 4 connected pads.
 
 ### `gamepad.rs`
 
@@ -351,8 +355,8 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 do
     lurek.input.bind("shoot", "x")
     local bindings = lurek.input.getBindings()
-    local shoot = bindings.shoot or {}
-    print("has shoot = " .. tostring(bindings.shoot ~= nil))
+    local shoot = rawget(bindings, "shoot") or {}
+    print("has shoot = " .. tostring(rawget(bindings, "shoot") ~= nil))
     print("shoot bindings = " .. #shoot)
 end
 ```
@@ -2255,10 +2259,6 @@ do
     if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
     lurek.input.stopPlayback()
     print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
-        if rec then
-            lurek.input.loadRecording(rec:toJson())
-            lurek.input.startPlayback()
-        end
 end
 ```
 
@@ -2284,9 +2284,9 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-	lurek.input.startRecording()
-	local rec = lurek.input.stopRecording()
-	print("recording stopped, got recording = " .. tostring(rec ~= nil))
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("stopped recording=" .. tostring(rec ~= nil))
 end
 ```
 
@@ -2898,9 +2898,9 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-	lurek.input.startRecording()
-	local rec = lurek.input.stopRecording()
-	print("recording stopped, got recording = " .. tostring(rec ~= nil))
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("stopped recording=" .. tostring(rec ~= nil))
 end
 ```
 

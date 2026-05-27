@@ -4,7 +4,7 @@
 -- @module example.audio_manager
 
 package.path = "library/?.lua;library/?/init.lua;" .. package.path
-local AudioManager = require("audio_manager")
+local AudioManager = require("library.audio_manager")
 
 print("[example.audio_manager] === Setup: create manager with groups ===")
 

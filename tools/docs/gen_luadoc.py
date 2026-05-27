@@ -1022,6 +1022,11 @@ def main():
                     out.append(f"lurek.particle.{mname} = LParticleSystem.{mname}")
             out.append("")
 
+    # Module aliases: runtime registrations that expose the same table under multiple names.
+    out.append("-- lurek.serialize is an alias for lurek.serial (both registered at runtime)")
+    out.append("lurek.serialize = lurek.serial")
+    out.append("")
+
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write("\n".join(out))

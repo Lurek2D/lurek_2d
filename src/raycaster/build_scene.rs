@@ -9,7 +9,8 @@
 //! - Snap projected coordinates to half-pixel boundaries to reduce sub-pixel jitter on floor/ceiling edges.
 //! - Supply UV-generation utilities for axis-aligned quads and world-space column strips.
 
-use crate::math::{Color, Vec2};
+use crate::color::Color;
+use crate::math::Vec2;
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};
 use crate::raycaster::projection::distance_shade;

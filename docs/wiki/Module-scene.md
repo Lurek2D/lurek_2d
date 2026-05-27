@@ -12,7 +12,6 @@
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
   - [depth_sorter.rs](#depthsorterrs)
-  - [easing.rs](#easingrs)
   - [mod.rs](#modrs)
   - [render.rs](#renderrs)
   - [stack.rs](#stackrs)
@@ -58,11 +57,6 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 - Selects unstable, stable, 8-bit radix, or rayon parallel sort by entry count and depth shape.
 - Radix path requires integral depths and ≥256 entries; parallel kicks in at 10k entries.
 - Each entry carries depth, callback index, and object-kind flag for draw dispatch.
-
-### `easing.rs`
-
-- Easing curve helpers for scene transitions and tween interpolation.
-- Provides bounce-out and related mathematical curves.
 
 ### `mod.rs`
 

@@ -139,7 +139,6 @@ pub fn project_province(
 ) -> Option<ProjectedRegion> {
     project_region(province, view, spec, camera, light_intensity)
 }
-}
 /// Project a globe point and return the screen position with depth or None when hidden.
 pub fn project_point_with_z(
     lat_deg: f32,

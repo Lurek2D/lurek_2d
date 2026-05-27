@@ -1,6 +1,5 @@
 --- @title Graph Layout Algorithms
 --- @desc Tree, DAG, and force-directed layouts for node positioning.
---- @module layout
 
 -- Define nodes
 --@api-stub: lurek.layout.tree

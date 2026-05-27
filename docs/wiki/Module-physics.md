@@ -19,6 +19,7 @@
   - [render.rs](#renderrs)
   - [shape.rs](#shapers)
   - [terrain.rs](#terrainrs)
+  - [types.rs](#typesrs)
   - [world.rs](#worldrs)
   - [zone.rs](#zoners)
 - [🧩 Key Types](#key-types)
@@ -88,7 +89,12 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 
 ### `collision.rs`
 
-- Collision detection result types for penetration depth and contact normals.
+- Collision event queuing and contact processing between physics bodies.
+- `CollisionQueue` accumulates `ContactEvent`s during `physics::step()`.
+- Events are drained each Lua tick and delivered as `lurek.physics.on_contact` callbacks.
+- Contact events carry both body keys, contact normal, and penetration depth.
+- Sensor events (`ContactEvent::SensorEnter` / `SensorExit`) are routed separately.
+- The queue is never flushed mid-step; callbacks fire only after step completes.
 
 ### `collision_helpers.rs`
 
@@ -125,6 +131,12 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - Run-length row merging to minimise body count per chunk.
 - Compact bitpacked serialisation and deserialisation for save/load.
 - Debris spawning and column-collapse utilities for destructible terrain effects.
+
+### `types.rs`
+
+- Core type definitions for the physics subsystem.
+- `BodyId` newtype wrapper for type-safe body identification across Lua and Rust layers.
+- Implements `Copy`, `Hash`, and `Display`; converts to/from `usize` without allocation.
 
 ### `world.rs`
 
@@ -202,7 +214,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(120, 120, 24, 24, "dynamic")
+    local body = world:newBody(120, 120, "dynamic")
     local shape = lurek.physics.newCircleShape(10)
     shape:setDensity(1.5)
     lurek.physics.attachShape(body, shape)
@@ -340,7 +352,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 0, 0, 16, 16, "dynamic")
+    local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     body:setVelocity(10, 5)
     print("body", lurek.physics.getBody(world, body))
 end
@@ -374,7 +386,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 400, 20, "static")
+    world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
     for _ = 1, 120 do
         lurek.physics.step(world, 1 / 60)
@@ -434,11 +446,9 @@ end
 ---@param world LWorld The target world.
 ---@param x number Initial X position.
 ---@param y number Initial Y position.
----@param w number Body width.
----@param h number Body height.
 ---@param bodyType string Body type: "static", "dynamic", "kinematic", or "sensor".
 ---@return LBody The newly created body.
-lurek.physics.newBody = function(world, x, y, w, h, bodyType) end
+lurek.physics.newBody = function(world, x, y, bodyType) end
 ```
 
 #### Description
@@ -450,8 +460,6 @@ Parameters:
 - `world` (`LWorld`, required): The target world.
 - `x` (`number`, required): Initial X position.
 - `y` (`number`, required): Initial Y position.
-- `w` (`number`, required): Body width.
-- `h` (`number`, required): Body height.
 - `bodyType` (`string`, required): Body type: "static", "dynamic", "kinematic", or "sensor".
 
 Returns: `LBody` - The newly created body.
@@ -463,7 +471,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = lurek.physics.newBody(world, 50, 50, 20, 20, "static")
+    local body = lurek.physics.newBody(world, 50, 50, "static")
     print("id", body:getId())
     print("type", body:getType())
 end
@@ -797,7 +805,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 0, 0, 16, 16, "dynamic")
+    local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     lurek.physics.setBodyVelocity(world, body, 10, 5)
     print("velocity", body:getVelocity())
 end
@@ -832,7 +840,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 0, 0, 16, 16, "dynamic")
+    local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     lurek.physics.setSleepingAllowed(world, body, false)
     print("allowed", body:isSleepingAllowed())
 end
@@ -1071,7 +1079,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = lurek.physics.newBody(world, 50, 50, 20, 20, "static")
+    local body = lurek.physics.newBody(world, 50, 50, "static")
     print("id", body:getId())
     print("type", body:getType())
 end
@@ -1379,7 +1387,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local temp = world:newBody(400, 400, 24, 24, "dynamic")
+    local temp = world:newBody(400, 400, "dynamic")
     print("before", world:getBodyCount())
     temp:destroy()
     print("after", world:getBodyCount())
@@ -1409,7 +1417,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 30, 10, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setAngle(math.pi / 6)
     print("angle", body:getAngle())
     print("position", body:getPosition())
@@ -1439,7 +1447,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setAngularDamping(0.9)
     print("angular_damping", body:getAngularDamping())
     print("linear_damping", body:getLinearDamping())
@@ -1469,7 +1477,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 30, 10, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setAngularVelocity(1.25)
     print("angular_velocity", body:getAngularVelocity())
     print("angle", body:getAngle())
@@ -1529,7 +1537,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 20, 20, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setGravityScale(-1.0)
     print("gravity_scale", body:getGravityScale())
     print("type", body:getType())
@@ -1559,7 +1567,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 100, 100, 24, 36, "dynamic")
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     print("position", body:getPosition())
     print("size", body:getWidth(), body:getHeight())
 end
@@ -1588,7 +1596,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 100, 100, 24, 36, "dynamic")
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     print("id", body:getId())
     print("position", body:getPosition())
 end
@@ -1617,7 +1625,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setLayer(4)
     print("layer", body:getLayer())
     print("type", body:getType())
@@ -1647,7 +1655,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setLinearDamping(0.75)
     print("linear_damping", body:getLinearDamping())
     print("velocity", body:getVelocity())
@@ -1677,7 +1685,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setMask(7)
     print("mask", body:getMask())
     print("id", body:getId())
@@ -1739,7 +1747,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 100, 100, 24, 36, "dynamic")
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     print("position", body:getPosition())
     print("id", body:getId())
 end
@@ -1798,7 +1806,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "sensor")
+    local body = world:newBody(100, 100, "sensor")
     print("type", body:getType())
     print("id", body:getId())
 end
@@ -1828,7 +1836,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(0, 0, 20, 20, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     body:setVelocity(25, -50)
     print("velocity", body:getVelocity())
     print("type", body:getType())
@@ -1858,7 +1866,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 100, 100, 24, 36, "dynamic")
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     print("width", body:getWidth())
     print("height", body:getHeight())
 end
@@ -1887,7 +1895,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 100, 100, 24, 36, "dynamic")
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     print("x", body:getX())
     print("y", body:getY())
 end
@@ -1916,7 +1924,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = lurek.physics.newBody(world, 100, 100, 24, 36, "dynamic")
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
     print("y", body:getY())
     print("x", body:getX())
 end
@@ -1975,7 +1983,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local player = world:newBody(200, 200, 24, 40, "dynamic")
+    local player = world:newBody(200, 200, "dynamic")
     player:setFixedRotation(true)
     print("fixed_rotation", player:isFixedRotation())
     print("type", player:getType())
@@ -2005,7 +2013,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
     body:sleep()
     print("sleeping", body:isSleeping())
@@ -2036,7 +2044,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
     print("allowed", body:isSleepingAllowed())
     print("type", body:getType())
@@ -2068,7 +2076,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 30, 10, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setAngle(math.pi / 4)
     print("angle", body:getAngle())
     print("angular_velocity", body:getAngularVelocity())
@@ -2100,7 +2108,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setAngularDamping(0.3)
     print("angular_damping", body:getAngularDamping())
     print("angle", body:getAngle())
@@ -2132,7 +2140,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 30, 10, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setAngularVelocity(2.0)
     print("angular_velocity", body:getAngularVelocity())
     world:step(1 / 60)
@@ -2197,7 +2205,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local player = world:newBody(200, 200, 24, 40, "dynamic")
+    local player = world:newBody(200, 200, "dynamic")
     player:setFixedRotation(true)
     print("fixed_rotation", player:isFixedRotation())
     print("angle", player:getAngle())
@@ -2261,8 +2269,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local normal = world:newBody(100, 100, 20, 20, "dynamic")
-    local floaty = world:newBody(200, 100, 20, 20, "dynamic")
+    local normal = world:newBody(100, 100, "dynamic")
+    local floaty = world:newBody(200, 100, "dynamic")
     floaty:setGravityScale(0.2)
     print("normal", normal:getGravityScale())
     print("floaty", floaty:getGravityScale())
@@ -2294,7 +2302,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setLayer(2)
     print("layer", body:getLayer())
     print("mask", body:getMask())
@@ -2326,7 +2334,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setLinearDamping(0.5)
     print("linear_damping", body:getLinearDamping())
     print("angular_damping", body:getAngularDamping())
@@ -2358,7 +2366,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setMask(3)
     print("mask", body:getMask())
     print("layer", body:getLayer())
@@ -2424,7 +2432,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(0, 0, 20, 20, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     body:setPosition(200, 100)
     print("position", body:getPosition())
     print("velocity", body:getVelocity())
@@ -2488,7 +2496,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(false)
     print("allowed", body:isSleepingAllowed())
     print("sleeping", body:isSleeping())
@@ -2520,7 +2528,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setType("kinematic")
     print("type", body:getType())
     print("layer", body:getLayer())
@@ -2554,7 +2562,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(0, 0, 20, 20, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     body:setVelocity(50, -100)
     print("velocity", body:getVelocity())
     world:step(1 / 60)
@@ -2582,7 +2590,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
     body:sleep()
     print("sleeping", body:isSleeping())
@@ -2613,7 +2621,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(0, 0, 16, 16, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     print("type", body:type())
     print("type_of", body:typeOf("LBody"), body:typeOf("LObject"))
 end
@@ -2647,7 +2655,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(0, 0, 16, 16, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     print("type_of", body:typeOf("LBody"), body:typeOf("LObject"))
     print("type", body:type())
 end
@@ -2673,7 +2681,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
     body:sleep()
     body:wakeUp()
@@ -4077,7 +4085,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = world:newBody(0, 0, 12, 12, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
     print("fixture", fid)
     print("count", world:fixtureCount(body:getId()))
@@ -4122,7 +4130,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local ground = world:newBody(200, 400, 80, 16, "static")
+    local ground = world:newBody(200, 400, "static")
     local puck = world:newCircleBody(200, 400, 10, "dynamic")
     local jointId = world:addFrictionJoint(ground:getId(), puck:getId(), 200, 400, 100, 50)
     print("joint_id", jointId)
@@ -4204,8 +4212,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local platform = world:newBody(200, 200, 80, 16, "static")
-    local mover = world:newBody(200, 200, 24, 24, "dynamic")
+    local platform = world:newBody(200, 200, "static")
+    local mover = world:newBody(200, 200, "dynamic")
     local jointId = world:addMotorJoint(platform:getId(), mover:getId(), 0.5)
     print("joint_id", jointId)
     print("joint_type", world:getJointType(jointId))
@@ -4292,8 +4300,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local rail = world:newBody(300, 300, 120, 16, "static")
-    local slider = world:newBody(300, 300, 24, 24, "dynamic")
+    local rail = world:newBody(300, 300, "static")
+    local slider = world:newBody(300, 300, "dynamic")
     local jointId = world:addPrismaticJoint(rail:getId(), slider:getId(), 300, 300, 1, 0)
     print("joint_id", jointId)
     print("joint_type", world:getJointType(jointId))
@@ -4376,8 +4384,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local pivot = world:newBody(200, 150, 16, 16, "static")
-    local arm = world:newBody(200, 200, 80, 12, "dynamic")
+    local pivot = world:newBody(200, 150, "static")
+    local arm = world:newBody(200, 200, "dynamic")
     local jointId = world:addRevoluteJoint(pivot:getId(), arm:getId(), 200, 150)
     print("joint_id", jointId)
     print("joint_type", world:getJointType(jointId))
@@ -4424,7 +4432,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local ceiling = world:newBody(300, 50, 32, 8, "static")
+    local ceiling = world:newBody(300, 50, "static")
     local weight = world:newCircleBody(300, 150, 8, "dynamic")
     local jointId = world:addRopeJoint(ceiling:getId(), weight:getId(), 0, 0, 0, 0, 120)
     print("joint_id", jointId)
@@ -4466,8 +4474,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local chassis = world:newBody(200, 200, 80, 20, "dynamic")
-    local turret = world:newBody(200, 180, 24, 24, "dynamic")
+    local chassis = world:newBody(200, 200, "dynamic")
+    local turret = world:newBody(200, 180, "dynamic")
     local jointId = world:addWeldJoint(chassis:getId(), turret:getId(), 200, 190)
     print("joint_id", jointId)
     print("joint_type", world:getJointType(jointId))
@@ -4512,7 +4520,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local car = world:newBody(200, 200, 80, 20, "dynamic")
+    local car = world:newBody(200, 200, "dynamic")
     local wheel = world:newCircleBody(200, 230, 12, "dynamic")
     local jointId = world:addWheelJoint(car:getId(), wheel:getId(), 200, 230, 0, 1)
     print("joint_id", jointId)
@@ -4608,7 +4616,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 400, 20, "static")
+    world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
     local count = 0
     world:setBeginContact(function()
@@ -4679,7 +4687,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local platform = world:newBody(200, 400, 100, 10, "static")
+    local platform = world:newBody(200, 400, "static")
     world:setBodyOneWay(platform:getId(), 0, -1)
     world:clearBodyOneWay(platform:getId())
     print("normal", world:getBodyOneWay(platform:getId()))
@@ -4706,7 +4714,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 400, 20, "static")
+    world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
     ball:setRestitution(0.9)
     local count = 0
@@ -4746,7 +4754,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = world:newBody(0, 0, 12, 12, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     print("before", world:getBodyCount())
     world:destroyBody(body:getId())
     print("after", world:getBodyCount())
@@ -4778,8 +4786,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local a = world:newBody(100, 100, 20, 20, "static")
-    local b = world:newBody(100, 200, 20, 20, "dynamic")
+    local a = world:newBody(100, 100, "static")
+    local b = world:newBody(100, 200, "dynamic")
     local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
     print("before", world:jointCount())
     world:destroyJoint(jid)
@@ -4855,7 +4863,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = world:newBody(0, 0, 12, 12, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
     print("count", world:fixtureCount(body:getId()))
 end
@@ -4884,7 +4892,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 600, 20, "static")
+    world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
     local count = 0
     for _ = 1, 180 do
@@ -5000,7 +5008,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 400, 20, "static")
+    world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 480, 10, "dynamic")
     for _ = 1, 60 do
         world:step(1 / 60)
@@ -5036,8 +5044,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(100, 100, 20, 20, "dynamic")
-    world:newBody(200, 200, 20, 20, "static")
+    world:newBody(100, 100, "dynamic")
+    world:newBody(200, 200, "static")
     print("body_count", world:getBodyCount())
 end
 ```
@@ -5101,8 +5109,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(100, 100, 20, 20, "dynamic")
-    world:newBody(200, 200, 20, 20, "static")
+    world:newBody(100, 100, "dynamic")
+    world:newBody(200, 200, "static")
     local ids = world:getBodyIds()
     print("count", #ids)
     print("first", ids[1])
@@ -5138,7 +5146,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local platform = world:newBody(200, 400, 100, 10, "static")
+    local platform = world:newBody(200, 400, "static")
     world:setBodyOneWay(platform:getId(), 0, -1)
     print("normal", world:getBodyOneWay(platform:getId()))
 end
@@ -5172,7 +5180,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 20, 20, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     print("type", world:getBodyType(body:getId()))
     print("id", body:getId())
 end
@@ -5201,7 +5209,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 600, 20, "static")
+    world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
     world:newCircleBody(210, 100, 8, "dynamic")
     local count = 0
@@ -5240,7 +5248,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 400, 20, "static")
+    world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
     for _ = 1, 120 do
         world:step(1 / 60)
@@ -5274,7 +5282,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 600, 20, "static")
+    world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
     ball:setRestitution(0.9)
     local count = 0
@@ -5350,7 +5358,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local a = world:newBody(100, 100, 20, 20, "static")
+    local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
     print("bodies", world:getJointBodies(jid))
@@ -5385,7 +5393,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local ceiling = world:newBody(200, 50, 32, 8, "static")
+    local ceiling = world:newBody(200, 50, "static")
     local weight = world:newCircleBody(200, 100, 10, "dynamic")
     local jid = world:addDistanceJoint(ceiling:getId(), weight:getId(), 0, 0, 0, 0, 50)
     world:setJointBreakForce(jid, 500)
@@ -5416,7 +5424,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local a = world:newBody(100, 100, 20, 20, "static")
+    local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
     local ids = world:getJointIds()
@@ -5454,8 +5462,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local anchor = world:newBody(200, 100, 20, 20, "static")
-    local arm = world:newBody(200, 200, 80, 12, "dynamic")
+    local anchor = world:newBody(200, 100, "static")
+    local arm = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
     world:setJointLimits(jid, -math.pi / 4, math.pi / 4)
     print("limits", world:getJointLimits(jid))
@@ -5490,8 +5498,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local hub = world:newBody(200, 200, 20, 20, "static")
-    local blade = world:newBody(200, 200, 80, 12, "dynamic")
+    local hub = world:newBody(200, 200, "static")
+    local blade = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(hub:getId(), blade:getId(), 200, 200)
     world:setJointMotorSpeed(jid, 5.0)
     print("motor_speed", world:getJointMotorSpeed(jid))
@@ -5526,7 +5534,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local a = world:newBody(100, 100, 20, 20, "static")
+    local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
     print("joint_type", world:getJointType(jid))
@@ -5684,7 +5692,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local a = world:newBody(100, 100, 20, 20, "static")
+    local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
     print("joint_count", world:jointCount())
@@ -5696,19 +5704,19 @@ end
 #### Definition
 
 ```lua
---- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type}.
----@param specs table Array of tables: {{x, y, w, h, "dynamic"}, {x, y, w, h, "static"}, ...}.
+--- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
+---@param specs table Array of tables: {{x, y, w, h, "dynamic"}, ...} or {{x, y, "dynamic"}, ...} (defaults to 16x16).
 ---@return number[] Body ID numbers in creation order.
 function LWorld:newBodies(specs) end
 ```
 
 #### Description
 
-Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type}.
+Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
 
 Parameters:
 
-- `specs` (`table`, required): Array of tables: {{x, y, w, h, "dynamic"}, {x, y, w, h, "static"}, ...}.
+- `specs` (`table`, required): Array of tables: {{x, y, w, h, "dynamic"}, ...} or {{x, y, "dynamic"}, ...} (defaults to 16x16).
 
 Returns: `integer[]` - Body ID numbers in creation order.
 
@@ -5737,11 +5745,9 @@ end
 --- Creates a new physics body at the given position with the specified type and dimensions.
 ---@param x number Initial X position in world coordinates.
 ---@param y number Initial Y position in world coordinates.
----@param w number Body width.
----@param h number Body height.
 ---@param bodyType string One of "static", "dynamic", "kinematic", or "sensor".
 ---@return LBody The newly created body handle.
-function LWorld:newBody(x, y, w, h, bodyType) end
+function LWorld:newBody(x, y, bodyType) end
 ```
 
 #### Description
@@ -5752,8 +5758,6 @@ Parameters:
 
 - `x` (`number`, required): Initial X position in world coordinates.
 - `y` (`number`, required): Initial Y position in world coordinates.
-- `w` (`number`, required): Body width.
-- `h` (`number`, required): Body height.
 - `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
 
 Returns: `LBody` - The newly created body handle.
@@ -5765,7 +5769,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 50, 24, 24, "dynamic")
+    local body = world:newBody(100, 50, "dynamic")
     world:step(1 / 60)
     print("id", body:getId())
     print("type", body:getType())
@@ -6150,7 +6154,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 400, 20, "static")
+    world:newBody(200, 500, "static")
     world:newCircleBody(200, 100, 10, "dynamic")
     local contactCount = 0
     world:setBeginContact(function(bodyA, bodyB)
@@ -6262,7 +6266,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local platform = world:newBody(200, 400, 100, 10, "static")
+    local platform = world:newBody(200, 400, "static")
     world:setBodyOneWay(platform:getId(), 0, -1)
     print("normal", world:getBodyOneWay(platform:getId()))
 end
@@ -6295,7 +6299,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = world:newBody(0, 0, 12, 12, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     world:setBodyType(body:getId(), "static")
     print("type", world:getBodyType(body:getId()))
 end
@@ -6326,7 +6330,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(200, 500, 400, 20, "static")
+    world:newBody(200, 500, "static")
     local ball = world:newCircleBody(200, 100, 10, "dynamic")
     ball:setRestitution(0.9)
     local endCount = 0
@@ -6370,7 +6374,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
     world:setFixtureFriction(body:getId(), fixture, 0.8)
     print("fixture", fixture)
@@ -6407,7 +6411,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
     world:setFixtureRestitution(body:getId(), fixture, 0.9)
     print("fixture", fixture)
@@ -6444,7 +6448,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(100, 100, 24, 24, "dynamic")
+    local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
     world:setFixtureSensor(body:getId(), fixture, true)
     print("fixture", fixture)
@@ -6513,7 +6517,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local ceiling = world:newBody(200, 50, 32, 8, "static")
+    local ceiling = world:newBody(200, 50, "static")
     local weight = world:newCircleBody(200, 100, 10, "dynamic")
     local jid = world:addDistanceJoint(ceiling:getId(), weight:getId(), 0, 0, 0, 0, 50)
     world:setJointBreakForce(jid, 500)
@@ -6550,8 +6554,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local anchor = world:newBody(200, 100, 20, 20, "static")
-    local arm = world:newBody(200, 200, 80, 12, "dynamic")
+    local anchor = world:newBody(200, 100, "static")
+    local arm = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
     world:setJointLimits(jid, -math.pi / 4, math.pi / 4)
     print("limits", world:getJointLimits(jid))
@@ -6585,8 +6589,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    local anchor = world:newBody(200, 100, 20, 20, "static")
-    local arm = world:newBody(200, 200, 80, 12, "dynamic")
+    local anchor = world:newBody(200, 100, "static")
+    local arm = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
     world:setJointLimitsEnabled(jid, true)
     print("limits", world:getJointLimits(jid))
@@ -6620,8 +6624,8 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 0)
-    local hub = world:newBody(200, 200, 20, 20, "static")
-    local blade = world:newBody(200, 200, 80, 12, "dynamic")
+    local hub = world:newBody(200, 200, "static")
+    local blade = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(hub:getId(), blade:getId(), 200, 200)
     world:setJointMotorSpeed(jid, 5.0)
     print("motor_speed", world:getJointMotorSpeed(jid))
@@ -6688,7 +6692,7 @@ Source: [physics.lua](../blob/main/content/examples/physics.lua)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
-    local body = world:newBody(0, 0, 12, 12, "dynamic")
+    local body = world:newBody(0, 0, "dynamic")
     local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
     world:setMouseJointTarget(jid, 50, 50)
     print("joint", jid)

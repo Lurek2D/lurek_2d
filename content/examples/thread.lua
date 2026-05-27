@@ -393,3 +393,45 @@ do
     local ok = pool:typeOf("LThreadPool")
     print("typeOf = " .. tostring(ok))
 end
+
+--@api-stub: LThreadHandle:start
+do
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    print("LThreadHandle:start ok")
+end
+
+--@api-stub: LThreadHandle:wait
+do
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    t:wait()
+    print("LThreadHandle:wait ok")
+end
+
+--@api-stub: LThreadHandle:isRunning
+do
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    print("LThreadHandle:isRunning = " .. tostring(t:isRunning()))
+end
+
+--@api-stub: LThreadHandle:getError
+do
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    t:wait()
+    print("LThreadHandle:getError = " .. tostring(t:getError()))
+end
+
+--@api-stub: LThreadHandle:type
+do
+    local t = lurek.thread.newThread("return 1")
+    print("LThreadHandle:type = " .. t:type())
+end
+
+--@api-stub: LThreadHandle:typeOf
+do
+    local t = lurek.thread.newThread("return 1")
+    print("LThreadHandle:typeOf = " .. tostring(t:typeOf("LThread")))
+end

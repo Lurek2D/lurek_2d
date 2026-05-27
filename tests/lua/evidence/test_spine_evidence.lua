@@ -55,7 +55,7 @@ describe("Evidence: lurek.spine API", function()
         }
 
         local path = OUT .. "bone_operations.txt"
-        lurek.filesystem.write(path, table.concat(lines, "\n") .. "\n")
+        write_file(path, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(path)
     end)
 end)

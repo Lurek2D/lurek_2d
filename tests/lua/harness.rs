@@ -272,11 +272,6 @@ fn lua_integration_pathfind_ecs() {
     run_lua_test("integration/test_pathfind_ecs.lua");
 }
 
-#[test]
-fn lua_integration_data_compute() {
-    run_lua_test("integration/test_data_compute.lua");
-}
-
 // ─── Golden ──────────────────────────────────────────────────────────────────
 // ─── Security ─────────────────────────────────────────────────────────────────// ─── Stress ───────────────────────────────────────────────────────────────────// ─── Property-Based ──────────────────────────────────────────────────────────
 // ─── Unit library tests (battle / crafting / dialog) ─────────────────────────
@@ -306,11 +301,6 @@ fn lua_integration_tilemap_camera() {
 #[test]
 fn lua_integration_ai_pathfind() {
     run_lua_test("integration/test_ai_pathfind.lua");
-}
-
-#[test]
-fn lua_integration_data_filesystem() {
-    run_lua_test("integration/test_data_filesystem.lua");
 }
 
 #[test]
@@ -374,11 +364,6 @@ fn lua_integration_math_pathfind() {
     run_lua_test("integration/test_math_pathfind.lua");
 }
 
-#[test]
-fn lua_integration_graph_pathfind() {
-    run_lua_test("integration/test_graph_pathfind.lua");
-}
-
 // ── config layer ──
 
 #[test]
@@ -439,11 +424,6 @@ fn lua_unit_crafting_unit() {
 }
 
 #[test]
-fn lua_unit_data_unit() {
-    run_lua_test("unit/test_data_core_unit.lua");
-}
-
-#[test]
 fn lua_unit_dataframe_unit() {
     run_lua_test("unit/test_dataframe_core_unit.lua");
 }
@@ -494,6 +474,11 @@ fn lua_unit_drawlayer_api_unit() {
 }
 
 #[test]
+fn lua_unit_dsp_unit() {
+    run_lua_test("unit/test_dsp_core_unit.lua");
+}
+
+#[test]
 fn lua_unit_ecs_unit() {
     run_lua_test("unit/test_ecs_core_unit.lua");
 }
@@ -531,11 +516,6 @@ fn lua_unit_font_core_unit() {
 #[test]
 fn lua_unit_globe_unit() {
     run_lua_test("unit/test_globe_core_unit.lua");
-}
-
-#[test]
-fn lua_unit_graph_unit() {
-    run_lua_test("unit/test_graph_core_unit.lua");
 }
 
 #[test]
@@ -871,11 +851,6 @@ fn lua_evidence_geometry_evidence() {
 }
 
 #[test]
-fn lua_evidence_graph_evidence() {
-    run_lua_test("evidence/test_graph_evidence.lua");
-}
-
-#[test]
 fn lua_evidence_gui_evidence() {
     run_lua_test("evidence/test_gui_evidence.lua");
 }
@@ -1004,11 +979,6 @@ fn lua_golden_compute_golden() {
 }
 
 #[test]
-fn lua_golden_data_golden() {
-    run_lua_test("golden/test_data_golden.lua");
-}
-
-#[test]
 fn lua_golden_dataframe_golden() {
     run_lua_test("golden/test_dataframe_golden.lua");
 }
@@ -1016,11 +986,6 @@ fn lua_golden_dataframe_golden() {
 #[test]
 fn lua_golden_ecs_golden() {
     run_lua_test("golden/test_ecs_golden.lua");
-}
-
-#[test]
-fn lua_golden_graph_golden() {
-    run_lua_test("golden/test_graph_golden.lua");
 }
 
 #[test]
@@ -1096,11 +1061,6 @@ fn lua_stress_compute_stress() {
 }
 
 #[test]
-fn lua_stress_data_stress() {
-    run_lua_test("stress/test_data_stress.lua");
-}
-
-#[test]
 fn lua_stress_dataframe_stress() {
     run_lua_test("stress/test_dataframe_stress.lua");
 }
@@ -1118,11 +1078,6 @@ fn lua_stress_event_stress() {
 #[test]
 fn lua_stress_filesystem_stress() {
     run_lua_test("stress/test_filesystem_stress.lua");
-}
-
-#[test]
-fn lua_stress_graph_stress() {
-    run_lua_test("stress/test_graph_stress.lua");
 }
 
 #[test]

@@ -56,7 +56,7 @@ describe("evidence: cellular_sand", function()
             "walls=" .. tostring(walls),
             "floors=" .. tostring((w * h) - walls),
         }
-        lurek.filesystem.write(txt, table.concat(lines, "\n") .. "\n")
+        write_file(txt, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(txt)
     end)
 

@@ -61,6 +61,7 @@ Beyond the global queue, the module implements a robust publish-subscribe patter
 
 - Priority queue with ordered dispatch and Lua payload conversion for runtime events.
 - Name-based and wildcard signal subscriptions for decoupled communication.
+- Re-exports `EventQueue`, `Event`, `EventArg`, `EventPriority`, and signal types.
 
 ### `signal.rs`
 

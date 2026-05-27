@@ -11,8 +11,12 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [api_registry.rs](#apiregistryrs)
+  - [api_schema.rs](#apischemars)
   - [mod.rs](#modrs)
+  - [mod_loader.rs](#modloaderrs)
   - [mod_manager.rs](#modmanagerrs)
+  - [mod_sandbox.rs](#modsandboxrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -52,11 +56,37 @@ Once loaded, the module bridges the gap between engine architecture and user con
 
 ## 📁 Source Files
 
+### `api_registry.rs`
+
+- Mod API registry: records which `lurek.*` namespaces are available to mod scripts.
+- `ApiRegistry` maps API name strings to the set of permitted function identifiers.
+- Populated at engine startup from the built-in API schema and any engine plugins.
+- Mods declare their required API surface in `mod.toml`; the sandbox checks against it.
+- Unknown API requests produce a sandbox violation error before the mod is loaded.
+
+### `api_schema.rs`
+
+- Mod API schema: JSON-serialisable description of every `lurek.*` function signature.
+- `ApiSchema` is generated from `docs/api/lurek.json` at startup.
+- Used by the sandbox to validate that a mod only calls permitted, typed API entries.
+- Schema entries carry parameter types, return types, and a human-readable summary.
+- Versioned by the engine semver; mods may declare a minimum engine version.
+
 ### `mod.rs`
 
 - Mod system entry point exposing lifecycle management for game mods.
 - Handles discovery, enabling/disabling, and Lua script integration of mods.
-- Re-exports all public items from the mod manager submodule.
+- Game API registry for type-safe mod content declarations.
+- Sandboxing to restrict mod capabilities.
+- Instance loading from TOML content files.
+
+### `mod_loader.rs`
+
+- Mod loader: discovers, validates, and loads mod packages from the mods directory.
+- Scans `content/mods/` for `mod.toml` manifests and loads each into a `ModInstance`.
+- `load_instances_from_toml` parses a single manifest and builds the instance.
+- Validates API requirements against the `ApiRegistry` before executing any Lua.
+- Load order is deterministic (alphabetical by mod ID) and overrideable via priority.
 
 ### `mod_manager.rs`
 
@@ -68,6 +98,14 @@ Once loaded, the module bridges the gap between engine architecture and user con
 - Folder scanning: discover mod directories on disk and batch-register valid entries.
 - Dependency validation: detect missing deps and circular dependency cycles.
 - Config schema: carry typed key/default triples from manifests for runtime config UI.
+
+### `mod_sandbox.rs`
+
+- Mod sandbox: restricts mod Lua API access to the declared capability set.
+- Wraps the shared Lua state with a per-mod permission filter over `lurek.*`.
+- Attempts to call undeclared API functions raise a Lua error instead of panicking.
+- File system access for mods is limited to their own `content/mods/<id>/` directory.
+- Sandbox is re-applied after each hot-reload; capability set cannot expand at runtime.
 
 [⬆ back to top](#table-of-contents)
 

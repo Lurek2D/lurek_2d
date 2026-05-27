@@ -25,6 +25,7 @@
   - [projection.rs](#projectionrs)
   - [province_adapter.rs](#provinceadapterrs)
   - [registry.rs](#registryrs)
+  - [sphere.rs](#spherers)
   - [sync.rs](#syncrs)
   - [topology.rs](#topologyrs)
   - [types.rs](#typesrs)
@@ -154,6 +155,7 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 
 - Sync political colors and fog visibility from the province registry into the globe.
 - Bridge between province game-state and globe rendering data.
+- Copies color and fog state from `ProvinceRegistry` into matching `Globe` region entries.
 
 ### `registry.rs`
 
@@ -164,6 +166,14 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - Frame emission producing render commands for the full globe state.
 - Named globe registry for storing and retrieving multiple globes by name.
 - Reachability caching per faction for path-cost queries.
+
+### `sphere.rs`
+
+- Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
+- Great-circle distance (Haversine) and arc interpolation between two geo-points.
+- Ray-sphere intersection returning the nearest positive hit distance.
+- Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
+- Matrix-vector and matrix-matrix multiplication for globe-view transforms.
 
 ### `sync.rs`
 

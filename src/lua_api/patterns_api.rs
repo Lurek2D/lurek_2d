@@ -744,7 +744,7 @@ impl LuaUserData for LuaBlackboard {
                     .board
                     .borrow_mut()
                     .set_text(&key, s.to_str()?.to_string()),
-                LuaValue::Nil => this.board.borrow_mut().clear(&key),
+                LuaValue::Nil => this.board.borrow_mut().clear(),
                 _ => {
                     return Err(LuaError::external(
                         "Blackboard only supports bool/number/string/nil values",

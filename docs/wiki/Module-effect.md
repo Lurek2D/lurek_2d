@@ -11,21 +11,14 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
-  - [ambient.rs](#ambientrs)
-  - [atmosphere.rs](#atmospherers)
   - [draw.rs](#drawrs)
   - [effect.rs](#effectrs)
   - [effect_type.rs](#effecttypers)
   - [image_effect.rs](#imageeffectrs)
   - [mod.rs](#modrs)
-  - [overlay.rs](#overlayrs)
   - [presets.rs](#presetsrs)
   - [render.rs](#renderrs)
-  - [screen_effects.rs](#screeneffectsrs)
   - [stack.rs](#stackrs)
-  - [transition.rs](#transitionrs)
-  - [water_overlay.rs](#wateroverlayrs)
-  - [weather.rs](#weatherrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -65,22 +58,11 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 
 ## 📁 Source Files
 
-### `ambient.rs`
-
-- Global ambient tint state driven by a time-of-day curve.
-- Maps hour values (0–24) to RGBA color through piecewise dawn/day/dusk/night segments.
-- Consumed by the overlay renderer when the ambient effect is enabled.
-
-### `atmosphere.rs`
-
-- State structs for full-screen atmosphere overlays: clouds, fog, heat haze, vignette, film grain, and lightning flash.
-- Each struct carries enabled flag plus effect-specific parameters (density, intensity, color, speed).
-- All default to disabled so overlays are opt-in per scene.
-
 ### `draw.rs`
 
 - Render a preview image summarizing the current post-FX stack state.
 - Produce a solid-color thumbnail indicating whether any effects are active.
+- Image colour differs between an empty stack and a stack with at least one enabled effect.
 
 ### `effect.rs`
 
@@ -104,21 +86,11 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 
 ### `mod.rs`
 
-- Post-processing effect stack: bloom, blur, CRT, vignette, film grain, and custom shaders.
-- Screen overlays: weather particles, fog, heat haze, water distortion, flashes, and fades.
-- Atmosphere and ambient color derived from time-of-day.
-- Named presets and per-image effect ordering.
-
-### `overlay.rs`
-
-- Central `Overlay` struct owning every screen-space post-world effect state block.
-- Per-frame update loop advancing weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning.
-- Weather particle spawning and simulation for rain, snow, hail, dust, leaves, ash, and pollen modes.
-- Trigger API for flash, camera shake, screen fade, and lightning flash events.
-- Query helpers for shake offset, flash/lightning alpha, active state, and target dimensions.
-- Render command builder emitting full-screen colored rectangles for flash, fade, lightning, and vignette overlays.
-- Clear/reset restoring all subsystems to default inactive state.
-- Debug visualization: state panels, flash frame strips, shake offset trails, fade transition strips, and combined trigger previews.
+- Visual effect sub-system: particle effects, screen-space post-processing, and shakes.
+- Orchestrates `particle`, `tween`, `dsp` integrations for composite effects.
+- All effects are data-driven: configured from Lua tables, not hard-coded structs.
+- Effects are lifetime-managed; expired effects are removed at the start of each tick.
+- No GPU work is performed here — effect data is converted to `RenderCommand`s.
 
 ### `presets.rs`
 
@@ -132,12 +104,6 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 - Emits begin/end/apply command sequences consumed by the renderer.
 - Skips command generation when no effects are enabled.
 
-### `screen_effects.rs`
-
-- Full-screen effect state machines: flash, shake, and fade.
-- Each state tracks active flag, timing, and per-frame parameters.
-- Deterministic PRNG for shake offsets without external RNG dependency.
-
 ### `stack.rs`
 
 - Ordered post-processing effect stack with per-entry enable flags.
@@ -145,25 +111,6 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 - Stack manipulation: add, remove, insert, reorder, deduplicate.
 - Query helpers for enabled subset, dimensions, and positional lookup.
 - Debug visualization renderers for stack state, catalogs, parameters, and type bars.
-
-### `transition.rs`
-
-- Full-screen transition effects: fade, wipe, iris wipe, and dissolve.
-- String-based kind parsing with canonical name round-tripping.
-- Time-based playback lifecycle with forward and reverse modes.
-- Normalized progress query for renderer consumption.
-
-### `water_overlay.rs`
-
-- Animated water distortion overlay with configurable amplitude, frequency, and speed.
-- Shallow-water tint and depth-based color shift with independent blend strengths.
-- Time-accumulating update loop that advances the wave pattern each frame.
-
-### `weather.rs`
-
-- Weather particle simulation types and state management.
-- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
-- Tracks particle pool, wind parameters, and internal PRNG.
 
 [⬆ back to top](#table-of-contents)
 

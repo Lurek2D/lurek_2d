@@ -98,14 +98,8 @@ pub struct ChartSeries {
 }
 
 /// Options for DataFrame-to-chart mapping.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ChartDataFrameOptions {
     /// Maximum number of rows to plot from the DataFrame.
     pub max_rows: Option<usize>,
-}
-
-impl Default for ChartDataFrameOptions {
-    fn default() -> Self {
-        Self { max_rows: None }
-    }
 }

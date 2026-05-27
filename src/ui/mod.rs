@@ -3,6 +3,10 @@
 //! - Provides layout panels, interactive widgets, and data-bound context.
 //! - Optional TOML layout-loader feature behind a feature flag.
 
+/// Chart types re-exported from the charts crate module.
+pub mod chart;
+/// Multi-series data graph renderer with viewport and coordinate mapping.
+pub mod data_graph_renderer;
 /// Container widgets: panels, docks, scroll areas, split views.
 pub mod containers;
 /// GUI context, event dispatch, and data-binding values.

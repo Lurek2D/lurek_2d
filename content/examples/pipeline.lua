@@ -1045,32 +1045,3 @@ do
     print("success = " .. tostring(result.success))
     print("result = " .. tostring(context.result))
 end
-
---@api-stub: lurek.pipeline.fromTable
-do
-    local pl = lurek.pipeline.fromTable({
-        name = "test_pipeline",
-        steps = {
-            {
-                name = "init",
-                fn = function(ctx)
-                    ctx.x = 1
-                end,
-            },
-            {
-                name = "done",
-                deps = { "init" },
-                fn = function(ctx)
-                    ctx.y = (ctx.x or 0) + 1
-                end,
-            },
-        },
-    })
-    local context = {}
-
-    pl:run(context)
-
-    print("step count = " .. pl:getStepCount())
-    print("x = " .. tostring(context.x))
-    print("y = " .. tostring(context.y))
-end

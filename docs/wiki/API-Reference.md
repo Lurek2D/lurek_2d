@@ -270,7 +270,7 @@
 - [lurek.thread](#lurekthread)
   - [LChannel](#lchannel)
   - [LPromise](#lpromise)
-  - [LThread](#lthread)
+  - [LThreadHandle](#lthreadhandle)
   - [LThreadPool](#lthreadpool)
 - [lurek.tilemap](#lurektilemap)
   - [LAutoTileSheet](#lautotilesheet)
@@ -845,6 +845,7 @@ LBlendLayerSet:typeOf(name: string) -> boolean -- Returns whether this blend lay
 [Module page](Module-audio)
 
 ```lua
+lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer -- Adds an effect to a named audio bus and returns its effect ID.
 lurek.audio.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number) -- Applies a bandpass filter in-place to the sound data.
 lurek.audio.applyGain(sd_ud: LSoundData, gain: number) -- Applies a gain multiplier in-place to the sound data.
 lurek.audio.applyHighpass(sd_ud: LSoundData, cutoff_hz: number) -- Applies a highpass filter in-place to the sound data.
@@ -899,21 +900,25 @@ lurek.audio.newSineWave(freq: number, duration: number, sample_rate: integer, am
 lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData -- Creates a new SoundData object from a file path or blank buffer for procedural audio.
 lurek.audio.newSource(path: string, [sourceType]: string) -> LSource -- Creates a new audio source from a file path, either fully loaded or streaming.
 lurek.audio.newSquareWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData -- Generates a square wave as a `SoundData` buffer.
-lurek.audio.newSynthWave(waveform: string, freq: number, duration: number, sample_rate: integer, amplitude: number, adsr: table) -> LSoundData -- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
+lurek.audio.newSynthWave(waveform: string, freq: number, duration: number, sample_rate: integer, amplitude: number, [adsr]: table) -> LSoundData -- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
 lurek.audio.newTriangleWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData -- Generates a triangle wave as a `SoundData` buffer.
 lurek.audio.newWhiteNoise(duration: number, sample_rate: integer, amplitude: number, seed: integer) -> LSoundData -- Generates white noise as a `SoundData` buffer using a deterministic seed.
+lurek.audio.normalizeFile(input: string, output: string, target: number) -- Normalizes an audio file to a target peak amplitude and saves the result.
 lurek.audio.pause(source: LSource|integer) -- Pauses playback of a source at its current position.
 lurek.audio.pauseAll() -- Pauses all currently playing audio sources.
 lurek.audio.play(source: LSource|integer, [options]: table) -> integer -- Starts playback of a source by handle, optionally routing through a named bus.
 lurek.audio.playLooping(source: LSource|integer) -- Starts playback of a source with looping enabled in one call.
 lurek.audio.playQueueable(qsource_id: integer) -- Starts playback of a queueable audio source.
+lurek.audio.processOffline(input: string, output: string, effects_tbl: table) -- Processes an audio file offline through a chain of effects and writes the result to an output file.
 lurek.audio.queueSource(qsource_id: integer, sd: LSoundData) -- Queues a decoded audio chunk for playback on a queueable source.
 lurek.audio.release(source: LSource|integer) -> boolean -- Releases an audio source, freeing its memory and stopping playback.
+lurek.audio.remove_effect(bus_name: string, effect_id: integer) -> boolean -- Removes an effect from a named audio bus by effect ID.
 lurek.audio.resume(source: LSource|integer) -- Resumes playback of a paused source.
 lurek.audio.resumeAll() -- Resumes all paused audio sources. This function is exposed to Lua scripts.
 lurek.audio.saveWAV(sd_ud: LSoundData, filename: string) -- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 lurek.audio.seek(source: LSource|integer, pos: number) -- Seeks a source to a specific position in seconds.
 lurek.audio.set_bus_volume(name: string, volume: number) -- Sets the volume of a named audio bus.
+lurek.audio.set_effect_param(bus_name: string, effect_id: integer, param_name: string, value: number) -> boolean -- Sets a parameter value on an effect attached to a named audio bus.
 lurek.audio.setDistanceModel(model: string) -- Sets the distance attenuation model for spatial audio.
 lurek.audio.setDopplerScale(scale: number) -- Sets the global Doppler effect intensity multiplier.
 lurek.audio.setHighpass(source: LSource|integer, cutoff_hz: integer) -- Applies a highpass filter to a source, attenuating low frequencies.
@@ -934,10 +939,12 @@ lurek.audio.setSourceBus(source: LSource|integer, bus: LBus) -- Routes a source 
 lurek.audio.setStereoWidth(src_ud: LSource, width: number) -- Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
 lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, [z]: number) -- Sets the velocity of a source for Doppler effect calculations.
 lurek.audio.setVolume(source: LSource|integer, vol: number) -- Sets the volume of a source by handle.
+lurek.audio.spectrogramToPng(input: string, output: string, width: integer, height: integer) -- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 lurek.audio.stop(source: LSource|integer) -- Stops playback of a source and resets its position to the beginning.
 lurek.audio.stopAll() -- Stops all audio sources and resets their positions.
 lurek.audio.stopQueueable(qsource_id: integer) -- Stops playback of a queueable audio source.
 lurek.audio.tell(source: LSource|integer) -> number -- Returns the current playback position of a source in seconds.
+lurek.audio.waveformToPng(input: string, output: string, width: integer, height: integer) -- Renders a waveform visualization of an audio file and saves it as a PNG image.
 ```
 
 ### LBus
@@ -1984,7 +1991,7 @@ lurek.docs.validateModule(module_name: string, [catalog_ud]: LApiCatalog) -> LVa
 LApiCatalog:entryCount([module]: string) -> integer -- Counts entries in the catalog, optionally for one module.
 LApiCatalog:filter(predicate: function) -> LApiCatalog -- Builds a new catalog containing entries accepted by a Lua predicate.
 LApiCatalog:getEntries([module]: string) -> LDocEntry[] -- Returns catalog entries, optionally limited to one module.
-LApiCatalog:getEntry(qualified_name: string) -> LuaValue -- Returns one catalog entry by qualified API name.
+LApiCatalog:getEntry(qualified_name: string) -> LDocEntry -- Returns one catalog entry by qualified API name.
 LApiCatalog:getModules() -> string[] -- Returns every module represented in this catalog.
 LApiCatalog:getTypeMethods(qualified_name: string) -> LDocEntry[] -- Returns method entries associated with a qualified type name.
 LApiCatalog:getTypes(module_name: string) -> string[] -- Returns type names documented for one module.
@@ -2072,6 +2079,10 @@ lurek.dsp.addEffectToBus(bus_name: string, effect_type_str: string, [params]: ta
 lurek.dsp.analyzeFft(sd: LSoundData, size: integer) -> table -- Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
 lurek.dsp.analyzePeak(sd: LSoundData) -> number -- Analyzes the Peak volume of a `SoundData` buffer.
 lurek.dsp.analyzeRms(sd: LSoundData) -> number -- Analyzes the RMS volume of a `SoundData` buffer.
+lurek.dsp.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number) -- Applies a bandpass filter in-place to the sound data.
+lurek.dsp.applyGain(sd_ud: LSoundData, gain: number) -- Applies a gain multiplier in-place to the sound data.
+lurek.dsp.applyHighpass(sd_ud: LSoundData, cutoff_hz: number) -- Applies a highpass filter in-place to the sound data.
+lurek.dsp.applyLowpass(sd_ud: LSoundData, cutoff_hz: number) -- Applies a lowpass filter in-place to the sound data.
 lurek.dsp.newEffectParams(effectType: string, p1: number, p2: number, p3: number) -> table -- Creates an effect parameter descriptor table for use with offline processing.
 lurek.dsp.normalize(input: string, output: string, target: number) -- Normalizes an audio file to a target peak amplitude and saves the result.
 lurek.dsp.processOffline(input: string, output: string, effects: table) -- Processes an audio file offline through a chain of effects and writes the result to an output file.
@@ -2806,7 +2817,7 @@ LHtmlElement:typeOf(name: string) -> boolean -- Returns whether this element han
 [Module page](Module-i18n)
 
 ```lua
-lurek.i18n.buildIndex() -> string[] -- Builds a word-to-keys search index from the catalog.
+lurek.i18n.buildIndex() -> table -- Builds a word-to-keys search index from the catalog.
 lurek.i18n.categories() -> string[] -- Returns top-level translation key categories.
 lurek.i18n.detectLocale() -> string -- Detects the system locale when available.
 lurek.i18n.formatDate(timestamp: integer, [fmt]: string) -> string -- Formats a timestamp with the active locale and a named format.
@@ -3165,8 +3176,8 @@ LNeuralNet:typeOf(name: string) -> boolean -- Returns whether this neural networ
 
 ```lua
 LNeuroevolution:bestFitness() -> number -- Returns the best fitness value in the population.
-LNeuroevolution:bestNetwork() -> LuaValue -- Converts the best chromosome into a neural network handle when one exists.
-LNeuroevolution:chromosomeToNet(idx: integer) -> LuaValue -- Converts one chromosome into a neural network handle when the index is valid.
+LNeuroevolution:bestNetwork() -> LNeuralNet -- Converts the best chromosome into a neural network handle when one exists.
+LNeuroevolution:chromosomeToNet(idx: integer) -> LNeuralNet -- Converts one chromosome into a neural network handle when the index is valid.
 LNeuroevolution:evolve() -- Advances the neuroevolution population by one generation.
 LNeuroevolution:generation() -> integer -- Returns the current generation index.
 LNeuroevolution:popSize() -> integer -- Returns the population size. This method is available to Lua scripts.
@@ -3184,6 +3195,7 @@ LQLearner:deserialize(json: string) -- Replaces the Q-learner state from a JSON 
 LQLearner:endEpisode() -- Decays epsilon and increments the episode count.
 LQLearner:getActionCount() -> integer -- Returns the number of actions represented by this learner.
 LQLearner:getDiscountFactor() -> number -- Returns the Q-learning gamma discount factor.
+LQLearner:getEpisodeCount() -> integer -- Returns the total number of episodes completed so far.
 LQLearner:getExplorationDecay() -> number -- Returns the exploration decay multiplier.
 LQLearner:getExplorationRate() -> number -- Returns the exploration rate used by action selection.
 LQLearner:getLearningRate() -> number -- Returns the Q-learning alpha learning rate.
@@ -4833,7 +4845,7 @@ lurek.physics.drawDebugGpu(world: LWorld, [config]: table) -- Queues a GPU-rende
 lurek.physics.getBody(world: LWorld, body: LBody) -> number -- Returns position and velocity of a body (free-function variant for quick queries).
 lurek.physics.getCollisions(world: LWorld) -> table -- Returns all collision events from the last world step as {body_a, body_b} pairs.
 lurek.physics.isSleepingAllowed(world: LWorld, body: LBody) -> boolean -- Checks if sleeping is allowed on a body (free-function variant).
-lurek.physics.newBody(world: LWorld, x: number, y: number, w: number, h: number, bodyType: string) -> LBody -- Creates a new body in a world (free-function variant).
+lurek.physics.newBody(world: LWorld, x: number, y: number, bodyType: string) -> LBody -- Creates a new body in a world (free-function variant).
 lurek.physics.newCellular(width: integer, height: integer) -> LCellular -- Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
 lurek.physics.newChainShape(closed: boolean, ...: number) -> LPhysicsShape -- Creates a chain (polyline) collision shape. Useful for terrain outlines.
 lurek.physics.newCircleShape(r: number) -> LPhysicsShape -- Creates a circle collision shape with the given radius.
@@ -5007,8 +5019,8 @@ LWorld:getSolverIterations() -> integer -- Returns the current number of velocit
 LWorld:getZoneEvents() -> table -- Returns all zone enter/leave events from the last step.
 LWorld:isBodySleeping(id: integer) -> boolean -- Returns whether a body is currently in the sleeping (inactive) state.
 LWorld:jointCount() -> integer -- Returns the total number of joints in the world.
-LWorld:newBodies(specs: table) -> integer[] -- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type}.
-LWorld:newBody(x: number, y: number, w: number, h: number, bodyType: string) -> LBody -- Creates a new physics body at the given position with the specified type and dimensions.
+LWorld:newBodies(specs: table) -> integer[] -- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, ty...
+LWorld:newBody(x: number, y: number, bodyType: string) -> LBody -- Creates a new physics body at the given position with the specified type and dimensions.
 LWorld:newChainBody(x: number, y: number, vertices: table, closed: boolean, bodyType: string) -> LBody -- Creates a new body with a chain (polyline) collider. Useful for terrain edges.
 LWorld:newCircleBody(x: number, y: number, radius: number, bodyType: string) -> LBody -- Creates a new body with a circle collider already attached.
 LWorld:newEdgeBody(x: number, y: number, x1: number, y1: number, x2: number, y2: number, bodyType: string) -> LBody -- Creates a new body with an edge (line segment) collider between two local points.
@@ -6103,15 +6115,13 @@ LPromise:type() -> string -- Returns the type name of this object.
 LPromise:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
-### LThread
+### LThreadHandle
 
 ```lua
-LThread:getError() -> string -- Returns the error message from the worker thread, if it terminated with an error.
-LThread:isRunning() -> boolean -- Checks whether the worker thread is still executing.
-LThread:start(...: any) -- Launches the worker thread, executing the Lua code string supplied at creation time.
-LThread:type() -> string -- Returns the type name of this object.
-LThread:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
-LThread:wait() -- Blocks the calling thread until the worker thread finishes execution.
+LThreadHandle:getError() -> string -- Returns the error message from the worker thread, if it terminated with an error.
+LThreadHandle:isRunning() -> boolean -- Checks whether the worker thread is still executing.
+LThreadHandle:start(...: any) -- Launches the worker thread, executing the Lua code string supplied at creation time.
+LThreadHandle:wait() -- Blocks the calling thread until the worker thread finishes execution.
 ```
 
 ### LThreadPool

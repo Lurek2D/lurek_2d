@@ -7,7 +7,8 @@
 //! math, free-function ray casting against segments, and internal scene/render
 //! command generation.
 
-use lurek2d::math::{Color, Vec2};
+use lurek2d::color::Color;
+use lurek2d::math::Vec2;
 use lurek2d::raycaster::*;
 use lurek2d::render::renderer::RenderCommand;
 

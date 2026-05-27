@@ -59,7 +59,7 @@ pub fn load_rules_from_toml(content: &str) -> Vec<LuaPatternRule> {
         } else if let Some(value) = extract_toml_string(trimmed, "message") {
             current_message = value;
         } else if let Some(value) = extract_toml_string(trimmed, "severity") {
-            current_severity = Severity::from_str(&value);
+            current_severity = Severity::from_name(&value);
         } else if trimmed.starts_with("invert") {
             current_invert = trimmed.contains("true");
         }

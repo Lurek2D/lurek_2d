@@ -1,8 +1,7 @@
 //! `lurek.grep` - Pattern-based file search across game content: literal, regex, multi-pattern, and log search.
 use super::SharedState;
 use crate::grep::{
-    engine::GrepEngine, filter::FileFilter, json_search, log_search, matcher::Matcher,
-    parallel::ParallelSearch, pattern::PatternKind, GrepConfig,
+    engine::GrepEngine, filter::FileFilter, json_search, log_search, GrepConfig,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -19,7 +18,7 @@ struct LuaGrepEngine {
 }
 
 impl LuaUserData for LuaGrepEngine {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Search a directory for a literal pattern.
         /// @param | path | string | Directory to search.
         /// @param | pattern | string | Text pattern to find.
@@ -83,7 +82,7 @@ struct LuaFileFilter {
 }
 
 impl LuaUserData for LuaFileFilter {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add allowed file extensions — Lua userdata object exposed by the engine.
         /// @param | ext | string | Extension (without dot).
         methods.add_method("addExtension", |_, this, ext: String| {
@@ -118,7 +117,7 @@ impl LuaUserData for LuaFileFilter {
 // Helper: convert SearchResult to Lua table
 // ---------------------------------------------------------------------------
 
-fn result_to_table(lua: &Lua, result: &crate::grep::result::SearchResult) -> LuaResult<LuaTable> {
+fn result_to_table<'lua>(lua: &'lua Lua, result: &crate::grep::result::SearchResult) -> LuaResult<LuaTable<'lua>> {
     let tbl = lua.create_table()?;
     tbl.set("files_searched", result.files_searched)?;
     tbl.set("files_matched", result.files_matched)?;
@@ -190,9 +189,12 @@ fn result_to_table(lua: &Lua, result: &crate::grep::result::SearchResult) -> Lua
 /// @param | level | string | Log level filter (INFO, WARN, ERROR, etc.) or empty.
 /// @param | pattern | string | Message pattern or empty.
 /// @return | table | Array of matching log entries.
-pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
+pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
     let module = lua.create_table()?;
 
+    /// Creates a new grep engine with default configuration settings.
+    ///
+    /// @return | LGrepEngine | A new grep engine instance.
     module.set(
         "newEngine",
         lua.create_function(|_, ()| {
@@ -202,6 +204,10 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Creates a new grep engine with custom search configuration options.
+    ///
+    /// @param | opts | table | Options table with fields: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).
+    /// @return | LGrepEngine | A new configured grep engine instance.
     module.set(
         "newEngineOpts",
         lua.create_function(|_, opts: LuaTable| {
@@ -222,6 +228,9 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Creates a new empty file filter that can be configured to match specific file patterns.
+    ///
+    /// @return | LFileFilter | A new empty file filter instance.
     module.set(
         "newFilter",
         lua.create_function(|_, ()| {
@@ -231,6 +240,9 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Creates a file filter preset that matches only Lua source files (.lua extension).
+    ///
+    /// @return | LFileFilter | A file filter configured for Lua files only.
     module.set(
         "luaFilter",
         lua.create_function(|_, ()| {
@@ -240,6 +252,11 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Searches a directory tree for files containing an exact literal pattern string.
+    ///
+    /// @param | path | string | Root directory path to search in.
+    /// @param | pattern | string | Literal text pattern to search for.
+    /// @return | table | Array of tables with fields: file (string), line (integer), text (string).
     module.set(
         "search",
         lua.create_function(|lua, (path, pattern): (String, String)| {
@@ -250,6 +267,11 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Searches a JSON file for all values associated with a given key name at any depth.
+    ///
+    /// @param | file | string | Path to the JSON file to search.
+    /// @param | key | string | Key name to search for in the JSON structure.
+    /// @return | table | Array of tables with fields: path (string), value (string).
     module.set(
         "jsonSearch",
         lua.create_function(|lua, (file, key): (String, String)| {
@@ -265,6 +287,12 @@ pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
         })?,
     )?;
 
+    /// Searches a structured log file by log level and regex pattern, returning matched entries.
+    ///
+    /// @param | file | string | Path to the log file to search.
+    /// @param | level | string | Log level filter (e.g. "ERROR", "WARN"); empty string matches all.
+    /// @param | pattern | string | Regex pattern to match against log messages; empty string matches all.
+    /// @return | table | Array of tables with fields: line (integer), message (string), timestamp (string?), level (string?).
     module.set(
         "logSearch",
         lua.create_function(|lua, (file, level, pattern): (String, String, String)| {

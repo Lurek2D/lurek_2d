@@ -2,6 +2,7 @@
 
 use std::time::Duration;
 
+#[allow(clippy::duplicate_mod)]
 mod smoke_support;
 
 use smoke_support::{

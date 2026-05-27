@@ -51,7 +51,6 @@ impl ParallelSearch {
             for chunk in chunks {
                 let results = Arc::clone(&results);
                 let reader = &self.reader;
-                let matcher = matcher;
                 s.spawn(move || {
                     for path in chunk {
                         if let Some(file_match) = search_file(path, matcher, reader) {
@@ -87,7 +86,6 @@ impl ParallelSearch {
             for chunk in chunks {
                 let results = Arc::clone(&results);
                 let reader = &self.reader;
-                let matcher = matcher;
                 s.spawn(move || {
                     for path in chunk {
                         if let Some(file_match) = search_file(path, matcher, reader) {

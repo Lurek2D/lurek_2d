@@ -10,13 +10,14 @@ use super::devtools_api;
 use super::flownet_api;
 use super::lua_module::ModuleEntry;
 use super::{
-    ai_api, animation_api, audio_api, camera_api, color_api, compute_api, binary_api, dataframe_api,
-    debugbridge_api, dialog_api, docs_api, dsp_api, ecs_api, effect_api, engine_api, event_api, filesystem_api,
-    globe_api, html_api, i18n_api, image_api, input_api, layout_api, learning_api, light_api, log_api,
-    math_api, midi_api, minimap_api, mods_api, network_api, overlay_api, parallax_api, particle_api,
-    pathfind_api, patterns_api, physics_api, pipeline_api, procgen_api, province_api, raycaster_api,
-    render_api, repl_api, save_api, scene_api, serialize_api, spine_api, sprite_api, system_api,
-    terminal_api, thread_api, tilemap_api, timer_api, tween_api, ui_api, visibility_api,
+    ai_api, animation_api, audio_api, camera_api, color_api, compute_api, binary_api, cursor_api,
+    dataframe_api, debugbridge_api, dialog_api, docs_api, dsp_api, ecs_api, effect_api, engine_api,
+    event_api, filesystem_api, font_api, globe_api, grep_api, html_api, i18n_api, image_api, input_api,
+    layout_api, learning_api, light_api, log_api, mapblock_api, math_api, midi_api, minimap_api,
+    mods_api, network_api, overlay_api, parallax_api, particle_api, pathfind_api, patterns_api,
+    physics_api, pipeline_api, procgen_api, province_api, raycaster_api, render_api, repl_api,
+    save_api, scene_api, serialize_api, spine_api, sprite_api, system_api, terminal_api,
+    thread_api, tilemap_api, timer_api, tween_api, ui_api, validator_api, visibility_api,
     window_api,
 };
 use crate::runtime::config::ModulesConfig;
@@ -69,6 +70,7 @@ static MODULES: &[ModuleEntry] = &[
     always!(math_api),
     always!(color_api),
     always!(system_api),
+    always!(font_api),
     // ── Config-gated modules ────────────────────────────────────────────
     gated!(timer_api, timer),
     gated!(image_api, image),
@@ -111,10 +113,6 @@ static MODULES: &[ModuleEntry] = &[
     gated!(tilemap_api, tilemap),
     gated!(physics_api, physics),
     gated!(render_api, render),
-    gated!(cursor_api, cursor),
-    gated!(grep_api, grep),
-    gated!(mapblock_api, mapblock),
-    gated!(validator_api, validator),
 ];
 
 // ─── VM constructors ────────────────────────────────────────────────────────
@@ -212,6 +210,24 @@ fn register_modules(
     // charts_api uses a different signature (no state parameter).
     #[cfg(feature = "ui-charts")]
     charts_api::register(lua, lurek)?;
+
+    // These apis use the (lua, &SharedState) -> LuaTable signature.
+    if modules.cursor {
+        let t = cursor_api::register(lua, &state.borrow())?;
+        lurek.set("cursor", t)?;
+    }
+    if modules.grep {
+        let t = grep_api::register(lua, &state.borrow())?;
+        lurek.set("grep", t)?;
+    }
+    if modules.mapblock {
+        let t = mapblock_api::register(lua, &state.borrow())?;
+        lurek.set("mapblock", t)?;
+    }
+    if modules.validator {
+        let t = validator_api::register(lua, &state.borrow())?;
+        lurek.set("validator", t)?;
+    }
 
     Ok(())
 }

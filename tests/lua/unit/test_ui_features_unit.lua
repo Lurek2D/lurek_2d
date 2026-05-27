@@ -49,7 +49,7 @@ describe("ui resolution scaling", function()
         lurek.ui.setBaseResolution(1920, 1080)
         lurek.ui.updateResolution(1920, 1080)
         local factor = lurek.ui.getScaleFactor()
-        assert_near(1.0, factor, 0.01)
+        expect_near(1.0, factor, 0.01)
     end)
 
     -- @covers lurek.ui.updateResolution
@@ -59,7 +59,7 @@ describe("ui resolution scaling", function()
         lurek.ui.updateResolution(1280, 720)
         local factor = lurek.ui.getScaleFactor()
         -- 720 / 1080 = 0.667
-        assert_near(0.667, factor, 0.01)
+        expect_near(0.667, factor, 0.01)
     end)
 
     -- @covers lurek.ui.setBaseResolution
@@ -69,7 +69,7 @@ describe("ui resolution scaling", function()
         lurek.ui.setBaseResolution(1920, 1080)
         lurek.ui.updateResolution(3840, 2160)
         local factor = lurek.ui.getScaleFactor()
-        assert_near(2.0, factor, 0.01)
+        expect_near(2.0, factor, 0.01)
     end)
 end)
 
@@ -77,7 +77,7 @@ end)
 describe("ui visible range virtualization", function()
     -- @covers lurek.ui.visibleRange
     it("computes visible item range for list box", function()
-        local list = lurek.ui.newListBox()
+        local list = lurek.ui.newList()
         list:setPosition(10, 10)
         list:setSize(200, 100)
         lurek.ui.update(0.0)

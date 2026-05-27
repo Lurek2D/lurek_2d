@@ -11,6 +11,7 @@
 
 use crate::image::ImageData;
 use crate::province::registry::ProvinceRegistry;
+use crate::province::types::ProvinceId;
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
@@ -414,23 +415,23 @@ pub fn import_metadata_from_files(
                     } else {
                         opts.land_terrain_type
                     };
-                    registry.set_terrain_type(gid, terrain_type);
+                    registry.set_terrain_type(ProvinceId(gid), terrain_type);
                     if opts.set_political_colors {
-                        registry.set_political_color(gid, color_for_gameid(game_id, is_water));
+                        registry.set_political_color(ProvinceId(gid), color_for_gameid(game_id, is_water));
                     }
-                    registry.set_attr(gid, "game_id".to_string(), game_id.to_string());
+                    registry.set_attr(ProvinceId(gid), "game_id".to_string(), game_id.to_string());
                     if let Some(t) = terrain {
-                        registry.set_attr(gid, "terrain".to_string(), t.clone());
+                        registry.set_attr(ProvinceId(gid), "terrain".to_string(), t.clone());
                     }
                     if opts.set_label_text {
                         let label = info
                             .and_then(|p| p.name.as_ref())
                             .map(|s| s.replace('_', " "))
                             .unwrap_or_else(|| game_id.to_string());
-                        if registry.set_label_text(gid, label.clone()) {
+                        if registry.set_label_text(ProvinceId(gid), label.clone()) {
                             labels_set = labels_set.saturating_add(1);
                         }
-                        registry.set_attr(gid, "name".to_string(), label);
+                        registry.set_attr(ProvinceId(gid), "name".to_string(), label);
                     }
                 }
             }
@@ -438,7 +439,7 @@ pub fn import_metadata_from_files(
                 .get_pixel(x, y)
                 .ok_or_else(|| "province metadata: marker map pixel out of bounds".to_string())?;
             if opts.set_capitals && is_capital_marker(mr, mg, mb, &opts.marker_options) {
-                if registry.set_capital(gid, x as f32 + 0.5, y as f32 + 0.5) {
+                if registry.set_capital(ProvinceId(gid), x as f32 + 0.5, y as f32 + 0.5) {
                     capitals_set = capitals_set.saturating_add(1);
                 }
             } else if opts.set_label_lines && is_label_marker(mr, mg, mb, &opts.marker_options) {
@@ -470,7 +471,7 @@ pub fn import_metadata_from_files(
                     }
                 }
             }
-            if registry.set_label_line(gid, p1.0, p1.1, p2.0, p2.1) {
+            if registry.set_label_line(ProvinceId(gid), p1.0, p1.1, p2.0, p2.1) {
                 label_lines_set = label_lines_set.saturating_add(1);
             }
         }

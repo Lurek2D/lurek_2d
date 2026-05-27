@@ -127,10 +127,12 @@ impl MapScript {
 
     /// Add a step from type and group name with defaults.
     pub fn add_step_simple(&mut self, step_type: StepType, group_name: &str, count: u32) {
-        let mut step = ScriptStep::default();
-        step.step_type = step_type;
-        step.group_name = group_name.to_string();
-        step.count = count;
+        let step = ScriptStep {
+            step_type,
+            group_name: group_name.to_string(),
+            count,
+            ..Default::default()
+        };
         self.steps.push(step);
     }
 

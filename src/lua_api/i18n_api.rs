@@ -431,7 +431,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let s = shared.clone();
     // -- buildIndex --
     /// Builds a word-to-keys search index from the catalog.
-    /// @return | string[] | Map table from normalized words to arrays of translation keys.
+    /// @return | table | Map table from normalized words to arrays of translation keys.
     loc.set(
         "buildIndex",
         lua.create_function(move |lua, ()| {

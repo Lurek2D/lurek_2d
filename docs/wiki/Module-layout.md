@@ -11,6 +11,12 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [dag.rs](#dagrs)
+  - [force.rs](#forcers)
+  - [grid_align.rs](#gridalignrs)
+  - [mod.rs](#modrs)
+  - [tree.rs](#treers)
+  - [types.rs](#typesrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -32,13 +38,66 @@ Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space.
 
 ## 📋 Summary
 
-Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space.
+Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. Pure algorithmic module with no engine runtime dependencies.
+
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `dag.rs`
+
+- Sugiyama layered layout algorithm for directed acyclic graphs.
+- `layout_dag(nodes, edges, config)` returns a `LayoutResult` with `(x, y)` positions.
+- Phases: cycle removal, layer assignment, crossing minimisation, coordinate assignment.
+- `DagConfig` controls node separation, layer height, and direction (top-down / LR).
+- Output coordinates are in logical pixels; caller applies camera transform.
+- Used by `lurek.layout.dag`; suitable for dependency trees and tech-tree UIs.
+
+### `force.rs`
+
+- Fruchterman-Reingold force-directed layout for arbitrary undirected graphs.
+- `layout_force(nodes, edges, config)` iterates attraction/repulsion until convergence.
+- `ForceConfig` controls temperature, cooling rate, repulsion constant, and max iterations.
+- Initialises nodes on a random grid; deterministic given the same seed.
+- Convergence is detected when the max node displacement falls below a threshold.
+- Used by `lurek.layout.force` for social graphs, skill webs, and mind maps.
+
+### `grid_align.rs`
+
+- Post-processing utilities: snap node positions to a grid and centre in a bounding box.
+- `snap_to_grid(positions, cell_size)` rounds each node to the nearest grid cell.
+- `center_layout(positions, viewport)` translates the whole layout to fill a rect.
+- Pure functions; no mutation of the graph structure, only the coordinate map.
+- Applied after any layout algorithm before the positions are returned to Lua.
+
+### `mod.rs`
+
+- Generic graph/tree/DAG layout algorithms.
+- Provides algorithms for positioning nodes in 2D space:
+- **Tree layout** — Reingold-Tilford algorithm for hierarchical trees
+- **DAG layout** — Sugiyama layered algorithm for directed acyclic graphs
+- **Force-directed** — Fruchterman-Reingold spring simulation for arbitrary graphs
+- **Grid alignment** — Post-processing snap-to-grid and centering
+- Used by: pipeline visualization, dialog tree view, skill trees, node editors.
+
+### `tree.rs`
+
+- Reingold-Tilford algorithm for compact hierarchical tree node layout.
+- `layout_tree(root, children, config)` returns a `HashMap<NodeId, (f32, f32)>`.
+- Handles arbitrary branching factors; sibling subtrees are packed as tightly as possible.
+- `TreeConfig` sets horizontal and vertical node separation distances.
+- Supports top-down and left-to-right orientations via the `orientation` field.
+- Used by `lurek.layout.tree` for dialogue trees, skill trees, and org charts.
+
+### `types.rs`
+
+- Shared layout types: nodes, edges, configuration structs, and result containers.
+- `LayoutNode` carries an ID and optional size hint for layout algorithms.
+- `LayoutEdge` is a directed `(from, to)` pair with an optional weight.
+- `LayoutResult` is the common return type: a `HashMap<NodeId, (f32, f32)>`.
+- `LayoutConfig` base fields (padding, viewport size) are embedded in every algorithm config.
 
 [⬆ back to top](#table-of-contents)
 

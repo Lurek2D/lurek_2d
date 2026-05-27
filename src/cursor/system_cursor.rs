@@ -23,7 +23,7 @@ pub enum SystemCursor {
 
 impl SystemCursor {
     /// Parse a `SystemCursor` variant from a string name; returns `None` for unknown names.
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn from_name(s: &str) -> Option<Self> {
         match s.to_lowercase().as_str() {
             "arrow" => Some(Self::Arrow),
             "ibeam" | "text" => Some(Self::IBeam),

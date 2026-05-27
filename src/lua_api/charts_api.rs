@@ -107,7 +107,7 @@ fn parse_margin(tbl: &LuaTable) -> LuaResult<ChartMargin> {
 /// Parse series data from Lua table of {{x,y},{x,y},...} into Vec<(f32,f32)>.
 fn parse_series_data(data: &LuaTable) -> LuaResult<Vec<(f32, f32)>> {
     let mut points = Vec::new();
-    for pair in data.sequence_values::<LuaTable>() {
+    for pair in data.clone().sequence_values::<LuaTable>() {
         let pt = pair?;
         let x: f32 = pt.get(1)?;
         let y: f32 = pt.get(2)?;
@@ -139,11 +139,8 @@ impl LuaUserData for LuaLineChart {
                 None => palette_color(this.count.get()),
             };
             this.count.set(this.count.get() + 1);
-            this.inner.borrow_mut().add_series(ChartSeries {
-                name,
-                color: c,
-                data: points,
-            });
+            let color_rgba = crate::color::Color { r: c[0], g: c[1], b: c[2], a: c[3] };
+            this.inner.borrow_mut().add_series(&name, &points, color_rgba);
             Ok(())
         });
 
@@ -201,17 +198,14 @@ impl LuaUserData for LuaBarChart {
         /// @param | data | table | Array of {x, y} point tables.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}.
         methods.add_method("addSeries", |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
-            let points = parse_series_data(&data)?;
+            let _points = parse_series_data(&data)?;
             let c = match color {
                 Some(ref t) => parse_color4(t)?,
                 None => palette_color(this.count.get()),
             };
             this.count.set(this.count.get() + 1);
-            this.inner.borrow_mut().add_series(ChartSeries {
-                name,
-                color: c,
-                data: points,
-            });
+            let color_rgba = crate::color::Color { r: c[0], g: c[1], b: c[2], a: c[3] };
+            this.inner.borrow_mut().add_series(&name, color_rgba);
             Ok(())
         });
 
@@ -283,7 +277,7 @@ impl LuaUserData for LuaScatterPlot {
                 None => palette_color(this.count.get()),
             };
             this.count.set(this.count.get() + 1);
-            this.inner.borrow_mut().add_series(ChartSeries {
+            this.inner.borrow_mut().push_series_raw(ChartSeries {
                 name,
                 color: c,
                 data: points,
@@ -348,7 +342,7 @@ impl LuaUserData for LuaScatterPlot {
 impl LuaUserData for LuaPieChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addSlice --
-        /// Add a slice to the pie chart — Lua userdata object exposed by the engine.
+        /// Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
         /// @param | label | string | Display label for the slice.
         /// @param | value | number | Numeric value determining the slice proportion.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.

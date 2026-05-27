@@ -63,12 +63,17 @@
 	],
 	"Lua.codeLens.enable": true,
 	// lurek is the only global namespace (C-01: use lurek.* only)
-	"Lua.diagnostics.globals": ["lurek"],
+	"Lua.diagnostics.globals": ["lurek", "read_file", "write_file"],
 	"Lua.diagnostics.disable": ["duplicate-set-field"],
 	"Lua.workspace.ignoreDir": [
 		"build",
 		"target",
-		"extensions/vscode/node_modules"
+		"extensions/vscode/node_modules",
+		"dist",
+		"work",
+		"scratch",
+		"ideas",
+		"tools/tests/dummy_data"
 	],
 	// Enable strict mode for Lua scripts
 	"Lua.type.castNumberToInteger": true,

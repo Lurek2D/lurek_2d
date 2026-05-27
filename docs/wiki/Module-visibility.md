@@ -11,6 +11,15 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [adjacency.rs](#adjacencyrs)
+  - [cost.rs](#costrs)
+  - [events.rs](#eventsrs)
+  - [flags.rs](#flagsrs)
+  - [fog_render.rs](#fogrenderrs)
+  - [grid.rs](#gridrs)
+  - [mod.rs](#modrs)
+  - [owner.rs](#ownerrs)
+  - [state.rs](#staters)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -38,11 +47,89 @@ Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, cons
 
 Universal visibility system for fog-of-war, discovery, and line-of-sight. Provides a generic, geometry-agnostic visibility layer that can be attached to any region-based system (tilemap, province map, globe, custom grids). Part of the Platform Services tier — no dependencies on globe, province, or tilemap modules.
 
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `adjacency.rs`
+
+- Adjacency provider trait: defines the neighbor relationship between map regions.
+- `AdjacencyProvider` trait has one method: `neighbors(region_id) -> Vec<RegionId>`.
+- Grid-based maps implement it via 4-directional or 8-directional cell adjacency.
+- Province maps implement it via the province border index for irregular shapes.
+- Injected into the visibility grid at construction; swappable without engine changes.
+
+### `cost.rs`
+
+- Per-region discovery cost and adjacency requirements for visibility reveal logic.
+- `VisibilityCost` stores a movement-point cost and required flag mask per region.
+- Regions with `cost = 0` are revealed instantly when any neighbor becomes visible.
+- Required flags can block reveal until the player has a specific capability.
+- Costs are set from Lua via `lurek.visibility.set_cost(region_id, cost)`.
+
+### `events.rs`
+
+- Visibility state-change events emitted when regions transition between states.
+- `VisibilityEvent` variants: `RegionRevealed`, `RegionDiscovered`, `RegionHidden`.
+- Events are queued during the visibility update pass and drained to Lua each tick.
+- `RegionRevealed` fires when a region moves from Hidden/Discovered to Visible.
+- Used to trigger map-reveal animations, narration, and scripted events.
+
+### `flags.rs`
+
+- Per-region bitfield flags: terrain type, unit presence, buildings, and custom bits.
+- `VisibilityFlags` is a `u32` bitfield; bits 0-7 are engine-reserved, 8-31 are game-defined.
+- Flag constants are registered at game startup; names are mapped to bit positions.
+- Used as required-flag masks in `VisibilityCost` to gate region reveal.
+- Modified from Lua via `lurek.visibility.set_flags(region_id, flags)`.
+
+### `fog_render.rs`
+
+- Fog-of-war rendering configuration: intensity, colour, and render integration hints.
+- `FogRenderConfig` controls fog opacity for `Hidden` and `Discovered` states.
+- Fog is composited in the tilemap/world render pass as a per-tile colour multiply.
+- `FogColor` is an RGBA value applied to hidden tiles; discovered tiles use a lighter shade.
+- Config is hot-reloadable from `[visibility.fog]` TOML without a restart.
+
+### `grid.rs`
+
+- Visibility grid: per-region state storage for multiple simultaneous players/factions.
+- `VisibilityGrid` maps `(faction_id, region_id) → VisibilityState`.
+- Update pass: marks visible set, propagates discovery, reverts out-of-range to Discovered.
+- Dirty tracking ensures only changed regions emit events and redraw fog tiles.
+- Grid is serialised into the save file; full snapshot is compact (2 bits per region per faction).
+
+### `mod.rs`
+
+- Universal visibility system for fog-of-war, discovery, and line-of-sight.
+- This module provides a generic visibility layer that can be attached to any
+- region-based system (tilemap, province map, globe, custom). The module is
+- agnostic to geometry — it receives region counts and adjacency lists.
+- # Architecture
+- `VisibilityGrid` — per-region visibility state for multiple players
+- `VisibilityState` — enum: Hidden, Discovered, Visible (+ custom u8 levels)
+- `PlayerOwnership` — which players/groups share visibility
+- `VisibilityFlags` — bitfield per region (terrain, units, buildings, etc.)
+- `DiscoveryCost` — per-region cost to reveal, adjacency requirements
+- `FogConfig` — fog intensity and rendering hints
+
+### `owner.rs`
+
+- Player and faction ownership of shared visibility and discovery state.
+- `OwnerMap` tracks which faction owns each region for fog-of-war sharing.
+- Allied factions share visibility when `share_vision` is enabled per-alliance.
+- `OwnerMap::visible_to(faction_id, region_id)` is the hot-path query.
+- Ownership changes trigger re-evaluation of all visibility states for affected factions.
+
+### `state.rs`
+
+- Visibility state enum: Hidden, Discovered, Visible, and custom extension levels.
+- `VisibilityState` has three built-in variants and reserves bits for game-defined levels.
+- `Hidden` = never seen; `Discovered` = seen but not currently in sight range; `Visible` = in range.
+- Ordered by ascending information: `Hidden < Discovered < Visible`.
+- Custom levels (e.g. `Remembered`) can be inserted between `Discovered` and `Visible`.
 
 [⬆ back to top](#table-of-contents)
 

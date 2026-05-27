@@ -37,42 +37,42 @@ describe("ValidationEngine", function()
     -- @covers lurek.validator.newEngine
     it("ruleCount starts at zero", function()
         local engine = lurek.validator.newEngine("content/examples")
-        assert_equal(0, engine:ruleCount())
+        expect_equal(0, engine:ruleCount())
     end)
 
     -- @covers lurek.validator.newEngine
     it("addAssetRule increases rule count", function()
         local engine = lurek.validator.newEngine("content/examples")
         engine:addAssetRule("assets")
-        assert_equal(1, engine:ruleCount())
+        expect_equal(1, engine:ruleCount())
     end)
 
     -- @covers lurek.validator.newEngine
     it("addImportRule adds require resolution", function()
         local engine = lurek.validator.newEngine("content/examples")
         engine:addImportRule({ "content/examples", "library" })
-        assert_equal(1, engine:ruleCount())
+        expect_equal(1, engine:ruleCount())
     end)
 
     -- @covers lurek.validator.newEngine
     it("addApiRule adds API compliance", function()
         local engine = lurek.validator.newEngine("content/examples")
         engine:addApiRule()
-        assert_equal(1, engine:ruleCount())
+        expect_equal(1, engine:ruleCount())
     end)
 
     -- @covers lurek.validator.newEngine
     it("addPatternRule adds custom pattern", function()
         local engine = lurek.validator.newEngine("content/examples")
         engine:addPatternRule("no-print", "print%(", "Use lurek.log instead", "warning")
-        assert_equal(1, engine:ruleCount())
+        expect_equal(1, engine:ruleCount())
     end)
 
     -- @covers lurek.validator.newEngine
     it("addRequiredRule adds required pattern", function()
         local engine = lurek.validator.newEngine("content/examples")
         engine:addRequiredRule("has-license", "-- License:", "Missing license header")
-        assert_equal(1, engine:ruleCount())
+        expect_equal(1, engine:ruleCount())
     end)
 
     -- @covers lurek.validator.newEngine
@@ -81,7 +81,7 @@ describe("ValidationEngine", function()
         engine:addAssetRule("assets")
         engine:addApiRule()
         engine:addPatternRule("no-print", "print%(", "Use lurek.log", "warning")
-        assert_equal(3, engine:ruleCount())
+        expect_equal(3, engine:ruleCount())
     end)
 end)
 
@@ -111,7 +111,7 @@ describe("Running validation", function()
         engine:addPatternRule("has-local", "local", "Found local", "hint")
         local report = engine:runFile("content/examples/sprite.lua")
         expect_type("table", report)
-        assert_equal(1, report.files_checked)
+        expect_equal(1, report.files_checked)
     end)
 end)
 
@@ -134,7 +134,7 @@ describe("Report violation structure", function()
             expect_type("number", v.line)
             expect_type("string", v.message)
         end
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -156,7 +156,7 @@ describe("Quick validation functions", function()
     it("validateFile returns report for single file", function()
         local report = lurek.validator.validateFile("content/examples/sprite.lua")
         expect_type("table", report)
-        assert_equal(1, report.files_checked)
+        expect_equal(1, report.files_checked)
     end)
 end)
 
@@ -170,7 +170,7 @@ describe("ValidationEngine loadTomlRules", function()
     it("loadTomlRules accepts a path without crash", function()
         local engine = lurek.validator.newEngine("content/examples")
         engine:loadTomlRules("content/nonexistent_rules.toml")
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -195,3 +195,4 @@ describe("ValidationEngine:run", function()
 end)
 
 test_summary()
+

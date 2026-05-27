@@ -6,7 +6,7 @@ use crate::binary::{
     LuaDataView, PackValue,
 };
 use crate::lua_api::lua_types::LurekType;
-use crate::serialize;
+use crate::serialize as serial;
 use indexmap::IndexMap as LuaIndexMap;
 use mlua::prelude::*;
 use std::cell::RefCell;

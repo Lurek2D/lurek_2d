@@ -6,7 +6,7 @@ use lurek2d::camera::{ScaleMode, Viewport, ViewportScale};
 use lurek2d::image::palette_lut::PaletteLUT;
 use lurek2d::image::texture_atlas::TextureAtlas;
 use lurek2d::light::light2d::Light2D;
-use lurek2d::math::Color;
+use lurek2d::color::Color;
 use lurek2d::math::Rect;
 use lurek2d::particle::trail::Trail;
 use lurek2d::raycaster::column_batch::ColumnBatch;

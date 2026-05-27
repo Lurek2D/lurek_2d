@@ -11,9 +11,11 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [chart.rs](#chartrs)
   - [containers.rs](#containersrs)
   - [context.rs](#contextrs)
   - [controls.rs](#controlsrs)
+  - [data_graph_renderer.rs](#datagraphrendererrs)
   - [extras.rs](#extrasrs)
   - [layout_loader.rs](#layoutloaderrs)
   - [mod.rs](#modrs)
@@ -135,6 +137,10 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ## 📁 Source Files
 
+### `chart.rs`
+
+- Re-export charts for UI module compatibility.
+
 ### `containers.rs`
 
 - Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.
@@ -166,6 +172,13 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
 - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
 
+### `data_graph_renderer.rs`
+
+- Multi-series data graph renderer for line, scatter, and bar data.
+- Provides viewport management, coordinate transforms, auto-range, and cursor
+- support. Does not write GPU commands directly — callers convert `SeriesEntry`
+- values to draw calls as needed.
+
 ### `extras.rs`
 
 - Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
@@ -190,7 +203,7 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 - Immediate-mode GUI toolkit: containers, controls, extras, and theming.
 - Provides layout panels, interactive widgets, and data-bound context.
-- Optional TOML layout-loader features behind feature flags.
+- Optional TOML layout-loader feature behind a feature flag.
 
 ### `render.rs`
 
@@ -218,7 +231,12 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ### `widget.rs`
 
-- Public types and helpers for the widget module.
+- UI widget tree node: the fundamental layout and rendering unit of the UI system.
+- `Widget` holds layout properties (size, margin, padding), style, and child list.
+- Widgets are built from Lua tables or TOML layout files and owned by the UI tree.
+- Layout is computed in a single top-down pass; results are cached until dirty.
+- Render commands are emitted per-widget in tree order during the UI render phase.
+- Interaction (click, hover, focus) is dispatched in a second bottom-up hit-test pass.
 
 [⬆ back to top](#table-of-contents)
 
@@ -321,7 +339,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 ```lua
 do
     local lbl = lurek.ui.newLabel("Hello")
-    lurek.ui.animateColor(lbl, {1,1,1,1}, {1,0.5,0,1}, 0.5)
+    lurek.ui.animateColor(lbl._idx, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
     print("lurek.ui.animateColor ok")
 end
 ```
@@ -358,8 +376,8 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local img = lurek.ui.newImage("assets/textures/logo.png")
-    lurek.ui.animateRotation(img, 0, 360, 1.0)
+    local img = lurek.ui.newPanel()
+    lurek.ui.animateRotation(img._idx, 0, 360, 1.0)
     print("lurek.ui.animateRotation ok")
 end
 ```
@@ -400,8 +418,8 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local btn = lurek.ui.newButton(100, 30)
-    lurek.ui.animateScale(btn, 1.0, 1.2, 0.3)
+    local btn = lurek.ui.newButton("Scale")
+    lurek.ui.animateScale(btn._idx, 1.0, 1.0, 1.2, 1.2, 0.3)
     print("lurek.ui.animateScale ok")
 end
 ```
@@ -724,7 +742,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    lurek.ui.focusDirection("right")
+    lurek.ui.focusDirection(1.0, 0.0)
     print("lurek.ui.focusDirection ok")
 end
 ```
@@ -3350,7 +3368,8 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local x, y, w, h = lurek.ui.visibleRange()
+    local list = lurek.ui.newList()
+    local x, y = lurek.ui.visibleRange(list, 50, 20.0)
     print("lurek.ui.visibleRange x=" .. x .. " y=" .. y)
 end
 ```
@@ -4996,7 +5015,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newBarChart(400, 300)
+    local chart = lurek.ui.newBarChart({ width = 400, height = 300 })
     chart:addSeries("Q2", { 5, 8, 3, 6 })
     print("LBarChart:addSeries.2 ok")
 end
@@ -7807,7 +7826,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newLineChart(400, 300)
+    local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
     chart:addSeries("sales", { 1, 4, 2, 7, 3 })
     print("LLineChart:addSeries ok")
 end
@@ -9734,7 +9753,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newScatterPlot(400, 300)
+    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
     chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} })
     print("LScatterPlot:addSeries ok")
 end

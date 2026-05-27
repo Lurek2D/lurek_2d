@@ -17,8 +17,8 @@ mod dsp_tests {
 
     #[test]
     fn atomic_param_get_set() {
-        let p = AtomicParam::new(3.14);
-        assert!((p.get() - 3.14).abs() < 0.001);
+        let p = AtomicParam::new(3.0);
+        assert!((p.get() - 3.0).abs() < 0.001);
         p.set(2.0);
         assert!((p.get() - 2.0).abs() < 0.001);
     }

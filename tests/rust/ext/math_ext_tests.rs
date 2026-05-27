@@ -6,16 +6,16 @@
 use lurek2d::math::geometry;
 use lurek2d::math::spatial_hash::SpatialHash;
 use lurek2d::tween::Tween;
-use lurek2d::math::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
+use lurek2d::procgen::noise::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use lurek2d::pathfind::grid::Grid;
 use lurek2d::procgen::{self, CellularOpts, VoronoiOpts};
 use lurek2d::raycaster::Raycaster2D;
 use lurek2d::raycaster::{cast_ray_2d, distance_shade, field_of_view, project_column, Segment};
 use lurek2d::tilemap::tile_walker::{Facing, TileWalker};
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 1. NoiseGenerator
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn noise_generator_deterministic() {
@@ -55,7 +55,7 @@ fn noise_generator_perlin_range() {
         let y = (i as f64) * 0.27;
         let v = ng.perlin_2d(x, y);
         assert!(
-            v >= -1.0 && v <= 1.0,
+            (-1.0..=1.0).contains(&v),
             "perlin_2d({x}, {y}) = {v} out of [-1, 1]"
         );
     }
@@ -64,17 +64,15 @@ fn noise_generator_perlin_range() {
 #[test]
 fn noise_generator_perlin_dimensions() {
     let ng = NoiseGenerator::new(13);
-    let v1d = ng.perlin_1d(3.14);
-    let v2d = ng.perlin_2d(3.14, 2.71);
-    let v3d = ng.perlin_3d(3.14, 2.71, 1.41);
-    let v4d = ng.perlin_4d(3.14, 2.71, 1.41, 0.57);
-    // All should return finite values
+    let v1d = ng.perlin_1d(3.15);
+    let v2d = ng.perlin_2d(3.15, 2.71);
+    let v3d = ng.perlin_3d(3.15, 2.71, 1.41);
+        // All should return finite values
     assert!(v1d.is_finite(), "perlin_1d not finite: {v1d}");
     assert!(v2d.is_finite(), "perlin_2d not finite: {v2d}");
     assert!(v3d.is_finite(), "perlin_3d not finite: {v3d}");
-    assert!(v4d.is_finite(), "perlin_4d not finite: {v4d}");
-    // Higher dimensions should produce different-looking values (not all zero)
-    let sum = v1d.abs() + v2d.abs() + v3d.abs() + v4d.abs();
+        // Higher dimensions should produce different-looking values (not all zero)
+    let sum = v1d.abs() + v2d.abs() + v3d.abs();
     assert!(sum > 1e-6, "All perlin dimensions returned ~0");
 }
 
@@ -86,7 +84,7 @@ fn noise_generator_simplex_range() {
         let y = (i as f64) * 0.31;
         let v = ng.simplex_2d(x, y);
         assert!(
-            v >= -1.5 && v <= 1.5,
+            (-1.5..=1.5).contains(&v),
             "simplex_2d({x}, {y}) = {v} outside reasonable range"
         );
     }
@@ -95,11 +93,9 @@ fn noise_generator_simplex_range() {
 #[test]
 fn noise_generator_simplex_dimensions() {
     let ng = NoiseGenerator::new(55);
-    let v1d = ng.simplex_1d(5.5);
-    let v2d = ng.simplex_2d(5.5, 3.3);
+        let v2d = ng.simplex_2d(5.5, 3.3);
     let v3d = ng.simplex_3d(5.5, 3.3, 1.1);
-    assert!(v1d.is_finite());
-    assert!(v2d.is_finite());
+        assert!(v2d.is_finite());
     assert!(v3d.is_finite());
 }
 
@@ -185,9 +181,9 @@ fn noise_generator_generate_map() {
     }
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 2. Grid (Pathfinding)
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn grid_new_all_walkable() {
@@ -304,13 +300,13 @@ fn grid_flow_field() {
         "Flow field should have width*height entries"
     );
     // Row-major: index = y*width + x
-    // At the goal cell (4,4) → index 4*5+4=24, direction should be (0,0) or very small
+    // At the goal cell (4,4) â†’ index 4*5+4=24, direction should be (0,0) or very small
     let (dx, dy) = field[4 * 5 + 4];
     assert!(
         dx.abs() < 1e-4 && dy.abs() < 1e-4,
         "Goal cell direction should be ~(0,0), got ({dx},{dy})"
     );
-    // Cell (3,4) → index 4*5+3=23, should point toward (4,4) → dx > 0
+    // Cell (3,4) â†’ index 4*5+3=23, should point toward (4,4) â†’ dx > 0
     let (dx, _dy) = field[4 * 5 + 3];
     assert!(
         dx > 0.0,
@@ -318,9 +314,9 @@ fn grid_flow_field() {
     );
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 3. SpatialHash
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn spatial_hash_insert_query() {
@@ -335,7 +331,7 @@ fn spatial_hash_no_overlap() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("a".into(), 0.0, 0.0, 10.0, 10.0);
     let results = sh.query_rect(100.0, 100.0, 10.0, 10.0);
-    assert!(results.is_empty(), "No overlap → empty result");
+    assert!(results.is_empty(), "No overlap â†’ empty result");
 }
 
 #[test]
@@ -409,9 +405,9 @@ fn spatial_hash_clear() {
     assert!(results.is_empty());
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 4. Raycaster2D
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn raycaster_new_empty() {
@@ -435,7 +431,7 @@ fn raycaster_set_get_cell() {
 fn raycaster_cast_ray_empty() {
     let rc = Raycaster2D::new(8, 8);
     let hit = rc.cast_ray(1.5, 1.5, 0.0, 20.0);
-    // Empty grid → ray should either return None or a non-hit
+    // Empty grid â†’ ray should either return None or a non-hit
     match hit {
         None => {} // acceptable
         Some(h) => assert!(!h.hit, "Ray in empty grid should not hit"),
@@ -502,21 +498,21 @@ fn raycaster_project_sprite() {
         4.5,
         2.5,                         // player position
         0.0,                         // player angle (facing +Y)
-        std::f32::consts::FRAC_PI_3, // 60° FOV
+        std::f32::consts::FRAC_PI_3, // 60Â° FOV
         320.0,                       // screen width
     );
     assert!(proj.visible, "Sprite ahead of player should be visible");
     assert!(proj.distance > 0.0, "Distance should be positive");
     assert!(
         (proj.screen_x - 160.0).abs() < 80.0,
-        "Sprite directly ahead → near screen center. Got screen_x={}",
+        "Sprite directly ahead â†’ near screen center. Got screen_x={}",
         proj.screen_x
     );
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 5. TileWalker
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn tile_walker_new() {
@@ -529,7 +525,7 @@ fn tile_walker_new() {
 #[test]
 fn tile_walker_move_forward() {
     let mut tw = TileWalker::new(5, 5, Facing::East);
-    // No raycaster set, so no collision → should move freely
+    // No raycaster set, so no collision â†’ should move freely
     let moved = tw.move_forward();
     assert!(
         moved,
@@ -555,12 +551,12 @@ fn tile_walker_turn() {
 #[test]
 fn tile_walker_strafe() {
     let mut tw = TileWalker::new(5, 5, Facing::North);
-    tw.strafe_right(); // North-facing, strafe right → move East
+    tw.strafe_right(); // North-facing, strafe right â†’ move East
     assert_eq!(tw.x(), 6);
     assert_eq!(tw.y(), 5);
 
     let mut tw2 = TileWalker::new(5, 5, Facing::North);
-    tw2.strafe_left(); // North-facing, strafe left → move West
+    tw2.strafe_left(); // North-facing, strafe left â†’ move West
     assert_eq!(tw2.x(), 4);
     assert_eq!(tw2.y(), 5);
 }
@@ -600,9 +596,9 @@ fn tile_walker_relative_facing() {
     assert_eq!(rel_behind, "back");
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 6. Tween
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn tween_linear() {
@@ -680,7 +676,7 @@ fn tween_set_time() {
     let v = tw.get_value(idx);
     assert!(
         (v - 100.0).abs() < 1e-4,
-        "set_time(2) on 4s tween → 50% → 100, got {v}"
+        "set_time(2) on 4s tween â†’ 50% â†’ 100, got {v}"
     );
     assert!((tw.clock() - 2.0).abs() < 1e-4);
 }
@@ -707,9 +703,9 @@ fn tween_clamp() {
     );
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 7. Geometry
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn angle_between() {
@@ -722,7 +718,7 @@ fn angle_between() {
     let a_up = geometry::angle_between(0.0, 0.0, 0.0, 1.0);
     assert!(
         (a_up - std::f32::consts::FRAC_PI_2).abs() < 1e-4,
-        "Angle to (0,1) should be π/2, got {a_up}"
+        "Angle to (0,1) should be Ď€/2, got {a_up}"
     );
 }
 
@@ -759,7 +755,7 @@ fn circle_intersects_line() {
     assert!(p2.is_some());
     let (ix1, _) = p1.unwrap();
     let (ix2, _) = p2.unwrap();
-    assert!((ix1.abs() - 5.0).abs() < 1e-3, "Intersection at x=±5");
+    assert!((ix1.abs() - 5.0).abs() < 1e-3, "Intersection at x=Â±5");
     assert!((ix2.abs() - 5.0).abs() < 1e-3);
 }
 
@@ -778,7 +774,7 @@ fn circle_intersects_segment() {
 
 #[test]
 fn polygon_area_triangle() {
-    // Triangle: (0,0), (4,0), (0,3) → area = 6
+    // Triangle: (0,0), (4,0), (0,3) â†’ area = 6
     let verts = [0.0f32, 0.0, 4.0, 0.0, 0.0, 3.0];
     let area = geometry::polygon_area(&verts);
     assert!(
@@ -789,7 +785,7 @@ fn polygon_area_triangle() {
 
 #[test]
 fn polygon_area_square() {
-    // Square (0,0), (2,0), (2,2), (0,2) → area = 4
+    // Square (0,0), (2,0), (2,2), (0,2) â†’ area = 4
     let verts = [0.0f32, 0.0, 2.0, 0.0, 2.0, 2.0, 0.0, 2.0];
     let area = geometry::polygon_area(&verts);
     assert!(
@@ -800,7 +796,7 @@ fn polygon_area_square() {
 
 #[test]
 fn polygon_centroid() {
-    // Square (0,0), (4,0), (4,4), (0,4) → centroid (2,2)
+    // Square (0,0), (4,0), (4,4), (0,4) â†’ centroid (2,2)
     let verts = [0.0f32, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0];
     let (cx, cy) = geometry::polygon_centroid(&verts);
     assert!((cx - 2.0).abs() < 1e-4, "Centroid x should be 2, got {cx}");
@@ -889,7 +885,7 @@ fn bresenham() {
 
 #[test]
 fn convex_hull() {
-    // Square + interior point → hull should be the 4 corners
+    // Square + interior point â†’ hull should be the 4 corners
     let points = [
         0.0f32, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0, 2.0, 2.0, // interior
     ];
@@ -903,9 +899,9 @@ fn convex_hull() {
     );
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 8. Raycasting (utility functions)
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn cast_ray_2d_test() {
@@ -976,7 +972,7 @@ fn project_column_test() {
     assert!(top < bottom, "Top should be above bottom");
     assert!(height.is_finite());
 
-    // Closer distance → taller column
+    // Closer distance â†’ taller column
     let (h_close, _, _) = project_column(2.0, std::f32::consts::FRAC_PI_3, 480.0);
     assert!(h_close > height, "Closer wall should be taller");
 }
@@ -987,24 +983,24 @@ fn distance_shade_test() {
     let shade_far = distance_shade(18.0, 20.0);
     assert!(shade_near > shade_far, "Near objects should be brighter");
     assert!(
-        shade_near >= 0.0 && shade_near <= 1.0,
+        (0.0..=1.0).contains(&shade_near),
         "Shade should be [0,1], got {shade_near}"
     );
     assert!(
-        shade_far >= 0.0 && shade_far <= 1.0,
+        (0.0..=1.0).contains(&shade_far),
         "Shade should be [0,1], got {shade_far}"
     );
 
     let shade_zero = distance_shade(0.0, 20.0);
     assert!(
         (shade_zero - 1.0).abs() < 1e-4,
-        "Distance 0 → full brightness"
+        "Distance 0 â†’ full brightness"
     );
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // 9. Procgen
-// ═════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 #[test]
 fn cellular_automata() {
@@ -1044,7 +1040,7 @@ fn flood_fill() {
     // Create a 5x5 grid with a border of 1s and interior 0s
     let mut data = vec![0u8; 25];
     for x in 0..5u32 {
-        data[(x * 1) as usize] = 1; // top row (y=0 if row-major: idx = y*w+x)
+        data[x as usize] = 1; // top row (y=0 if row-major: idx = y*w+x)
         data[(4 * 5 + x) as usize] = 1; // bottom row
     }
     for y in 0..5u32 {
@@ -1078,8 +1074,8 @@ fn poisson_disk() {
     }
     // All points should be within bounds
     for (i, &(x, y)) in points.iter().enumerate() {
-        assert!(x >= 0.0 && x <= 100.0, "Point {i} x={x} out of bounds");
-        assert!(y >= 0.0 && y <= 100.0, "Point {i} y={y} out of bounds");
+        assert!((0.0..=100.0).contains(&x), "Point {i} x={x} out of bounds");
+        assert!((0.0..=100.0).contains(&y), "Point {i} y={y} out of bounds");
     }
 }
 

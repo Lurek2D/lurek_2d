@@ -69,7 +69,7 @@ impl BitmapFont {
     ///
     /// Returns `None` if the codepoint is outside the supported range.
     pub fn glyph_info(&self, codepoint: u32) -> Option<&GlyphMetrics> {
-        if codepoint < FIRST_CODEPOINT || codepoint > LAST_CODEPOINT {
+        if !(FIRST_CODEPOINT..=LAST_CODEPOINT).contains(&codepoint) {
             return None;
         }
         let index = (codepoint - FIRST_CODEPOINT) as usize;
@@ -78,8 +78,7 @@ impl BitmapFont {
 
     /// Returns `true` if the font contains a glyph for the given codepoint.
     pub fn contains_glyph(&self, codepoint: u32) -> bool {
-        codepoint >= FIRST_CODEPOINT
-            && codepoint <= LAST_CODEPOINT
+        (FIRST_CODEPOINT..=LAST_CODEPOINT).contains(&codepoint)
             && ((codepoint - FIRST_CODEPOINT) as usize) < self.glyphs.len()
     }
 

@@ -35,9 +35,9 @@ mod lua_table_tests {
     #[test]
     fn to_lua_float_preserved() {
         let lua = Lua::new();
-        let val = to_lua(&lua, &SerialValue::Float(3.14)).unwrap();
+        let val = to_lua(&lua, &SerialValue::Float(std::f64::consts::PI)).unwrap();
         match val {
-            LuaValue::Number(n) => assert!((n - 3.14).abs() < 1e-10),
+            LuaValue::Number(n) => assert!((n - std::f64::consts::PI).abs() < 1e-10),
             other => panic!("expected Number, got {:?}", other),
         }
     }
@@ -97,10 +97,10 @@ mod lua_table_tests {
 
     #[test]
     fn from_lua_fractional_number_stays_float() {
-        let val = LuaValue::Number(3.14);
+        let val = LuaValue::Number(std::f64::consts::PI);
         let sv = from_lua(&val).unwrap();
         match sv {
-            SerialValue::Float(f) => assert!((f - 3.14).abs() < 1e-10),
+            SerialValue::Float(f) => assert!((f - std::f64::consts::PI).abs() < 1e-10),
             other => panic!("expected Float, got {:?}", other),
         }
     }

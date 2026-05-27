@@ -11,6 +11,14 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [area.rs](#arears)
+  - [bar.rs](#barrs)
+  - [config.rs](#configrs)
+  - [line.rs](#liners)
+  - [mod.rs](#modrs)
+  - [pie.rs](#piers)
+  - [render_utils.rs](#renderutilsrs)
+  - [scatter.rs](#scatterrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -46,11 +54,76 @@ Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pix
 
 The charts module provides five chart types (line, bar, scatter, pie, area) that render entirely in software to RGBA8 pixel buffers. Charts are configured with margins, colors, grid toggles, and legend settings via `ChartConfig`. Data is fed through named `ChartSeries` or `PieSlice` objects. The module has no GPU dependency — rendered buffers can be used as textures in the render pipeline. An 8-color default palette auto-assigns series colors. The module is feature-gated behind `ui-charts`.
 
+This module primarily collaborates with `color`, `dataframe`, `image`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
+
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `area.rs`
+
+- Area chart renderer: filled regions below one or more line series.
+- Rasterises each series into an RGBA pixel buffer via `render_area_chart`.
+- Supports stacked and overlapping fill modes with per-series alpha.
+- Delegates coordinate mapping to `charts::render_utils::world_to_screen`.
+- Owned by `lurek.charts.area` Lua API; output is uploaded as a texture.
+
+### `bar.rs`
+
+- Bar chart renderer: vertical or horizontal grouped/stacked bars.
+- Rasterises a `BarChartSpec` into an RGBA pixel buffer.
+- Supports grouped and stacked layouts; bar width and gap are configurable.
+- Uses `render_utils::draw_rect_filled` for individual bar segments.
+- Owned by `lurek.charts.bar`; output is uploaded as a per-frame texture.
+
+### `config.rs`
+
+- Shared chart configuration types: size, background, margins, and axis labels.
+- `ChartConfig` is the common base embedded in every chart spec.
+- Pixel dimensions, background colour, and title string live here.
+- Axis label and legend settings are optional; missing values use defaults.
+- Referenced by `BarChartSpec`, `LineChartSpec`, `PieChartSpec`, etc.
+
+### `line.rs`
+
+- Line chart renderer: connected data-point series over time or categories.
+- Rasterises a `LineChartSpec` into an RGBA pixel buffer.
+- Supports multiple named series with per-series colour and line width.
+- Pixel coordinates are mapped via `render_utils::world_to_screen`.
+- Owned by `lurek.charts.line`; result is uploaded as a texture each frame.
+
+### `mod.rs`
+
+- Software-rasterised chart rendering for data visualisation.
+- Five chart types: line, bar, scatter, pie, area.
+- Configurable appearance: colors, margins, grid, titles, legends.
+- Renders to CPU pixel buffers (no GPU dependency).
+- DataFrame integration for direct column-to-series mapping.
+
+### `pie.rs`
+
+- Pie chart renderer: proportional slice segments from a single data series.
+- Rasterises a `PieChartSpec` into an RGBA pixel buffer using arc fill.
+- Slice angles are computed from normalised values; labels are optional.
+- A configurable donut-hole radius converts the pie into a ring chart.
+- Owned by `lurek.charts.pie`; output is uploaded as a texture.
+
+### `render_utils.rs`
+
+- Internal rasterisation utilities shared by all chart renderers.
+- `fill_buffer` — flood-fills an RGBA buffer with a single background colour.
+- `draw_rect_filled` / `draw_circle_filled` — axis-aligned primitive fill.
+- `world_to_screen` — maps a data-space value to a pixel coordinate.
+- `auto_range` — computes the bounding min/max across all series data.
+- All functions operate on a flat `&mut [u8]` RGBA buffer with stride = width×4.
+
+### `scatter.rs`
+
+- Scatter plot renderer: (x, y) point series showing distribution and correlation.
+- Rasterises a `ScatterChartSpec` into an RGBA pixel buffer.
+- Each point is drawn as a filled circle; radius and colour are per-series.
+- Axes are auto-ranged or clamped to user-supplied min/max bounds.
+- Owned by `lurek.charts.scatter`; output is uploaded as a texture.
 
 [⬆ back to top](#table-of-contents)
 
@@ -831,7 +904,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newBarChart(400, 300)
+    local chart = lurek.ui.newBarChart({ width = 400, height = 300 })
     chart:addSeries("Q2", { 5, 8, 3, 6 })
     print("LBarChart:addSeries.2 ok")
 end
@@ -1047,7 +1120,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newLineChart(400, 300)
+    local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
     chart:addSeries("sales", { 1, 4, 2, 7, 3 })
     print("LLineChart:addSeries ok")
 end
@@ -1420,7 +1493,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newScatterPlot(400, 300)
+    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
     chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} })
     print("LScatterPlot:addSeries ok")
 end

@@ -11,6 +11,12 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [condition.rs](#conditionrs)
+  - [events.rs](#eventsrs)
+  - [mod.rs](#modrs)
+  - [speaker.rs](#speakerrs)
+  - [state.rs](#staters)
+  - [tree.rs](#treers)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -40,13 +46,66 @@ Dialog/conversation engine: weighted topic/branch selection, state tracking, spe
 
 ## 📋 Summary
 
-Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry.
+Provides a flexible dialog tree engine for interactive conversations. Supports weighted topic/branch selection with gate conditions (FSM state, behavior tree status, utility scores), conversation state tracking with visited history and variables, and a speaker registry for character metadata.
+
+Extracted from and expanded into a full dialog subsystem.
 
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `condition.rs`
+
+- Dialog gate conditions: guards that control branch and topic visibility.
+- `Condition` is an enum with variants for flag checks, stat comparisons, and Lua callbacks.
+- Evaluated lazily at the point where the dialog engine requests the next node.
+- Lua callback conditions receive the current `DialogState` as a table argument.
+- Composed with `And` / `Or` / `Not` wrappers for complex gating logic.
+
+### `events.rs`
+
+- Events emitted by the dialog tree engine during conversation playback.
+- `DialogEvent` variants: `NodeEntered`, `ChoiceMade`, `Finished`, `Interrupted`.
+- Pushed into the engine's event queue; consumed by game scripts each tick.
+- `NodeEntered` carries the node ID and speaker ID for UI presentation.
+- Cleared at the start of each tick after the Lua callback has processed them.
+
+### `mod.rs`
+
+- Dialog and conversation system.
+- Provides a flexible dialog tree engine with:
+- Weighted topic/branch selection with gate conditions
+- FSM and behavior tree state context for conditional branching
+- Utility-score-based topic prioritization
+- Speaker registry for character metadata
+- Event emission for script integration
+- The module powers both simple linear dialogs and complex branching
+- conversations with dynamic topic selection.
+
+### `speaker.rs`
+
+- Speaker registry and character metadata used across dialog trees.
+- `Speaker` holds a display name, portrait asset path, and voice bank key.
+- The global `SpeakerRegistry` maps speaker IDs to `Speaker` values.
+- Speakers are registered from TOML at load time or dynamically via `lurek.dialog`.
+- Speaker IDs are stable string slugs (e.g. `"npc_merchant"`) not numeric indices.
+
+### `state.rs`
+
+- Dialog FSM state: tracks the current node, visited history, and variable bindings.
+- `DialogState` is the mutable context passed through the dialog engine each tick.
+- Tracks the current node ID, conversation ID, and per-run variable map.
+- `visited` set prevents re-entering nodes marked as non-repeatable.
+- Serialisable via `Save` system for checkpoint-save mid-conversation support.
+
+### `tree.rs`
+
+- Dialogue tree types: topics, branches, and the AI selector.
+- Dialogue selection choosing topics and branches from weighted sets guarded by FSM and BT state.
+- Topic and branch records with optional gate keys and utility-score references.
+- Scoring and matching logic filtering by gates, folding utility, and returning best candidates.
+- Independent gating against FSM state and behavior-tree status for adaptive selection.
+- Base weight combined with optional utility scores for flexible priority ranking.
 
 [⬆ back to top](#table-of-contents)
 
@@ -951,7 +1010,7 @@ do
     ds:start("rumor_intro")
     ds:advance("rumor_detail")
     ds:advance("rumor_exit")
-    print("LDialogueState:visitCount=" .. ds:visitCount("rumor"))
+    print("LDialogueState:visitCount=" .. ds:visitCount())
 end
 ```
 

@@ -61,7 +61,7 @@ struct LuaMapBlockResult {
 }
 
 impl LuaUserData for LuaMapBlockConfig {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add a slot definition — Lua userdata object exposed by the engine.
         /// @param | name | string | Slot name.
         /// @param | required | boolean | Whether this slot is required.
@@ -101,7 +101,7 @@ impl LuaUserData for LuaMapBlockConfig {
 }
 
 impl LuaUserData for LuaMapBlock {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Set a tile slot value — Lua userdata object exposed by the engine.
         /// @param | layer | integer | Layer index (0-based).
         /// @param | x | integer | Tile X position.
@@ -202,7 +202,7 @@ impl LuaUserData for LuaMapBlock {
 }
 
 impl LuaUserData for LuaMapGroup {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add a block to this group for this object.
         /// @param | block | MapBlock | Block to add.
         methods.add_method_mut("addBlock", |_, this, block: LuaAnyUserData| {
@@ -234,7 +234,7 @@ impl LuaUserData for LuaMapGroup {
 }
 
 impl LuaUserData for LuaMapScript {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add a generation step — Lua userdata object exposed by the engine.
         /// @param | step_type | string | Step type name.
         /// @param | opts | table | Step configuration options.
@@ -253,62 +253,61 @@ impl LuaUserData for LuaMapScript {
                 _ => return Err(LuaError::RuntimeError(format!("Unknown step type: {step_type_str}"))),
             };
 
-            let mut step = ScriptStep::default();
-            step.step_type = step_type;
+            let mut step = ScriptStep { step_type, ..Default::default() };
 
             if let Some(opts) = opts {
-                if let Ok(group) = opts.get::<String>("group") {
+                if let Ok(group) = opts.get::<_, String>("group") {
                     step.group_name = group;
                 }
-                if let Ok(count) = opts.get::<u32>("count") {
+                if let Ok(count) = opts.get::<_, u32>("count") {
                     step.count = count;
                 }
-                if let Ok(x) = opts.get::<i32>("x") {
+                if let Ok(x) = opts.get::<_, i32>("x") {
                     step.x = x;
                 }
-                if let Ok(y) = opts.get::<i32>("y") {
+                if let Ok(y) = opts.get::<_, i32>("y") {
                     step.y = y;
                 }
-                if let Ok(w) = opts.get::<u32>("width") {
+                if let Ok(w) = opts.get::<_, u32>("width") {
                     step.width = w;
                 }
-                if let Ok(h) = opts.get::<u32>("height") {
+                if let Ok(h) = opts.get::<_, u32>("height") {
                     step.height = h;
                 }
-                if let Ok(r) = opts.get::<u32>("rotation") {
+                if let Ok(r) = opts.get::<_, u32>("rotation") {
                     step.rotation = r;
                 }
-                if let Ok(m) = opts.get::<bool>("mirror") {
+                if let Ok(m) = opts.get::<_, bool>("mirror") {
                     step.mirror = m;
                 }
-                if let Ok(rr) = opts.get::<bool>("random_rotation") {
+                if let Ok(rr) = opts.get::<_, bool>("random_rotation") {
                     step.random_rotation = rr;
                 }
-                if let Ok(rm) = opts.get::<bool>("random_mirror") {
+                if let Ok(rm) = opts.get::<_, bool>("random_mirror") {
                     step.random_mirror = rm;
                 }
-                if let Ok(ms) = opts.get::<bool>("match_sides") {
+                if let Ok(ms) = opts.get::<_, bool>("match_sides") {
                     step.match_sides = ms;
                 }
-                if let Ok(c) = opts.get::<f32>("chance") {
+                if let Ok(c) = opts.get::<_, f32>("chance") {
                     step.chance = c;
                 }
-                if let Ok(rc) = opts.get::<u32>("repeat") {
+                if let Ok(rc) = opts.get::<_, u32>("repeat") {
                     step.repeat_count = rc;
                 }
-                if let Ok(bi) = opts.get::<i32>("block_index") {
+                if let Ok(bi) = opts.get::<_, i32>("block_index") {
                     step.block_index = bi;
                 }
-                if let Ok(tid) = opts.get::<u32>("tile_id") {
+                if let Ok(tid) = opts.get::<_, u32>("tile_id") {
                     step.tile_id = tid;
                 }
-                if let Ok(si) = opts.get::<usize>("slot") {
+                if let Ok(si) = opts.get::<_, usize>("slot") {
                     step.slot_index = si;
                 }
-                if let Ok(l) = opts.get::<u32>("layer") {
+                if let Ok(l) = opts.get::<_, u32>("layer") {
                     step.layer = l;
                 }
-                if let Ok(lv) = opts.get::<u32>("level") {
+                if let Ok(lv) = opts.get::<_, u32>("level") {
                     step.level = lv;
                 }
             }
@@ -338,7 +337,7 @@ impl LuaUserData for LuaMapScript {
 }
 
 impl LuaUserData for LuaNeighborRules {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add bidirectional compatibility between two edge types.
         /// @param | type_a | integer | First edge type.
         /// @param | type_b | integer | Second edge type.
@@ -372,7 +371,7 @@ impl LuaUserData for LuaNeighborRules {
 }
 
 impl LuaUserData for LuaPlacementGrid {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add a position to the grid — Lua userdata object exposed by the engine.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
@@ -404,7 +403,7 @@ impl LuaUserData for LuaPlacementGrid {
 }
 
 impl LuaUserData for LuaMapBlockGenerator {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Set rectangular map shape — Lua userdata object exposed by the engine.
         /// @param | width | integer | Grid width.
         /// @param | height | integer | Grid height.
@@ -430,7 +429,7 @@ impl LuaUserData for LuaMapBlockGenerator {
         /// Set rendering orientation for this object.
         /// @param | orientation | string | "topdown" or "isometric".
         methods.add_method_mut("setOrientation", |_, this, orientation: String| {
-            let o = MapOrientation::from_str(&orientation)
+            let o = MapOrientation::from_name(&orientation)
                 .ok_or_else(|| LuaError::RuntimeError(format!("Unknown orientation: {orientation}")))?;
             this.inner.borrow_mut().set_orientation(o);
             Ok(())
@@ -494,7 +493,7 @@ impl LuaUserData for LuaMapBlockGenerator {
 }
 
 impl LuaUserData for LuaMapBlockResult {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Get total width in tiles for this object.
         /// @return | integer | Width.
         methods.add_method("getWidth", |_, this, ()| Ok(this.inner.width));
@@ -533,7 +532,7 @@ impl LuaUserData for LuaMapBlockResult {
 }
 
 impl LuaUserData for LuaTilesetRef {
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Get the numeric tileset ID for this tileset reference.
         /// @return | integer | Tileset ID.
         methods.add_method("getId", |_, this, ()| Ok(this.inner.borrow().id()));
@@ -556,7 +555,7 @@ impl LuaUserData for LuaTilesetRef {
 // ─── Module registration ────────────────────────────────────────────────────
 
 /// Register the `lurek.mapblock` module.
-pub fn register(lua: &Lua, _state: &SharedState) -> LuaResult<LuaTable> {
+pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
     let module = lua.create_table()?;
 
     // ─── Constructors ───────────────────────────────────────────────────────

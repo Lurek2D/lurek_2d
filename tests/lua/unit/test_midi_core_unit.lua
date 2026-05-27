@@ -1,5 +1,4 @@
 --- Unit tests for lurek.midi core API.
---- @module test_midi_core_unit
 
 local T = lurek.test
 

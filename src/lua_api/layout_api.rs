@@ -13,17 +13,17 @@ use std::rc::Rc;
 /// Parses a Lua table of nodes into a Vec of LayoutNode.
 fn parse_nodes(tbl: &LuaTable) -> LuaResult<Vec<LayoutNode>> {
     let mut nodes = Vec::new();
-    for pair in tbl.sequence_values::<LuaTable>() {
+    for pair in tbl.clone().sequence_values::<LuaTable>() {
         let t = pair?;
         let id: NodeId = t.get("id")?;
         let mut node = LayoutNode::new(id);
-        if let Ok(w) = t.get::<f64>("width") {
+        if let Ok(w) = t.get::<_, f64>("width") {
             node.width = w;
         }
-        if let Ok(h) = t.get::<f64>("height") {
+        if let Ok(h) = t.get::<_, f64>("height") {
             node.height = h;
         }
-        if let Ok(label) = t.get::<String>("label") {
+        if let Ok(label) = t.get::<_, String>("label") {
             node.label = Some(label);
         }
         nodes.push(node);
@@ -34,7 +34,7 @@ fn parse_nodes(tbl: &LuaTable) -> LuaResult<Vec<LayoutNode>> {
 /// Parses a Lua table of edges into a Vec of LayoutEdge.
 fn parse_edges(tbl: &LuaTable) -> LuaResult<Vec<LayoutEdge>> {
     let mut edges = Vec::new();
-    for pair in tbl.sequence_values::<LuaTable>() {
+    for pair in tbl.clone().sequence_values::<LuaTable>() {
         let t = pair?;
         let from: NodeId = t.get("from")?;
         let to: NodeId = t.get("to")?;
@@ -45,7 +45,7 @@ fn parse_edges(tbl: &LuaTable) -> LuaResult<Vec<LayoutEdge>> {
 }
 
 /// Converts a LayoutResult into a Lua table.
-fn result_to_lua(lua: &Lua, result: &LayoutResult) -> LuaResult<LuaTable> {
+fn result_to_lua<'lua>(lua: &'lua Lua, result: &LayoutResult) -> LuaResult<LuaTable<'lua>> {
     let tbl = lua.create_table()?;
     let nodes_tbl = lua.create_table()?;
     for (i, node) in result.nodes.iter().enumerate() {

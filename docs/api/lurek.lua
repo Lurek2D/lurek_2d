@@ -2555,6 +2555,13 @@ function LSource:type() end
 ---@return boolean True if this object matches the given type.
 function LSource:typeOf(name) end
 
+--- Adds an effect to a named audio bus and returns its effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+---@param params? table Optional parameters table; may include a `value` field.
+---@return number Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
+lurek.audio.add_effect = function(bus_name, effect_type_str, params) end
+
 --- Applies a bandpass filter in-place to the sound data.
 ---@param sd_ud LSoundData The sound data to process.
 ---@param low_hz number Lower cutoff frequency in Hz.
@@ -2841,12 +2848,12 @@ lurek.audio.newSource = function(path, sourceType) end
 lurek.audio.newSquareWave = function(freq, duration, sample_rate, amplitude) end
 
 --- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
----@param waveform string Waveform type ("sine", "square", "sawtooth", "triangle", "noise").
----@param freq number Frequency in Hz.
+---@param waveform string Wave type: `"sine"`, `"square"`, `"sawtooth"`, or `"triangle"`.
+---@param freq number Frequency in Hz (e.g. 440.0 for concert A).
 ---@param duration number Duration in seconds.
 ---@param sample_rate number Sample rate in Hz (e.g. 44100).
 ---@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@param adsr table ADSR parameters: `attack`, `decay`, `sustain`, `release`.
+---@param adsr? table Optional ADSR envelope with `attack`, `decay`, `sustain`, `release` fields (durations in seconds, sustain is a level in [0,1]).
 ---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newSynthWave = function(waveform, freq, duration, sample_rate, amplitude, adsr) end
 
@@ -2865,6 +2872,12 @@ lurek.audio.newTriangleWave = function(freq, duration, sample_rate, amplitude) e
 ---@param seed number Seed value for the noise generator (same seed produces identical output).
 ---@return LSoundData A `SoundData` object containing the generated PCM samples.
 lurek.audio.newWhiteNoise = function(duration, sample_rate, amplitude, seed) end
+
+--- Normalizes an audio file to a target peak amplitude and saves the result.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output WAV file.
+---@param target number Target peak amplitude (e.g. 0.9 for headroom).
+lurek.audio.normalizeFile = function(input, output, target) end
 
 --- Pauses playback of a source at its current position.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -2887,6 +2900,12 @@ lurek.audio.playLooping = function(source) end
 ---@param qsource_id number Queueable source handle returned by newQueueableSource.
 lurek.audio.playQueueable = function(qsource_id) end
 
+--- Processes an audio file offline through a chain of effects and writes the result to an output file.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output WAV file.
+---@param effects_tbl table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
+lurek.audio.processOffline = function(input, output, effects_tbl) end
+
 --- Queues a decoded audio chunk for playback on a queueable source.
 ---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
 ---@param sd LSoundData Sound data chunk to enqueue for playback.
@@ -2896,6 +2915,12 @@ lurek.audio.queueSource = function(qsource_id, sd) end
 ---@param source LSource|number Audio source or numeric source ID to release.
 ---@return boolean True if the source was successfully released.
 lurek.audio.release = function(source) end
+
+--- Removes an effect from a named audio bus by effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by add_effect.
+---@return boolean True if the effect was successfully removed.
+lurek.audio.remove_effect = function(bus_name, effect_id) end
 
 --- Resumes playback of a paused source.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -3024,6 +3049,21 @@ lurek.audio.setVolume = function(source, vol) end
 ---@param volume number Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
 lurek.audio.set_bus_volume = function(name, volume) end
 
+--- Sets a parameter value on an effect attached to a named audio bus.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by add_effect.
+---@param param_name string Name of the effect parameter to set.
+---@param value number New value for the parameter.
+---@return boolean True if the parameter was set successfully.
+lurek.audio.set_effect_param = function(bus_name, effect_id, param_name, value) end
+
+--- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output PNG file.
+---@param width number Image width in pixels.
+---@param height number Image height in pixels.
+lurek.audio.spectrogramToPng = function(input, output, width, height) end
+
 --- Stops playback of a source and resets its position to the beginning.
 ---@param source LSource|number Audio source or numeric source ID.
 lurek.audio.stop = function(source) end
@@ -3039,6 +3079,13 @@ lurek.audio.stopQueueable = function(qsource_id) end
 ---@param source LSource|number Audio source or numeric source ID.
 ---@return number Current position in seconds.
 lurek.audio.tell = function(source) end
+
+--- Renders a waveform visualization of an audio file and saves it as a PNG image.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output PNG file.
+---@param width number Image width in pixels.
+---@param height number Image height in pixels.
+lurek.audio.waveformToPng = function(input, output, width, height) end
 
 ---@class lurek.automation
 lurek.automation = {}
@@ -6422,7 +6469,7 @@ function LApiCatalog:getEntries(module) end
 
 --- Returns one catalog entry by qualified API name.
 ---@param qualified_name string Full dotted API name to find.
----@return LuaValue `LDocEntry` when found, or nil when the catalog has no match.
+---@return LDocEntry The matching catalog entry.
 function LApiCatalog:getEntry(qualified_name) end
 
 --- Returns every module represented in this catalog.
@@ -6869,20 +6916,41 @@ lurek.dsp = {}
 lurek.dsp.addEffectToBus = function(bus_name, effect_type_str, params) end
 
 --- Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
----@param sd LSoundData The audio buffer to analyze.
----@param size number FFT window size (must be power of two, e.g. 512).
----@return table Array of magnitudes for each frequency bin.
+---@param sd LSoundData The sound data to analyze.
+---@param size number Number of frequency bins to compute (capped at 512).
+---@return table Array of tables, each with `frequency` (number, Hz) and `magnitude` (number) fields.
 lurek.dsp.analyzeFft = function(sd, size) end
 
 --- Analyzes the Peak volume of a `SoundData` buffer.
----@param sd LSoundData The audio buffer to analyze.
----@return number The peak level (linear).
+---@param sd LSoundData The sound data to analyze.
+---@return number Peak amplitude in the range [0.0, 1.0].
 lurek.dsp.analyzePeak = function(sd) end
 
 --- Analyzes the RMS volume of a `SoundData` buffer.
----@param sd LSoundData The audio buffer to analyze.
----@return number The RMS level (linear).
+---@param sd LSoundData The sound data to analyze.
+---@return number RMS amplitude in the range [0.0, 1.0].
 lurek.dsp.analyzeRms = function(sd) end
+
+--- Applies a bandpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param low_hz number Lower cutoff frequency in Hz.
+---@param high_hz number Upper cutoff frequency in Hz.
+lurek.dsp.applyBandpass = function(sd_ud, low_hz, high_hz) end
+
+--- Applies a gain multiplier in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param gain number Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
+lurek.dsp.applyGain = function(sd_ud, gain) end
+
+--- Applies a highpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param cutoff_hz number Highpass cutoff frequency in Hz.
+lurek.dsp.applyHighpass = function(sd_ud, cutoff_hz) end
+
+--- Applies a lowpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param cutoff_hz number Lowpass cutoff frequency in Hz.
+lurek.dsp.applyLowpass = function(sd_ud, cutoff_hz) end
 
 --- Creates an effect parameter descriptor table for use with offline processing.
 ---@param effectType string Effect type name (e.g. "lowpass", "reverb", "compressor").
@@ -6906,16 +6974,16 @@ lurek.dsp.processOffline = function(input, output, effects) end
 
 --- Removes an effect from a named audio bus by effect ID.
 ---@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by addEffectToBus.
----@return boolean True if the effect was successfully removed.
+---@param effect_id number Effect ID returned by `addEffectToBus`.
+---@return boolean `true` if the effect was successfully removed.
 lurek.dsp.removeEffectFromBus = function(bus_name, effect_id) end
 
 --- Sets a parameter value on an effect attached to a named audio bus.
 ---@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by addEffectToBus.
+---@param effect_id number Effect ID returned by `addEffectToBus`.
 ---@param param_name string Name of the effect parameter to set.
 ---@param value number New value for the parameter.
----@return boolean True if the parameter was set successfully.
+---@return boolean `true` if the parameter was set successfully.
 lurek.dsp.setEffectParam = function(bus_name, effect_id, param_name, value) end
 
 --- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
@@ -9777,7 +9845,7 @@ lurek.html.supports = function(feature) end
 lurek.i18n = {}
 
 --- Builds a word-to-keys search index from the catalog.
----@return string[] Map table from normalized words to arrays of translation keys.
+---@return table Map table from normalized words to arrays of translation keys.
 lurek.i18n.buildIndex = function() end
 
 --- Returns top-level translation key categories.
@@ -11207,12 +11275,12 @@ LNeuroevolution = {}
 function LNeuroevolution:bestFitness() end
 
 --- Converts the best chromosome into a neural network handle when one exists.
----@return LuaValue Neural network handle, or nil when no best chromosome is available.
+---@return LNeuralNet Neural network handle.
 function LNeuroevolution:bestNetwork() end
 
 --- Converts one chromosome into a neural network handle when the index is valid.
 ---@param idx number Zero-based chromosome index.
----@return LuaValue Neural network handle, or nil when the chromosome index is invalid.
+---@return LNeuralNet Neural network handle.
 function LNeuroevolution:chromosomeToNet(idx) end
 
 --- Advances the neuroevolution population by one generation.
@@ -11268,6 +11336,10 @@ function LQLearner:getActionCount() end
 --- Returns the Q-learning gamma discount factor.
 ---@return number Current discount factor.
 function LQLearner:getDiscountFactor() end
+
+--- Returns the total number of episodes completed so far.
+---@return number Episode count.
+function LQLearner:getEpisodeCount() end
 
 --- Returns the exploration decay multiplier.
 ---@return number Current exploration decay multiplier.
@@ -14503,10 +14575,9 @@ function LNetworkHost:send(peer_id, channel_id, data, reliable) end
 
 ---@class LNetworkHostServiceResult
 ---@field type string Event type (connect, disconnect, receive).
----@field peer_id number? Peer id.
----@field data number? Connection data.
----@field channel number? Channel index for receive events.
----@field payload string? Received payload bytes.
+---@field peer_id number Peer id.
+---@field data any Connection data or receive payload.
+---@field channel_id number? Channel index for receive events.
 
 --- Polls the host for one network event.
 ---@return LNetworkHostServiceResult Event table, or nil when no event is available.
@@ -14659,8 +14730,10 @@ lurek.network.joinRoom = function(id) end
 
 ---@class NetworkLeaveRoomResult
 ---@field id string Room id.
----@field room_id string Room identifier.
----@field peer_id string Peer identifier.
+---@field name string Room name.
+---@field host string Host address.
+---@field player_count number Current player count.
+---@field max_players number Maximum allowed players.
 
 --- Leaves a room by id when available. This function is exposed to Lua scripts.
 ---@param id string Room id.
@@ -18661,19 +18734,17 @@ function LWorld:isBodySleeping(id) end
 ---@return number Joint count.
 function LWorld:jointCount() end
 
---- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type}.
----@param specs table Array of tables: {{x, y, w, h, "dynamic"}, {x, y, w, h, "static"}, ...}.
+--- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
+---@param specs table Array of tables: {{x, y, w, h, "dynamic"}, ...} or {{x, y, "dynamic"}, ...} (defaults to 16x16).
 ---@return number[] Body ID numbers in creation order.
 function LWorld:newBodies(specs) end
 
 --- Creates a new physics body at the given position with the specified type and dimensions.
 ---@param x number Initial X position in world coordinates.
 ---@param y number Initial Y position in world coordinates.
----@param w number Body width.
----@param h number Body height.
 ---@param bodyType string One of "static", "dynamic", "kinematic", or "sensor".
 ---@return LBody The newly created body handle.
-function LWorld:newBody(x, y, w, h, bodyType) end
+function LWorld:newBody(x, y, bodyType) end
 
 --- Creates a new body with a chain (polyline) collider. Useful for terrain edges.
 ---@param x number Body X position in world coordinates.
@@ -19006,11 +19077,9 @@ lurek.physics.isSleepingAllowed = function(world, body) end
 ---@param world LWorld The target world.
 ---@param x number Initial X position.
 ---@param y number Initial Y position.
----@param w number Body width.
----@param h number Body height.
 ---@param bodyType string Body type: "static", "dynamic", "kinematic", or "sensor".
 ---@return LBody The newly created body.
-lurek.physics.newBody = function(world, x, y, w, h, bodyType) end
+lurek.physics.newBody = function(world, x, y, bodyType) end
 
 --- Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
 ---@param width number Grid width in cells.
@@ -23882,7 +23951,7 @@ function LThread:start(...) end
 function LThread:type() end
 
 --- Checks whether this object matches the given type name.
----@param name string Type name to test against (`"LThread"`, `"Thread"`, or `"Object"`).
+---@param name string Type name to check (`"LThread"` or `"LObject"`).
 ---@return boolean `true` if the name matches one of the accepted type names.
 function LThread:typeOf(name) end
 
@@ -28257,3 +28326,6 @@ lurek.window.toPixels = function(value) end
 --- Applies multiple window settings at once from a configuration table. Supports title, width, height, fullscreen, fullscreentype, vsync, position (x, y), scaleMode, and display index.
 ---@param opts table Configuration table with optional fields: title (string), width (number), height (number), fullscreen (boolean), fullscreentype (string), vsync (number), x (number), y (number), scaleMode (string), display (number).
 lurek.window.windowConfig = function(opts) end
+
+-- lurek.serialize is an alias for lurek.serial (both registered at runtime)
+lurek.serialize = lurek.serial

@@ -15,6 +15,7 @@
   - [lua_table.rs](#luatablers)
   - [mod.rs](#modrs)
   - [relationships.rs](#relationshipsrs)
+  - [types.rs](#typesrs)
   - [universe.rs](#universers)
   - [universe_ext.rs](#universeextrs)
   - [universe_systems.rs](#universesystemsrs)
@@ -78,6 +79,14 @@ To simplify entity instantiation, the ECS leverages a Blueprint system. Blueprin
 - Canonical entity-pair ordering for symmetric, order-independent lookups.
 - Directed named links between entities for one-way associations.
 - Query helpers: filter by entity, check existence, iterate all relations.
+
+### `types.rs`
+
+- Core ECS type aliases and ID newtypes: entity, component slot, and archetype key.
+- `EntityId` is a `u32` generation-stamped handle; 0 is the null entity.
+- `ComponentSlot` is a dense index into a component storage array.
+- `ArchetypeKey` is a sorted bitset of component type IDs identifying a layout.
+- All types derive `Copy`, `Eq`, and `Hash` so they can be used as map keys.
 
 ### `universe.rs`
 

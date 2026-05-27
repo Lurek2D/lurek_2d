@@ -113,8 +113,10 @@ mod error_screen_tests {
         assert!(text.contains("Actual failure"));
         assert!(text.contains("detail line"));
 
-        // Build commands should include the title text
-        let cmds = screen.build_render_commands(800, 600, None, None);
+        // Build commands with a font so Print commands are emitted.
+        let mut fonts: SlotMap<FontKey, ()> = SlotMap::with_key();
+        let fk = fonts.insert(());
+        let cmds = screen.build_render_commands(800, 600, Some(fk), Some(fk));
         assert!(!cmds.is_empty());
 
         // Verify at least one Print command contains the title
@@ -173,11 +175,12 @@ mod viewport_tests {
     use super::*;
 
     fn make_window_state(scale_mode: &str, game_w: f32, game_h: f32) -> WindowState {
-        let mut ws = WindowState::default();
-        ws.scale_mode_str = scale_mode.to_string();
-        ws.game_width = game_w;
-        ws.game_height = game_h;
-        ws
+        WindowState {
+            scale_mode_str: scale_mode.to_string(),
+            game_width: game_w,
+            game_height: game_h,
+            ..Default::default()
+        }
     }
 
     #[test]

@@ -47,7 +47,7 @@ describe("physics + timer integration", function()
         -- Simulate accumulator pattern
         local fixed_dt = 1.0 / 60.0
         local accumulator = 0
-        local frame_time = 0.033 -- ~30fps frame
+        local frame_time = 0.033 -- approx 30fps frame
 
         accumulator = accumulator + frame_time
         local steps = 0
@@ -110,3 +110,5 @@ describe("physics multi-body + math", function()
     end)
 end)
 test_summary()
+
+

@@ -1,6 +1,5 @@
 --- @title Overlay Effects
 --- @desc Weather, atmosphere, screen flash/shake/fade, and transitions.
---- @module overlay
 
 local function f2(value)
     return string.format("%.2f", value)
@@ -560,7 +559,7 @@ end
 --@api-stub: LOverlay:triggerFade
 do
     local ov = lurek.overlay.new(800, 600)
-    ov:triggerFade(1.0, 0, 0, 0)
+    ov:triggerFade(1.0, 0, 0, 0, 0.2)
     print("LOverlay:triggerFade isFading=" .. tostring(ov:isFading()))
 end
 

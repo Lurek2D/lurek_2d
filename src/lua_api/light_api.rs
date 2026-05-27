@@ -6,7 +6,8 @@ use crate::light::{
     Attenuation, FalloffMode, FlickerConfig, Light2D, LightBlendMode, LightType, Occluder,
     ShadowFilter,
 };
-use crate::math::{Color, Vec2};
+use crate::color::Color;
+use crate::math::Vec2;
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use mlua::prelude::*;
 use std::cell::RefCell;

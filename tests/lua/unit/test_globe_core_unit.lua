@@ -1070,8 +1070,8 @@ describe("Globe addRegion and removeRegion", function()
             vertices = {{44.0, 9.0}, {44.0, 11.0}, {46.0, 11.0}, {46.0, 9.0}},
             neighbors = {},
         })
-        assert_true(ok)
-        assert_equal(1, g:regionCount())
+        expect_true(ok)
+        expect_equal(1, g:regionCount())
     end)
 
     -- @covers LGlobe:removeRegion
@@ -1085,9 +1085,11 @@ describe("Globe addRegion and removeRegion", function()
             vertices = {{-1.0, -1.0}, {-1.0, 1.0}, {1.0, 1.0}, {1.0, -1.0}},
         })
         local removed = g:removeRegion(20)
-        assert_true(removed)
-        assert_equal(0, g:regionCount())
+        expect_true(removed)
+        expect_equal(0, g:regionCount())
     end)
 end)
 
 test_summary()
+
+

@@ -1,4 +1,3 @@
---- @module library.window_config
 --- @status full
 --- Fluent configuration builder for window setup and common window management
 --- patterns. Wraps lurek.window.* API with chainable setters, preset configs,
@@ -43,7 +42,8 @@ end
 
 -- ── Engine bindings (safe for headless) ───────────────────────────────────────
 
-local _win = (type(lurek) == "table") and lurek.window or nil
+local _win ---@type any
+_win = (type(lurek) == "table") and lurek.window or nil
 local _json = (type(lurek) == "table") and lurek.data or nil
 
 -- ── WindowConfig class ────────────────────────────────────────────────────────
@@ -179,44 +179,44 @@ function WindowConfig:apply()
     log_debug("applying window config: " .. self._title
               .. " (" .. self._width .. "x" .. self._height .. ")")
 
-    if _win.setTitle then
-        _win.setTitle(self._title)
+    if _win["setTitle"] then
+        _win["setTitle"](self._title)
     end
 
-    if _win.setSize then
-        _win.setSize(self._width, self._height)
+    if _win["setSize"] then
+        _win["setSize"](self._width, self._height)
     end
 
-    if self._min_width and self._min_height and _win.setMinSize then
-        _win.setMinSize(self._min_width, self._min_height)
+    if self._min_width and self._min_height and _win["setMinSize"] then
+        _win["setMinSize"](self._min_width, self._min_height)
     end
 
-    if _win.setResizable then
-        _win.setResizable(self._resizable)
+    if _win["setResizable"] then
+        _win["setResizable"](self._resizable)
     end
 
-    if _win.setVsync then
-        _win.setVsync(self._vsync)
+    if _win["setVsync"] then
+        _win["setVsync"](self._vsync)
     end
 
-    if _win.setFullscreen then
-        _win.setFullscreen(self._fullscreen)
+    if _win["setFullscreen"] then
+        _win["setFullscreen"](self._fullscreen)
     end
 
-    if self._centered and _win.center then
-        _win.center()
+    if self._centered and _win["center"] then
+        _win["center"]()
     end
 
-    if self._icon_path and _win.setIcon then
-        _win.setIcon(self._icon_path)
+    if self._icon_path and _win["setIcon"] then
+        _win["setIcon"](self._icon_path)
     end
 
-    if _win.setScalingMode then
-        _win.setScalingMode(self._scaling_mode)
+    if _win["setScalingMode"] then
+        _win["setScalingMode"](self._scaling_mode)
     end
 
-    if self._game_width and self._game_height and _win.setGameSize then
-        _win.setGameSize(self._game_width, self._game_height)
+    if self._game_width and self._game_height and _win["setGameSize"] then
+        _win["setGameSize"](self._game_width, self._game_height)
     end
 end
 
@@ -280,8 +280,8 @@ end
 --- Toggle fullscreen mode on the live window.
 function WindowConfig:toggleFullscreen()
     self._fullscreen = not self._fullscreen
-    if _win and _win.setFullscreen then
-        _win.setFullscreen(self._fullscreen)
+    if _win and _win["setFullscreen"] then
+        _win["setFullscreen"](self._fullscreen)
         log_debug("fullscreen toggled to " .. tostring(self._fullscreen))
     end
 end
@@ -290,8 +290,8 @@ end
 --- @treturn number width Current window width, or configured width if headless.
 --- @treturn number height Current window height, or configured height if headless.
 function WindowConfig:getActualSize()
-    if _win and _win.getSize then
-        return _win.getSize()
+    if _win and _win["getSize"] then
+        return _win["getSize"]()
     end
     return self._width, self._height
 end
@@ -426,3 +426,4 @@ function window_config.fromJson(json_str)
 end
 
 return window_config
+

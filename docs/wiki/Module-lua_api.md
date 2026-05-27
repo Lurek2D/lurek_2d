@@ -15,33 +15,46 @@
   - [animation_api.rs](#animationapirs)
   - [audio_api.rs](#audioapirs)
   - [automation_api.rs](#automationapirs)
+  - [binary_api.rs](#binaryapirs)
   - [callback_registry.rs](#callbackregistryrs)
   - [camera_api.rs](#cameraapirs)
+  - [charts_api.rs](#chartsapirs)
+  - [color_api.rs](#colorapirs)
   - [compute_api.rs](#computeapirs)
-  - [data_api.rs](#dataapirs)
+  - [cursor_api.rs](#cursorapirs)
   - [dataframe_api.rs](#dataframeapirs)
   - [debugbridge_api.rs](#debugbridgeapirs)
   - [devtools_api.rs](#devtoolsapirs)
+  - [dialog_api.rs](#dialogapirs)
   - [docs_api.rs](#docsapirs)
+  - [dsp_api.rs](#dspapirs)
   - [ecs_api.rs](#ecsapirs)
   - [effect_api.rs](#effectapirs)
   - [engine_api.rs](#engineapirs)
   - [event_api.rs](#eventapirs)
   - [filesystem_api.rs](#filesystemapirs)
+  - [flownet_api.rs](#flownetapirs)
+  - [font_api.rs](#fontapirs)
   - [globe_api.rs](#globeapirs)
-  - [graph_api.rs](#graphapirs)
+  - [grep_api.rs](#grepapirs)
   - [html_api.rs](#htmlapirs)
   - [i18n_api.rs](#i18napirs)
   - [image_api.rs](#imageapirs)
   - [input_api.rs](#inputapirs)
+  - [layout_api.rs](#layoutapirs)
+  - [learning_api.rs](#learningapirs)
   - [light_api.rs](#lightapirs)
   - [log_api.rs](#logapirs)
+  - [lua_module.rs](#luamodulers)
   - [lua_types.rs](#luatypesrs)
+  - [mapblock_api.rs](#mapblockapirs)
   - [math_api.rs](#mathapirs)
+  - [midi_api.rs](#midiapirs)
   - [minimap_api.rs](#minimapapirs)
   - [mod.rs](#modrs)
   - [mods_api.rs](#modsapirs)
   - [network_api.rs](#networkapirs)
+  - [overlay_api.rs](#overlayapirs)
   - [parallax_api.rs](#parallaxapirs)
   - [particle_api.rs](#particleapirs)
   - [pathfind_api.rs](#pathfindapirs)
@@ -56,7 +69,7 @@
   - [repl_api.rs](#replapirs)
   - [save_api.rs](#saveapirs)
   - [scene_api.rs](#sceneapirs)
-  - [serial_api.rs](#serialapirs)
+  - [serialize_api.rs](#serializeapirs)
   - [spine_api.rs](#spineapirs)
   - [sprite_api.rs](#spriteapirs)
   - [system_api.rs](#systemapirs)
@@ -66,6 +79,8 @@
   - [timer_api.rs](#timerapirs)
   - [tween_api.rs](#tweenapirs)
   - [ui_api.rs](#uiapirs)
+  - [validator_api.rs](#validatorapirs)
+  - [visibility_api.rs](#visibilityapirs)
   - [window_api.rs](#windowapirs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
@@ -118,6 +133,10 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 - `lurek.automation` -- Automation bindings for loading simulator scripts, controlling playback, inspecting state, saving macros, and waiting on Lua predicates.
 
+### `binary_api.rs`
+
+- `lurek.binary` -- Binary bindings for binary packing, compression, encoding, hashing, byte buffers, data views, TOML conversion, ring buffers, and structured writers.
+
 ### `callback_registry.rs`
 
 - Public types and helpers for the callback_registry module.
@@ -126,13 +145,21 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 - `lurek.camera` -- Camera bindings for 2D transforms, targets, bounds, screen conversion, paths, zoom tweens, parallax factors, effects, constraints, presets, and camera rigs.
 
+### `charts_api.rs`
+
+- `lurek.charts` -- Chart creation, configuration, and rendering bindings.
+
+### `color_api.rs`
+
+- `lurek.color` -- Color bindings for RGBA construction, color-space conversions, blending modes, palettes, and utility operations.
+
 ### `compute_api.rs`
 
 - `lurek.compute` -- Compute bindings for multidimensional arrays, numeric operations, reductions, spatial filters, analytics, linear algebra, FFT helpers, and parallel threshold tuning.
 
-### `data_api.rs`
+### `cursor_api.rs`
 
-- `lurek.data` -- Data bindings for binary packing, compression, encoding, hashing, byte buffers, data views, TOML conversion, ring buffers, and structured writers.
+- `lurek.cursor` - Cursor appearance, system cursors, custom image cursors, animated cursors, and context-sensitive switching.
 
 ### `dataframe_api.rs`
 
@@ -146,9 +173,17 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 - `lurek.devtools` -- Developer tooling bindings for logs, profiling, frame stats, file watching, console state, watch expressions, snapshots, REPL, and debugger-style eval helpers.
 
+### `dialog_api.rs`
+
+- `lurek.dialog` — Lua bindings for the dialog system (topics, branches, state, speakers).
+
 ### `docs_api.rs`
 
 - `lurek.docs` -- Documentation tooling bindings for live API reflection, editable catalogs, quality reports, schema validation, and export helpers that produce editor and Markdown artifacts from Lua-visible API metadata.
+
+### `dsp_api.rs`
+
+- `lurek.dsp` - Digital signal processing: effects, offline batch processing, and audio visualization.
 
 ### `ecs_api.rs`
 
@@ -156,7 +191,7 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 ### `effect_api.rs`
 
-- `lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, image effect chains, screen overlays, weather and ambient controls, screen transitions, and shader error display state used by the renderer command queue.
+- `lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, and image effect chains used by the renderer command queue.
 
 ### `engine_api.rs`
 
@@ -170,13 +205,21 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 - `lurek.filesystem` -- GameFS bindings for text, binary, JSON, directory, metadata, async IO, mount, ZIP archive, file handle, file data, watcher, path conversion, and script chunk loading operations available to Lua.
 
+### `flownet_api.rs`
+
+- `lurek.flownet` -- Logistics flow-network bindings for nodes, directed edges, typed items, capacities, queues, conversion rules, supply and demand, pathfinding, reachability, graph algorithms, events, and Lua callbacks.
+
+### `font_api.rs`
+
+- `lurek.font` -- Font bindings for text measurement, font loading, word wrapping, and text shaping.
+
 ### `globe_api.rs`
 
 - `lurek.globe` -- Spherical province-map bindings for globe registries, province graphs, sectors, heat layers, camera controls, picking, fog of war, markers, labels, render layers, arcs, pathfinding, exports, and coordinate math.
 
-### `graph_api.rs`
+### `grep_api.rs`
 
-- `lurek.graph` -- Logistics graph bindings for nodes, directed edges, typed items, capacities, queues, conversion rules, supply and demand, pathfinding, reachability, graph algorithms, events, and Lua callbacks.
+- `lurek.grep` - Pattern-based file search across game content: literal, regex, multi-pattern, and log search.
 
 ### `html_api.rs`
 
@@ -194,6 +237,14 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 - `lurek.input` -- Input bindings for keyboard, mouse, cursor objects, gamepads, touch points, action mappings, combo detection, virtual d-pad conversion, input recording, and playback state exposed through nested Lua tables.
 
+### `layout_api.rs`
+
+- `lurek.layout` — Lua bindings for graph/tree/DAG layout algorithms.
+
+### `learning_api.rs`
+
+- `lurek.learning` - Lua bindings for machine learning and evolutionary computation algorithms.
+
 ### `light_api.rs`
 
 - `lurek.light` -- 2D lighting bindings for light handles, occluders, ambient color, shadows, masks, groups, flicker animation, transitions, cookies, normal-map hints, and renderer-facing lighting world state.
@@ -202,13 +253,28 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 - `lurek.log` -- Logging bindings for severity helpers, global level control, memory/file/rotating/callback sinks, sink listing and flushing, memory reads, structured field logs, tag filters, and Lua callback dispatch.
 
+### `lua_module.rs`
+
+- Trait-based module registration for `lurek.*` Lua API modules.
+
 ### `lua_types.rs`
 
 - Public types and helpers for the lua_types module.
 
+### `mapblock_api.rs`
+
+- `lurek.mapblock` — Block-based map assembly system.
+- Provides tools for building tile maps from composable blocks using
+- scripted placement, Carcassonne-style neighbor constraints, multi-level
+- support, and configurable tile slots.
+
 ### `math_api.rs`
 
-- `lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, noise generation, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, colors, and scalar helpers.
+- `lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, and scalar helpers.
+
+### `midi_api.rs`
+
+- `lurek.midi` - MIDI playback and SoundFont management.
 
 ### `minimap_api.rs`
 
@@ -225,6 +291,10 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 ### `network_api.rs`
 
 - `lurek.network` -- Lua bindings for ENet-style hosts, async network runtime, message packing, lobby helpers, relay tickets, and snapshot prediction.
+
+### `overlay_api.rs`
+
+- `lurek.overlay` -- Lua bindings for the overlay system: weather, atmosphere, screen flash/shake/fade, transitions, and ambient controls.
 
 ### `parallax_api.rs`
 
@@ -244,7 +314,7 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 ### `physics_api.rs`
 
-- `lurek.physics` — 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
+- `lurek.physics` â€” 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
 
 ### `pipeline_api.rs`
 
@@ -282,9 +352,9 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 - `lurek.scene` — Stack-based scene management with animated transitions, overlay support, shared data passing, lifecycle callbacks (enter/leave/pause/resume/ready/update/draw/render), and depth-sorted rendering via `LDepthSorter`.
 
-### `serial_api.rs`
+### `serialize_api.rs`
 
-- `lurek.serial` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange.
+- `lurek.serialize` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange.
 
 ### `spine_api.rs`
 
@@ -296,7 +366,7 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 
 ### `system_api.rs`
 
-- `lurek.runtime` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
+- `lurek.system` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
 
 ### `terminal_api.rs`
 
@@ -321,6 +391,14 @@ All `lurek.*` namespace registrations use a trait-based system defined in :
 ### `ui_api.rs`
 
 - `lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.
+
+### `validator_api.rs`
+
+- `lurek.validator` - Schema and constraint validation for Lua files, assets, imports, and custom rules.
+
+### `visibility_api.rs`
+
+- `lurek.visibility` -- Lua bindings for universal fog-of-war, discovery, and line-of-sight.
 
 ### `window_api.rs`
 

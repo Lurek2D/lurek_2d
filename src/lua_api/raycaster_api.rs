@@ -6,7 +6,7 @@ use crate::lua_api::render_api::LObjModel;
 use crate::lua_api::render_api::LuaImage;
 use crate::color::Color;
 use crate::raycaster::sprite_manager::SpriteManager;
-use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays, MinimapTileSample};
+use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
 use crate::raycaster::{
     compute_lighting, dir4_delta, distance_shade,
     project_column, try_move, DoorDirection, DoorManager, DoorState,

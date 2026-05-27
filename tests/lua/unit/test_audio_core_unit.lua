@@ -2514,5 +2514,52 @@ describe("audio migrated from integration/audio_timer", function()
     end)
 end)
 
+-- @describe lurek.audio.newSynthWave
+describe("lurek.audio.newSynthWave", function()
+    -- @covers lurek.audio.newSynthWave
+    it("is a function", function()
+        expect_type("function", lurek.audio.newSynthWave)
+    end)
+
+    -- @covers lurek.audio.newSynthWave
+    it("sine waveform returns LSoundData userdata", function()
+        local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.5)
+        expect_true(sd ~= nil, "returned non-nil")
+        expect_type("userdata", sd)
+    end)
+
+    -- @covers lurek.audio.newSynthWave
+    it("square waveform returns LSoundData userdata", function()
+        local sd = lurek.audio.newSynthWave("square", 440, 0.1, 44100, 0.5)
+        expect_type("userdata", sd)
+    end)
+
+    -- @covers lurek.audio.newSynthWave
+    it("sawtooth waveform returns LSoundData userdata", function()
+        local sd = lurek.audio.newSynthWave("sawtooth", 440, 0.1, 44100, 0.5)
+        expect_type("userdata", sd)
+    end)
+
+    -- @covers lurek.audio.newSynthWave
+    it("triangle waveform returns LSoundData userdata", function()
+        local sd = lurek.audio.newSynthWave("triangle", 440, 0.1, 44100, 0.5)
+        expect_type("userdata", sd)
+    end)
+
+    -- @covers lurek.audio.newSynthWave
+    it("invalid waveform name errors", function()
+        expect_error(function()
+            lurek.audio.newSynthWave("INVALID_WAVE", 440, 0.1, 44100, 0.5)
+        end, "unknown waveform")
+    end)
+
+    -- @covers lurek.audio.newSynthWave
+    it("accepts optional ADSR table and returns userdata", function()
+        local adsr = { attack = 0.01, decay = 0.05, sustain = 0.7, release = 0.1 }
+        local sd = lurek.audio.newSynthWave("sine", 440, 0.2, 44100, 0.5, adsr)
+        expect_type("userdata", sd)
+    end)
+end)
+
 test_summary()
 

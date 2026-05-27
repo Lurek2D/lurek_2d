@@ -2,6 +2,8 @@
 -- Covers lurek.mapblock module: config, blocks, groups, scripts,
 -- rules, grids, generators, and tileset references.
 
+require("tests/lua/init")
+
 -- =========================================================================
 -- Module existence
 -- =========================================================================
@@ -47,32 +49,27 @@ describe("MapBlockConfig", function()
     it("newConfig returns a config with default slots", function()
         local cfg = lurek.mapblock.newConfig()
         expect_type("userdata", cfg)
-        local slots = cfg:slots()
-        assert_true(#slots > 0)
+        expect_true(cfg:getSlotCount() > 0)
     end)
 
     -- @covers lurek.mapblock.newEmptyConfig
     it("newEmptyConfig returns a config with no slots", function()
         local cfg = lurek.mapblock.newEmptyConfig()
         expect_type("userdata", cfg)
-        local slots = cfg:slots()
-        assert_equal(0, #slots)
+        expect_equal(0, cfg:getSlotCount())
     end)
 
     -- @covers lurek.mapblock.newConfig
     it("default config has 5 standard slots", function()
         local cfg = lurek.mapblock.newConfig()
-        local slots = cfg:slots()
-        assert_equal(5, #slots)
+        expect_equal(5, cfg:getSlotCount())
     end)
 
     -- @covers lurek.mapblock.newEmptyConfig
     it("addSlot adds a slot to empty config", function()
         local cfg = lurek.mapblock.newEmptyConfig()
         cfg:addSlot("custom")
-        local slots = cfg:slots()
-        assert_equal(1, #slots)
-        assert_equal("custom", slots[1])
+        expect_equal(1, cfg:getSlotCount())
     end)
 end)
 
@@ -85,40 +82,39 @@ describe("MapBlock creation and tiles", function()
     -- @covers lurek.mapblock.newBlock
     it("newBlock creates a block with correct dimensions", function()
         local cfg = lurek.mapblock.newConfig()
-        local block = lurek.mapblock.newBlock("test", 8, 6, 2, cfg)
+        local block = lurek.mapblock.newBlock(8, 6, 2, cfg)
         expect_type("userdata", block)
-        assert_equal(8, block:width())
-        assert_equal(6, block:height())
-        assert_equal(2, block:layers())
+        expect_equal(8, block:getWidth())
+        expect_equal(6, block:getHeight())
+        expect_equal(2, block:getLayerCount())
     end)
 
     -- @covers lurek.mapblock.newBlock
     it("setTile and getTile roundtrip", function()
         local cfg = lurek.mapblock.newConfig()
-        local block = lurek.mapblock.newBlock("test", 4, 4, 1, cfg)
-        block:setTile(0, 0, 0, "floor", 1, 42)
-        local tid, gid = block:getTile(0, 0, 0, "floor")
-        assert_equal(1, tid)
-        assert_equal(42, gid)
+        local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
+        block:setTile(0, 0, 0, 0, 1, 42)
+        local gid = block:getTile(0, 0, 0, 0)
+        expect_equal(42, gid)
     end)
 
     -- @covers lurek.mapblock.newBlock
     it("setWeight changes block weight", function()
         local cfg = lurek.mapblock.newConfig()
-        local block = lurek.mapblock.newBlock("test", 4, 4, 1, cfg)
+        local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
         block:setWeight(2.5)
         -- No crash = pass (weight is used internally by generator)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers lurek.mapblock.newBlock
     it("setSide marks edge compatibility", function()
         local cfg = lurek.mapblock.newConfig()
-        local block = lurek.mapblock.newBlock("test", 4, 4, 1, cfg)
-        block:setSide("north", true)
-        block:setSide("south", false)
+        local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
+        block:setEdge("north", 1, 1)
+        block:setEdge("south", 1, 2)
         -- Setter does not crash
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -132,22 +128,21 @@ describe("PlacementGrid", function()
     it("newGrid creates grid with dimensions", function()
         local grid = lurek.mapblock.newGrid(10, 8)
         expect_type("userdata", grid)
-        assert_equal(10, grid:width())
-        assert_equal(8, grid:height())
+        expect_true(grid:getAvailableCount() > 0)
     end)
 
     -- @covers lurek.mapblock.newEmptyGrid
     it("newEmptyGrid creates empty grid", function()
         local grid = lurek.mapblock.newEmptyGrid()
         expect_type("userdata", grid)
-        assert_equal(0, grid:cellCount())
+        expect_equal(0, grid:getAvailableCount())
     end)
 
     -- @covers lurek.mapblock.newEmptyGrid
     it("addCell adds a cell to empty grid", function()
         local grid = lurek.mapblock.newEmptyGrid()
-        grid:addCell(3, 5)
-        assert_equal(1, grid:cellCount())
+        grid:addPosition(3, 5)
+        expect_equal(1, grid:getAvailableCount())
     end)
 end)
 
@@ -161,14 +156,14 @@ describe("NeighborRules", function()
     it("newRules creates empty rules", function()
         local rules = lurek.mapblock.newRules()
         expect_type("userdata", rules)
-        assert_equal(0, rules:count())
+        expect_equal(false, rules:isCompatible(1, 2))
     end)
 
     -- @covers lurek.mapblock.newRules
     it("addRule increases rule count", function()
         local rules = lurek.mapblock.newRules()
-        rules:addRule("blockA", "north", "blockB")
-        assert_equal(1, rules:count())
+        rules:addCompatible(1, 2)
+        expect_true(rules:isCompatible(1, 2))
     end)
 end)
 
@@ -180,16 +175,20 @@ end)
 describe("Generator", function()
     -- @covers lurek.mapblock.newGenerator
     it("newGenerator creates generator with seed", function()
-        local gen = lurek.mapblock.newGenerator(12345)
+        local cfg = lurek.mapblock.newConfig()
+        local gen = lurek.mapblock.newGenerator(cfg)
+        gen:setSeed(12345)
         expect_type("userdata", gen)
     end)
 
     -- @covers lurek.mapblock.newGroup
     it("addGroup registers a block group", function()
-        local gen = lurek.mapblock.newGenerator(42)
+        local cfg = lurek.mapblock.newConfig()
+        local gen = lurek.mapblock.newGenerator(cfg)
+        gen:setSeed(42)
         local group = lurek.mapblock.newGroup("terrain")
         gen:addGroup(group)
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -201,7 +200,7 @@ end)
 describe("TilesetRef", function()
     -- @covers lurek.mapblock.newTilesetRef
     it("newTilesetRef creates a tileset reference", function()
-        local ts = lurek.mapblock.newTilesetRef(1, "ground", 64, 8, 32, 32, "ground.png")
+        local ts = lurek.mapblock.newTilesetRef(1, "ground", 64, 8, 32, 32)
         expect_type("userdata", ts)
     end)
 end)
@@ -216,14 +215,14 @@ describe("GenerationScript", function()
     it("newScript creates empty script", function()
         local script = lurek.mapblock.newScript()
         expect_type("userdata", script)
-        assert_equal(0, script:stepCount())
+        expect_equal(0, script:getStepCount())
     end)
 
     -- @covers lurek.mapblock.newScript
     it("addStep adds generation steps", function()
         local script = lurek.mapblock.newScript()
-        script:addStep("fill", { block = "grass" })
-        assert_equal(1, script:stepCount())
+        script:addStep("fill_rect", { tile_id = 1, x = 0, y = 0, width = 1, height = 1 })
+        expect_equal(1, script:getStepCount())
     end)
 end)
 
@@ -238,27 +237,27 @@ describe("MapBlockConfig getSlotCount setMaxLayers setDefaultSegmentSize", funct
         local cfg = lurek.mapblock.newConfig()
         local count = cfg:getSlotCount()
         expect_type("number", count)
-        assert_true(count > 0)
+        expect_true(count > 0)
     end)
 
     -- @covers LMapBlockConfig:getSlotCount
     it("getSlotCount is zero for empty config", function()
         local cfg = lurek.mapblock.newEmptyConfig()
-        assert_equal(0, cfg:getSlotCount())
+        expect_equal(0, cfg:getSlotCount())
     end)
 
     -- @covers LMapBlockConfig:setMaxLayers
     it("setMaxLayers configures max layers without crash", function()
         local cfg = lurek.mapblock.newConfig()
         cfg:setMaxLayers(3)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LMapBlockConfig:setDefaultSegmentSize
     it("setDefaultSegmentSize configures segment size without crash", function()
         local cfg = lurek.mapblock.newConfig()
         cfg:setDefaultSegmentSize(16)
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -280,21 +279,21 @@ describe("MapBlock setEdge setEdgeOnly setInteriorOnly setLevelSpan", function()
         block:setEdge("south", 0, 2)
         block:setEdge("east", 0, 1)
         block:setEdge("west", 0, 1)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LMapBlock:setEdgeOnly
     it("setEdgeOnly marks block as edge-only placement", function()
         local block = make_block()
         block:setEdgeOnly(true)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LMapBlock:setInteriorOnly
     it("setInteriorOnly marks block as interior-only placement", function()
         local block = make_block()
         block:setInteriorOnly(true)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LMapBlock:setLevelSpan
@@ -302,7 +301,7 @@ describe("MapBlock setEdge setEdgeOnly setInteriorOnly setLevelSpan", function()
         local cfg = lurek.mapblock.newConfig()
         local block = lurek.mapblock.newBlock(4, 4, 2, cfg)
         block:setLevelSpan(2)
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -317,8 +316,8 @@ describe("NeighborRules addCompatible addCompatibleOneWay isCompatible", functio
     it("addCompatible creates bidirectional compatibility", function()
         local rules = lurek.mapblock.newRules()
         rules:addCompatible(1, 2)
-        assert_true(rules:isCompatible(1, 2))
-        assert_true(rules:isCompatible(2, 1))
+        expect_true(rules:isCompatible(1, 2))
+        expect_true(rules:isCompatible(2, 1))
     end)
 
     -- @covers LNeighborRules:addCompatibleOneWay
@@ -326,13 +325,13 @@ describe("NeighborRules addCompatible addCompatibleOneWay isCompatible", functio
     it("addCompatibleOneWay creates one-way compatibility", function()
         local rules = lurek.mapblock.newRules()
         rules:addCompatibleOneWay(3, 4)
-        assert_true(rules:isCompatible(3, 4))
+        expect_true(rules:isCompatible(3, 4))
     end)
 
     -- @covers LNeighborRules:isCompatible
     it("isCompatible returns false for unregistered type pair", function()
         local rules = lurek.mapblock.newRules()
-        assert_equal(false, rules:isCompatible(99, 100))
+        expect_equal(false, rules:isCompatible(99, 100))
     end)
 end)
 
@@ -346,7 +345,7 @@ describe("PlacementGrid addPosition isAvailable", function()
     it("addPosition adds a grid position", function()
         local grid = lurek.mapblock.newEmptyGrid()
         grid:addPosition(3, 5)
-        assert_equal(1, grid:getAvailableCount())
+        expect_equal(1, grid:getAvailableCount())
     end)
 
     -- @covers LPlacementGrid:isAvailable
@@ -354,13 +353,13 @@ describe("PlacementGrid addPosition isAvailable", function()
     it("isAvailable returns true for an added position", function()
         local grid = lurek.mapblock.newEmptyGrid()
         grid:addPosition(2, 4)
-        assert_true(grid:isAvailable(2, 4))
+        expect_true(grid:isAvailable(2, 4))
     end)
 
     -- @covers LPlacementGrid:isAvailable
     it("isAvailable returns false for a position not in grid", function()
         local grid = lurek.mapblock.newEmptyGrid()
-        assert_equal(false, grid:isAvailable(99, 99))
+        expect_equal(false, grid:isAvailable(99, 99))
     end)
 end)
 
@@ -375,7 +374,7 @@ describe("MapBlockGenerator setRectShape setMaxLevels setRules getLastPlacedCoun
         local cfg = lurek.mapblock.newConfig()
         local gen = lurek.mapblock.newGenerator(cfg)
         gen:setRectShape(4, 4)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LMapBlockGenerator:setMaxLevels
@@ -383,7 +382,7 @@ describe("MapBlockGenerator setRectShape setMaxLevels setRules getLastPlacedCoun
         local cfg = lurek.mapblock.newConfig()
         local gen = lurek.mapblock.newGenerator(cfg)
         gen:setMaxLevels(2)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LMapBlockGenerator:setRules
@@ -393,7 +392,7 @@ describe("MapBlockGenerator setRectShape setMaxLevels setRules getLastPlacedCoun
         local rules = lurek.mapblock.newRules()
         rules:addCompatible(1, 1)
         gen:setRules(rules)
-        assert_true(true)
+        expect_true(true)
     end)
 
     -- @covers LMapBlockGenerator:getLastPlacedCount
@@ -402,7 +401,7 @@ describe("MapBlockGenerator setRectShape setMaxLevels setRules getLastPlacedCoun
         local gen = lurek.mapblock.newGenerator(cfg)
         local count = gen:getLastPlacedCount()
         expect_type("number", count)
-        assert_equal(0, count)
+        expect_equal(0, count)
     end)
 end)
 
@@ -437,7 +436,7 @@ describe("TilesetRef setImagePath", function()
     it("setImagePath sets the image file path without crash", function()
         local ts = lurek.mapblock.newTilesetRef(1, "ground", 64, 8, 32, 32)
         ts:setImagePath("assets/textures/ground.png")
-        assert_true(true)
+        expect_true(true)
     end)
 end)
 
@@ -452,17 +451,18 @@ describe("MapBlockConfig:removeSlot", function()
         local cfg = lurek.mapblock.newEmptyConfig()
         cfg:addSlot("floor")
         cfg:addSlot("wall")
-        assert_equal(2, cfg:getSlotCount())
+        expect_equal(2, cfg:getSlotCount())
         cfg:removeSlot("floor")
-        assert_equal(1, cfg:getSlotCount())
+        expect_equal(1, cfg:getSlotCount())
     end)
 
     -- @covers LMapBlockConfig:removeSlot
     it("removeSlot on nonexistent slot does not crash", function()
         local cfg = lurek.mapblock.newEmptyConfig()
         cfg:removeSlot("nonexistent")
-        assert_equal(0, cfg:getSlotCount())
+        expect_equal(0, cfg:getSlotCount())
     end)
 end)
 
 test_summary()
+

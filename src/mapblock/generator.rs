@@ -5,7 +5,6 @@
 //! - After assembly, converts the grid to a `TileMap` via `mapblock::output`.
 //! - Exposed to Lua via `lurek.mapblock.generate(config, script)` returning a tilemap.
 
-use super::block::MapBlock;
 use super::config::MapBlockConfig;
 use super::constraints::NeighborRules;
 use super::group::MapGroup;

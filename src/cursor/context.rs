@@ -33,7 +33,7 @@ pub enum CursorContext {
 
 impl CursorContext {
     /// Parse a `CursorContext` variant from a lowercase string name.
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_name(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "default" => Self::Default,
             "raycaster" => Self::Raycaster,

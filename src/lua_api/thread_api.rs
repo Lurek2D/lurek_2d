@@ -1,5 +1,6 @@
 //! `lurek.thread` - Provides multi-threaded Lua worker VMs with typed channel messaging for parallel game logic execution.
 
+use super::lua_types::{add_type_methods, LurekType};
 use super::SharedState;
 use crate::thread::channel::{
     channel_value_to_lua, lua_to_channel_value, Channel, ChannelValue, LuaChannel,
@@ -17,19 +18,13 @@ use std::sync::{Arc, Mutex};
 pub struct LuaThreadHandle {
     inner: Arc<Mutex<LuaThread>>,
 }
+impl LurekType for LuaThreadHandle {
+    const TYPE_NAME: &'static str = "LThread";
+    const TYPE_HIERARCHY: &'static [&'static str] = &["LThread", "LObject"];
+}
 impl LuaUserData for LuaThreadHandle {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // -- type --
-        /// Returns the type name of this object.
-        /// @return | string | Always returns `"LThread"`.
-        methods.add_method("type", |_, _, ()| Ok("LThread".to_string()));
-        // -- typeOf --
-        /// Checks whether this object matches the given type name.
-        /// @param | name | string | Type name to test against (`"LThread"`, `"Thread"`, or `"Object"`).
-        /// @return | boolean | `true` if the name matches one of the accepted type names.
-        methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LThread" || name == "LObject")
-        });
+        add_type_methods::<LuaThreadHandle, _>(methods);
         // -- start --
         /// Launches the worker thread, executing the Lua code string supplied at creation time.
         /// @param | ... | any | Zero or more arguments forwarded to the worker as the `arg` table.

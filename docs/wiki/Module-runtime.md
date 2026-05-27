@@ -64,7 +64,7 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - Defines `EngineError` — the engine-wide error enum covering all subsystem failures.
 - Provides `ErrorCategory` for high-level failure classification (init, runtime, resource, script, filesystem, system).
 - Assigns stable machine-readable error codes (`E1001`–`E1012`) and recovery hints per variant.
-- Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding; serde-based serialization escapes control characters correctly.
+- Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding.
 - Supplies the `EngineResult<T>` convenience alias used throughout the runtime.
 
 ### `headless.rs`
@@ -109,7 +109,11 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 
 ### `os.rs`
 
-- OS-level utilities including clipboard, system info, environment variables, and platform detection.
+- Operating system detection utilities for platform-specific code paths.
+- `get_os_name()` returns a lowercase string: `"windows"`, `"linux"`, or `"macos"`.
+- Used at startup to set OS-specific defaults (e.g. font paths, config directories).
+- Exposed to Lua via `lurek.runtime.os()` for platform-conditional game scripts.
+- Built on `cfg!` macros; no runtime OS probing, so the result is always correct.
 
 ### `resource_keys.rs`
 

@@ -910,7 +910,7 @@ def render_luacats(modules: dict) -> str:
         # Canonical stub prefix always uses library. with hyphens normalised to underscores
         stub_prefix = "library." + re.sub(r"-", "_", module_name)
         out.append(f"---@class {display}")
-        out.append(f"library.{module_name} = {{}}")
+        out.append(f"{stub_prefix} = {{}}")
         out.append("")
 
         nested_tables: set[str] = set()

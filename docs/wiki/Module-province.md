@@ -15,7 +15,6 @@
   - [borders.rs](#bordersrs)
   - [cache.rs](#cachers)
   - [distance_field.rs](#distancefieldrs)
-  - [properties.rs](#propertiesrs)
   - [events.rs](#eventsrs)
   - [gpu_bridge.rs](#gpubridgers)
   - [gpu_upload.rs](#gpuuploadrs)
@@ -23,6 +22,8 @@
   - [labels.rs](#labelsrs)
   - [map_modes.rs](#mapmodesrs)
   - [mod.rs](#modrs)
+  - [properties.rs](#propertiesrs)
+  - [province_grid.rs](#provincegridrs)
   - [registry.rs](#registryrs)
   - [render.rs](#renderrs)
   - [topology.rs](#topologyrs)
@@ -73,9 +74,11 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ### `borders.rs`
 
-- Border type utilities for the province map system.
-- Border classification is now game-defined via `registerBorderType` from Lua.
-- The engine no longer auto-classifies borders by terrain.
+- Province border geometry: border index map, dilation, and edge detection.
+- `build_border_index` converts a raw province-ID grid into a border pixel mask.
+- `dilate_border_index_with_styles` expands border pixels by per-pair style thickness.
+- `build_border_index_from_registry` reads the current registry pixel buffer directly.
+- Output is an `R16Uint` texture uploaded via `province::gpu_upload`.
 
 ### `cache.rs`
 
@@ -88,12 +91,6 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Distance-from-border precompute for province pixels.
 - Multi-source BFS seeded from border pixels where neighboring province ids differ.
 - Produces a compact u8 field used by later shading or LOD passes.
-
-### `properties.rs`
-
-- Generic per-province key-value property store.
-- Numeric, string, and 64-bit flag properties keyed by province ID.
-- Game logic defines semantics; the engine provides fast storage and retrieval.
 
 ### `events.rs`
 
@@ -129,12 +126,13 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 - Compute pixel-weighted centroids from province span data.
 - Map province IDs to their geometric center for label placement.
+- Accumulates pixel-weighted x/y sums across span rows and normalises per province area.
 
 ### `map_modes.rs`
 
-- Map-mode enum selecting which province style field drives fill colour.
-- Colour resolution logic mapping political, terrain, and visibility modes to RGBA.
-- String round-trip helpers for mode serialisation and Lua interop.
+- Config-driven map mode system for the province renderer.
+- Map modes are registered from Lua at runtime with per-mode display settings.
+- Color resolution uses the color_property field from the active map mode config.
 
 ### `mod.rs`
 
@@ -142,6 +140,26 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Imports colour-map PNG + CSV/TOML metadata into an authoritative ProvinceRegistry.
 - Generates RenderCommands for fills, borders, capitals, and text labels.
 - Provides view-transform helpers for camera fitting and screen-to-map projection.
+
+### `properties.rs`
+
+- Province property storage: per-province key-value metadata and stat tables.
+- `ProvinceProperties` maps `ProvinceId → HashMap<String, PropertyValue>`.
+- `PropertyValue` is an enum covering `Int`, `Float`, `Bool`, and `Text` variants.
+- Properties are set from Lua via `lurek.province.set_property(id, key, value)`.
+- Serialized into the save file as a flat list for fast round-trip loading.
+
+### `province_grid.rs`
+
+- Province grid construction from color-mapped images, assigning unique ids per distinct RGB color.
+- Pixel-level province id lookup and reverse color retrieval by id.
+- Adjacency detection between neighboring provinces with shared-border-pixel counts.
+- Horizontal span extraction for contiguous province row segments.
+- Border segment detection returning line segments between differing province regions.
+- Polygon tracing from directed cell edges into closed point loops per province.
+- Polygon simplification removing collinear vertices and 45-degree staircase patterns.
+- Binary serialization and deserialization of span and border segment shape data.
+- Adjacency pair struct exposing province relationships for map graph queries.
 
 ### `registry.rs`
 
@@ -152,8 +170,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - Stores capital positions, label anchor lines, and label text per province.
 - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
 - Maintains a monotonic revision counter and ordered change log for incremental sync.
-- Supports border type overrides keyed by normalised province pair.
-- Stores registered border type configs (name, color, thickness, draw_priority).
+- Supports border class overrides keyed by normalised province pair.
 - Stores arbitrary string key-value attributes per province via set_attr.
 
 ### `render.rs`
@@ -175,8 +192,7 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 ### `types.rs`
 
 - Core type definitions for the province map system.
-- ProvinceId alias, BorderType (u8) for game-defined adjacency classification, and ProvinceStyle for per-province visuals.
-- BorderTypeConfig struct for per-type visual settings registered from Lua.
+- ProvinceId newtype, BorderType (u8) for game-defined adjacency classification, and ProvinceStyle for per-province visuals.
 - ProvinceSnapshot provides an immutable point-in-time view of province state.
 
 ### `view_transform.rs`

@@ -1,1 +1,1 @@
-local d = require('dummy_lib')
+local d = require('tools.tests.dummy_data.library.dummy_lib')

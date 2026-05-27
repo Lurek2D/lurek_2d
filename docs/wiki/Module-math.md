@@ -19,17 +19,12 @@
   - [geometry.rs](#geometryrs)
   - [mat3.rs](#mat3rs)
   - [mod.rs](#modrs)
-  - [noise_functions.rs](#noisefunctionsrs)
-  - [noise_generator.rs](#noisegeneratorrs)
   - [polygon.rs](#polygonrs)
   - [random.rs](#randomrs)
   - [rect.rs](#rectrs)
-  - [rect_packing.rs](#rectpackingrs)
   - [spatial_hash.rs](#spatialhashrs)
-  - [sphere.rs](#spherers)
   - [spline.rs](#spliners)
   - [transform.rs](#transformrs)
-  - [tween.rs](#tweenrs)
   - [vec2.rs](#vec2rs)
   - [vec3.rs](#vec3rs)
   - [voronoi.rs](#voronoirs)
@@ -152,28 +147,8 @@ The module also excels in procedural generation and animation. It features a sop
 ### `mod.rs`
 
 - Math primitives: Vec2, Vec3, Mat3, Rect, Circle, Transform.
-- Noise and procedural generation: Perlin, simplex, value noise, Voronoi diagrams.
 - Spatial structures: AABB tree, spatial hash grid, rectangle bin-packing.
 - Curves and interpolation: bezier, splines, tweens, easing functions, scalar helpers.
-
-### `noise_functions.rs`
-
-- Perlin noise helpers (2-D, 3-D, 4-D) with per-call seeding.
-- Simplex noise (2-D, 3-D) with optional fixed seed.
-- Fractional Brownian motion (fBm) layering multiple Perlin octaves.
-
-### `noise_generator.rs`
-
-- Seeded permutation-table noise generator supporting Perlin gradient noise in 1-D through 4-D dimensions.
-- Simplex noise variants in 1-D, 2-D, and 3-D using skewed simplex grids for faster evaluation.
-- Worley (cell/Voronoi) noise in 2-D and 3-D with selectable distance metrics: Euclidean, Manhattan, Chebyshev.
-- Fractal layering strategies: fractional Brownian motion (fBm), ridged multifractal, and turbulence.
-- Configurable heightmap generation producing row-major f64 arrays from combined multi-octave passes.
-- Gradient contribution helpers mapping hash bytes to directional dot products in 1-D through 4-D.
-- Smoothstep fade curve and linear interpolation primitives used across all Perlin evaluations.
-- Deterministic cell hashing for reproducible procedural feature point placement from any u64 seed.
-- Domain warping via Perlin displacement fields for organic terrain and texture distortion.
-- MapGenOptions controlling scale, octaves, lacunarity, persistence, offset, algorithm, and fractal type.
 
 ### `polygon.rs`
 
@@ -195,12 +170,6 @@ The module also excels in procedural generation and animation. It features a sop
 - Containment, intersection, union, and bounding-box construction from point sets.
 - Center-based and corner-based constructors for layout and collision use cases.
 
-### `rect_packing.rs`
-
-- Shelf-first rectangle packing for texture atlas layout.
-- Configurable atlas dimensions and uniform pixel padding between rects.
-- Tracks occupancy ratio and returns placement coordinates in insertion order.
-
 ### `spatial_hash.rs`
 
 - Uniform-grid spatial hashing for broad-phase 2D collision and proximity queries.
@@ -208,14 +177,6 @@ The module also excels in procedural generation and animation. It features a sop
 - Rectangle, circle, and segment query shapes with deduplication.
 - Parametric slab-based segment-vs-AABB intersection test.
 - O(1) cell lookup per query tile; scales with world density, not total item count.
-
-### `sphere.rs`
-
-- Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
-- Great-circle distance (Haversine) and arc interpolation between two geo-points.
-- Ray-sphere intersection returning the nearest positive hit distance.
-- Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
-- Matrix-vector and matrix-matrix multiplication for globe-view transforms.
 
 ### `spline.rs`
 
@@ -228,14 +189,6 @@ The module also excels in procedural generation and animation. It features a sop
 - Accumulated 2D affine transform backed by a 3×3 matrix.
 - Chainable translate, rotate, scale, and shear mutations.
 - Forward and inverse point mapping plus SRT decomposition.
-
-### `tween.rs`
-
-- Multi-channel tween interpolator that drives values from start to target over a fixed duration.
-- Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
-- Each tween holds an independent clock, supports reset, seek, and completion query.
-- Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
-- Falls back to linear when an unknown easing name is provided.
 
 ### `vec2.rs`
 

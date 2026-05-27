@@ -34,9 +34,55 @@ impl BarChart {
         }
     }
 
-    /// Add a data series to the chart.
-    pub fn add_series(&mut self, series: ChartSeries) {
+    /// Add a data series (low-level: accepts a ChartSeries directly).
+    pub fn push_series(&mut self, series: ChartSeries) {
         self.series.push(series);
+    }
+
+    /// Register a named series slot with a color.
+    pub fn add_series(&mut self, name: &str, color: crate::color::Color) {
+        self.push_series(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: Vec::new(),
+        });
+    }
+
+    /// Add a category with one value per registered series.
+    pub fn add_category(&mut self, _label: &str, vals: &[f32]) {
+        let cat_idx = self.series.iter().map(|s| s.data.len()).max().unwrap_or(0) as f32;
+        for (i, series) in self.series.iter_mut().enumerate() {
+            let v = vals.get(i).copied().unwrap_or(0.0);
+            series.data.push((cat_idx, v));
+        }
+    }
+
+    /// Add categories from dataframe rows, returning the number of categories added.
+    pub fn add_categories_from_dataframe(
+        &mut self,
+        df: &crate::dataframe::DataFrame,
+        label_col: &str,
+        value_cols: &[String],
+        opts: crate::charts::config::ChartDataFrameOptions,
+    ) -> Result<usize, String> {
+        use crate::dataframe::frame::ColRef;
+        let label_data = df.get_column(ColRef::Name(label_col.to_string()))?;
+        let n = label_data.len().min(opts.max_rows.unwrap_or(usize::MAX));
+        for row in 0..n {
+            let mut vals: Vec<f32> = Vec::new();
+            for vc in value_cols.iter() {
+                let col = df.get_column(ColRef::Name(vc.clone()))?;
+                vals.push(col.get(row).and_then(|c| c.as_number()).unwrap_or(0.0) as f32);
+            }
+            let label = label_data.get(row).map(|c| format!("{c}")).unwrap_or_default();
+            self.add_category(&label, &vals);
+        }
+        Ok(n)
+    }
+
+    /// Render this chart into an ImageData buffer.
+    pub fn draw_to_image(&self, img: &mut crate::image::ImageData) {
+        self.render(img.as_mut_bytes());
     }
 
     /// Remove all series from the chart.

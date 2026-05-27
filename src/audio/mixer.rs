@@ -305,6 +305,14 @@ impl Mixer {
                 }
                 entry.play_start = Some(Instant::now());
             }
+        } else if let Some(entry) = self.sources.get_mut(key) {
+            // Headless: no audio hardware available; advance play state so
+            // is_playing() / is_paused() / is_stopped() reflect the intent.
+            entry.play_state = PlayState::Playing;
+            if was_stopped {
+                entry.accumulated_secs = 0.0;
+            }
+            entry.play_start = Some(Instant::now());
         }
     }
     /// Stop playback, drop the sink, and reset accumulated position to zero.
@@ -379,13 +387,9 @@ impl Mixer {
         self.set_pitch(key, speed);
     }
     /// Return `true` when the source sink is active and not paused.
+    /// Falls back to tracked `play_state` when no sink exists (headless/test mode).
     pub fn is_playing(&self, key: SoundKey) -> bool {
-        if let Some(entry) = self.sources.get(key) {
-            if let Some(ref sink) = entry.sink {
-                return !sink.is_paused() && !sink.empty();
-            }
-        }
-        false
+        self.get_play_state(key) == PlayState::Playing
     }
     /// Return the current transport state of the source by inspecting its sink.
     pub fn get_play_state(&self, key: SoundKey) -> PlayState {

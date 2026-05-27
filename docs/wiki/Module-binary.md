@@ -94,7 +94,6 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - Sequential binary writer with a movable cursor over a growable byte buffer
 - Little-endian and big-endian integer, float, and string write methods
 - Seek support with automatic zero-fill when moving past buffer end
-- Append-at-end writes use extend-from-slice without zero-fill overwrite; only seek past end triggers gap filling
 
 ### `dataview.rs`
 
@@ -131,7 +130,7 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - Length-prefixed ('s') and null-terminated ('z') string support
 - Coercion helpers that widen numeric PackValue variants at write time
 - Bounds-checked reads with per-token underflow error messages
-- Static and dynamic packed-size calculation for buffer pre-allocation; mixed formats like '<is' count one shared value index per token
+- Static and dynamic packed-size calculation for buffer pre-allocation
 - ByteData output for integration with the data module pipeline
 
 ### `ring_buffer.rs`

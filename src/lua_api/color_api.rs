@@ -18,7 +18,7 @@ fn color_from_table(t: &LuaTable) -> LuaResult<(f32, f32, f32, f32)> {
 }
 
 /// Creates a Lua table with RGBA at indices 1-4.
-fn color_to_table(lua: &Lua, r: f32, g: f32, b: f32, a: f32) -> LuaResult<LuaTable> {
+fn color_to_table(lua: &Lua, r: f32, g: f32, b: f32, a: f32) -> LuaResult<LuaTable<'_>> {
     let t = lua.create_table()?;
     t.set(1, r)?;
     t.set(2, g)?;
@@ -28,7 +28,7 @@ fn color_to_table(lua: &Lua, r: f32, g: f32, b: f32, a: f32) -> LuaResult<LuaTab
 }
 
 /// Converts a Color struct into a Lua table.
-fn color_struct_to_table(lua: &Lua, c: &Color) -> LuaResult<LuaTable> {
+fn color_struct_to_table<'lua>(lua: &'lua Lua, c: &Color) -> LuaResult<LuaTable<'lua>> {
     color_to_table(lua, c.r, c.g, c.b, c.a)
 }
 

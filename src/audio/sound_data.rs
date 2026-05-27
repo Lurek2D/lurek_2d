@@ -334,4 +334,74 @@ impl SoundData {
             *s = (*s + o).clamp(-1.0, 1.0);
         }
     }
+    /// Returns the RMS (root-mean-square) amplitude of the sound data.
+    pub fn analyze_rms(&self) -> f32 {
+        if self.samples.is_empty() {
+            return 0.0;
+        }
+        let sum_sq: f32 = self.samples.iter().map(|s| s * s).sum();
+        (sum_sq / self.samples.len() as f32).sqrt()
+    }
+    /// Returns the peak (maximum absolute) amplitude of the sound data.
+    pub fn analyze_peak(&self) -> f32 {
+        self.samples.iter().map(|s| s.abs()).fold(0.0f32, f32::max)
+    }
+    /// Performs a bounded DFT and returns `size` (frequency, magnitude) pairs.
+    /// At most 4096 input samples are used to keep computation deterministic and fast.
+    pub fn analyze_dft(&self, size: usize) -> Vec<(f32, f32)> {
+        const MAX_SAMPLES: usize = 4096;
+        let n = self.samples.len().min(MAX_SAMPLES);
+        if n == 0 {
+            return Vec::new();
+        }
+        let bins = size.max(1).min(n / 2 + 1).min(512);
+        let sr = self.sample_rate as f32;
+        let input = &self.samples[..n];
+        (0..bins)
+            .map(|k| {
+                let freq = k as f32 * sr / n as f32;
+                let (mut re, mut im) = (0.0f32, 0.0f32);
+                for (j, &s) in input.iter().enumerate() {
+                    let angle = -2.0 * std::f32::consts::PI * k as f32 * j as f32 / n as f32;
+                    re += s * angle.cos();
+                    im += s * angle.sin();
+                }
+                let mag = (re * re + im * im).sqrt() / n as f32;
+                (freq, mag)
+            })
+            .collect()
+    }
+    /// Apply ADSR amplitude envelope in place.
+    /// `attack`, `decay`, `release` are durations in seconds; `sustain` is a gain level in [0,1].
+    pub fn apply_adsr(&mut self, attack: f32, decay: f32, sustain: f32, release: f32) {
+        let n = self.samples.len();
+        if n == 0 {
+            return;
+        }
+        let sr = self.sample_rate as f32;
+        let a_end = (attack * sr) as usize;
+        let d_end = a_end + (decay * sr) as usize;
+        let r_start = n.saturating_sub((release * sr) as usize);
+        let s_level = sustain.clamp(0.0, 1.0);
+        for (i, s) in self.samples.iter_mut().enumerate() {
+            let env = if i < a_end {
+                if a_end == 0 { 1.0 } else { i as f32 / a_end as f32 }
+            } else if i < d_end {
+                let span = (d_end - a_end) as f32;
+                if span == 0.0 { s_level } else {
+                    let t = (i - a_end) as f32 / span;
+                    1.0 - (1.0 - s_level) * t
+                }
+            } else if i < r_start {
+                s_level
+            } else {
+                let span = (n - r_start) as f32;
+                if span == 0.0 { 0.0 } else {
+                    let t = (i - r_start) as f32 / span;
+                    s_level * (1.0 - t)
+                }
+            };
+            *s *= env;
+        }
+    }
 }

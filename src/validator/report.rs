@@ -17,7 +17,7 @@ pub enum Severity {
 
 impl Severity {
     /// Parse a `Severity` level from a string; unknown values map to `Warning`.
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_name(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "hint" | "info" => Self::Hint,
             "warning" | "warn" => Self::Warning,

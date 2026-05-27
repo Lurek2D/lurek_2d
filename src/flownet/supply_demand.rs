@@ -23,12 +23,12 @@ impl Graph {
                 .nodes
                 .values()
                 .filter(|n| {
-                    n.id != demand_node_id
+                    n.id.raw() != demand_node_id
                         && n.supplies
                             .iter()
                             .any(|s| s.item_type == item_type && s.quantity != 0)
                 })
-                .map(|n| n.id)
+                .map(|n| n.id.0)
                 .collect();
             for supply_node_id in supply_nodes {
                 if remaining <= 0 {

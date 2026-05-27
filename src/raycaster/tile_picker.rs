@@ -101,18 +101,17 @@ impl TilePicker {
         };
 
         let max_steps = (self.grid_width + self.grid_height) as i32;
-        let mut wall_side = 0u8;
 
-        for _ in 0..max_steps {
-            if side_x < side_y {
+        if max_steps > 0 {
+            let wall_side = if side_x < side_y {
                 side_x += delta_x;
                 map_x += step_x;
-                wall_side = 0;
+                0u8
             } else {
                 side_y += delta_y;
                 map_y += step_y;
-                wall_side = 1;
-            }
+                1u8
+            };
 
             if map_x < 0 || map_y < 0
                 || map_x >= self.grid_width as i32

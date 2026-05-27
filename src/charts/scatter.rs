@@ -5,10 +5,13 @@
 //! - Axes are auto-ranged or clamped to user-supplied min/max bounds.
 //! - Owned by `lurek.charts.scatter`; output is uploaded as a texture.
 
-use crate::charts::config::{ChartConfig, ChartSeries};
+use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{
     auto_range, draw_circle_filled, draw_line, fill_buffer, world_to_screen,
 };
+use crate::color::Color;
+use crate::dataframe::frame::DataFrame;
+use crate::image::ImageData;
 
 /// A scatter plot that renders data points as filled circles.
 #[derive(Debug, Clone)]
@@ -19,6 +22,10 @@ pub struct ScatterPlot {
     series: Vec<ChartSeries>,
     /// Radius of each dot in pixels.
     dot_radius: f32,
+    /// Optional explicit X-axis range.
+    pub x_range: (f32, f32),
+    /// Optional explicit Y-axis range.
+    pub y_range: (f32, f32),
 }
 
 impl ScatterPlot {
@@ -28,12 +35,59 @@ impl ScatterPlot {
             config,
             series: Vec::new(),
             dot_radius: 4.0,
+            x_range: (0.0, 0.0),
+            y_range: (0.0, 0.0),
         }
     }
 
-    /// Add a data series to the chart.
-    pub fn add_series(&mut self, series: ChartSeries) {
+    /// Add a pre-built series entry directly.
+    pub fn push_series_raw(&mut self, series: ChartSeries) {
         self.series.push(series);
+    }
+
+    /// Add a data series by name, points, and color.
+    pub fn add_series(&mut self, name: &str, data: &[(f32, f32)], color: Color) {
+        self.series.push(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: data.to_vec(),
+        });
+    }
+
+    /// Add a data series from a DataFrame, reading x and y from named columns.
+    pub fn add_series_from_dataframe(
+        &mut self,
+        name: &str,
+        df: &DataFrame,
+        x_col: &str,
+        y_col: &str,
+        color: Color,
+        opts: ChartDataFrameOptions,
+    ) -> Result<usize, String> {
+        use crate::dataframe::frame::{CellValue, ColRef};
+        let max = opts.max_rows.unwrap_or(usize::MAX);
+        let mut pts: Vec<(f32, f32)> = Vec::new();
+        for row_idx in 0..df.nrows().min(max) {
+            let xv = df.get_value(row_idx, ColRef::Name(x_col.to_string()))?;
+            let yv = df.get_value(row_idx, ColRef::Name(y_col.to_string()))?;
+            if let (CellValue::Number(x), CellValue::Number(y)) = (xv, yv) { pts.push((x as f32, y as f32)) }
+        }
+        let n = pts.len();
+        self.series.push(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: pts,
+        });
+        Ok(n)
+    }
+
+    /// Render the chart into an ImageData buffer.
+    pub fn draw_to_image(&self, img: &mut ImageData) {
+        let w = self.config.width as usize;
+        let h = self.config.height as usize;
+        let mut buf = vec![0u8; w * h * 4];
+        self.render(&mut buf);
+        let _ = img.set_raw_data(&buf);
     }
 
     /// Remove all series from the chart.

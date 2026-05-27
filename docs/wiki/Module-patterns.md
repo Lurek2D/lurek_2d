@@ -133,6 +133,8 @@ The module also includes specialized data structures optimized for game developm
 - Shared key-value store for passing typed state between AI and game systems.
 - Supports bool, number, text, and nil entries with per-key revision tracking.
 - Global and per-key revision counters enable efficient change detection.
+- Optional parent chain for hierarchical lookup (child inherits parent data).
+- Typed getters with defaults that walk the parent chain on miss.
 
 ### `collections.rs`
 

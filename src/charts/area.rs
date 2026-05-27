@@ -5,10 +5,13 @@
 //! - Delegates coordinate mapping to `charts::render_utils::world_to_screen`.
 //! - Owned by `lurek.charts.area` Lua API; output is uploaded as a texture.
 
-use crate::charts::config::{ChartConfig, ChartSeries};
+use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{
     auto_range, draw_line, fill_buffer, set_pixel, world_to_screen,
 };
+use crate::color::Color;
+use crate::dataframe::frame::DataFrame;
+use crate::image::ImageData;
 
 /// A stacked area chart that renders cumulative filled regions.
 #[derive(Debug, Clone)]
@@ -17,6 +20,8 @@ pub struct AreaChart {
     pub config: ChartConfig,
     /// Data series to stack and fill.
     series: Vec<ChartSeries>,
+    /// Y-axis maximum (0 = auto).
+    pub y_max: f32,
 }
 
 impl AreaChart {
@@ -25,12 +30,60 @@ impl AreaChart {
         Self {
             config,
             series: Vec::new(),
+            y_max: 0.0,
         }
     }
 
     /// Add a data series to the chart (drawn stacked above previous series).
     pub fn add_series(&mut self, series: ChartSeries) {
         self.series.push(series);
+    }
+
+    /// Add a named layer by values array and color.
+    pub fn add_layer(&mut self, name: &str, vals: &[f32], color: Color) {
+        self.series.push(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: vals.iter().enumerate().map(|(i, &v)| (i as f32, v)).collect(),
+        });
+    }
+
+    /// Add a layer from a DataFrame column.
+    pub fn add_layer_from_dataframe(
+        &mut self,
+        name: &str,
+        df: &DataFrame,
+        value_col: &str,
+        color: Color,
+        opts: ChartDataFrameOptions,
+    ) -> Result<usize, String> {
+        use crate::dataframe::frame::{CellValue, ColRef};
+        let max = opts.max_rows.unwrap_or(usize::MAX);
+        let mut pts: Vec<(f32, f32)> = Vec::new();
+        for row_idx in 0..df.nrows().min(max) {
+            let val = df.get_value(row_idx, ColRef::Name(value_col.to_string()))?;
+            let v = match val {
+                CellValue::Number(n) => n as f32,
+                _ => 0.0,
+            };
+            pts.push((row_idx as f32, v));
+        }
+        let n = pts.len();
+        self.series.push(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: pts,
+        });
+        Ok(n)
+    }
+
+    /// Render the chart into an ImageData buffer.
+    pub fn draw_to_image(&self, img: &mut ImageData) {
+        let w = self.config.width as usize;
+        let h = self.config.height as usize;
+        let mut buf = vec![0u8; w * h * 4];
+        self.render(&mut buf);
+        let _ = img.set_raw_data(&buf);
     }
 
     /// Remove all series from the chart.

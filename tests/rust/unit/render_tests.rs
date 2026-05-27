@@ -577,8 +577,8 @@ mod postfx_pipeline_tests {
         params.insert("samples".to_string(), 15.0);
         params.insert("palette_size".to_string(), 16.0);
         let u = params_to_uniform(&params);
-        for i in 0..16 {
-            assert_eq!(u[i], (i + 1) as f32, "slot {i} mismatch");
+        for (i, &val) in u.iter().enumerate() {
+            assert_eq!(val, (i + 1) as f32, "slot {i} mismatch");
         }
     }
 }

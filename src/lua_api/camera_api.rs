@@ -2,7 +2,7 @@
 
 use super::SharedState;
 use crate::camera::{
-    Camera2D, CameraEasing, CameraPath, CameraRig2D, CameraTweenEasing, ZoomTween,
+    Camera2D, CameraEasing, CameraPath, CameraRig2D, ZoomTween,
 };
 use crate::render::renderer::RenderCommand;
 use mlua::prelude::*;

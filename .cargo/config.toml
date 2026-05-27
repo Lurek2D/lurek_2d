@@ -20,3 +20,10 @@ demo = "run --bin lurek2d -- content/games/showcase/hello_world"
 # The previous /DEBUG:FASTLINK setting caused unstable `lua_tests` links on
 # large debug builds under MSVC, so the repository now relies on Cargo's
 # default debug linking behavior for correctness.
+
+# Statically link the MSVC C++ runtime on Windows.
+# This bakes VCRUNTIME140.dll (and friends) directly into the .exe so the
+# binary runs on a clean machine without Visual C++ Redistributable installed.
+# The condition is scoped to windows-msvc only — GNU/Linux builds are unaffected.
+[target.'cfg(all(target_os = "windows", target_env = "msvc"))']
+rustflags = ["-C", "target-feature=+crt-static"]

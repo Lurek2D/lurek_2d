@@ -1,32 +1,63 @@
 # Sensible Soccer
 
-**Category:** Retro
-**Engine:** Lurek2D
+_Niezwykle szybka, dynamiczna retro-gra piłkarska — przejmij kontrolę nad 5-osobową drużyną, stosuj podania i wślizgi taktyczne, i pokonaj komputer w emocjonującym meczu z fizyką piłki._
 
-A fast-paced top-down football game inspired by Sensible Software's legendary 1992 Amiga classic. Control a team of 5 green players against a CPU-controlled red team in quick 3-minute matches with automatic player switching, ball physics, and half-time side swaps.
+## 🎮 O grze (About the Game)
 
-## How to Play
+**Sensible Soccer** (wierny hołd dla kultowej sagi piłkarskiej z 1992 roku na Amigę) to szybka, zręcznościowa symulacja piłki nożnej z widokiem z góry (bird's-eye view). Kontrolujesz 5-osobową drużynę w zielonych strojach przeciwko sterowanej przez komputer (AI) drużynie w barwach czerwonych. Gra toczy się w dynamicznym tempie, a mecze trwają 180 sekund z zamianą stron boiska w połowie czasu (po 90 sekundach).
 
-- **WASD** — Move the controlled player
-- **Space** — Kick ball toward facing direction (power shot)
-- **F** — Pass to nearest teammate
-- **T** — Slide tackle toward the ball
-- **Escape** — Quit
+Kluczowe mechaniki rozgrywki:
+- **Automatyczne przełączanie zawodników (Auto-switching)** – w warstwie obronnej i przy podaniach gra automatycznie przekazuje kontrolę nad zawodnikiem, który znajduje się najbliżej piłki, zapewniając nieprzerwaną płynność akcji.
+- **Fizyka piłki (Ball Physics)** – piłka posiada realistyczne tarcie podłoża (friction 0.88/klatkę), odbija się od krawędzi boiska oraz posiada zaawansowany system siły kopnięcia (kick power charging).
+- **Sztuczna inteligencja CPU** – komputerowi przeciwnicy aktywnie ścigają piłkę najbliższym zawodnikiem, podczas gdy reszta zespołu utrzymuje pozycje taktyczne w formacji.
+- **Wślizgi taktyczne (Slide Tackle)** – pozwala na szybki skok wślizgiem w kierunku piłki w celu jej odebrania wrogowi (wiązany z ryzykiem minięcia piłki).
+- **Zasady meczu** – pełne oznakowanie boiska (pole karne, koło środkowe, bramki), naprzemienne rozpoczynanie gry ze środka po stracie bramki oraz spektakularne celebrowanie goli.
 
-## Features
+## 🚀 Uruchomienie (Run Instructions)
 
-- **Automatic player switching**: You always control the teammate nearest to the ball
-- **Ball physics**: Realistic friction (0.88/frame), boundary bouncing, kick power system
-- **CPU AI**: Nearest CPU player chases the ball, remaining players hold formation
-- **Slide tackling**: Lunge toward the ball with T — risk vs. reward
-- **Half-time**: Teams swap sides at 90 seconds; match ends at 180 seconds
-- **Alternating kickoff**: Scoring team concedes kickoff to the opponent
-- **Particles**: Kick dust, goal celebration bursts, tackle slide dust, ball trail
-- **Tween animations**: Goal text zoom-in, half-time transition effects
-- **Full pitch markings**: Center circle, halfway line, penalty boxes, goals
+Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
 
-## Running
-
-```
+```powershell
 cargo run -- content/games/retro/sensible_soccer
 ```
+
+## 🕹️ Sterowanie (Controls)
+
+Sterowanie zostało zoptymalizowane pod kątem szybkiej i zręcznościowej rozgrywki klawiaturowej.
+
+| Klawisz | Akcja w grze | Opis działania |
+| :--- | :--- | :--- |
+| **W, A, S, D** | Ruch zawodnika | Poruszanie się aktualnie kontrolowanym piłkarzem po boisku |
+| **Spacja** | Silny strzał (Shot) | Mocne kopnięcie piłki w kierunku spojrzenia (strzał na bramkę) |
+| **F** | Podanie (Pass) | Precyzyjne podanie piłki do najbliższego kolegi z drużyny |
+| **T** | Wślizg (Slide Tackle) | Wykonanie agresywnego wślizgu obronnego w celu odebrania piłki |
+| **Escape** | Wyjście | Zamknięcie gry i powrót do konsoli |
+
+---
+
+## 🔗 Inspiracje i Klasyki (Inspirations & Classics)
+
+- **Sensible Soccer / Sensible World of Soccer (1992-1994) stworzony przez Sensible Software na komputer Amiga**
+  - *Opis powiązania*: Gra to zjawiskowa rekonstrukcja legendarnego hitu stworzonego przez Jona Hare'a. Nasza wersja w Lurek2D idealnie odtwarza charakterystyczny **widok z lotu ptaka (tele-view)**, niesamowicie szybkie tempo rozgrywki, płynną mechanikę automatycznego przełączania zawodników oraz precyzyjną kontrolę nad toczącą się piłką. Gra rezygnuje ze złożonego symulowania na rzecz czystego zręcznościowego "feeling-u" rozgrywki podwórkowej. Dodatkowo wzbogaciliśmy wersję o animowane, rozbłyskujące celebrowanie goli przy pomocy cząsteczek, ślady wślizgów na murawie oraz płynną kamerę śledzącą piłkę.
+
+---
+
+## 🛠️ Wykorzystane API Lurek (Engine APIs Showcased)
+
+Gra kompleksowo demonstruje precyzyjną fizykę wieloobiektową oraz interakcje z kamerą:
+
+- `lurek.camera` – Kamera dynamicznie śledzi pozycję piłki, a nie gracza, co pozwala zachować idealny widok na całą akcję rozgrywającą się na boisku.
+- `lurek.render` – Rysuje zieloną murawę z pełnym białym liniowaniem boiska, bramki z siatkami, zawodników obu drużyn z animacją biegu i wślizgu, piłkę z cieniem (nadającym jej iluzję wysokości przy strzałach) oraz interfejs wyniku.
+- `lurek.input` – Odpowiada za precyzyjne odczytywanie kombinacji ruchowych oraz natychmiastowe wyzwalanie podań i wślizgów.
+- `lurek.particle` – Generuje obłoki kurzu spod butów biegnących i wykonujących wślizgi piłkarzy, smugę za mocno uderzoną piłką oraz eksplozję confetti przy zdobyciu bramki (celebration burst).
+- `lurek.tween` – Animuje spektakularne powiększanie i pulsowanie napisów "GOAL!" na środku ekranu oraz przejścia ekranów połowy meczu.
+- `lurek.timer` – Mierzy czas trwania meczu (180 sekund), obsługuje odliczanie wślizgów i precyzyjnie przelicza prędkości w Delta Time.
+- `lurek.window` & `lurek.event` – Kontrolują konfigurację okna i bezpieczne wyjście.
+
+---
+
+## 💎 Przydatność i Unikalność (Showcase Value & Uniqueness)
+
+- **Wartość demonstracyjna (Showcase Value)**: To wybitny pokaz **kamery śledzącej obiekt niezależny (ball-focused tracking camera)** oraz ** dynamicznej logiki przełączania kontroli (auto-switching entity controller)** w czasie rzeczywistym. Doskonale ilustruje, jak zarządzać sztuczną inteligencją wielu wędrujących agentów (piłkarze CPU i bezczynni piłkarze gracza) realizujących proste zadania taktyczne (pozycja formacji vs atak na piłkę).
+- **Unikalność**: Jedyna gra sportowo-zespołowa (team sports game) w całym repozytorium Lureka z pełną symulacją drużynową, mechaniką wślizgów obronnych i dryfu piłki.
+- **Podobne gry**: Brak zbliżonych gier sportowo-zespołowych w kolekcji. Gra jest absolutnie unikalną pozycją.

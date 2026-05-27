@@ -82,7 +82,7 @@ For local multiplayer or complex UI requirements, the module provides `CameraRig
 
 - Waypoint-based camera path interpolation for scripted camera movement.
 - CameraZoomTween provides eased transitions between zoom levels over time.
-- CameraTweenEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
+- CameraEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
 - CameraPath segments multi-point paths with linear interpolation and progress tracking.
 - ZoomTween is a type alias preserving backwards compatibility.
 

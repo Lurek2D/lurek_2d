@@ -19,8 +19,10 @@
   - [draw.rs](#drawrs)
   - [grid_motion.rs](#gridmotionrs)
   - [heightmap.rs](#heightmaprs)
+  - [level_render.rs](#levelrenderrs)
   - [lighting.rs](#lightingrs)
   - [mod.rs](#modrs)
+  - [multilevel.rs](#multilevelrs)
   - [projection.rs](#projectionrs)
   - [ray_hit.rs](#rayhitrs)
   - [render.rs](#renderrs)
@@ -28,6 +30,7 @@
   - [segment.rs](#segmentrs)
   - [sprite_manager.rs](#spritemanagerrs)
   - [sprite_projection.rs](#spriteprojectionrs)
+  - [tile_picker.rs](#tilepickerrs)
   - [visibility.rs](#visibilityrs)
   - [visualization.rs](#visualizationrs)
 - [🧩 Key Types](#key-types)
@@ -134,6 +137,15 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - Supports individual tile and rectangular region height assignment.
 - Out-of-bounds coordinates are silently ignored or return safe defaults.
 
+### `level_render.rs`
+
+- Raycaster level renderer: wall, floor, ceiling, and sprite column rendering.
+- `render_level_columns` is the hot path; called once per screen column per frame.
+- `compute_hole_visibility` pre-calculates which cells are visible through openings.
+- Texture-mapped floors/ceilings use an affine perspective-corrected UV formula.
+- All output goes to an RGBA framebuffer; no wgpu calls are made from this module.
+- Performance target: 60 FPS at 320×200 on integrated GPUs; scales to 1080p.
+
 ### `lighting.rs`
 
 - Point-light model with position, radius, intensity, and RGB color.
@@ -147,10 +159,19 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - Supports heightmaps, distance lighting, depth occlusion, and FOV visibility.
 - Provides debug visualization helpers.
 
+### `multilevel.rs`
+
+- Multi-level raycaster: stacked horizontal slices for floors, ceilings, and bridges.
+- Extends the flat raycaster with per-column level stacks for multi-storey maps.
+- Each level slice defines a floor height, ceiling height, and tile layer pair.
+- Level transitions (stairs, portals) are handled as special tile types.
+- Blends into the base `level_render` pipeline; no separate render pass needed.
+
 ### `projection.rs`
 
 - Wall-column projection from ray distance to screen-pixel height and vertical bounds.
 - Distance-based shading for depth fog attenuation.
+- Returns `(wall_height, draw_start, draw_end)` clamped to valid screen-pixel bounds.
 
 ### `ray_hit.rs`
 
@@ -187,6 +208,14 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - Screen-space sprite projection data for raycaster billboard rendering.
 - Stores position, scale, distance, and visibility after camera-plane projection.
 - Consumed by the depth-buffer occlusion pass to sort and clip sprites.
+
+### `tile_picker.rs`
+
+- Tile picker: converts a screen (x, y) click into a raycasted map tile coordinate.
+- `pick_tile(screen_x, screen_y, camera, map)` returns `Option<(tile_x, tile_y)>`.
+- Reverses the column rendering math to find the intersection depth for a pixel.
+- Accounts for the player's position and angle at the moment of the pick query.
+- Used by `lurek.raycaster.pick(x, y)` to report tile coordinates to Lua scripts.
 
 ### `visibility.rs`
 

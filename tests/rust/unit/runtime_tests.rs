@@ -97,7 +97,7 @@ mod error_tests {
             EngineError::ConfigError("".into()),
             EngineError::ResourceNotFound("".into()),
             EngineError::ResourceNotLoaded("".into()),
-            EngineError::IoError(std::io::Error::new(std::io::ErrorKind::Other, "")),
+            EngineError::IoError(std::io::Error::other("")),
         ];
         let mut codes: Vec<&str> = errors.iter().map(|e| e.code()).collect();
         let total = codes.len();
@@ -189,7 +189,7 @@ mod error_tests {
             EngineError::ConfigError("".into()),
             EngineError::ResourceNotFound("".into()),
             EngineError::ResourceNotLoaded("".into()),
-            EngineError::IoError(std::io::Error::new(std::io::ErrorKind::Other, "")),
+            EngineError::IoError(std::io::Error::other("")),
         ];
         for err in &errors {
             assert!(!err.recovery_hint().is_empty(), "empty hint for {:?}", err);
@@ -640,10 +640,7 @@ mod physics_run_config_tests {
 
     #[test]
     fn mutated_cfg_does_not_affect_new_default() {
-        let mut cfg = PhysicsRunConfig::default();
-        cfg.debug_draw = true;
-        cfg.max_steps = 64;
-        drop(cfg); // suppress unused-assignment warning
+        let _cfg = PhysicsRunConfig { debug_draw: true, max_steps: 64, ..Default::default() };
         let fresh = PhysicsRunConfig::default();
         assert!(!fresh.debug_draw);
         assert_eq!(fresh.max_steps, 8);

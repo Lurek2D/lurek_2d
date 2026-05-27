@@ -6969,7 +6969,7 @@ function RPC:_dispatch(peer_id, data, responses) end
 function RPC:getHandlerCount() end
 
 ---@class library.scene-objects
-library.scene-objects = {}
+library.scene_objects = {}
 
 --- Create a new scene object container.
 ---@return ObjectContainer

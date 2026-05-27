@@ -96,7 +96,7 @@ mod blackboard_tests {
     fn clear_removes_key() {
         let mut bb = Blackboard::new("t");
         bb.set_bool("x", true);
-        bb.clear("x");
+        bb.remove("x");
         assert!(!bb.has("x"));
     }
 

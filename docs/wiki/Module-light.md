@@ -69,11 +69,13 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 
 - Define blend modes controlling how each light merges into the accumulation buffer.
 - Support additive, subtractive, and alpha-mix compositing strategies.
+- Variants: `Add` (classic glow), `Subtract` (shadow zones), `Mix` (alpha compositing).
 
 ### `falloff.rs`
 
 - Radial intensity falloff shapes applied on top of distance attenuation.
 - Variants control how brightness decreases from a light's center to its radius edge.
+- Modes: `Linear` (default), `Smooth` (smooth-step), and `Constant` (no radial decay).
 
 ### `flicker.rs`
 

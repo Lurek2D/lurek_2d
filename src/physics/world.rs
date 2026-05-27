@@ -1574,7 +1574,7 @@ impl World {
         let pt_x = x1 + unit_dir.x * toi_result.time_of_impact;
         let pt_y = y1 + unit_dir.y * toi_result.time_of_impact;
         Some(RaycastHit {
-            body_id,
+            body_id: BodyId(body_id),
             point: (pt_x, pt_y),
             normal: (toi_result.normal.x, toi_result.normal.y),
             toi: toi_result.time_of_impact,
@@ -1602,7 +1602,7 @@ impl World {
                 let pt_x = x1 + unit_dir.x * ri.time_of_impact;
                 let pt_y = y1 + unit_dir.y * ri.time_of_impact;
                 hits.push(RaycastHit {
-                    body_id,
+                    body_id: BodyId(body_id),
                     point: (pt_x, pt_y),
                     normal: (ri.normal.x, ri.normal.y),
                     toi: ri.time_of_impact,
@@ -1756,7 +1756,7 @@ impl World {
         anchor.shape = BodyShape::Circle { radius: 0.1 };
         let anchor_id = self.add_body(anchor);
         let ha = self.body_handles[body_id];
-        let hb = self.body_handles[anchor_id];
+        let hb = self.body_handles[anchor_id.0];
         let stiffness = max_force;
         let damping = max_force * 0.7;
         let joint = SpringJointBuilder::new(0.0, stiffness, damping)
@@ -1767,7 +1767,7 @@ impl World {
         let jid = self.joint_handles.len();
         self.joint_handles.push(handle);
         self.joint_types.push("mouse");
-        self.mouse_joint_anchors.insert(jid, anchor_id);
+        self.mouse_joint_anchors.insert(jid, anchor_id.0);
         jid
     }
     /// Reposition the kinematic anchor of mouse joint `joint_id` to `(x, y)`.
@@ -1898,8 +1898,8 @@ impl World {
                     .map(|m| (m.local_n1.x, m.local_n1.y))
                     .unwrap_or((0.0, 0.0));
                 contacts.push(ContactInfo {
-                    body_a: a,
-                    body_b: b,
+                    body_a: BodyId(a),
+                    body_b: BodyId(b),
                     normal_x: nx,
                     normal_y: ny,
                     is_touching,
@@ -1912,7 +1912,7 @@ impl World {
     pub fn get_body_contacts(&self, body_id: usize) -> Vec<ContactInfo> {
         self.get_contacts()
             .into_iter()
-            .filter(|c| c.body_a == body_id || c.body_b == body_id)
+            .filter(|c| c.body_a.0 == body_id || c.body_b.0 == body_id)
             .collect()
     }
     /// Enable one-way platform behaviour: only accept collisions with a normal aligned to `(nx,ny)`.
@@ -1976,7 +1976,7 @@ impl World {
     pub fn add_bodies(&mut self, specs: Vec<(f32, f32, f32, f32, BodyType)>) -> Vec<usize> {
         specs
             .into_iter()
-            .map(|(x, y, w, h, bt)| self.add_body(Body::new(x, y, w, h, bt)))
+            .map(|(x, y, w, h, bt)| self.add_body(Body::new(x, y, w, h, bt)).0)
             .collect()
     }
 }

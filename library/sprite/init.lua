@@ -1,4 +1,3 @@
---- @module library.sprite
 --- @status full
 --- Sprite animation toolkit: SpriteAnimator for frame-by-frame playback,
 --- and AnimController for rule-based state-machine animation switching.

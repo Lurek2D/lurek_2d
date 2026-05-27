@@ -1,37 +1,62 @@
 # Endless Runner
 
-Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, leap across gaps, and collect coins while the world accelerates.
+_Dynamiczny, niekończący się bieg z przeszkodami — omijaj wysokie zapory, wykonuj wślizgi pod belkami, przeskakuj przepaście i zbieraj monety w stale przyspieszającym świecie._
 
-## Run
+## 🎮 O grze (About the Game)
 
-```
+W **Endless Runner** wcielasz się w postać sprintera stale biegnącego w prawą stronę ekranu. Świat gry automatycznie przewija się w poziomie (auto-scrolling), a prędkość biegu sukcesywnie wzrasta wraz z pokonanym dystansem (od początkowych 300 do maksymalnie 600 pikseli na sekundę), co drastycznie skraca czas na reakcję gracza.
+
+Rozgrywka wymaga błyskawicznej oceny sytuacji i stosowania zróżnicowanych manewrów:
+- **Wysokie zapory (Tall barriers)** – wymagają wykonania standardowego skoku.
+- **Niskie zawieszenia (Low beams)** – wymagają wykonania wślizgu (sliding) pod przeszkodą, co czasowo zmniejsza wysokość hitboxa gracza.
+- **Przepaście (Gaps)** – szerokie dziury w ziemi wymagające precyzyjnego przeskoczenia (dla ułatwienia detekcja kolizji z krawędzią przepaści jest lekko tolerancyjna).
+- **Podwójny skok (Double Jump)** – po przebiegnięciu pierwszych 500 metrów odblokowuje się stała umiejętność podwójnego skoku, ułatwiająca pokonywanie bardziej skomplikowanych sekwencji przeszkód.
+
+Wzdłuż toru biegu rozłożone są złote monety (+50 punktów każda). Wynik końcowy to suma przebiegniętych metrów oraz zebranych monet. Gra posiada klimatyczną, 3-warstwową paralaksę tła, która działa nawet na ekranie tytułowym, oraz zaawansowaną fizycznie animację śmierci (postać obraca się i spada poza ekran).
+
+## 🚀 Uruchomienie (Run Instructions)
+
+Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
+
+```powershell
 cargo run -- content/games/action/endless_runner
 ```
 
-## Controls
+## 🕹️ Sterowanie (Controls)
 
-| Key            | Action                        |
-| -------------- | ----------------------------- |
-| Space / W / Up | Jump (double jump after 500m) |
-| S / Down       | Slide                         |
-| Enter          | Start / Restart               |
-| Escape         | Quit                          |
+Sterowanie opiera się na prostych, responsywnych komendach ruchu.
 
-## Gameplay
+| Klawisz | Akcja w grze | Opis działania |
+| :--- | :--- | :--- |
+| **Spacja** / **W** / **↑** | Skok (Jump) | Przeskoczenie zapory / przepaści (podwójny skok po przekroczeniu 500m) |
+| **S** / **↓** | Wślizg (Slide) | Prześlizgnięcie się pod niską przeszkodą |
+| **Enter** | Start / Restart | Uruchomienie gry lub szybki restart po porażce |
+| **Escape** | Wyjście | Zamknięcie gry i powrót do konsoli |
 
-The player sprints rightward automatically at increasing speed (300 → 600). Three obstacle types force different reactions: tall barriers require jumping, low barriers require sliding, and gaps require leaping across. Golden coins float in the air near obstacles — each one adds +50 to the score.
+---
 
-After reaching 500 meters, a double jump unlocks, letting the player chain two jumps for harder sequences. Speed increases by 20 every 500m, capping at 600. Score combines distance (meters) plus coin bonuses. High score persists across attempts within the session.
+## 🔗 Inspiracje i Klasyki (Inspirations & Classics)
 
-Three parallax background layers (mountains, trees, ground detail) scroll at different rates for depth. Landing produces dust particles, coin pickups trigger golden sparkles, and death plays a tumbling poof.
+- **Canabalt (2009) autorstwa Adama Saltsmana** oraz **klasyki typu Temple Run / Subway Surfers**
+  - *Opis powiązania*: Gra stanowi udaną rekonstrukcję fenomenu gier typu *endless runner*, zapoczątkowanego w 2D przez minimalistyczny hit *Canabalt*. Doskonale odtwarza to nostalgiczne poczucie pędu, narastający poziom trudności powiązany z fizycznym przyspieszaniem kamery świata, oraz płynną trójwarstwową paralaksę (odległe góry, zarysy lasów, bliższe pagórki). Wersja Lurek2D unowocześnia model rozgrywki poprzez wprowadzenie mechaniki **wślizgu pod belkami** oraz precyzyjnego systemu **odblokowywania podwójnego skoku** (double jump progression gate) na określonym dystansie jako elementu urozmaicającego rozgrywkę.
 
-## APIs Used
+---
 
-lurek.window, lurek.render, lurek.input, lurek.timer, lurek.event, lurek.particle, lurek.tween
+## 🛠️ Wykorzystane API Lurek (Engine APIs Showcased)
 
-## Notes
+Gra stanowi doskonały poligon doświadczalny dla dynamicznych systemów cząsteczkowych i fizyki skokowej:
 
-- Double jump is intentionally gated at 500m to create a difficulty curve shift
-- Gap obstacles use centre-of-player detection so grazing the edge is forgiving
-- The death animation rotates and drops the player off-screen before switching to the DEAD state
-- Parallax scrolls gently even on the title screen for visual appeal
+- `lurek.render` – Generuje płynną trójwarstwową paralaksę tła, rysuje biegnącą postać (z deformacjami kształtu przy skoku i wślizgu), złote monety, przeszkody oraz HUD.
+- `lurek.input` – Obsługuje responsywne wejście w czasie rzeczywistym, w tym dwukrotne tapnięcie skoku do wyzwolenia Double Jump.
+- `lurek.particle` – Generuje efektowne kłęby kurzu spod stóp sprintera przy lądowaniu po skoku, złote iskry przy zjadaniu monet (sparkles) oraz obłok pyłu (poof) przy zderzeniu i śmierci postaci.
+- `lurek.tween` – Animuje pulsowanie napisów tytułowych, napisy bonusów oraz płynną rotację i upadek fizyczny postaci przy śmierci.
+- `lurek.timer` – Mierzy dystans w metrach w oparciu o prędkość klatkową Delta Time oraz dynamicznie zarządza czasem trwania wślizgu.
+- `lurek.window` & `lurek.event` – Kontrola nad oknem i bezpiecznym wyjściem.
+
+---
+
+## 💎 Przydatność i Unikalność (Showcase Value & Uniqueness)
+
+- **Wartość demonstracyjna (Showcase Value)**: Znakomity pokaz **płynnego horyzontalnego przewijania nieskończonej planszy (infinite auto-scrolling runner architecture)** z dynamicznym generowaniem kolejnych przeszkód i coinów na krawędzi ekranu oraz ich sprzątaniem z pamięci po wylocie z drugiej strony. Pokazuje jak implementować dwustopniowy skok (Double Jump) i czasową zmianę wysokości hitboxa (sliding mechanics).
+- **Unikalność**: Jedyna gra w sekcji Action oferująca **progresję zdolności bohatera w locie (ability unlock at milestone)** – odblokowanie podwójnego skoku po przebiegnięciu 500 metrów jako sposobu na przełamanie krzywej trudności.
+- **Podobne gry**: *Giana Sisters* (platformówka z przewijanym ekranem), ale *Endless Runner* odróżnia się brakiem swobody zatrzymania się i stania w miejscu – postać nieprzerwanie i stale pędzi do przodu pod wpływem automatycznego przyspieszenia.

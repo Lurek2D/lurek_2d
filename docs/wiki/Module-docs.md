@@ -1105,51 +1105,9 @@ Provides Lua accessors for documentation entry metadata.
 Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
---- Docs Module Part 1: Scanning, Catalog, Schema, DocEntry, Validation, Quality, Export
-
---@api-stub: lurek.docs.scan
 do
     local cat = lurek.docs.scan()
-    print("scanned entries = " .. cat:entryCount())
-end
-
---@api-stub: lurek.docs.scanModule
-do
-    local cat = lurek.docs.scanModule("math")
-    print("math entries = " .. cat:entryCount())
-end
-
---@api-stub: lurek.docs.loadToml
-do
-    local path = "save/_fs_tests/docs_load_toml_example.toml"
-    lurek.filesystem.write(path, '[[entries]]\nname = "play"\nqualifiedName = "lurek.audio.play"\nmodule = "audio"\nkind = "function"\ndescription = "Plays a sound"')
-    local cat = lurek.docs.loadToml(path)
-    print("loaded entries = " .. cat:entryCount())
-end
-
---@api-stub: lurek.docs.loadAll
-do
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
-    local cat = lurek.docs.loadAll("save/_fs_tests/")
-    print("all entries = " .. cat:entryCount())
-end
-
---@api-stub: lurek.docs.describe
-do
-    lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
-    print("description set")
-end
-
---@api-stub: lurek.docs.setParamInfo
-do
-    lurek.docs.resetCatalog()
-    lurek.docs.describe("lurek.test.blend", "Blend two values.")
-    lurek.docs.setParamInfo("lurek.test.blend", {
-        { name = "t", type = "number", description = "Interpolation factor", optional = false },
-    })
-    local entry = lurek.docs.getCatalog():getEntry("lurek.test.blend")
-    print("params set = " .. #entry:getParameters())
+    print("found entry = " .. tostring(cat:getEntry("lurek.math.lerp") ~= nil))
 end
 ```
 
@@ -1364,7 +1322,7 @@ end
 ```lua
 --- Returns one catalog entry by qualified API name.
 ---@param qualified_name string Full dotted API name to find.
----@return LuaValue `LDocEntry` when found, or nil when the catalog has no match.
+---@return LDocEntry The matching catalog entry.
 function LApiCatalog:getEntry(qualified_name) end
 ```
 
@@ -1376,7 +1334,7 @@ Parameters:
 
 - `qualified_name` (`string`, required): Full dotted API name to find.
 
-Returns: `LuaValue` - `LDocEntry` when found, or nil when the catalog has no match.
+Returns: `LDocEntry` - The matching catalog entry.
 
 #### Example
 

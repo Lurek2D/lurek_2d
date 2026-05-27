@@ -1,6 +1,6 @@
--- content/examples/system.lua
+-- content/examples/runtime.lua
 -- Auto-generated from content/examples2/system_*.lua by tools/fix/merge_examples2_into_examples.py
--- Run: cargo run -- content/examples/system.lua
+-- Run: cargo run -- content/examples/runtime.lua
 
 --- System/Runtime Module: version, OS, hardware, args, clipboard, logging, config, batch, power, messages
 

@@ -11,11 +11,12 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
-  - [neural_net.rs](#neuralnetrs)
+  - [bandit.rs](#banditrs)
   - [genetic.rs](#geneticrs)
+  - [mod.rs](#modrs)
+  - [neural_net.rs](#neuralnetrs)
   - [neuroevolution.rs](#neuroevolutionrs)
   - [qlearner.rs](#qlearnerrs)
-  - [bandit.rs](#banditrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -69,11 +70,13 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 
 ## 📁 Source Files
 
-### `neural_net.rs`
+### `bandit.rs`
 
-- Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
-- Layer-local forward evaluation, activation application, and parameter counting.
-- Network-level operations: append layers, run forward passes, load/export weight buffers.
+- Compact multi-armed bandit storing per-arm reward history and posterior parameters.
+- Strategy switch for epsilon-greedy, UCB1, and Thompson sampling policies.
+- Selection, reward ingestion, and reset for adaptive arm choice without a planning framework.
+- Internal gamma and beta sampling driven by a deterministic xorshift64 RNG.
+- Per-arm pull counts, cumulative reward, and Bayesian alpha/beta parameter tracking.
 
 ### `genetic.rs`
 
@@ -82,6 +85,24 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - Deterministic random helpers driving parent selection, crossover, and Gaussian mutation.
 - Stable per-chromosome identifiers persisting across generations for lineage tracking.
 - Seeded xorshift64 RNG with Box-Muller normal sampling for reproducible evolution.
+
+### `mod.rs`
+
+- Machine learning and evolutionary computation algorithms.
+- This module provides standalone learning algorithms that can be used
+- independently or integrated with the AI decision-making systems.
+- # Submodules
+- `neural_net` — Feedforward neural networks with backpropagation
+- `neuroevolution` — Evolving neural network topologies
+- `genetic` — Genetic algorithms with configurable crossover and mutation
+- `qlearner` — Tabular Q-learning for reinforcement learning
+- `bandit` — Multi-armed bandit strategies (UCB1, Thompson, epsilon-greedy)
+
+### `neural_net.rs`
+
+- Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
+- Layer-local forward evaluation, activation application, and parameter counting.
+- Network-level operations: append layers, run forward passes, load/export weight buffers.
 
 ### `neuroevolution.rs`
 
@@ -95,14 +116,6 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - Epsilon-greedy action selection, Bellman updates, and episode bookkeeping.
 - Lightweight persistence helpers for serializing and reloading learned policies.
 
-### `bandit.rs`
-
-- Compact multi-armed bandit storing per-arm reward history and posterior parameters.
-- Strategy switch for epsilon-greedy, UCB1, and Thompson sampling policies.
-- Selection, reward ingestion, and reset for adaptive arm choice without a planning framework.
-- Internal gamma and beta sampling driven by a deterministic xorshift64 RNG.
-- Per-arm pull counts, cumulative reward, and Bayesian alpha/beta parameter tracking.
-
 [⬆ back to top](#table-of-contents)
 
 ## 🧩 Key Types
@@ -111,7 +124,7 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LGeneticAlgorithm` (8 methods) - Lua handle for a floating-point genetic algorithm population.
 - `LNeuralNet` (8 methods) - Lua handle for a feed-forward neural network.
 - `LNeuroevolution` (9 methods) - Lua handle for evolving neural network chromosomes.
-- `LQLearner` (20 methods) - Lua handle for a Q-learning table with configurable exploration and learning parameters.
+- `LQLearner` (21 methods) - Lua handle for a Q-learning table with configurable exploration and learning parameters.
 
 [⬆ back to top](#table-of-contents)
 
@@ -120,7 +133,7 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - Source spec: [docs/specs/learning.md](../blob/main/docs/specs/learning.md)
 - Module-level functions: 5
 - Lua-visible types: 5
-- Total type methods: 53
+- Total type methods: 54
 
 
 [⬆ back to top](#table-of-contents)
@@ -1286,7 +1299,7 @@ end
 
 ```lua
 --- Converts the best chromosome into a neural network handle when one exists.
----@return LuaValue Neural network handle, or nil when no best chromosome is available.
+---@return LNeuralNet Neural network handle.
 function LNeuroevolution:bestNetwork() end
 ```
 
@@ -1294,7 +1307,7 @@ function LNeuroevolution:bestNetwork() end
 
 Converts the best chromosome into a neural network handle when one exists.
 
-Returns: `LuaValue` - Neural network handle, or nil when no best chromosome is available.
+Returns: `LNeuralNet` - Neural network handle.
 
 #### Example
 
@@ -1325,7 +1338,7 @@ end
 ```lua
 --- Converts one chromosome into a neural network handle when the index is valid.
 ---@param idx number Zero-based chromosome index.
----@return LuaValue Neural network handle, or nil when the chromosome index is invalid.
+---@return LNeuralNet Neural network handle.
 function LNeuroevolution:chromosomeToNet(idx) end
 ```
 
@@ -1337,7 +1350,7 @@ Parameters:
 
 - `idx` (`integer`, required): Zero-based chromosome index.
 
-Returns: `LuaValue` - Neural network handle, or nil when the chromosome index is invalid.
+Returns: `LNeuralNet` - Neural network handle.
 
 #### Example
 
@@ -1762,6 +1775,37 @@ do
     learner:setDiscountFactor(0.95)
 
     print("LQLearner:getDiscountFactor", learner:getDiscountFactor())
+end
+```
+
+#### LQLearner:getEpisodeCount
+
+#### Definition
+
+```lua
+--- Returns the total number of episodes completed so far.
+---@return number Episode count.
+function LQLearner:getEpisodeCount() end
+```
+
+#### Description
+
+Returns the total number of episodes completed so far.
+
+Returns: `integer` - Episode count.
+
+#### Example
+
+Source: [ai.lua](../blob/main/content/examples/ai.lua)
+
+```lua
+do
+  local ql = lurek.ai.newQLearner(3, 2)
+  ql:endEpisode()
+  ql:endEpisode()
+  ql:endEpisode()
+  local episodes = ql:getEpisodeCount()
+  print("LQLearner:getEpisodeCount: " .. tostring(episodes))
 end
 ```
 

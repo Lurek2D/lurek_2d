@@ -146,6 +146,19 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 
 ### `obj_loader.rs`
 
+- OBJ model loader for 2D projection.
+- Loads Wavefront .obj files and projects 3D geometry into 2D for use with
+- the raycaster and globe rendering systems. This is NOT a 3D rendering
+- pipeline — models are reduced to 2D projections (orthographic or perspective)
+- for display in the 2D engine.
+- ## Feature Gate
+- This module is gated behind the `obj-loader` feature (enabled by default).
+- Disable it to reduce binary size if your game doesn't use 3D model loading:
+- ```toml
+- [dependencies]
+- lurek2d = { version = "...", default-features = false, features = [...] }
+- ```
+- ## Capabilities
 - Wavefront OBJ and MTL file loading via a built-in hand parser.
 - Triangulated face model with per-vertex position, UV, and normal indices.
 - Named materials carrying diffuse colour and optional texture path.

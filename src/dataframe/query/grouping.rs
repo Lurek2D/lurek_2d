@@ -124,8 +124,8 @@ impl DataFrame {
         let mut key_order: Vec<String> = Vec::new();
         let mut groups: std::collections::HashMap<String, Vec<usize>> =
             std::collections::HashMap::new();
-        for i in 0..n {
-            let key = format!("{}", data[gci][i]);
+        for (i, cell) in data[gci].iter().take(n).enumerate() {
+            let key = format!("{}", cell);
             if !groups.contains_key(&key) {
                 key_order.push(key.clone());
             }

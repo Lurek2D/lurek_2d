@@ -16,7 +16,6 @@
   - [blackboard.rs](#blackboardrs)
   - [command_queue.rs](#commandqueuers)
   - [context_steering.rs](#contextsteeringrs)
-  - [dialogue.rs](#dialoguers)
   - [director.rs](#directorrs)
   - [emotion.rs](#emotionrs)
   - [fsm.rs](#fsmrs)
@@ -128,6 +127,9 @@ Inter-system communi
 
 ### `behavior_tree.rs`
 
+- Runtime behavior tree executor for AI agents with Lua callbacks.
+- For structural BT building and inspection, see [`crate::patterns::behavior_tree`].
+- This module adds Lua RegistryKey-driven actions, conditions, guards, and per-tick running state.
 - Behavior-tree node hierarchy with local runtime progress and last tick result.
 - Control-flow variants: selector, sequence, parallel, decorator, guard, and Lua leaves.
 - Subtree reset, node counting, status translation, and compact debug snapshots.
@@ -137,11 +139,11 @@ Inter-system communi
 
 ### `blackboard.rs`
 
-- Lightweight hierarchical blackboard storing per-agent facts as numbers, booleans, and strings.
-- Local entry map with optional parent chain and read/write resolution through fallback hierarchy.
-- Key removal, board clearing, key listing, size reporting, and parent attachment operations.
-- Parent-chain walk for reads giving child boards transparent access to shared data.
-- Structured runtime logging for creation, removal, and clear events.
+- Agent blackboard: shared read/write key-value memory for behaviour-tree nodes.
+- Stores typed values (`bool`, `i32`, `f32`, `String`) under string keys.
+- Designed for single-agent or squad-shared access within one Lua game tick.
+- Values are reset or persisted per agent lifecycle at the call site's discretion.
+- Used by BT nodes to communicate patrol targets, attack counts, and state flags.
 
 ### `command_queue.rs`
 
@@ -164,14 +166,6 @@ Inter-system communi
 - Uses cosine-attenuated cone fill to smoothly distribute weights across
 - neighboring slots near a target angle.
 
-### `dialogue.rs`
-
-- Dialogue selection choosing topics and branches from weighted sets guarded by FSM and BT state.
-- Topic and branch records with optional gate keys and utility-score references.
-- Scoring and matching logic filtering by gates, folding utility, and returning best candidates.
-- Independent gating against FSM state and behavior-tree status for adaptive selection.
-- Base weight combined with optional utility scores for flexible priority ranking.
-
 ### `director.rs`
 
 - Pacing director translating accumulated tension into pressure phases and runtime multipliers.
@@ -190,6 +184,9 @@ Inter-system communi
 
 ### `fsm.rs`
 
+- Runtime state machine executor for AI agents.
+- For structural FSM definition and graph validation, see [`crate::patterns::state_machine`].
+- This module adds Lua callback execution, priority-based transitions, and per-frame time tracking.
 - Finite-state-machine storing named states, callback hooks, transition rules, and active state.
 - Callback bundles for state entry, update, and exit with priority-sorted transition records.
 - Mutable machine state tracking current state, initial state, elapsed time, and registration helpers.
@@ -235,8 +232,7 @@ Inter-system communi
 
 - Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
 - Module-level export map for agent state, planners, blackboard, and command flow.
-- Re-exports learning types (NeuralNet, GeneticAlgorithm, QLearner, Bandit, Neuroevolution) from for backward compatibility.
-- Perception, steering, and squad coordination re-exports.
+- Learning helpers, perception, steering, and squad coordination re-exports.
 - Compact entry surface re-exporting runtime types for higher engine layers.
 
 ### `needs.rs`

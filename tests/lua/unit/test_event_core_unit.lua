@@ -860,13 +860,10 @@ end)
 -- @describe unit: migrated from integration/test_dialog_event_integration.lua
 describe("unit: migrated from integration/test_dialog_event_integration.lua", function()
         local dialog = lurek.dialog
-        if dialog == nil or dialog.newSequencer == nil then
-            -- @covers lurek.dialog
-            it("dialog module unavailable in this runtime", function()
-                expect_nil(dialog)
-            end)
+        if dialog == nil or rawget(dialog, "newSequencer") == nil then
             return
         end
+        local newSequencer = rawget(dialog, "newSequencer")
 
         local function bridge(seq, sig, names)
             for _, name in ipairs(names) do
@@ -878,7 +875,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("line event fires through Signal with payload", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line", "finished" })
 
@@ -899,7 +896,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("multiple Signal subscribers each receive the event", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line" })
 
@@ -919,7 +916,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("finished event fires through Signal at end of script", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line", "finished" })
 
@@ -937,7 +934,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("choice event fires through Signal when reaching a choice node", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "choice" })
 
@@ -958,7 +955,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("seq:off stops further events from reaching Signal subscribers", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line" })
 
@@ -983,7 +980,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("line event fires through Signal with payload", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line", "finished" })
 
@@ -1004,7 +1001,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("multiple Signal subscribers each receive the event", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line" })
 
@@ -1024,7 +1021,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("finished event fires through Signal at end of script", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line", "finished" })
 
@@ -1042,7 +1039,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("choice event fires through Signal when reaching a choice node", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "choice" })
 
@@ -1063,7 +1060,7 @@ describe("unit: migrated from integration/test_dialog_event_integration.lua", fu
         -- @covers LSignal:connect
         -- @covers lurek.event.newSignal
         it("seq:off stops further events from reaching Signal subscribers", function()
-            local seq = dialog.newSequencer()
+            local seq = newSequencer()
             local sig = lurek.event.newSignal()
             bridge(seq, sig, { "line" })
 

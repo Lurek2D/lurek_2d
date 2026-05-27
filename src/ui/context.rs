@@ -895,6 +895,7 @@ impl GuiContext {
         true
     }
     /// Start a scale animation on a widget. Returns true if widget exists.
+    #[allow(clippy::too_many_arguments)]
     pub fn animate_scale(
         &mut self,
         idx: usize,

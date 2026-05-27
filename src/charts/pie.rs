@@ -5,8 +5,11 @@
 //! - A configurable donut-hole radius converts the pie into a ring chart.
 //! - Owned by `lurek.charts.pie`; output is uploaded as a texture.
 
-use crate::charts::config::ChartConfig;
+use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{fill_buffer, set_pixel};
+use crate::color::Color;
+use crate::dataframe::frame::DataFrame;
+use crate::image::ImageData;
 
 /// A single named slice of a pie chart.
 #[derive(Debug, Clone)]
@@ -35,6 +38,65 @@ impl PieChart {
             config,
             slices: Vec::new(),
         }
+    }
+
+    /// Add a new data slice to the pie chart using a `Color`.
+    pub fn add_segment(&mut self, label: &str, value: f32, color: Color) {
+        self.slices.push(PieSlice {
+            label: label.to_owned(),
+            value,
+            color: [color.r, color.g, color.b, color.a],
+        });
+    }
+
+    /// Add slices from a DataFrame.  One slice per row; colors auto-assigned from palette.
+    pub fn add_segments_from_dataframe(
+        &mut self,
+        df: &DataFrame,
+        label_col: &str,
+        value_col: &str,
+        opts: ChartDataFrameOptions,
+    ) -> Result<usize, String> {
+        use crate::dataframe::frame::{CellValue, ColRef};
+        // Simple palette
+        const PALETTE: [[f32; 4]; 8] = [
+            [0.94, 0.28, 0.24, 1.0],
+            [0.13, 0.59, 0.95, 1.0],
+            [0.30, 0.69, 0.31, 1.0],
+            [1.00, 0.76, 0.03, 1.0],
+            [0.61, 0.15, 0.69, 1.0],
+            [1.00, 0.34, 0.13, 1.0],
+            [0.01, 0.66, 0.96, 1.0],
+            [0.38, 0.49, 0.55, 1.0],
+        ];
+        let max = opts.max_rows.unwrap_or(usize::MAX);
+        let mut count = 0usize;
+        for row_idx in 0..df.nrows().min(max) {
+            let label_val = df.get_value(row_idx, ColRef::Name(label_col.to_string()))?;
+            let value_val = df.get_value(row_idx, ColRef::Name(value_col.to_string()))?;
+            let label = match label_val {
+                CellValue::Text(s) => s,
+                CellValue::Number(n) => n.to_string(),
+                _ => continue,
+            };
+            let value = match value_val {
+                CellValue::Number(n) if n > 0.0 => n as f32,
+                _ => continue,
+            };
+            let color = PALETTE[count % PALETTE.len()];
+            self.slices.push(PieSlice { label, value, color });
+            count += 1;
+        }
+        Ok(count)
+    }
+
+    /// Render the chart into an ImageData buffer.
+    pub fn draw_to_image(&self, img: &mut ImageData) {
+        let w = self.config.width as usize;
+        let h = self.config.height as usize;
+        let mut buf = vec![0u8; w * h * 4];
+        self.render(&mut buf);
+        let _ = img.set_raw_data(&buf);
     }
 
     /// Add a new data slice to the pie chart.

@@ -11,6 +11,20 @@
 - [🎯 Purpose](#purpose)
 - [📋 Summary](#summary)
 - [📁 Source Files](#source-files)
+  - [block.rs](#blockrs)
+  - [config.rs](#configrs)
+  - [constraints.rs](#constraintsrs)
+  - [generator.rs](#generatorrs)
+  - [group.rs](#grouprs)
+  - [layer.rs](#layerrs)
+  - [maptile.rs](#maptilers)
+  - [mod.rs](#modrs)
+  - [multilevel.rs](#multilevelrs)
+  - [orientation.rs](#orientationrs)
+  - [output.rs](#outputrs)
+  - [placement.rs](#placementrs)
+  - [script.rs](#scriptrs)
+  - [tileset_ref.rs](#tilesetrefrs)
 - [🧩 Key Types](#key-types)
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
@@ -52,13 +66,128 @@ Procedural map block generation: configurable tiles, constraints, multi-level, s
 
 ## 📋 Summary
 
-Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines.
+The `mapblock` module is documented from the current source tree and existing module reference data.
+
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 [⬆ back to top](#table-of-contents)
 
 ## 📁 Source Files
 
-No source-file descriptions were found in the module spec.
+### `block.rs`
+
+- Map block definition: tile slots, edge connection points, and per-block metadata.
+- `MapBlock` holds a grid of `MapTile` slots and a set of edge constraint descriptors.
+- `BlockMeta` carries the name, weight, group membership, and tileset reference.
+- Blocks are loaded from TOML files under `content/maps/blocks/`.
+- Exposed to Lua via `lurek.mapblock.define(spec)` for runtime registration.
+
+### `config.rs`
+
+- Map block generator configuration: grid dimensions, seed, and global assembly rules.
+- `MapBlockConfig` is deserialized from the `[mapblock]` section of a game TOML.
+- Controls output grid width/height, RNG seed, and whether to allow backtracking.
+- `retry_limit` caps backtrack iterations; exceeded limit falls back to a blank tile.
+- Seed 0 uses the current wall-clock time for non-deterministic generation.
+
+### `constraints.rs`
+
+- Carcassonne-style edge constraints for matching adjacent map blocks.
+- `EdgeConstraint` describes what socket types are legal on each of the 4 cardinal edges.
+- `opposite_edge` returns the mirror direction (North↔South, East↔West).
+- Constraint checking is O(1) per neighbor pair; the full grid check is O(w×h).
+- Socket type strings are arbitrary game-defined labels (e.g. `"road"`, `"river"`).
+
+### `generator.rs`
+
+- Scripted procedural map assembler: executes a sequence of placement steps.
+- `MapBlockGenerator` owns the grid, block registry, and RNG state.
+- Runs the `MapScript` step list: Fill, PlaceGroup, PlaceBlock, ApplyLayer.
+- After assembly, converts the grid to a `TileMap` via `mapblock::output`.
+- Exposed to Lua via `lurek.mapblock.generate(config, script)` returning a tilemap.
+
+### `group.rs`
+
+- Named block groups for weighted random selection and themed zone filling.
+- `BlockGroup` holds a name and a `Vec<(block_id, weight)>` for weighted sampling.
+- Groups are registered by name; scripts reference them by string, not index.
+- `BlockGroup::pick(rng)` returns a block ID using alias-method weighted sampling.
+- Useful for biome zones: register a `"forest"` group and fill a region by name.
+
+### `layer.rs`
+
+- Z-layer management for multi-storey and multi-level map construction.
+- `LayerStack` holds a `Vec<MapBlockGrid>`, one per Z level starting from 0.
+- Layers are independent grids; block placement in one layer does not affect another.
+- Layer 0 is the ground floor; negative indices are not supported.
+- The `MapBlockConfig::layer_count` field pre-allocates the stack at generator init.
+
+### `maptile.rs`
+
+- Map tile and slot definitions: floor, roof, object, wall, and custom-typed slots.
+- `MapTile` is a struct of optional slot IDs: `floor`, `roof`, `object`, `wall`.
+- Each slot references a tile ID in the associated tileset; `None` = empty.
+- `TileSlotKind` distinguishes slot roles for rendering order and collision.
+- `MapTile` is the leaf unit stored in every cell of a `MapBlockGrid`.
+
+### `mod.rs`
+
+- Map-block procedural assembly system.
+- Builds tile maps from composable blocks using scripted placement.
+- Supports configurable tile slots (floor, roof, object, walls, custom).
+- Carcassonne-style neighbor edge matching for placement constraints.
+- Multi-level (Z-layers) for multi-storey maps.
+- TopDown and Isometric orientations (no hex).
+- Arbitrary map shapes (not limited to rectangles).
+- Output converts to standard `TileMap` for rendering.
+
+### `multilevel.rs`
+
+- Multi-level map data structure with per-level block grid accessors.
+- `MultilevelMap` wraps `LayerStack` and exposes named-level access (floor, roof, etc.).
+- Level names are user-defined strings registered at generator init time.
+- Provides `get(level, x, y)` and `set(level, x, y, tile)` with bounds checking.
+- Serialized as a flat array of (level, x, y, tile) tuples in the save file.
+
+### `orientation.rs`
+
+- Map orientation modes: TopDown and Isometric projection support.
+- `Orientation` enum controls how (grid_x, grid_y) maps to screen (pixel_x, pixel_y).
+- `TopDown` uses a direct pixel-per-tile scale with no shear.
+- `Isometric` applies the standard 2:1 diamond transform for 2.5D appearance.
+- The active orientation is set in `MapBlockConfig` and applied by the tilemap renderer.
+
+### `output.rs`
+
+- Output converter: transforms an assembled map block grid into a `TileMap`.
+- `grid_to_tilemap(grid, tileset_id)` produces a `TileMap` ready for the renderer.
+- Slot roles (floor/wall/object) are translated to `TileMap` layer indices.
+- Block-local tile IDs are offset by the tileset base ID to produce world tile IDs.
+- The returned `TileMap` is owned by the caller; no reference to the block grid is kept.
+
+### `placement.rs`
+
+- Block placement grid, valid-position search, and placed-block tracking.
+- `PlacementGrid` tracks which cells are occupied and caches constraint state.
+- `find_valid_positions(grid, block)` returns all (x, y) cells where the block fits.
+- Placement validation is O(edges × constraints) per candidate cell.
+- `PlacedBlock` records the block ID, position, and applied rotation for undo support.
+
+### `script.rs`
+
+- Script steps that drive the procedural map block generation sequence.
+- `MapScript` is a `Vec<ScriptStep>` executed in order by the generator.
+- `StepType` variants: `Fill`, `PlaceGroup`, `PlaceBlock`, `ApplyLayer`, `Repeat`.
+- Steps can be loaded from TOML or constructed programmatically from Lua.
+- `Repeat { count, steps }` nests a sub-list with its own RNG advancement.
+
+### `tileset_ref.rs`
+
+- Tileset reference: links a map block's tile slots to ID ranges in a tileset asset.
+- `TilesetRef` stores the tileset asset key and a `base_id` offset applied to all tiles.
+- Multiple blocks may reference the same tileset with different `base_id` offsets.
+- Resolved at generator build time; missing tilesets produce a load-time error.
+- The resolved tileset texture is loaded once and shared across all referencing blocks.
 
 [⬆ back to top](#table-of-contents)
 
