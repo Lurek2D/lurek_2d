@@ -796,21 +796,25 @@ end
 --@api-stub: lurek.tilemap.FLOOR
 do
     print("FLOOR = " .. lurek.tilemap.FLOOR)
+    print("FLOOR type = " .. type(lurek.tilemap.FLOOR))
 end
 
 --@api-stub: lurek.tilemap.NORTH_WALL
 do
     print("NORTH_WALL = " .. lurek.tilemap.NORTH_WALL)
+    print("NORTH_WALL ~= FLOOR: " .. tostring(lurek.tilemap.NORTH_WALL ~= lurek.tilemap.FLOOR))
 end
 
 --@api-stub: lurek.tilemap.WEST_WALL
 do
     print("WEST_WALL = " .. lurek.tilemap.WEST_WALL)
+    print("WEST_WALL ~= NORTH_WALL: " .. tostring(lurek.tilemap.WEST_WALL ~= lurek.tilemap.NORTH_WALL))
 end
 
 --@api-stub: lurek.tilemap.OBJECT
 do
     print("OBJECT = " .. lurek.tilemap.OBJECT)
+    print("OBJECT ~= FLOOR: " .. tostring(lurek.tilemap.OBJECT ~= lurek.tilemap.FLOOR))
 end
 
 --- Tilemap Module Part 4: ChunkMap, IsoMap, LargeMapRenderer, MapBlock, MapGroup, MapScript, MapGen

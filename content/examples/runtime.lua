@@ -143,12 +143,14 @@ end
 
 --@api-stub: lurek.runtime.getOS
 do
-    print("os = " .. lurek.runtime.getOS())
+    local os = lurek.runtime.getOS()
+    print("os = " .. os)
 end
 
 --@api-stub: lurek.runtime.getArch
 do
-    print("arch = " .. lurek.runtime.getArch())
+    local arch = lurek.runtime.getArch()
+    print("arch = " .. arch)
 end
 
 --@api-stub: lurek.runtime.getMemorySize
@@ -168,7 +170,8 @@ end
 
 --@api-stub: lurek.runtime.getLogLevel
 do
-    print("log_level = " .. lurek.runtime.getLogLevel())
+    local lvl = lurek.runtime.getLogLevel()
+    print("log_level = " .. lvl)
 end
 
 --@api-stub: lurek.runtime.setClipboardText
@@ -179,12 +182,14 @@ end
 
 --@api-stub: lurek.runtime.hasMessage
 do
-    print("has_msg = " .. tostring(lurek.runtime.hasMessage("engine.welcome")))
+    local v = lurek.runtime.hasMessage("engine.welcome")
+    print("has_msg = " .. tostring(v))
 end
 
 --@api-stub: lurek.runtime.getMessageCount
 do
-    print("msg_count = " .. lurek.runtime.getMessageCount())
+    local n = lurek.runtime.getMessageCount()
+    print("msg_count = " .. n)
 end
 
 --@api-stub: lurek.runtime.getBatchResults

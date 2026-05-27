@@ -1802,7 +1802,8 @@ end
 
 --@api-stub: lurek.render.isBold
 do
-    print("isBold = " .. tostring(lurek.render.isBold()))
+    local v = lurek.render.isBold()
+    print("isBold = " .. tostring(v))
 end
 
 --@api-stub: lurek.render.printRotatedWithFont

@@ -2,10 +2,17 @@
 """Cross-reference Lua example scripts against the lurek.* Lua API.
 
 Coverage is reported in four tiers:
-    - "FULL" -- --@api-stub: block present, NO "-- TODO:" line, and block body has 1+ non-empty lines
-    - "PART" -- reserved legacy bucket; current real examples should classify as FULL
+    - "FULL" -- --@api-stub: block present, NO "-- TODO:" line, and block body has 2+ non-empty lines
+    - "PART" -- block present, no TODO, but body has fewer than 2 non-empty lines (thin block)
     - "TODO" -- --@api-stub: block present AND has a "-- TODO:" line
     - "MISS" -- no --@api-stub: marker at all (item not tracked in any example)
+
+Structural lint checks (E-codes) run automatically after the summary:
+    E1 -- stub has no ``do`` block below it (not a recognised alias)
+    E2 -- non-blank line (including a comment) between stub marker and ``do``
+    E3 -- two or more stubs stacked with no ``do`` block between them
+    E4 -- ``do`` block body is thin (< 2 non-blank lines)
+    E5 -- marker text is not a clean API identifier
 
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
@@ -13,20 +20,21 @@ Workflow:
   3. This tool gates on: no "missing" items (--report) or no pending (--no-stubs)
 
 Usage:
-    python tools/audit/example_coverage.py                  # summary table
+    python tools/audit/example_coverage.py                  # summary table + lint
     python tools/audit/example_coverage.py --examples-dir content/examples
     python tools/audit/example_coverage.py --missing        # list uncovered items
     python tools/audit/example_coverage.py --stubs          # list modules with pending stubs
+    python tools/audit/example_coverage.py --lint           # structural quality only
     python tools/audit/example_coverage.py --module timer   # one module
     python tools/audit/example_coverage.py --json           # machine-readable
-    python tools/audit/example_coverage.py --report         # exit 1 if any missing
+    python tools/audit/example_coverage.py --report         # exit 1 if any missing or lint issues
     python tools/audit/example_coverage.py --report --no-stubs  # also fail if pending
     python tools/audit/example_coverage.py --examples-dir content/examples --markdown
     python tools/audit/example_coverage.py --markdown FILE  # export Markdown report
 
 Exit codes:
-    0 -- no missing items (all API items have at least a stub marker)
-    1 -- one or more items have no --@api-stub: marker at all
+    0 -- no missing items and no structural lint issues
+    1 -- one or more items have no --@api-stub: marker, or structural lint issues found
 """
 from __future__ import annotations
 import argparse, json, re, sys
@@ -37,9 +45,9 @@ ROOT = Path(__file__).resolve().parents[2]
 API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
 DEFAULT_EXAMPLES_DIR = ROOT / 'content' / 'examples'
 DEFAULT_MARKDOWN_REPORT = ROOT / 'logs' / 'reports' / 'example_coverage.md'
-# Real examples are already distinguished from placeholders by marker presence and TODO state.
-# Requiring 5+ lines created a large PART bucket without indicating missing API coverage.
-FULL_BLOCK_MIN_LINES = 1
+# FULL requires at least this many non-blank body lines inside the do block.
+# Mirrors LINT_MIN_BODY_LINES so that thin blocks are PART (not FULL) AND trigger E4.
+FULL_BLOCK_MIN_LINES = 2
 
 DO_LINE_RE = re.compile(r'^do(?:\s*--.*)?$')
 FUNCTION_START_RE = re.compile(r'^(?:local\s+)?function\b')
@@ -710,7 +718,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
             # E3: immediately followed by another stub
             if STUB_TAG_RE.match(next_stripped):
                 issues.append((p.name, stub_lineno, 'E3',
-                    f"stub '{marker}': stacked — another stub follows with no do block"))
+                    f"stub '{marker}': stacked - another stub follows with no do block"))
                 i = j  # let the loop pick up the next stub
                 continue
 
@@ -802,6 +810,7 @@ def main() -> int:
 
     has_gaps  = any(mc.miss_count > 0 for mc in bk.values())
     has_stubs = any(mc.todo_count > 0 for mc in bk.values())
+    has_lint  = False
 
     if args.markdown:
         export_markdown(bk, entries, markdown_path, examples_dir)
@@ -838,6 +847,9 @@ def main() -> int:
         return 0
     else:
         print_summary(bk, filt=args.module)
+        lint_count = print_lint(examples_dir, filt=args.module)
+        if lint_count:
+            has_lint = True
 
     if args.report:
         failures = []
@@ -847,12 +859,14 @@ def main() -> int:
         if args.no_stubs and has_stubs:
             stubs = sum(1 for mc in bk.values() if mc.todo_count)
             failures.append(f'{stubs} module(s) still have TODO stub blocks (not real scenarios).')
+        if has_lint:
+            failures.append('Structural lint issues found (see lint output above).')
         if failures:
             for f in failures:
                 print(f'\n[REPORT] {f}')
             return 1
 
-    return 1 if has_gaps else 0
+    return 1 if (has_gaps or has_lint) else 0
 
 
 if __name__ == '__main__':

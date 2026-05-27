@@ -37,7 +37,8 @@ end
 
 --@api-stub: lurek.input.keyboard.hasKeyRepeat
 do
-    print("key repeat = " .. tostring(lurek.input.keyboard.hasKeyRepeat()))
+    local v = lurek.input.keyboard.hasKeyRepeat()
+    print("key repeat = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.keyboard.setKeyRepeat
@@ -48,7 +49,8 @@ end
 
 --@api-stub: lurek.input.keyboard.hasTextInput
 do
-    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
+    local v = lurek.input.keyboard.hasTextInput()
+    print("text input = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.keyboard.setTextInput
@@ -97,7 +99,8 @@ end
 
 --@api-stub: lurek.input.mouse.isVisible
 do
-    print("cursor visible = " .. tostring(lurek.input.mouse.isVisible()))
+    local v = lurek.input.mouse.isVisible()
+    print("cursor visible = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.mouse.setVisible
@@ -108,7 +111,8 @@ end
 
 --@api-stub: lurek.input.mouse.isGrabbed
 do
-    print("grabbed = " .. tostring(lurek.input.mouse.isGrabbed()))
+    local v = lurek.input.mouse.isGrabbed()
+    print("grabbed = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.mouse.setGrabbed
@@ -119,7 +123,8 @@ end
 
 --@api-stub: lurek.input.mouse.getRelativeMode
 do
-    print("relative mode = " .. tostring(lurek.input.mouse.getRelativeMode()))
+    local v = lurek.input.mouse.getRelativeMode()
+    print("relative mode = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.mouse.setRelativeMode
@@ -130,7 +135,8 @@ end
 
 --@api-stub: lurek.input.mouse.isCursorSupported
 do
-    print("cursor supported = " .. tostring(lurek.input.mouse.isCursorSupported()))
+    local v = lurek.input.mouse.isCursorSupported()
+    print("cursor supported = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.mouse.getCursor
@@ -424,17 +430,26 @@ end
 
 --@api-stub: lurek.input.isDown
 do
+    -- isDown() returns true while any key is held; check inside an input event callback
+    local v = lurek.input.isDown()
     print("isDown available = " .. tostring(type(lurek.input.isDown) == "function"))
+    print("result type = " .. type(v))
 end
 
 --@api-stub: lurek.input.wasPressed
 do
+    -- wasPressed() is true on the first frame the key goes down; call inside event callback
+    local v = lurek.input.wasPressed()
     print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
+    print("result type = " .. type(v))
 end
 
 --@api-stub: lurek.input.wasReleased
 do
+    -- wasReleased(key) is true on the first frame the key goes up
+    local v = lurek.input.wasReleased("space")
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+    print("space released = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.newMapping
@@ -699,5 +714,8 @@ end
 
 --@api-stub: lurek.input.getTouchCount
 do
-    print("lurek.input.getTouchCount=" .. lurek.input.touch.getTouchCount())
+    -- getTouchCount returns active touch points; 0 on desktop without a touchscreen
+    local n = lurek.input.touch.getTouchCount()
+    print("lurek.input.getTouchCount=" .. n)
+    print("touch type = " .. type(n))
 end

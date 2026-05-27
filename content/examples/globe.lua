@@ -7,21 +7,25 @@
 --@api-stub: lurek.globe.MAX_PROVINCES
 do
     print("max provinces = " .. lurek.globe.MAX_PROVINCES)
+    print("capacity ok = " .. tostring(lurek.globe.MAX_PROVINCES > 0))
 end
 
 --@api-stub: lurek.globe.LOD_FAR
 do
     print("LOD_FAR = " .. lurek.globe.LOD_FAR)
+    print("LOD_FAR > LOD_MID: " .. tostring(lurek.globe.LOD_FAR > lurek.globe.LOD_MID))
 end
 
 --@api-stub: lurek.globe.LOD_MID
 do
     print("LOD_MID = " .. lurek.globe.LOD_MID)
+    print("LOD_MID between FAR and NEAR: " .. tostring(lurek.globe.LOD_FAR > lurek.globe.LOD_MID and lurek.globe.LOD_MID > lurek.globe.LOD_NEAR))
 end
 
 --@api-stub: lurek.globe.LOD_NEAR
 do
     print("LOD_NEAR = " .. lurek.globe.LOD_NEAR)
+    print("LOD_NEAR smallest: " .. tostring(lurek.globe.LOD_NEAR < lurek.globe.LOD_MID))
 end
 
 --@api-stub: lurek.globe.new

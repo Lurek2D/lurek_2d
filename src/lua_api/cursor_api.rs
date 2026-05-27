@@ -330,7 +330,7 @@ impl LuaUserData for LuaAnimatedCursor {
 /// ### systemCursors (see lurek Lua API reference for details).
 /// Get list of available system cursor names.
 /// @return | table | Array of cursor name strings.
-pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let module = lua.create_table()?;
 
     /// Creates a new cursor manager for handling cursor state and visibility.
@@ -393,5 +393,6 @@ pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTabl
         })?,
     )?;
 
-    Ok(module)
+    lurek.set("cursor", module)?;
+    Ok(())
 }

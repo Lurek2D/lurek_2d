@@ -1,11 +1,13 @@
 --@api-stub: lurek.math.pi
 do
     print("pi = " .. lurek.math.pi)
+    print("pi * 2 = " .. lurek.math.pi * 2)
 end
 
 --@api-stub: lurek.math.tau
 do
     print("tau = " .. lurek.math.tau)
+    print("tau == 2*pi: " .. tostring(lurek.math.tau == 2 * lurek.math.pi))
 end
 
 --@api-stub: lurek.math.abs
@@ -104,11 +106,13 @@ end
 --@api-stub: lurek.math.min
 do
     print("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
+    print("min(0, -5) = " .. lurek.math.min(0, -5))
 end
 
 --@api-stub: lurek.math.max
 do
     print("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
+    print("max(0, -5) = " .. lurek.math.max(0, -5))
 end
 
 --@api-stub: lurek.math.sin

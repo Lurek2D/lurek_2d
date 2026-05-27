@@ -13,8 +13,8 @@ pub use super::effects::{DynamicEffectSource, SharedEffectGraph};
 /// Stable DSP graph node handle.
 pub type NodeId = u32;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// DSP node processing kind.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DspNodeType {
 	/// Low-pass filter node.
 	Lowpass,
@@ -52,8 +52,8 @@ impl DspNodeType {
 	}
 }
 
-#[derive(Debug, Clone)]
 /// One DSP graph node with simple named parameters.
+#[derive(Debug, Clone)]
 pub struct DspNode {
 	node_type: DspNodeType,
 	p1: f32,
@@ -125,8 +125,8 @@ impl DspNode {
 	}
 }
 
-#[derive(Debug, Clone)]
 /// Minimal deterministic DSP graph used by Lua for offline SoundData processing.
+#[derive(Debug, Clone)]
 pub struct DspGraph {
 	next_id: NodeId,
 	nodes: Vec<(NodeId, DspNode)>,

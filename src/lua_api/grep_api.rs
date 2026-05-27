@@ -189,7 +189,7 @@ fn result_to_table<'lua>(lua: &'lua Lua, result: &crate::grep::result::SearchRes
 /// @param | level | string | Log level filter (INFO, WARN, ERROR, etc.) or empty.
 /// @param | pattern | string | Message pattern or empty.
 /// @return | table | Array of matching log entries.
-pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let module = lua.create_table()?;
 
     /// Creates a new grep engine with default configuration settings.
@@ -323,5 +323,6 @@ pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTabl
         })?,
     )?;
 
-    Ok(module)
+    lurek.set("grep", module)?;
+    Ok(())
 }

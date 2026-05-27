@@ -50,7 +50,8 @@ end
 
 --@api-stub: lurek.window.isFullscreen
 do
-    print("is fullscreen:", lurek.window.isFullscreen())
+    local v = lurek.window.isFullscreen()
+    print("is fullscreen:", v)
 end
 
 --@api-stub: lurek.window.getFullscreen
@@ -76,12 +77,14 @@ end
 
 --@api-stub: lurek.window.getDPIScale
 do
-    print("DPI scale:", lurek.window.getDPIScale())
+    local s = lurek.window.getDPIScale()
+    print("DPI scale:", s)
 end
 
 --@api-stub: lurek.window.getNativeDPIScale
 do
-    print("native DPI scale:", lurek.window.getNativeDPIScale())
+    local s = lurek.window.getNativeDPIScale()
+    print("native DPI scale:", s)
 end
 
 --@api-stub: lurek.window.fromPixels
@@ -208,7 +211,8 @@ end
 
 --@api-stub: lurek.window.hasMouseFocus
 do
-    print("mouse focus = " .. tostring(lurek.window.hasMouseFocus()))
+    local v = lurek.window.hasMouseFocus()
+    print("mouse focus = " .. tostring(v))
 end
 
 --@api-stub: lurek.window.focus
@@ -386,14 +390,17 @@ end
 
 --@api-stub: lurek.window.isHighDPIAllowed
 do
-    print("high DPI allowed:", lurek.window.isHighDPIAllowed())
+    local v = lurek.window.isHighDPIAllowed()
+    print("high DPI allowed:", v)
 end
 
 --- Window Part 2: full lurek.window module + LGuiWindow coverage
 
 --@api-stub: lurek.window.close
 do
-    print("call lurek.window.close() from a quit button when you are ready to end the session")
+    -- Call lurek.window.close() to programmatically end the session, e.g. from a Quit button.
+    -- Safe to query the function exists before calling it in a headless test context.
+    print("close available = " .. tostring(type(lurek.window.close) == "function"))
 end
 
 --@api-stub: LWindow:getTitle

@@ -15,8 +15,8 @@ use crate::runtime::log_messages::{DP01, DP02, DP03};
 use rodio::Source;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, RwLock};
-#[derive(Debug)]
 /// Lock-free f32 parameter shared between the audio thread and the Lua API via atomic bit-cast.
+#[derive(Debug)]
 pub struct AtomicParam {
     /// Bit-cast f32 stored as u32 for atomic load/store via `Relaxed` ordering.
     val: AtomicU32,
@@ -37,8 +37,8 @@ impl AtomicParam {
         self.val.store(val.to_bits(), Ordering::Relaxed);
     }
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// DSP effect algorithm applied by `ActiveEffect::process` per sample.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EffectType {
     /// Biquad low-pass filter (cutoff, Q, mix).
     Lowpass,
@@ -71,8 +71,8 @@ pub enum EffectType {
     /// Dynamic-range compressor (threshold, ratio, makeup_gain).
     Compressor,
 }
-#[derive(Debug)]
 /// Shared, lock-free parameter block for one DSP effect; shared between Lua API and audio thread.
+#[derive(Debug)]
 pub struct EffectParams {
     /// Unique integer ID assigned when the effect is added to a `Bus` effect chain.
     pub id: u32,
@@ -315,8 +315,8 @@ pub fn set_shared_chain_effect_param(
     effect.set_param(param_name, value)
 }
 
-#[derive(Clone)]
 /// Per-source instantiation of a DSP effect with its own filter and delay-line state.
+#[derive(Clone)]
 pub struct ActiveEffect {
     /// Shared parameter block read each sample; updated lock-free from the Lua API.
     pub params: Arc<EffectParams>,
