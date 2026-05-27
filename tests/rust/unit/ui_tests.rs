@@ -872,8 +872,8 @@ mod containers_tests {
         let l = Layout::new(LayoutDirection::Vertical);
         assert!((l.spacing - 0.0).abs() < 1e-5, "expected 0.0 got {}", l.spacing);
         assert!(!l.wrap);
-        assert_eq!(l.align, "center");
-        assert_eq!(l.justify, "center");
+        assert_eq!(l.align, "stretch");
+        assert_eq!(l.justify, "start");
     }
 
     #[test]

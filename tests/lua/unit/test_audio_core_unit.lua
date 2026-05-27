@@ -1,4 +1,4 @@
--- Lurek2D Audio API Tests
+﻿-- Lurek2D Audio API Tests
 
 -- @describe lurek.audio module exists
 describe("lurek.audio module exists", function()
@@ -677,31 +677,31 @@ describe("lurek.audio SoundData", function()
     -- @covers LSoundData:getChannelCount
     -- @covers LSoundData:getSample
     -- @covers LSoundData:getSampleCount
-    -- @covers lurek.audio.newSineWave
+    -- @covers lurek.dsp.newSineWave
     it("newSineWave creates the requested mono buffer", function()
-        local sd = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
+        local sd = lurek.dsp.newSineWave(440.0, 1.0, 44100, 0.5)
         expect_equal(44100, sd:getSampleCount())
         expect_equal(1, sd:getChannelCount())
         expect_true(math.abs(sd:getSample(0)) < 0.01)
     end)
 
     -- @covers LSoundData:getSample
-    -- @covers lurek.audio.newSquareWave
+    -- @covers lurek.dsp.newSquareWave
     it("newSquareWave alternates positive and negative phases", function()
-        local sd = lurek.audio.newSquareWave(1.0, 1.0, 100, 1.0)
+        local sd = lurek.dsp.newSquareWave(1.0, 1.0, 100, 1.0)
         expect_true(sd:getSample(0) > 0.0)
         expect_true(sd:getSample(75) < 0.0)
     end)
 
     -- @covers LSoundData:getSample
     -- @covers LSoundData:setSample
-    -- @covers lurek.audio.applyGain
+    -- @covers lurek.dsp.applyGain
     -- @covers lurek.audio.newSoundData
     it("applyGain scales samples in-place", function()
         local sd = lurek.audio.newSoundData(2, 44100, 1)
         sd:setSample(0, 0.5)
         sd:setSample(1, -0.5)
-        lurek.audio.applyGain(sd, 0.5)
+        lurek.dsp.applyGain(sd, 0.5)
         expect_near(0.25, sd:getSample(0), 0.0001)
         expect_near(-0.25, sd:getSample(1), 0.0001)
     end)
@@ -1263,97 +1263,97 @@ describe("lurek.audio.play with bus", function()
     end)
 end)
 
--- @describe lurek.audio.add_effect
-describe("lurek.audio.add_effect", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus
+describe("lurek.dsp.addEffectToBus", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("adds an effect and returns an integer ID", function()
         lurek.audio.create_bus("sfx2")
-        local effect_id = lurek.audio.add_effect("sfx2", "lowpass")
+        local effect_id = lurek.dsp.addEffectToBus("sfx2", "lowpass")
         expect_type("number", effect_id)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("accepts initial parameters", function()
         lurek.audio.create_bus("sfx3")
-        local effect_id = lurek.audio.add_effect("sfx3", "reverb", { room_size = 0.8, mix = 0.4 })
+        local effect_id = lurek.dsp.addEffectToBus("sfx3", "reverb", { room_size = 0.8, mix = 0.4 })
         expect_type("number", effect_id)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("errors on invalid effect type", function()
         lurek.audio.create_bus("sfx4")
         expect_error(function()
-            lurek.audio.add_effect("sfx4", "magic_wand")
+            lurek.dsp.addEffectToBus("sfx4", "magic_wand")
         end, "invalid effect")
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     it("errors if bus does not exist for effect", function()
         expect_error(function()
-            lurek.audio.add_effect("nope_bus", "lowpass")
+            lurek.dsp.addEffectToBus("nope_bus", "lowpass")
         end, "bus not found")
     end)
 end)
 
--- @describe lurek.audio.set_effect_param
-describe("lurek.audio.set_effect_param", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.setEffectParam
+describe("lurek.dsp.setEffectParam", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("mutates an effect parameter without errors", function()
         lurek.audio.create_bus("music2")
-        local efx = lurek.audio.add_effect("music2", "lowpass")
+        local efx = lurek.dsp.addEffectToBus("music2", "lowpass")
         -- set cutoff
-        lurek.audio.set_effect_param("music2", efx, "cutoff", 500.0)
+        lurek.dsp.setEffectParam("music2", efx, "cutoff", 500.0)
     end)
 
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("errors if effect ID does not exist", function()
         lurek.audio.create_bus("music3")
         expect_error(function()
-            lurek.audio.set_effect_param("music3", 9999, "cutoff", 500.0)
+            lurek.dsp.setEffectParam("music3", 9999, "cutoff", 500.0)
         end, "effect not found")
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("errors if parameter name is invalid for effect type", function()
         lurek.audio.create_bus("music4")
-        local efx = lurek.audio.add_effect("music4", "lowpass")
+        local efx = lurek.dsp.addEffectToBus("music4", "lowpass")
         expect_error(function()
-            lurek.audio.set_effect_param("music4", efx, "room_size", 0.5)
+            lurek.dsp.setEffectParam("music4", efx, "room_size", 0.5)
         end, "invalid parameter")
     end)
 end)
 
--- @describe lurek.audio.remove_effect
-describe("lurek.audio.remove_effect", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.removeEffectFromBus
+describe("lurek.dsp.removeEffectFromBus", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.remove_effect
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.removeEffectFromBus
+    -- @covers lurek.dsp.setEffectParam
     it("removes an existing effect", function()
         lurek.audio.create_bus("sfx5")
-        local efx = lurek.audio.add_effect("sfx5", "bandpass")
-        lurek.audio.remove_effect("sfx5", efx)
+        local efx = lurek.dsp.addEffectToBus("sfx5", "bandpass")
+        lurek.dsp.removeEffectFromBus("sfx5", efx)
 
         -- Further operations on it should error
         expect_error(function()
-            lurek.audio.set_effect_param("sfx5", efx, "center", 1000.0)
+            lurek.dsp.setEffectParam("sfx5", efx, "center", 1000.0)
         end, "effect not found")
     end)
 
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.remove_effect
+    -- @covers lurek.dsp.removeEffectFromBus
     it("errors if effect not found", function()
         lurek.audio.create_bus("sfx6")
         expect_error(function()
-            lurek.audio.remove_effect("sfx6", 1234)
+            lurek.dsp.removeEffectFromBus("sfx6", 1234)
         end, "effect not found")
     end)
 end)
@@ -1362,227 +1362,227 @@ end)
 -- Merged from test_audio_effects.lua
 -- =========================================================================
 
--- @describe lurek.audio.add_effect  - notch
-describe("lurek.audio.add_effect  - notch", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - notch
+describe("lurek.dsp.addEffectToBus  - notch", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a notch filter effect and returns an id", function()
         lurek.audio.create_bus("test_notch")
-        local eid = lurek.audio.add_effect("test_notch", "notch")
+        local eid = lurek.dsp.addEffectToBus("test_notch", "notch")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts cutoff and bandwidth parameters", function()
         lurek.audio.create_bus("test_notch2")
-        local eid = lurek.audio.add_effect("test_notch2", "notch", { cutoff = 1000.0, bandwidth = 100.0 })
+        local eid = lurek.dsp.addEffectToBus("test_notch2", "notch", { cutoff = 1000.0, bandwidth = 100.0 })
         expect_type("number", eid)
-        lurek.audio.set_effect_param("test_notch2", eid, "cutoff", 2000.0)
-        lurek.audio.set_effect_param("test_notch2", eid, "bandwidth", 200.0)
+        lurek.dsp.setEffectParam("test_notch2", eid, "cutoff", 2000.0)
+        lurek.dsp.setEffectParam("test_notch2", eid, "bandwidth", 200.0)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - lowshelf
-describe("lurek.audio.add_effect  - lowshelf", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - lowshelf
+describe("lurek.dsp.addEffectToBus  - lowshelf", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a low-shelf EQ effect", function()
         lurek.audio.create_bus("test_lowshelf")
-        local eid = lurek.audio.add_effect("test_lowshelf", "lowshelf")
+        local eid = lurek.dsp.addEffectToBus("test_lowshelf", "lowshelf")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts cutoff and gain_db parameters", function()
         lurek.audio.create_bus("test_lowshelf2")
-        local eid = lurek.audio.add_effect("test_lowshelf2", "lowshelf", { cutoff = 200.0, gain_db = -6.0 })
-        lurek.audio.set_effect_param("test_lowshelf2", eid, "cutoff", 300.0)
-        lurek.audio.set_effect_param("test_lowshelf2", eid, "gain_db", 3.0)
+        local eid = lurek.dsp.addEffectToBus("test_lowshelf2", "lowshelf", { cutoff = 200.0, gain_db = -6.0 })
+        lurek.dsp.setEffectParam("test_lowshelf2", eid, "cutoff", 300.0)
+        lurek.dsp.setEffectParam("test_lowshelf2", eid, "gain_db", 3.0)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - highshelf
-describe("lurek.audio.add_effect  - highshelf", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - highshelf
+describe("lurek.dsp.addEffectToBus  - highshelf", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a high-shelf EQ effect", function()
         lurek.audio.create_bus("test_highshelf")
-        local eid = lurek.audio.add_effect("test_highshelf", "highshelf")
+        local eid = lurek.dsp.addEffectToBus("test_highshelf", "highshelf")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts cutoff and gain_db parameters", function()
         lurek.audio.create_bus("test_highshelf2")
-        local eid = lurek.audio.add_effect("test_highshelf2", "highshelf", { cutoff = 8000.0, gain_db = 4.0 })
-        lurek.audio.set_effect_param("test_highshelf2", eid, "gain_db", -3.0)
+        local eid = lurek.dsp.addEffectToBus("test_highshelf2", "highshelf", { cutoff = 8000.0, gain_db = 4.0 })
+        lurek.dsp.setEffectParam("test_highshelf2", eid, "gain_db", -3.0)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - flanger
-describe("lurek.audio.add_effect  - flanger", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - flanger
+describe("lurek.dsp.addEffectToBus  - flanger", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a flanger effect", function()
         lurek.audio.create_bus("test_flanger")
-        local eid = lurek.audio.add_effect("test_flanger", "flanger")
+        local eid = lurek.dsp.addEffectToBus("test_flanger", "flanger")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts rate and depth parameters", function()
         lurek.audio.create_bus("test_flanger2")
-        local eid = lurek.audio.add_effect("test_flanger2", "flanger", { rate = 0.5, depth = 0.3, mix = 0.6 })
-        lurek.audio.set_effect_param("test_flanger2", eid, "rate", 1.0)
-        lurek.audio.set_effect_param("test_flanger2", eid, "depth", 0.5)
-        lurek.audio.set_effect_param("test_flanger2", eid, "mix", 0.8)
+        local eid = lurek.dsp.addEffectToBus("test_flanger2", "flanger", { rate = 0.5, depth = 0.3, mix = 0.6 })
+        lurek.dsp.setEffectParam("test_flanger2", eid, "rate", 1.0)
+        lurek.dsp.setEffectParam("test_flanger2", eid, "depth", 0.5)
+        lurek.dsp.setEffectParam("test_flanger2", eid, "mix", 0.8)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - phaser
-describe("lurek.audio.add_effect  - phaser", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - phaser
+describe("lurek.dsp.addEffectToBus  - phaser", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a phaser effect", function()
         lurek.audio.create_bus("test_phaser")
-        local eid = lurek.audio.add_effect("test_phaser", "phaser")
+        local eid = lurek.dsp.addEffectToBus("test_phaser", "phaser")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts rate, depth and mix parameters", function()
         lurek.audio.create_bus("test_phaser2")
-        local eid = lurek.audio.add_effect("test_phaser2", "phaser", { rate = 0.3, depth = 0.7, mix = 0.5 })
-        lurek.audio.set_effect_param("test_phaser2", eid, "rate", 0.6)
+        local eid = lurek.dsp.addEffectToBus("test_phaser2", "phaser", { rate = 0.3, depth = 0.7, mix = 0.5 })
+        lurek.dsp.setEffectParam("test_phaser2", eid, "rate", 0.6)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - distortion
-describe("lurek.audio.add_effect  - distortion", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - distortion
+describe("lurek.dsp.addEffectToBus  - distortion", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a distortion (waveshaper) effect", function()
         lurek.audio.create_bus("test_dist")
-        local eid = lurek.audio.add_effect("test_dist", "distortion")
+        local eid = lurek.dsp.addEffectToBus("test_dist", "distortion")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts drive and mix parameters", function()
         lurek.audio.create_bus("test_dist2")
-        local eid = lurek.audio.add_effect("test_dist2", "distortion", { drive = 10.0, mix = 0.5 })
-        lurek.audio.set_effect_param("test_dist2", eid, "drive", 20.0)
-        lurek.audio.set_effect_param("test_dist2", eid, "mix", 0.3)
+        local eid = lurek.dsp.addEffectToBus("test_dist2", "distortion", { drive = 10.0, mix = 0.5 })
+        lurek.dsp.setEffectParam("test_dist2", eid, "drive", 20.0)
+        lurek.dsp.setEffectParam("test_dist2", eid, "mix", 0.3)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - limiter
-describe("lurek.audio.add_effect  - limiter", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - limiter
+describe("lurek.dsp.addEffectToBus  - limiter", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a brick-wall limiter effect", function()
         lurek.audio.create_bus("test_limiter")
-        local eid = lurek.audio.add_effect("test_limiter", "limiter")
+        local eid = lurek.dsp.addEffectToBus("test_limiter", "limiter")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts threshold and release parameters", function()
         lurek.audio.create_bus("test_limiter2")
-        local eid = lurek.audio.add_effect("test_limiter2", "limiter", { threshold = 0.9, release = 0.1 })
-        lurek.audio.set_effect_param("test_limiter2", eid, "threshold", 0.8)
+        local eid = lurek.dsp.addEffectToBus("test_limiter2", "limiter", { threshold = 0.9, release = 0.1 })
+        lurek.dsp.setEffectParam("test_limiter2", eid, "threshold", 0.8)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - compressor
-describe("lurek.audio.add_effect  - compressor", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - compressor
+describe("lurek.dsp.addEffectToBus  - compressor", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a dynamic range compressor", function()
         lurek.audio.create_bus("test_comp")
-        local eid = lurek.audio.add_effect("test_comp", "compressor")
+        local eid = lurek.dsp.addEffectToBus("test_comp", "compressor")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts threshold, ratio and makeup_gain parameters", function()
         lurek.audio.create_bus("test_comp2")
-        local eid = lurek.audio.add_effect("test_comp2", "compressor",
+        local eid = lurek.dsp.addEffectToBus("test_comp2", "compressor",
             { threshold = 0.5, ratio = 4.0, makeup_gain = 1.5 })
-        lurek.audio.set_effect_param("test_comp2", eid, "threshold", 0.6)
-        lurek.audio.set_effect_param("test_comp2", eid, "ratio", 2.0)
-        lurek.audio.set_effect_param("test_comp2", eid, "makeup_gain", 1.0)
+        lurek.dsp.setEffectParam("test_comp2", eid, "threshold", 0.6)
+        lurek.dsp.setEffectParam("test_comp2", eid, "ratio", 2.0)
+        lurek.dsp.setEffectParam("test_comp2", eid, "makeup_gain", 1.0)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - bell_eq
-describe("lurek.audio.add_effect  - bell_eq", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - bell_eq
+describe("lurek.dsp.addEffectToBus  - bell_eq", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates a bell equalizer effect", function()
         lurek.audio.create_bus("test_bell")
-        local eid = lurek.audio.add_effect("test_bell", "bell_eq")
+        local eid = lurek.dsp.addEffectToBus("test_bell", "bell_eq")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts cutoff, gain_db and q parameters", function()
         lurek.audio.create_bus("test_bell2")
-        local eid = lurek.audio.add_effect("test_bell2", "bell_eq",
+        local eid = lurek.dsp.addEffectToBus("test_bell2", "bell_eq",
             { cutoff = 1000.0, gain_db = 6.0, q = 1.0 })
-        lurek.audio.set_effect_param("test_bell2", eid, "cutoff", 2000.0)
-        lurek.audio.set_effect_param("test_bell2", eid, "gain_db", -3.0)
+        lurek.dsp.setEffectParam("test_bell2", eid, "cutoff", 2000.0)
+        lurek.dsp.setEffectParam("test_bell2", eid, "gain_db", -3.0)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - reverb2
-describe("lurek.audio.add_effect  - reverb2", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - reverb2
+describe("lurek.dsp.addEffectToBus  - reverb2", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("creates an improved reverb (reverb2) effect", function()
         lurek.audio.create_bus("test_rev2")
-        local eid = lurek.audio.add_effect("test_rev2", "reverb2")
+        local eid = lurek.dsp.addEffectToBus("test_rev2", "reverb2")
         expect_type("number", eid)
     end)
 
-    -- @covers lurek.audio.add_effect
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.audio.set_effect_param
+    -- @covers lurek.dsp.setEffectParam
     it("accepts room_size, damping, pre_delay and mix parameters", function()
         lurek.audio.create_bus("test_rev3")
-        local eid = lurek.audio.add_effect("test_rev3", "reverb2",
+        local eid = lurek.dsp.addEffectToBus("test_rev3", "reverb2",
             { room_size = 0.7, damping = 0.5, pre_delay = 0.02, mix = 0.4 })
-        lurek.audio.set_effect_param("test_rev3", eid, "room_size", 0.9)
-        lurek.audio.set_effect_param("test_rev3", eid, "mix", 0.3)
+        lurek.dsp.setEffectParam("test_rev3", eid, "room_size", 0.9)
+        lurek.dsp.setEffectParam("test_rev3", eid, "mix", 0.3)
     end)
 end)
 
--- @describe lurek.audio.add_effect  - validation
-describe("lurek.audio.add_effect  - validation", function()
-    -- @covers lurek.audio.add_effect
+-- @describe lurek.dsp.addEffectToBus  - validation
+describe("lurek.dsp.addEffectToBus  - validation", function()
+    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.audio.create_bus
     it("rejects unknown effect type names", function()
         lurek.audio.create_bus("test_inv_e")
         expect_error(function()
-            lurek.audio.add_effect("test_inv_e", "magic_sauce")
+            lurek.dsp.addEffectToBus("test_inv_e", "magic_sauce")
         end, "invalid effect")
     end)
 end)
@@ -1594,70 +1594,70 @@ end)
 local WAVE = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = evidence_output_dir("audio")
 
--- @describe lurek.audio.processOffline
-describe("lurek.audio.processOffline", function()
-    -- @covers lurek.audio.processOffline
+-- @describe lurek.dsp.processOffline
+describe("lurek.dsp.processOffline", function()
+    -- @covers lurek.dsp.processOffline
     it("processes a WAV file with a lowpass effect and writes output", function()
         local effects = {
             { type = "lowpass", cutoff = 1000.0 }
         }
         local out = OUT_DIR .. "offline_lowpass_out.wav"
-        lurek.audio.processOffline(WAVE, out, effects)
+        lurek.dsp.processOffline(WAVE, out, effects)
     end)
 
-    -- @covers lurek.audio.processOffline
+    -- @covers lurek.dsp.processOffline
     it("processes with multiple chained effects", function()
         local effects = {
             { type = "highpass", cutoff = 200.0 },
             { type = "reverb",   room_size = 0.6, mix = 0.3 }
         }
         local out = OUT_DIR .. "offline_chain_out.wav"
-        lurek.audio.processOffline(WAVE, out, effects)
+        lurek.dsp.processOffline(WAVE, out, effects)
     end)
 
-    -- @covers lurek.audio.processOffline
+    -- @covers lurek.dsp.processOffline
     it("processes with empty effect list (passthrough)", function()
         local out = OUT_DIR .. "offline_passthrough_out.wav"
-        lurek.audio.processOffline(WAVE, out, {})
+        lurek.dsp.processOffline(WAVE, out, {})
     end)
 
-    -- @covers lurek.audio.processOffline
+    -- @covers lurek.dsp.processOffline
     it("errors if source file does not exist", function()
         expect_error(function()
-            lurek.audio.processOffline("no_such_file.wav", OUT_DIR .. "out.wav", {})
+            lurek.dsp.processOffline("no_such_file.wav", OUT_DIR .. "out.wav", {})
         end, "not found")
     end)
 
-    -- @covers lurek.audio.processOffline
+    -- @covers lurek.dsp.processOffline
     it("errors on path traversal in output path", function()
         expect_error(function()
-            lurek.audio.processOffline(WAVE, "../../etc/output.wav", {})
+            lurek.dsp.processOffline(WAVE, "../../etc/output.wav", {})
         end, "path")
     end)
 end)
 
--- @describe lurek.audio.normalizeFile
-describe("lurek.audio.normalizeFile", function()
-    -- @covers lurek.audio.normalizeFile
+-- @describe lurek.dsp.normalize
+describe("lurek.dsp.normalize", function()
+    -- @covers lurek.dsp.normalize
     it("normalizes a WAV file without error", function()
         local out = OUT_DIR .. "normalized_out.wav"
-        lurek.audio.normalizeFile(WAVE, out, 0.9)
+        lurek.dsp.normalize(WAVE, out, 0.9)
     end)
 
-    -- @covers lurek.audio.normalizeFile
+    -- @covers lurek.dsp.normalize
     it("errors if target level is outside (0.0, 1.0]", function()
         expect_error(function()
-            lurek.audio.normalizeFile(WAVE, OUT_DIR .. "out.wav", 0.0)
+            lurek.dsp.normalize(WAVE, OUT_DIR .. "out.wav", 0.0)
         end, "target level")
         expect_error(function()
-            lurek.audio.normalizeFile(WAVE, OUT_DIR .. "out.wav", 1.5)
+            lurek.dsp.normalize(WAVE, OUT_DIR .. "out.wav", 1.5)
         end, "target level")
     end)
 
-    -- @covers lurek.audio.normalizeFile
+    -- @covers lurek.dsp.normalize
     it("errors if source file does not exist", function()
         expect_error(function()
-            lurek.audio.normalizeFile("no_such.wav", OUT_DIR .. "out.wav", 0.9)
+            lurek.dsp.normalize("no_such.wav", OUT_DIR .. "out.wav", 0.9)
         end, "not found")
     end)
 end)
@@ -1955,20 +1955,20 @@ end)
 
 -- @describe lurek.audio waveform and spectrogram export errors
 describe("lurek.audio waveform and spectrogram export errors", function()
-    -- @covers lurek.audio.waveformToPng
+    -- @covers lurek.dsp.waveformToPng
     it("waveformToPng errors for a missing input file", function()
         local ok, err = pcall(function()
-            lurek.audio.waveformToPng("tests/fixtures/does_not_exist.wav", "tests/output/missing_waveform.png", 100, 50)
+            lurek.dsp.waveformToPng("tests/fixtures/does_not_exist.wav", "tests/output/missing_waveform.png", 100, 50)
         end)
 
         expect_false(ok)
         expect_false(err == nil)
     end)
 
-    -- @covers lurek.audio.spectrogramToPng
+    -- @covers lurek.dsp.spectrogramToPng
     it("spectrogramToPng errors for a missing input file", function()
         local ok, err = pcall(function()
-            lurek.audio.spectrogramToPng("tests/fixtures/does_not_exist.wav", "tests/output/missing_spectrogram.png", 100, 50)
+            lurek.dsp.spectrogramToPng("tests/fixtures/does_not_exist.wav", "tests/output/missing_spectrogram.png", 100, 50)
         end)
 
         expect_false(ok)
@@ -2267,57 +2267,57 @@ end)
 
 -- @describe audio strict: newSawtoothWave
 describe("audio strict: newSawtoothWave", function()
-    -- @covers lurek.audio.newSawtoothWave
+    -- @covers lurek.dsp.newSawtoothWave
     it("newSawtoothWave returns SoundData", function()
-        local sd = lurek.audio.newSawtoothWave(440, 0.01, 44100, 0.5)
+        local sd = lurek.dsp.newSawtoothWave(440, 0.01, 44100, 0.5)
         expect_type("userdata", sd)
     end)
 end)
 
 -- @describe audio strict: newTriangleWave
 describe("audio strict: newTriangleWave", function()
-    -- @covers lurek.audio.newTriangleWave
+    -- @covers lurek.dsp.newTriangleWave
     it("newTriangleWave returns SoundData", function()
-        local sd = lurek.audio.newTriangleWave(440, 0.01, 44100, 0.5)
+        local sd = lurek.dsp.newTriangleWave(440, 0.01, 44100, 0.5)
         expect_type("userdata", sd)
     end)
 end)
 
 -- @describe audio strict: newWhiteNoise
 describe("audio strict: newWhiteNoise", function()
-    -- @covers lurek.audio.newWhiteNoise
+    -- @covers lurek.dsp.newWhiteNoise
     it("newWhiteNoise returns SoundData", function()
-        local sd = lurek.audio.newWhiteNoise(0.01, 44100, 0.5, 42)
+        local sd = lurek.dsp.newWhiteNoise(0.01, 44100, 0.5, 42)
         expect_type("userdata", sd)
     end)
 end)
 
 -- @describe audio strict: applyLowpass
 describe("audio strict: applyLowpass", function()
-    -- @covers lurek.audio.applyLowpass
+    -- @covers lurek.dsp.applyLowpass
     it("applyLowpass modifies SoundData in-place without error", function()
-        local sd = lurek.audio.newSawtoothWave(440, 0.01, 44100, 0.5)
-        local ok = pcall(lurek.audio.applyLowpass, sd, 2000.0)
+        local sd = lurek.dsp.newSawtoothWave(440, 0.01, 44100, 0.5)
+        local ok = pcall(lurek.dsp.applyLowpass, sd, 2000.0)
         expect_true(ok)
     end)
 end)
 
 -- @describe audio strict: applyHighpass
 describe("audio strict: applyHighpass", function()
-    -- @covers lurek.audio.applyHighpass
+    -- @covers lurek.dsp.applyHighpass
     it("applyHighpass modifies SoundData in-place without error", function()
-        local sd = lurek.audio.newSawtoothWave(440, 0.01, 44100, 0.5)
-        local ok = pcall(lurek.audio.applyHighpass, sd, 500.0)
+        local sd = lurek.dsp.newSawtoothWave(440, 0.01, 44100, 0.5)
+        local ok = pcall(lurek.dsp.applyHighpass, sd, 500.0)
         expect_true(ok)
     end)
 end)
 
 -- @describe audio strict: applyBandpass
 describe("audio strict: applyBandpass", function()
-    -- @covers lurek.audio.applyBandpass
+    -- @covers lurek.dsp.applyBandpass
     it("applyBandpass modifies SoundData in-place without error", function()
-        local sd = lurek.audio.newSawtoothWave(440, 0.01, 44100, 0.5)
-        local ok = pcall(lurek.audio.applyBandpass, sd, 500.0, 2000.0)
+        local sd = lurek.dsp.newSawtoothWave(440, 0.01, 44100, 0.5)
+        local ok = pcall(lurek.dsp.applyBandpass, sd, 500.0, 2000.0)
         expect_true(ok)
     end)
 end)
@@ -2326,7 +2326,7 @@ end)
 describe("audio strict: saveWAV", function()
     -- @covers lurek.audio.saveWAV
     it("saveWAV writes a file without error", function()
-        local sd = lurek.audio.newSawtoothWave(440, 0.01, 44100, 0.5)
+        local sd = lurek.dsp.newSawtoothWave(440, 0.01, 44100, 0.5)
         local ok = pcall(lurek.audio.saveWAV, sd, "save/_audio_strict_test.wav")
         expect_true(ok)
     end)
@@ -2514,49 +2514,49 @@ describe("audio migrated from integration/audio_timer", function()
     end)
 end)
 
--- @describe lurek.audio.newSynthWave
-describe("lurek.audio.newSynthWave", function()
-    -- @covers lurek.audio.newSynthWave
+-- @describe lurek.dsp.newSynthWave
+describe("lurek.dsp.newSynthWave", function()
+    -- @covers lurek.dsp.newSynthWave
     it("is a function", function()
-        expect_type("function", lurek.audio.newSynthWave)
+        expect_type("function", lurek.dsp.newSynthWave)
     end)
 
-    -- @covers lurek.audio.newSynthWave
+    -- @covers lurek.dsp.newSynthWave
     it("sine waveform returns LSoundData userdata", function()
-        local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.5)
+        local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.5)
         expect_true(sd ~= nil, "returned non-nil")
         expect_type("userdata", sd)
     end)
 
-    -- @covers lurek.audio.newSynthWave
+    -- @covers lurek.dsp.newSynthWave
     it("square waveform returns LSoundData userdata", function()
-        local sd = lurek.audio.newSynthWave("square", 440, 0.1, 44100, 0.5)
+        local sd = lurek.dsp.newSynthWave("square", 440, 0.1, 44100, 0.5)
         expect_type("userdata", sd)
     end)
 
-    -- @covers lurek.audio.newSynthWave
+    -- @covers lurek.dsp.newSynthWave
     it("sawtooth waveform returns LSoundData userdata", function()
-        local sd = lurek.audio.newSynthWave("sawtooth", 440, 0.1, 44100, 0.5)
+        local sd = lurek.dsp.newSynthWave("sawtooth", 440, 0.1, 44100, 0.5)
         expect_type("userdata", sd)
     end)
 
-    -- @covers lurek.audio.newSynthWave
+    -- @covers lurek.dsp.newSynthWave
     it("triangle waveform returns LSoundData userdata", function()
-        local sd = lurek.audio.newSynthWave("triangle", 440, 0.1, 44100, 0.5)
+        local sd = lurek.dsp.newSynthWave("triangle", 440, 0.1, 44100, 0.5)
         expect_type("userdata", sd)
     end)
 
-    -- @covers lurek.audio.newSynthWave
+    -- @covers lurek.dsp.newSynthWave
     it("invalid waveform name errors", function()
         expect_error(function()
-            lurek.audio.newSynthWave("INVALID_WAVE", 440, 0.1, 44100, 0.5)
+            lurek.dsp.newSynthWave("INVALID_WAVE", 440, 0.1, 44100, 0.5)
         end, "unknown waveform")
     end)
 
-    -- @covers lurek.audio.newSynthWave
+    -- @covers lurek.dsp.newSynthWave
     it("accepts optional ADSR table and returns userdata", function()
         local adsr = { attack = 0.01, decay = 0.05, sustain = 0.7, release = 0.1 }
-        local sd = lurek.audio.newSynthWave("sine", 440, 0.2, 44100, 0.5, adsr)
+        local sd = lurek.dsp.newSynthWave("sine", 440, 0.2, 44100, 0.5, adsr)
         expect_type("userdata", sd)
     end)
 end)

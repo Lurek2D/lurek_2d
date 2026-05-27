@@ -1,4 +1,4 @@
--- test_evidence_audio.lua
+﻿-- test_evidence_audio.lua
 -- Evidence test: lurek.audio API + saves generated audio as WAV files
 -- Produces: audio_sine_440hz.wav, audio_chord.wav, audio_sweep.wav
 
@@ -274,11 +274,11 @@ end
 describe("Evidence: lurek.audio applyLowpass", function()
     -- @evidence file
     it("PNG evidence: low-pass filter before vs after", function()
-        local raw = lurek.audio.newSineWave(4000, 0.05, SR, 0.8)
+        local raw = lurek.dsp.newSineWave(4000, 0.05, SR, 0.8)
         -- Clone via saveWAV round-trip is not available headlessly;
         -- create identical raw version for comparison
-        local raw2 = lurek.audio.newSineWave(4000, 0.05, SR, 0.8)
-        lurek.audio.applyLowpass(raw2, 300)
+        local raw2 = lurek.dsp.newSineWave(4000, 0.05, SR, 0.8)
+        lurek.dsp.applyLowpass(raw2, 300)
         waveform_compare(raw, raw2, "4 kHz sine (raw)", "after 300 Hz LP",
             OUT .. "evidence_dsp_lowpass.png")
     end)
@@ -291,9 +291,9 @@ end)
 describe("Evidence: lurek.audio applyHighpass", function()
     -- @evidence file
     it("PNG evidence: high-pass filter before vs after", function()
-        local raw  = lurek.audio.newSineWave(300, 0.05, SR, 0.8)
-        local raw2 = lurek.audio.newSineWave(300, 0.05, SR, 0.8)
-        lurek.audio.applyHighpass(raw2, 2000)
+        local raw  = lurek.dsp.newSineWave(300, 0.05, SR, 0.8)
+        local raw2 = lurek.dsp.newSineWave(300, 0.05, SR, 0.8)
+        lurek.dsp.applyHighpass(raw2, 2000)
         waveform_compare(raw, raw2, "300 Hz sine (raw)", "after 2000 Hz HP",
             OUT .. "evidence_dsp_highpass.png")
     end)
@@ -306,9 +306,9 @@ end)
 describe("Evidence: lurek.audio applyBandpass", function()
     -- @evidence file
     it("PNG evidence: bandpass filter on white noise", function()
-        local raw  = lurek.audio.newWhiteNoise(0.05, SR, 0.8, 42)
-        local raw2 = lurek.audio.newWhiteNoise(0.05, SR, 0.8, 42)
-        lurek.audio.applyBandpass(raw2, 800, 3000)
+        local raw  = lurek.dsp.newWhiteNoise(0.05, SR, 0.8, 42)
+        local raw2 = lurek.dsp.newWhiteNoise(0.05, SR, 0.8, 42)
+        lurek.dsp.applyBandpass(raw2, 800, 3000)
         waveform_compare(raw, raw2, "white noise (raw)", "after 800-3000 Hz BP",
             OUT .. "evidence_dsp_bandpass.png")
     end)
@@ -327,9 +327,9 @@ end)
 describe("Evidence: lurek.audio mixInto", function()
     -- @evidence file
     it("PNG evidence: two sine waves mixed together", function()
-        local a = lurek.audio.newSineWave(440,  0.05, SR, 0.5)
-        local b = lurek.audio.newSineWave(880,  0.05, SR, 0.5)
-        local a_raw = lurek.audio.newSineWave(440, 0.05, SR, 0.5)
+        local a = lurek.dsp.newSineWave(440,  0.05, SR, 0.5)
+        local b = lurek.dsp.newSineWave(880,  0.05, SR, 0.5)
+        local a_raw = lurek.dsp.newSineWave(440, 0.05, SR, 0.5)
         lurek.audio.mixInto(a, b)
         waveform_compare(a_raw, a, "440 Hz sine", "440+880 Hz mixed",
             OUT .. "evidence_dsp_mix.png")
@@ -351,8 +351,8 @@ describe("Evidence: lurek.audio filter sweep PNG", function()
         img:fill(10, 10, 18, 255)
 
         for col, cut in ipairs(CUTS) do
-            local noise = lurek.audio.newWhiteNoise(0.05, SR, 0.8, 7)
-            lurek.audio.applyLowpass(noise, cut)
+            local noise = lurek.dsp.newWhiteNoise(0.05, SR, 0.8, 7)
+            lurek.dsp.applyLowpass(noise, cut)
             local ratio = cut / 10000.0
             local r = math.floor(255 * ratio)
             local b = math.floor(255 * (1.0 - ratio))
@@ -449,11 +449,11 @@ describe("Evidence: lurek.audio waveform PNG", function()
     -- @evidence file
     it("renders all five waveforms in a single comparison image", function()
         local WAVES = {
-            {fn = function() return lurek.audio.newSineWave(    440, DUR, SR, 0.8) end, col = {80, 180, 240}},
-            {fn = function() return lurek.audio.newSquareWave(  440, DUR, SR, 0.8) end, col = {220, 100, 100}},
-            {fn = function() return lurek.audio.newSawtoothWave(440, DUR, SR, 0.8) end, col = {80, 220, 100}},
-            {fn = function() return lurek.audio.newTriangleWave(440, DUR, SR, 0.8) end, col = {240, 200,  50}},
-            {fn = function() return lurek.audio.newWhiteNoise(  DUR, SR, 0.8, 42) end,  col = {180, 120, 220}},
+            {fn = function() return lurek.dsp.newSineWave(    440, DUR, SR, 0.8) end, col = {80, 180, 240}},
+            {fn = function() return lurek.dsp.newSquareWave(  440, DUR, SR, 0.8) end, col = {220, 100, 100}},
+            {fn = function() return lurek.dsp.newSawtoothWave(440, DUR, SR, 0.8) end, col = {80, 220, 100}},
+            {fn = function() return lurek.dsp.newTriangleWave(440, DUR, SR, 0.8) end, col = {240, 200,  50}},
+            {fn = function() return lurek.dsp.newWhiteNoise(  DUR, SR, 0.8, 42) end,  col = {180, 120, 220}},
         }
         local IMG_W = 800
         local LANE_H = 80
@@ -478,15 +478,15 @@ describe("Evidence: lurek.audio waveform PNG", function()
 
     -- @evidence file
     it("WAV files: saves each waveform as a WAV file", function()
-        lurek.audio.saveWAV(lurek.audio.newSineWave(    440, 1.0, SR, 0.8),
+        lurek.audio.saveWAV(lurek.dsp.newSineWave(    440, 1.0, SR, 0.8),
             OUT .. "evidence_wave_sine.wav")
-        lurek.audio.saveWAV(lurek.audio.newSquareWave(  440, 1.0, SR, 0.8),
+        lurek.audio.saveWAV(lurek.dsp.newSquareWave(  440, 1.0, SR, 0.8),
             OUT .. "evidence_wave_square.wav")
-        lurek.audio.saveWAV(lurek.audio.newSawtoothWave(440, 1.0, SR, 0.8),
+        lurek.audio.saveWAV(lurek.dsp.newSawtoothWave(440, 1.0, SR, 0.8),
             OUT .. "evidence_wave_sawtooth.wav")
-        lurek.audio.saveWAV(lurek.audio.newTriangleWave(440, 1.0, SR, 0.8),
+        lurek.audio.saveWAV(lurek.dsp.newTriangleWave(440, 1.0, SR, 0.8),
             OUT .. "evidence_wave_triangle.wav")
-        lurek.audio.saveWAV(lurek.audio.newWhiteNoise(  1.0, SR, 0.8, 7),
+        lurek.audio.saveWAV(lurek.dsp.newWhiteNoise(  1.0, SR, 0.8, 7),
             OUT .. "evidence_wave_whitenoise.wav")
     end)
 
@@ -567,7 +567,7 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
         local dur_h = 0.1
         local n_h   = math.floor(dur_h * SR)
         -- Build white noise via newWhiteNoise then apply envelope via setSample
-        local noise = lurek.audio.newWhiteNoise(dur_h, SR, 0.9, 55)
+        local noise = lurek.dsp.newWhiteNoise(dur_h, SR, 0.9, 55)
         -- Apply exponential amplitude envelope in-place
         for i = 0, n_h - 1 do
             local t = i / SR
@@ -576,7 +576,7 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
             noise:setSample(i, v * env)
         end
         -- High-pass to make it sound like metal
-        lurek.audio.applyHighpass(noise, 5000)
+        lurek.dsp.applyHighpass(noise, 5000)
         lurek.audio.saveWAV(noise, OUT .. "evidence_drum_hihat.wav")
     end)
 
@@ -824,33 +824,33 @@ end)
 -- Merged from: test_evidence_audio_offline.lua
 -- ================================================================
 
--- Evidence test: proves lurek.audio.processOffline and lurek.audio.normalizeFile
+-- Evidence test: proves lurek.dsp.processOffline and lurek.dsp.normalize
 -- write valid WAV files to disk that contain non-trivial PCM data.
 -- Does NOT call raw draw calls. Litmus: delete offline.rs     these calls error.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = evidence_output_dir("audio")
 
--- @describe Evidence: lurek.audio.processOffline
-describe("Evidence: lurek.audio.processOffline", function()
+-- @describe Evidence: lurek.dsp.processOffline
+describe("Evidence: lurek.dsp.processOffline", function()
     -- @evidence file
     it("lowpass at 1 kHz produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_lowpass.wav"
-        lurek.audio.processOffline(WAVE, out, { { type = "lowpass", cutoff = 1000.0 } })
+        lurek.dsp.processOffline(WAVE, out, { { type = "lowpass", cutoff = 1000.0 } })
         expect_evidence_created(out)
     end)
 
     -- @evidence file
     it("reverb produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_reverb.wav"
-        lurek.audio.processOffline(WAVE, out, { { type = "reverb", room_size = 0.7, mix = 0.4 } })
+        lurek.dsp.processOffline(WAVE, out, { { type = "reverb", room_size = 0.7, mix = 0.4 } })
         expect_evidence_created(out)
     end)
 
     -- @evidence file
     it("chained effects produce a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_offline_chain.wav"
-        lurek.audio.processOffline(WAVE, out, {
+        lurek.dsp.processOffline(WAVE, out, {
             { type = "highpass",   cutoff = 200.0 },
             { type = "distortion", drive = 10.0, mix = 0.6 }
         })
@@ -858,12 +858,12 @@ describe("Evidence: lurek.audio.processOffline", function()
     end)
 end)
 
--- @describe Evidence: lurek.audio.normalizeFile
-describe("Evidence: lurek.audio.normalizeFile", function()
+-- @describe Evidence: lurek.dsp.normalize
+describe("Evidence: lurek.dsp.normalize", function()
     -- @evidence file
     it("normalizeFile at 0.9 produces a WAV file larger than 44 bytes", function()
         local out = OUT_DIR .. "evidence_normalized.wav"
-        lurek.audio.normalizeFile(WAVE, out, 0.9)
+        lurek.dsp.normalize(WAVE, out, 0.9)
         expect_evidence_created(out)
     end)
 end)
@@ -875,38 +875,39 @@ end)
 -- Merged from: test_evidence_audio_visualizer.lua
 -- ================================================================
 
--- Evidence test: proves lurek.audio.waveformToPng and lurek.audio.spectrogramToPng
+-- Evidence test: proves lurek.dsp.waveformToPng and lurek.dsp.spectrogramToPng
 -- create valid PNG image files from WAV audio data.
 -- Litmus: delete src/audio/visualizer.rs     these calls error out.
 
 local WAVE    = "tests/fixtures/sine_mono_44100.wav"
 local OUT_DIR = evidence_output_dir("audio")
 
--- @describe Evidence: lurek.audio.waveformToPng
-describe("Evidence: lurek.audio.waveformToPng", function()
+-- @describe Evidence: lurek.dsp.waveformToPng
+describe("Evidence: lurek.dsp.waveformToPng", function()
     -- @evidence file
     it("produces a 512x128 PNG waveform file larger than 100 bytes", function()
         local out = OUT_DIR .. "evidence_waveform.png"
-        lurek.audio.waveformToPng(WAVE, out, 512, 128)
+        lurek.dsp.waveformToPng(WAVE, out, 512, 128)
         expect_evidence_created(out)
     end)
 
     -- @evidence file
     it("produces a 1024x256 PNG waveform file", function()
         local out = OUT_DIR .. "evidence_waveform_large.png"
-        lurek.audio.waveformToPng(WAVE, out, 1024, 256)
+        lurek.dsp.waveformToPng(WAVE, out, 1024, 256)
         expect_evidence_created(out)
     end)
 end)
 
--- @describe Evidence: lurek.audio.spectrogramToPng
-describe("Evidence: lurek.audio.spectrogramToPng", function()
+-- @describe Evidence: lurek.dsp.spectrogramToPng
+describe("Evidence: lurek.dsp.spectrogramToPng", function()
     -- @evidence file
     it("produces a 512x256 PNG spectrogram file larger than 100 bytes", function()
         local out = OUT_DIR .. "evidence_spectrogram.png"
-        lurek.audio.spectrogramToPng(WAVE, out, 512, 256)
+        lurek.dsp.spectrogramToPng(WAVE, out, 512, 256)
         expect_evidence_created(out)
     end)
 
 end)
 test_summary()
+
