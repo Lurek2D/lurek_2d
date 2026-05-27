@@ -263,11 +263,10 @@ impl ModulesConfig {
     }
     /// Disable modules whose dependencies are not enabled and emit warnings.
     pub fn validate_and_fix(&mut self) {
-        if !self.audio
-            && self.dsp {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "dsp requires audio");
-                self.dsp = false;
-            }
+        if !self.audio && self.dsp {
+            log_msg!(warn, L050_MODULE_DEP_DISABLED, "dsp requires audio");
+            self.dsp = false;
+        }
         if !self.render {
             if self.minimap {
                 log_msg!(warn, L050_MODULE_DEP_DISABLED, "minimap requires render");

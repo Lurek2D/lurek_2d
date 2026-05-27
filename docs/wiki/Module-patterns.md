@@ -2182,15 +2182,20 @@ Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 ```lua
 do
     local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSequence("root_seq")
+    local seq = bt:addSequence("root_seq")
+    local check = bt:addLeaf("check")
     local act = bt:addLeaf("act")
-    bt:addChild(root, act)
+    bt:addChild(seq, check)
+    bt:addChild(seq, act)
+    bt:setLeaf("check", function()
+        return "success"
+    end)
     bt:setLeaf("act", function()
         return "success"
     end)
-    bt:setRoot(root)
+    bt:setRoot(seq)
+    print("node_count = " .. bt:nodeCount())
     print("result = " .. bt:tick())
-    print("type = " .. bt:type())
 end
 ```
 
@@ -5013,14 +5018,11 @@ Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
-    local factory = lurek.patterns.newFactory()
-    factory:register("bullet", function(speed)
-        return {speed = speed or 300, active = false}
-    end)
     local pool = lurek.patterns.newObjectPool()
-    pool:add(factory:create("bullet", 400))
-    local bullet = pool:acquire()
-    print("bullet speed = " .. tostring(bullet and bullet.speed))
+    pool:add({id = 1, active = false})
+    pool:add({id = 2, active = false})
+    local obj = pool:acquire()
+    print("acquired = " .. tostring(obj and obj.id))
     print("active = " .. pool:getActiveCount())
 end
 ```
@@ -5501,14 +5503,10 @@ Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
-    local graph = lurek.patterns.newGraph(true)
-    local start = graph:addNode("core")
-    local physics = graph:addNode("physics")
-    graph:addEdge(start, physics)
-    local order = graph:bfs(start)
-    print("bfs count = " .. #order)
-    print("connected = " .. tostring(graph:isConnected(start, physics)))
-end
+    local g = lurek.patterns.newGraph(true)
+    local a = g:addNode("start")
+    local b = g:addNode("mid")
+    local c = g:addNode("end")
 ```
 
 #### LPatternGraph:clearAll
@@ -5768,12 +5766,12 @@ Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
-    local graph = lurek.patterns.newGraph(true)
-    local a = graph:addNode("core")
-    local b = graph:addNode("physics")
-    graph:addEdge(a, b)
-    print("nodes = " .. graph:nodeCount())
-    print("edges = " .. graph:edgeCount())
+    local g = lurek.patterns.newGraph(true)
+    local a = g:addNode("A")
+    local b = g:addNode("B")
+    g:addEdge(a, b, 1.0, "road")
+    print("nodes = " .. g:nodeCount())
+    print("edges = " .. g:edgeCount())
 end
 ```
 

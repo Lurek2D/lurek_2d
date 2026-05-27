@@ -834,7 +834,7 @@ end
 
 --@api-stub: lurek.audio.processOffline
 do
-    local effects = {{ type = "lowpass", p1 = 1000 }, { type = "gain", p1 = 0.8 }}
+    local effects = {{ type = "lowpass", p1 = 1000 }, { type = "compressor", p1 = 0.8, p2 = 2.5, p3 = 0.1 }}
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "work/output/processed.wav"
     lurek.audio.processOffline(path_in, path_out, effects)
@@ -1023,7 +1023,7 @@ do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     local dur = src:getDuration()
-    print("duration = " .. dur .. "s")
+    print("duration = " .. tostring(dur) .. "s")
 end
 
 --@api-stub: LSource:tell
@@ -1237,7 +1237,7 @@ end
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
-    print("file = " .. player:getFilePath())
+    print("file = " .. tostring(player:getFilePath()))
 end
 
 --@api-stub: LMidiPlayer:setSoundFont
@@ -1509,7 +1509,7 @@ do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     local name = player:getTrackName(1)
-    print("track 1 = " .. name)
+    print("track 1 = " .. tostring(name))
 end
 
 --@api-stub: LMidiPlayer:setTrackMuted

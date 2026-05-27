@@ -7,6 +7,8 @@ use crate::log_msg;
 use crate::runtime::log_messages::AS01;
 #[derive(Debug, Clone, Copy)]
 /// 3D spatial attributes used for panning/attenuation and doppler calculations.
+///
+/// # Fields
 pub struct SpatialState {
     /// Source position as `[x, y, z]`.
     pub position: [f32; 3],
@@ -27,6 +29,8 @@ impl Default for SpatialState {
     }
 }
 /// Basic audio source metadata exposed to scripting and tools.
+///
+/// # Fields
 pub struct AudioSource {
     /// Stable source identifier assigned by the caller.
     pub id: usize,

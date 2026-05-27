@@ -1796,16 +1796,14 @@ Returns: `integer` - Episode count.
 
 #### Example
 
-Source: [ai.lua](../blob/main/content/examples/ai.lua)
+Source: [learning.lua](../blob/main/content/examples/learning.lua)
 
 ```lua
 do
-  local ql = lurek.ai.newQLearner(3, 2)
-  ql:endEpisode()
-  ql:endEpisode()
-  ql:endEpisode()
-  local episodes = ql:getEpisodeCount()
-  print("LQLearner:getEpisodeCount: " .. tostring(episodes))
+    local learner = lurek.learning.newQLearner(10, 4)
+    learner:endEpisode()
+    learner:endEpisode()
+    print("LQLearner:getEpisodeCount", learner:getEpisodeCount())
 end
 ```
 

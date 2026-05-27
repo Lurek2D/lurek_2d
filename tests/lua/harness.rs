@@ -131,13 +131,11 @@ fn run_lua_test_at_path(display_name: &str, file_path: &str) {
     // Print all failures with FAIL: prefix (parseable by parse_test_log.py)
     if failed > 0 {
         if let Ok(errors) = results.get::<_, mlua::Table>("errors") {
-            for pair in errors.pairs::<i64, mlua::Table>() {
-                if let Ok((_, err_tbl)) = pair {
-                    let suite: String = err_tbl.get("suite").unwrap_or_default();
-                    let test: String = err_tbl.get("test").unwrap_or_default();
-                    let error: String = err_tbl.get("error").unwrap_or_default();
-                    eprintln!("  FAIL: [{}] {} - {}", suite, test, error);
-                }
+            for (_, err_tbl) in errors.pairs::<i64, mlua::Table>().flatten() {
+                let suite: String = err_tbl.get("suite").unwrap_or_default();
+                let test: String = err_tbl.get("test").unwrap_or_default();
+                let error: String = err_tbl.get("error").unwrap_or_default();
+                eprintln!("  FAIL: [{}] {} - {}", suite, test, error);
             }
         }
     }
@@ -874,7 +872,6 @@ fn lua_evidence_imagedata_evidence() {
 fn lua_evidence_layers_evidence() {
     run_lua_test("evidence/test_layers_evidence.lua");
 }
-
 
 #[test]
 fn lua_evidence_math_evidence() {

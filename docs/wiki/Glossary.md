@@ -26,6 +26,7 @@ The glossary collects terms that appear across module and API pages.
 
 - `LAabbTree` ([lurek.math](Module-math)) - Lua-side wrapper for an AABB tree spatial index.
 - `LAccordion` ([lurek.ui](Module-ui)) - Adds accordion-specific methods to an accordion widget table.
+- `LAdsrEnvelope` ([lurek.dsp](Module-dsp)) - Lua-visible ADSR envelope object for sample stepping and buffer shaping.
 - `LAgent` ([lurek.ai](Module-ai)) - Lua handle for a named agent stored inside an AI world.
 - `LAIBlackboard` ([lurek.ai](Module-ai)) - Lua handle for a typed AI blackboard storing local key-value facts.
 - `LAIDirector` ([lurek.ai](Module-ai)) - Lua handle for an AI director that tracks encounter tension and pacing factors.
@@ -92,6 +93,8 @@ The glossary collects terms that appear across module and API pages.
 - `LDockPanel` ([lurek.ui](Module-ui)) - Adds dock-panel-specific methods to a dock panel widget table.
 - `LDoorManager` ([lurek.raycaster](Module-raycaster)) - Lua-visible door manager that controls sliding doors within a raycaster map.
 - `LDrawLayer` ([lurek.render](Module-render)) - Z-ordered draw callback layer for sorting draw calls by depth before flushing.
+- `LDspGraph` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph that stores nodes, edges, and offline processing order.
+- `LDspNode` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph node carrying type and simple numeric parameters.
 - `LEmotionModel` ([lurek.ai](Module-ai)) - Lua handle for decaying named emotion intensities.
 - `LEventBus` ([lurek.patterns](Module-patterns)) - Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 - `LFactory` ([lurek.patterns](Module-patterns)) - Lua-facing factory pattern for creating typed game objects from registered constructor functions.
@@ -135,12 +138,9 @@ The glossary collects terms that appear across module and API pages.
 - `LLayeredImage` ([lurek.image](Module-image)) - Lua-side handle for multiple image layers with visibility, opacity, and ordering.
 - `LLayout` ([lurek.ui](Module-ui)) - Adds layout-specific methods to a layout container widget table.
 - `LLazyQuery` ([lurek.dataframe](Module-dataframe)) - Lua-side lazy dataframe query pipeline.
+- `LLevelDetector` ([lurek.dsp](Module-dsp)) - Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.
 - `LLight` ([lurek.light](Module-light)) - Lua-side handle for a light stored in the shared light world.
 - `LLineChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a connected line series chart.
 - `LLineChart` ([lurek.ui](Module-ui)) - Lua-exposed line chart for data visualization.
 - `LList` ([lurek.patterns](Module-patterns)) - Lua-facing dynamic array list with indexed access, insertion, removal, and search.
 - `LListBox` ([lurek.ui](Module-ui)) - Adds list-box-specific methods to a list box widget table.
-- `LMap` ([lurek.patterns](Module-patterns)) - Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.
-- `LMapBlock` ([lurek.mapblock](Module-mapblock)) - Lua-facing map block exposed by the lurek engine.
-- `LMapBlock` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
-- `LMapBlockConfig` ([lurek.mapblock](Module-mapblock)) - Lua-facing map block configuration.

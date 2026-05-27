@@ -155,7 +155,6 @@ This module has no separate Lua-visible classes in the generated API data.
 ## 💡 Examples
 
 - [runtime.lua](../blob/main/content/examples/runtime.lua) - API example
-- [system.lua](../blob/main/content/examples/system.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

@@ -237,6 +237,84 @@ impl EffectParams {
         }
     }
 }
+
+/// Parse Lua-visible effect type name into `EffectType`.
+fn parse_effect_type(effect_type_str: &str) -> Result<EffectType, String> {
+    match effect_type_str {
+        "lowpass" => Ok(EffectType::Lowpass),
+        "highpass" => Ok(EffectType::Highpass),
+        "bandpass" => Ok(EffectType::Bandpass),
+        "reverb" => Ok(EffectType::Reverb),
+        "chorus" => Ok(EffectType::Chorus),
+        "notch" => Ok(EffectType::Notch),
+        "lowshelf" => Ok(EffectType::LowShelf),
+        "highshelf" => Ok(EffectType::HighShelf),
+        "bell_eq" => Ok(EffectType::BellEq),
+        "reverb2" => Ok(EffectType::Reverb2),
+        "flanger" => Ok(EffectType::Flanger),
+        "phaser" => Ok(EffectType::Phaser),
+        "distortion" => Ok(EffectType::Distortion),
+        "limiter" => Ok(EffectType::Limiter),
+        "compressor" => Ok(EffectType::Compressor),
+        other => Err(format!("invalid effect type: {}", other)),
+    }
+}
+
+/// Append an effect to a shared effect chain and return the assigned effect ID.
+pub fn add_effect_to_shared_chain(
+    shared_chain: &Arc<RwLock<Vec<Arc<EffectParams>>>>,
+    effect_type_str: &str,
+    p1_val: f32,
+) -> Result<u32, String> {
+    let effect_type = parse_effect_type(effect_type_str)?;
+    let mut fx_list = shared_chain
+        .write()
+        .map_err(|_| "audio bus effect chain lock poisoned".to_string())?;
+    let effect_id = (fx_list.len() + 1) as u32;
+    fx_list.push(Arc::new(EffectParams {
+        id: effect_id,
+        typ: effect_type,
+        p1: AtomicParam::new(p1_val),
+        p2: AtomicParam::new(1.0),
+        p3: AtomicParam::new(0.5),
+    }));
+    Ok(effect_id)
+}
+
+/// Remove the effect with `effect_id` from a shared effect chain.
+pub fn remove_effect_from_shared_chain(
+    shared_chain: &Arc<RwLock<Vec<Arc<EffectParams>>>>,
+    effect_id: u32,
+) -> Result<(), String> {
+    let mut fx_list = shared_chain
+        .write()
+        .map_err(|_| "audio bus effect chain lock poisoned".to_string())?;
+    let len_before = fx_list.len();
+    fx_list.retain(|fx| fx.id != effect_id);
+    if fx_list.len() == len_before {
+        Err(format!("effect {} not found", effect_id))
+    } else {
+        Ok(())
+    }
+}
+
+/// Set one named parameter on an existing effect inside a shared effect chain.
+pub fn set_shared_chain_effect_param(
+    shared_chain: &Arc<RwLock<Vec<Arc<EffectParams>>>>,
+    effect_id: u32,
+    param_name: &str,
+    value: f32,
+) -> Result<(), String> {
+    let fx_list = shared_chain
+        .read()
+        .map_err(|_| "audio bus effect chain lock poisoned".to_string())?;
+    let effect = fx_list
+        .iter()
+        .find(|fx| fx.id == effect_id)
+        .ok_or_else(|| format!("effect {} not found", effect_id))?;
+    effect.set_param(param_name, value)
+}
+
 #[derive(Clone)]
 /// Per-source instantiation of a DSP effect with its own filter and delay-line state.
 pub struct ActiveEffect {

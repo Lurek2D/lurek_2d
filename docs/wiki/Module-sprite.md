@@ -972,7 +972,6 @@ end
 
 ## 💡 Examples
 
-- [handles.lua](../blob/main/content/examples/handles.lua) - API example
 - [sprite.lua](../blob/main/content/examples/sprite.lua) - API example
 
 [⬆ back to top](#table-of-contents)

@@ -4,7 +4,8 @@
 //! Run: cargo test --test examples_load_test
 //!
 //! Each file is loaded in isolation. If it panics, the test fails.
-//! All 49 files are tested; report is printed at end.
+//! By default all example files are tested; set `LUREK_EXAMPLE_FILTER` to a
+//! comma-separated list of file names for a focused smoke check.
 
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
@@ -37,12 +38,36 @@ fn load_example(path: &str) -> Result<(), String> {
 fn examples_load_all() {
     let mut failed = Vec::new();
     let mut passed = 0usize;
+    let filter = std::env::var("LUREK_EXAMPLE_FILTER")
+        .ok()
+        .map(|raw| {
+            raw.split(',')
+                .map(str::trim)
+                .filter(|item| !item.is_empty())
+                .map(str::to_string)
+                .collect::<Vec<_>>()
+        })
+        .filter(|items| !items.is_empty());
 
     let mut paths: Vec<_> = std::fs::read_dir("content/examples")
         .expect("read_dir failed")
         .filter_map(|e| e.ok())
         .map(|e| e.path())
         .filter(|p| p.extension().map(|x| x == "lua").unwrap_or(false))
+        .filter(|p| {
+            if let Some(filter) = &filter {
+                let name = p
+                    .file_name()
+                    .and_then(|name| name.to_str())
+                    .unwrap_or_default();
+                let path = p.to_string_lossy();
+                filter
+                    .iter()
+                    .any(|item| item == name || path.ends_with(item))
+            } else {
+                true
+            }
+        })
         .collect();
     paths.sort();
 

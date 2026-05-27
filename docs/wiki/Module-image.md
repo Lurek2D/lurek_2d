@@ -3710,7 +3710,7 @@ end
 
 ## 🎮 Reference Games
 
-- [sprites](../tree/main/content/games/showcase/sprites) (showcase)
+No direct references were found in `content/games/**/main.lua`.
 
 [⬆ back to top](#table-of-contents)
 

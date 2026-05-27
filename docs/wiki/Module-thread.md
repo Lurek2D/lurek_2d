@@ -1019,13 +1019,23 @@ Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
-    local first = lurek.thread.async([[ return 10 ]])
-    while not first:isDone() do end
+    local first = lurek.thread.async([[
+        local result = lurek.thread.getChannel("__promise_result")
+        result:push(10)
+    ]])
+    local guard = 0
+    while not first:isDone() and guard < 10000 do
+        guard = guard + 1
+    end
     local second = first:chain([[
         local prev = ...
-        return prev * 3
+        local result = lurek.thread.getChannel("__promise_result")
+        result:push(prev * 3)
     ]])
-    while not second:isDone() do end
+    guard = 0
+    while not second:isDone() and guard < 10000 do
+        guard = guard + 1
+    end
     print("chain result = " .. tostring(second:result()))
 end
 ```
@@ -1198,53 +1208,12 @@ Returns: `string` - The error string, or `nil` if the thread completed successfu
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
---- Thread Module: channels, threads, pools, promises, async, worker capabilities
-
---@api-stub: lurek.thread.newChannel
 do
-    local ch = lurek.thread.newChannel()
-    print("type = " .. ch:type())
-    print("count = " .. ch:getCount())
-    print("bounded = " .. tostring(ch:isBounded()))
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    t:wait()
+    print("LThreadHandle:getError = " .. tostring(t:getError()))
 end
-
---@api-stub: lurek.thread.newBoundedChannel
-do
-    ---@type LChannel
-    local ch = lurek.thread.newBoundedChannel(10)
-    print("bounded = " .. tostring(ch:isBounded()))
-    print("capacity = " .. ch:getCapacity())
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:push
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    local id1 = ch:push("hello")
-    print("pushed id: " .. id1)
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:pop
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    ch:push("hello")
-    local val1 = ch:pop()
-    print("pop 1 = " .. tostring(val1))
-end
-
---@api-stub: LChannel:peek
-do
-    local ch = lurek.thread.newChannel()
-    ch:push("first")
-    print("peek = " .. tostring(ch:peek()))
-    print("count after peek = " .. ch:getCount())
-end
-
---@api-stub: LChannel:demand
-do
 ```
 
 #### LThreadHandle:isRunning
@@ -1268,53 +1237,11 @@ Returns: `boolean` - `true` if the thread has been started and has not yet finis
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
---- Thread Module: channels, threads, pools, promises, async, worker capabilities
-
---@api-stub: lurek.thread.newChannel
 do
-    local ch = lurek.thread.newChannel()
-    print("type = " .. ch:type())
-    print("count = " .. ch:getCount())
-    print("bounded = " .. tostring(ch:isBounded()))
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    print("LThreadHandle:isRunning = " .. tostring(t:isRunning()))
 end
-
---@api-stub: lurek.thread.newBoundedChannel
-do
-    ---@type LChannel
-    local ch = lurek.thread.newBoundedChannel(10)
-    print("bounded = " .. tostring(ch:isBounded()))
-    print("capacity = " .. ch:getCapacity())
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:push
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    local id1 = ch:push("hello")
-    print("pushed id: " .. id1)
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:pop
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    ch:push("hello")
-    local val1 = ch:pop()
-    print("pop 1 = " .. tostring(val1))
-end
-
---@api-stub: LChannel:peek
-do
-    local ch = lurek.thread.newChannel()
-    ch:push("first")
-    print("peek = " .. tostring(ch:peek()))
-    print("count after peek = " .. ch:getCount())
-end
-
---@api-stub: LChannel:demand
-do
 ```
 
 #### LThreadHandle:start
@@ -1340,53 +1267,11 @@ Parameters:
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
---- Thread Module: channels, threads, pools, promises, async, worker capabilities
-
---@api-stub: lurek.thread.newChannel
 do
-    local ch = lurek.thread.newChannel()
-    print("type = " .. ch:type())
-    print("count = " .. ch:getCount())
-    print("bounded = " .. tostring(ch:isBounded()))
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    print("LThreadHandle:start ok")
 end
-
---@api-stub: lurek.thread.newBoundedChannel
-do
-    ---@type LChannel
-    local ch = lurek.thread.newBoundedChannel(10)
-    print("bounded = " .. tostring(ch:isBounded()))
-    print("capacity = " .. ch:getCapacity())
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:push
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    local id1 = ch:push("hello")
-    print("pushed id: " .. id1)
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:pop
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    ch:push("hello")
-    local val1 = ch:pop()
-    print("pop 1 = " .. tostring(val1))
-end
-
---@api-stub: LChannel:peek
-do
-    local ch = lurek.thread.newChannel()
-    ch:push("first")
-    print("peek = " .. tostring(ch:peek()))
-    print("count after peek = " .. ch:getCount())
-end
-
---@api-stub: LChannel:demand
-do
 ```
 
 #### LThreadHandle:wait
@@ -1407,53 +1292,12 @@ Blocks the calling thread until the worker thread finishes execution.
 Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
---- Thread Module: channels, threads, pools, promises, async, worker capabilities
-
---@api-stub: lurek.thread.newChannel
 do
-    local ch = lurek.thread.newChannel()
-    print("type = " .. ch:type())
-    print("count = " .. ch:getCount())
-    print("bounded = " .. tostring(ch:isBounded()))
+    local t = lurek.thread.newThread("return 1")
+    t:start()
+    t:wait()
+    print("LThreadHandle:wait ok")
 end
-
---@api-stub: lurek.thread.newBoundedChannel
-do
-    ---@type LChannel
-    local ch = lurek.thread.newBoundedChannel(10)
-    print("bounded = " .. tostring(ch:isBounded()))
-    print("capacity = " .. ch:getCapacity())
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:push
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    local id1 = ch:push("hello")
-    print("pushed id: " .. id1)
-    print("count = " .. ch:getCount())
-end
-
---@api-stub: LChannel:pop
-do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    ch:push("hello")
-    local val1 = ch:pop()
-    print("pop 1 = " .. tostring(val1))
-end
-
---@api-stub: LChannel:peek
-do
-    local ch = lurek.thread.newChannel()
-    ch:push("first")
-    print("peek = " .. tostring(ch:peek()))
-    print("count after peek = " .. ch:getCount())
-end
-
---@api-stub: LChannel:demand
-do
 ```
 
 ### LThreadPool Methods

@@ -285,6 +285,10 @@ name = "audio_tests"
 path = "tests/rust/unit/audio_tests.rs"
 
 [[test]]
+name = "dsp_tests"
+path = "tests/rust/unit/dsp_tests.rs"
+
+[[test]]
 name = "camera_tests"
 path = "tests/rust/unit/camera_tests.rs"
 

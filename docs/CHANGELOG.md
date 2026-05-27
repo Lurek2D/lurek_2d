@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+ - refactor(audio,dsp): extract logic-heavy Lua registration closures into private helpers and return boolean success values for DSP offline file operations.
+ - fix(config): gate `lurek.dsp` registration with `modules.dsp` and keep `dsp` disabled when `audio` is disabled.
+ - test(dsp): move Rust-only DSP internals into `tests/rust/unit/dsp_tests.rs` and register the `dsp_tests` Cargo target.
+ - docs(audio,dsp): sync audio/DSP specs and add audit entry pages for `Audio-API` and `Dsp-API`.
+ - fix(examples): keep `thread.lua` promise chaining bounded and use supported offline DSP effect types in `audio.lua`.
+ - test(examples): allow `examples_load_test` to run a focused file subset with `LUREK_EXAMPLE_FILTER`.
  - content(examples): delete orphan `handles.lua`, `system.lua`, and `ecs_complete.lua`; remove cross-module duplicate ownership blocks from `ai.lua`, `effect.lua`, `math.lua`, `tilemap.lua`, and `ui.lua` so examples stay aligned to their owning modules.
  - fix(thread): replace `add_type_methods` on `LuaThreadHandle` with explicit `type`/`typeOf`/`__tostring` methods; correct `newThread` `@return` annotation from `LThreadHandle` to `LThread`; rename 4 `LThreadHandle:` stub markers in `content/examples/thread.lua` to `LThread:` and add `LThread:type`/`LThread:typeOf` stubs.
  - fix(examples): add `lurek.scene.depth` and `lurek.scene.update` coverage stubs to `content/examples/scene.lua`.

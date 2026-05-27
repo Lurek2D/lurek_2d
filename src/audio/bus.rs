@@ -1,15 +1,15 @@
 //! Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
 //!
 //! - Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
-//! - Dynamic add/remove of typed effects (lowpass, reverb, chorus, compressor, etc.) with runtime IDs.
 //! - Duck-target assignment enabling automatic cross-bus volume suppression.
 //! - Boundary clamping on volume, pitch, and duck volume values.
 
-use crate::dsp::{AtomicParam, EffectParams, EffectType};
 use crate::log_msg;
 use crate::runtime::log_messages::{BU01, BU02, BU03};
 #[derive(Debug, Clone)]
 /// Named audio routing channel that applies volume, pitch, effects, and ducking to its sources.
+///
+/// # Fields
 pub struct Bus {
     /// Human-readable identifier used as the registry key in `Mixer`.
     name: String,
@@ -20,8 +20,7 @@ pub struct Bus {
     /// When true, all sources assigned to this bus are suspended from playback.
     paused: bool,
     /// Shared DSP effect chain applied by `DynamicEffectSource` on every source in this bus.
-    pub effects:
-        std::sync::Arc<std::sync::RwLock<Vec<std::sync::Arc<crate::dsp::EffectParams>>>>,
+    pub effects: std::sync::Arc<std::sync::RwLock<Vec<std::sync::Arc<crate::dsp::EffectParams>>>>,
     /// Optional duck target: `(bus_name, duck_volume)` to suppress when this bus is active.
     pub duck_target: Option<(String, f32)>,
 }
@@ -72,48 +71,6 @@ impl Bus {
     /// Return `true` when this bus is paused.
     pub fn is_paused(&self) -> bool {
         self.paused
-    }
-    /// Append a DSP effect of `effect_type_str` with initial parameter `p1_val` to the chain; returns the new effect ID.
-    pub fn add_effect(&self, effect_type_str: &str, p1_val: f32) -> Result<u32, String> {
-        let effect_type = match effect_type_str {
-            "lowpass" => EffectType::Lowpass,
-            "highpass" => EffectType::Highpass,
-            "bandpass" => EffectType::Bandpass,
-            "reverb" => EffectType::Reverb,
-            "chorus" => EffectType::Chorus,
-            "notch" => EffectType::Notch,
-            "lowshelf" => EffectType::LowShelf,
-            "highshelf" => EffectType::HighShelf,
-            "bell_eq" => EffectType::BellEq,
-            "reverb2" => EffectType::Reverb2,
-            "flanger" => EffectType::Flanger,
-            "phaser" => EffectType::Phaser,
-            "distortion" => EffectType::Distortion,
-            "limiter" => EffectType::Limiter,
-            "compressor" => EffectType::Compressor,
-            other => return Err(format!("invalid effect type: {}", other)),
-        };
-        let mut fx_list = self.effects.write().unwrap();
-        let eid = (fx_list.len() + 1) as u32;
-        fx_list.push(std::sync::Arc::new(EffectParams {
-            id: eid,
-            typ: effect_type,
-            p1: AtomicParam::new(p1_val),
-            p2: AtomicParam::new(1.0),
-            p3: AtomicParam::new(0.5),
-        }));
-        Ok(eid)
-    }
-    /// Remove the DSP effect with `effect_id` from the chain; error if not found.
-    pub fn remove_effect(&self, effect_id: u32) -> Result<(), String> {
-        let mut fx_list = self.effects.write().unwrap();
-        let len_before = fx_list.len();
-        fx_list.retain(|fx| fx.id != effect_id);
-        if fx_list.len() == len_before {
-            Err(format!("effect {} not found", effect_id))
-        } else {
-            Ok(())
-        }
     }
     /// Set the duck target bus name and duck volume; volume is clamped to 0.0..=1.0.
     pub fn set_duck_target(&mut self, target_bus_name: impl Into<String>, duck_volume: f32) {

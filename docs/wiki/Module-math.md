@@ -5197,7 +5197,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local rng = lurek.math.newRandomGenerator(88)
+    local rng = lurek.math.newRandomGenerator(77)
     print("seed = " .. rng:getSeed())
 end
 ```

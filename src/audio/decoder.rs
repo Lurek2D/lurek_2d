@@ -9,6 +9,8 @@ use crate::log_msg;
 use crate::runtime::log_messages::AD01_AUDIO_DECODED;
 use crate::runtime::EngineError;
 /// Decodes an audio file into an i16 PCM buffer and provides seekable chunk iteration.
+///
+/// # Fields
 pub struct Decoder {
     /// Filesystem path of the source audio file.
     pub path: String,

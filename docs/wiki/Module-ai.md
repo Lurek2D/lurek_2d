@@ -3906,15 +3906,20 @@ Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 ```lua
 do
     local bt = lurek.patterns.newBehaviorTree()
-    local root = bt:addSequence("root_seq")
+    local seq = bt:addSequence("root_seq")
+    local check = bt:addLeaf("check")
     local act = bt:addLeaf("act")
-    bt:addChild(root, act)
+    bt:addChild(seq, check)
+    bt:addChild(seq, act)
+    bt:setLeaf("check", function()
+        return "success"
+    end)
     bt:setLeaf("act", function()
         return "success"
     end)
-    bt:setRoot(root)
+    bt:setRoot(seq)
+    print("node_count = " .. bt:nodeCount())
     print("result = " .. bt:tick())
-    print("type = " .. bt:type())
 end
 ```
 

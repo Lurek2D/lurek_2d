@@ -6,6 +6,8 @@
 
 use crate::runtime::resource_keys::SoundKey;
 /// Round-robin pool of preloaded source keys representing voices for one sound asset.
+///
+/// # Fields
 pub struct SoundPool {
     /// Source keys used as available voices.
     keys: Vec<SoundKey>,

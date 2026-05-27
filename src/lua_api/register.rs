@@ -10,13 +10,13 @@ use super::devtools_api;
 use super::flownet_api;
 use super::lua_module::ModuleEntry;
 use super::{
-    ai_api, animation_api, audio_api, camera_api, color_api, compute_api, binary_api, cursor_api,
+    ai_api, animation_api, audio_api, binary_api, camera_api, color_api, compute_api, cursor_api,
     dataframe_api, debugbridge_api, dialog_api, docs_api, dsp_api, ecs_api, effect_api, engine_api,
-    event_api, filesystem_api, font_api, globe_api, grep_api, html_api, i18n_api, image_api, input_api,
-    layout_api, learning_api, light_api, log_api, mapblock_api, math_api, midi_api, minimap_api,
-    mods_api, network_api, overlay_api, parallax_api, particle_api, pathfind_api, patterns_api,
-    physics_api, pipeline_api, procgen_api, province_api, raycaster_api, render_api, repl_api,
-    save_api, scene_api, serialize_api, spine_api, sprite_api, system_api, terminal_api,
+    event_api, filesystem_api, font_api, globe_api, grep_api, html_api, i18n_api, image_api,
+    input_api, layout_api, learning_api, light_api, log_api, mapblock_api, math_api, midi_api,
+    minimap_api, mods_api, network_api, overlay_api, parallax_api, particle_api, pathfind_api,
+    patterns_api, physics_api, pipeline_api, procgen_api, province_api, raycaster_api, render_api,
+    repl_api, save_api, scene_api, serialize_api, spine_api, sprite_api, system_api, terminal_api,
     thread_api, tilemap_api, timer_api, tween_api, ui_api, validator_api, visibility_api,
     window_api,
 };
@@ -102,7 +102,7 @@ static MODULES: &[ModuleEntry] = &[
     gated!(dialog_api, ai),
     gated!(learning_api, learning),
     gated!(audio_api, audio),
-    gated!(dsp_api, audio),
+    gated!(dsp_api, dsp),
     gated!(midi_api, audio),
     gated!(effect_api, effect),
     gated!(overlay_api, overlay),

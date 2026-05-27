@@ -3239,8 +3239,6 @@ end
 
 ## 🎮 Reference Games
 
-- [light_demo](../tree/main/content/games/showcase/light_demo) (showcase)
-- [vending_lights](../tree/main/content/games/showcase/vending_lights) (showcase)
 - [light_min](../tree/main/content/games/test/light_min) (test)
 
 [⬆ back to top](#table-of-contents)

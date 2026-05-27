@@ -2,8 +2,8 @@
 use super::SharedState;
 use crate::audio::sound_data::SoundData;
 use crate::audio::{Decoder, SourceType};
-use crate::midi::MidiPlayer;
 use crate::log_msg;
+use crate::midi::MidiPlayer;
 use crate::runtime::log_messages::LA01_API_STUB;
 use crate::runtime::resource_keys::{BusKey, QueueableKey, SoundKey};
 use mlua::prelude::*;
@@ -95,6 +95,239 @@ fn extract_sound_data_args(args: LuaMultiValue) -> LuaResult<(Option<String>, us
     };
     Ok((path, count, rate, channels))
 }
+
+fn helper_new_source(s: Rc<RefCell<SharedState>>, args: LuaMultiValue) -> LuaResult<LuaSource> {
+    let path: String = args
+        .get(0)
+        .and_then(|value| match value {
+            LuaValue::String(lua_string) => Some(lua_string.to_str().ok()?.to_string()),
+            _ => None,
+        })
+        .ok_or_else(|| LuaError::RuntimeError("lurek.audio.newSource: path required".into()))?;
+    let source_type = args
+        .get(1)
+        .and_then(|value| match value {
+            LuaValue::String(lua_string) => Some(lua_string.to_str().ok()?.to_string()),
+            _ => None,
+        })
+        .map(|source_type| match source_type.as_str() {
+            "static" => SourceType::Static,
+            _ => SourceType::Stream,
+        })
+        .unwrap_or(SourceType::Stream);
+    let mut state = s.borrow_mut();
+    let key = state.mixer.load_source(&path, source_type);
+    Ok(LuaSource {
+        state: s.clone(),
+        key,
+    })
+}
+
+fn helper_play(
+    s: Rc<RefCell<SharedState>>,
+    id_val: LuaValue,
+    options: Option<LuaTable>,
+) -> LuaResult<u64> {
+    let mut state = s.borrow_mut();
+    let key = require_sound_key(&state, &id_val, "lurek.audio.play")?;
+    if let Some(options) = options {
+        if let Ok(bus_name) = options.get::<_, String>("bus") {
+            if let Some(bus) = state.mixer.get_bus_by_name(&bus_name) {
+                state.mixer.set_source_bus(key, Some(bus));
+            } else {
+                return Err(LuaError::external("bus not found"));
+            }
+        }
+    }
+    let game_dir = state.game_dir.clone();
+    state.mixer.play(key, &game_dir);
+    Ok(key.data().as_ffi())
+}
+
+fn helper_get_source_type(s: Rc<RefCell<SharedState>>, id_val: LuaValue) -> LuaResult<String> {
+    let key = sound_key_from_value(&id_val)?;
+    let state = s.borrow();
+    match state.mixer.get_source_type(key) {
+        Some(SourceType::Static) => Ok("static".to_string()),
+        Some(SourceType::Stream) => Ok("stream".to_string()),
+        None => Err(LuaError::RuntimeError(
+            "lurek.audio.getSourceType: invalid source handle".into(),
+        )),
+    }
+}
+
+fn helper_clone(s: Rc<RefCell<SharedState>>, id_val: LuaValue) -> LuaResult<LuaSource> {
+    let key = sound_key_from_value(&id_val)?;
+    let mut state = s.borrow_mut();
+    match state.mixer.clone_source(key) {
+        Some(new_key) => Ok(LuaSource {
+            state: s.clone(),
+            key: new_key,
+        }),
+        None => Err(LuaError::RuntimeError(
+            "lurek.audio.clone: invalid source handle".into(),
+        )),
+    }
+}
+
+fn helper_release(s: Rc<RefCell<SharedState>>, id_val: LuaValue) -> LuaResult<bool> {
+    let key = sound_key_from_value(&id_val)?;
+    let mut state = s.borrow_mut();
+    if state.mixer.release(key) {
+        Ok(true)
+    } else {
+        Err(LuaError::RuntimeError(
+            "lurek.audio.release: invalid or already-released audio source handle".into(),
+        ))
+    }
+}
+
+fn helper_set_source_bus(
+    s: Rc<RefCell<SharedState>>,
+    id_val: LuaValue,
+    bus_val: LuaValue,
+) -> LuaResult<()> {
+    let key = sound_key_from_value(&id_val)?;
+    let bus_key = match &bus_val {
+        LuaValue::UserData(userdata) => {
+            let bus = userdata.borrow::<LuaBus>()?;
+            Some(bus.key)
+        }
+        _ => {
+            return Err(LuaError::RuntimeError(
+                "lurek.audio.setSourceBus: expected Bus userdata".into(),
+            ));
+        }
+    };
+    s.borrow_mut().mixer.set_source_bus(key, bus_key);
+    Ok(())
+}
+
+fn helper_get_source_bus(
+    s: Rc<RefCell<SharedState>>,
+    id_val: LuaValue,
+) -> LuaResult<Option<LuaBus>> {
+    let key = sound_key_from_value(&id_val)?;
+    let state = s.borrow();
+    match state.mixer.get_source_bus(key) {
+        Some(bus_key) => Ok(Some(LuaBus {
+            state: s.clone(),
+            key: bus_key,
+        })),
+        None => Ok(None),
+    }
+}
+
+fn helper_new_midi_player(
+    s: Rc<RefCell<SharedState>>,
+    path: Option<String>,
+) -> LuaResult<LuaMidiPlayer> {
+    let midi_player = MidiPlayer::new();
+    let inner = Rc::new(RefCell::new(midi_player));
+    let result = LuaMidiPlayer {
+        inner: inner.clone(),
+        state: s.clone(),
+    };
+    if let Some(path) = path {
+        let state = s.borrow();
+        let full_path = state.game_dir.join(&path);
+        drop(state);
+        inner.borrow_mut().load(&full_path);
+    }
+    Ok(result)
+}
+
+fn helper_get_playback_devices<'lua>(lua: &'lua Lua) -> LuaResult<LuaTable<'lua>> {
+    let devices = crate::audio::get_playback_devices();
+    let table = lua.create_table()?;
+    for (index, name) in devices.into_iter().enumerate() {
+        table.set(index + 1, name)?;
+    }
+    Ok(table)
+}
+
+fn helper_create_bus(
+    s: Rc<RefCell<SharedState>>,
+    (name, parent_name): (String, Option<String>),
+) -> LuaResult<()> {
+    if name.is_empty() {
+        return Err(LuaError::external("invalid bus name"));
+    }
+    let mut state = s.borrow_mut();
+    let _parent_key = parent_name.and_then(|parent| state.mixer.get_bus_by_name(&parent));
+    let _bus_key = state.mixer.new_bus(&name);
+    Ok(())
+}
+
+fn helper_set_bus_volume(
+    s: Rc<RefCell<SharedState>>,
+    (name, volume): (String, f32),
+) -> LuaResult<()> {
+    let mut state = s.borrow_mut();
+    if let Some(bus_key) = state.mixer.get_bus_by_name(&name) {
+        if let Some(bus) = state.mixer.get_bus_mut(bus_key) {
+            bus.set_volume(volume);
+            return Ok(());
+        }
+    }
+    Err(LuaError::external("bus not found"))
+}
+
+
+fn helper_mix_into((dest_ud, src_ud): (LuaAnyUserData, LuaAnyUserData)) -> LuaResult<()> {
+    let src_samples: Vec<f32> = {
+        let source = src_ud
+            .borrow::<SoundData>()
+            .map_err(|_| LuaError::RuntimeError("src must be a SoundData".into()))?;
+        source.samples().to_vec()
+    };
+    let src_data = {
+        let source = src_ud
+            .borrow::<SoundData>()
+            .map_err(|_| LuaError::RuntimeError("src must be a SoundData".into()))?;
+        SoundData::from_samples(src_samples, source.sample_rate(), source.channel_count())
+    };
+    let mut destination = dest_ud
+        .borrow_mut::<SoundData>()
+        .map_err(|_| LuaError::RuntimeError("dest must be a SoundData".into()))?;
+    destination.mix_into(&src_data);
+    Ok(())
+}
+
+fn helper_save_wav(
+    s: Rc<RefCell<SharedState>>,
+    (sd_ud, filename): (LuaAnyUserData, String),
+) -> LuaResult<()> {
+    let path = s.borrow().game_dir.join(&filename);
+    let sound_data = sd_ud
+        .borrow::<SoundData>()
+        .map_err(|_| LuaError::RuntimeError("argument must be a SoundData".into()))?;
+    let bytes = sound_data.encode_wav();
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(LuaError::external)?;
+    }
+    std::fs::write(&path, &bytes).map_err(LuaError::external)
+}
+
+fn helper_crossfade(
+    s: Rc<RefCell<SharedState>>,
+    (from_ud, to_ud, duration): (LuaAnyUserData, LuaAnyUserData, f32),
+) -> LuaResult<()> {
+    let from_key = from_ud
+        .borrow::<LuaSource>()
+        .map_err(|_| LuaError::RuntimeError("from must be an AudioSource".into()))?
+        .key;
+    let to_key = to_ud
+        .borrow::<LuaSource>()
+        .map_err(|_| LuaError::RuntimeError("to must be an AudioSource".into()))?
+        .key;
+    let game_dir = s.borrow().game_dir.clone();
+    s.borrow_mut()
+        .mixer
+        .crossfade(from_key, to_key, duration, &game_dir);
+    Ok(())
+}
+
 /// Lua-side wrapper around a loaded audio source (sound effect or music stream).
 #[derive(Clone)]
 pub struct LuaSource {
@@ -1025,6 +1258,7 @@ impl LuaUserData for LuaDecoder {
 /// Registers the `lurek.audio` Lua API table and userdata bindings.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // --- source lifecycle ----------------------------------------------------
     // -- newSource --
     /// Creates a new audio source from a file path, either fully loaded or streaming.
     /// @param | path | string | Relative path to the audio file (WAV, OGG, MP3, FLAC).
@@ -1033,34 +1267,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "newSource",
-        lua.create_function(move |_, args: LuaMultiValue| {
-            let path: String = args
-                .get(0)
-                .and_then(|v| match v {
-                    LuaValue::String(ls) => Some(ls.to_str().ok()?.to_string()),
-                    _ => None,
-                })
-                .ok_or_else(|| {
-                    LuaError::RuntimeError("lurek.audio.newSource: path required".into())
-                })?;
-            let source_type = args
-                .get(1)
-                .and_then(|v| match v {
-                    LuaValue::String(ls) => Some(ls.to_str().ok()?.to_string()),
-                    _ => None,
-                })
-                .map(|t| match t.as_str() {
-                    "static" => SourceType::Static,
-                    _ => SourceType::Stream,
-                })
-                .unwrap_or(SourceType::Stream);
-            let mut st = s.borrow_mut();
-            let key = st.mixer.load_source(&path, source_type);
-            Ok(LuaSource {
-                state: s.clone(),
-                key,
-            })
-        })?,
+        lua.create_function(move |_, args| helper_new_source(s.clone(), args))?,
     )?;
     // -- play --
     /// Starts playback of a source by handle, optionally routing through a named bus.
@@ -1070,24 +1277,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "play",
-        lua.create_function(
-            move |_, (id_val, options): (LuaValue, Option<mlua::Table>)| {
-                let mut st = s.borrow_mut();
-                let key = require_sound_key(&st, &id_val, "lurek.audio.play")?;
-                if let Some(opts) = options {
-                    if let Ok(bus_name) = opts.get::<_, String>("bus") {
-                        if let Some(bus) = st.mixer.get_bus_by_name(&bus_name) {
-                            st.mixer.set_source_bus(key, Some(bus));
-                        } else {
-                            return Err(LuaError::external("bus not found"));
-                        }
-                    }
-                }
-                let game_dir = st.game_dir.clone();
-                st.mixer.play(key, &game_dir);
-                Ok(key.data().as_ffi())
-            },
-        )?,
+        lua.create_function(move |_, (id_val, options)| helper_play(s.clone(), id_val, options))?,
     )?;
     // -- stop --
     /// Stops playback of a source and resets its position to the beginning.
@@ -1331,17 +1521,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "getSourceType",
-        lua.create_function(move |_, id_val: LuaValue| {
-            let key = sound_key_from_value(&id_val)?;
-            let st = s.borrow();
-            match st.mixer.get_source_type(key) {
-                Some(SourceType::Static) => Ok("static".to_string()),
-                Some(SourceType::Stream) => Ok("stream".to_string()),
-                None => Err(LuaError::RuntimeError(
-                    "lurek.audio.getSourceType: invalid source handle".into(),
-                )),
-            }
-        })?,
+        lua.create_function(move |_, id_val| helper_get_source_type(s.clone(), id_val))?,
     )?;
     // -- clone --
     /// Creates an independent copy of a source sharing the same audio data.
@@ -1350,19 +1530,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "clone",
-        lua.create_function(move |_, id_val: LuaValue| {
-            let key = sound_key_from_value(&id_val)?;
-            let mut st = s.borrow_mut();
-            match st.mixer.clone_source(key) {
-                Some(new_key) => Ok(LuaSource {
-                    state: s.clone(),
-                    key: new_key,
-                }),
-                None => Err(LuaError::RuntimeError(
-                    "lurek.audio.clone: invalid source handle".into(),
-                )),
-            }
-        })?,
+        lua.create_function(move |_, id_val| helper_clone(s.clone(), id_val))?,
     )?;
     // -- pauseAll --
     /// Pauses all currently playing audio sources.
@@ -1401,17 +1569,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "release",
-        lua.create_function(move |_, id_val: LuaValue| {
-            let key = sound_key_from_value(&id_val)?;
-            let mut st = s.borrow_mut();
-            if st.mixer.release(key) {
-                Ok(true)
-            } else {
-                Err(LuaError::RuntimeError(
-                    "lurek.audio.release: invalid or already-released audio source handle".into(),
-                ))
-            }
-        })?,
+        lua.create_function(move |_, id_val| helper_release(s.clone(), id_val))?,
     )?;
     // -- newBus --
     /// Creates a new audio mixing bus for grouping and controlling sources.
@@ -1436,21 +1594,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "setSourceBus",
-        lua.create_function(move |_, (id_val, bus_val): (LuaValue, LuaValue)| {
-            let key = sound_key_from_value(&id_val)?;
-            let bus_key = match &bus_val {
-                LuaValue::UserData(ud) => {
-                    let bus = ud.borrow::<LuaBus>()?;
-                    Some(bus.key)
-                }
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "lurek.audio.setSourceBus: expected Bus userdata".into(),
-                    ));
-                }
-            };
-            s.borrow_mut().mixer.set_source_bus(key, bus_key);
-            Ok(())
+        lua.create_function(move |_, (id_val, bus_val)| {
+            helper_set_source_bus(s.clone(), id_val, bus_val)
         })?,
     )?;
     // -- getSourceBus --
@@ -1460,17 +1605,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "getSourceBus",
-        lua.create_function(move |_, id_val: LuaValue| {
-            let key = sound_key_from_value(&id_val)?;
-            let st = s.borrow();
-            match st.mixer.get_source_bus(key) {
-                Some(bus_key) => Ok(Some(LuaBus {
-                    state: s.clone(),
-                    key: bus_key,
-                })),
-                None => Ok(None),
-            }
-        })?,
+        lua.create_function(move |_, id_val| helper_get_source_bus(s.clone(), id_val))?,
     )?;
     // -- getMaxSources --
     /// Returns the maximum number of simultaneous audio sources supported.
@@ -1823,21 +1958,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "newMidiPlayer",
-        lua.create_function(move |_, path: Option<String>| {
-            let mp = MidiPlayer::new();
-            let inner = Rc::new(RefCell::new(mp));
-            let result = LuaMidiPlayer {
-                inner: inner.clone(),
-                state: s.clone(),
-            };
-            if let Some(p) = path {
-                let st = s.borrow();
-                let full_path = st.game_dir.join(&p);
-                drop(st);
-                inner.borrow_mut().load(&full_path);
-            }
-            Ok(result)
-        })?,
+        lua.create_function(move |_, path| helper_new_midi_player(s.clone(), path))?,
     )?;
     // -- newSoundData --
     /// Creates a new SoundData object from a file path or blank buffer for procedural audio.
@@ -1990,14 +2111,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | string[] | Device name strings.
     tbl.set(
         "getPlaybackDevices",
-        lua.create_function(|lua, ()| {
-            let devices = crate::audio::get_playback_devices();
-            let t = lua.create_table()?;
-            for (i, name) in devices.into_iter().enumerate() {
-                t.set(i + 1, name)?;
-            }
-            Ok(t)
-        })?,
+        lua.create_function(|lua, ()| helper_get_playback_devices(lua))?,
     )?;
     /// Returns the name of the currently active audio playback device.
     /// @return | string | Current playback device name.
@@ -2020,15 +2134,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | parent_name | string? | Name of the parent bus, or nil for a root bus.
     tbl.set(
         "create_bus",
-        lua.create_function(move |_, (name, parent_name): (String, Option<String>)| {
-            if name.is_empty() {
-                return Err(LuaError::external("invalid bus name"));
-            }
-            let mut st = s.borrow_mut();
-            let _parent_key = parent_name.and_then(|n| st.mixer.get_bus_by_name(&n));
-            let _bus_key = st.mixer.new_bus(&name);
-            Ok(())
-        })?,
+        lua.create_function(move |_, args| helper_create_bus(s.clone(), args))?,
     )?;
 
     /// Sets the volume of a named audio bus.
@@ -2037,312 +2143,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "set_bus_volume",
-        lua.create_function(move |_, (name, volume): (String, f32)| {
-            let mut st = s.borrow_mut();
-            if let Some(bus_key) = st.mixer.get_bus_by_name(&name) {
-                if let Some(bus) = st.mixer.get_bus_mut(bus_key) {
-                    bus.set_volume(volume);
-                    return Ok(());
-                }
-            }
-            Err(LuaError::external("bus not found"))
-        })?,
-    )?;
-    let s = state.clone();
-    /// Adds an effect to a named audio bus and returns its effect ID.
-    /// @param | bus_name | string | Name of the audio bus.
-    /// @param | effect_type_str | string | Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
-    /// @param | params | table? | Optional parameters table; may include a `value` field.
-    /// @return | integer | Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
-    tbl.set(
-        "add_effect",
-        lua.create_function(
-            move |_, (bus_name, effect_type_str, params): (String, String, Option<mlua::Table>)| {
-                let st = s.borrow();
-                let bus_key = st
-                    .mixer
-                    .get_bus_by_name(&bus_name)
-                    .ok_or_else(|| LuaError::external(format!("Bus not found: {}", bus_name)))?;
-                let bus = st
-                    .mixer
-                    .get_bus(bus_key)
-                    .ok_or_else(|| LuaError::external(format!("Bus not found: {}", bus_name)))?;
-                let p1_val = params
-                    .as_ref()
-                    .and_then(|t| t.get::<_, f32>("value").ok())
-                    .unwrap_or(1000.0);
-                let eid = bus
-                    .add_effect(&effect_type_str, p1_val)
-                    .map_err(LuaError::RuntimeError)?;
-                Ok(Some(eid))
-            },
-        )?,
-    )?;
-    let s = state.clone();
-    /// Removes an effect from a named audio bus by effect ID.
-    /// @param | bus_name | string | Name of the audio bus.
-    /// @param | effect_id | integer | Effect ID returned by add_effect.
-    /// @return | boolean | True if the effect was successfully removed.
-    tbl.set(
-        "remove_effect",
-        lua.create_function(move |_, (bus_name, effect_id): (String, u32)| {
-            let st = s.borrow();
-            let bus_key = st
-                .mixer
-                .get_bus_by_name(&bus_name)
-                .ok_or_else(|| LuaError::external(format!("Bus not found: {}", bus_name)))?;
-            let bus = st
-                .mixer
-                .get_bus(bus_key)
-                .ok_or_else(|| LuaError::external(format!("Bus not found: {}", bus_name)))?;
-            bus.remove_effect(effect_id)
-                .map_err(LuaError::RuntimeError)
-                .map(|_| true)
-        })?,
-    )?;
-    let s = state.clone();
-    /// Sets a parameter value on an effect attached to a named audio bus.
-    /// @param | bus_name | string | Name of the audio bus.
-    /// @param | effect_id | integer | Effect ID returned by add_effect.
-    /// @param | param_name | string | Name of the effect parameter to set.
-    /// @param | value | number | New value for the parameter.
-    /// @return | boolean | True if the parameter was set successfully.
-    tbl.set(
-        "set_effect_param",
-        lua.create_function(
-            move |_, (bus_name, effect_id, param_name, value): (String, u32, String, f32)| {
-                let st = s.borrow();
-                let bus_key = st
-                    .mixer
-                    .get_bus_by_name(&bus_name)
-                    .ok_or_else(|| LuaError::external(format!("Bus not found: {}", bus_name)))?;
-                let bus = st
-                    .mixer
-                    .get_bus(bus_key)
-                    .ok_or_else(|| LuaError::external(format!("Bus not found: {}", bus_name)))?;
-                let fx_list = bus.effects.read().unwrap();
-                let fx = fx_list
-                    .iter()
-                    .find(|fx| fx.id == effect_id)
-                    .ok_or_else(|| {
-                        LuaError::external(format!("Effect not found: {}", effect_id))
-                    })?;
-                fx.set_param(&param_name, value)
-                    .map_err(LuaError::RuntimeError)
-                    .map(|_| true)
-            },
-        )?,
-    )?;
-    /// Generates a sine wave as a `SoundData` buffer.
-    /// @param | freq | number | Frequency in Hz (e.g. 440.0 for concert A).
-    /// @param | duration | number | Duration in seconds.
-    /// @param | sample_rate | integer | Sample rate in Hz (e.g. 44100).
-    /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
-    /// @return | LSoundData | A `SoundData` object containing the generated PCM samples.
-    tbl.set(
-        "newSineWave",
-        lua.create_function(
-            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-                Ok(SoundData::sine_wave(freq, duration, sample_rate, amplitude))
-            },
-        )?,
-    )?;
-    /// Generates a square wave as a `SoundData` buffer.
-    /// @param | freq | number | Frequency in Hz.
-    /// @param | duration | number | Duration in seconds.
-    /// @param | sample_rate | integer | Sample rate in Hz (e.g. 44100).
-    /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
-    /// @return | LSoundData | A `SoundData` object containing the generated PCM samples.
-    tbl.set(
-        "newSquareWave",
-        lua.create_function(
-            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-                Ok(SoundData::square_wave(
-                    freq,
-                    duration,
-                    sample_rate,
-                    amplitude,
-                ))
-            },
-        )?,
-    )?;
-    /// Generates a sawtooth wave as a `SoundData` buffer.
-    /// @param | freq | number | Frequency in Hz.
-    /// @param | duration | number | Duration in seconds.
-    /// @param | sample_rate | integer | Sample rate in Hz (e.g. 44100).
-    /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
-    /// @return | LSoundData | A `SoundData` object containing the generated PCM samples.
-    tbl.set(
-        "newSawtoothWave",
-        lua.create_function(
-            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-                Ok(SoundData::sawtooth_wave(
-                    freq,
-                    duration,
-                    sample_rate,
-                    amplitude,
-                ))
-            },
-        )?,
-    )?;
-    /// Generates a triangle wave as a `SoundData` buffer.
-    /// @param | freq | number | Frequency in Hz.
-    /// @param | duration | number | Duration in seconds.
-    /// @param | sample_rate | integer | Sample rate in Hz (e.g. 44100).
-    /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
-    /// @return | LSoundData | A `SoundData` object containing the generated PCM samples.
-    tbl.set(
-        "newTriangleWave",
-        lua.create_function(
-            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-                Ok(SoundData::triangle_wave(
-                    freq,
-                    duration,
-                    sample_rate,
-                    amplitude,
-                ))
-            },
-        )?,
-    )?;
-    /// Generates white noise as a `SoundData` buffer using a deterministic seed.
-    /// @param | duration | number | Duration in seconds.
-    /// @param | sample_rate | integer | Sample rate in Hz (e.g. 44100).
-    /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
-    /// @param | seed | integer | Seed value for the noise generator (same seed produces identical output).
-    /// @return | LSoundData | A `SoundData` object containing the generated PCM samples.
-    tbl.set(
-        "newWhiteNoise",
-        lua.create_function(
-            |_, (duration, sample_rate, amplitude, seed): (f32, u32, f32, u32)| {
-                Ok(SoundData::white_noise(
-                    duration,
-                    sample_rate,
-                    amplitude,
-                    seed,
-                ))
-            },
-        )?,
-    )?;
-    /// Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
-    /// @param | waveform | string | Wave type: `"sine"`, `"square"`, `"sawtooth"`, or `"triangle"`.
-    /// @param | freq | number | Frequency in Hz (e.g. 440.0 for concert A).
-    /// @param | duration | number | Duration in seconds.
-    /// @param | sample_rate | integer | Sample rate in Hz (e.g. 44100).
-    /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
-    /// @param | adsr | table? | Optional ADSR envelope with `attack`, `decay`, `sustain`, `release` fields (durations in seconds, sustain is a level in [0,1]).
-    /// @return | LSoundData | A `SoundData` object containing the generated PCM samples.
-    tbl.set(
-        "newSynthWave",
-        lua.create_function(
-            |_,
-             (waveform, freq, duration, sample_rate, amplitude, adsr): (
-                String,
-                f32,
-                f32,
-                u32,
-                f32,
-                Option<mlua::Table>,
-            )| {
-                let mut sd = match waveform.as_str() {
-                    "sine" => SoundData::sine_wave(freq, duration, sample_rate, amplitude),
-                    "square" => SoundData::square_wave(freq, duration, sample_rate, amplitude),
-                    "sawtooth" => SoundData::sawtooth_wave(freq, duration, sample_rate, amplitude),
-                    "triangle" => SoundData::triangle_wave(freq, duration, sample_rate, amplitude),
-                    other => {
-                        return Err(LuaError::RuntimeError(format!(
-                            "lurek.audio.newSynthWave: unknown waveform '{}'; expected sine, square, sawtooth, or triangle",
-                            other
-                        )))
-                    }
-                };
-                if let Some(env) = adsr {
-                    let attack: f32 = env.get("attack").unwrap_or(0.0);
-                    let decay: f32 = env.get("decay").unwrap_or(0.0);
-                    let sustain: f32 = env.get("sustain").unwrap_or(1.0);
-                    let release: f32 = env.get("release").unwrap_or(0.0);
-                    sd.apply_adsr(attack, decay, sustain, release);
-                }
-                Ok(sd)
-            },
-        )?,
-    )?;
-    /// Applies a lowpass filter in-place to the sound data.
-    /// @param | sd_ud | LSoundData | The sound data to process.
-    /// @param | cutoff_hz | number | Lowpass cutoff frequency in Hz.
-    tbl.set(
-        "applyLowpass",
-        lua.create_function(|_, (sd_ud, cutoff_hz): (LuaAnyUserData, f32)| {
-            let mut sd = sd_ud
-                .borrow_mut::<SoundData>()
-                .map_err(|_| LuaError::RuntimeError("argument must be a SoundData".into()))?;
-            sd.apply_lowpass(cutoff_hz);
-            Ok(())
-        })?,
-    )?;
-    /// Applies a highpass filter in-place to the sound data.
-    /// @param | sd_ud | LSoundData | The sound data to process.
-    /// @param | cutoff_hz | number | Highpass cutoff frequency in Hz.
-    tbl.set(
-        "applyHighpass",
-        lua.create_function(|_, (sd_ud, cutoff_hz): (LuaAnyUserData, f32)| {
-            let mut sd = sd_ud
-                .borrow_mut::<SoundData>()
-                .map_err(|_| LuaError::RuntimeError("argument must be a SoundData".into()))?;
-            sd.apply_highpass(cutoff_hz);
-            Ok(())
-        })?,
-    )?;
-    /// Applies a bandpass filter in-place to the sound data.
-    /// @param | sd_ud | LSoundData | The sound data to process.
-    /// @param | low_hz | number | Lower cutoff frequency in Hz.
-    /// @param | high_hz | number | Upper cutoff frequency in Hz.
-    tbl.set(
-        "applyBandpass",
-        lua.create_function(|_, (sd_ud, low_hz, high_hz): (LuaAnyUserData, f32, f32)| {
-            let mut sd = sd_ud
-                .borrow_mut::<SoundData>()
-                .map_err(|_| LuaError::RuntimeError("argument must be a SoundData".into()))?;
-            sd.apply_bandpass(low_hz, high_hz);
-            Ok(())
-        })?,
-    )?;
-    /// Applies a gain multiplier in-place to the sound data.
-    /// @param | sd_ud | LSoundData | The sound data to process.
-    /// @param | gain | number | Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
-    tbl.set(
-        "applyGain",
-        lua.create_function(|_, (sd_ud, gain): (LuaAnyUserData, f32)| {
-            let mut sd = sd_ud
-                .borrow_mut::<SoundData>()
-                .map_err(|_| LuaError::RuntimeError("argument must be a SoundData".into()))?;
-            sd.apply_gain(gain);
-            Ok(())
-        })?,
+        lua.create_function(move |_, args| helper_set_bus_volume(s.clone(), args))?,
     )?;
     /// Mixes the samples of `src` into `dest` in-place (both must have the same format).
     /// @param | dest_ud | LSoundData | Destination sound data to mix into.
     /// @param | src_ud | LSoundData | Source sound data to mix from.
     tbl.set(
         "mixInto",
-        lua.create_function(|_, (dest_ud, src_ud): (LuaAnyUserData, LuaAnyUserData)| {
-            let src_samples: Vec<f32> = {
-                let src = src_ud
-                    .borrow::<SoundData>()
-                    .map_err(|_| LuaError::RuntimeError("src must be a SoundData".into()))?;
-                src.samples().to_vec()
-            };
-            let src_data = {
-                let src = src_ud
-                    .borrow::<SoundData>()
-                    .map_err(|_| LuaError::RuntimeError("src must be a SoundData".into()))?;
-                SoundData::from_samples(src_samples, src.sample_rate(), src.channel_count())
-            };
-            let mut dest = dest_ud
-                .borrow_mut::<SoundData>()
-                .map_err(|_| LuaError::RuntimeError("dest must be a SoundData".into()))?;
-            dest.mix_into(&src_data);
-            Ok(())
-        })?,
+        lua.create_function(|_, args| helper_mix_into(args))?,
     )?;
     let s = state.clone();
     /// Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
@@ -2350,17 +2158,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | filename | string | Relative output path for the WAV file.
     tbl.set(
         "saveWAV",
-        lua.create_function(move |_, (sd_ud, filename): (LuaAnyUserData, String)| {
-            let path = s.borrow().game_dir.join(&filename);
-            let sd = sd_ud
-                .borrow::<SoundData>()
-                .map_err(|_| LuaError::RuntimeError("argument must be a SoundData".into()))?;
-            let bytes = sd.encode_wav();
-            if let Some(parent) = path.parent() {
-                std::fs::create_dir_all(parent).map_err(LuaError::external)?;
-            }
-            std::fs::write(&path, &bytes).map_err(LuaError::external)
-        })?,
+        lua.create_function(move |_, args| helper_save_wav(s.clone(), args))?,
     )?;
     let s = state.clone();
     /// Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
@@ -2435,23 +2233,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | duration | number | Crossfade duration in seconds.
     tbl.set(
         "crossfade",
-        lua.create_function(
-            move |_, (from_ud, to_ud, duration): (LuaAnyUserData, LuaAnyUserData, f32)| {
-                let from_key = from_ud
-                    .borrow::<LuaSource>()
-                    .map_err(|_| LuaError::RuntimeError("from must be an AudioSource".into()))?
-                    .key;
-                let to_key = to_ud
-                    .borrow::<LuaSource>()
-                    .map_err(|_| LuaError::RuntimeError("to must be an AudioSource".into()))?
-                    .key;
-                let game_dir = s.borrow().game_dir.clone();
-                s.borrow_mut()
-                    .mixer
-                    .crossfade(from_key, to_key, duration, &game_dir);
-                Ok(())
-            },
-        )?,
+        lua.create_function(move |_, args| helper_crossfade(s.clone(), args))?,
     )?;
     let s = state.clone();
     /// Returns the peak amplitude of the named audio bus over the last processing frame.
@@ -2497,124 +2279,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 state: s.clone(),
             })
         })?,
-    )?;
-    let s = state.clone();
-    /// Processes an audio file offline through a chain of effects and writes the result to an output file.
-    /// @param | input | string | Relative path to the input audio file.
-    /// @param | output | string | Relative path for the output WAV file.
-    /// @param | effects_tbl | table | Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
-    tbl.set(
-        "processOffline",
-        lua.create_function(
-            move |_, (input, output, effects_tbl): (String, String, mlua::Table)| {
-                if input.contains("..") || output.contains("..") {
-                    return Err(LuaError::external("path traversal not allowed"));
-                }
-                let game_dir = s.borrow().game_dir.clone();
-                let input_path = game_dir.join(&input).to_string_lossy().into_owned();
-                let output_path = game_dir.join(&output).to_string_lossy().into_owned();
-                let mut effects = Vec::new();
-                for pair in effects_tbl.sequence_values::<mlua::Table>() {
-                    let t = pair.map_err(LuaError::external)?;
-                    let typ_str: String = t.get("type").unwrap_or_default();
-                    let p1: f32 = t.get("p1").unwrap_or(1000.0);
-                    let p2: f32 = t.get("p2").unwrap_or(1.0);
-                    let p3: f32 = t.get("p3").unwrap_or(0.5);
-                    use crate::dsp::EffectType;
-                    let typ = match typ_str.as_str() {
-                        "lowpass" => EffectType::Lowpass,
-                        "highpass" => EffectType::Highpass,
-                        "bandpass" => EffectType::Bandpass,
-                        "reverb" => EffectType::Reverb,
-                        "chorus" => EffectType::Chorus,
-                        "notch" => EffectType::Notch,
-                        "lowshelf" => EffectType::LowShelf,
-                        "highshelf" => EffectType::HighShelf,
-                        "bell_eq" => EffectType::BellEq,
-                        "reverb2" => EffectType::Reverb2,
-                        "flanger" => EffectType::Flanger,
-                        "phaser" => EffectType::Phaser,
-                        "distortion" => EffectType::Distortion,
-                        "limiter" => EffectType::Limiter,
-                        "compressor" => EffectType::Compressor,
-                        other => {
-                            return Err(LuaError::external(format!(
-                                "unknown effect type: {}",
-                                other
-                            )))
-                        }
-                    };
-                    effects.push(crate::dsp::OfflineEffect { typ, p1, p2, p3 });
-                }
-                crate::dsp::offline::process_offline(&input_path, &output_path, &effects)
-                    .map_err(LuaError::external)
-            },
-        )?,
-    )?;
-    let s = state.clone();
-    /// Normalizes an audio file to a target peak amplitude and saves the result.
-    /// @param | input | string | Relative path to the input audio file.
-    /// @param | output | string | Relative path for the output WAV file.
-    /// @param | target | number | Target peak amplitude (e.g. 0.9 for headroom).
-    tbl.set(
-        "normalizeFile",
-        lua.create_function(move |_, (input, output, target): (String, String, f32)| {
-            if input.contains("..") || output.contains("..") {
-                return Err(LuaError::external("path traversal not allowed"));
-            }
-            let game_dir = s.borrow().game_dir.clone();
-            let input_path = game_dir.join(&input).to_string_lossy().into_owned();
-            let output_path = game_dir.join(&output).to_string_lossy().into_owned();
-            crate::dsp::offline::normalize_file(&input_path, &output_path, target)
-                .map_err(LuaError::external)
-        })?,
-    )?;
-    let s = state.clone();
-    /// Renders a waveform visualization of an audio file and saves it as a PNG image.
-    /// @param | input | string | Relative path to the input audio file.
-    /// @param | output | string | Relative path for the output PNG file.
-    /// @param | width | integer | Image width in pixels.
-    /// @param | height | integer | Image height in pixels.
-    tbl.set(
-        "waveformToPng",
-        lua.create_function(
-            move |_, (input, output, width, height): (String, String, u32, u32)| {
-                if input.contains("..") || output.contains("..") {
-                    return Err(LuaError::external("path traversal not allowed"));
-                }
-                let game_dir = s.borrow().game_dir.clone();
-                let input_path = game_dir.join(&input).to_string_lossy().into_owned();
-                let output_path = game_dir.join(&output).to_string_lossy().into_owned();
-                crate::dsp::visualizer::waveform_to_png(&input_path, &output_path, width, height)
-                    .map_err(LuaError::external)
-            },
-        )?,
-    )?;
-    let s = state.clone();
-    /// Renders a spectrogram visualization of an audio file and saves it as a PNG image.
-    /// @param | input | string | Relative path to the input audio file.
-    /// @param | output | string | Relative path for the output PNG file.
-    /// @param | width | integer | Image width in pixels.
-    /// @param | height | integer | Image height in pixels.
-    tbl.set(
-        "spectrogramToPng",
-        lua.create_function(
-            move |_, (input, output, width, height): (String, String, u32, u32)| {
-                if input.contains("..") || output.contains("..") {
-                    return Err(LuaError::external("path traversal not allowed"));
-                }
-                let game_dir = s.borrow().game_dir.clone();
-                let input_path = game_dir.join(&input).to_string_lossy().into_owned();
-                let output_path = game_dir.join(&output).to_string_lossy().into_owned();
-                crate::dsp::visualizer::spectrogram_to_png(
-                    &input_path,
-                    &output_path,
-                    width,
-                    height,
-                )
-                .map_err(LuaError::external)
-            },
-        )?,
     )?;
     /// Performs the 'audio' operation.
     lurek.set("audio", tbl)?;

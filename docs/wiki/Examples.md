@@ -31,7 +31,6 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [docs.lua](../blob/main/content/examples/docs.lua) | `lurek.docs` | API example |
 | [dsp.lua](../blob/main/content/examples/dsp.lua) | `lurek.dsp` | API example |
 | [ecs.lua](../blob/main/content/examples/ecs.lua) | `lurek.ecs` | API example |
-| [ecs_complete.lua](../blob/main/content/examples/ecs_complete.lua) | `lurek.ecs` | API example |
 | [effect.lua](../blob/main/content/examples/effect.lua) | `lurek.effect` | API example |
 | [engine.lua](../blob/main/content/examples/engine.lua) | `lurek.engine` | API example |
 | [event.lua](../blob/main/content/examples/event.lua) | `lurek.event` | API example |
@@ -67,12 +66,10 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [render.lua](../blob/main/content/examples/render.lua) | `lurek.render` | API example |
 | [repl.lua](../blob/main/content/examples/repl.lua) | `lurek.repl` | API example |
 | [runtime.lua](../blob/main/content/examples/runtime.lua) | `lurek.runtime` | API example |
-| [system.lua](../blob/main/content/examples/system.lua) | `lurek.runtime` | API example |
 | [save.lua](../blob/main/content/examples/save.lua) | `lurek.save` | API example |
 | [scene.lua](../blob/main/content/examples/scene.lua) | `lurek.scene` | API example |
 | [serialize.lua](../blob/main/content/examples/serialize.lua) | `lurek.serial` | API example |
 | [spine.lua](../blob/main/content/examples/spine.lua) | `lurek.spine` | API example |
-| [handles.lua](../blob/main/content/examples/handles.lua) | `lurek.sprite` | API example |
 | [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.sprite` | API example |
 | [terminal.lua](../blob/main/content/examples/terminal.lua) | `lurek.terminal` | API example |
 | [thread.lua](../blob/main/content/examples/thread.lua) | `lurek.thread` | API example |

@@ -233,10 +233,12 @@ Source: [scene.lua](../blob/main/content/examples/scene.lua)
 
 ```lua
 do
-    local scene = lurek.scene.new({ name = "layered" })
-    lurek.scene.push(scene)
-    print("depth = " .. lurek.scene.depth())
     lurek.scene.clear()
+    local d0 = lurek.scene.depth()
+    lurek.scene.push(lurek.scene.new({ name = "d1" }))
+    local d1 = lurek.scene.depth()
+    lurek.scene.clear()
+    print("depth 0=" .. d0 .. " 1=" .. d1)
 end
 ```
 
@@ -329,9 +331,8 @@ Source: [scene.lua](../blob/main/content/examples/scene.lua)
 
 ```lua
 do
-    local transition = lurek.scene.transitions.fade(0.5)
-    print("helper type = " .. transition.type)
-    print("helper duration = " .. transition.duration)
+    local fade = lurek.scene.transitions.fade(0.5)
+    print("fade type = " .. fade.type .. " dur = " .. fade.duration)
 end
 ```
 
@@ -798,9 +799,8 @@ Source: [scene.lua](../blob/main/content/examples/scene.lua)
 
 ```lua
 do
-    local transition = lurek.scene.transitions.iris(0.8)
-    print("helper type = " .. transition.type)
-    print("helper duration = " .. transition.duration)
+    local iris = lurek.scene.transitions.iris(0.6)
+    print("iris type = " .. iris.type .. " dur = " .. iris.duration)
 end
 ```
 
@@ -1995,9 +1995,8 @@ Source: [scene.lua](../blob/main/content/examples/scene.lua)
 
 ```lua
 do
-    local transition = lurek.scene.transitions.slide("right", 0.4)
-    print("helper type = " .. transition.type)
-    print("helper duration = " .. transition.duration)
+    local slide = lurek.scene.transitions.slide("left", 0.4)
+    print("slide type = " .. slide.type .. " dur = " .. slide.duration)
 end
 ```
 
@@ -2116,28 +2115,13 @@ Source: [scene.lua](../blob/main/content/examples/scene.lua)
 
 ```lua
 do
-    local updateCount = 0
-    local drawCount = 0
-    local processCount = 0
-    local scene = lurek.scene.new({
-        update = function(self, dt)
-            self.last_dt = dt
-            updateCount = updateCount + 1
-        end,
-        draw = function()
-            drawCount = drawCount + 1
-        end,
-        process = function()
-            processCount = processCount + 1
-        end,
-    })
-    lurek.scene.push(scene)
-    lurek.scene.update(1 / 60)
-    lurek.scene.process(1 / 60)
-    lurek.scene.draw()
-    print("updates = " .. updateCount)
-    print("draws = " .. drawCount .. " processes = " .. processCount)
+    -- update advances transitions and dispatches the update callback to the top scene
     lurek.scene.clear()
+    local s = lurek.scene.new({ name = "update_test" })
+    lurek.scene.push(s)
+    lurek.scene.update(0.016)
+    lurek.scene.clear()
+    print("lurek.scene.update ok")
 end
 ```
 
@@ -2168,9 +2152,8 @@ Source: [scene.lua](../blob/main/content/examples/scene.lua)
 
 ```lua
 do
-    local transition = lurek.scene.transitions.wipe(0.6)
-    print("helper type = " .. transition.type)
-    print("helper duration = " .. transition.duration)
+    local wipe = lurek.scene.transitions.wipe(0.5)
+    print("wipe type = " .. wipe.type .. " dur = " .. wipe.duration)
 end
 ```
 

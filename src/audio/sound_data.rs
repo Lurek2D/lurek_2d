@@ -10,6 +10,8 @@
 use rodio::Source;
 #[derive(Debug, Clone)]
 /// In-memory interleaved f32 PCM data with metadata and utility transforms.
+///
+/// # Fields
 pub struct SoundData {
     /// Interleaved audio samples in the range [-1.0, 1.0].
     samples: Vec<f32>,
@@ -385,10 +387,16 @@ impl SoundData {
         let s_level = sustain.clamp(0.0, 1.0);
         for (i, s) in self.samples.iter_mut().enumerate() {
             let env = if i < a_end {
-                if a_end == 0 { 1.0 } else { i as f32 / a_end as f32 }
+                if a_end == 0 {
+                    1.0
+                } else {
+                    i as f32 / a_end as f32
+                }
             } else if i < d_end {
                 let span = (d_end - a_end) as f32;
-                if span == 0.0 { s_level } else {
+                if span == 0.0 {
+                    s_level
+                } else {
                     let t = (i - a_end) as f32 / span;
                     1.0 - (1.0 - s_level) * t
                 }
@@ -396,7 +404,9 @@ impl SoundData {
                 s_level
             } else {
                 let span = (n - r_start) as f32;
-                if span == 0.0 { 0.0 } else {
+                if span == 0.0 {
+                    0.0
+                } else {
                     let t = (i - r_start) as f32 / span;
                     s_level * (1.0 - t)
                 }

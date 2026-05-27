@@ -252,13 +252,23 @@ end
 
 --@api-stub: LPromise:chain
 do
-    local first = lurek.thread.async([[ return 10 ]])
-    while not first:isDone() do end
+    local first = lurek.thread.async([[
+        local result = lurek.thread.getChannel("__promise_result")
+        result:push(10)
+    ]])
+    local guard = 0
+    while not first:isDone() and guard < 10000 do
+        guard = guard + 1
+    end
     local second = first:chain([[
         local prev = ...
-        return prev * 3
+        local result = lurek.thread.getChannel("__promise_result")
+        result:push(prev * 3)
     ]])
-    while not second:isDone() do end
+    guard = 0
+    while not second:isDone() and guard < 10000 do
+        guard = guard + 1
+    end
     print("chain result = " .. tostring(second:result()))
 end
 

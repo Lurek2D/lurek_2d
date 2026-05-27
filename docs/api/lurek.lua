@@ -10,6 +10,9 @@ lurek = {}
 ---@class LSpacer : LUiWidget
 LSpacer = {}
 
+---@class LThread
+LThread = {}
+
 ---@class LuaAnimatedCursor
 LuaAnimatedCursor = {}
 
@@ -2555,34 +2558,6 @@ function LSource:type() end
 ---@return boolean True if this object matches the given type.
 function LSource:typeOf(name) end
 
---- Adds an effect to a named audio bus and returns its effect ID.
----@param bus_name string Name of the audio bus.
----@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
----@param params? table Optional parameters table; may include a `value` field.
----@return number Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
-lurek.audio.add_effect = function(bus_name, effect_type_str, params) end
-
---- Applies a bandpass filter in-place to the sound data.
----@param sd_ud LSoundData The sound data to process.
----@param low_hz number Lower cutoff frequency in Hz.
----@param high_hz number Upper cutoff frequency in Hz.
-lurek.audio.applyBandpass = function(sd_ud, low_hz, high_hz) end
-
---- Applies a gain multiplier in-place to the sound data.
----@param sd_ud LSoundData The sound data to process.
----@param gain number Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
-lurek.audio.applyGain = function(sd_ud, gain) end
-
---- Applies a highpass filter in-place to the sound data.
----@param sd_ud LSoundData The sound data to process.
----@param cutoff_hz number Highpass cutoff frequency in Hz.
-lurek.audio.applyHighpass = function(sd_ud, cutoff_hz) end
-
---- Applies a lowpass filter in-place to the sound data.
----@param sd_ud LSoundData The sound data to process.
----@param cutoff_hz number Lowpass cutoff frequency in Hz.
-lurek.audio.applyLowpass = function(sd_ud, cutoff_hz) end
-
 --- Removes all frequency filters from a source.
 ---@param source LSource|number Audio source or numeric source ID.
 lurek.audio.clearFilter = function(source) end
@@ -2810,22 +2785,6 @@ lurek.audio.newPool = function(file_path, voice_count) end
 ---@return number An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`.
 lurek.audio.newQueueableSource = function(sample_rate, bit_depth, channels, buffer_count) end
 
---- Generates a sawtooth wave as a `SoundData` buffer.
----@param freq number Frequency in Hz.
----@param duration number Duration in seconds.
----@param sample_rate number Sample rate in Hz (e.g. 44100).
----@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@return LSoundData A `SoundData` object containing the generated PCM samples.
-lurek.audio.newSawtoothWave = function(freq, duration, sample_rate, amplitude) end
-
---- Generates a sine wave as a `SoundData` buffer.
----@param freq number Frequency in Hz (e.g. 440.0 for concert A).
----@param duration number Duration in seconds.
----@param sample_rate number Sample rate in Hz (e.g. 44100).
----@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@return LSoundData A `SoundData` object containing the generated PCM samples.
-lurek.audio.newSineWave = function(freq, duration, sample_rate, amplitude) end
-
 --- Creates a new SoundData object from a file path or blank buffer for procedural audio.
 ---@param pathOrCount string|number File path to decode, or sample count for blank buffer.
 ---@param sampleRate number Sample rate in Hz (e.g. 44100, 48000).
@@ -2838,46 +2797,6 @@ lurek.audio.newSoundData = function(pathOrCount, sampleRate, channels) end
 ---@param sourceType? string "static" to load fully into memory, or "stream" (default) for streaming.
 ---@return LSource A new audio source ready for playback.
 lurek.audio.newSource = function(path, sourceType) end
-
---- Generates a square wave as a `SoundData` buffer.
----@param freq number Frequency in Hz.
----@param duration number Duration in seconds.
----@param sample_rate number Sample rate in Hz (e.g. 44100).
----@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@return LSoundData A `SoundData` object containing the generated PCM samples.
-lurek.audio.newSquareWave = function(freq, duration, sample_rate, amplitude) end
-
---- Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
----@param waveform string Wave type: `"sine"`, `"square"`, `"sawtooth"`, or `"triangle"`.
----@param freq number Frequency in Hz (e.g. 440.0 for concert A).
----@param duration number Duration in seconds.
----@param sample_rate number Sample rate in Hz (e.g. 44100).
----@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@param adsr? table Optional ADSR envelope with `attack`, `decay`, `sustain`, `release` fields (durations in seconds, sustain is a level in [0,1]).
----@return LSoundData A `SoundData` object containing the generated PCM samples.
-lurek.audio.newSynthWave = function(waveform, freq, duration, sample_rate, amplitude, adsr) end
-
---- Generates a triangle wave as a `SoundData` buffer.
----@param freq number Frequency in Hz.
----@param duration number Duration in seconds.
----@param sample_rate number Sample rate in Hz (e.g. 44100).
----@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@return LSoundData A `SoundData` object containing the generated PCM samples.
-lurek.audio.newTriangleWave = function(freq, duration, sample_rate, amplitude) end
-
---- Generates white noise as a `SoundData` buffer using a deterministic seed.
----@param duration number Duration in seconds.
----@param sample_rate number Sample rate in Hz (e.g. 44100).
----@param amplitude number Peak amplitude in the range [0.0, 1.0].
----@param seed number Seed value for the noise generator (same seed produces identical output).
----@return LSoundData A `SoundData` object containing the generated PCM samples.
-lurek.audio.newWhiteNoise = function(duration, sample_rate, amplitude, seed) end
-
---- Normalizes an audio file to a target peak amplitude and saves the result.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output WAV file.
----@param target number Target peak amplitude (e.g. 0.9 for headroom).
-lurek.audio.normalizeFile = function(input, output, target) end
 
 --- Pauses playback of a source at its current position.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -2900,12 +2819,6 @@ lurek.audio.playLooping = function(source) end
 ---@param qsource_id number Queueable source handle returned by newQueueableSource.
 lurek.audio.playQueueable = function(qsource_id) end
 
---- Processes an audio file offline through a chain of effects and writes the result to an output file.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output WAV file.
----@param effects_tbl table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
-lurek.audio.processOffline = function(input, output, effects_tbl) end
-
 --- Queues a decoded audio chunk for playback on a queueable source.
 ---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
 ---@param sd LSoundData Sound data chunk to enqueue for playback.
@@ -2915,12 +2828,6 @@ lurek.audio.queueSource = function(qsource_id, sd) end
 ---@param source LSource|number Audio source or numeric source ID to release.
 ---@return boolean True if the source was successfully released.
 lurek.audio.release = function(source) end
-
---- Removes an effect from a named audio bus by effect ID.
----@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by add_effect.
----@return boolean True if the effect was successfully removed.
-lurek.audio.remove_effect = function(bus_name, effect_id) end
 
 --- Resumes playback of a paused source.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -3049,21 +2956,6 @@ lurek.audio.setVolume = function(source, vol) end
 ---@param volume number Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
 lurek.audio.set_bus_volume = function(name, volume) end
 
---- Sets a parameter value on an effect attached to a named audio bus.
----@param bus_name string Name of the audio bus.
----@param effect_id number Effect ID returned by add_effect.
----@param param_name string Name of the effect parameter to set.
----@param value number New value for the parameter.
----@return boolean True if the parameter was set successfully.
-lurek.audio.set_effect_param = function(bus_name, effect_id, param_name, value) end
-
---- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output PNG file.
----@param width number Image width in pixels.
----@param height number Image height in pixels.
-lurek.audio.spectrogramToPng = function(input, output, width, height) end
-
 --- Stops playback of a source and resets its position to the beginning.
 ---@param source LSource|number Audio source or numeric source ID.
 lurek.audio.stop = function(source) end
@@ -3079,13 +2971,6 @@ lurek.audio.stopQueueable = function(qsource_id) end
 ---@param source LSource|number Audio source or numeric source ID.
 ---@return number Current position in seconds.
 lurek.audio.tell = function(source) end
-
---- Renders a waveform visualization of an audio file and saves it as a PNG image.
----@param input string Relative path to the input audio file.
----@param output string Relative path for the output PNG file.
----@param width number Image width in pixels.
----@param height number Image height in pixels.
-lurek.audio.waveformToPng = function(input, output, width, height) end
 
 ---@class lurek.automation
 lurek.automation = {}
@@ -6908,12 +6793,174 @@ lurek.docs.validateModule = function(module_name, catalog_ud) end
 ---@class lurek.dsp
 lurek.dsp = {}
 
+--- Lua-visible ADSR envelope object for sample stepping and buffer shaping.
+---@class LAdsrEnvelope
+LAdsrEnvelope = {}
+
+--- Applies this ADSR envelope across an entire sound buffer in place.
+---@param sound_data_ud LSoundData Sound buffer to shape in-place.
+function LAdsrEnvelope:apply(sound_data_ud) end
+
+--- Returns whether the envelope has fully completed and is idle.
+---@return boolean True when the envelope is idle.
+function LAdsrEnvelope:is_idle() end
+
+--- Advances the envelope and returns the next gain sample.
+---@return number Current envelope gain after stepping.
+function LAdsrEnvelope:next_sample() end
+
+--- Starts the envelope release phase.
+function LAdsrEnvelope:trigger_off() end
+
+--- Starts the envelope attack phase for this ADSR object.
+function LAdsrEnvelope:trigger_on() end
+
+--- Lua-visible DSP graph that stores nodes, edges, and offline processing order.
+---@class LDspGraph
+LDspGraph = {}
+
+--- Adds a DSP node object to the graph and returns its stable node ID.
+---@param node_ud LDspNode Node object to add to this graph.
+---@return number Stable node identifier for connect and disconnect calls.
+function LDspGraph:addNode(node_ud) end
+
+--- Clears all graph nodes and edges from this graph.
+function LDspGraph:clear() end
+
+--- Connects two node IDs in this graph object.
+---@param from number Source node ID.
+---@param to number Destination node ID.
+---@param options? table Reserved connection options for future graph routing.
+---@return boolean True when the connection is valid and stored.
+function LDspGraph:connect(from, to, options) end
+
+--- Removes a connection between two node IDs.
+---@param from number Source node ID.
+---@param to number Destination node ID.
+---@return boolean True when an existing connection was removed.
+function LDspGraph:disconnect(from, to) end
+
+--- Processes a sound buffer through the graph and returns transformed data.
+---@param sound_data_ud LSoundData Input sound buffer.
+---@return LSoundData Processed sound buffer output.
+function LDspGraph:process(sound_data_ud) end
+
+--- Lua-visible DSP graph node carrying type and simple numeric parameters.
+---@class LDspNode
+LDspNode = {}
+
+--- Returns one named numeric parameter from the node.
+---@param name string Parameter name to fetch.
+---@return number Current parameter value.
+function LDspNode:getParam(name) end
+
+--- Sets one named numeric parameter on the node.
+---@param name string Parameter name such as `cutoff`, `low`, `high`, or `gain`.
+---@param value number New parameter value.
+function LDspNode:setParam(name, value) end
+
+--- Returns the node type string used by this node.
+---@return string Node kind used by this DSP node.
+function LDspNode:type() end
+
+--- Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.
+---@class LLevelDetector
+LLevelDetector = {}
+
+--- Returns the current peak level accumulated by the detector.
+---@return number Peak absolute amplitude in linear scale.
+function LLevelDetector:get_peak() end
+
+--- Returns the current RMS level accumulated by the detector.
+---@return number RMS amplitude in linear scale.
+function LLevelDetector:get_rms() end
+
+--- Processes all samples in a sound buffer and returns aggregate level statistics.
+---@param sound_data_ud LSoundData Sound buffer to analyze.
+---@return table Table with `rms`, `peak`, and `clipping` fields.
+function LLevelDetector:process(sound_data_ud) end
+
+--- Processes one audio sample and updates detector statistics incrementally.
+---@param sample number Input sample value in the range [-1.0, 1.0].
+function LLevelDetector:process_sample(sample) end
+
+--- Resets detector state so a new measurement window can begin.
+function LLevelDetector:reset() end
+
+--- Converts a linear amplitude value to decibels full scale.
+---@param value number Linear amplitude value to convert.
+---@return number Converted dBFS value.
+function LLevelDetector:to_db(value) end
+
+--- Lua-visible spectral analyzer that computes bounded frequency bins from sound buffers.
+---@class LSpectrumAnalyzer
+LSpectrumAnalyzer = {}
+
+--- Analyzes one sound buffer and returns `(frequency, magnitude)` rows.
+---@param sound_data_ud LSoundData Sound buffer to analyze.
+---@return table Array with `frequency` and `magnitude` fields per bin.
+function LSpectrumAnalyzer:analyze(sound_data_ud) end
+
+--- Sets the frequency-bin count used by subsequent spectrum analysis calls.
+---@param size number Requested number of bins (bounded internally).
+function LSpectrumAnalyzer:setSize(size) end
+
+--- Lua-visible synthesizer that combines waveform selection and optional ADSR shaping.
+---@class LSynthesizer
+LSynthesizer = {}
+
+--- Generates a SoundData buffer; alias of `render` for compatibility.
+---@param freq number Frequency in Hertz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hertz.
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData Generated sound buffer.
+function LSynthesizer:generate(freq, duration, sample_rate, amplitude) end
+
+--- Renders a SoundData buffer using current synthesizer settings.
+---@param freq number Frequency in Hertz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hertz.
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData Generated sound buffer.
+function LSynthesizer:render(freq, duration, sample_rate, amplitude) end
+
+--- Attaches an ADSR envelope used by future render calls.
+---@param envelope_ud LAdsrEnvelope Envelope object copied into the synthesizer.
+function LSynthesizer:setEnvelope(envelope_ud) end
+
+--- Sets the oscillator waveform using a kind string or waveform object.
+---@param value any Waveform kind string or LWaveform instance.
+function LSynthesizer:setWaveform(value) end
+
+--- Lua-visible procedural waveform descriptor used for repeated SoundData rendering.
+---@class LWaveform
+LWaveform = {}
+
+--- Renders this waveform to a new SoundData buffer.
+---@param freq number Frequency in Hertz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hertz.
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData Generated mono sound buffer.
+function LWaveform:render(freq, duration, sample_rate, amplitude) end
+
+--- Returns the waveform identifier string.
+---@return string One of `sine`, `square`, `sawtooth`, `triangle`, or `white_noise`.
+function LWaveform:type() end
+
 --- Adds an effect to a named audio bus and returns its effect ID.
 ---@param bus_name string Name of the audio bus.
 ---@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
 ---@param params? table Optional parameters table; may include a `value` field.
 ---@return number Numeric effect ID handle for use with `removeEffectFromBus` and `setEffectParam`.
 lurek.dsp.addEffectToBus = function(bus_name, effect_type_str, params) end
+
+--- Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+---@param sd LSoundData The sound data to analyze.
+---@param size number Number of frequency bins to compute (capped at 512).
+---@return table Array of tables, each with `frequency` (number, Hz) and `magnitude` (number) fields.
+lurek.dsp.analyzeFft = function(sd, size) end
 
 --- Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
 ---@param sd LSoundData The sound data to analyze.
@@ -6952,6 +6999,14 @@ lurek.dsp.applyHighpass = function(sd_ud, cutoff_hz) end
 ---@param cutoff_hz number Lowpass cutoff frequency in Hz.
 lurek.dsp.applyLowpass = function(sd_ud, cutoff_hz) end
 
+--- Creates an ADSR envelope object for procedural synthesis and buffer shaping workflows.
+---@param attack number Attack time in seconds.
+---@param decay number Decay time in seconds.
+---@param sustain number Sustain gain in [0, 1].
+---@param release number Release time in seconds.
+---@return LAdsrEnvelope New ADSR envelope instance.
+lurek.dsp.newAdsrEnvelope = function(attack, decay, sustain, release) end
+
 --- Creates an effect parameter descriptor table for use with offline processing.
 ---@param effectType string Effect type name (e.g. "lowpass", "reverb", "compressor").
 ---@param p1 number Primary parameter value.
@@ -6960,16 +7015,99 @@ lurek.dsp.applyLowpass = function(sd_ud, cutoff_hz) end
 ---@return table Effect parameter descriptor table.
 lurek.dsp.newEffectParams = function(effectType, p1, p2, p3) end
 
+--- Creates an empty DSP graph object for connecting nodes and processing SoundData buffers.
+---@return LDspGraph New DSP graph instance.
+lurek.dsp.newGraph = function() end
+
+--- Creates a level detector object that tracks RMS, peak, and clipping state over samples.
+---@param options? table Optional table with `clipThreshold` numeric field.
+---@return LLevelDetector New level detector instance.
+lurek.dsp.newLevelDetector = function(options) end
+
+--- Creates a DSP graph node object with a node kind and optional initial options.
+---@param kind string Node kind such as `lowpass`, `highpass`, `bandpass`, or `gain`.
+---@param options? table Reserved options table for future node configuration.
+---@return LDspNode New graph node instance.
+lurek.dsp.newNode = function(kind, options) end
+
+--- Generates a sawtooth wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz.
+---@param amplitude number Peak amplitude in [0, 1].
+---@return LSoundData Generated audio buffer.
+lurek.dsp.newSawtoothWave = function(freq, duration, sample_rate, amplitude) end
+
+--- Generates a sine wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz.
+---@param amplitude number Peak amplitude in [0, 1].
+---@return LSoundData Generated audio buffer.
+lurek.dsp.newSineWave = function(freq, duration, sample_rate, amplitude) end
+
+--- Creates a spectrum analyzer object for bounded frequency-bin analysis on SoundData.
+---@param options? table Optional table with integer `size` field for bin count.
+---@return LSpectrumAnalyzer New spectrum analyzer instance.
+lurek.dsp.newSpectrumAnalyzer = function(options) end
+
+--- Generates a square wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz.
+---@param amplitude number Peak amplitude in [0, 1].
+---@return LSoundData Generated audio buffer.
+lurek.dsp.newSquareWave = function(freq, duration, sample_rate, amplitude) end
+
+--- Generates a synthesized waveform with optional ADSR.
+---@param waveform string Waveform kind: `sine`, `square`, `sawtooth`, or `triangle`.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz.
+---@param amplitude number Peak amplitude in [0, 1].
+---@param adsr? table Optional ADSR table with `attack`, `decay`, `sustain`, and `release`.
+---@return LSoundData Generated synthesized sound buffer.
+lurek.dsp.newSynthWave = function(waveform, freq, duration, sample_rate, amplitude, adsr) end
+
+--- Creates a synthesizer object that combines waveform selection and optional ADSR shaping.
+---@param options? table Reserved options table for future synthesizer defaults.
+---@return LSynthesizer New synthesizer instance.
+lurek.dsp.newSynthesizer = function(options) end
+
+--- Generates a triangle wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz.
+---@param amplitude number Peak amplitude in [0, 1].
+---@return LSoundData Generated audio buffer.
+lurek.dsp.newTriangleWave = function(freq, duration, sample_rate, amplitude) end
+
+--- Creates a waveform descriptor object that can render repeated procedural tones.
+---@param kind string Waveform kind name.
+---@param options? table Reserved options table for future waveform behavior.
+---@return LWaveform New waveform descriptor instance.
+lurek.dsp.newWaveform = function(kind, options) end
+
+--- Generates deterministic white noise as a `SoundData` buffer.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz.
+---@param amplitude number Peak amplitude in [0, 1].
+---@param seed number Deterministic seed for the noise source.
+---@return LSoundData Generated noise buffer.
+lurek.dsp.newWhiteNoise = function(duration, sample_rate, amplitude, seed) end
+
 --- Normalizes an audio file to a target peak amplitude and saves the result.
 ---@param input string Relative path to the input audio file.
 ---@param output string Relative path for the output WAV file.
 ---@param target number Target peak amplitude (e.g. 0.9 for headroom).
+---@return boolean True when the output file was written successfully.
 lurek.dsp.normalize = function(input, output, target) end
 
 --- Processes an audio file offline through a chain of effects and writes the result to an output file.
 ---@param input string Relative path to the input audio file.
 ---@param output string Relative path for the output WAV file.
 ---@param effects table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
+---@return boolean True when the output file was written successfully.
 lurek.dsp.processOffline = function(input, output, effects) end
 
 --- Removes an effect from a named audio bus by effect ID.
@@ -6991,6 +7129,7 @@ lurek.dsp.setEffectParam = function(bus_name, effect_id, param_name, value) end
 ---@param output string Relative path for the output PNG file.
 ---@param width number Image width in pixels.
 ---@param height number Image height in pixels.
+---@return boolean True when the output image was written successfully.
 lurek.dsp.spectrogramToPng = function(input, output, width, height) end
 
 --- Renders a waveform visualization of an audio file and saves it as a PNG image.
@@ -6998,6 +7137,7 @@ lurek.dsp.spectrogramToPng = function(input, output, width, height) end
 ---@param output string Relative path for the output PNG file.
 ---@param width number Image width in pixels.
 ---@param height number Image height in pixels.
+---@return boolean True when the output image was written successfully.
 lurek.dsp.waveformToPng = function(input, output, width, height) end
 
 ---@class lurek.ecs
@@ -23931,32 +24071,23 @@ function LPromise:type() end
 function LPromise:typeOf(name) end
 
 --- Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
----@class LThread
-LThread = {}
+---@class LThreadHandle
+LThreadHandle = {}
 
 --- Returns the error message from the worker thread, if it terminated with an error.
 ---@return string The error string, or `nil` if the thread completed successfully or is still running.
-function LThread:getError() end
+function LThreadHandle:getError() end
 
 --- Checks whether the worker thread is still executing.
 ---@return boolean `true` if the thread has been started and has not yet finished.
-function LThread:isRunning() end
+function LThreadHandle:isRunning() end
 
 --- Launches the worker thread, executing the Lua code string supplied at creation time.
 ---@param ... any Zero or more arguments forwarded to the worker as the `arg` table.
-function LThread:start(...) end
-
---- Returns the type name of this object.
----@return string Always returns `"LThread"`.
-function LThread:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check (`"LThread"` or `"LObject"`).
----@return boolean `true` if the name matches one of the accepted type names.
-function LThread:typeOf(name) end
+function LThreadHandle:start(...) end
 
 --- Blocks the calling thread until the worker thread finishes execution.
-function LThread:wait() end
+function LThreadHandle:wait() end
 
 --- Lua-visible handle for a fixed-size pool of worker threads that process items from a shared input channel.
 ---@class LThreadPool

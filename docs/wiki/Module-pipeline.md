@@ -137,31 +137,30 @@ Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
-    local pl = lurek.pipeline.fromTable({
-        name = "test_pipeline",
+    local pipe = lurek.pipeline.fromTable({
+        name = "from-table",
+        errorMode = "abort",
         steps = {
             {
-                name = "init",
+                name = "x",
                 fn = function(ctx)
-                    ctx.x = 1
+                    ctx.x = "ran"
                 end,
             },
             {
-                name = "done",
-                deps = { "init" },
+                name = "y",
+                deps = { "x" },
                 fn = function(ctx)
-                    ctx.y = (ctx.x or 0) + 1
+                    ctx.y = ctx.x .. " again"
                 end,
             },
         },
     })
-    local context = {}
 
-    pl:run(context)
+    local result = pipe:run({})
 
-    print("step count = " .. pl:getStepCount())
-    print("x = " .. tostring(context.x))
-    print("y = " .. tostring(context.y))
+    print("steps = " .. pipe:getStepCount())
+    print("success = " .. tostring(result.success))
 end
 ```
 
@@ -254,31 +253,30 @@ Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
-    local pl = lurek.pipeline.fromTable({
-        name = "test_pipeline",
+    local pipe = lurek.pipeline.fromTable({
+        name = "from-table",
+        errorMode = "abort",
         steps = {
             {
-                name = "init",
+                name = "x",
                 fn = function(ctx)
-                    ctx.x = 1
+                    ctx.x = "ran"
                 end,
             },
             {
-                name = "done",
-                deps = { "init" },
+                name = "y",
+                deps = { "x" },
                 fn = function(ctx)
-                    ctx.y = (ctx.x or 0) + 1
+                    ctx.y = ctx.x .. " again"
                 end,
             },
         },
     })
-    local context = {}
 
-    pl:run(context)
+    local result = pipe:run({})
 
-    print("step count = " .. pl:getStepCount())
-    print("x = " .. tostring(context.x))
-    print("y = " .. tostring(context.y))
+    print("steps = " .. pipe:getStepCount())
+    print("success = " .. tostring(result.success))
 end
 ```
 

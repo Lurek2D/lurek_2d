@@ -3123,7 +3123,7 @@ end
 
 ## 🎮 Reference Games
 
-- [globe_demo](../tree/main/content/games/showcase/globe_demo) (showcase)
+No direct references were found in `content/games/**/main.lua`.
 
 [⬆ back to top](#table-of-contents)
 

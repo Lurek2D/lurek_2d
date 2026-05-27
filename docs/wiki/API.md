@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7888 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28325 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7961 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28462 lines)
 
 ## Coverage
 
 - 66 modules
-- 5178 functions and methods
+- 5201 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -32,7 +32,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 |---|---:|---:|---|
 | [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
-| [lurek.audio](Module-audio) | 100 | 6 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
+| [lurek.audio](Module-audio) | 83 | 6 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
 | [lurek.automation](Module-automation) | 32 | 0 | Automated input simulation for headless tests, QA replay, recorded sessions. |
 | [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
 | [lurek.camera](Module-camera) | 3 | 2 | 2D camera and viewport types. Pure data; no GPU resources. |
@@ -45,7 +45,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.devtools](Module-devtools) | 50 | 2 | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
 | [lurek.dialog](Module-dialog) | 3 | 3 | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
 | [lurek.docs](Module-docs) | 26 | 5 | In-engine API documentation catalog and lightweight schema validation for structured game data. |
-| [lurek.dsp](Module-dsp) | 15 | 0 | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
+| [lurek.dsp](Module-dsp) | 28 | 7 | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
 | [lurek.ecs](Module-ecs) | 1 | 1 | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
 | [lurek.effect](Module-effect) | 9 | 3 | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes. |
 | [lurek.engine](Module-engine) | 13 | 0 | lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts. |

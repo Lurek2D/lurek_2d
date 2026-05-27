@@ -28,6 +28,8 @@ use std::sync::Arc;
 use std::time::Instant;
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Backing source strategy for one loaded audio entry.
+///
+/// # Variants
 pub enum SourceType {
     /// Fully decoded source reused from cached bytes.
     Static,
@@ -36,6 +38,8 @@ pub enum SourceType {
 }
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Runtime playback state of one source or stream.
+///
+/// # Variants
 pub enum PlayState {
     /// Not playing; position reset or completed.
     Stopped,
@@ -88,6 +92,8 @@ struct AudioEntry {
     pub peak: f32,
 }
 /// Push-buffer streaming source with fixed number of reusable queue slots.
+///
+/// # Fields
 pub struct QueueableSource {
     /// Output sample rate in Hz.
     pub sample_rate: u32,
@@ -131,6 +137,8 @@ impl QueueableSource {
     }
 }
 /// Central audio mixer state and resource registry.
+///
+/// # Fields
 pub struct Mixer {
     /// Owned rodio output stream; kept alive for the lifetime of the mixer.
     _stream: Option<rodio::OutputStream>,

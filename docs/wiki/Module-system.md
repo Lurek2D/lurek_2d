@@ -84,15 +84,14 @@ Returns: `string` - JSON string containing the error snapshot with stack and con
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
     local snapshot = lurek.runtime.errorSnapshot("Something went wrong in level 3")
     print("snapshot type = " .. type(snapshot))
     print("snapshot length = " .. #snapshot)
-    local parsed = lurek.serialize.fromJson(snapshot)
-    print("snapshot has message = " .. tostring(parsed.message ~= nil))
+    print("contains message field = " .. tostring(snapshot:find('"message"') ~= nil))
 end
 ```
 
@@ -114,7 +113,7 @@ Returns: `string` - Architecture identifier (e.g. `"x86_64"`, `"aarch64"`).
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -140,7 +139,7 @@ Returns: `string[]` - Argument strings.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -175,7 +174,7 @@ Returns: `number` - Count of passed tasks.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -207,7 +206,7 @@ Returns: `string` - The clipboard text, or `""` on failure.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -236,7 +235,7 @@ Returns: `table` - Table with fields: `runtime_mode` (string), `physics_tick_rat
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -265,7 +264,7 @@ Returns: `boolean` - `true` if the debug overlay is visible.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -297,7 +296,7 @@ Returns: `string` - The variable value. Returns `nil` when the variable is not s
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -325,7 +324,7 @@ Returns: `table` - Table with fields: `engine` (string), `version` (string), `lu
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -354,7 +353,7 @@ Returns: `table` - Table result returned by this call.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -382,7 +381,7 @@ Returns: `string` - Current log level: `"error"`, `"warn"`, `"info"`, `"debug"`,
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -408,7 +407,7 @@ Returns: `number` - Total RAM in MB.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -441,7 +440,7 @@ Returns: `string` - The resolved message text. Returns `nil` when the identifier
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -469,7 +468,7 @@ Returns: `number` - Count of registered message identifiers.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -495,7 +494,7 @@ Returns: `string` - Operating system name: `"Windows"`, `"Linux"`, `"macOS"`, `"
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -523,7 +522,7 @@ Returns: `string` - Power state: `"unknown"`, `"battery"`, `"nobattery"`, `"char
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -552,7 +551,7 @@ Returns: `string[]` - Locale strings (e.g. `{"en_US", "pl_PL"}`). Falls back to 
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -580,12 +579,13 @@ Returns: `number` - Logical processor count (minimum 1).
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
     local cpus = lurek.runtime.getProcessorCount()
     print("logical processors = " .. cpus)
+    print("has cpu info = " .. tostring(cpus >= 1))
 end
 ```
 
@@ -607,7 +607,7 @@ Returns: `string` - Engine version in `"MAJOR.MINOR.PATCH"` format.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -640,7 +640,7 @@ Returns: `boolean` - `true` if the message identifier is registered.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -670,12 +670,12 @@ Parameters:
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
     lurek.runtime.log("info", "Game starting up")
-    lurek.runtime.log("debug", "Loading system runtime example block")
+    lurek.runtime.log("debug", "Loading runtime example block")
     print("logged runtime messages")
 end
 ```
@@ -703,7 +703,7 @@ Returns: `boolean` - `true` if the URL was accepted and the open command launche
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -735,7 +735,7 @@ Returns: `table` - Table with fields: `flags` (table of boolean), `options` (tab
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -761,7 +761,7 @@ Requests a reload of the engine configuration from `conf.lua`. The reload is def
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -798,7 +798,7 @@ Returns: `table` - Table mapping each task name to a result table.
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -836,7 +836,7 @@ Parameters:
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
@@ -865,11 +865,12 @@ Parameters:
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
-    print("debug overlay = " .. tostring(lurek.runtime.getDebugOverlay()))
+    local before = lurek.runtime.getDebugOverlay()
+    print("debug overlay before = " .. tostring(before))
     lurek.runtime.setDebugOverlay(true)
     print("after enable = " .. tostring(lurek.runtime.getDebugOverlay()))
     lurek.runtime.setDebugOverlay(false)
@@ -897,7 +898,7 @@ Parameters:
 
 #### Example
 
-Source: [system.lua](../blob/main/content/examples/system.lua)
+Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do

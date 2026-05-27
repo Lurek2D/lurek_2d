@@ -5015,9 +5015,12 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newBarChart({ width = 400, height = 300 })
-    chart:addSeries("Q2", { 5, 8, 3, 6 })
-    print("LBarChart:addSeries.2 ok")
+    local chart = lurek.ui.newBarChart({width = 200, height = 100})
+    chart:addSeries("Q1", 0.2, 0.6, 1.0)
+    chart:addSeries("Q2", 1.0, 0.5, 0.1)
+    chart:addCategory("Jan", {30, 45})
+    chart:addCategory("Feb", {40, 35})
+    print("bar series count example ok")
 end
 ```
 
@@ -7828,7 +7831,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 do
     local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
     chart:addSeries("sales", { 1, 4, 2, 7, 3 })
-    print("LLineChart:addSeries ok")
+    print("line series added")
 end
 ```
 
@@ -9755,7 +9758,7 @@ Source: [ui.lua](../blob/main/content/examples/ui.lua)
 do
     local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
     chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} })
-    print("LScatterPlot:addSeries ok")
+    print("scatter series added")
 end
 ```
 
