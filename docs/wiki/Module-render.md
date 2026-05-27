@@ -2180,7 +2180,8 @@ Source: [render.lua](../blob/main/content/examples/render.lua)
 
 ```lua
 do
-    print("isBold = " .. tostring(lurek.render.isBold()))
+    local v = lurek.render.isBold()
+    print("isBold = " .. tostring(v))
 end
 ```
 

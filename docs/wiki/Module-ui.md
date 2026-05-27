@@ -317,6 +317,7 @@ end
 ---@param to table Target color {r, g, b, a} (0-1 range).
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
+---@return nil Schedules the animation; no return value.
 lurek.ui.animateColor = function(idx, from, to, duration, easing) end
 ```
 
@@ -331,6 +332,8 @@ Parameters:
 - `to` (`table`, required): Target color {r, g, b, a} (0-1 range).
 - `duration` (`number`, required): Duration in seconds.
 - `easing` (`string`, optional): Easing function name (default "linear").
+
+Returns: - Schedules the animation; no return value.
 
 #### Example
 
@@ -355,6 +358,7 @@ end
 ---@param to number Target angle in radians.
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
+---@return nil Schedules the animation; no return value.
 lurek.ui.animateRotation = function(idx, from, to, duration, easing) end
 ```
 
@@ -369,6 +373,8 @@ Parameters:
 - `to` (`number`, required): Target angle in radians.
 - `duration` (`number`, required): Duration in seconds.
 - `easing` (`string`, optional): Easing function name (default "linear").
+
+Returns: - Schedules the animation; no return value.
 
 #### Example
 
@@ -395,6 +401,7 @@ end
 ---@param to_sy number Target Y scale.
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
+---@return nil Schedules the animation; no return value.
 lurek.ui.animateScale = function(idx, from_sx, from_sy, to_sx, to_sy, duration, easing) end
 ```
 
@@ -411,6 +418,8 @@ Parameters:
 - `to_sy` (`number`, required): Target Y scale.
 - `duration` (`number`, required): Duration in seconds.
 - `easing` (`string`, optional): Easing function name (default "linear").
+
+Returns: - Schedules the animation; no return value.
 
 #### Example
 

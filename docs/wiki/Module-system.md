@@ -117,7 +117,8 @@ Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
-    print("arch = " .. lurek.runtime.getArch())
+    local arch = lurek.runtime.getArch()
+    print("arch = " .. arch)
 end
 ```
 
@@ -385,7 +386,8 @@ Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
-    print("log_level = " .. lurek.runtime.getLogLevel())
+    local lvl = lurek.runtime.getLogLevel()
+    print("log_level = " .. lvl)
 end
 ```
 
@@ -472,7 +474,8 @@ Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
-    print("msg_count = " .. lurek.runtime.getMessageCount())
+    local n = lurek.runtime.getMessageCount()
+    print("msg_count = " .. n)
 end
 ```
 
@@ -498,7 +501,8 @@ Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
-    print("os = " .. lurek.runtime.getOS())
+    local os = lurek.runtime.getOS()
+    print("os = " .. os)
 end
 ```
 
@@ -644,7 +648,8 @@ Source: [runtime.lua](../blob/main/content/examples/runtime.lua)
 
 ```lua
 do
-    print("has_msg = " .. tostring(lurek.runtime.hasMessage("engine.welcome")))
+    local v = lurek.runtime.hasMessage("engine.welcome")
+    print("has_msg = " .. tostring(v))
 end
 ```
 

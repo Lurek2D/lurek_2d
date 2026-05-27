@@ -586,21 +586,25 @@ Source: [globe.lua](../blob/main/content/examples/globe.lua)
 --@api-stub: lurek.globe.MAX_PROVINCES
 do
     print("max provinces = " .. lurek.globe.MAX_PROVINCES)
+    print("capacity ok = " .. tostring(lurek.globe.MAX_PROVINCES > 0))
 end
 
 --@api-stub: lurek.globe.LOD_FAR
 do
     print("LOD_FAR = " .. lurek.globe.LOD_FAR)
+    print("LOD_FAR > LOD_MID: " .. tostring(lurek.globe.LOD_FAR > lurek.globe.LOD_MID))
 end
 
 --@api-stub: lurek.globe.LOD_MID
 do
     print("LOD_MID = " .. lurek.globe.LOD_MID)
+    print("LOD_MID between FAR and NEAR: " .. tostring(lurek.globe.LOD_FAR > lurek.globe.LOD_MID and lurek.globe.LOD_MID > lurek.globe.LOD_NEAR))
 end
 
 --@api-stub: lurek.globe.LOD_NEAR
 do
     print("LOD_NEAR = " .. lurek.globe.LOD_NEAR)
+    print("LOD_NEAR smallest: " .. tostring(lurek.globe.LOD_NEAR < lurek.globe.LOD_MID))
 end
 
 --@api-stub: lurek.globe.new
@@ -623,11 +627,6 @@ do
     local g = lurek.globe.generateVoronoi("voronoi_globe", { { 0, 0 }, { 30, 45 }, { -20, 90 }, { 60, -30 } }, {})
     print("voronoi provinces = " .. g:provinceCount())
 end
-
---@api-stub: lurek.globe.loadFromTOML
-do
-    local toml = '[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]'
-    local g = lurek.globe.loadFromTOML("toml_globe", toml)
 ```
 
 

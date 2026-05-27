@@ -1917,9 +1917,9 @@ LDialogueAI:typeOf(name: string) -> boolean -- Returns whether this dialogue AI 
 
 ```lua
 LDialogueState:advance(node_id: string) -- Advances to a new node in the conversation.
-LDialogueState:current() -> string? -- Returns the ID of the currently active dialogue node or nil.
+LDialogueState:current() -> string -- Returns the ID of the currently active dialogue node or nil.
 LDialogueState:end_() -- End the active conversation and release its state data.
-LDialogueState:getVariable(key: string) -> string? -- Gets a conversation variable by key.
+LDialogueState:getVariable(key: string) -> string -- Gets a conversation variable by key.
 LDialogueState:hasVisited(node_id: string) -> boolean -- Check whether a given conversation node has been visited.
 LDialogueState:isActive() -> boolean -- Returns whether the conversation is currently active.
 LDialogueState:reset() -- Reset all conversation progress, history, and visited flags.
@@ -1936,7 +1936,7 @@ LDialogueState:visitCount() -> integer -- Returns the number of visited nodes.
 LSpeakerRegistry:add(id: string, name: string, [portrait]: string, [voice_id]: string) -- Registers a speaker in the registry.
 LSpeakerRegistry:contains(id: string) -> boolean -- Checks if a speaker exists in the registry.
 LSpeakerRegistry:count() -> integer -- Returns the number of registered speakers.
-LSpeakerRegistry:get(id: string) -> table? -- Gets a speaker by ID as a table with id, name, portrait, voice_id fields.
+LSpeakerRegistry:get(id: string) -> table -- Gets a speaker by ID as a table with id, name, portrait, voice_id fields.
 LSpeakerRegistry:remove(id: string) -> boolean -- Removes a speaker by ID for this object.
 LSpeakerRegistry:type() -> string -- Returns the Lua-visible type name.
 LSpeakerRegistry:typeOf(name: string) -> boolean -- Returns whether this handle matches a supported type name.

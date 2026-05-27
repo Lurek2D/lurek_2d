@@ -148,7 +148,7 @@ fn report_to_table<'lua>(lua: &'lua Lua, report: &crate::validator::report::Vali
 /// Validate a single Lua file with default rules.
 /// @param | path | string | File path.
 /// @return | table | Validation report.
-pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let module = lua.create_table()?;
 
     /// Creates a new validation engine rooted at the given filesystem path.
@@ -198,5 +198,6 @@ pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTabl
         })?,
     )?;
 
-    Ok(module)
+    lurek.set("validator", module)?;
+    Ok(())
 }

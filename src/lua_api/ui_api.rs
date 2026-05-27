@@ -6405,6 +6405,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param | to_sy | number | Target Y scale.
     /// @param | duration | number | Duration in seconds.
     /// @param | easing | string? | Easing function name (default "linear").
+    /// @return | nil | Schedules the animation; no return value.
     let c = ctx.clone();
     tbl.set(
         "animateScale",
@@ -6428,6 +6429,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param | to | number | Target angle in radians.
     /// @param | duration | number | Duration in seconds.
     /// @param | easing | string? | Easing function name (default "linear").
+    /// @return | nil | Schedules the animation; no return value.
     let c = ctx.clone();
     tbl.set(
         "animateRotation",
@@ -6449,6 +6451,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param | to | table | Target color {r, g, b, a} (0-1 range).
     /// @param | duration | number | Duration in seconds.
     /// @param | easing | string? | Easing function name (default "linear").
+    /// @return | nil | Schedules the animation; no return value.
     let c = ctx.clone();
     tbl.set(
         "animateColor",

@@ -173,7 +173,7 @@ impl LuaUserData for LuaDialogueState {
         });
         // -- current --
         /// Returns the ID of the currently active dialogue node or nil.
-        /// @return | string? | Current node identifier.
+        /// @return | string | Current node identifier, or nil when no node is active.
         methods.add_method("current", |_, this, ()| {
             Ok(this.inner.borrow().current().map(|s| s.to_string()))
         });
@@ -207,7 +207,7 @@ impl LuaUserData for LuaDialogueState {
         // -- getVariable --
         /// Gets a conversation variable by key.
         /// @param | key | string | Variable name.
-        /// @return | string? | Variable value or nil.
+        /// @return | string | Variable value, or nil when the variable is not set.
         methods.add_method("getVariable", |_, this, key: String| {
             Ok(this.inner.borrow().get_variable(&key).map(|s| s.to_string()))
         });
@@ -252,7 +252,7 @@ impl LuaUserData for LuaSpeakerRegistry {
         // -- get --
         /// Gets a speaker by ID as a table with id, name, portrait, voice_id fields.
         /// @param | id | string | Speaker identifier.
-        /// @return | table? | Speaker info table or nil.
+        /// @return | table | Speaker info table, or nil when the speaker ID is not found.
         methods.add_method("get", |lua, this, id: String| {
             match this.inner.borrow().get(&id) {
                 Some(s) => {

@@ -3138,9 +3138,9 @@ Lua handle for dialog conversation state tracking.
 
 ```lua
 LDialogueState:advance( node_id : string )  -- Advances to a new node in the conversation
-LDialogueState:current() -> string?  -- Returns the ID of the currently active dialogue node or nil
+LDialogueState:current() -> string  -- Returns the ID of the currently active dialogue node or nil
 LDialogueState:end_()  -- End the active conversation and release its state data
-LDialogueState:getVariable( key : string ) -> string?  -- Gets a conversation variable by key
+LDialogueState:getVariable( key : string ) -> string  -- Gets a conversation variable by key
 LDialogueState:hasVisited( node_id : string ) -> boolean  -- Check whether a given conversation node has been visited
 LDialogueState:isActive() -> boolean  -- Returns whether the conversation is currently active
 LDialogueState:reset()  -- Reset all conversation progress, history, and visited flags
@@ -3159,7 +3159,7 @@ Lua userdata handle for managing a named speaker registry.
 LSpeakerRegistry:add( id : string, name : string, portrait : string?, voice_id : string? )  -- Registers a speaker in the registry
 LSpeakerRegistry:contains( id : string ) -> boolean  -- Checks if a speaker exists in the registry
 LSpeakerRegistry:count() -> integer  -- Returns the number of registered speakers
-LSpeakerRegistry:get( id : string ) -> table?  -- Gets a speaker by ID as a table with id, name, portrait, voice_id fields
+LSpeakerRegistry:get( id : string ) -> table  -- Gets a speaker by ID as a table with id, name, portrait, voice_id fields
 LSpeakerRegistry:remove( id : string ) -> boolean  -- Removes a speaker by ID for this object
 LSpeakerRegistry:type() -> string  -- Returns the Lua-visible type name
 LSpeakerRegistry:typeOf( name : string ) -> boolean  -- Returns whether this handle matches a supported type name
@@ -7176,9 +7176,9 @@ LTweenState:typeOf( name : string ) -> boolean  -- Checks whether this object ma
 
 ```lua
 lurek.ui.addToast( toast_table : table )  -- Adds a toast notification to the queue
-lurek.ui.animateColor( idx : integer, from : table, to : table, duration : number, easing : string? )  -- Animate widget color tint from one RGBA value to another
-lurek.ui.animateRotation( idx : integer, from : number, to : number, duration : number, easing : string? )  -- Animate widget rotation from one angle to another (in radians)
-lurek.ui.animateScale( idx : integer, from_sx : number, from_sy : number, to_sx : number, to_sy : number, duration : number, easing : string? )  -- Animate widget scale from one value to another
+lurek.ui.animateColor( idx : integer, from : table, to : table, duration : number, easing : string? ) -> nil  -- Animate widget color tint from one RGBA value to another
+lurek.ui.animateRotation( idx : integer, from : number, to : number, duration : number, easing : string? ) -> nil  -- Animate widget rotation from one angle to another (in radians)
+lurek.ui.animateScale( idx : integer, from_sx : number, from_sy : number, to_sx : number, to_sy : number, duration : number, easing : string? ) -> nil  -- Animate widget scale from one value to another
 lurek.ui.beginDrag( widget : table|number ) -> boolean  -- Begins a drag operation on a widget
 lurek.ui.clear() -> integer  -- Clears all retained UI widgets and transient UI state while keeping the active theme
 lurek.ui.clearFocus()  -- Clears keyboard focus from all widgets

@@ -112,6 +112,10 @@ static MODULES: &[ModuleEntry] = &[
     gated!(visibility_api, visibility),
     gated!(tilemap_api, tilemap),
     gated!(physics_api, physics),
+    gated!(cursor_api, cursor),
+    gated!(grep_api, grep),
+    gated!(mapblock_api, mapblock),
+    gated!(validator_api, validator),
     gated!(render_api, render),
 ];
 
@@ -210,24 +214,6 @@ fn register_modules(
     // charts_api uses a different signature (no state parameter).
     #[cfg(feature = "ui-charts")]
     charts_api::register(lua, lurek)?;
-
-    // These apis use the (lua, &SharedState) -> LuaTable signature.
-    if modules.cursor {
-        let t = cursor_api::register(lua, &state.borrow())?;
-        lurek.set("cursor", t)?;
-    }
-    if modules.grep {
-        let t = grep_api::register(lua, &state.borrow())?;
-        lurek.set("grep", t)?;
-    }
-    if modules.mapblock {
-        let t = mapblock_api::register(lua, &state.borrow())?;
-        lurek.set("mapblock", t)?;
-    }
-    if modules.validator {
-        let t = validator_api::register(lua, &state.borrow())?;
-        lurek.set("validator", t)?;
-    }
 
     Ok(())
 }

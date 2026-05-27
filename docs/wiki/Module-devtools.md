@@ -425,7 +425,8 @@ Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    print("history capacity = " .. lurek.devtools.getFrameHistorySize())
+    local n = lurek.devtools.getFrameHistorySize()
+    print("history capacity = " .. n)
 end
 ```
 
@@ -511,7 +512,8 @@ Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    print("console = " .. tostring(lurek.devtools.getLogConsole()))
+    local console = lurek.devtools.getLogConsole()
+    print("console = " .. tostring(console))
 end
 ```
 
@@ -663,7 +665,8 @@ Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    print("profile frames = " .. lurek.devtools.getProfileFrameCount())
+    local n = lurek.devtools.getProfileFrameCount()
+    print("profile frames = " .. n)
 end
 ```
 
@@ -745,7 +748,8 @@ Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    print("interval = " .. lurek.devtools.getWatchInterval())
+    local v = lurek.devtools.getWatchInterval()
+    print("interval = " .. v)
 end
 ```
 
@@ -800,7 +804,8 @@ Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    print("console open = " .. tostring(lurek.devtools.isConsoleOpen()))
+    local v = lurek.devtools.isConsoleOpen()
+    print("console open = " .. tostring(v))
 end
 ```
 
@@ -826,7 +831,8 @@ Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    print("inspector open = " .. tostring(lurek.devtools.isEntityInspectorOpen()))
+    local v = lurek.devtools.isEntityInspectorOpen()
+    print("inspector open = " .. tostring(v))
 end
 ```
 
@@ -852,7 +858,8 @@ Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    print("profiling = " .. tostring(lurek.devtools.isProfilingEnabled()))
+    local v = lurek.devtools.isProfilingEnabled()
+    print("profiling = " .. tostring(v))
 end
 ```
 

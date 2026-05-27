@@ -1410,54 +1410,13 @@ Parameters:
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
+    env:trigger_on()
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    env:apply(sd)
+    print("LAdsrEnvelope:apply sampleCount=" .. tostring(sd:getSampleCount()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LAdsrEnvelope:is_idle
@@ -1481,54 +1440,12 @@ Returns: `boolean` - True when the envelope is idle.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
+    print("LAdsrEnvelope:is_idle before=" .. tostring(env:is_idle()))
+    env:trigger_on()
+    print("LAdsrEnvelope:is_idle after=" .. tostring(env:is_idle()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LAdsrEnvelope:next_sample
@@ -1552,54 +1469,13 @@ Returns: `number` - Current envelope gain after stepping.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local env = lurek.dsp.newAdsrEnvelope(0.005, 0.01, 0.7, 0.05)
+    env:trigger_on()
+    local s1 = env:next_sample()
+    local s2 = env:next_sample()
+    print("LAdsrEnvelope:next_sample s1=" .. tostring(s1) .. " s2=" .. tostring(s2))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LAdsrEnvelope:trigger_off
@@ -1620,54 +1496,12 @@ Starts the envelope release phase.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
+    env:trigger_on()
+    env:trigger_off()
+    print("LAdsrEnvelope:trigger_off is_idle=" .. tostring(env:is_idle()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LAdsrEnvelope:trigger_on
@@ -1688,54 +1522,12 @@ Starts the envelope attack phase for this ADSR object.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
+    env:trigger_on()
+    local s = env:next_sample()
+    print("LAdsrEnvelope:trigger_on sample=" .. tostring(s))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 ### LDspGraph Methods
@@ -1766,54 +1558,12 @@ Returns: `integer` - Stable node identifier for connect and disconnect calls.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local g = lurek.dsp.newGraph()
+    local n = lurek.dsp.newNode("lowpass")
+    local id = g:addNode(n)
+    print("LDspGraph:addNode id=" .. tostring(id))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LDspGraph:clear
@@ -1834,54 +1584,20 @@ Clears all graph nodes and edges from this graph.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    -- Build a small graph, process audio through it, then clear it.
+    -- After clear() the graph can be reused with fresh nodes.
+    local g = lurek.dsp.newGraph()
+    local n1 = lurek.dsp.newNode("lowpass")
+    local n2 = lurek.dsp.newNode("gain")
+    local id1 = g:addNode(n1)
+    local id2 = g:addNode(n2)
+    g:connect(id1, id2)
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    g:process(sd)
+    g:clear()
+    print("LDspGraph:clear — graph reset, node count 0")
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LDspGraph:connect
@@ -1914,54 +1630,13 @@ Returns: `boolean` - True when the connection is valid and stored.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local g = lurek.dsp.newGraph()
+    local id1 = g:addNode(lurek.dsp.newNode("lowpass"))
+    local id2 = g:addNode(lurek.dsp.newNode("gain"))
+    local ok = g:connect(id1, id2)
+    print("LDspGraph:connect ok=" .. tostring(ok))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LDspGraph:disconnect
@@ -1992,54 +1667,14 @@ Returns: `boolean` - True when an existing connection was removed.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local g = lurek.dsp.newGraph()
+    local id1 = g:addNode(lurek.dsp.newNode("lowpass"))
+    local id2 = g:addNode(lurek.dsp.newNode("gain"))
+    g:connect(id1, id2)
+    local ok = g:disconnect(id1, id2)
+    print("LDspGraph:disconnect ok=" .. tostring(ok))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LDspGraph:process
@@ -2068,54 +1703,14 @@ Returns: `LSoundData` - Processed sound buffer output.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local g = lurek.dsp.newGraph()
+    g:addNode(lurek.dsp.newNode("lowpass"))
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local out = g:process(sd)
+    print("LDspGraph:process type=" .. type(out))
+    print("LDspGraph:process sampleCount=" .. tostring(out:getSampleCount()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 ### LDspNode Methods
@@ -2146,54 +1741,12 @@ Returns: `number` - Current parameter value.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local node = lurek.dsp.newNode("gain")
+    node:setParam("gain", 0.7)
+    local val = node:getParam("gain")
+    print("LDspNode:getParam gain=" .. tostring(val))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LDspNode:setParam
@@ -2221,54 +1774,12 @@ Parameters:
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local node = lurek.dsp.newNode("lowpass")
+    node:setParam("cutoff", 800.0)
+    local val = node:getParam("cutoff")
+    print("LDspNode:setParam cutoff=" .. tostring(val))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LDspNode:type
@@ -2292,54 +1803,11 @@ Returns: `string` - Node kind used by this DSP node.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local node = lurek.dsp.newNode("gain")
+    local t = node:type()
+    print("LDspNode:type t=" .. tostring(t))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 ### LLevelDetector Methods
@@ -2365,54 +1833,12 @@ Returns: `number` - Peak absolute amplitude in linear scale.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local det = lurek.dsp.newLevelDetector({})
+    det:process_sample(0.9)
+    local peak = det:get_peak()
+    print("LLevelDetector:get_peak peak=" .. tostring(peak))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LLevelDetector:get_rms
@@ -2436,54 +1862,12 @@ Returns: `number` - RMS amplitude in linear scale.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local det = lurek.dsp.newLevelDetector({})
+    det:process_sample(0.5)
+    local rms = det:get_rms()
+    print("LLevelDetector:get_rms rms=" .. tostring(rms))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LLevelDetector:process
@@ -2512,54 +1896,13 @@ Returns: `table` - Table with `rms`, `peak`, and `clipping` fields.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local det = lurek.dsp.newLevelDetector({})
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local result = det:process(sd)
+    print("LLevelDetector:process rms=" .. tostring(result.rms))
+    print("LLevelDetector:process peak=" .. tostring(result.peak))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LLevelDetector:process_sample
@@ -2585,54 +1928,12 @@ Parameters:
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local det = lurek.dsp.newLevelDetector({})
+    det:process_sample(0.8)
+    det:process_sample(-0.3)
+    print("LLevelDetector:process_sample peak=" .. tostring(det:get_peak()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LLevelDetector:reset
@@ -2653,54 +1954,12 @@ Resets detector state so a new measurement window can begin.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local det = lurek.dsp.newLevelDetector({})
+    det:process_sample(0.7)
+    det:reset()
+    print("LLevelDetector:reset rms=" .. tostring(det:get_rms()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LLevelDetector:to_db
@@ -2729,54 +1988,11 @@ Returns: `number` - Converted dBFS value.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local det = lurek.dsp.newLevelDetector({})
+    local db = det:to_db(0.5)
+    print("LLevelDetector:to_db db=" .. tostring(db))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 ### LSpectrumAnalyzer Methods
@@ -2807,54 +2023,13 @@ Returns: `table` - Array with `frequency` and `magnitude` fields per bin.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local sa = lurek.dsp.newSpectrumAnalyzer({ size = 32 })
+    local sd = lurek.dsp.newSineWave(440, 0.01, 44100, 0.8)
+    local bins = sa:analyze(sd)
+    print("LSpectrumAnalyzer:analyze bins=" .. tostring(#bins))
+    print("LSpectrumAnalyzer:analyze bin[1]=" .. tostring(bins[1]))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LSpectrumAnalyzer:setSize
@@ -2880,54 +2055,13 @@ Parameters:
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local sa = lurek.dsp.newSpectrumAnalyzer({ size = 64 })
+    sa:setSize(128)
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local bins = sa:analyze(sd)
+    print("LSpectrumAnalyzer:setSize bins=" .. tostring(#bins))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 ### LSynthesizer Methods
@@ -2964,54 +2098,12 @@ Returns: `LSoundData` - Generated sound buffer.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local synth = lurek.dsp.newSynthesizer()
+    local sd = synth:generate(440, 0.02, 44100, 0.7)
+    print("LSynthesizer:generate type=" .. type(sd))
+    print("LSynthesizer:generate sampleCount=" .. tostring(sd:getSampleCount()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LSynthesizer:render
@@ -3046,54 +2138,13 @@ Returns: `LSoundData` - Generated sound buffer.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local synth = lurek.dsp.newSynthesizer()
+    synth:setWaveform("sine")
+    local sd = synth:render(330, 0.01, 44100, 0.5)
+    print("LSynthesizer:render type=" .. type(sd))
+    print("LSynthesizer:render sampleCount=" .. tostring(sd:getSampleCount()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LSynthesizer:setEnvelope
@@ -3119,54 +2170,13 @@ Parameters:
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local synth = lurek.dsp.newSynthesizer()
+    local env = lurek.dsp.newAdsrEnvelope(0.01, 0.02, 0.7, 0.03)
+    synth:setEnvelope(env)
+    local sd = synth:render(523, 0.01, 44100, 0.5)
+    print("LSynthesizer:setEnvelope sampleCount=" .. tostring(sd:getSampleCount()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LSynthesizer:setWaveform
@@ -3192,54 +2202,12 @@ Parameters:
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local synth = lurek.dsp.newSynthesizer()
+    synth:setWaveform("sawtooth")
+    local sd = synth:render(440, 0.01, 44100, 0.5)
+    print("LSynthesizer:setWaveform sampleCount=" .. tostring(sd:getSampleCount()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 ### LWaveform Methods
@@ -3276,54 +2244,11 @@ Returns: `LSoundData` - Generated mono sound buffer.
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local wf = lurek.dsp.newWaveform("triangle")
+    local sd = wf:render(330, 0.01, 44100, 0.6)
+    print("LWaveform:render sampleCount=" .. tostring(sd:getSampleCount()))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 #### LWaveform:type
@@ -3347,54 +2272,11 @@ Returns: `string` - One of `sine`, `square`, `sawtooth`, `triangle`, or `white_n
 Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
---- DSP Processing Example
---- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
-
---@api-stub: lurek.dsp.newEffectParams
 do
-    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
-    print("lurek.dsp.newEffectParams type=" .. type(params))
-    print("effect=" .. tostring(params.type))
+    local wf = lurek.dsp.newWaveform("square")
+    local t = wf:type()
+    print("LWaveform:type t=" .. tostring(t))
 end
-
---@api-stub: lurek.dsp.processOffline
-do
-    local input = "content/examples/assets/audio/sample_click.wav"
-    local output = "save/_fs_tests/dsp_processed.wav"
-    local effects = {
-        lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2),
-        lurek.dsp.newEffectParams("compressor", 0.8, 2.5, 0.1),
-    }
-    local ok = lurek.dsp.processOffline(input, output, effects)
-    print("lurek.dsp.processOffline ok=" .. tostring(ok))
-    print("output exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.normalize
-do
-    local input = "content/examples/assets/audio/sample_tone.wav"
-    local output = "save/_fs_tests/dsp_normalized.wav"
-    local ok = lurek.dsp.normalize(input, output, 0.9)
-    print("lurek.dsp.normalize ok=" .. tostring(ok))
-    print("normalized exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.waveformToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_waveform.png"
-    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
-    print("lurek.dsp.waveformToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
-end
-
---@api-stub: lurek.dsp.spectrogramToPng
-do
-    local input = "content/examples/assets/audio/sample_loop.wav"
-    local output = "save/_fs_tests/dsp_spectrogram.png"
-    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
-    print("lurek.dsp.spectrogramToPng ok=" .. tostring(ok))
-    print("png exists=" .. tostring(lurek.filesystem.exists(output)))
 ```
 
 

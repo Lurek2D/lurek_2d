@@ -1998,6 +1998,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 ```lua
 do
     print("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
+    print("max(0, -5) = " .. lurek.math.max(0, -5))
 end
 ```
 
@@ -2029,6 +2030,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 ```lua
 do
     print("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
+    print("min(0, -5) = " .. lurek.math.min(0, -5))
 end
 ```
 

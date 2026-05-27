@@ -18,7 +18,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
 - Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7962 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28467 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28470 lines)
 
 ## Coverage
 

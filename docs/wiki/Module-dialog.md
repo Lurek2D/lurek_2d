@@ -690,7 +690,7 @@ end
 
 ```lua
 --- Returns the ID of the currently active dialogue node or nil.
----@return string? Current node identifier.
+---@return string Current node identifier, or nil when no node is active.
 function LDialogueState:current() end
 ```
 
@@ -698,7 +698,7 @@ function LDialogueState:current() end
 
 Returns the ID of the currently active dialogue node or nil.
 
-Returns: `string?` - Current node identifier.
+Returns: `string` - Current node identifier, or nil when no node is active.
 
 #### Example
 
@@ -745,7 +745,7 @@ end
 ```lua
 --- Gets a conversation variable by key.
 ---@param key string Variable name.
----@return string? Variable value or nil.
+---@return string Variable value, or nil when the variable is not set.
 function LDialogueState:getVariable(key) end
 ```
 
@@ -757,7 +757,7 @@ Parameters:
 
 - `key` (`string`, required): Variable name.
 
-Returns: `string?` - Variable value or nil.
+Returns: `string` - Variable value, or nil when the variable is not set.
 
 #### Example
 
@@ -1121,7 +1121,7 @@ end
 ```lua
 --- Gets a speaker by ID as a table with id, name, portrait, voice_id fields.
 ---@param id string Speaker identifier.
----@return table? Speaker info table or nil.
+---@return table Speaker info table, or nil when the speaker ID is not found.
 function LSpeakerRegistry:get(id) end
 ```
 
@@ -1133,7 +1133,7 @@ Parameters:
 
 - `id` (`string`, required): Speaker identifier.
 
-Returns: `table?` - Speaker info table or nil.
+Returns: `table` - Speaker info table, or nil when the speaker ID is not found.
 
 #### Example
 

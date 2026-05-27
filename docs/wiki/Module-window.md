@@ -116,7 +116,53 @@ Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
-    print("call lurek.window.close() from a quit button when you are ready to end the session")
+    -- Call lurek.window.close() to programmatically end the session, e.g. from a Quit button.
+    -- Safe to query the function exists before calling it in a headless test context.
+    print("close available = " .. tostring(type(lurek.window.close) == "function"))
+end
+
+--@api-stub: LWindow:getTitle
+do
+    local win = lurek.ui.newWindow("Test Window")
+    print("win_title=" .. win:getTitle())
+    win:setTitle("Renamed Window")
+    win:setCloseable(true)
+    win:setDraggable(false)
+    win:setResizable(true)
+    win:setOnClose(function() print("window_closed") end)
+    print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
+end
+
+--@api-stub: LWindow:getTitle.2
+do
+    local win = lurek.ui.newWindow("Test Window")
+    print("win_title=" .. win:getTitle())
+    win:setTitle("Renamed Window")
+    win:setCloseable(true)
+    win:setDraggable(false)
+    win:setResizable(true)
+    win:setOnClose(function() print("window_closed") end)
+    print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
+end
+
+--@api-stub: LWindow:getTitle.3
+do
+    local win = lurek.ui.newWindow("Test Window")
+    print("win_title=" .. win:getTitle())
+    win:setTitle("Renamed Window")
+    win:setCloseable(true)
+    win:setDraggable(false)
+    win:setResizable(true)
+    win:setOnClose(function() print("window_closed") end)
+    print("win_title2=" .. win:getTitle() .. " closeable=" .. tostring(win:isCloseable()) .. " draggable=" .. tostring(win:isDraggable()) .. " resizable=" .. tostring(win:isResizable()))
+end
+
+--@api-stub: LWindow:getTitle.4
+do
+    local win = lurek.ui.newWindow("Test Window")
+    print("win_title=" .. win:getTitle())
+    win:setTitle("Renamed Window")
+    win:setCloseable(true)
 ```
 
 #### lurek.window.flash
@@ -449,7 +495,8 @@ Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
-    print("DPI scale:", lurek.window.getDPIScale())
+    local s = lurek.window.getDPIScale()
+    print("DPI scale:", s)
 end
 ```
 
@@ -646,7 +693,8 @@ Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
-    print("native DPI scale:", lurek.window.getNativeDPIScale())
+    local s = lurek.window.getNativeDPIScale()
+    print("native DPI scale:", s)
 end
 ```
 
@@ -961,7 +1009,8 @@ Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
-    print("mouse focus = " .. tostring(lurek.window.hasMouseFocus()))
+    local v = lurek.window.hasMouseFocus()
+    print("mouse focus = " .. tostring(v))
 end
 ```
 
@@ -987,7 +1036,8 @@ Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
-    print("is fullscreen:", lurek.window.isFullscreen())
+    local v = lurek.window.isFullscreen()
+    print("is fullscreen:", v)
 end
 ```
 
@@ -1013,7 +1063,8 @@ Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
-    print("high DPI allowed:", lurek.window.isHighDPIAllowed())
+    local v = lurek.window.isHighDPIAllowed()
+    print("high DPI allowed:", v)
 end
 ```
 

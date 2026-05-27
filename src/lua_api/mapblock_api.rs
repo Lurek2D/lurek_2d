@@ -555,7 +555,7 @@ impl LuaUserData for LuaTilesetRef {
 // ─── Module registration ────────────────────────────────────────────────────
 
 /// Register the `lurek.mapblock` module.
-pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTable<'lua>> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let module = lua.create_table()?;
 
     // ─── Constructors ───────────────────────────────────────────────────────
@@ -695,5 +695,6 @@ pub fn register<'lua>(lua: &'lua Lua, _state: &SharedState) -> LuaResult<LuaTabl
         )?,
     )?;
 
-    Ok(module)
+    lurek.set("mapblock", module)?;
+    Ok(())
 }

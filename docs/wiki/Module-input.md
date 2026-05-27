@@ -815,7 +815,8 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-    print("relative mode = " .. tostring(lurek.input.mouse.getRelativeMode()))
+    local v = lurek.input.mouse.getRelativeMode()
+    print("relative mode = " .. tostring(v))
 end
 ```
 
@@ -1042,7 +1043,8 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-    print("key repeat = " .. tostring(lurek.input.keyboard.hasKeyRepeat()))
+    local v = lurek.input.keyboard.hasKeyRepeat()
+    print("key repeat = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.keyboard.setKeyRepeat
@@ -1053,7 +1055,8 @@ end
 
 --@api-stub: lurek.input.keyboard.hasTextInput
 do
-    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
+    local v = lurek.input.keyboard.hasTextInput()
+    print("text input = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.keyboard.setTextInput
@@ -1086,9 +1089,6 @@ do
     local right = lurek.input.mouse.isDown(2)
     print("left=" .. tostring(left) .. " right=" .. tostring(right))
 end
-
---@api-stub: lurek.input.mouse.getWheelDelta
-do
 ```
 
 #### lurek.input.keyboard.hasTextInput
@@ -1113,7 +1113,8 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
+    local v = lurek.input.keyboard.hasTextInput()
+    print("text input = " .. tostring(v))
 end
 ```
 
@@ -1204,7 +1205,8 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-    print("cursor supported = " .. tostring(lurek.input.mouse.isCursorSupported()))
+    local v = lurek.input.mouse.isCursorSupported()
+    print("cursor supported = " .. tostring(v))
 end
 ```
 
@@ -1264,17 +1266,26 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
+    -- isDown() returns true while any key is held; check inside an input event callback
+    local v = lurek.input.isDown()
     print("isDown available = " .. tostring(type(lurek.input.isDown) == "function"))
+    print("result type = " .. type(v))
 end
 
 --@api-stub: lurek.input.wasPressed
 do
+    -- wasPressed() is true on the first frame the key goes down; call inside event callback
+    local v = lurek.input.wasPressed()
     print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
+    print("result type = " .. type(v))
 end
 
 --@api-stub: lurek.input.wasReleased
 do
+    -- wasReleased(key) is true on the first frame the key goes up
+    local v = lurek.input.wasReleased("space")
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+    print("space released = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.newMapping
@@ -1302,15 +1313,6 @@ do
 end
 
 --@api-stub: LCombo:tick
-do
-    local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
-    local result = combo:tick(0.016)
-    print("tick → " .. result)
-end
-
---@api-stub: LCombo:getStep
-do
-    local combo = lurek.input.newCombo({"a", "b"})
 ```
 
 #### lurek.input.keyboard.isDown
@@ -1432,7 +1434,8 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-    print("grabbed = " .. tostring(lurek.input.mouse.isGrabbed()))
+    local v = lurek.input.mouse.isGrabbed()
+    print("grabbed = " .. tostring(v))
 end
 ```
 
@@ -1615,7 +1618,8 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
-    print("cursor visible = " .. tostring(lurek.input.mouse.isVisible()))
+    local v = lurek.input.mouse.isVisible()
+    print("cursor visible = " .. tostring(v))
 end
 ```
 
@@ -1982,7 +1986,8 @@ end
 
 --@api-stub: lurek.input.keyboard.hasTextInput
 do
-    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
+    local v = lurek.input.keyboard.hasTextInput()
+    print("text input = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.keyboard.setTextInput
@@ -2655,12 +2660,18 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
+    -- wasPressed() is true on the first frame the key goes down; call inside event callback
+    local v = lurek.input.wasPressed()
     print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
+    print("result type = " .. type(v))
 end
 
 --@api-stub: lurek.input.wasReleased
 do
+    -- wasReleased(key) is true on the first frame the key goes up
+    local v = lurek.input.wasReleased("space")
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+    print("space released = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.newMapping
@@ -2696,12 +2707,6 @@ end
 
 --@api-stub: LCombo:getStep
 do
-    local combo = lurek.input.newCombo({"a", "b"})
-    local step = combo:getStep(1)
-    print("step 1 key = " .. step.key .. " gap = " .. step.gap_ms)
-end
-
---@api-stub: LCombo:reset
 ```
 
 #### lurek.input.gamepad.wasReleased
@@ -2796,7 +2801,10 @@ Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
+    -- wasReleased(key) is true on the first frame the key goes up
+    local v = lurek.input.wasReleased("space")
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+    print("space released = " .. tostring(v))
 end
 
 --@api-stub: lurek.input.newMapping
@@ -2840,9 +2848,6 @@ end
 --@api-stub: LCombo:reset
 do
     local combo = lurek.input.newCombo({"q", "w", "e"})
-    combo:feed("q")
-    combo:reset()
-    print("progress after reset = " .. combo:progress())
 ```
 
 

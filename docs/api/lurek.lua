@@ -6234,7 +6234,7 @@ LDialogueState = {}
 function LDialogueState:advance(node_id) end
 
 --- Returns the ID of the currently active dialogue node or nil.
----@return string? Current node identifier.
+---@return string Current node identifier, or nil when no node is active.
 function LDialogueState:current() end
 
 --- End the active conversation and release its state data.
@@ -6242,7 +6242,7 @@ function LDialogueState:end_() end
 
 --- Gets a conversation variable by key.
 ---@param key string Variable name.
----@return string? Variable value or nil.
+---@return string Variable value, or nil when the variable is not set.
 function LDialogueState:getVariable(key) end
 
 --- Check whether a given conversation node has been visited.
@@ -6301,7 +6301,7 @@ function LSpeakerRegistry:count() end
 
 --- Gets a speaker by ID as a table with id, name, portrait, voice_id fields.
 ---@param id string Speaker identifier.
----@return table? Speaker info table or nil.
+---@return table Speaker info table, or nil when the speaker ID is not found.
 function LSpeakerRegistry:get(id) end
 
 --- Removes a speaker by ID for this object.
@@ -27613,6 +27613,7 @@ lurek.ui.addToast = function(toast_table) end
 ---@param to table Target color {r, g, b, a} (0-1 range).
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
+---@return nil Schedules the animation; no return value.
 lurek.ui.animateColor = function(idx, from, to, duration, easing) end
 
 --- Animate widget rotation from one angle to another (in radians).
@@ -27621,6 +27622,7 @@ lurek.ui.animateColor = function(idx, from, to, duration, easing) end
 ---@param to number Target angle in radians.
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
+---@return nil Schedules the animation; no return value.
 lurek.ui.animateRotation = function(idx, from, to, duration, easing) end
 
 --- Animate widget scale from one value to another.
@@ -27631,6 +27633,7 @@ lurek.ui.animateRotation = function(idx, from, to, duration, easing) end
 ---@param to_sy number Target Y scale.
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
+---@return nil Schedules the animation; no return value.
 lurek.ui.animateScale = function(idx, from_sx, from_sy, to_sx, to_sy, duration, easing) end
 
 --- Begins a drag operation on a widget.
