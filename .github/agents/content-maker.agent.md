@@ -1,7 +1,8 @@
 ﻿---
 name: Content-Maker
-description: Manage the content folder (demos, examples, library) as a Game Designer. Write Lua code based on the lurek API. Review experience through player personas and report friction. Write conf.lua and conf.toml config templates. Do not work on engine Rust code.
-tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, vscode/toolSearch, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, read/problems, read/readFile, read/viewImage, read/skill, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, todo]
+description: "Manage the content folder (demos, examples, library) as a Game Designer. Write Lua code based on the lurek API. Review experience through player personas and report friction. Write conf.lua and conf.toml config templates."
+
+tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, read/problems, read/readFile, read/viewImage, read/skill, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, todo]
 ---
 
 # Content-Maker

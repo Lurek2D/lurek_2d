@@ -1,4 +1,4 @@
----
+﻿---
 trigger: manual
 description: "Run a full snippet-development workflow with module-level coverage gates and VS Code output generation."
 expected_agent: "Manager"
@@ -43,7 +43,7 @@ expected_agent: "Manager"
 - Writing API one-liners that are not useful building blocks.
 - Auto-generating large snippet batches without manual rationale.
 - Shipping snippet markers without placeholders for user parameters.
-- Updating `extensions/vscode/data/snippets.json` manually instead of using the generator.
+- Updating `extension/vscode/data/snippets.json` manually instead of using the generator.
 - Closing without running both validator and coverage audit.
 
 ## Example Invocation
@@ -53,3 +53,4 @@ expected_agent: "Manager"
 Mode: agent
 Loads skills: examples-management, documentation, vscode-extension
 Inputs required: Snippet goal., Target modules., Coverage expectation (module-level)., Required final gate.
+

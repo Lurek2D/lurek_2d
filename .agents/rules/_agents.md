@@ -1,4 +1,4 @@
----
+﻿---
 trigger: always_on
 description: "Lurek2D Agent Definition for README.md"
 ---
@@ -7,7 +7,7 @@ description: "Lurek2D Agent Definition for README.md"
 
 Consolidated from 27 agents to 12. Previous agents merged into broader roles that cover overlapping workflow modes.
 
-**See also:** [cag-system.md § 4.1](../../docs/architecture/cag-system.md#41-agent-skill-bundles) — authoritative agent-to-skill bundle table (derived from each agent's `## CAG Metadata`).
+**See also:** [cag-system.md Â§ 4.1](../../docs/architecture/cag-system.md#41-agent-skill-bundles) â€” authoritative agent-to-skill bundle table (derived from each agent's `## CAG Metadata`).
 
 ## Merge map
 
@@ -46,7 +46,7 @@ Consolidated from 27 agents to 12. Previous agents merged into broader roles tha
 | Developer | All Rust engine code: runtime, renderer, physics, audio, assets, debugging. |
 | Lua-Designer | lurek.* API surface as a product. src/lua_api/, docstrings, generators. |
 | Content-Maker | content/examples/, content/games/, library/, conf files, player-review feedback. |
-| Extension-Engineer | extensions/vscode/ commands, panels, language features, generated data sync. |
+| Extension-Engineer | extension/vscode/ commands, panels, language features, generated data sync. |
 | Build-Engineer | Cargo profiles, build tasks, CI, packaging, dist scripts. |
 | Tester | Lua-first tests, Rust unit tests, adversarial probes, security test cases. |
 | Verifier | Final quality gate: code review, architecture review, security review, performance gate, accept/reject. |
@@ -55,4 +55,5 @@ Consolidated from 27 agents to 12. Previous agents merged into broader roles tha
 
 ## Skill bundles
 
-See [docs/architecture/cag-system.md § 4.1](../../docs/architecture/cag-system.md#41-agent-skill-bundles) for the authoritative table. That section is derived from each agent's `## CAG Metadata` block and is the single source of truth.
+See [docs/architecture/cag-system.md Â§ 4.1](../../docs/architecture/cag-system.md#41-agent-skill-bundles) for the authoritative table. That section is derived from each agent's `## CAG Metadata` block and is the single source of truth.
+

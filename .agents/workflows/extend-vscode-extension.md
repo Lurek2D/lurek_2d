@@ -1,4 +1,4 @@
----
+﻿---
 trigger: manual
 description: "Extend the VS Code extension with one bounded command, panel, or language feature."
 expected_agent: "Manager"
@@ -17,7 +17,7 @@ expected_agent: "Manager"
 
 ## Steps
 1. Load [skill: vscode-extension](../rules/skill_vscode-extension.md) and [skill: html-css](../rules/skill_html-css.md) before acting.
-2. Read extensions/vscode/, package.json contributions, nearby extension patterns, and any generated data dependency before editing.
+2. Read extension/vscode/, package.json contributions, nearby extension patterns, and any generated data dependency before editing.
 3. Keep implementation inside the extension, make contributions explicit, and sync generated data or command wiring when the feature depends on them.
 4. Run the narrowest extension build or test path first and verify the changed command, panel, or provider still resolves correctly.
 
@@ -39,3 +39,4 @@ expected_agent: "Manager"
 Mode: agent
 Loads skills: vscode-extension, html-css
 Inputs required: Feature goal., Target extension area., Expected user action., Validation path.
+
