@@ -248,15 +248,42 @@ function LAISystem:addInstruction(key, text) end
 ---@return nil No value is returned.
 function LAISystem:addSkill(name, keywords, prompt) end
 
+--- Returns the number of registered agents.
+---@return number Agent count.
+function LAISystem:agentCount() end
+
 --- Builds and returns the full context string that would be sent for a given prompt.
 ---@param instruction string The prompt text used for keyword matching.
 ---@param opts? table Optional table with `agent` (string) and `instructions` (table) keys.
 ---@return string The assembled system context block.
 function LAISystem:buildContext(instruction, opts) end
 
+--- Returns `true` if an agent with `name` is registered.
+---@param name string Agent name to check.
+---@return boolean `true` if the agent exists.
+function LAISystem:hasAgent(name) end
+
+--- Returns `true` if an instruction with `key` is registered.
+---@param key string Instruction key to check.
+---@return boolean `true` if the instruction exists.
+function LAISystem:hasInstruction(key) end
+
+--- Returns `true` if a system skill with `name` is registered.
+---@param name string Skill name to check.
+---@return boolean `true` if the skill exists.
+function LAISystem:hasSkill(name) end
+
+--- Returns the number of registered instruction blocks.
+---@return number Instruction count.
+function LAISystem:instructionCount() end
+
 --- Returns a sorted list of all registered agent names.
 ---@return table String array of agent names.
 function LAISystem:listAgents() end
+
+--- Returns a list of registered instruction keys in insertion order.
+---@return table String array of instruction keys.
+function LAISystem:listInstructions() end
 
 --- Sends a prompt to a named agent through the system, auto-injecting matching context.
 ---@param agent_name string Name of the agent to query.
@@ -287,6 +314,10 @@ function LAISystem:removeSkill(name) end
 ---@return number Batch callback ID.
 function LAISystem:runAll(tasks, callback) end
 
+--- Returns the number of registered system skills.
+---@return number Skill count.
+function LAISystem:skillCount() end
+
 --- Polls the system's background client for completed requests and dispatches callbacks.
 ---@return nil No value is returned.
 function LAISystem:update() end
@@ -314,6 +345,35 @@ function LAgent:clearSkills() end
 ---@param code string The Lua code to execute.
 ---@return boolean `true` on success, raises an error on failure.
 function LAgent:evalCode(code) end
+
+--- Returns the agent's role description.
+---@return string Role description, or `""` if not set.
+function LAgent:getDescription() end
+
+--- Returns the current response format string.
+---@return string One of `"json"`, `"csv"`, or `"text"`.
+function LAgent:getFormat() end
+
+--- Returns the current model identifier.
+---@return string Model name.
+function LAgent:getModel() end
+
+--- Returns the agent's name identifier.
+---@return string Agent name, or `""` if not set.
+function LAgent:getName() end
+
+--- Returns the current LLM endpoint URL.
+---@return string Endpoint URL.
+function LAgent:getUrl() end
+
+--- Returns `true` if a skill with `name` is registered.
+---@param name string Skill name to check.
+---@return boolean `true` if the skill exists.
+function LAgent:hasSkill(name) end
+
+--- Returns a list of registered skill names in insertion order.
+---@return table String array of skill names.
+function LAgent:listSkills() end
 
 --- Returns the number of in-flight requests that have not yet completed.
 ---@return number Number of pending requests.
@@ -351,6 +411,11 @@ function LAgent:setFormat(format) end
 ---@return nil No value is returned.
 function LAgent:setMaxRetries(n) end
 
+--- Changes the model identifier for future prompts.
+---@param model string Model name (e.g. `"llama3"`, `"mistral"`).
+---@return nil No value is returned.
+function LAgent:setModel(model) end
+
 --- Sets the agent's name identifier used when added to an AISystem.
 ---@param name string Agent name.
 ---@return nil No value is returned.
@@ -366,6 +431,20 @@ function LAgent:setOption(key, value) end
 ---@param t number Temperature value (e.g. 0.7). Higher = more random.
 ---@return nil No value is returned.
 function LAgent:setTemperature(t) end
+
+--- Sets the per-request timeout in seconds (0 uses the default 60 s).
+---@param secs number Timeout in seconds.
+---@return nil No value is returned.
+function LAgent:setTimeout(secs) end
+
+--- Changes the LLM endpoint URL for future prompts.
+---@param url string Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`).
+---@return nil No value is returned.
+function LAgent:setUrl(url) end
+
+--- Returns the number of registered skills.
+---@return number Skill count.
+function LAgent:skillCount() end
 
 --- Polls the background client for completed LLM requests and dispatches callbacks.
 ---@return nil No value is returned.
@@ -389,6 +468,10 @@ function LAgentManager:update() end
 ---@class LOllamaManager
 LOllamaManager = {}
 
+--- Returns the base URL this manager was created with.
+---@return string Base URL (e.g. `"http://127.0.0.1:11434"`).
+function LOllamaManager:baseUrl() end
+
 --- Sends `DELETE /api/delete` to remove a model from local Ollama storage.
 ---@param name string Model name to delete (e.g. `"llama3:latest"`).
 ---@return boolean `true` if the request succeeded.
@@ -406,6 +489,10 @@ function LOllamaManager:isRunning() end
 --- Returns a table of locally available models, each with `name` and `size_gb` fields.
 ---@return table Array of `{ name = string, size_gb = number }` tables.
 function LOllamaManager:listModels() end
+
+--- Returns a string array of locally available model names; empty if Ollama is not running.
+---@return table String array of model names.
+function LOllamaManager:modelNames() end
 
 --- Returns the number of in-flight model pull operations.
 ---@return number Number of pending pulls.
@@ -447,7 +534,7 @@ lurek.agent.new = function(config) end
 lurek.agent.newManager = function() end
 
 --- Creates an Ollama infrastructure manager for server lifecycle and model management.
----@param config table Optional config with `url` (default `"http://127.0.0.1:11434"`).
+---@param config? table Optional config with `url` (default `"http://127.0.0.1:11434"`).
 ---@return LOllamaManager A new Ollama manager object.
 lurek.agent.newOllama = function(config) end
 

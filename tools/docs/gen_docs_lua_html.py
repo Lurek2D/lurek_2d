@@ -8,7 +8,7 @@ its own output directory.
 Usage:
     python tools/docs/gen_docs_lua_html.py
     python tools/docs/gen_docs_lua_html.py --input logs/data/lua_api_data.json
-    python tools/docs/gen_docs_lua_html.py --output build/doc/lua-api
+    python tools/docs/gen_docs_lua_html.py --output pages/lua-docs
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from typing import Any
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 INPUT_FILE = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
-OUTPUT_DIR = WORKSPACE_ROOT / "build" / "doc" / "lua-api"
+OUTPUT_DIR = WORKSPACE_ROOT / "pages" / "lua-docs"
 EXAMPLES_DIR = WORKSPACE_ROOT / "content" / "examples"
 ICON_CANDIDATES = [
     WORKSPACE_ROOT / "extension" / "vscode" / "media" / "lurek-logo.png",

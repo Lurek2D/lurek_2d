@@ -89,11 +89,22 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 - `LuaAgentRuntime::from_lua_config` (`lua_runtime.rs`): Creates a runtime from a Lua config table, including new fields: name, description, max_retries, timeout.
 - `LuaAgentRuntime::add_skill` (`lua_runtime.rs`): Appends a named skill to the runtime state.
 - `LuaAgentRuntime::clear_skills` (`lua_runtime.rs`): Removes all skills from the runtime state.
+- `LuaAgentRuntime::has_skill` (`lua_runtime.rs`): Returns `true` if a skill with the given name is registered.
+- `LuaAgentRuntime::skill_count` (`lua_runtime.rs`): Returns the number of registered skills.
+- `LuaAgentRuntime::list_skills` (`lua_runtime.rs`): Returns skill names in insertion order.
 - `LuaAgentRuntime::set_option` (`lua_runtime.rs`): Inserts or updates a single model option.
 - `LuaAgentRuntime::set_format` (`lua_runtime.rs`): Changes the response format for future prompts.
+- `LuaAgentRuntime::set_model` (`lua_runtime.rs`): Changes the model name for future prompts.
+- `LuaAgentRuntime::set_url` (`lua_runtime.rs`): Changes the endpoint URL for future prompts.
+- `LuaAgentRuntime::set_timeout` (`lua_runtime.rs`): Sets the per-request timeout in seconds.
 - `LuaAgentRuntime::set_max_retries` (`lua_runtime.rs`): Sets the retry count.
 - `LuaAgentRuntime::set_name` (`lua_runtime.rs`): Sets the agent identifier.
 - `LuaAgentRuntime::set_description` (`lua_runtime.rs`): Sets the agent role description.
+- `LuaAgentRuntime::get_name` (`lua_runtime.rs`): Returns the agent identifier.
+- `LuaAgentRuntime::get_description` (`lua_runtime.rs`): Returns the agent role description.
+- `LuaAgentRuntime::get_model` (`lua_runtime.rs`): Returns the current model name.
+- `LuaAgentRuntime::get_url` (`lua_runtime.rs`): Returns the current endpoint URL.
+- `LuaAgentRuntime::get_format` (`lua_runtime.rs`): Returns the current response format.
 - `LuaAgentRuntime::cancel` (`lua_runtime.rs`): Cancels an in-flight callback by ID.
 - `LuaAgentRuntime::pending_count` (`lua_runtime.rs`): Returns the in-flight request count.
 - `LuaAgentRuntime::prompt` (`lua_runtime.rs`): Queues one async prompt and stores its callback.
@@ -108,10 +119,17 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 - `LuaAISystemRuntime::add_agent` (`lua_runtime.rs`): Registers an agent by name.
 - `LuaAISystemRuntime::remove_agent` (`lua_runtime.rs`): Removes an agent by name.
 - `LuaAISystemRuntime::list_agents` (`lua_runtime.rs`): Returns sorted agent names.
+- `LuaAISystemRuntime::has_agent` (`lua_runtime.rs`): Returns `true` if an agent with the given name is registered.
+- `LuaAISystemRuntime::agent_count` (`lua_runtime.rs`): Returns the number of registered agents.
 - `LuaAISystemRuntime::add_instruction` (`lua_runtime.rs`): Adds a named instruction block.
 - `LuaAISystemRuntime::remove_instruction` (`lua_runtime.rs`): Removes an instruction block.
+- `LuaAISystemRuntime::has_instruction` (`lua_runtime.rs`): Returns `true` if an instruction block with the given key exists.
+- `LuaAISystemRuntime::instruction_count` (`lua_runtime.rs`): Returns the number of stored instruction blocks.
+- `LuaAISystemRuntime::list_instructions` (`lua_runtime.rs`): Returns instruction keys in insertion order.
 - `LuaAISystemRuntime::add_system_skill` (`lua_runtime.rs`): Adds a keyword-gated skill.
 - `LuaAISystemRuntime::remove_system_skill` (`lua_runtime.rs`): Removes a system skill.
+- `LuaAISystemRuntime::has_system_skill` (`lua_runtime.rs`): Returns `true` if a system skill with the given name is registered.
+- `LuaAISystemRuntime::system_skill_count` (`lua_runtime.rs`): Returns the number of registered system skills.
 - `LuaAISystemRuntime::build_context` (`lua_runtime.rs`): Assembles the full context block for a given prompt.
 - `LuaAISystemRuntime::prompt` (`lua_runtime.rs`): Sends a single system-routed prompt to a named agent.
 - `LuaAISystemRuntime::run_all` (`lua_runtime.rs`): Dispatches system-context batch tasks.
@@ -119,15 +137,37 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 - `LuaAISystemRuntime::update` (`lua_runtime.rs`): Polls and dispatches completed system responses.
 - `AgentState::new` (`state.rs`): Creates a new `AgentState` with default retry and timeout.
 - `AgentState::set_name` / `set_description` / `set_max_retries` / `set_timeout` / `set_option` (`state.rs`): Mutation helpers.
+- `AgentState::set_model` (`state.rs`): Changes the model name.
+- `AgentState::set_url` (`state.rs`): Changes the endpoint URL.
+- `AgentState::set_format` (`state.rs`): Changes the response format.
 - `AgentState::add_skill` / `clear_skills` (`state.rs`): Skill management.
+- `AgentState::has_skill` (`state.rs`): Returns `true` if a skill with the given name is registered.
+- `AgentState::skill_count` (`state.rs`): Returns the number of registered skills.
+- `AgentState::list_skills` (`state.rs`): Returns skill names in insertion order.
 - `AgentState::build_system_block` (`state.rs`): Builds the agent system block including skills.
 - `AgentState::to_request` / `to_request_with_system` (`state.rs`): Request-building helpers.
 - `AISystemState::new` (`state.rs`): Creates a new orchestration state.
 - `AISystemState::add_instruction` / `remove_instruction` (`state.rs`): Instruction management.
+- `AISystemState::has_instruction` (`state.rs`): Returns `true` if an instruction block exists.
+- `AISystemState::instruction_count` (`state.rs`): Returns the number of stored instruction blocks.
+- `AISystemState::list_instructions` (`state.rs`): Returns instruction keys in insertion order.
 - `AISystemState::add_system_skill` / `remove_system_skill` (`state.rs`): Skill management.
+- `AISystemState::has_system_skill` (`state.rs`): Returns `true` if a system skill exists.
+- `AISystemState::system_skill_count` (`state.rs`): Returns the number of registered system skills.
 - `AISystemState::build_context` (`state.rs`): Assembles the system context block with auto-matched skills.
+- `OllamaManager::new` (`ollama.rs`): Creates a new `OllamaManager` pointing to the given base URL.
+- `OllamaManager::base_url` (`ollama.rs`): Returns the base URL this manager targets.
+- `OllamaManager::model_names` (`ollama.rs`): Returns a `Vec<String>` of locally available model names.
+- `OllamaManager::is_running` / `version` (`ollama.rs`): Probe liveness; `version` returns the server version string.
+- `OllamaManager::start` / `stop` / `restart` (`ollama.rs`): Manage the `ollama serve` process lifecycle.
+- `OllamaManager::list_models` / `has_model` (`ollama.rs`): Query the local model inventory.
+- `OllamaManager::pull_model` / `delete_model` (`ollama.rs`): Async pull and synchronous delete.
+- `OllamaManager::poll` / `in_flight_count` (`ollama.rs`): Background pull result collection.
 - `AgentError::code` (`types.rs`): Returns the stable Lua-facing error code.
 - `AgentError::is_transient` (`types.rs`): Returns `true` for errors safe to retry.
+- `AgentError::message` (`types.rs`): Returns the inner error message string.
+- `AgentResponse::is_ok` (`types.rs`): Returns `true` if the response body is a success value.
+- `AgentResponse::text` (`types.rs`): Returns the response text as `Option<&str>`, or `None` on error.
 
 ## Lua API Reference
 
@@ -140,15 +180,26 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 - `lurek.agent.newSystem(config)`: Creates an AISystem orchestrator. Config keys: `system_prompt`.
 
 ### `LAgent` Methods
+- `LAgent:setName(name)`: Sets the agent's name identifier.
+- `LAgent:setDescription(description)`: Sets the agent's role description.
+- `LAgent:setModel(model)`: Changes the model name for future prompts.
+- `LAgent:setUrl(url)`: Changes the endpoint URL for future prompts.
+- `LAgent:setTimeout(seconds)`: Sets the per-request timeout in seconds.
+- `LAgent:getName()`: Returns the agent's name identifier.
+- `LAgent:getDescription()`: Returns the agent's role description.
+- `LAgent:getModel()`: Returns the current model name.
+- `LAgent:getUrl()`: Returns the current endpoint URL.
+- `LAgent:getFormat()`: Returns the current response format (`json`, `csv`, or `text`).
 - `LAgent:addSkill(name, prompt)`: Appends a named skill prompt to the agent's context block.
 - `LAgent:clearSkills()`: Removes all registered skills.
+- `LAgent:hasSkill(name)`: Returns `true` if a skill with the given name is registered.
+- `LAgent:skillCount()`: Returns the number of registered skills.
+- `LAgent:listSkills()`: Returns a table of registered skill names in insertion order.
 - `LAgent:setOption(key, value)`: Sets a single model option (e.g. `temperature`, `seed`, `num_ctx`).
 - `LAgent:setFormat(format)`: Changes the response format (`json`, `csv`, `text`).
 - `LAgent:setMaxRetries(n)`: Sets the retry count for transient errors.
 - `LAgent:setContextSize(n)`: Sets `options.num_ctx`.
 - `LAgent:setTemperature(t)`: Sets `options.temperature`.
-- `LAgent:setName(name)`: Sets the agent's name identifier.
-- `LAgent:setDescription(description)`: Sets the agent's role description.
 - `LAgent:prompt(instruction, callback)`: Sends an async prompt; callback receives `(success, data, err_info)`. Returns callback ID.
 - `LAgent:promptBatch(instructions, callback)`: Sends a batch; callback receives a results table. Returns batch ID.
 - `LAgent:cancel(callback_id)`: Cancels a pending or in-flight request.
@@ -164,14 +215,36 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 - `LAISystem:addAgent(name, agent)`: Registers a named agent in the system.
 - `LAISystem:removeAgent(name)`: Removes an agent by name; returns `true` if found.
 - `LAISystem:listAgents()`: Returns a sorted table of registered agent names.
+- `LAISystem:hasAgent(name)`: Returns `true` if an agent with the given name is registered.
+- `LAISystem:agentCount()`: Returns the number of registered agents.
 - `LAISystem:addInstruction(key, text)`: Adds a named instruction block the user may explicitly include per call.
 - `LAISystem:removeInstruction(key)`: Removes an instruction block; returns `true` if found.
+- `LAISystem:hasInstruction(key)`: Returns `true` if an instruction block with the given key exists.
+- `LAISystem:instructionCount()`: Returns the number of stored instruction blocks.
+- `LAISystem:listInstructions()`: Returns a table of instruction keys in insertion order.
 - `LAISystem:addSkill(name, keywords, prompt)`: Adds a keyword-gated skill auto-injected by Lurek on prompt overlap.
 - `LAISystem:removeSkill(name)`: Removes a system skill; returns `true` if found.
+- `LAISystem:hasSkill(name)`: Returns `true` if a system skill with the given name is registered.
+- `LAISystem:skillCount()`: Returns the number of registered system skills.
 - `LAISystem:buildContext(instruction, opts?)`: Returns the assembled context string for debug/preview. Opts: `{ agent = string, instructions = table }`.
 - `LAISystem:prompt(agent_name, instruction, callback, opts?)`: Sends a system-routed prompt to a named agent. Opts: `{ instructions = { "key", ... } }`. Returns callback ID.
 - `LAISystem:runAll(tasks, callback)`: Dispatches named-agent batch tasks. Each task: `{ agent = string, instruction = string, instructions = table? }`. Returns batch ID.
 - `LAISystem:update()`: Polls for completed system responses and dispatches callbacks.
+
+### `LOllamaManager` Methods
+- `LOllamaManager:isRunning()`: Returns `true` if the Ollama server is reachable.
+- `LOllamaManager:version()`: Returns the Ollama server version string, or `nil` if unreachable.
+- `LOllamaManager:baseUrl()`: Returns the base URL this manager is configured to connect to.
+- `LOllamaManager:start()`: Spawns the `ollama serve` child process; no-op if already running.
+- `LOllamaManager:stop()`: Kills the managed `ollama serve` child process.
+- `LOllamaManager:restart()`: Stops then starts the server with a settle pause.
+- `LOllamaManager:listModels()`: Returns a table of model info tables (`{ name, size_gb, modified }`).
+- `LOllamaManager:modelNames()`: Returns a table of model name strings (convenience wrapper around `listModels`).
+- `LOllamaManager:hasModel(name)`: Returns `true` if the named model is available locally.
+- `LOllamaManager:pullModel(name, callback)`: Starts an async model download; callback receives `(ok, err)` on completion.
+- `LOllamaManager:deleteModel(name)`: Removes a local model.
+- `LOllamaManager:update()`: Polls for completed pull operations and dispatches callbacks.
+- `LOllamaManager:inFlightCount()`: Returns the number of active background pulls.
 
 ## References
 

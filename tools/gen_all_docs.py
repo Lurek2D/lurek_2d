@@ -7,7 +7,7 @@ Steps:
     3.  gen_extension_api.py         -> extension/vscode/data/lurek-api.json  (VS Code extension API)
     4.  gen_luadoc.py                -> docs/api/lurek.lua                     (LuaCATS stubs)
     5.  gen_docs_lua.py              -> docs/api/lurek.md                      (Lua API reference)
-    6.  gen_docs_lua_html.py         -> build/doc/lua-api                      (Lua API HTML browser)
+    6.  gen_docs_lua_html.py         -> pages/lua-docs                         (Lua API HTML browser)
     7.  gen_docs_rust.py             -> docs/api/rust.md                       (Rust API reference)
     8.  gen_lib_docs.py              -> docs/api/lureksome.md + docs/api/lureksome.lua  (Lureksome library API)
     9.  gen_wiki.py                  -> docs/wiki/*.md                         (GitHub Wiki pages)
@@ -19,12 +19,14 @@ Steps:
    15.  example_coverage.py          -> logs/reports/example_coverage.md       (example coverage)
    16.  test_coverage.py             -> logs/reports/test_coverage.md          (test coverage report)
    17.  lua_api_test_coverage.py     -> logs/reports/lua_test_coverage.md      (Lua test coverage)
+   18.  (inline) copy build/doc/lurek2d -> pages/rust-docs                    (Rust HTML docs for GitHub Pages)
 
 Usage:
     python tools/gen_all_docs.py          # run all steps
 """
 
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -40,7 +42,7 @@ SCRIPTS = [
     ("docs/gen_extension_api.py", "VS Code extension API (extension/vscode/data/lurek-api.json)"),
     ("docs/gen_luadoc.py",        "LuaCATS Stubs (docs/api/lurek.lua)"),
     ("docs/gen_docs_lua.py",      "Lua API reference (docs/api/lurek.md)"),
-    ("docs/gen_docs_lua_html.py", "Lua API HTML browser (build/doc/lua-api)"),
+    ("docs/gen_docs_lua_html.py", "Lua API HTML browser (pages/lua-docs)"),
     ("docs/gen_docs_rust.py",     "Rust API reference (docs/api/rust.md)"),
     ("docs/gen_lib_docs.py",      "Library API (docs/api/lureksome.md + lureksome.lua)"),
     ("docs/gen_wiki.py",          "User wiki (docs/wiki/*.md)"),
@@ -110,6 +112,18 @@ def main() -> None:
         ok = run_script(script_name, extra_args, label)
         if not ok:
             failed.append(f"{script_name} {' '.join(extra_args)}")
+
+    # Copy cargo doc output into pages/rust-docs for GitHub Pages.
+    rust_src = TOOLS_DIR.parent / "build" / "doc" / "lurek2d"
+    rust_dst = TOOLS_DIR.parent / "pages" / "rust-docs"
+    print(f"  [Rust HTML docs ({rust_dst.relative_to(TOOLS_DIR.parent).as_posix()})]")
+    if rust_src.exists():
+        if rust_dst.exists():
+            shutil.rmtree(rust_dst)
+        shutil.copytree(rust_src, rust_dst)
+        print(f"    copied {rust_src.relative_to(TOOLS_DIR.parent).as_posix()} -> {rust_dst.relative_to(TOOLS_DIR.parent).as_posix()}")
+    else:
+        print(f"    SKIP: {rust_src.relative_to(TOOLS_DIR.parent).as_posix()} not found (run 'cargo doc' first)")
 
     print("=" * 60)
     if failed:

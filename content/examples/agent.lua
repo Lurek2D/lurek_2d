@@ -61,6 +61,113 @@ do
     print("Agent description set.")
 end
 
+-- ─── LAgent:setModel ─────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:setModel
+do
+    local agent = lurek.agent.new({ model = "llama3" })
+    agent:setModel("mistral")
+    print("Agent model changed to mistral.")
+end
+
+-- ─── LAgent:setUrl ───────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:setUrl
+do
+    local agent = lurek.agent.new({})
+    agent:setUrl("http://10.0.0.5:11434/api/generate")
+    print("Agent URL updated.")
+end
+
+-- ─── LAgent:setTimeout ───────────────────────────────────────────────────────
+
+--@api-stub: LAgent:setTimeout
+do
+    local agent = lurek.agent.new({})
+    agent:setTimeout(90)
+    print("Agent timeout set to 90 s.")
+end
+
+-- ─── LAgent:getName ──────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:getName
+do
+    local agent = lurek.agent.new({})
+    agent:setName("planner")
+    local name = agent:getName()
+    print("Agent name:", name)
+end
+
+-- ─── LAgent:getDescription ───────────────────────────────────────────────────
+
+--@api-stub: LAgent:getDescription
+do
+    local agent = lurek.agent.new({})
+    agent:setDescription("Plans tasks.")
+    local desc = agent:getDescription()
+    print("Agent description:", desc)
+end
+
+-- ─── LAgent:getModel ─────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:getModel
+do
+    local agent = lurek.agent.new({ model = "llama3" })
+    local m     = agent:getModel()
+    print("Agent model:", m)
+end
+
+-- ─── LAgent:getUrl ───────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:getUrl
+do
+    local agent = lurek.agent.new({ url = "http://127.0.0.1:11434/api/generate" })
+    local url   = agent:getUrl()
+    print("Agent URL:", url)
+end
+
+-- ─── LAgent:getFormat ────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:getFormat
+do
+    local agent = lurek.agent.new({ format = "json" })
+    local fmt   = agent:getFormat()
+    print("Agent format:", fmt)
+end
+
+-- ─── LAgent:hasSkill ─────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:hasSkill
+do
+    local agent = lurek.agent.new({})
+    agent:addSkill("location", "The player is in the Darkwood forest.")
+    print("Has 'location' skill:", agent:hasSkill("location"))
+    print("Has 'weather' skill:", agent:hasSkill("weather"))
+end
+
+-- ─── LAgent:skillCount ───────────────────────────────────────────────────────
+
+--@api-stub: LAgent:skillCount
+do
+    local agent = lurek.agent.new({})
+    agent:addSkill("s1", "Context A.")
+    agent:addSkill("s2", "Context B.")
+    print("Skill count:", agent:skillCount())
+end
+
+-- ─── LAgent:listSkills ───────────────────────────────────────────────────────
+
+--@api-stub: LAgent:listSkills
+do
+    local agent = lurek.agent.new({})
+    agent:addSkill("combat",    "Turn-based combat.")
+    agent:addSkill("inventory", "Inventory management.")
+    local names = agent:listSkills()
+    for _, name in ipairs(names) do
+        print("Skill:", name)
+    end
+end
+
 -- ─── LAgent:addSkill ─────────────────────────────────────────────────────────
 
 --@api-stub: LAgent:addSkill
@@ -283,6 +390,28 @@ do
     end
 end
 
+-- ─── LAISystem:hasAgent ──────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:hasAgent
+do
+    local system = lurek.agent.newSystem({})
+    local agent  = lurek.agent.new({})
+    system:addAgent("planner", agent)
+    print("Has 'planner':", system:hasAgent("planner"))
+    print("Has 'ghost':",   system:hasAgent("ghost"))
+end
+
+-- ─── LAISystem:agentCount ────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:agentCount
+do
+    local system = lurek.agent.newSystem({})
+    local agent  = lurek.agent.new({})
+    system:addAgent("a1", agent)
+    system:addAgent("a2", agent)
+    print("Agent count:", system:agentCount())
+end
+
 -- ─── LAISystem:addInstruction ────────────────────────────────────────────────
 
 --@api-stub: LAISystem:addInstruction
@@ -301,6 +430,39 @@ do
     system:addInstruction("debug_hint", "Temporary debug context.")
     local removed = system:removeInstruction("debug_hint")
     print("Instruction removed:", removed)
+end
+
+-- ─── LAISystem:hasInstruction ────────────────────────────────────────────────
+
+--@api-stub: LAISystem:hasInstruction
+do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction("tone", "Be concise.")
+    print("Has 'tone':",    system:hasInstruction("tone"))
+    print("Has 'missing':", system:hasInstruction("missing"))
+end
+
+-- ─── LAISystem:instructionCount ──────────────────────────────────────────────
+
+--@api-stub: LAISystem:instructionCount
+do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction("tone",      "Be concise.")
+    system:addInstruction("art_style", "Use pixel art.")
+    print("Instruction count:", system:instructionCount())
+end
+
+-- ─── LAISystem:listInstructions ──────────────────────────────────────────────
+
+--@api-stub: LAISystem:listInstructions
+do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction("tone",      "Be concise.")
+    system:addInstruction("art_style", "Use pixel art.")
+    local keys = system:listInstructions()
+    for _, key in ipairs(keys) do
+        print("Instruction key:", key)
+    end
 end
 
 -- ─── LAISystem:addSkill ──────────────────────────────────────────────────────
@@ -330,6 +492,26 @@ do
     system:addSkill("temp_skill", { "test" }, "Temporary.")
     local removed = system:removeSkill("temp_skill")
     print("Skill removed:", removed)
+end
+
+-- ─── LAISystem:hasSkill ──────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:hasSkill
+do
+    local system = lurek.agent.newSystem({})
+    system:addSkill("combat_rules", { "combat", "attack" }, "Turn-based combat.")
+    print("Has 'combat_rules':",  system:hasSkill("combat_rules"))
+    print("Has 'no_such_skill':", system:hasSkill("no_such_skill"))
+end
+
+-- ─── LAISystem:skillCount ────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:skillCount
+do
+    local system = lurek.agent.newSystem({})
+    system:addSkill("combat_rules",   { "combat" },        "Turn-based combat.")
+    system:addSkill("pixel_art_rules", { "sprite", "tile" }, "16 colours max.")
+    print("Skill count:", system:skillCount())
 end
 
 -- ─── LAISystem:buildContext ──────────────────────────────────────────────────
@@ -448,6 +630,15 @@ do
     print("Ollama version:", v)
 end
 
+-- ─── LOllamaManager:baseUrl ──────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:baseUrl
+do
+    local ollama = lurek.agent.newOllama({ url = "http://127.0.0.1:11434" })
+    local url    = ollama:baseUrl()
+    print("Ollama base URL:", url)
+end
+
 -- ─── LOllamaManager:listModels ───────────────────────────────────────────────
 
 --@api-stub: LOllamaManager:listModels
@@ -456,6 +647,17 @@ do
     local models = ollama:listModels()
     for _, m in ipairs(models) do
         print(m.name, string.format("%.1f GB", m.size_gb))
+    end
+end
+
+-- ─── LOllamaManager:modelNames ───────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:modelNames
+do
+    local ollama = lurek.agent.newOllama()
+    local names  = ollama:modelNames()
+    for _, name in ipairs(names) do
+        print("Available model:", name)
     end
 end
 

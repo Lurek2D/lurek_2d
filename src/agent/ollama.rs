@@ -50,6 +50,17 @@ impl OllamaManager {
         }
     }
 
+    /// Returns the base URL this manager was created with.
+    pub fn base_url(&self) -> &str {
+        &self.base_url
+    }
+
+    /// Returns the names of all locally available models; empty vec if Ollama is not running.
+    pub fn model_names(&self) -> Vec<String> {
+        self.list_models().into_iter().map(|m| m.name).collect()
+    }
+
+
     /// Returns `true` if the Ollama HTTP server responds on the base URL within 5 seconds.
     pub fn is_running(&self) -> bool {
         use crate::network::http::execute_request as http_exec;

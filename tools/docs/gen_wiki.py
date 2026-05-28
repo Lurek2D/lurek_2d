@@ -1372,9 +1372,10 @@ def footer_page(context: Context) -> Page:
     return Page("_Footer.md", BANNER + "\n".join(lines).rstrip() + "\n")
 
 
-def build_pages(context: Context) -> list[Page]:
+def build_pages(context: Context, skip_module_pages: bool = False) -> list[Page]:
     pages = [home_page(context), start_page(context), first_game_page(context), project_page(context), callbacks_page(context), runtime_page(context), modules_page(context), api_page(context), api_reference_page(context), examples_page(context), games_page(context), lureksome_page(context), glossary_page(context)]
-    pages += [module_page(context, module) for module in context.modules]
+    if not skip_module_pages:
+        pages += [module_page(context, module) for module in context.modules]
     pages += [sidebar_page(context), footer_page(context)]
     order = {slug + ".md": index for index, slug in enumerate(STATIC_ORDER)}
     return sorted(pages, key=lambda item: (order.get(item.filename, 1000), item.filename.lower()))
@@ -1504,12 +1505,14 @@ Examples:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--validate", action="store_true")
+    parser.add_argument("--skip-module-pages", action="store_true",
+                        help="Omit per-module Module-<name>.md pages (API detail lives on GitHub Pages instead).")
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else ROOT / args.output
     context = build_context(output.resolve())
     if args.validate:
         return validate_examples(context)
-    pages = select_pages(build_pages(context), args.page)
+    pages = select_pages(build_pages(context, skip_module_pages=args.skip_module_pages), args.page)
     if args.list:
         for page_item in pages:
             print(page_item.slug)

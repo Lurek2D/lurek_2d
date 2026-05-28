@@ -81,6 +81,9 @@ Before enumerating use cases it is important to understand the engine's core ide
 | UC-29 | Infrastructure Monitoring Dashboard | Near-future | `release` |
 | UC-30 | Log Analysis & Anomaly Detection | Near-future | `release --headless` |
 | UC-31 | CI / Test Automation Harness | Current | `release --headless` |
+| UC-39 | Headless Game Regression Framework | Current | `release --headless` |
+| UC-42 | Data Quality Validator & Schema Checker | Near-future | `release --headless` |
+| UC-45 | Linux Headless Daemon / Background Service | Current | `release --headless` |
 
 ### AI & LLM
 
@@ -90,6 +93,9 @@ Before enumerating use cases it is important to understand the engine's core ide
 | UC-32 | LLM Inference Server with GUI | Near-future | `release` |
 | UC-33 | Multi-Agent Game Design Tool | Near-future | `release` |
 | UC-34 | Procedural Content Factory | Current | `release --headless` |
+| UC-38 | Dialogue-Driven NPC System (Standalone / Library) | Current | `release` / library |
+| UC-41 | AI Skill-Injection Chatbot (LAISystem) | Near-future | `release` |
+| UC-47 | Agent `evalCode` Sandbox | Near-future | `release` |
 
 ### Platform & Tooling
 
@@ -100,6 +106,25 @@ Before enumerating use cases it is important to understand the engine's core ide
 | UC-11 | Physical AI & Robotics Visualiser | Future | `dist` ARM64 |
 | UC-13 | Audio / Video Processing Pipeline | Future | `dist` headless |
 | UC-14 | ARM64 Edge Device Dashboard | Near-future | `lua54` ARM64 |
+| UC-35 | DAG Workflow Orchestrator | Current | `release --headless` |
+| UC-43 | Lurek2D as Lua Scripting Library | Current | `--headless` lib |
+| UC-44 | Windows System Tray Application | Current | `dist` |
+| UC-46 | Cross-Platform Configuration & Settings GUI | Current | `dist` / `release` |
+| UC-49 | Multi-Platform Game Launcher & Updater | Near-future | `dist` / `release` |
+
+### DSP & Audio Tools
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
+| UC-36 | Offline DSP Audio Processing Pipeline | Current | `release --headless` |
+| UC-37 | Audio Analysis & Fingerprinting Tool | Current | `release` |
+| UC-48 | Real-Time Audio Spectrogram Visualiser | Current | `release` |
+
+### Scientific & Compute
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
+| UC-40 | Scientific Computing Workbench | Current | `release` |
 
 ---
 
@@ -1572,65 +1597,690 @@ Examples:
 
 ---
 
-## Module × Use Case Matrix
+---
 
-The table below maps each major module to the use cases where it plays a primary (●) or secondary (◌) role. New UCs are abbreviated as numbers.
+## UC-35 — DAG Workflow Orchestrator
 
-| Module | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 |
-|--------|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| `render` | ● | ● | ● | ● | ● | ● | | | ● | | ● | ● | ◌ | ● | ◌ | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | | ● | | ◌ | ◌ | ● | |
-| `audio` | ● | ● | | | | | | | | | | | ● | | | ● | ● | ● | ● | ◌ | ● | | | | | | | | | | | | | |
-| `physics` | ● | ● | ● | | | | | | | | | | | | | ● | | ● | | | ● | | | | | | | | | | | | | |
-| `input` | ● | ● | ● | ● | ● | ● | | | ● | ● | | | | | | ● | ● | ● | ● | ● | ● | | ● | ● | ◌ | ● | ● | | | | | ● | ◌ | |
-| `ui` | ● | | | | ● | ● | | | ● | ● | ● | ● | | ● | | ◌ | ● | ◌ | ◌ | ◌ | | ● | ● | ● | ● | ● | ● | | ● | | | ● | ● | |
-| `tilemap` | ● | ● | | | | | | | ● | | | | | | | ◌ | | | | | | | | | | | | | | | | | | |
-| `scene` | ● | ● | ● | | | | | | | | | | | | | ● | ● | ◌ | | | ● | | | | | | | | | | | | | |
-| `agent` | | | | | ● | ● | ● | ● | | | ● | ● | | | ● | | ◌ | | | | | ◌ | | | ◌ | | | | ◌ | ● | | ● | ● | ● |
-| `dataframe` | | | | | ● | ● | ◌ | ● | | | ● | ● | ◌ | ● | ● | | | | | | | ● | ◌ | ● | ● | ● | ◌ | ● | ● | ● | ◌ | | ● | ◌ |
-| `compute` | | | | ● | ● | | | ● | | | | | ● | | ● | | | | | | | | | | | | ● | | | | | | | |
-| `procgen` | ● | ● | | ● | ● | | | ● | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | ● |
-| `province` | ◌ | | | | ● | ● | | | | | | ● | | | ● | | | | | | | ◌ | | | | | | | | | | | | |
-| `globe` | ◌ | | | | ● | ● | | | | | ● | ● | | | | | | | | | | | | | | | | | | | | | | |
-| `pathfind` | ● | | | | ● | ● | | | | | ● | ● | | | | | | | | | | ● | | | | | | | | | | | | |
-| `flownet` | | | | | ● | ● | | | | | | ● | | | | | | | | | | ● | | | | | | | | | | | | |
-| `graph` | | | | | ● | ● | | ● | | | | ● | | | | | | | | | | ● | ● | | | | | | | | | | | |
-| `patterns` | ● | | ● | | ● | | | | | | | | | | ● | | | | | | | | | | | | | | | | | | | |
-| `network` | ◌ | | | | | ● | | ◌ | | | ● | ◌ | | ● | | | | | | | | | | | ● | | | ● | ● | ◌ | | | | |
-| `thread` | ◌ | | | | ◌ | | ● | ● | | | ● | | ● | | ● | | | | | | | | | | | | ● | ● | | ● | | | ◌ | ● |
-| `dsp` | ◌ | | | ● | | | | | | | | | ● | | | | | | ● | | | | | | | | | | | | | | | |
-| `midi` | | | | | | | | | | | | | ● | | | | | | ● | | | | | | | | | | | | | | | |
-| `learning` | | | | | | | ◌ | | | | | | | | ● | | | | | | | | | | | | | | | | | | | |
-| `save` | ● | | | | ● | | ◌ | | ● | | | ● | | ● | | | ● | ◌ | ● | | | | | ● | ● | ◌ | | | ◌ | | | ● | ● | |
-| `automation` | | | | | | ◌ | | ● | ◌ | | | ● | | | ● | | | | | | | | | | | | | ◌ | | | ● | | | |
-| `charts` | | | | | ● | ● | | ● | | | | | ◌ | ● | ● | | | | ◌ | | | ◌ | ◌ | ● | ● | ● | | | ● | | | | | |
-| `minimap` | ● | | | | ● | ● | | | | | ● | ● | | | | | | | | | | ◌ | | | | | | | | | | | | |
-| `ecs` | ● | ● | ● | | | | | | | | | | | | | ● | | ◌ | | | ● | | | | | | | | | | | | | |
-| `ai` | ● | | | | ● | | ● | | | | | | | | ● | ● | | | | | | | | | | | | | | | | | | |
-| `mods` | ◌ | | | | | | | | | ● | | | | | | | | | | | | | | | | | | | | | | | | |
-| `i18n` | ● | | | | | | | | | | | | | | | ● | ● | | | | | | | | | | | | | | | | | |
-| `serial` | ● | | | | ● | ● | | ● | ● | | ● | ● | | ● | ● | | ◌ | | ◌ | | | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● |
-| `terminal` | | | | | | | | | | | | | | | | | | | | ● | | | | | | | | | | | | ● | ● | |
-| `grep` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ● | | | | |
-| `filesystem` | ◌ | | | | | ◌ | | ● | ● | ● | | | | | | | | | | | | | | ● | | ● | ● | ● | | ● | ● | ● | | ◌ |
-| `overlay` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ● | | | | | |
-| `dialog` | | | | | | | | | ◌ | | | | | | | | | | | | | | | | | ● | ◌ | | | | | | | |
-| `effect` | | | | ● | | | | | | | | | | | | ● | | | | ● | | | | | | | | | | | | | | |
-| `raycaster` | | | | ● | | | | | | | | | | | | ● | | | | | | | | | | | | | | | | | | |
-| `parallax` | ◌ | | | ● | | | | | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | |
-| `tween` | ● | ● | | ◌ | | | | | | | | | | | | ● | ● | ● | ● | ● | ● | | ● | ◌ | | ◌ | | | | | | | | |
-| `timer` | ● | ● | | | | | | | | | | | | | | ● | ● | ● | ● | ● | ● | | | ● | ● | | | | ● | | | | | |
-| `particle` | ● | ◌ | | ● | | | | | | | | | | | | ● | ◌ | ● | ● | ● | ◌ | | | | | | | | | | | | | |
-| `camera` | ● | ● | | ● | | | | | ● | | | | | | | ● | ● | ● | | | | | ● | | | ● | | | | | | | | |
-| `light` | ◌ | | | ● | ● | | | | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | |
-| `spine` | ◌ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-| `html` | | | | | | | | | | | | | | | | | ● | | | | | | | ● | | ◌ | | | | | | | | |
-| `window` | ● | ● | | | | | | | ● | | | | | | | ● | ● | ● | ● | ● | ● | | | ● | ● | ● | ● | | ● | | | ● | | |
-| `log` | | | | | | | | ● | | | | | | | | | | | | | | | | | | | | ● | | ● | ● | | | ● |
-| `validator` | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | | | ◌ | | | | | | |
+### Description
 
-● = primary use   ◌ = secondary / optional
+A developer or data engineer uses Lurek2D headlessly as a general-purpose task orchestration engine: define a pipeline of named steps with explicit dependency edges, retry logic, conditional branching, and timeout enforcement. The `pipeline` module provides a production-grade DAG scheduler with topological sort, parallel-tier detection, and sub-pipeline composition.
+
+Example pipelines:
+- Asset build pipeline: `fetch_assets → validate → compress → upload`. Parallel compression of independent assets.
+- Data processing: `load_csv → [clean, validate] → aggregate → report`. Validation and cleaning run concurrently.
+- Game boot sequence: `load_config → [load_audio, load_tileset] → init_world → start`.
+
+### Build Variant
+
+`release --headless` for CI pipelines; `release` windowed for interactive progress display.
+
+### Module Combination
+
+`pipeline` · `serial` · `filesystem` · `log` · `timer` · `thread` · `dataframe` (result aggregation) · `render` + `ui` (optional: progress UI)
+
+### Key `pipeline` Capabilities Used
+
+- `lurek.pipeline.fromTable` — declare the entire DAG as a Lua table (name, deps, delay, retryCount, retryDelay, async, optional, fn).
+- `LPipeline:getParallelGroups()` — inspect which steps can run concurrently.
+- `LPipeline:runAsync()` + `update(dt)` — non-blocking async execution that yields between frames.
+- `LPipeline:addBranch(pred, then_fn, else_fn)` — conditional execution inside the DAG.
+- `LPipeline:addSubPipeline(sub, alias, outer_deps)` — embed reusable sub-pipelines under a namespace prefix.
+- `LPipeline:toAscii()` — render the dependency graph as ASCII art for debugging.
+- `LPipeline:setOnStepComplete` / `setOnStepError` — step-level event callbacks.
+- Step-level `setTimeout`, `setRetryCount`, `setOptional` — fine-grained fault tolerance.
+
+### Benefits
+
+- Full DAG with cycle detection and Kahn topological sort — no silent ordering bugs.
+- Parallel-tier scheduling: independent steps run concurrently, cutting total time.
+- Retry + backoff per step: transient failures (network, disk) are handled automatically.
+- `optional` steps: non-critical steps don’t abort the whole pipeline.
+- Sub-pipeline composition: reuse workflows across projects with namespace isolation.
+- Single binary — no Airflow, no Celery, no Docker.
+- LuaJIT speed: orchestrating 10 000 steps per second is routine.
+
+### As a Library
+
+Lurek2D can be compiled as a Rust library crate. The `pipeline` module can be embedded into another Rust project, driven by its own Lua scripts, using the engine headlessly as a workflow scheduler component.
+
+### Constraints
+
+- All step functions are Lua callbacks — CPU-bound heavy work must be dispatched to `thread` workers.
+- No distributed execution — single-machine only.
+- No persistent pipeline state across binary restarts (re-run from scratch).
+
+### Complexity Level
+
+⭐⭐ — linear 3-step pipeline. ⭐⭐⭐⭐ — complex DAG with branching, sub-pipelines, and retry.
 
 ---
+
+## UC-36 — Offline DSP Audio Processing Pipeline
+
+### Description
+
+A sound designer, podcast producer, or game audio engineer uses Lurek2D headlessly to batch-process audio files: apply effect chains (lowpass, reverb, compressor, normalise), convert formats, and generate visualisations (waveform PNG, spectrogram PNG). The `dsp` module handles all signal processing without a DAW.
+
+Example workflows:
+- Normalise 500 game sound effects to −23 dBFS and save.
+- Apply lowpass + reverb chain to all `sfx/indoor/*.wav`.
+- Generate waveform overview PNGs for all voice lines (for a DAW-style editor preview).
+- Batch-convert 44.1 kHz stereo to 22 kHz mono for mobile-quality export.
+
+### Build Variant
+
+`release --headless` — runs as a build step in the game’s asset pipeline.
+
+### Module Combination
+
+`dsp` · `audio` · `filesystem` · `thread` (parallel batch) · `pipeline` (DAG ordering) · `serial` · `log`
+
+### Key `dsp` Capabilities Used
+
+- `lurek.dsp.processOffline(input, effects, output)` — apply an effect chain to a WAV file.
+- `lurek.dsp.normalize(input, target_level, output)` — peak-normalise a file.
+- `lurek.dsp.waveformToPng(wav, png, width, height)` — render waveform overview image.
+- `lurek.dsp.spectrogramToPng(wav, png, width, height)` — render Hann-windowed spectrogram heatmap.
+- `lurek.dsp.newEffectParams(type, p1, p2, p3)` — declare an effect for offline processing.
+- Effect types: `lowpass`, `highpass`, `reverb`, `delay`, `chorus`, `compressor`, `limiter`, `distortion`, `bitcrush`.
+
+### Benefits
+
+- `processOffline` is file-to-file: no playback thread, no GPU, no window.
+- `thread` runs parallel processing across 8+ files simultaneously.
+- `pipeline` ensures correct ordering: normalise before reverb, reverb before visualise.
+- `waveformToPng` and `spectrogramToPng` generate editor-quality preview images headlessly.
+- Single binary — no SoX, no FFmpeg, no Python librosa.
+- MIT — integrate into any game build system.
+
+### Constraints
+
+- WAV input/output only (PCM 16-bit). MP3/OGG require pre-conversion.
+- No pitch shifting or time-stretching built in.
+- CPU-only DSP — not real-time GPU processing.
+
+### Complexity Level
+
+⭐⭐ — single-file normalise. ⭐⭐⭐⭐ — full DAG pipeline with parallel batch, effect chains, and PNG output.
+
+---
+
+## UC-37 — Audio Analysis & Fingerprinting Tool
+
+### Description
+
+A developer or music researcher builds a desktop tool to analyse audio files: measure RMS and peak levels, detect clipping, generate frequency spectra (FFT), perform cross-correlation to find repeated patterns, and export analysis results as CSV/JSON. The `dsp` and `compute` modules handle all analysis; the `charts` module renders the results.
+
+### Build Variant
+
+`release` windowed for interactive analysis; `release --headless` for batch analysis.
+
+### Module Combination
+
+`dsp` · `compute` · `audio` · `charts` · `render` · `ui` · `filesystem` · `dialog` · `serial` · `dataframe`
+
+### Key API Combinations
+
+- `lurek.dsp.analyzeRms(sound)` / `analyzePeak(sound)` / `analyzeFft(sound, bins)` — per-buffer level detection.
+- `lurek.dsp.newLevelDetector()` + `detector:process(sound)` — incremental level accumulation.
+- `lurek.dsp.newSpectrumAnalyzer(bins)` + `analyzer:analyze(sound)` — frequency bin output.
+- `lurek.compute.fftMagnitude(samples)` — raw FFT from a sample array.
+- `lurek.compute.correlate1d(signal, template)` — sliding cross-correlation for pattern search.
+- `lurek.compute.pearsonCorr(a, b)` — similarity score between two frequency profiles.
+- `dataframe` aggregates per-file results; `charts` renders spectrum bar charts.
+
+### Benefits
+
+- `LLevelDetector` provides sample-accurate RMS, peak, and clipping detection.
+- FFT + `correlate1d` enables basic audio fingerprinting (find duplicate sound effects).
+- `spectrogramToPng` renders publication-quality heatmaps for research output.
+- `dialog` provides native file-picker for WAV import.
+- Single binary — no Python librosa, no MATLAB, no Audacity plugin.
+
+### Constraints
+
+- WAV input only (no MP3/OGG decode built in).
+- No commercial-grade fingerprinting database (Shazam-style) — local comparison only.
+- FFT window size limited to powers of 2 (radix-2 implementation).
+
+### Complexity Level
+
+⭐⭐ — simple RMS display. ⭐⭐⭐⭐ — full spectrum analyser with cross-correlation fingerprinting.
+
+---
+
+## UC-38 — Dialogue-Driven NPC System (Standalone / Library)
+
+### Description
+
+A game developer integrates Lurek2D’s `dialog` module as a dialogue engine for NPCs: weighted topic selection, gated branches (FSM state, behaviour-tree status, utility scores), speaker registry, per-conversation variable tracking, and mid-conversation save/restore.
+
+The `dialog` module was designed to be used both inside a Lurek2D game and as an **embedded library** — another Rust project can link against the Lurek2D crate and drive `DialogueAI` directly from Rust.
+
+### Build Variant
+
+`release` (windowed game) · `release --headless` (server-side NPC logic) · **library crate** (embedded in another engine).
+
+### Module Combination
+
+`dialog` · `ai` (FSM + behaviour tree state as gate context) · `agent` (LLM fallback for unmatched topics) · `save` (mid-conversation checkpoint) · `serial` · `audio` (voice line trigger)
+
+### Key `dialog` Capabilities Used
+
+- `lurek.dialog.newAI()` — create a dialogue selector per NPC type.
+- `LDialogueAI:addTopic(id, opts)` — register topics with FSM/BT/utility gate requirements.
+- `LDialogueAI:addBranch(topic, id, opts)` — register weighted branches within a topic.
+- `LDialogueAI:setFSMState(state)` / `setBTStatus(status)` — inject current game state as selection context.
+- `LDialogueAI:setUtilityScore(key, value)` — drive topic priority from game utility values (hunger, relationship, danger).
+- `LDialogueAI:selectTopic()` / `selectBranch(topic)` — contextually select the best dialogue path.
+- `lurek.dialog.newState()` — per-conversation state: current node, visited history, variable bindings.
+- `LDialogueState:setVariable` / `getVariable` — store quest flags, relationship scores, discovered secrets.
+- `lurek.dialog.newSpeakerRegistry()` — map speaker IDs to display name, portrait, and voice bank.
+
+### Benefits
+
+- Utility scoring + FSM/BT gating = NPCs speak differently based on game state, not just random pick.
+- `visited` history prevents re-entering non-repeatable nodes (no dialogue loops).
+- `DialogueState` is serialisable — save mid-conversation and restore exactly.
+- `agent` fallback: if no topic matches, send a prompt to a local LLM for dynamic dialogue.
+- `SpeakerRegistry` centralises character metadata — one source of truth for portrait + voice.
+
+### As a Library
+
+The `dialog` module exposes pure Rust types (`DialogueAI`, `DialogueState`, `SpeakerRegistry`) with no mandatory render or window dependency. It can be compiled into another project as a dialogue runtime without the full Lurek2D window stack.
+
+### Constraints
+
+- No built-in dialogue authoring GUI — all dialogue trees are defined in Lua code or TOML.
+- LLM fallback requires Ollama on the host machine.
+
+### Complexity Level
+
+⭐⭐ — simple linear dialogue. ⭐⭐⭐⭐ — full utility-gated adaptive NPC with save/restore and LLM fallback.
+
+---
+
+## UC-39 — Headless Game Regression Framework
+
+### Description
+
+A QA engineer or solo developer builds a comprehensive regression test suite for a Lurek2D game using the `automation` module’s full feature set: TOML-scripted input sequences, conditional assertions, visual frame comparison (`VisualAssert`), macro composition, and boolean condition evaluation.
+
+This is a step beyond UC-31 (basic CI harness) — it targets the full `automation` feature surface for complex multi-step game regression.
+
+### Build Variant
+
+`release --headless` for logic regression; `release` windowed for visual regression (with `VisualAssert`).
+
+### Module Combination
+
+`automation` · `timer` · `serial` · `filesystem` · `log` · `dataframe` (test result aggregation) · `pipeline` (test orchestration DAG) · `render` (frame capture for visual asserts)
+
+### Key `automation` Capabilities Used
+
+- `lurek.automation.loadFromToml(text)` — TOML-authored scripts: `keydown`, `mouseclick`, `wait`, `repeat`, `callmacro`, `assert`, `visualassert`.
+- `lurek.automation.setCondition(name, val)` — set named boolean flags evaluated by `when` and `assert` expressions.
+- `assert` steps with boolean expressions: `!flag`, `flag1 && flag2`, `(a || b) && c`.
+- `visualassert` steps: compare a baseline PNG against the actual rendered frame with configurable `maxDiff` tolerance.
+- `lurek.automation.saveMacro(name)` — register reusable input macros inlined by `callmacro` steps.
+- `lurek.automation.setPlaybackSpeed(n)` — run tests at 10× speed in headless CI.
+- `lurek.automation.waitUntil(pred, timeout)` — wait for async game state before asserting.
+- `pipeline` orchestrates test suites: `[load_level, run_smoke, run_regression, collect_results]`.
+
+### Benefits
+
+- TOML scripts are version-controlled: test scenarios are human-readable and diffable.
+- `visualassert` catches rendering regressions that pure logic tests miss.
+- `callmacro` composes complex input sequences from reusable building blocks.
+- Boolean condition evaluation in `assert` enables state-machine-aware test scripts.
+- `pipeline` runs test suites as a DAG: independent test groups run in parallel.
+- Single binary — no Selenium, no pytest, no test runner install.
+
+### Constraints
+
+- Visual regression tests require a display or virtual framebuffer on Linux CI.
+- `maxDiff` tolerance is pixel-count based, not perceptual (SSIM).
+- Replay fidelity depends on deterministic game logic (physics seed, random seed).
+
+### Complexity Level
+
+⭐⭐ — simple TOML replay. ⭐⭐⭐⭐⭐ — full visual regression suite with macro composition, condition expressions, and pipeline orchestration.
+
+---
+
+## UC-40 — Scientific Computing Workbench
+
+### Description
+
+A physicist, engineer, or data scientist uses Lurek2D as an interactive scientific computing environment: define N-dimensional arrays, apply linear algebra (LU decomposition, eigenvalue estimation, linear system solving), run FFT analysis, apply spatial filters (Gaussian, Sobel, morphology), and visualise results in real time.
+
+This is the Lurek2D equivalent of a NumPy + Matplotlib notebook — without Python.
+
+### Build Variant
+
+`release` windowed for interactive exploration; `release --headless` for batch computation.
+
+### Module Combination
+
+`compute` · `charts` · `render` · `ui` · `input` · `filesystem` · `serial` · `dataframe` (tabular result export) · `terminal` (expression REPL)
+
+### Key `compute` Capabilities
+
+- `lurek.compute.zeros/ones/range/fromTable` — array construction.
+- `LArray:matmul`, `dot`, `transpose`, `reshape` — linear algebra building blocks.
+- `LArray:linsolve(b)` — solve A·x = b via Gaussian elimination with partial pivoting.
+- `LArray:luDecompose()` — P·A = L·U with row permutation.
+- `LArray:eigenPower()` — dominant eigenvalue + eigenvector via power iteration.
+- `lurek.compute.fftMagnitude(samples)` — frequency domain analysis.
+- `LArray:convolve2D(kernel)` — 2D convolution with zero padding.
+- `LArray:sobel()` — edge detection on 2D float arrays.
+- `LArray:dilate(r)` / `erode(r)` — morphological operations for image processing.
+- `LArray:zscore()` / `normalizeRange()` / `pearsonCorr()` / `histogram()` — statistics.
+- `LArray:map(fn)` / `eval(expr)` / `reduce(fn)` / `scan(fn)` — custom element-wise operations.
+- Rayon parallel dispatch above configurable threshold (default 10 000 elements).
+
+### Benefits
+
+- Full linear algebra (LU, eigenvalue, Sobel) without NumPy or MATLAB.
+- Rayon parallel execution for large arrays — uses all CPU cores.
+- `LArray:eval("x^2 + 1")` — define array transformations as expression strings.
+- `charts` renders histogram, scatter, and line plots from `NdArray` data.
+- `terminal` provides a REPL for interactive array exploration.
+- Single binary — no Python, no Julia, no R install.
+
+### As a Library
+
+The `compute` module is in the Foundations tier with no render or window dependency. It can be compiled as a standalone Rust library and linked into another project for CPU numerical computation.
+
+### Constraints
+
+- Float32/Float64/Int32 dtypes only — no complex number native type.
+- GPU acceleration not available (CPU-only by design, constraint in `advanced-feature-surfaces.md`).
+- Power iteration eigenvalue: dominant eigenpair only, not full decomposition.
+
+### Complexity Level
+
+⭐⭐ — array arithmetic. ⭐⭐⭐⭐ — full numerical simulation with FFT, linear solvers, and morphology.
+
+---
+
+## UC-41 — AI Skill-Injection Chatbot (LAISystem)
+
+### Description
+
+A developer builds a production-quality local chatbot application where the `LAISystem` orchestrates multiple specialist agents: each agent has a named role (support, coding, creative), shared system instructions, and keyword-gated skills that are automatically injected into prompts when relevant keywords appear. The chatbot routes user messages to the most appropriate agent.
+
+This is the full `LAISystem` pattern — beyond the basic `LAgent` chat (UC-32).
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`agent` · `ui` · `render` · `terminal` · `save` (conversation history per agent) · `serial` · `dataframe` (response metadata logging)
+
+### Key `agent` Capabilities (LAISystem)
+
+- `lurek.agent.newSystem({ system_prompt = "You are a helpful assistant." })`.
+- `system:addAgent("coding", agent)` — register specialist agents.
+- `system:addInstruction("safety_rules", text)` — named instruction blocks included per-call.
+- `system:addSkill("sql_expert", {"sql", "query", "database"}, prompt)` — auto-injected when user message contains those keywords.
+- `system:prompt("coding", user_message, callback, { instructions = {"safety_rules"} })` — route to specialist with context.
+- `system:runAll(tasks, callback)` — dispatch multiple agents in parallel for comparison.
+- `system:buildContext(instruction, { agent = "coding" })` — preview the full assembled prompt before sending.
+- Context assembly order: `system_prompt → auto-matched skills → explicit instructions → agent description → agent skills`.
+
+### Benefits
+
+- Auto-skill injection: typing "write an SQL query" automatically adds SQL expertise to the prompt — no manual routing.
+- `buildContext` lets the developer inspect the full prompt before it fires.
+- `runAll` enables A/B testing: send same query to two models, compare responses.
+- All inference is local — no API key, no data leaves the machine.
+- `dataframe` logs response latency, token count, and model used per conversation turn.
+
+### Constraints
+
+- Requires Ollama + at least one model (7B+ recommended for skill-gated quality).
+- Keyword matching is string-overlap only — not semantic (no embedding lookup).
+- No automatic agent selection — routing is explicit in `system:prompt(agent_name, ...)`.
+
+### Complexity Level
+
+⭐⭐⭐ — single-agent with one skill. ⭐⭐⭐⭐⭐ — multi-agent system with skill gating, instruction blocks, and A/B comparison.
+
+---
+
+## UC-42 — Data Quality Validator & Schema Checker
+
+### Description
+
+A data engineer or analyst uses Lurek2D headlessly to validate data quality: check column types, value ranges, null counts, uniqueness constraints, referential integrity, and statistical outliers across large CSV/JSON datasets. The `validator` and `dataframe` modules power the checks; the `agent` module generates a natural-language summary of quality issues.
+
+### Build Variant
+
+`release --headless` — runs as a CI step or scheduled data quality job.
+
+### Module Combination
+
+`validator` · `dataframe` · `compute` (z-score outlier detection) · `serial` · `filesystem` · `agent` (LLM quality summary) · `log` · `pipeline` (validation DAG: load → validate → report)
+
+### Key Capabilities
+
+- `lurek.validator.*` — validate values, types, ranges, and string patterns from Lua.
+- `LDataFrame:query(sql)` — SQL `WHERE` filters to find null, out-of-range, or duplicate rows.
+- `LDataFrame:zscore()` from `compute` — flag statistical outliers (|z| > 3).
+- `LDataFrame:groupBy` + `count` — detect cardinality violations.
+- `lurek.dataframe.fromCSVFileAsync` — async load of large files without blocking.
+- `agent:setFormat("json")` + `prompt` — structured quality report as JSON from an LLM.
+- `pipeline:fromTable` — orchestrate: `[load, type_check, range_check, outlier_check, report]` with per-step retry.
+
+### Benefits
+
+- SQL-style queries in `dataframe` find invalid rows without writing Rust.
+- `pipeline` DAG ensures validation steps run in dependency order with retry on load failure.
+- `agent` generates a plain-English summary: "Column `age` has 3.2% values above 120. Likely data entry errors."
+- Zero external dependency: no Great Expectations, no dbt, no Python.
+- Output is JSON/CSV — integrates with any reporting system.
+
+### Constraints
+
+- `validator` module provides structural checks; statistical analysis requires `compute`.
+- No schema definition language (like JSON Schema) — rules are Lua functions.
+- In-memory only: datasets larger than available RAM require streaming (not yet supported).
+
+### Complexity Level
+
+⭐⭐ — basic null check. ⭐⭐⭐⭐ — full multi-layer validation pipeline with LLM summary.
+
+---
+
+## UC-43 — Lurek2D as a Lua Scripting Library (Embedded Runtime)
+
+### Description
+
+A Rust developer embeds the Lurek2D runtime as a **library crate** inside their own application: the host application owns the window, the event loop, and the render surface; Lurek2D provides the Lua VM, module bindings (`dataframe`, `compute`, `agent`, `serial`, `pipeline`, `automation`), and the scripting infrastructure. Game scripts are loaded and executed by the host on demand.
+
+This is the **library use case** — Lurek2D is not the top-level binary; it is a dependency.
+
+### Build Variant
+
+`--headless` library mode: no window, no wgpu surface. Only Lua VM + modules that have no render/window dependency.
+
+### Applicable Modules (headless-safe)
+
+`dataframe` · `compute` · `agent` · `serial` · `pipeline` · `automation` · `validator` · `grep` · `filesystem` · `math` · `patterns` · `thread` · `log` · `timer` · `dialog` (no render dep) · `graph` · `flownet`
+
+### Benefits
+
+- Host app controls the lifecycle — Lurek2D provides Lua scripting without imposing a window.
+- `dataframe` + `compute` + `agent` are all Foundations/Core tier with no render coupling.
+- `pipeline` provides DAG orchestration for the host’s task scheduler.
+- `automation` provides input replay for the host’s own test infrastructure.
+- MIT license — embed in commercial products without royalties.
+- Single Rust crate — add to `Cargo.toml` as a dependency.
+
+### Example Host Applications
+
+- A Bevy game embeds Lurek2D for Lua modding support: mods script gameplay logic, Bevy owns rendering.
+- A desktop app embeds Lurek2D for a user-facing scripting REPL (like a macro language).
+- A simulation platform uses Lurek2D’s `dataframe` + `agent` + `pipeline` as its analytics and LLM layer.
+- A CLI tool uses Lurek2D as its embedded Lua runtime for configuration and automation.
+
+### Constraints
+
+- Render-dependent modules (`render`, `audio`, `physics`, `ui`) require the window stack and cannot be embedded headlessly.
+- Library API is not yet formally stabilised — semver guarantees follow Cargo.toml versioning.
+- LuaJIT is not available on all ARM targets — use `--features lua54` for portability.
+
+### Complexity Level
+
+⭐⭐⭐ — scripting host with `dataframe` only. ⭐⭐⭐⭐⭐ — full embedded runtime with `agent` + `pipeline` + `automation`.
+
+---
+
+## UC-44 — Windows System Tray Application
+
+### Description
+
+A developer builds a minimal-footprint Windows desktop tool that lives in the system tray: shows a status icon, renders a compact popup window on click, polls data (network API, filesystem, local metrics), and displays results. Lurek2D’s `window` module supports borderless, transparent, and always-on-top windows — suitable for tray-style UIs.
+
+### Build Variant
+
+`dist` — smallest possible binary (~8–9 MB stripped + UPX). Static CRT link for zero VCRUNTIME dependency (`+crt-static`).
+
+### Module Combination
+
+`window` · `render` · `ui` · `input` · `timer` · `network` (data polling) · `dataframe` (lightweight aggregation) · `tween` (popup animation) · `save` (user preferences)
+
+### Benefits
+
+- `window` supports borderless and transparent window modes for floating HUD-style UI.
+- `dist` profile + UPX: 8–9 MB executable, no installer needed — copy and run.
+- Static CRT: no VCRUNTIME DLL requirement — works on any Windows 10/11 machine.
+- `timer` drives background polling without a separate thread.
+- `tween` animates slide-in/slide-out for the popup panel.
+- Single Lua script — the entire app is one `main.lua`.
+
+### Constraints
+
+- No native Windows tray icon API — Lurek2D window is a regular desktop window, not a Shell_NotifyIcon tray entry. The “tray-style” behaviour is achieved via borderless + always-on-top window positioning.
+- Windows-only in practice (Linux/macOS windowing works differently).
+
+### Complexity Level
+
+⭐⭐ — static popup window. ⭐⭐⭐ — animated popup with live data polling.
+
+---
+
+## UC-45 — Linux Headless Daemon / Background Service
+
+### Description
+
+A developer runs Lurek2D as a persistent headless background service on Linux: a scheduled data collector, a webhook listener, a game server companion process, or a monitoring agent. The `--headless` flag disables the window and GPU stack; the binary runs indefinitely, processing data and responding to events.
+
+### Build Variant
+
+`release --headless` · ARM64 cross-compile with `lua54` for Raspberry Pi / server ARM.
+
+### Module Combination
+
+`network` · `timer` · `dataframe` · `filesystem` · `serial` · `log` · `thread` · `pipeline` · `agent` (optional: LLM anomaly detection)
+
+### Benefits
+
+- `--headless` binary has no wgpu, no winit, no audio dependency: minimal memory footprint.
+- `timer` drives periodic tasks (poll every 60 s, report every 1 h).
+- `thread` runs parallel worker VMs for concurrent data collection.
+- `pipeline` orchestrates multi-step daemon workflows with retry and error policy.
+- `lua54` build runs on ARM Linux (Raspberry Pi, Jetson, server ARM) where LuaJIT is unavailable.
+- `log` writes structured log output compatible with systemd journal and syslog.
+- Single binary — deploy with `scp` and run as a systemd unit. No package manager needed.
+
+### Constraints
+
+- No signal handler for SIGTERM — graceful shutdown requires Lua-side loop exit logic.
+- `lua54` is slower than LuaJIT on x86_64 — use LuaJIT build on x86_64 servers.
+- No built-in daemon fork / PID file management — use systemd `Type=simple`.
+
+### Complexity Level
+
+⭐⭐ — simple polling loop. ⭐⭐⭐⭐ — multi-worker daemon with pipeline orchestration and LLM anomaly detection.
+
+---
+
+## UC-46 — Cross-Platform Configuration & Settings GUI
+
+### Description
+
+A developer builds a cross-platform desktop configuration GUI for another application: file path pickers, toggle switches, sliders, combo-box dropdowns, and text inputs — all rendered with Lurek2D’s native `ui` system and TOML-driven layouts. Settings are saved to TOML and read by the target application.
+
+This is a practical use case for teams that need a small standalone settings editor without shipping Electron or a web app.
+
+### Build Variant
+
+`dist` (Windows static CRT) · `release` (Linux/macOS). Single binary, no installer.
+
+### Module Combination
+
+`ui` · `render` · `input` · `window` · `dialog` (file pickers) · `serial` (TOML read/write) · `save` · `filesystem` · `i18n` (optional: multi-language UI)
+
+### Key `ui` Capabilities
+
+- `LGuiSlider`, `LGuiCheckbox`, `LGuiComboBox`, `LGuiTextInput`, `LGuiButton` — all standard form controls.
+- TOML layout files in `content/layouts/` — UI structure is data, not code.
+- `LGuiTab` / `LGuiPanel` — multi-section settings pages.
+- `dialog` — native OS file picker dialog for path selection.
+- `serial.fromToml` / `toToml` — read and write TOML config files directly.
+
+### Benefits
+
+- TOML layouts: UI structure defined in data files, not hardcoded Lua — easy to modify.
+- `dialog` provides native file picker dialogs (no custom file browser needed).
+- `serial.toToml` writes human-readable TOML that the target app can parse with any TOML library.
+- `dist` binary is 8–9 MB — ships alongside the target app without bloat.
+- Works on Windows, Linux, and macOS with the same binary source.
+- `i18n` enables multi-language settings UI for international distributions.
+
+### Constraints
+
+- No OS-native widget rendering (not a Win32/GTK/Cocoa GUI) — uses Lurek2D’s own renderer.
+- Accessibility (screen readers, high-contrast) is not yet supported.
+
+### Complexity Level
+
+⭐⭐ — simple TOML key-value form. ⭐⭐⭐ — full tabbed settings GUI with file pickers and live preview.
+
+---
+
+## UC-47 — Agent `evalCode` Sandbox (LLM-Driven Code Execution)
+
+### Description
+
+A developer builds a tool where a local LLM writes Lua code and the engine immediately executes it in a sandboxed VM: the `agent:evalCode()` API evaluates LLM-generated Lua strings inside the active Lurek2D VM. This enables "AI writes code, engine runs it" workflows for data transformation, game logic prototyping, or interactive scripting assistants.
+
+Example applications:
+- A data transformation assistant: user describes a transformation in plain English, the LLM writes `dataframe` Lua code, `evalCode` runs it.
+- A game level generator: user describes a level in text, LLM writes `tilemap` + `procgen` Lua code, `evalCode` populates the world.
+- A debugging assistant: LLM diagnoses a runtime issue and writes a Lua fix, `evalCode` hot-patches it.
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`agent` · `terminal` (input/output display) · `ui` · `render` · `dataframe` (common target for generated code) · `serial` · `save` (session history)
+
+### Key `agent` Capability
+
+- `LAgent:evalCode(lua_string)` — executes a Lua string in the active VM; returns `true` or raises.
+- `LAgent:setFormat("text")` — receive raw Lua code output from the model.
+- `LAgent:addSkill("lua_style", prompt)` — inject Lua coding conventions into the model’s context.
+- `LAISystem:addSkill("dataframe_api", keywords, api_docs)` — auto-inject the `dataframe` API reference when the user mentions "table" or "data".
+- `agent:setOption("temperature", 0.1)` — low temperature for deterministic code generation.
+
+### Benefits
+
+- `evalCode` closes the loop: LLM generates code, engine runs it, results display immediately.
+- `addSkill` with API documentation teaches the model the correct `lurek.*` API surface.
+- Low temperature + JSON format = structured, reliable code output.
+- `terminal` renders the code and output side by side for a REPL-like experience.
+- Works fully offline with Ollama — no external API, no token cost.
+
+### Constraints
+
+- `evalCode` executes in the main VM: malformed code can raise a Lua error; wrap in `pcall` at the Lua boundary.
+- The LLM may hallucinate API names — skill injection of correct API docs mitigates this.
+- No sandboxed subprocess: generated code has full access to the Lua VM’s global scope.
+
+### Complexity Level
+
+⭐⭐ — simple eval loop. ⭐⭐⭐⭐ — full AI coding assistant with skill injection, format control, and error recovery.
+
+---
+
+## UC-48 — Real-Time Audio Spectrogram Visualiser
+
+### Description
+
+A musician, sound designer, or researcher builds a real-time audio analysis tool: capture or load audio, compute FFT spectra, and display a live scrolling spectrogram, RMS meter, and peak hold graph. The `dsp` module provides all analysis; `compute` handles FFT and correlation; `charts` and `render` display the results.
+
+### Build Variant
+
+`release` — real-time interactive tool. `release --headless` for batch spectrogram export.
+
+### Module Combination
+
+`dsp` · `audio` · `compute` · `render` · `charts` · `ui` · `input` · `filesystem` · `serial` (export) · `tween` (meter animation)
+
+### Key API Combination
+
+- `lurek.dsp.newSpectrumAnalyzer(bins)` + `analyzer:analyze(sound)` — per-frame FFT bins.
+- `lurek.dsp.newLevelDetector()` + `detector:process(sound)` + `detector:get_rms()` — RMS meter.
+- `lurek.dsp.newLevelDetector():to_db(rms)` — convert to dBFS for meter display.
+- `lurek.compute.fftMagnitude(samples)` — raw magnitude spectrum from a sample buffer.
+- `lurek.compute.correlate1d(a, b)` — cross-correlation between two frequency frames.
+- `lurek.dsp.spectrogramToPng(wav, png)` — headless batch export of spectrogram images.
+- Real-time render: each audio frame → FFT → draw vertical colour bar → scroll left.
+- `lurek.dsp.addEffectToBus` / `setEffectParam` — apply real-time DSP and visualise the effect.
+
+### Benefits
+
+- `newSpectrumAnalyzer` is designed for per-frame analysis — 60 FPS spectrogram is the intended use case.
+- Heat-colour mapping is built into `spectrogramToPng` — no custom shader needed for export.
+- `compute.correlate1d` enables real-time beat detection and onset detection.
+- `charts` renders bar graphs for per-band EQ display alongside the spectrogram.
+- Single binary — no Python librosa, no Audacity, no MATLAB.
+
+### Constraints
+
+- Real-time audio capture requires OS audio input; Lurek2D’s `audio` module is playback-oriented — microphone input requires a `SoundData` buffer sourced externally or via a future capture API.
+- 60 FPS spectrogram at 512 bins requires LuaJIT (not `lua54`) for sufficient throughput.
+
+### Complexity Level
+
+⭐⭐⭐ — scrolling FFT display. ⭐⭐⭐⭐⭐ — real-time spectrogram + RMS meter + DSP effect visualiser.
+
+---
+
+## UC-49 — Multi-Platform Game Launcher & Updater
+
+### Description
+
+A game studio builds a Lurek2D-based game launcher: display game list, check for updates via HTTP, download and unpack new versions, show changelogs, and launch the selected game binary. The launcher runs on Windows, Linux, and macOS from a single Lua script.
+
+### Build Variant
+
+`dist` (Windows) · `release` (Linux/macOS). Cross-platform binary, no installer.
+
+### Module Combination
+
+`ui` · `render` · `network` · `filesystem` · `serial` · `save` · `input` · `tween` · `image` · `dialog` · `pipeline` (download → verify → unpack → launch DAG) · `agent` (optional: changelog summary)
+
+### Benefits
+
+- `network` downloads update archives via HTTP with progress callbacks.
+- `filesystem` handles extraction, path resolution, and launch of child processes.
+- `pipeline` orchestrates the update flow: `[check_version, download, verify_checksum, unpack, launch]` with retry on download failure.
+- `ui` renders a polished game grid with cover images, progress bars, and status badges.
+- `image` loads cover art from disk and the download cache.
+- `tween` animates download progress bars and panel transitions.
+- `agent` summarises the changelog in plain English: "Version 1.4 fixes the cave boss and adds 3 new levels."
+- Single binary — distributes as `launcher.exe` or `launcher` without dependencies.
+
+### Constraints
+
+- No code signing built in — Windows SmartScreen may warn on first run for unsigned executables.
+- No delta-patch updates — full-file download only.
+- Child process launch via `filesystem` module; the launched game runs independently.
+
+### Complexity Level
+
+⭐⭐⭐ — static game list with manual update. ⭐⭐⭐⭐ — full auto-update pipeline with LLM changelog summary.
+
+---
+
 
 ## Build Variant Reference
 

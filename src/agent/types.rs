@@ -23,7 +23,7 @@ pub enum AgentError {
 
 impl AgentError {
     /// Returns the stable Lua-facing error code for this variant.
-    pub(crate) fn code(&self) -> &'static str {
+    pub fn code(&self) -> &'static str {
         match self {
             Self::Network(_) => "NETWORK_ERROR",
             Self::Timeout(_) => "TIMEOUT",
@@ -33,8 +33,15 @@ impl AgentError {
     }
 
     /// Returns `true` if this error is likely transient and safe to retry.
-    pub(crate) fn is_transient(&self) -> bool {
+    pub fn is_transient(&self) -> bool {
         matches!(self, Self::Network(_) | Self::Timeout(_))
+    }
+
+    /// Returns the inner error message string.
+    pub fn message(&self) -> &str {
+        match self {
+            Self::Network(m) | Self::Timeout(m) | Self::Format(m) | Self::Model(m) => m,
+        }
     }
 }
 
@@ -66,4 +73,16 @@ pub struct AgentResponse {
     pub callback_id: usize,
     /// Raw response body or an error.
     pub body: Result<String, AgentError>,
+}
+
+impl AgentResponse {
+    /// Returns `true` if the response body is `Ok`.
+    pub fn is_ok(&self) -> bool {
+        self.body.is_ok()
+    }
+
+    /// Returns the response text if successful; `None` on error.
+    pub fn text(&self) -> Option<&str> {
+        self.body.as_deref().ok()
+    }
 }

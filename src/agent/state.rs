@@ -91,6 +91,36 @@ impl AgentState {
         self.skills.clear();
     }
 
+    /// Returns `true` if a skill with `name` is registered.
+    pub fn has_skill(&self, name: &str) -> bool {
+        self.skills.iter().any(|(n, _)| n == name)
+    }
+
+    /// Returns the number of registered skills.
+    pub fn skill_count(&self) -> usize {
+        self.skills.len()
+    }
+
+    /// Returns the names of all registered skills in insertion order.
+    pub fn list_skills(&self) -> Vec<String> {
+        self.skills.iter().map(|(name, _)| name.clone()).collect()
+    }
+
+    /// Sets the response format (`"json"`, `"csv"`, or `"text"`).
+    pub fn set_format(&mut self, format: String) {
+        self.format = format;
+    }
+
+    /// Sets the model identifier.
+    pub fn set_model(&mut self, model: String) {
+        self.model = model;
+    }
+
+    /// Sets the LLM endpoint URL.
+    pub fn set_url(&mut self, url: String) {
+        self.url = url;
+    }
+
     /// Build the system block: base system prompt followed by a `Skills` section when skills are registered.
     pub fn build_system_block(&self) -> String {
         if self.skills.is_empty() {
@@ -209,6 +239,31 @@ impl AISystemState {
         let before = self.system_skills.len();
         self.system_skills.retain(|s| s.name != name);
         self.system_skills.len() < before
+    }
+
+    /// Returns `true` if an instruction with `key` exists.
+    pub fn has_instruction(&self, key: &str) -> bool {
+        self.instructions.iter().any(|(k, _)| k == key)
+    }
+
+    /// Returns the number of registered instructions.
+    pub fn instruction_count(&self) -> usize {
+        self.instructions.len()
+    }
+
+    /// Returns the keys of all registered instructions in insertion order.
+    pub fn list_instructions(&self) -> Vec<String> {
+        self.instructions.iter().map(|(k, _)| k.clone()).collect()
+    }
+
+    /// Returns `true` if a system skill with `name` is registered.
+    pub fn has_system_skill(&self, name: &str) -> bool {
+        self.system_skills.iter().any(|s| s.name == name)
+    }
+
+    /// Returns the number of registered system skills.
+    pub fn system_skill_count(&self) -> usize {
+        self.system_skills.len()
     }
 
     /// Builds the combined context block for a given prompt.

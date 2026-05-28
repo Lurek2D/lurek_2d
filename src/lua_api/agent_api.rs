@@ -104,6 +104,95 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
+        // ─── setModel ───
+        /// Changes the model identifier for future prompts.
+        /// @param | model | string | Model name (e.g. `"llama3"`, `"mistral"`).
+        /// @return | nil | No value is returned.
+        methods.add_method_mut("setModel", |_, this, model: String| {
+            this.runtime.set_model(model);
+            Ok(())
+        });
+
+        // ─── setUrl ───
+        /// Changes the LLM endpoint URL for future prompts.
+        /// @param | url | string | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`).
+        /// @return | nil | No value is returned.
+        methods.add_method_mut("setUrl", |_, this, url: String| {
+            this.runtime.set_url(url);
+            Ok(())
+        });
+
+        // ─── setTimeout ───
+        /// Sets the per-request timeout in seconds (0 uses the default 60 s).
+        /// @param | secs | integer | Timeout in seconds.
+        /// @return | nil | No value is returned.
+        methods.add_method_mut("setTimeout", |_, this, secs: u64| {
+            this.runtime.set_timeout(secs);
+            Ok(())
+        });
+
+        // ─── getName ───
+        /// Returns the agent's name identifier.
+        /// @return | string | Agent name, or `""` if not set.
+        methods.add_method("getName", |_, this, ()| {
+            Ok(this.runtime.get_name().to_string())
+        });
+
+        // ─── getDescription ───
+        /// Returns the agent's role description.
+        /// @return | string | Role description, or `""` if not set.
+        methods.add_method("getDescription", |_, this, ()| {
+            Ok(this.runtime.get_description().to_string())
+        });
+
+        // ─── getModel ───
+        /// Returns the current model identifier.
+        /// @return | string | Model name.
+        methods.add_method("getModel", |_, this, ()| {
+            Ok(this.runtime.get_model().to_string())
+        });
+
+        // ─── getUrl ───
+        /// Returns the current LLM endpoint URL.
+        /// @return | string | Endpoint URL.
+        methods.add_method("getUrl", |_, this, ()| {
+            Ok(this.runtime.get_url().to_string())
+        });
+
+        // ─── getFormat ───
+        /// Returns the current response format string.
+        /// @return | string | One of `"json"`, `"csv"`, or `"text"`.
+        methods.add_method("getFormat", |_, this, ()| {
+            Ok(this.runtime.get_format().to_string())
+        });
+
+        // ─── hasSkill ───
+        /// Returns `true` if a skill with `name` is registered.
+        /// @param | name | string | Skill name to check.
+        /// @return | boolean | `true` if the skill exists.
+        methods.add_method("hasSkill", |_, this, name: String| {
+            Ok(this.runtime.has_skill(&name))
+        });
+
+        // ─── skillCount ───
+        /// Returns the number of registered skills.
+        /// @return | integer | Skill count.
+        methods.add_method("skillCount", |_, this, ()| {
+            Ok(this.runtime.skill_count())
+        });
+
+        // ─── listSkills ───
+        /// Returns a list of registered skill names in insertion order.
+        /// @return | table | String array of skill names.
+        methods.add_method("listSkills", |lua, this, ()| {
+            let names = this.runtime.list_skills();
+            let tbl = lua.create_table()?;
+            for (i, name) in names.into_iter().enumerate() {
+                tbl.set(i + 1, name)?;
+            }
+            Ok(tbl)
+        });
+
         // ─── prompt ───
         /// Sends an instructional prompt to the LLM asynchronously.
         /// @param | instruction | string | The specific task instruction for the agent.
@@ -235,6 +324,21 @@ impl UserData for LuaAISystem {
             Ok(tbl)
         });
 
+        // ─── hasAgent ───
+        /// Returns `true` if an agent with `name` is registered.
+        /// @param | name | string | Agent name to check.
+        /// @return | boolean | `true` if the agent exists.
+        methods.add_method("hasAgent", |_, this, name: String| {
+            Ok(this.runtime.has_agent(&name))
+        });
+
+        // ─── agentCount ───
+        /// Returns the number of registered agents.
+        /// @return | integer | Agent count.
+        methods.add_method("agentCount", |_, this, ()| {
+            Ok(this.runtime.agent_count())
+        });
+
         // ─── addInstruction ───
         /// Adds a named instruction block the user can explicitly include per prompt.
         /// @param | key | string | Unique instruction identifier.
@@ -251,6 +355,33 @@ impl UserData for LuaAISystem {
         /// @return | boolean | `true` if the instruction was found and removed.
         methods.add_method_mut("removeInstruction", |_, this, key: String| {
             Ok(this.runtime.remove_instruction(key))
+        });
+
+        // ─── hasInstruction ───
+        /// Returns `true` if an instruction with `key` is registered.
+        /// @param | key | string | Instruction key to check.
+        /// @return | boolean | `true` if the instruction exists.
+        methods.add_method("hasInstruction", |_, this, key: String| {
+            Ok(this.runtime.has_instruction(&key))
+        });
+
+        // ─── instructionCount ───
+        /// Returns the number of registered instruction blocks.
+        /// @return | integer | Instruction count.
+        methods.add_method("instructionCount", |_, this, ()| {
+            Ok(this.runtime.instruction_count())
+        });
+
+        // ─── listInstructions ───
+        /// Returns a list of registered instruction keys in insertion order.
+        /// @return | table | String array of instruction keys.
+        methods.add_method("listInstructions", |lua, this, ()| {
+            let keys = this.runtime.list_instructions();
+            let tbl = lua.create_table()?;
+            for (i, key) in keys.into_iter().enumerate() {
+                tbl.set(i + 1, key)?;
+            }
+            Ok(tbl)
         });
 
         // ─── addSkill ───
@@ -278,6 +409,21 @@ impl UserData for LuaAISystem {
         /// @return | boolean | `true` if the skill was found and removed.
         methods.add_method_mut("removeSkill", |_, this, name: String| {
             Ok(this.runtime.remove_system_skill(name))
+        });
+
+        // ─── hasSkill ───
+        /// Returns `true` if a system skill with `name` is registered.
+        /// @param | name | string | Skill name to check.
+        /// @return | boolean | `true` if the skill exists.
+        methods.add_method("hasSkill", |_, this, name: String| {
+            Ok(this.runtime.has_system_skill(&name))
+        });
+
+        // ─── skillCount ───
+        /// Returns the number of registered system skills.
+        /// @return | integer | Skill count.
+        methods.add_method("skillCount", |_, this, ()| {
+            Ok(this.runtime.system_skill_count())
         });
 
         // ─── buildContext ───
@@ -396,6 +542,13 @@ impl UserData for LuaOllamaManager {
             Ok(this.manager.version())
         });
 
+        // ─── baseUrl ───
+        /// Returns the base URL this manager was created with.
+        /// @return | string | Base URL (e.g. `"http://127.0.0.1:11434"`).
+        methods.add_method("baseUrl", |_, this, ()| {
+            Ok(this.manager.base_url().to_string())
+        });
+
         // ─── listModels ───
         /// Returns a table of locally available models, each with `name` and `size_gb` fields.
         /// @return | table | Array of `{ name = string, size_gb = number }` tables.
@@ -407,6 +560,18 @@ impl UserData for LuaOllamaManager {
                 entry.set("name", m.name)?;
                 entry.set("size_gb", m.size_gb)?;
                 tbl.set(i + 1, entry)?;
+            }
+            Ok(tbl)
+        });
+
+        // ─── modelNames ───
+        /// Returns a string array of locally available model names; empty if Ollama is not running.
+        /// @return | table | String array of model names.
+        methods.add_method("modelNames", |lua, this, ()| {
+            let names = this.manager.model_names();
+            let tbl = lua.create_table()?;
+            for (i, name) in names.into_iter().enumerate() {
+                tbl.set(i + 1, name)?;
             }
             Ok(tbl)
         });
@@ -536,7 +701,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // ─── newOllama ───
     /// Creates an Ollama infrastructure manager for server lifecycle and model management.
-    /// @param | config | table | Optional config with `url` (default `"http://127.0.0.1:11434"`).
+    /// @param | config | table? | Optional config with `url` (default `"http://127.0.0.1:11434"`).
     /// @return | LOllamaManager | A new Ollama manager object.
     agent_table.set(
         "newOllama",

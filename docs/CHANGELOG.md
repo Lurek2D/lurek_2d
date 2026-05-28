@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+ - docs(pipeline): redirect Lua API HTML output from `build/doc/lua-api` to `pages/lua-docs`; add `pages/rust-docs` copy step (from `build/doc/lurek2d`) in `gen_all_docs.py`; add `--skip-module-pages` flag to `gen_wiki.py`; add `pages/index.html` landing page for GitHub Pages.
+ - feat(agent): add `LAgent:setModel()`, `LAgent:setUrl()`, `LAgent:setTimeout()`, `LAgent:getName()`, `LAgent:getDescription()`, `LAgent:getModel()`, `LAgent:getUrl()`, `LAgent:getFormat()`, `LAgent:hasSkill()`, `LAgent:skillCount()`, `LAgent:listSkills()` — full getter/setter coverage for per-agent configuration and skill introspection.
+ - feat(agent): add `LAISystem:hasAgent()`, `LAISystem:agentCount()`, `LAISystem:hasInstruction()`, `LAISystem:instructionCount()`, `LAISystem:listInstructions()`, `LAISystem:hasSkill()`, `LAISystem:skillCount()` — introspection helpers for multi-agent orchestration state.
+ - feat(agent): add `LOllamaManager:baseUrl()`, `LOllamaManager:modelNames()` — inspect the configured base URL and list available model names without building the full model-info table.
+ - feat(agent): add `AgentError::message()`, `AgentResponse::is_ok()`, `AgentResponse::text()` — public convenience accessors for error and response types.
+ - feat(agent): add `AgentState::set_model()`, `AgentState::set_url()`, `AgentState::set_format()`, `AgentState::has_skill()`, `AgentState::skill_count()`, `AgentState::list_skills()` — mutation and inspection helpers.
+ - feat(agent): add `AISystemState::has_instruction()`, `AISystemState::instruction_count()`, `AISystemState::list_instructions()`, `AISystemState::has_system_skill()`, `AISystemState::system_skill_count()` — inspection helpers.
+ - feat(agent): add `OllamaManager::base_url()`, `OllamaManager::model_names()` — expose configured URL and model name list without a network call.
+ - fix(agent): mark `lurek.agent.newOllama` config param as optional (`table?`) so `newOllama()` with no args is valid.
+ - test(agent): add ~30 unit tests for all new helper methods across `LAgent`, `LAISystem`, and `LOllamaManager`.
+ - docs(agent): add all new methods to `content/examples/agent.lua`; agent example coverage 63/63 = 100%.
+ - docs(agent): update `docs/specs/agent.md` — add `LOllamaManager` Lua API section; extend Functions section with all new Rust helpers; sync Lua API reference with new getters/setters/introspection methods.
  - feat(tools): add `tools/audit/module_docstring_audit.py` — LOC-proportional `//!` docstring coverage audit for all `src/**/*.rs` files; tiers: 1-30->1, 31-80->3, 81-200->4, 201-400->5, 401-800->6, 801-2000->8, 2001+->10 minimum lines; outputs `logs/data/module_docstring_audit.json`; `--check` flag for CI gate.
  - feat(tools): add `tools/fix/module_docstring_fix.py` — auto-expand under-sized `//!` blocks using LOC-tier rules; for `lua_api/` files generates per-`LuaUserData`-type bullets; `--force` re-patches already-compliant files (repairs bad content); `--dry-run` and `--top N` flags.
  - docs(src): expand and repair `//!` docstrings in all 697 `src/**/*.rs` files to meet LOC-tier minimums; `lua_api/` files now list each exposed Lua userdata type individually.

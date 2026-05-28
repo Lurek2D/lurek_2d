@@ -230,7 +230,7 @@ impl LuaAgentRuntime {
 
     /// Changes the response format (`"json"`, `"csv"`, or `"text"`).
     pub(crate) fn set_format(&mut self, format: String) {
-        self.state.format = format;
+        self.state.set_format(format);
     }
 
     /// Sets the maximum retry count for transient errors.
@@ -246,6 +246,61 @@ impl LuaAgentRuntime {
     /// Sets the agent's role description (injected by AISystem after the system prompt).
     pub(crate) fn set_description(&mut self, description: String) {
         self.state.set_description(description);
+    }
+
+    /// Sets the model identifier forwarded to the LLM backend.
+    pub(crate) fn set_model(&mut self, model: String) {
+        self.state.set_model(model);
+    }
+
+    /// Sets the LLM endpoint URL.
+    pub(crate) fn set_url(&mut self, url: String) {
+        self.state.set_url(url);
+    }
+
+    /// Sets the per-request timeout in seconds.
+    pub(crate) fn set_timeout(&mut self, secs: u64) {
+        self.state.set_timeout(secs);
+    }
+
+    /// Returns `true` if a skill with `name` is registered.
+    pub(crate) fn has_skill(&self, name: &str) -> bool {
+        self.state.has_skill(name)
+    }
+
+    /// Returns the number of registered skills.
+    pub(crate) fn skill_count(&self) -> usize {
+        self.state.skill_count()
+    }
+
+    /// Returns the names of all registered skills in insertion order.
+    pub(crate) fn list_skills(&self) -> Vec<String> {
+        self.state.list_skills()
+    }
+
+    /// Returns the agent's name identifier.
+    pub(crate) fn get_name(&self) -> &str {
+        &self.state.name
+    }
+
+    /// Returns the agent's role description.
+    pub(crate) fn get_description(&self) -> &str {
+        &self.state.description
+    }
+
+    /// Returns the model identifier.
+    pub(crate) fn get_model(&self) -> &str {
+        &self.state.model
+    }
+
+    /// Returns the LLM endpoint URL.
+    pub(crate) fn get_url(&self) -> &str {
+        &self.state.url
+    }
+
+    /// Returns the response format string.
+    pub(crate) fn get_format(&self) -> &str {
+        &self.state.format
     }
 
     /// Cancels an in-flight or pending callback by ID, discarding its response.
@@ -491,6 +546,41 @@ impl LuaAISystemRuntime {
     /// Removes a system skill by name.
     pub(crate) fn remove_system_skill(&mut self, name: String) -> bool {
         self.system_state.remove_system_skill(&name)
+    }
+
+    /// Returns `true` if an agent with `name` is registered.
+    pub(crate) fn has_agent(&self, name: &str) -> bool {
+        self.agents.contains_key(name)
+    }
+
+    /// Returns the number of registered agents.
+    pub(crate) fn agent_count(&self) -> usize {
+        self.agents.len()
+    }
+
+    /// Returns `true` if an instruction with `key` exists.
+    pub(crate) fn has_instruction(&self, key: &str) -> bool {
+        self.system_state.has_instruction(key)
+    }
+
+    /// Returns the number of registered instructions.
+    pub(crate) fn instruction_count(&self) -> usize {
+        self.system_state.instruction_count()
+    }
+
+    /// Returns the keys of all registered instructions in insertion order.
+    pub(crate) fn list_instructions(&self) -> Vec<String> {
+        self.system_state.list_instructions()
+    }
+
+    /// Returns `true` if a system skill with `name` is registered.
+    pub(crate) fn has_system_skill(&self, name: &str) -> bool {
+        self.system_state.has_system_skill(name)
+    }
+
+    /// Returns the number of registered system skills.
+    pub(crate) fn system_skill_count(&self) -> usize {
+        self.system_state.system_skill_count()
     }
 
     /// Builds the system context block that would be sent for `instruction`; used by `buildContext` and routing.
